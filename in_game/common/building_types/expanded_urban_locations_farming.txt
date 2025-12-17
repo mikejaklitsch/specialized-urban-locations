@@ -1,0 +1,629 @@
+﻿REPLACE:fruit_orchard = {
+	is_foreign = no
+	pop_type = laborers
+	max_levels = rural_building_cap
+	employment_size = rural_peasant_produce_employment
+	category = rgo_building_category
+	rural_settlement = yes
+	town = yes
+	city = yes
+
+	remove_if = {
+		location = {
+			NOR = {
+				location_rank = location_rank:rural_settlement
+				var:specialization_designation = flag:farming
+			}
+		}
+	}
+
+	location_potential = {
+		AND = {
+			OR = {
+				vegetation = grasslands
+				vegetation = farmland
+				vegetation = woods
+				vegetation = jungle
+			}
+			OR = {
+				location_rank = location_rank:rural_settlement
+				var:specialization_designation = flag:farming
+			}
+		}
+	}
+
+	unique_production_methods = {
+		fruit_orchard_maintenance = {
+			produced = fruit
+			output = 0.3
+			lumber = 0.17
+			category = building_maintenance
+		}
+	}
+
+	build_time = rural_build_time
+	construction_demand = farm_constructions
+}
+
+REPLACE:fiber_crops_farm = {
+	is_foreign = no
+	max_levels = rural_building_cap
+	pop_type = laborers
+	employment_size = rural_peasant_produce_employment
+	rural_settlement = yes
+	town = yes
+	city = yes
+
+	location_potential = {
+		AND = {
+			NOT = {
+				raw_material = goods:fiber_crops
+			}
+			NOT = { climate = arctic }
+			OR = {
+				location_rank = location_rank:rural_settlement
+				var:specialization_designation = flag:farming
+			}
+		}
+	}
+
+	remove_if = {
+		location = {
+			NOR = {
+				location_rank = location_rank:rural_settlement
+				var:specialization_designation = flag:farming
+			}
+		}
+	}
+
+	category = rgo_building_category
+	build_time = rural_build_time
+
+	unique_production_methods = {
+		fiber_crops_farm_maintenance = {
+			livestock = 0.5
+			lumber = 0.2
+			tools = 0.1
+			category = building_maintenance
+			produced = fiber_crops
+			output = 0.8
+		}
+	}
+
+	construction_demand = farm_constructions
+}
+
+REPLACE:horse_breeders = {
+	is_foreign = no
+	pop_type = laborers
+	max_levels = rural_building_cap
+	employment_size = tiny_rural_peasant_produce_employment
+	category = rgo_building_category
+	rural_settlement = yes
+	town = yes
+	city = yes
+
+	location_potential = {
+		AND = {
+			raw_material = goods:horses
+			OR = {
+				location_rank = location_rank:rural_settlement
+				var:specialization_designation = flag:farming
+			}
+		}
+	}
+
+	remove_if = {
+		location = {
+			NOR = {
+				location_rank = location_rank:rural_settlement
+				var:specialization_designation = flag:farming
+			}
+		}
+	}
+
+	allow = {
+		OR = {
+			climate = mediterranean
+			climate = continental
+			climate = oceanic
+		}
+	}
+
+	unique_production_methods = {
+		horse_breeders_maintenance = {
+			produced = horses
+			output = 1
+			wheat = 1.5
+			horses = 0.3
+			category = building_maintenance
+		}
+	}
+
+	build_time = rural_build_time
+	construction_demand = horse_breeders_construction
+}
+
+
+INJECT:brewery = {
+	remove_if = {
+		location = {
+			NOR = {
+				var:specialization_designation = flag:farming
+				var:specialization_designation = flag:commercial
+			}
+		}
+	}
+
+	location_potential = {
+		OR = {
+			var:specialization_designation = flag:farming
+			var:specialization_designation = flag:commercial
+		}
+	}
+}
+
+INJECT:beer_workshop = {
+	remove_if = {
+		location = {
+			NOR = {
+				var:specialization_designation = flag:farming
+				var:specialization_designation = flag:commercial
+			}
+		}
+	}
+
+	location_potential = {
+		OR = {
+			var:specialization_designation = flag:farming
+			var:specialization_designation = flag:commercial
+		}
+	}
+}
+
+INJECT:brewery_manufactory = {
+	remove_if = {
+		location = {
+			NOR = {
+				var:specialization_designation = flag:farming
+				var:specialization_designation = flag:commercial
+			}
+		}
+	}
+
+	location_potential = {
+		OR = {
+			var:specialization_designation = flag:farming
+			var:specialization_designation = flag:commercial
+		}
+	}
+}
+
+INJECT:brewery_mill = {
+	remove_if = {
+		location = {
+			NOR = {
+				var:specialization_designation = flag:farming
+				var:specialization_designation = flag:commercial
+			}
+		}
+	}
+
+	location_potential = {
+		OR = {
+			var:specialization_designation = flag:farming
+			var:specialization_designation = flag:commercial
+		}
+	}
+}
+
+
+REPLACE:sugar_plantation = {
+	is_foreign = no
+	pop_type = slaves
+	max_levels = plantation_cap
+	employment_size = plantation_employment
+	category = colonial_category
+
+	location_potential = {
+		AND = {
+			raw_material = goods:sugar
+			OR = {
+				is_overseas_for_owner = yes
+				owner ?= { is_colonial_subject = yes }
+			}
+			OR = {
+				location_rank = location_rank:rural_settlement
+				var:specialization_designation = flag:farming
+			}
+		}
+	}
+
+	remove_if = {
+		location = {
+			NOR = {
+				location_rank = location_rank:rural_settlement
+				var:specialization_designation = flag:farming
+			}
+		}
+	}
+
+	rural_settlement = yes
+	town = yes
+	city = yes
+	price = expand_rgo_farming
+	always_add_demands = yes
+	build_time = plantation_build_time
+
+	unique_production_methods = {
+		sugar_plantation_maintenance = {
+			produced = sugar
+			output = 1
+			slaves_goods = 0.5
+			leather = 0.12
+			tools = 0.12
+			lumber = 0.12
+			category = building_maintenance
+		}
+	}
+
+	modifier = {
+		local_sugar_output_modifier = 0.1
+	}
+
+	construction_demand = plantation_construction
+}
+
+REPLACE:cotton_plantation = {
+	is_foreign = no
+	pop_type = slaves
+	max_levels = plantation_cap
+	employment_size = plantation_employment
+	category = colonial_category
+
+	location_potential = {
+		AND = {
+			raw_material = goods:cotton
+			OR = {
+				is_overseas_for_owner = yes
+				owner ?= { is_colonial_subject = yes }
+			}
+			OR = {
+				location_rank = location_rank:rural_settlement
+				var:specialization_designation = flag:farming
+			}
+		}
+	}
+
+	remove_if = {
+		location = {
+			NOR = {
+				location_rank = location_rank:rural_settlement
+				var:specialization_designation = flag:farming
+			}
+		}
+	}
+
+	rural_settlement = yes
+	town = yes
+	city = yes
+	always_add_demands = yes
+	price = expand_rgo_farming
+	build_time = plantation_build_time
+
+	unique_production_methods = {
+		cotton_plantation_maintenance = {
+			produced = cotton
+			output = 1
+			slaves_goods = 0.5
+			leather = 0.12
+			tools = 0.12
+			lumber = 0.12
+			category = building_maintenance
+		}
+	}
+
+	modifier = {
+		local_cotton_output_modifier = 0.1
+	}
+
+	construction_demand = plantation_construction
+}
+
+REPLACE:tobacco_plantation = {
+	is_foreign = no
+	pop_type = slaves
+	max_levels = plantation_cap
+	employment_size = plantation_employment
+	category = colonial_category
+
+	location_potential = {
+		AND = {
+			raw_material = goods:tobacco
+			OR = {
+				is_overseas_for_owner = yes
+				owner ?= { is_colonial_subject = yes }
+			}
+			OR = {
+				location_rank = location_rank:rural_settlement
+				var:specialization_designation = flag:farming
+			}
+		}
+	}
+
+	remove_if = {
+		location = {
+			NOR = {
+				location_rank = location_rank:rural_settlement
+				var:specialization_designation = flag:farming
+			}
+		}
+	}
+
+	rural_settlement = yes
+	town = yes
+	city = yes
+	price = expand_rgo_farming
+	always_add_demands = yes
+	build_time = plantation_build_time
+
+	unique_production_methods = {
+		tobacco_plantation_maintenance = {
+			produced = tobacco
+			output = 1
+			slaves_goods = 0.5
+			leather = 0.12
+			tools = 0.12
+			lumber = 0.12
+			category = building_maintenance
+		}
+	}
+
+	construction_demand = plantation_construction
+}
+
+REPLACE:saltpeter_guild = {
+	is_foreign = no
+	pop_type = burghers
+	max_levels = guild_max_level
+	category = basic_industry_category
+	employment_size = guild_employment
+	town = yes
+	city = yes
+	build_time = guild_build_time
+
+	location_potential = {
+		AND = {
+			market ?= {
+				is_produced_in_market = goods:livestock
+				is_produced_in_market = goods:clay
+			}
+			var:specialization_designation = flag:farming
+		}
+	}
+
+	remove_if = {
+		location = {
+			var:specialization_designation != flag:farming
+		}
+	}
+
+	unique_production_methods = {
+		saltpeter_guild_demands = {
+			pottery = 0.2
+			livestock = 1.0
+			produced = saltpeter
+			output = 1
+			category = guild_input
+		}
+	}
+
+	custom_tags = { guild }
+	construction_demand = guild_construction
+}
+
+REPLACE:windmill = {
+	is_foreign = no
+	pop_type = laborers
+	max_levels = efficiency_building_caps
+	employment_size = rural_peasant_enhance_employment
+	category = rgo_building_category
+	rural_settlement = yes
+
+	location_potential = {
+		AND = {
+			OR = {
+				raw_material = goods:wheat
+				raw_material = goods:rice
+				raw_material = goods:millet
+			}
+			OR = {
+				location_rank = location_rank:rural_settlement
+				var:specialization_designation = flag:farming
+			}
+		}
+	}
+
+	remove_if = {
+		location = {
+			NOR = {
+				location_rank = location_rank:rural_settlement
+				var:specialization_designation = flag:farming
+			}
+		}
+	}
+
+	unique_production_methods = {
+		windmill_maintenance = {
+			tools  = 0.025
+			lumber = 0.05
+			cloth = 0.05
+			category = building_maintenance
+		}
+	}
+
+	modifier = {
+		local_wheat_output_modifier = 0.1
+		local_rice_output_modifier = 0.1
+		local_millet_output_modifier = 0.1
+	}
+
+	build_time = rural_build_time
+	construction_demand = farm_constructions
+}
+
+REPLACE:sheep_farms = {
+	is_foreign = no
+	pop_type = laborers
+	max_levels = rural_building_cap
+	employment_size = rural_peasant_produce_employment
+	category = rgo_building_category
+	rural_settlement = yes
+
+	location_potential = {
+		AND = {
+			OR = {
+				vegetation = sparse
+				vegetation = farmland
+				vegetation = grasslands
+			}
+			OR = {
+				location_rank = location_rank:rural_settlement
+				var:specialization_designation = flag:farming
+			}
+		}
+	}
+
+	remove_if = {
+		location = {
+			NOR = {
+				location_rank = location_rank:rural_settlement
+				var:specialization_designation = flag:farming
+			}
+		}
+	}
+
+	unique_production_methods = {
+		sheep_farm_maintenance = {
+			produced = wool
+			output = 0.5
+			lumber = 0.4
+			tools = 0.16
+			category = building_maintenance
+		}
+	}
+
+	modifier = {
+	}
+
+	build_time = rural_build_time
+	construction_demand = farm_constructions
+}
+
+INJECT:distillers_guild = {
+	remove_if = {
+		location = {
+			var:specialization_designation != flag:farming
+		}
+	}
+
+	location_potential = {
+		var:specialization_designation = flag:farming
+	}
+}
+
+INJECT:distillers_workshop = {
+	remove_if = {
+		location = {
+			var:specialization_designation != flag:farming
+		}
+	}
+
+	location_potential = {
+		var:specialization_designation = flag:farming
+	}
+}
+
+INJECT:distiller_manufactory = {
+	remove_if = {
+		location = {
+			var:specialization_designation != flag:farming
+		}
+	}
+
+	location_potential = {
+		var:specialization_designation = flag:farming
+	}
+}
+
+INJECT:distiller_mill = {
+	remove_if = {
+		location = {
+			var:specialization_designation != flag:farming
+		}
+	}
+
+	location_potential = {
+		var:specialization_designation = flag:farming
+	}
+}
+
+INJECT:saltpeter_workshop = {
+	remove_if = {
+		location = {
+			var:specialization_designation != flag:farming
+		}
+	}
+
+	location_potential = {
+		var:specialization_designation = flag:farming
+	}
+}
+
+INJECT:putrefaction_works = {
+	remove_if = {
+		location = {
+			var:specialization_designation != flag:farming
+		}
+	}
+
+	location_potential = {
+		var:specialization_designation = flag:farming
+	}
+}
+
+INJECT:putrefaction_mill = {
+	remove_if = {
+		location = {
+			var:specialization_designation != flag:farming
+		}
+	}
+
+	location_potential = {
+		var:specialization_designation = flag:farming
+	}
+}
+
+INJECT:winery = {
+	remove_if = {
+		location = {
+			var:specialization_designation != flag:farming
+		}
+	}
+
+	location_potential = {
+		var:specialization_designation = flag:farming
+	}
+}
+
+INJECT:winery_manufactory = {
+	remove_if = {
+		location = {
+			var:specialization_designation != flag:farming
+		}
+	}
+
+	location_potential = {
+		var:specialization_designation = flag:farming
+	}
+}

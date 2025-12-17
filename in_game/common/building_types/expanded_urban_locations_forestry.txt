@@ -1,0 +1,484 @@
+﻿REPLACE:lumber_mill = {
+	is_foreign = no
+	max_levels = rural_building_cap
+	pop_type = laborers
+	employment_size = rural_peasant_produce_employment
+	rural_settlement = yes
+	town = yes
+	city = yes
+	location_potential = {
+		AND = {
+			OR = {
+				vegetation = woods
+				vegetation = forest
+				vegetation = farmland
+				vegetation = jungle
+			}
+			NOT = {
+				raw_material = goods:lumber
+			}
+			OR = {
+				location_rank = location_rank:rural_settlement
+				var:specialization_designation = flag:forestry
+			}
+		}
+	}
+
+	remove_if = {
+		location = {
+			NOR = {
+				location_rank = location_rank:rural_settlement
+				var:specialization_designation = flag:forestry
+			}
+		}
+	}
+
+	category = rgo_building_category
+	build_time = rural_build_time
+
+	unique_production_methods = {
+		lumber_mill_maintenance = {
+			produced = lumber
+			output = 1
+			tools = 0.4
+			category = building_maintenance
+		}
+	}
+
+	construction_demand = basic_construction_needs
+}
+
+REPLACE:tar_kiln = {
+	is_foreign = no
+	pop_type = laborers
+	max_levels = rural_building_cap
+	employment_size = tiny_rural_peasant_produce_employment
+	category = basic_industry_category
+	rural_settlement = yes
+	town = yes
+	city = yes
+	location_potential = {
+		AND = {
+			OR = {
+				vegetation = woods
+				vegetation = forest
+				vegetation = jungle
+				raw_material = goods:lumber
+			}
+			OR = {
+				location_rank = location_rank:rural_settlement
+				var:specialization_designation = flag:forestry
+			}
+		}
+	}
+
+	remove_if = {
+		location = {
+			NOR = {
+				location_rank = location_rank:rural_settlement
+				var:specialization_designation = flag:forestry
+			}
+		}
+	}
+
+	unique_production_methods = {
+		tar_kiln_maintenance = {
+			produced = tar
+			output = 1.0
+			lumber = 1.0
+			category = guild_input
+			debug_max_profit = 0.5
+		}
+	}
+
+	build_time = rural_build_time
+	construction_demand = guild_construction
+}
+
+REPLACE:elephant_hunting_grounds = {
+	is_foreign = no
+	max_levels = {
+		value = rural_building_cap
+		if = {
+			limit = {
+				owner ?= {
+					has_variable = ori_double_elephant_hunting_ground_level_flag
+				}
+			}
+			add = {
+				desc = "INCREASED_MAX_LEVEL_ELEPHANT_HUNTING_GROUND"
+				value = 2
+			}
+		}
+	}
+	pop_type = peasants
+	category = rgo_building_category
+	employment_size = elephant_hunting_grounds_employment
+	rural_settlement = yes
+	country_potential = {
+		produced_in_country:elephants > 0
+	}
+
+	location_potential = {
+		AND = {
+			raw_material = goods:elephants
+			OR = {
+				location_rank = location_rank:rural_settlement
+				var:specialization_designation = flag:forestry
+			}
+		}
+	}
+
+	remove_if = {
+		location = {
+			NOR = {
+				location_rank = location_rank:rural_settlement
+				var:specialization_designation = flag:forestry
+			}
+		}
+	}
+
+	build_time = rural_build_time
+
+	unique_production_methods = {
+		elephant_hunting_grounds_maintenance = {
+			produced = ivory
+			output = 1
+			tools = 0.2
+			weaponry = 0.2
+			elephants = 0.2
+			category = guild_input
+		}
+	}
+
+	modifier = {
+		local_monthly_food_modifier = -0.05
+		local_nobles_desired_pop = 0.010
+	}
+
+	construction_demand = village_construction
+}
+
+REPLACE:sawmill = {
+	is_foreign = no
+	pop_type = laborers
+	max_levels = efficiency_building_caps
+	employment_size = rural_peasant_enhance_employment
+	category = rgo_building_category
+	rural_settlement = yes
+	location_potential = {
+		AND = {
+			raw_material = goods:lumber
+			OR = {
+				location_rank = location_rank:rural_settlement
+				var:specialization_designation = flag:forestry
+			}
+		}
+	}
+
+	remove_if = {
+		location = {
+			NOR = {
+				location_rank = location_rank:rural_settlement
+				var:specialization_designation = flag:forestry
+			}
+		}
+	}
+
+	unique_production_methods = {
+		sawmill_maintenance = {
+			tools  = 0.05
+			category = building_maintenance
+		}
+	}
+
+	modifier = {
+		local_lumber_output_modifier = 0.1
+	}
+
+	build_time = rural_build_time
+	construction_demand = farm_constructions
+}
+
+REPLACE:forest_village = {
+	is_foreign = no
+	max_levels = rural_building_cap
+	pop_type = peasants
+	category = village_category
+	employment_size = village_employment_size
+	rural_settlement = yes
+	location_potential = {
+		AND = {
+			OR = {
+				raw_material = goods:wild_game
+				vegetation = forest
+				vegetation = woods
+				vegetation = jungle
+			}
+			OR = {
+				location_rank = location_rank:rural_settlement
+				var:specialization_designation = flag:forestry
+			}
+		}
+	}
+
+	remove_if = {
+		location = {
+			NOR = {
+				location_rank = location_rank:rural_settlement
+				var:specialization_designation = flag:forestry
+			}
+		}
+	}
+
+	build_time = village_build_time
+
+	unique_production_methods = {
+		forest_village_maintenance = {
+			produced = leather
+			output = 0.25
+			sand = 0.1
+			tar = 0.02
+			wild_game = 0.4
+			debug_max_profit = 0.6
+			category = building_maintenance
+		}
+	}
+
+	construction_demand = village_construction
+
+	modifier = {
+		local_monthly_food = 1.0
+		local_peasants_estate_power = 0.25
+		local_laborers_desired_pop = 0.1
+		local_soldiers_desired_pop = 0.05
+	}
+}
+
+INJECT:dyes_guild = {
+	remove_if = {
+		location = {
+			NOR = {
+				var:specialization_designation = flag:forestry
+				var:specialization_designation = flag:commercial
+			}
+		}
+	}
+
+	location_potential = {
+		OR = {
+			var:specialization_designation = flag:forestry
+			var:specialization_designation = flag:commercial
+		}
+	}
+}
+
+INJECT:dyes_workshop = {
+	remove_if = {
+		location = {
+			NOR = {
+				var:specialization_designation = flag:forestry
+				var:specialization_designation = flag:commercial
+			}
+		}
+	}
+
+	location_potential = {
+		OR = {
+			var:specialization_designation = flag:forestry
+			var:specialization_designation = flag:commercial
+		}
+	}
+}
+
+INJECT:dyesworks = {
+	remove_if = {
+		location = {
+			NOR = {
+				var:specialization_designation = flag:forestry
+				var:specialization_designation = flag:commercial
+			}
+		}
+	}
+
+	location_potential = {
+		OR = {
+			var:specialization_designation = flag:forestry
+			var:specialization_designation = flag:commercial
+		}
+	}
+}
+
+INJECT:dyes_mill = {
+	remove_if = {
+		location = {
+			NOR = {
+				var:specialization_designation = flag:forestry
+				var:specialization_designation = flag:commercial
+			}
+		}
+	}
+
+	location_potential = {
+		OR = {
+			var:specialization_designation = flag:forestry
+			var:specialization_designation = flag:commercial
+		}
+	}
+}
+
+INJECT:furniture_guild = {
+	remove_if = {
+		location = {
+			var:specialization_designation != flag:forestry
+		}
+	}
+
+	location_potential = {
+		var:specialization_designation = flag:forestry
+	}
+}
+
+INJECT:furniture_workshop = {
+	remove_if = {
+		location = {
+			var:specialization_designation != flag:forestry
+		}
+	}
+
+	location_potential = {
+		var:specialization_designation = flag:forestry
+	}
+}
+
+INJECT:furniture_manufactory = {
+	remove_if = {
+		location = {
+			var:specialization_designation != flag:forestry
+		}
+	}
+
+	location_potential = {
+		var:specialization_designation = flag:forestry
+	}
+}
+
+INJECT:furniture_mill = {
+	remove_if = {
+		location = {
+			var:specialization_designation != flag:forestry
+		}
+	}
+
+	location_potential = {
+		var:specialization_designation = flag:forestry
+	}
+}
+
+INJECT:lacquerware_guild = {
+	remove_if = {
+		location = {
+			var:specialization_designation != flag:forestry
+		}
+	}
+
+	location_potential = {
+		var:specialization_designation = flag:forestry
+	}
+}
+
+INJECT:lacquerware_manufactory = {
+	remove_if = {
+		location = {
+			var:specialization_designation != flag:forestry
+		}
+	}
+
+	location_potential = {
+		var:specialization_designation = flag:forestry
+	}
+}
+
+INJECT:tannery = {
+	remove_if = {
+		location = {
+			var:specialization_designation != flag:forestry
+		}
+	}
+
+	location_potential = {
+		var:specialization_designation = flag:forestry
+	}
+}
+
+INJECT:tanning_workshop = {
+	remove_if = {
+		location = {
+			var:specialization_designation != flag:forestry
+		}
+	}
+
+	location_potential = {
+		var:specialization_designation = flag:forestry
+	}
+}
+
+INJECT:tannery_manufactory = {
+	remove_if = {
+		location = {
+			var:specialization_designation != flag:forestry
+		}
+	}
+
+	location_potential = {
+		var:specialization_designation = flag:forestry
+	}
+}
+
+INJECT:tannery_mill = {
+	remove_if = {
+		location = {
+			var:specialization_designation != flag:forestry
+		}
+	}
+
+	location_potential = {
+		var:specialization_designation = flag:forestry
+	}
+}
+
+INJECT:charcoal_maker = {
+	remove_if = {
+		location = {
+			NOR = {
+				location_rank = location_rank:rural_settlement
+				var:specialization_designation = flag:forestry
+			}
+		}
+	}
+
+	location_potential = {
+		OR = {
+			location_rank = location_rank:rural_settlement
+			var:specialization_designation = flag:forestry
+		}
+	}
+}
+
+INJECT:improved_charcoal_maker = {
+	remove_if = {
+		location = {
+			NOR = {
+				location_rank = location_rank:rural_settlement
+				var:specialization_designation = flag:forestry
+			}
+		}
+	}
+
+	location_potential = {
+		OR = {
+			location_rank = location_rank:rural_settlement
+			var:specialization_designation = flag:forestry
+		}
+	}
+}

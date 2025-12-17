@@ -1,0 +1,289 @@
+﻿# Expanded Urban Locations - Specialization Designation Actions
+# These actions allow players to designate a specialization for towns/cities
+# Costs gold + prestige, destroys non-matching buildings, applies modifier
+# scope:actor = country, scope:target = location
+
+designate_mining_specialization = {
+	type = owncountry
+
+	potential = {
+	}
+
+	allow = {
+	}
+
+	ai_tick = never
+
+	price = price:designate_specialization_price
+
+	select_trigger = {
+		looking_for_a = location
+		target_flag = target
+		source = actor
+		name = "designate_mining_select"
+
+		visible = {
+			owner = scope:actor
+			is_town_or_city = yes
+		}
+
+		enabled = {
+			has_mining_resources = yes
+			NOT = { var:specialization_designation = flag:mining }
+		}
+	}
+
+	effect = {
+		if = {
+			limit = { exists = scope:target }
+			scope:target = {
+				# Remove any existing specialization modifiers
+				clear_all_specialization_modifiers = yes
+
+				# Set the specialization variable
+				set_variable = { name = specialization_designation value = flag:mining }
+
+				# Destroy incompatible buildings
+				destroy_non_mining_buildings = yes
+
+				# Apply appropriate modifier based on current rank
+				if = {
+					limit = { location_rank = location_rank:town }
+					add_location_modifier = { modifier = mining_town_specialization }
+				}
+				else_if = {
+					limit = { location_rank = location_rank:city }
+					add_location_modifier = { modifier = mining_city_specialization }
+				}
+			}
+		}
+	}
+}
+
+designate_farming_specialization = {
+	type = owncountry
+
+	potential = {
+	}
+
+	allow = {
+	}
+
+	ai_tick = never
+
+	price = price:designate_specialization_price
+
+	select_trigger = {
+		looking_for_a = location
+		target_flag = target
+		source = actor
+		name = "designate_farming_select"
+
+		visible = {
+			owner = scope:actor
+			is_town_or_city = yes
+		}
+
+		enabled = {
+			has_farming_resources = yes
+			NOT = { var:specialization_designation = flag:farming }
+		}
+	}
+
+	effect = {
+		if = {
+			limit = { exists = scope:target }
+			scope:target = {
+				# Remove any existing specialization modifiers
+				clear_all_specialization_modifiers = yes
+
+				# Set the specialization variable
+				set_variable = { name = specialization_designation value = flag:farming }
+
+				# Destroy incompatible buildings
+				destroy_non_farming_buildings = yes
+
+				# Apply appropriate modifier based on current rank
+				if = {
+					limit = { location_rank = location_rank:town }
+					add_location_modifier = { modifier = farming_town_specialization }
+				}
+				else_if = {
+					limit = { location_rank = location_rank:city }
+					add_location_modifier = { modifier = farming_city_specialization }
+				}
+			}
+		}
+	}
+}
+
+designate_forestry_specialization = {
+	type = owncountry
+
+	potential = {
+	}
+
+	allow = {
+	}
+
+	ai_tick = never
+
+	price = price:designate_specialization_price
+
+	select_trigger = {
+		looking_for_a = location
+		target_flag = target
+		source = actor
+		name = "designate_forestry_select"
+
+		visible = {
+			owner = scope:actor
+			is_town_or_city = yes
+		}
+
+		enabled = {
+			has_forestry_resources = yes
+			NOT = { var:specialization_designation = flag:forestry }
+		}
+	}
+
+	effect = {
+		if = {
+			limit = { exists = scope:target }
+			scope:target = {
+				# Remove any existing specialization modifiers
+				clear_all_specialization_modifiers = yes
+
+				# Set the specialization variable
+				set_variable = { name = specialization_designation value = flag:forestry }
+
+				# Destroy incompatible buildings
+				destroy_non_forestry_buildings = yes
+
+				# Apply appropriate modifier based on current rank
+				if = {
+					limit = { location_rank = location_rank:town }
+					add_location_modifier = { modifier = forestry_town_specialization }
+				}
+				else_if = {
+					limit = { location_rank = location_rank:city }
+					add_location_modifier = { modifier = forestry_city_specialization }
+				}
+			}
+		}
+	}
+}
+
+designate_gathering_specialization = {
+	type = owncountry
+
+	potential = {
+	}
+
+	allow = {
+	}
+
+	ai_tick = never
+
+	price = price:designate_specialization_price
+
+	select_trigger = {
+		looking_for_a = location
+		target_flag = target
+		source = actor
+		name = "designate_gathering_select"
+
+		visible = {
+			owner = scope:actor
+			is_town_or_city = yes
+		}
+
+		enabled = {
+			has_gathering_resources = yes
+			NOT = { var:specialization_designation = flag:gathering }
+		}
+	}
+
+	effect = {
+		if = {
+			limit = { exists = scope:target }
+			scope:target = {
+				# Remove any existing specialization modifiers
+				clear_all_specialization_modifiers = yes
+
+				# Set the specialization variable
+				set_variable = { name = specialization_designation value = flag:gathering }
+
+				# Destroy incompatible buildings
+				destroy_non_gathering_buildings = yes
+
+				# Apply appropriate modifier based on current rank
+				if = {
+					limit = { location_rank = location_rank:town }
+					add_location_modifier = { modifier = gathering_town_specialization }
+				}
+				else_if = {
+					limit = { location_rank = location_rank:city }
+					add_location_modifier = { modifier = gathering_city_specialization }
+				}
+			}
+		}
+	}
+}
+
+designate_commercial_specialization = {
+	type = owncountry
+
+	potential = {
+	}
+
+	allow = {
+	}
+
+	ai_tick = never
+
+	price = price:designate_specialization_price
+
+	select_trigger = {
+		looking_for_a = location
+		target_flag = target
+		source = actor
+		name = "designate_commercial_select"
+
+		visible = {
+			owner = scope:actor
+			is_town_or_city = yes
+		}
+
+		# Commercial has no resource requirement - but cannot already be commercial
+		enabled = {
+			NOT = { var:specialization_designation = flag:commercial }
+		}
+	}
+
+	effect = {
+		if = {
+			limit = { exists = scope:target }
+			scope:target = {
+				# Remove any existing specialization modifiers
+				clear_all_specialization_modifiers = yes
+
+				# Set the specialization variable
+				set_variable = { name = specialization_designation value = flag:commercial }
+
+				# Destroy incompatible buildings
+				destroy_non_commercial_buildings = yes
+
+				# Apply appropriate modifier based on current rank
+				if = {
+					limit = { location_rank = location_rank:town }
+					add_location_modifier = { modifier = commercial_town_specialization }
+				}
+				else_if = {
+					limit = { location_rank = location_rank:city }
+					add_location_modifier = { modifier = commercial_city_specialization }
+				}
+			}
+		}
+	}
+}

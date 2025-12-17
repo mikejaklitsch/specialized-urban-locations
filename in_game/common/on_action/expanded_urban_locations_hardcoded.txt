@@ -1,0 +1,134 @@
+﻿# Handle modifier tier transitions when location rank changes
+# This ensures the correct modifier tier (town/city) is applied when a
+# specialized location upgrades or downgrades via normal gameplay
+# root = location
+
+on_location_changed_rank = {
+	on_actions = {
+		on_location_updates_specialization_by_rankup
+	}
+}
+
+on_game_start = {
+	on_actions = {
+		specialized_locations_setup
+	}
+}
+
+specialized_locations_setup = {
+	effect = {
+		every_location_in_the_world = {
+			limit = {
+				exists = owner
+				is_town_or_city = yes
+			}
+			if = {
+				limit = {
+					OR = {
+						is_market_center = yes
+						AND = {
+							is_capital = yes
+							owner = {
+								government_type = government_type:republic
+							}
+						}
+					}
+				}
+				set_variable = {
+					name = specialization_designation
+					value = flag:commercial
+				}
+				apply_specialization_modifier = yes
+			}
+			else_if = {
+				limit = { has_farming_resources = yes }
+				set_variable = {
+					name = specialization_designation
+					value = flag:farming
+				}
+				apply_specialization_modifier = yes
+			}
+			else_if = {
+				limit = { has_mining_resources = yes }
+				set_variable = {
+					name = specialization_designation
+					value = flag:mining
+				}
+				apply_specialization_modifier = yes
+			}
+			else_if = {
+				limit = { has_gathering_resources = yes }
+				set_variable = {
+					name = specialization_designation
+					value = flag:gathering
+				}
+				apply_specialization_modifier = yes
+			}
+			else_if = {
+				limit = { has_forestry_resources = yes }
+				set_variable = {
+					name = specialization_designation
+					value = flag:forestry
+				}
+				apply_specialization_modifier = yes
+			}
+		}
+	}
+}
+
+on_location_updates_specialization_by_rankup = {
+	effect = {
+		if = {
+			limit = {
+				has_variable = specialization_designation
+			}
+			# Clear all existing specialization modifiers
+			clear_all_specialization_modifiers = yes
+
+			# Apply the correct modifier tier based on new rank
+			# (If downgraded to rural, no modifier is applied - specialization is lost)
+			apply_specialization_modifier = yes
+		}
+		else_if = {
+			limit = {
+				has_farming_resources = yes
+			}
+			set_variable = {
+				name = specialization_designation
+				value = flag:farming
+			}
+			apply_specialization_modifier = yes
+		}
+		else_if = {
+			limit = {
+				has_gathering_resources = yes
+			}
+			set_variable = {
+				name = specialization_designation
+				value = flag:gathering
+			}
+			apply_specialization_modifier = yes
+		}
+		else_if = {
+			limit = {
+				has_forestry_resources = yes
+			}
+			set_variable = {
+				name = specialization_designation
+				value = flag:forestry
+			}
+			apply_specialization_modifier = yes
+		}
+		else_if = {
+			limit = {
+				has_mining_resources = yes
+			}
+			set_variable = {
+				name = specialization_designation
+				value = flag:mining
+			}
+			apply_specialization_modifier = yes
+		}
+	}
+}
+

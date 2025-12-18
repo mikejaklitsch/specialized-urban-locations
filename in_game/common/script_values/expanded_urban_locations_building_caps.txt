@@ -9,3 +9,197 @@
 		value = max_rgo_workers
 	}
 }
+
+# Doubled caps for burgher production buildings
+REPLACE:guild_max_level = {
+	add = {
+		desc = "BUILDING_LEVEL_BASE"
+		value = 1
+	}
+	add = {
+		desc = "BUILDING_LEVEL_DEVELOPMENT"
+		value = development
+		multiply = 0.1
+	}
+	add = {
+		desc = "BUILDING_LEVEL_POPULATION"
+		value = population
+		multiply = 0.05
+	}
+	if = {
+		limit = {
+			location_rank ?= location_rank:city
+		}
+		add = {
+			desc = "BUILDING_LEVEL_IS_CITY"
+			value = 5
+		}
+	}
+	if = {
+		limit = {
+			location_rank ?= location_rank:rural_settlement
+			has_variable = extra_levels_clothmaker_variable
+		}
+		add = {
+			desc = "[ShowMissionTaskName('mission_cloth_makers')]"
+			value = 2
+		}
+	}
+	# Save current value, then add it again (doubling) if specialized
+	save_temporary_value_as = eul_base_cap
+	if = {
+		limit = {
+			has_variable = specialization_designation
+		}
+		add = {
+			desc = "LOCATION_IS_SPECIALIZED"
+			value = scope:eul_base_cap
+		}
+	}
+}
+
+REPLACE:workshop_max_level = {
+	add = {
+		desc = "BUILDING_LEVEL_BASE"
+		value = 1
+	}
+	add = {
+		desc = "BUILDING_LEVEL_DEVELOPMENT"
+		value = development
+		multiply = 0.25
+	}
+	add = {
+		desc = "BUILDING_LEVEL_POPULATION"
+		value = population
+		multiply = 0.05
+	}
+	if = {
+		limit = {
+			location_rank = location_rank:city
+		}
+		add = {
+			desc = "BUILDING_LEVEL_IS_CITY"
+			value = 10
+		}
+	}
+	save_temporary_value_as = eul_base_cap
+	if = {
+		limit = {
+			has_variable = specialization_designation
+		}
+		add = {
+			desc = "LOCATION_IS_SPECIALIZED"
+			value = scope:eul_base_cap
+		}
+	}
+}
+
+REPLACE:manufactory_max_level = {
+	add = {
+		desc = "BUILDING_LEVEL_BASE"
+		value = 5
+	}
+	add = {
+		desc = "BUILDING_LEVEL_DEVELOPMENT"
+		value = development
+		multiply = 0.5
+	}
+	add = {
+		desc = "BUILDING_LEVEL_POPULATION"
+		value = population
+		multiply = 0.1
+	}
+	if = {
+		limit = {
+			location_rank = location_rank:city
+		}
+		add = {
+			desc = "BUILDING_LEVEL_IS_CITY"
+			value = 20
+		}
+	}
+	save_temporary_value_as = eul_base_cap
+	if = {
+		limit = {
+			has_variable = specialization_designation
+		}
+		add = {
+			desc = "LOCATION_IS_SPECIALIZED"
+			value = scope:eul_base_cap
+		}
+	}
+}
+
+
+REPLACE:mills_max_level = {
+	add = {
+		desc = "BUILDING_LEVEL_BASE"
+		value = 5
+	}
+	add = {
+		desc = "BUILDING_LEVEL_DEVELOPMENT"
+		value = development
+		multiply = 1
+	}
+	add = {
+		desc = "BUILDING_LEVEL_POPULATION"
+		value = population
+		multiply = 0.25
+	}
+	if = {
+		limit = {
+			location_rank = location_rank:city
+		}
+		add = {
+			desc = "BUILDING_LEVEL_IS_CITY"
+			value = 25
+		}
+	}
+	save_temporary_value_as = eul_base_cap
+	if = {
+		limit = {
+			has_variable = specialization_designation
+		}
+		add = {
+			desc = "LOCATION_IS_SPECIALIZED"
+			value = scope:eul_base_cap
+		}
+	}
+}
+
+
+REPLACE:market_max_level = {
+	add = {
+		desc = "BUILDING_LEVEL_BASE"
+		value = 1
+	}
+	add = {
+		desc = "BUILDING_LEVEL_DEVELOPMENT"
+		value = development
+		multiply = 0.1
+	}
+	add = {
+		desc = "BUILDING_LEVEL_POPULATION"
+		value = population
+		multiply = 0.05
+	}
+	if = {
+		limit = {
+			location_rank ?= location_rank:city
+		}
+		add = {
+			desc = "BUILDING_LEVEL_IS_CITY"
+			value = 5
+		}
+	}
+	save_temporary_value_as = eul_base_cap
+	if = {
+		limit = {
+			has_variable = specialization_designation
+		}
+		add = {
+			desc = "LOCATION_IS_SPECIALIZED"
+			value = scope:eul_base_cap
+		}
+	}
+}

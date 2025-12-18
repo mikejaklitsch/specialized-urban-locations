@@ -275,102 +275,322 @@ clear_all_specialization_modifiers = {
 	}
 }
 
+# Grant tier 1 buildings for a specialization (guilds valid for towns/cities)
+# Checks advance requirements - only grants buildings the owner has unlocked
+# root = location (must have specialization_designation variable set)
+grant_specialization_starter_buildings = {
+	# Mining - grant tier 1 production guilds
+	if = {
+		limit = { has_mining_specialization = yes }
+		# tools_guild requires metallurgy advance
+		if = {
+			limit = { owner = { has_advance = metallurgy } }
+			change_building_level_in_location = {
+				building = building_type:tools_guild
+				value = 1
+			}
+		}
+		# weapon_guild requires weapon_guild_advance
+		if = {
+			limit = { owner = { has_advance = weapon_guild_advance } }
+			change_building_level_in_location = {
+				building = building_type:weapon_guild
+				value = 1
+			}
+		}
+		# cannon_maker requires cannon_maker_advance
+		if = {
+			limit = { owner = { has_advance = cannon_maker_advance } }
+			change_building_level_in_location = {
+				building = building_type:cannon_maker
+				value = 1
+			}
+		}
+		# hand_cannon_guild requires hand_cannon_guild_advance (East Asia only)
+		if = {
+			limit = { owner = { has_advance = hand_cannon_guild_advance } }
+			change_building_level_in_location = {
+				building = building_type:hand_cannon_guild
+				value = 1
+			}
+		}
+		# jewelry_guild - no advance requirement
+		change_building_level_in_location = {
+			building = building_type:jewelry_guild
+			value = 1
+		}
+	}
+	# Farming - grant tier 1 production guilds
+	else_if = {
+		limit = { has_farming_specialization = yes }
+		# No advance requirements for these
+		change_building_level_in_location = {
+			building = building_type:brewery
+			value = 1
+		}
+		change_building_level_in_location = {
+			building = building_type:winery
+			value = 1
+		}
+		change_building_level_in_location = {
+			building = building_type:distillers_guild
+			value = 1
+		}
+		# saltpeter_guild requires livestock + clay in market
+		if = {
+			limit = {
+				market ?= {
+					is_produced_in_market = goods:livestock
+					is_produced_in_market = goods:clay
+				}
+			}
+			change_building_level_in_location = {
+				building = building_type:saltpeter_guild
+				value = 1
+			}
+		}
+	}
+	# Forestry - grant tier 1 production guilds
+	else_if = {
+		limit = { has_forestry_specialization = yes }
+		# No advance requirements for these
+		change_building_level_in_location = {
+			building = building_type:furniture_guild
+			value = 1
+		}
+		change_building_level_in_location = {
+			building = building_type:dyes_guild
+			value = 1
+		}
+		# lacquerware_guild requires lacquerware_guild_advance (East Asia only)
+		if = {
+			limit = { owner = { has_advance = lacquerware_guild_advance } }
+			change_building_level_in_location = {
+				building = building_type:lacquerware_guild
+				value = 1
+			}
+		}
+		change_building_level_in_location = {
+			building = building_type:tannery
+			value = 1
+		}
+	}
+	# Gathering - grant tier 1 production guilds
+	else_if = {
+		limit = { has_gathering_specialization = yes }
+		# glass_guild requires sand in market
+		if = {
+			limit = { market ?= { is_produced_in_market = goods:sand } }
+			change_building_level_in_location = {
+				building = building_type:glass_guild
+				value = 1
+			}
+		}
+		# No advance requirement
+		change_building_level_in_location = {
+			building = building_type:pottery_guild
+			value = 1
+		}
+		# porcelain_guild requires porcelain_kiln_advance (East Asia only)
+		if = {
+			limit = { owner = { has_advance = porcelain_kiln_advance } }
+			change_building_level_in_location = {
+				building = building_type:porcelain_guild
+				value = 1
+			}
+		}
+		# apothecary requires apothecary_advance
+		if = {
+			limit = { owner = { has_advance = apothecary_advance } }
+			change_building_level_in_location = {
+				building = building_type:apothecary
+				value = 1
+			}
+		}
+	}
+	# Commercial - grant tier 1 trade/production buildings
+	else_if = {
+		limit = { has_commercial_specialization = yes }
+		# No advance requirement
+		change_building_level_in_location = {
+			building = building_type:marketplace
+			value = 1
+		}
+		# scriptorium requires scriptorium_advance
+		if = {
+			limit = { owner = { has_advance = scriptorium_advance } }
+			change_building_level_in_location = {
+				building = building_type:scriptorium
+				value = 1
+			}
+		}
+		# No advance requirements
+		change_building_level_in_location = {
+			building = building_type:cloth_guild
+			value = 1
+		}
+		change_building_level_in_location = {
+			building = building_type:fine_cloth_guild
+			value = 1
+		}
+		change_building_level_in_location = {
+			building = building_type:naval_supplies_guild
+			value = 1
+		}
+		# paper_guild requires paper_guild_advance
+		if = {
+			limit = { owner = { has_advance = paper_guild_advance } }
+			change_building_level_in_location = {
+				building = building_type:paper_guild
+				value = 1
+			}
+		}
+	}
+}
+
+# Destroy non-matching buildings based on specialization variable
+# root = location (must have specialization_designation variable set)
+destroy_non_matching_buildings = {
+	if = {
+		limit = { has_mining_specialization = yes }
+		destroy_non_mining_buildings = yes
+	}
+	else_if = {
+		limit = { has_farming_specialization = yes }
+		destroy_non_farming_buildings = yes
+	}
+	else_if = {
+		limit = { has_forestry_specialization = yes }
+		destroy_non_forestry_buildings = yes
+	}
+	else_if = {
+		limit = { has_gathering_specialization = yes }
+		destroy_non_gathering_buildings = yes
+	}
+	else_if = {
+		limit = { has_commercial_specialization = yes }
+		destroy_non_commercial_buildings = yes
+	}
+}
+
+# Assign specialization based on local resources
+# Priority: Commercial (special conditions) > Farming > Mining > Gathering > Forestry
+# root = location (town or city)
+# Uses constants from expanded_urban_locations_specialization_constants.txt
+assign_specialization_by_resources = {
+	# Commercial specialization (priority for market centers, harbors, republic capitals)
+	if = {
+		limit = {
+			OR = {
+				is_market_center = yes
+				modifier:harbor_suitability > 0.7
+				AND = {
+					is_capital = yes
+					location_rank = location_rank:city
+					owner = { government_type = government_type:republic }
+				}
+			}
+		}
+		if = {
+			limit = { location_rank = location_rank:town }
+			set_variable = { name = specialization_designation value = eul_commercial_town_value }
+		}
+		else = {
+			set_variable = { name = specialization_designation value = eul_commercial_city_value }
+		}
+	}
+	# Farming specialization
+	else_if = {
+		limit = { has_farming_resources = yes }
+		if = {
+			limit = { location_rank = location_rank:town }
+			set_variable = { name = specialization_designation value = eul_farming_town_value }
+		}
+		else = {
+			set_variable = { name = specialization_designation value = eul_farming_city_value }
+		}
+	}
+	# Mining specialization
+	else_if = {
+		limit = { has_mining_resources = yes }
+		if = {
+			limit = { location_rank = location_rank:town }
+			set_variable = { name = specialization_designation value = eul_mining_town_value }
+		}
+		else = {
+			set_variable = { name = specialization_designation value = eul_mining_city_value }
+		}
+	}
+	# Gathering specialization
+	else_if = {
+		limit = { has_gathering_resources = yes }
+		if = {
+			limit = { location_rank = location_rank:town }
+			set_variable = { name = specialization_designation value = eul_gathering_town_value }
+		}
+		else = {
+			set_variable = { name = specialization_designation value = eul_gathering_city_value }
+		}
+	}
+	# Forestry specialization
+	else_if = {
+		limit = { has_forestry_resources = yes }
+		if = {
+			limit = { location_rank = location_rank:town }
+			set_variable = { name = specialization_designation value = eul_forestry_town_value }
+		}
+		else = {
+			set_variable = { name = specialization_designation value = eul_forestry_city_value }
+		}
+	}
+}
+
 # Apply correct modifier based on specialization variable and current rank
 # root = location (must have specialization_designation variable set)
 apply_specialization_modifier = {
 	# Mining
 	if = {
-		limit = {
-			var:specialization_designation = flag:mining
-			location_rank = location_rank:town
-		}
-		add_location_modifier = {
-			modifier = mining_town_specialization
-		}
+		limit = { is_mining_town = yes }
+		add_location_modifier = { modifier = mining_town_specialization }
 	}
 	else_if = {
-		limit = {
-			var:specialization_designation = flag:mining
-			location_rank = location_rank:city
-		}
-		add_location_modifier = {
-			modifier = mining_city_specialization
-		}
+		limit = { is_mining_city = yes }
+		add_location_modifier = { modifier = mining_city_specialization }
 	}
 	# Farming
 	else_if = {
-		limit = {
-			var:specialization_designation = flag:farming
-			location_rank = location_rank:town
-		}
-		add_location_modifier = {
-			modifier = farming_town_specialization
-		}
+		limit = { is_farming_town = yes }
+		add_location_modifier = { modifier = farming_town_specialization }
 	}
 	else_if = {
-		limit = {
-			var:specialization_designation = flag:farming
-			location_rank = location_rank:city
-		}
-		add_location_modifier = {
-			modifier = farming_city_specialization
-		}
+		limit = { is_farming_city = yes }
+		add_location_modifier = { modifier = farming_city_specialization }
 	}
 	# Forestry
 	else_if = {
-		limit = {
-			var:specialization_designation = flag:forestry
-			location_rank = location_rank:town
-		}
-		add_location_modifier = {
-			modifier = forestry_town_specialization
-		}
+		limit = { is_forestry_town = yes }
+		add_location_modifier = { modifier = forestry_town_specialization }
 	}
 	else_if = {
-		limit = {
-			var:specialization_designation = flag:forestry
-			location_rank = location_rank:city
-		}
-		add_location_modifier = {
-			modifier = forestry_city_specialization
-		}
+		limit = { is_forestry_city = yes }
+		add_location_modifier = { modifier = forestry_city_specialization }
 	}
 	# Gathering
 	else_if = {
-		limit = {
-			var:specialization_designation = flag:gathering
-			location_rank = location_rank:town
-		}
-		add_location_modifier = {
-			modifier = gathering_town_specialization
-		}
+		limit = { is_gathering_town = yes }
+		add_location_modifier = { modifier = gathering_town_specialization }
 	}
 	else_if = {
-		limit = {
-			var:specialization_designation = flag:gathering
-			location_rank = location_rank:city
-		}
-		add_location_modifier = {
-			modifier = gathering_city_specialization
-		}
+		limit = { is_gathering_city = yes }
+		add_location_modifier = { modifier = gathering_city_specialization }
 	}
 	# Commercial
 	else_if = {
-		limit = {
-			var:specialization_designation = flag:commercial
-			location_rank = location_rank:town
-		}
-		add_location_modifier = {
-			modifier = commercial_town_specialization
-		}
+		limit = { is_commercial_town = yes }
+		add_location_modifier = { modifier = commercial_town_specialization }
 	}
 	else_if = {
-		limit = {
-			var:specialization_designation = flag:commercial
-			location_rank = location_rank:city
-		}
-		add_location_modifier = {
-			modifier = commercial_city_specialization
-		}
+		limit = { is_commercial_city = yes }
+		add_location_modifier = { modifier = commercial_city_specialization }
 	}
 }

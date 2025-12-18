@@ -19,7 +19,7 @@
 			}
 			OR = {
 				location_rank = location_rank:rural_settlement
-				var:specialization_designation = flag:forestry
+				has_forestry_specialization = yes
 			}
 		}
 	}
@@ -28,24 +28,15 @@
 		location = {
 			NOR = {
 				location_rank = location_rank:rural_settlement
-				var:specialization_designation = flag:forestry
+				has_forestry_specialization = yes
 			}
 		}
 	}
 
 	category = rgo_building_category
 	build_time = rural_build_time
-
-	unique_production_methods = {
-		lumber_mill_maintenance = {
-			produced = lumber
-			output = 1
-			tools = 0.4
-			category = building_maintenance
-		}
-	}
-
 	construction_demand = basic_construction_needs
+	unique_production_methods = { lumber_mill_maintenance }
 }
 
 REPLACE:tar_kiln = {
@@ -67,7 +58,7 @@ REPLACE:tar_kiln = {
 			}
 			OR = {
 				location_rank = location_rank:rural_settlement
-				var:specialization_designation = flag:forestry
+				has_forestry_specialization = yes
 			}
 		}
 	}
@@ -76,23 +67,14 @@ REPLACE:tar_kiln = {
 		location = {
 			NOR = {
 				location_rank = location_rank:rural_settlement
-				var:specialization_designation = flag:forestry
+				has_forestry_specialization = yes
 			}
-		}
-	}
-
-	unique_production_methods = {
-		tar_kiln_maintenance = {
-			produced = tar
-			output = 1.0
-			lumber = 1.0
-			category = guild_input
-			debug_max_profit = 0.5
 		}
 	}
 
 	build_time = rural_build_time
 	construction_demand = guild_construction
+	unique_production_methods = { tar_kiln_maintenance }
 }
 
 REPLACE:elephant_hunting_grounds = {
@@ -115,6 +97,8 @@ REPLACE:elephant_hunting_grounds = {
 	category = rgo_building_category
 	employment_size = elephant_hunting_grounds_employment
 	rural_settlement = yes
+	town = yes
+	city = yes
 	country_potential = {
 		produced_in_country:elephants > 0
 	}
@@ -124,7 +108,7 @@ REPLACE:elephant_hunting_grounds = {
 			raw_material = goods:elephants
 			OR = {
 				location_rank = location_rank:rural_settlement
-				var:specialization_designation = flag:forestry
+				has_forestry_specialization = yes
 			}
 		}
 	}
@@ -133,23 +117,12 @@ REPLACE:elephant_hunting_grounds = {
 		location = {
 			NOR = {
 				location_rank = location_rank:rural_settlement
-				var:specialization_designation = flag:forestry
+				has_forestry_specialization = yes
 			}
 		}
 	}
 
 	build_time = rural_build_time
-
-	unique_production_methods = {
-		elephant_hunting_grounds_maintenance = {
-			produced = ivory
-			output = 1
-			tools = 0.2
-			weaponry = 0.2
-			elephants = 0.2
-			category = guild_input
-		}
-	}
 
 	modifier = {
 		local_monthly_food_modifier = -0.05
@@ -157,6 +130,7 @@ REPLACE:elephant_hunting_grounds = {
 	}
 
 	construction_demand = village_construction
+	unique_production_methods = { elephant_hunting_grounds_maintenance }
 }
 
 REPLACE:sawmill = {
@@ -166,12 +140,14 @@ REPLACE:sawmill = {
 	employment_size = rural_peasant_enhance_employment
 	category = rgo_building_category
 	rural_settlement = yes
+	town = yes
+	city = yes
 	location_potential = {
 		AND = {
 			raw_material = goods:lumber
 			OR = {
 				location_rank = location_rank:rural_settlement
-				var:specialization_designation = flag:forestry
+				has_forestry_specialization = yes
 			}
 		}
 	}
@@ -180,15 +156,8 @@ REPLACE:sawmill = {
 		location = {
 			NOR = {
 				location_rank = location_rank:rural_settlement
-				var:specialization_designation = flag:forestry
+				has_forestry_specialization = yes
 			}
-		}
-	}
-
-	unique_production_methods = {
-		sawmill_maintenance = {
-			tools  = 0.05
-			category = building_maintenance
 		}
 	}
 
@@ -198,6 +167,7 @@ REPLACE:sawmill = {
 
 	build_time = rural_build_time
 	construction_demand = farm_constructions
+	unique_production_methods = { sawmill_maintenance }
 }
 
 REPLACE:forest_village = {
@@ -207,6 +177,8 @@ REPLACE:forest_village = {
 	category = village_category
 	employment_size = village_employment_size
 	rural_settlement = yes
+	town = yes
+	city = yes
 	location_potential = {
 		AND = {
 			OR = {
@@ -217,7 +189,7 @@ REPLACE:forest_village = {
 			}
 			OR = {
 				location_rank = location_rank:rural_settlement
-				var:specialization_designation = flag:forestry
+				has_forestry_specialization = yes
 			}
 		}
 	}
@@ -226,25 +198,12 @@ REPLACE:forest_village = {
 		location = {
 			NOR = {
 				location_rank = location_rank:rural_settlement
-				var:specialization_designation = flag:forestry
+				has_forestry_specialization = yes
 			}
 		}
 	}
 
 	build_time = village_build_time
-
-	unique_production_methods = {
-		forest_village_maintenance = {
-			produced = leather
-			output = 0.25
-			sand = 0.1
-			tar = 0.02
-			wild_game = 0.4
-			debug_max_profit = 0.6
-			category = building_maintenance
-		}
-	}
-
 	construction_demand = village_construction
 
 	modifier = {
@@ -253,22 +212,23 @@ REPLACE:forest_village = {
 		local_laborers_desired_pop = 0.1
 		local_soldiers_desired_pop = 0.05
 	}
+	unique_production_methods = { forest_village_maintenance }
 }
 
 INJECT:dyes_guild = {
 	remove_if = {
 		location = {
 			NOR = {
-				var:specialization_designation = flag:forestry
-				var:specialization_designation = flag:commercial
+				has_forestry_specialization = yes
+				has_commercial_specialization = yes
 			}
 		}
 	}
 
 	location_potential = {
 		OR = {
-			var:specialization_designation = flag:forestry
-			var:specialization_designation = flag:commercial
+			has_forestry_specialization = yes
+			has_commercial_specialization = yes
 		}
 	}
 }
@@ -277,16 +237,16 @@ INJECT:dyes_workshop = {
 	remove_if = {
 		location = {
 			NOR = {
-				var:specialization_designation = flag:forestry
-				var:specialization_designation = flag:commercial
+				has_forestry_specialization = yes
+				has_commercial_specialization = yes
 			}
 		}
 	}
 
 	location_potential = {
 		OR = {
-			var:specialization_designation = flag:forestry
-			var:specialization_designation = flag:commercial
+			has_forestry_specialization = yes
+			has_commercial_specialization = yes
 		}
 	}
 }
@@ -295,16 +255,16 @@ INJECT:dyesworks = {
 	remove_if = {
 		location = {
 			NOR = {
-				var:specialization_designation = flag:forestry
-				var:specialization_designation = flag:commercial
+				has_forestry_specialization = yes
+				has_commercial_specialization = yes
 			}
 		}
 	}
 
 	location_potential = {
 		OR = {
-			var:specialization_designation = flag:forestry
-			var:specialization_designation = flag:commercial
+			has_forestry_specialization = yes
+			has_commercial_specialization = yes
 		}
 	}
 }
@@ -313,16 +273,16 @@ INJECT:dyes_mill = {
 	remove_if = {
 		location = {
 			NOR = {
-				var:specialization_designation = flag:forestry
-				var:specialization_designation = flag:commercial
+				has_forestry_specialization = yes
+				has_commercial_specialization = yes
 			}
 		}
 	}
 
 	location_potential = {
 		OR = {
-			var:specialization_designation = flag:forestry
-			var:specialization_designation = flag:commercial
+			has_forestry_specialization = yes
+			has_commercial_specialization = yes
 		}
 	}
 }
@@ -330,129 +290,132 @@ INJECT:dyes_mill = {
 INJECT:furniture_guild = {
 	remove_if = {
 		location = {
-			var:specialization_designation != flag:forestry
+			has_forestry_specialization = no
 		}
 	}
 
 	location_potential = {
-		var:specialization_designation = flag:forestry
+		has_forestry_specialization = yes
 	}
 }
 
 INJECT:furniture_workshop = {
 	remove_if = {
 		location = {
-			var:specialization_designation != flag:forestry
+			has_forestry_specialization = no
 		}
 	}
 
 	location_potential = {
-		var:specialization_designation = flag:forestry
+		has_forestry_specialization = yes
 	}
 }
 
 INJECT:furniture_manufactory = {
 	remove_if = {
 		location = {
-			var:specialization_designation != flag:forestry
+			has_forestry_specialization = no
 		}
 	}
 
 	location_potential = {
-		var:specialization_designation = flag:forestry
+		has_forestry_specialization = yes
 	}
 }
 
 INJECT:furniture_mill = {
 	remove_if = {
 		location = {
-			var:specialization_designation != flag:forestry
+			has_forestry_specialization = no
 		}
 	}
 
 	location_potential = {
-		var:specialization_designation = flag:forestry
+		has_forestry_specialization = yes
 	}
 }
 
 INJECT:lacquerware_guild = {
 	remove_if = {
 		location = {
-			var:specialization_designation != flag:forestry
+			has_forestry_specialization = no
 		}
 	}
 
 	location_potential = {
-		var:specialization_designation = flag:forestry
+		has_forestry_specialization = yes
 	}
 }
 
 INJECT:lacquerware_manufactory = {
 	remove_if = {
 		location = {
-			var:specialization_designation != flag:forestry
+			has_forestry_specialization = no
 		}
 	}
 
 	location_potential = {
-		var:specialization_designation = flag:forestry
+		has_forestry_specialization = yes
 	}
 }
 
 INJECT:tannery = {
 	remove_if = {
 		location = {
-			var:specialization_designation != flag:forestry
+			has_forestry_specialization = no
 		}
 	}
 
 	location_potential = {
-		var:specialization_designation = flag:forestry
+		has_forestry_specialization = yes
 	}
 }
 
 INJECT:tanning_workshop = {
 	remove_if = {
 		location = {
-			var:specialization_designation != flag:forestry
+			has_forestry_specialization = no
 		}
 	}
 
 	location_potential = {
-		var:specialization_designation = flag:forestry
+		has_forestry_specialization = yes
 	}
 }
 
 INJECT:tannery_manufactory = {
 	remove_if = {
 		location = {
-			var:specialization_designation != flag:forestry
+			has_forestry_specialization = no
 		}
 	}
 
 	location_potential = {
-		var:specialization_designation = flag:forestry
+		has_forestry_specialization = yes
 	}
 }
 
 INJECT:tannery_mill = {
 	remove_if = {
 		location = {
-			var:specialization_designation != flag:forestry
+			has_forestry_specialization = no
 		}
 	}
 
 	location_potential = {
-		var:specialization_designation = flag:forestry
+		has_forestry_specialization = yes
 	}
 }
 
 INJECT:charcoal_maker = {
+	town = yes
+	city = yes
+
 	remove_if = {
 		location = {
 			NOR = {
 				location_rank = location_rank:rural_settlement
-				var:specialization_designation = flag:forestry
+				has_forestry_specialization = yes
 			}
 		}
 	}
@@ -460,17 +423,20 @@ INJECT:charcoal_maker = {
 	location_potential = {
 		OR = {
 			location_rank = location_rank:rural_settlement
-			var:specialization_designation = flag:forestry
+			has_forestry_specialization = yes
 		}
 	}
 }
 
 INJECT:improved_charcoal_maker = {
+	town = yes
+	city = yes
+
 	remove_if = {
 		location = {
 			NOR = {
 				location_rank = location_rank:rural_settlement
-				var:specialization_designation = flag:forestry
+				has_forestry_specialization = yes
 			}
 		}
 	}
@@ -478,7 +444,7 @@ INJECT:improved_charcoal_maker = {
 	location_potential = {
 		OR = {
 			location_rank = location_rank:rural_settlement
-			var:specialization_designation = flag:forestry
+			has_forestry_specialization = yes
 		}
 	}
 }

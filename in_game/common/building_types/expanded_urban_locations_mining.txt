@@ -13,7 +13,7 @@
 				raw_material = goods:silver
 				raw_material = goods:goods_gold
 			}
-			var:specialization_designation = flag:mining
+			has_mining_specialization = yes
 		}
 	}
 
@@ -21,26 +21,19 @@
 		location = {
 			NOR = {
 				location_rank = location_rank:rural_settlement
-				var:specialization_designation = flag:mining
+				has_mining_specialization = yes
 			}
 		}
 	}
 
 	build_time = guild_build_time
-
-	unique_production_methods = {
-		mercury_patio_maintenance = {
-			mercury = 1.0
-			category = building_maintenance
-		}
-	}
-
 	construction_demand = mercury_patio_construction
 
 	modifier = {
 		local_goods_gold_output_modifier = 1.0
 		local_silver_output_modifier = 1.0
 	}
+	unique_production_methods = { mercury_patio_maintenance }
 }
 
 REPLACE:stone_quarry = {
@@ -61,7 +54,7 @@ REPLACE:stone_quarry = {
 			NOT = {
 				raw_material = goods:stone
 			}
-			var:specialization_designation = flag:mining
+			has_mining_specialization = yes
 		}
 	}
 
@@ -69,33 +62,18 @@ REPLACE:stone_quarry = {
 		location = {
 			NOR = {
 				location_rank = location_rank:rural_settlement
-				var:specialization_designation = flag:mining
+				has_mining_specialization = yes
 			}
 		}
 	}
 
 	category = rgo_building_category
-
-	unique_production_methods = {
-		stone_quarry_maintenance = {
-			tools = 0.1
-			lumber = 0.12
-			leather = 0.1
-			produced = stone
-			output = 1
-			category = building_maintenance
-		}
-
-		crude_quarry_maintenance = {
-			lumber = 0.28
-			produced = stone
-			output = 0.5
-			category = building_maintenance
-		}
-	}
-
 	build_time = rural_build_time
 	construction_demand = basic_construction_needs
+	unique_production_methods = {
+		stone_quarry_maintenance
+		crude_quarry_maintenance
+	}
 }
 
 REPLACE:bog_iron_smelter = {
@@ -117,7 +95,7 @@ REPLACE:bog_iron_smelter = {
 			}
 			OR = {
 				location_rank = location_rank:rural_settlement
-				var:specialization_designation = flag:mining
+				has_mining_specialization = yes
 			}
 		}
 	}
@@ -126,25 +104,15 @@ REPLACE:bog_iron_smelter = {
 		location = {
 			NOR = {
 				location_rank = location_rank:rural_settlement
-				var:specialization_designation = flag:mining
+				has_mining_specialization = yes
 			}
 		}
 	}
 
 	category = rgo_building_category
-
-	unique_production_methods = {
-		bog_iron_maintenance = {
-			produced = iron
-			output = 0.3
-			coal = 0.40
-			debug_max_profit = 0.2
-			category = building_maintenance
-		}
-	}
-
 	build_time = rural_build_time
 	construction_demand = basic_construction_needs
+	unique_production_methods = { bog_iron_maintenance }
 }
 
 REPLACE:local_smelters = {
@@ -166,7 +134,7 @@ REPLACE:local_smelters = {
 			}
 			OR = {
 				location_rank = location_rank:rural_settlement
-				var:specialization_designation = flag:mining
+				has_mining_specialization = yes
 			}
 		}
 	}
@@ -175,17 +143,8 @@ REPLACE:local_smelters = {
 		location = {
 			NOR = {
 				location_rank = location_rank:rural_settlement
-				var:specialization_designation = flag:mining
+				has_mining_specialization = yes
 			}
-		}
-	}
-
-	unique_production_methods = {
-		local_smelters_maintenance = {
-			tools  = 0.025
-			lumber = 0.05
-			coal = 0.05
-			category = building_maintenance
 		}
 	}
 
@@ -198,14 +157,18 @@ REPLACE:local_smelters = {
 
 	build_time = rural_build_time
 	construction_demand = farm_constructions
+	unique_production_methods = { local_smelters_maintenance }
 }
 
 INJECT:mason = {
+	town = yes
+	city = yes
+
 	remove_if = {
 		location = {
 			NOR = {
 				location_rank = location_rank:rural_settlement
-				var:specialization_designation = flag:mining
+				has_mining_specialization = yes
 			}
 		}
 	}
@@ -213,7 +176,7 @@ INJECT:mason = {
 	location_potential = {
 		OR = {
 			location_rank = location_rank:rural_settlement
-			var:specialization_designation = flag:mining
+			has_mining_specialization = yes
 		}
 	}
 }
@@ -222,16 +185,16 @@ INJECT:cannon_maker = {
 	remove_if = {
 		location = {
 			NOR = {
-				var:specialization_designation = flag:mining
-				var:specialization_designation = flag:commercial
+				has_mining_specialization = yes
+				has_commercial_specialization = yes
 			}
 		}
 	}
 
 	location_potential = {
 		OR = {
-			var:specialization_designation = flag:mining
-			var:specialization_designation = flag:commercial
+			has_mining_specialization = yes
+			has_commercial_specialization = yes
 		}
 	}
 }
@@ -240,16 +203,16 @@ INJECT:cannon_workshop = {
 	remove_if = {
 		location = {
 			NOR = {
-				var:specialization_designation = flag:mining
-				var:specialization_designation = flag:commercial
+				has_mining_specialization = yes
+				has_commercial_specialization = yes
 			}
 		}
 	}
 
 	location_potential = {
 		OR = {
-			var:specialization_designation = flag:mining
-			var:specialization_designation = flag:commercial
+			has_mining_specialization = yes
+			has_commercial_specialization = yes
 		}
 	}
 }
@@ -258,16 +221,16 @@ INJECT:cannon_foundry = {
 	remove_if = {
 		location = {
 			NOR = {
-				var:specialization_designation = flag:mining
-				var:specialization_designation = flag:commercial
+				has_mining_specialization = yes
+				has_commercial_specialization = yes
 			}
 		}
 	}
 
 	location_potential = {
 		OR = {
-			var:specialization_designation = flag:mining
-			var:specialization_designation = flag:commercial
+			has_mining_specialization = yes
+			has_commercial_specialization = yes
 		}
 	}
 }
@@ -276,16 +239,16 @@ INJECT:cannons_factory = {
 	remove_if = {
 		location = {
 			NOR = {
-				var:specialization_designation = flag:mining
-				var:specialization_designation = flag:commercial
+				has_mining_specialization = yes
+				has_commercial_specialization = yes
 			}
 		}
 	}
 
 	location_potential = {
 		OR = {
-			var:specialization_designation = flag:mining
-			var:specialization_designation = flag:commercial
+			has_mining_specialization = yes
+			has_commercial_specialization = yes
 		}
 	}
 }
@@ -293,179 +256,179 @@ INJECT:cannons_factory = {
 INJECT:hand_cannon_guild = {
 	remove_if = {
 		location = {
-			var:specialization_designation != flag:mining
+			has_mining_specialization = no
 		}
 	}
 
 	location_potential = {
-		var:specialization_designation = flag:mining
+		has_mining_specialization = yes
 	}
 }
 
 INJECT:gun_smith = {
 	remove_if = {
 		location = {
-			var:specialization_designation != flag:mining
+			has_mining_specialization = no
 		}
 	}
 
 	location_potential = {
-		var:specialization_designation = flag:mining
+		has_mining_specialization = yes
 	}
 }
 
 INJECT:guns_workshop = {
 	remove_if = {
 		location = {
-			var:specialization_designation != flag:mining
+			has_mining_specialization = no
 		}
 	}
 
 	location_potential = {
-		var:specialization_designation = flag:mining
+		has_mining_specialization = yes
 	}
 }
 
 INJECT:firearms_manufactory = {
 	remove_if = {
 		location = {
-			var:specialization_designation != flag:mining
+			has_mining_specialization = no
 		}
 	}
 
 	location_potential = {
-		var:specialization_designation = flag:mining
+		has_mining_specialization = yes
 	}
 }
 
 INJECT:firearms_factory = {
 	remove_if = {
 		location = {
-			var:specialization_designation != flag:mining
+			has_mining_specialization = no
 		}
 	}
 
 	location_potential = {
-		var:specialization_designation = flag:mining
+		has_mining_specialization = yes
 	}
 }
 
 INJECT:tools_guild = {
 	remove_if = {
 		location = {
-			var:specialization_designation != flag:mining
+			has_mining_specialization = no
 		}
 	}
 
 	location_potential = {
-		var:specialization_designation = flag:mining
+		has_mining_specialization = yes
 	}
 }
 
 INJECT:tools_workshop = {
 	remove_if = {
 		location = {
-			var:specialization_designation != flag:mining
+			has_mining_specialization = no
 		}
 	}
 
 	location_potential = {
-		var:specialization_designation = flag:mining
+		has_mining_specialization = yes
 	}
 }
 
 INJECT:iron_foundry = {
 	remove_if = {
 		location = {
-			var:specialization_designation != flag:mining
+			has_mining_specialization = no
 		}
 	}
 
 	location_potential = {
-		var:specialization_designation = flag:mining
+		has_mining_specialization = yes
 	}
 }
 
 INJECT:iron_mill = {
 	remove_if = {
 		location = {
-			var:specialization_designation != flag:mining
+			has_mining_specialization = no
 		}
 	}
 
 	location_potential = {
-		var:specialization_designation = flag:mining
+		has_mining_specialization = yes
 	}
 }
 
 INJECT:weapon_guild = {
 	remove_if = {
 		location = {
-			var:specialization_designation != flag:mining
+			has_mining_specialization = no
 		}
 	}
 
 	location_potential = {
-		var:specialization_designation = flag:mining
+		has_mining_specialization = yes
 	}
 }
 
 INJECT:weapon_workshop = {
 	remove_if = {
 		location = {
-			var:specialization_designation != flag:mining
+			has_mining_specialization = no
 		}
 	}
 
 	location_potential = {
-		var:specialization_designation = flag:mining
+		has_mining_specialization = yes
 	}
 }
 
 INJECT:weapon_manufactory = {
 	remove_if = {
 		location = {
-			var:specialization_designation != flag:mining
+			has_mining_specialization = no
 		}
 	}
 
 	location_potential = {
-		var:specialization_designation = flag:mining
+		has_mining_specialization = yes
 	}
 }
 
 INJECT:weapon_factory = {
 	remove_if = {
 		location = {
-			var:specialization_designation != flag:mining
+			has_mining_specialization = no
 		}
 	}
 
 	location_potential = {
-		var:specialization_designation = flag:mining
+		has_mining_specialization = yes
 	}
 }
 
 INJECT:steel_mill = {
 	remove_if = {
 		location = {
-			var:specialization_designation != flag:mining
+			has_mining_specialization = no
 		}
 	}
 
 	location_potential = {
-		var:specialization_designation = flag:mining
+		has_mining_specialization = yes
 	}
 }
 
 INJECT:jewelry_guild = {
 	remove_if = {
 		location = {
-			var:specialization_designation != flag:mining
+			has_mining_specialization = no
 		}
 	}
 
 	location_potential = {
-		var:specialization_designation = flag:mining
+		has_mining_specialization = yes
 	}
 }

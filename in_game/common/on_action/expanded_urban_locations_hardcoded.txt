@@ -15,118 +15,117 @@ on_game_start = {
 	}
 }
 
+# Monthly pulse to initialize specializations for saves that predate the mod
+# Uses a global flag so this only runs once per save, then skips immediately
+monthly_country_pulse = {
+	on_actions = {
+		check_uninitialized_specializations
+	}
+}
+
+check_uninitialized_specializations = {
+	trigger = {
+		# Global flag ensures this only runs once across all countries
+		NOT = { has_global_variable = eul_specializations_initialized }
+	}
+	effect = {
+		# Initialize any towns/cities missing specialization
+		every_location_in_the_world = {
+			limit = {
+				exists = owner
+				is_town_or_city = yes
+				NOT = { has_variable = specialization_designation }
+			}
+			assign_specialization_by_resources = yes
+			apply_specialization_modifier = yes
+		}
+		# Set flag so this never runs again for this save
+		set_global_variable = { name = eul_specializations_initialized value = yes }
+	}
+}
+
 specialized_locations_setup = {
 	effect = {
+		# Mark as initialized so monthly pulse skips
+		set_global_variable = { name = eul_specializations_initialized value = yes }
 		every_location_in_the_world = {
 			limit = {
 				exists = owner
 				is_town_or_city = yes
 			}
-			if = {
-				limit = {
-					OR = {
-						is_market_center = yes
-						AND = {
-							is_capital = yes
-							owner = {
-								government_type = government_type:republic
-							}
-						}
-					}
-				}
-				set_variable = {
-					name = specialization_designation
-					value = flag:commercial
-				}
-				apply_specialization_modifier = yes
-			}
-			else_if = {
-				limit = { has_farming_resources = yes }
-				set_variable = {
-					name = specialization_designation
-					value = flag:farming
-				}
-				apply_specialization_modifier = yes
-			}
-			else_if = {
-				limit = { has_mining_resources = yes }
-				set_variable = {
-					name = specialization_designation
-					value = flag:mining
-				}
-				apply_specialization_modifier = yes
-			}
-			else_if = {
-				limit = { has_gathering_resources = yes }
-				set_variable = {
-					name = specialization_designation
-					value = flag:gathering
-				}
-				apply_specialization_modifier = yes
-			}
-			else_if = {
-				limit = { has_forestry_resources = yes }
-				set_variable = {
-					name = specialization_designation
-					value = flag:forestry
-				}
-				apply_specialization_modifier = yes
-			}
+			assign_specialization_by_resources = yes
+			destroy_non_matching_buildings = yes
+			grant_specialization_starter_buildings = yes
+			apply_specialization_modifier = yes
 		}
 	}
 }
 
 on_location_updates_specialization_by_rankup = {
 	effect = {
+		# If already has specialization, update variable for new rank and reapply modifier
 		if = {
-			limit = {
-				has_variable = specialization_designation
-			}
+			limit = { has_any_specialization = yes }
 			# Clear all existing specialization modifiers
 			clear_all_specialization_modifiers = yes
+
+			# Update variable to match new rank (using constants from expanded_urban_locations_specialization_constants.txt)
+			if = {
+				limit = { location_rank = location_rank:town }
+				# Convert city values back to town values
+				if = {
+					limit = { has_mining_specialization = yes }
+					set_variable = { name = specialization_designation value = eul_mining_town_value }
+				}
+				else_if = {
+					limit = { has_farming_specialization = yes }
+					set_variable = { name = specialization_designation value = eul_farming_town_value }
+				}
+				else_if = {
+					limit = { has_gathering_specialization = yes }
+					set_variable = { name = specialization_designation value = eul_gathering_town_value }
+				}
+				else_if = {
+					limit = { has_forestry_specialization = yes }
+					set_variable = { name = specialization_designation value = eul_forestry_town_value }
+				}
+				else_if = {
+					limit = { has_commercial_specialization = yes }
+					set_variable = { name = specialization_designation value = eul_commercial_town_value }
+				}
+			}
+			else_if = {
+				limit = { location_rank = location_rank:city }
+				# Convert town values to city values
+				if = {
+					limit = { has_mining_specialization = yes }
+					set_variable = { name = specialization_designation value = eul_mining_city_value }
+				}
+				else_if = {
+					limit = { has_farming_specialization = yes }
+					set_variable = { name = specialization_designation value = eul_farming_city_value }
+				}
+				else_if = {
+					limit = { has_gathering_specialization = yes }
+					set_variable = { name = specialization_designation value = eul_gathering_city_value }
+				}
+				else_if = {
+					limit = { has_forestry_specialization = yes }
+					set_variable = { name = specialization_designation value = eul_forestry_city_value }
+				}
+				else_if = {
+					limit = { has_commercial_specialization = yes }
+					set_variable = { name = specialization_designation value = eul_commercial_city_value }
+				}
+			}
 
 			# Apply the correct modifier tier based on new rank
 			# (If downgraded to rural, no modifier is applied - specialization is lost)
 			apply_specialization_modifier = yes
 		}
-		else_if = {
-			limit = {
-				has_farming_resources = yes
-			}
-			set_variable = {
-				name = specialization_designation
-				value = flag:farming
-			}
-			apply_specialization_modifier = yes
-		}
-		else_if = {
-			limit = {
-				has_gathering_resources = yes
-			}
-			set_variable = {
-				name = specialization_designation
-				value = flag:gathering
-			}
-			apply_specialization_modifier = yes
-		}
-		else_if = {
-			limit = {
-				has_forestry_resources = yes
-			}
-			set_variable = {
-				name = specialization_designation
-				value = flag:forestry
-			}
-			apply_specialization_modifier = yes
-		}
-		else_if = {
-			limit = {
-				has_mining_resources = yes
-			}
-			set_variable = {
-				name = specialization_designation
-				value = flag:mining
-			}
+		# New town/city without specialization - assign based on resources
+		else = {
+			assign_specialization_by_resources = yes
 			apply_specialization_modifier = yes
 		}
 	}

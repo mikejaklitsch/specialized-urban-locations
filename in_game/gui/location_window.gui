@@ -1,4 +1,68 @@
-﻿types LocationWindowTypes
+﻿# EUL: Specialization designation values - REFERENCE ONLY
+# These cannot be used in '(float)...' casts - @variables are not expanded inside string literals.
+# Hardcoded float values must be used in visibility templates.
+# Towns: mining=1.0, farming=2.0, gathering=3.0, forestry=4.0, commercial=5.0
+# Cities: mining=11.0, farming=12.0, gathering=13.0, forestry=14.0, commercial=15.0
+
+# EUL: Template to hide specialization modifiers from timed modifier lists
+# Checks if TimedModifier.GetModifier.GetName matches any of the 10 specialization modifier names
+# Usage: using = eul_hide_if_specialization_modifier
+template eul_hide_if_specialization_modifier {
+	visible = "[Not(Or(
+		Or5(
+			EqualTo_string(TimedModifier.GetModifier.GetName, Localize('STATIC_MODIFIER_NAME_mining_town_specialization')),
+			EqualTo_string(TimedModifier.GetModifier.GetName, Localize('STATIC_MODIFIER_NAME_farming_town_specialization')),
+			EqualTo_string(TimedModifier.GetModifier.GetName, Localize('STATIC_MODIFIER_NAME_gathering_town_specialization')),
+			EqualTo_string(TimedModifier.GetModifier.GetName, Localize('STATIC_MODIFIER_NAME_forestry_town_specialization')),
+			EqualTo_string(TimedModifier.GetModifier.GetName, Localize('STATIC_MODIFIER_NAME_commercial_town_specialization'))
+		),
+		Or5(
+			EqualTo_string(TimedModifier.GetModifier.GetName, Localize('STATIC_MODIFIER_NAME_mining_city_specialization')),
+			EqualTo_string(TimedModifier.GetModifier.GetName, Localize('STATIC_MODIFIER_NAME_farming_city_specialization')),
+			EqualTo_string(TimedModifier.GetModifier.GetName, Localize('STATIC_MODIFIER_NAME_gathering_city_specialization')),
+			EqualTo_string(TimedModifier.GetModifier.GetName, Localize('STATIC_MODIFIER_NAME_forestry_city_specialization')),
+			EqualTo_string(TimedModifier.GetModifier.GetName, Localize('STATIC_MODIFIER_NAME_commercial_city_specialization'))
+		)
+	))]"
+}
+
+# EUL: Visibility templates for specialization icons in LocationView context
+# Usage: using = eul_vis_locview_mining_town (etc.)
+template eul_vis_locview_mining_town {
+	visible = "[And(LocationView.GetLocation.MakeScope.GetVariable('specialization_designation').IsSet, EqualTo_float(FixedPointToFloat(LocationView.GetLocation.MakeScope.GetVariable('specialization_designation').GetValue), '(float)1.0'))]"
+}
+template eul_vis_locview_farming_town {
+	visible = "[And(LocationView.GetLocation.MakeScope.GetVariable('specialization_designation').IsSet, EqualTo_float(FixedPointToFloat(LocationView.GetLocation.MakeScope.GetVariable('specialization_designation').GetValue), '(float)2.0'))]"
+}
+template eul_vis_locview_gathering_town {
+	visible = "[And(LocationView.GetLocation.MakeScope.GetVariable('specialization_designation').IsSet, EqualTo_float(FixedPointToFloat(LocationView.GetLocation.MakeScope.GetVariable('specialization_designation').GetValue), '(float)3.0'))]"
+}
+template eul_vis_locview_forestry_town {
+	visible = "[And(LocationView.GetLocation.MakeScope.GetVariable('specialization_designation').IsSet, EqualTo_float(FixedPointToFloat(LocationView.GetLocation.MakeScope.GetVariable('specialization_designation').GetValue), '(float)4.0'))]"
+}
+template eul_vis_locview_commercial_town {
+	visible = "[And(LocationView.GetLocation.MakeScope.GetVariable('specialization_designation').IsSet, EqualTo_float(FixedPointToFloat(LocationView.GetLocation.MakeScope.GetVariable('specialization_designation').GetValue), '(float)5.0'))]"
+}
+template eul_vis_locview_mining_city {
+	visible = "[And(LocationView.GetLocation.MakeScope.GetVariable('specialization_designation').IsSet, EqualTo_float(FixedPointToFloat(LocationView.GetLocation.MakeScope.GetVariable('specialization_designation').GetValue), '(float)11.0'))]"
+}
+template eul_vis_locview_farming_city {
+	visible = "[And(LocationView.GetLocation.MakeScope.GetVariable('specialization_designation').IsSet, EqualTo_float(FixedPointToFloat(LocationView.GetLocation.MakeScope.GetVariable('specialization_designation').GetValue), '(float)12.0'))]"
+}
+template eul_vis_locview_gathering_city {
+	visible = "[And(LocationView.GetLocation.MakeScope.GetVariable('specialization_designation').IsSet, EqualTo_float(FixedPointToFloat(LocationView.GetLocation.MakeScope.GetVariable('specialization_designation').GetValue), '(float)13.0'))]"
+}
+template eul_vis_locview_forestry_city {
+	visible = "[And(LocationView.GetLocation.MakeScope.GetVariable('specialization_designation').IsSet, EqualTo_float(FixedPointToFloat(LocationView.GetLocation.MakeScope.GetVariable('specialization_designation').GetValue), '(float)14.0'))]"
+}
+template eul_vis_locview_commercial_city {
+	visible = "[And(LocationView.GetLocation.MakeScope.GetVariable('specialization_designation').IsSet, EqualTo_float(FixedPointToFloat(LocationView.GetLocation.MakeScope.GetVariable('specialization_designation').GetValue), '(float)15.0'))]"
+}
+template eul_vis_locview_not_specialized {
+	visible = "[Not(LocationView.GetLocation.MakeScope.GetVariable('specialization_designation').IsSet)]"
+}
+
+types LocationWindowTypes
 {
 	type demography_chart = widget {
 
@@ -702,10 +766,47 @@
 							}
 						}
 
-						icon = {
+						widget = {
 							size = { 19 19 }
 							parentanchor = center
-							texture = "[Location.GetRankIcon]"
+							# EUL: Specialization icons using templates from map_markers.gui
+							# Mining
+							icon = { size = { 100% 100% } parentanchor = center using = eul_vis_loc_noisset_mining_town_capital using = eul_tex_red_capital_town }
+							icon = { size = { 100% 100% } parentanchor = center using = eul_vis_loc_noisset_mining_town_prov_capital using = eul_tex_red_province_capital_town }
+							icon = { size = { 100% 100% } parentanchor = center using = eul_vis_loc_noisset_mining_town_regular using = eul_tex_red_town }
+							icon = { size = { 100% 100% } parentanchor = center using = eul_vis_loc_noisset_mining_city_capital using = eul_tex_red_capital_city }
+							icon = { size = { 100% 100% } parentanchor = center using = eul_vis_loc_noisset_mining_city_prov_capital using = eul_tex_red_province_capital_city }
+							icon = { size = { 100% 100% } parentanchor = center using = eul_vis_loc_noisset_mining_city_regular using = eul_tex_red_city }
+							# Farming
+							icon = { size = { 100% 100% } parentanchor = center using = eul_vis_loc_noisset_farming_town_capital using = eul_tex_blue_capital_town }
+							icon = { size = { 100% 100% } parentanchor = center using = eul_vis_loc_noisset_farming_town_prov_capital using = eul_tex_blue_province_capital_town }
+							icon = { size = { 100% 100% } parentanchor = center using = eul_vis_loc_noisset_farming_town_regular using = eul_tex_blue_town }
+							icon = { size = { 100% 100% } parentanchor = center using = eul_vis_loc_noisset_farming_city_capital using = eul_tex_blue_capital_city }
+							icon = { size = { 100% 100% } parentanchor = center using = eul_vis_loc_noisset_farming_city_prov_capital using = eul_tex_blue_province_capital_city }
+							icon = { size = { 100% 100% } parentanchor = center using = eul_vis_loc_noisset_farming_city_regular using = eul_tex_blue_city }
+							# Gathering
+							icon = { size = { 100% 100% } parentanchor = center using = eul_vis_loc_noisset_gathering_town_capital using = eul_tex_brown_capital_town }
+							icon = { size = { 100% 100% } parentanchor = center using = eul_vis_loc_noisset_gathering_town_prov_capital using = eul_tex_brown_province_capital_town }
+							icon = { size = { 100% 100% } parentanchor = center using = eul_vis_loc_noisset_gathering_town_regular using = eul_tex_brown_town }
+							icon = { size = { 100% 100% } parentanchor = center using = eul_vis_loc_noisset_gathering_city_capital using = eul_tex_brown_capital_city }
+							icon = { size = { 100% 100% } parentanchor = center using = eul_vis_loc_noisset_gathering_city_prov_capital using = eul_tex_brown_province_capital_city }
+							icon = { size = { 100% 100% } parentanchor = center using = eul_vis_loc_noisset_gathering_city_regular using = eul_tex_brown_city }
+							# Forestry
+							icon = { size = { 100% 100% } parentanchor = center using = eul_vis_loc_noisset_forestry_town_capital using = eul_tex_green_capital_town }
+							icon = { size = { 100% 100% } parentanchor = center using = eul_vis_loc_noisset_forestry_town_prov_capital using = eul_tex_green_province_capital_town }
+							icon = { size = { 100% 100% } parentanchor = center using = eul_vis_loc_noisset_forestry_town_regular using = eul_tex_green_town }
+							icon = { size = { 100% 100% } parentanchor = center using = eul_vis_loc_noisset_forestry_city_capital using = eul_tex_green_capital_city }
+							icon = { size = { 100% 100% } parentanchor = center using = eul_vis_loc_noisset_forestry_city_prov_capital using = eul_tex_green_province_capital_city }
+							icon = { size = { 100% 100% } parentanchor = center using = eul_vis_loc_noisset_forestry_city_regular using = eul_tex_green_city }
+							# Commercial
+							icon = { size = { 100% 100% } parentanchor = center using = eul_vis_loc_noisset_commercial_town_capital using = eul_tex_purple_capital_town }
+							icon = { size = { 100% 100% } parentanchor = center using = eul_vis_loc_noisset_commercial_town_prov_capital using = eul_tex_purple_province_capital_town }
+							icon = { size = { 100% 100% } parentanchor = center using = eul_vis_loc_noisset_commercial_town_regular using = eul_tex_purple_town }
+							icon = { size = { 100% 100% } parentanchor = center using = eul_vis_loc_noisset_commercial_city_capital using = eul_tex_purple_capital_city }
+							icon = { size = { 100% 100% } parentanchor = center using = eul_vis_loc_noisset_commercial_city_prov_capital using = eul_tex_purple_province_capital_city }
+							icon = { size = { 100% 100% } parentanchor = center using = eul_vis_loc_noisset_commercial_city_regular using = eul_tex_purple_city }
+							# Fallback
+							icon = { size = { 100% 100% } parentanchor = center using = eul_vis_loc_not_specialized texture = "[Location.GetRankIcon]" }
 						}
 					}
 
@@ -1835,247 +1936,6 @@
 			}
 		}
 	}
-
-	# type colonial_charter_small_item = widget {
-	# 	size = {110 25}
-	# 	datacontext = "[ColonialCharterItem.GetColonialCharter]"
-	# 	using = bg_number_container_bckg
-	# 	blockoverride "number_container_alpha" {
-	# 		alpha = 0.5
-	# 	}
-	# 	blockoverride "number_container_color" {
-	# 		modify_texture = {
-	# 			using = color_bg_blue_texture
-	# 			blend_mode = multiply
-	# 		}
-	# 	}
-	# 	hbox = {
-	# 		piechart = {
-	# 			using = bg_circle
-	# 			size = { 22 22 }
-	# 			using = piechart_angles
-	# 			using = bg_circle_piechart
-	# 			tooltipwidget = {
-	# 				using = colonial_charter_progress_tooltip
-	# 			}
-	# 			icon = {
-	# 				texture = "gfx/interface/pie_charts/pie_chart_alpha_80.dds"
-	# 				size = { 97% 97% }
-	# 				parentanchor = center
-	# 				color = { 0 0 0 1 }
-	# 			}
-
-	# 			pieslice_no_highlight = {
-	# 				texture = "gfx/interface/pie_charts/pie_chart_alpha_80.dds"
-	# 				value = "[ColonialCharterItem.GetProgress]"
-	# 				color = { 0.3 0.8 0.3 1 }
-	# 				alpha = 0.8
-	# 			}
-
-	# 			pieslice_no_highlight = {
-	# 				texture = "gfx/interface/pie_charts/pie_chart_alpha_80.dds"
-	# 				value = "[Subtract_float('(float)100.0', ColonialCharterItem.GetProgress)]"
-	# 				color = { 0.8 0.3 0.3 1 }
-	# 				alpha = 0.8
-	# 			}
-
-	# 			icon = {
-	# 				size = { 61% 61% }
-	# 				parentanchor = center
-	# 				texture = "gfx/interface/icons/flat_icons/geopolitics/available_colonies.dds"
-	# 			}
-	# 		}
-
-	# 		country_flag_small = {
-	# 			datacontext = "[ColonialCharterItem.GetColonialCharter.GetOwner]"
-	# 		}
-
-	# 		text_single = {
-	# 			layoutpolicy_vertical = expanding
-	# 			size = { 40 -1 }
-	# 			autoresize = no
-	# 			align = center|nobaseline
-	# 			raw_text = "[ColonialCharterItem.GetColonialCharter.GetMonthlyMigration]@population!"
-	# 			tooltipwidget = {
-	# 				using = colonial_charter_migration_tooltip
-	# 			}
-	# 		}
-	# 	}
-	# }
-
-	# type pop_type_buildings = widget {
-	# 	size = {60 30}
-
-	# 	card_header_button_04 = {
-	# 		size = { 100% 100% }
-	# 		parentanchor = center
-	# 		datacontext = "[LocationView.GetLocation]"
-
-	# 		tooltipwidget = {
-	# 			using = BuildingInLocation_tooltip
-	# 			blockoverride "BuildingInLocation_title"{
-	# 				text = "BUILDINGS_IN_LOCATION_FROM_POPTYPE"
-	# 			}
-	# 			blockoverride "building_in_location_info" {
-	# 				textcontext = "[LocationView.GetPopTypeBuildingsInfo(PopType.GetKey)]"
-	# 			}
-	# 		}
-
-	# 		action_tooltip = {
-	# 			click_type = left
-	# 			click_mode = single
-	# 			on_action = "[OpenLateralViewWithFilter('production', PopType.GetKey)]"
-	# 			on_action = "[ShowProductionViewWithLocation(LocationView.GetLocation.GetId, '(bool)no')]"
-	# 			title = "MANAGE_BUILDINGS_POP_TYPE"
-	# 		}
-
-	# 		background = {
-	# 			using = color_grey_texture
-	# 			modify_texture = {
-	# 				texture = "gfx/interface/cards/headers/header_pattern_01.dds"
-	# 				texture_density = 2
-	# 				spriteType = corneredtiled
-	# 				blend_mode = overlay
-	# 				alpha = 0.2
-	# 			}
-
-	# 			modify_texture = {
-	# 				texture = "gfx/interface/component_overlay/cloth_texture.dds"
-	# 				texture_density = 2
-	# 				spriteType = Corneredtiled
-	# 				spriteborder = { 0 0 }
-	# 				blend_mode = overlay
-	# 				alpha = 0.2
-	# 			}
-
-	# 			modify_texture = {
-	# 				color = "[PopType.GetColor]"
-	# 				blend_mode = overlay
-	# 				alpha = 0.7
-	# 			}
-	# 		}
-
-	# 		hbox = {
-	# 			margin = { 5 0 }
-	# 			icon = {
-	# 				size = { 25 25 }
-	# 				texture = "gfx/interface/buttons/flats/buildings_button.dds"
-	# 				modify_texture = {
-	# 					using = overlay_window_texture
-	# 					blend_mode = overlay
-	# 					alpha = 0.7
-	# 				}
-
-	# 				modify_texture = {
-	# 					using = color_new_gold_texture
-	# 				}
-
-	# 				modify_texture = {
-	# 					texture = "gfx/interface/buttons/buttons_texture.dds"
-	# 					texture_density = 2
-	# 					blend_mode = overlay
-	# 					alpha = 0.6
-	# 				}
-
-	# 				icon = {
-	# 					parentanchor = bottom|right
-	# 					texture = "[GetGraphicalCultureTextureForCountryPopType(PopType.Self, LocationView.GetLocation.GetOwner.Self)]"
-	# 					size = {50% 50% }
-	# 				}
-	# 			}
-
-	# 			text_single = {
-	# 				layoutpolicy_horizontal = expanding
-	# 				size = { -1 20 }
-	# 				autoresize = no
-	# 				text = "[LocationView.GetNumPopTypeBuildings(PopType.Self)]"
-	# 				align = center
-	# 			}
-	# 		}
-	# 	}
-	# }
-
-	# type pop_type_location_population = widget {
-	# 	size = {70 30}
-	# 	# block "pop_type_location_population_visible" {
-	# 		visible = "[And(LocationView.GetPopTypeItem(PopType.Self).HasPop,
-	# 		Not(And(GreaterThan_int32(LocationView.GetNumPopTypeWithBuildings, '(int32)7'), ObjectsEqual(GetPopTypeByName('slaves'), PopType.Self))))]"
-	# 	# }
-
-	# 	card_header_button_04 = {
-	# 		size = { 100% 100% }
-	# 		parentanchor = center
-	# 		datacontext = "[LocationView.GetLocation]"
-
-	# 		tooltipwidget = {
-	# 			using = locationview_employed_tt
-	# 		}
-
-	# 		action_tooltip = {
-	# 			click_type = left
-	# 			click_mode = single
-	# 			title = "OPEN_POP_TYPE_PEOPLE_VIEW"
-	# 			on_action = "[ShowCountryPeopleViewWithPopFilter(PopType.Self, '(bool)yes')]"
-	# 			on_action = "[ShowCountryPeopleViewWithLocation(LocationView.GetLocation.GetId, '(bool)no')]"
-	# 		}
-
-	# 		background = {
-	# 			using = color_grey_texture
-	# 			modify_texture = {
-	# 				texture = "gfx/interface/cards/headers/header_pattern_01.dds"
-	# 				texture_density = 2
-	# 				spriteType = corneredtiled
-	# 				blend_mode = overlay
-	# 				alpha = 0.2
-	# 			}
-
-	# 			modify_texture = {
-	# 				color = "[PopType.GetColor]"
-	# 				blend_mode = overlay
-	# 				alpha = 0.7
-	# 			}
-
-	# 			modify_texture = {
-	# 				texture = "gfx/interface/component_overlay/cloth_texture.dds"
-	# 				texture_density = 2
-	# 				spriteType = Corneredtiled
-	# 				spriteborder = { 0 0 }
-	# 				blend_mode = overlay
-	# 				alpha = 0.2
-	# 			}
-	# 		}
-
-	# 		vbox = {
-	# 			margin = { 7 0 }
-	# 			expand = {}
-	# 			hbox = {
-	# 				spacing = 2
-	# 				text_single = {
-	# 					maximumsize = { 34 20 }
-	# 					text = "[LocationView.GetLocation.GetTotalPopTypeSize(PopType.Self)]"
-	# 					align = center
-	# 				}
-
-	# 				icon = {
-	# 					size = { 12 12 }
-	# 					texture = "[GetGraphicalCultureTextureForCountryPopType(PopType.Self, LocationView.GetLocation.GetOwner.Self)]"
-	# 				}
-	# 			}
-	# 			progressbar = {
-	# 				visible = "[LocationView.GetPopTypeItem(PopType.Self).HasPop]"
-	# 				layoutpolicy_horizontal = expanding
-	# 				size = { -1 3 }
-	# 				using = progress_bar_blue_green_alt
-	# 				min = 0
-	# 				max = 1
-	# 				value = "[Subtract_float('(float)1.0', FixedPointToFloat(LocationView.GetLocation.GetUnEmployedPercentageWithConstruction(PopType.Self)))]"
-	# 				direction = horizontal
-	# 			}
-
-	# 			expand = {}
-	# 		}
-	# 	}
-	# }
 }
 
 template location_fort_status {
@@ -2489,11 +2349,44 @@ lateralview = {
 						visible = "[And(Not(LocationView.Vars.Exists('edit_name')), LocationView.GetLocation.GetProvince.GetCountry.IsValid)]"
 						size = { 28 28 }
 						datacontext = "[LocationView.GetLocation]"
-						icon = {
-							parentanchor = center
-							size = { 90% 90% }
-							texture = "[Location.GetRankIcon]"
-						}
+						# EUL: Specialization icons using templates from map_markers.gui
+						# Mining
+						icon = { size = { 90% 90% } parentanchor = center using = eul_vis_loc_noisset_mining_town_capital using = eul_tex_red_capital_town }
+						icon = { size = { 90% 90% } parentanchor = center using = eul_vis_loc_noisset_mining_town_prov_capital using = eul_tex_red_province_capital_town }
+						icon = { size = { 90% 90% } parentanchor = center using = eul_vis_loc_noisset_mining_town_regular using = eul_tex_red_town }
+						icon = { size = { 90% 90% } parentanchor = center using = eul_vis_loc_noisset_mining_city_capital using = eul_tex_red_capital_city }
+						icon = { size = { 90% 90% } parentanchor = center using = eul_vis_loc_noisset_mining_city_prov_capital using = eul_tex_red_province_capital_city }
+						icon = { size = { 90% 90% } parentanchor = center using = eul_vis_loc_noisset_mining_city_regular using = eul_tex_red_city }
+						# Farming
+						icon = { size = { 90% 90% } parentanchor = center using = eul_vis_loc_noisset_farming_town_capital using = eul_tex_blue_capital_town }
+						icon = { size = { 90% 90% } parentanchor = center using = eul_vis_loc_noisset_farming_town_prov_capital using = eul_tex_blue_province_capital_town }
+						icon = { size = { 90% 90% } parentanchor = center using = eul_vis_loc_noisset_farming_town_regular using = eul_tex_blue_town }
+						icon = { size = { 90% 90% } parentanchor = center using = eul_vis_loc_noisset_farming_city_capital using = eul_tex_blue_capital_city }
+						icon = { size = { 90% 90% } parentanchor = center using = eul_vis_loc_noisset_farming_city_prov_capital using = eul_tex_blue_province_capital_city }
+						icon = { size = { 90% 90% } parentanchor = center using = eul_vis_loc_noisset_farming_city_regular using = eul_tex_blue_city }
+						# Gathering
+						icon = { size = { 90% 90% } parentanchor = center using = eul_vis_loc_noisset_gathering_town_capital using = eul_tex_brown_capital_town }
+						icon = { size = { 90% 90% } parentanchor = center using = eul_vis_loc_noisset_gathering_town_prov_capital using = eul_tex_brown_province_capital_town }
+						icon = { size = { 90% 90% } parentanchor = center using = eul_vis_loc_noisset_gathering_town_regular using = eul_tex_brown_town }
+						icon = { size = { 90% 90% } parentanchor = center using = eul_vis_loc_noisset_gathering_city_capital using = eul_tex_brown_capital_city }
+						icon = { size = { 90% 90% } parentanchor = center using = eul_vis_loc_noisset_gathering_city_prov_capital using = eul_tex_brown_province_capital_city }
+						icon = { size = { 90% 90% } parentanchor = center using = eul_vis_loc_noisset_gathering_city_regular using = eul_tex_brown_city }
+						# Forestry
+						icon = { size = { 90% 90% } parentanchor = center using = eul_vis_loc_noisset_forestry_town_capital using = eul_tex_green_capital_town }
+						icon = { size = { 90% 90% } parentanchor = center using = eul_vis_loc_noisset_forestry_town_prov_capital using = eul_tex_green_province_capital_town }
+						icon = { size = { 90% 90% } parentanchor = center using = eul_vis_loc_noisset_forestry_town_regular using = eul_tex_green_town }
+						icon = { size = { 90% 90% } parentanchor = center using = eul_vis_loc_noisset_forestry_city_capital using = eul_tex_green_capital_city }
+						icon = { size = { 90% 90% } parentanchor = center using = eul_vis_loc_noisset_forestry_city_prov_capital using = eul_tex_green_province_capital_city }
+						icon = { size = { 90% 90% } parentanchor = center using = eul_vis_loc_noisset_forestry_city_regular using = eul_tex_green_city }
+						# Commercial
+						icon = { size = { 90% 90% } parentanchor = center using = eul_vis_loc_noisset_commercial_town_capital using = eul_tex_purple_capital_town }
+						icon = { size = { 90% 90% } parentanchor = center using = eul_vis_loc_noisset_commercial_town_prov_capital using = eul_tex_purple_province_capital_town }
+						icon = { size = { 90% 90% } parentanchor = center using = eul_vis_loc_noisset_commercial_town_regular using = eul_tex_purple_town }
+						icon = { size = { 90% 90% } parentanchor = center using = eul_vis_loc_noisset_commercial_city_capital using = eul_tex_purple_capital_city }
+						icon = { size = { 90% 90% } parentanchor = center using = eul_vis_loc_noisset_commercial_city_prov_capital using = eul_tex_purple_province_capital_city }
+						icon = { size = { 90% 90% } parentanchor = center using = eul_vis_loc_noisset_commercial_city_regular using = eul_tex_purple_city }
+						# Fallback (when variable doesn't exist)
+						icon = { size = { 90% 90% } parentanchor = center using = eul_vis_loc_not_specialized texture = "[Location.GetRankIcon]" }
 
 						tooltipwidget = {
 							using = location_rank_tooltip
@@ -2505,7 +2398,7 @@ lateralview = {
 						autoresize = yes
 						maximumsize = { 380 -1 }
 						visible = "[Not(LocationView.Vars.Exists('edit_name'))]"
-						text = "[LocationView.GetLocation.GetRankAndName]"
+						using = eul_text_specialized_name_locview
 						using = snd_UI_window_state
 					}
 
@@ -3559,6 +3452,307 @@ lateralview = {
 										}
 									}
 								}
+								# EUL: SPECIALIZATION ICONS
+								# Mining Town (1)
+								icon = {
+									size = { 30 30 }
+									using = eul_vis_locview_mining_town
+									texture = "gfx/interface/mapitems/red_town.dds"
+									glow = {
+										name = "drop_shadow"
+										glow_radius = 3
+										color = {0.0 0.0 0.0 1.0}
+										alpha = 0.3
+									}
+									tooltipwidget = {
+										SimpleContextualTooltipType = {
+											blockoverride "title_text" {
+												text = "STATIC_MODIFIER_NAME_mining_town_specialization"
+											}
+											blockoverride "title_icon" {
+												icon = {
+													using = tooltip_title_icon_size
+													texture = "gfx/interface/mapitems/red_town.dds"
+												}
+											}
+											blockoverride "tooltip_content" {
+												TooltipStringPairList = {
+													textcontext = "[ShowModifierEffect('mining_town_specialization')]"
+												}
+											}
+										}
+									}
+								}
+								# Farming Town (2)
+								icon = {
+									size = { 30 30 }
+									using = eul_vis_locview_farming_town
+									texture = "gfx/interface/mapitems/blue_town.dds"
+									glow = {
+										name = "drop_shadow"
+										glow_radius = 3
+										color = {0.0 0.0 0.0 1.0}
+										alpha = 0.3
+									}
+									tooltipwidget = {
+										SimpleContextualTooltipType = {
+											blockoverride "title_text" {
+												text = "STATIC_MODIFIER_NAME_farming_town_specialization"
+											}
+											blockoverride "title_icon" {
+												icon = {
+													using = tooltip_title_icon_size
+													texture = "gfx/interface/mapitems/blue_town.dds"
+												}
+											}
+											blockoverride "tooltip_content" {
+												TooltipStringPairList = {
+													textcontext = "[ShowModifierEffect('farming_town_specialization')]"
+												}
+											}
+										}
+									}
+								}
+								# Gathering Town (3)
+								icon = {
+									size = { 30 30 }
+									using = eul_vis_locview_gathering_town
+									texture = "gfx/interface/mapitems/brown_town.dds"
+									glow = {
+										name = "drop_shadow"
+										glow_radius = 3
+										color = {0.0 0.0 0.0 1.0}
+										alpha = 0.3
+									}
+									tooltipwidget = {
+										SimpleContextualTooltipType = {
+											blockoverride "title_text" {
+												text = "STATIC_MODIFIER_NAME_gathering_town_specialization"
+											}
+											blockoverride "title_icon" {
+												icon = {
+													using = tooltip_title_icon_size
+													texture = "gfx/interface/mapitems/brown_town.dds"
+												}
+											}
+											blockoverride "tooltip_content" {
+												TooltipStringPairList = {
+													textcontext = "[ShowModifierEffect('gathering_town_specialization')]"
+												}
+											}
+										}
+									}
+								}
+								# Forestry Town (4)
+								icon = {
+									size = { 30 30 }
+									using = eul_vis_locview_forestry_town
+									texture = "gfx/interface/mapitems/green_town.dds"
+									glow = {
+										name = "drop_shadow"
+										glow_radius = 3
+										color = {0.0 0.0 0.0 1.0}
+										alpha = 0.3
+									}
+									tooltipwidget = {
+										SimpleContextualTooltipType = {
+											blockoverride "title_text" {
+												text = "STATIC_MODIFIER_NAME_forestry_town_specialization"
+											}
+											blockoverride "title_icon" {
+												icon = {
+													using = tooltip_title_icon_size
+													texture = "gfx/interface/mapitems/green_town.dds"
+												}
+											}
+											blockoverride "tooltip_content" {
+												TooltipStringPairList = {
+													textcontext = "[ShowModifierEffect('forestry_town_specialization')]"
+												}
+											}
+										}
+									}
+								}
+								# Commercial Town (5)
+								icon = {
+									size = { 30 30 }
+									using = eul_vis_locview_commercial_town
+									texture = "gfx/interface/mapitems/purple_town.dds"
+									glow = {
+										name = "drop_shadow"
+										glow_radius = 3
+										color = {0.0 0.0 0.0 1.0}
+										alpha = 0.3
+									}
+									tooltipwidget = {
+										SimpleContextualTooltipType = {
+											blockoverride "title_text" {
+												text = "STATIC_MODIFIER_NAME_commercial_town_specialization"
+											}
+											blockoverride "title_icon" {
+												icon = {
+													using = tooltip_title_icon_size
+													texture = "gfx/interface/mapitems/purple_town.dds"
+												}
+											}
+											blockoverride "tooltip_content" {
+												TooltipStringPairList = {
+													textcontext = "[ShowModifierEffect('commercial_town_specialization')]"
+												}
+											}
+										}
+									}
+								}
+								# Mining City (11)
+								icon = {
+									size = { 30 30 }
+									using = eul_vis_locview_mining_city
+									texture = "gfx/interface/mapitems/red_city.dds"
+									glow = {
+										name = "drop_shadow"
+										glow_radius = 3
+										color = {0.0 0.0 0.0 1.0}
+										alpha = 0.3
+									}
+									tooltipwidget = {
+										SimpleContextualTooltipType = {
+											blockoverride "title_text" {
+												text = "STATIC_MODIFIER_NAME_mining_city_specialization"
+											}
+											blockoverride "title_icon" {
+												icon = {
+													using = tooltip_title_icon_size
+													texture = "gfx/interface/mapitems/red_city.dds"
+												}
+											}
+											blockoverride "tooltip_content" {
+												TooltipStringPairList = {
+													textcontext = "[ShowModifierEffect('mining_city_specialization')]"
+												}
+											}
+										}
+									}
+								}
+								# Farming City (12)
+								icon = {
+									size = { 30 30 }
+									using = eul_vis_locview_farming_city
+									texture = "gfx/interface/mapitems/blue_city.dds"
+									glow = {
+										name = "drop_shadow"
+										glow_radius = 3
+										color = {0.0 0.0 0.0 1.0}
+										alpha = 0.3
+									}
+									tooltipwidget = {
+										SimpleContextualTooltipType = {
+											blockoverride "title_text" {
+												text = "STATIC_MODIFIER_NAME_farming_city_specialization"
+											}
+											blockoverride "title_icon" {
+												icon = {
+													using = tooltip_title_icon_size
+													texture = "gfx/interface/mapitems/blue_city.dds"
+												}
+											}
+											blockoverride "tooltip_content" {
+												TooltipStringPairList = {
+													textcontext = "[ShowModifierEffect('farming_city_specialization')]"
+												}
+											}
+										}
+									}
+								}
+								# Gathering City (13)
+								icon = {
+									size = { 30 30 }
+									using = eul_vis_locview_gathering_city
+									texture = "gfx/interface/mapitems/brown_city.dds"
+									glow = {
+										name = "drop_shadow"
+										glow_radius = 3
+										color = {0.0 0.0 0.0 1.0}
+										alpha = 0.3
+									}
+									tooltipwidget = {
+										SimpleContextualTooltipType = {
+											blockoverride "title_text" {
+												text = "STATIC_MODIFIER_NAME_gathering_city_specialization"
+											}
+											blockoverride "title_icon" {
+												icon = {
+													using = tooltip_title_icon_size
+													texture = "gfx/interface/mapitems/brown_city.dds"
+												}
+											}
+											blockoverride "tooltip_content" {
+												TooltipStringPairList = {
+													textcontext = "[ShowModifierEffect('gathering_city_specialization')]"
+												}
+											}
+										}
+									}
+								}
+								# Forestry City (14)
+								icon = {
+									size = { 30 30 }
+									using = eul_vis_locview_forestry_city
+									texture = "gfx/interface/mapitems/green_city.dds"
+									glow = {
+										name = "drop_shadow"
+										glow_radius = 3
+										color = {0.0 0.0 0.0 1.0}
+										alpha = 0.3
+									}
+									tooltipwidget = {
+										SimpleContextualTooltipType = {
+											blockoverride "title_text" {
+												text = "STATIC_MODIFIER_NAME_forestry_city_specialization"
+											}
+											blockoverride "title_icon" {
+												icon = {
+													using = tooltip_title_icon_size
+													texture = "gfx/interface/mapitems/green_city.dds"
+												}
+											}
+											blockoverride "tooltip_content" {
+												TooltipStringPairList = {
+													textcontext = "[ShowModifierEffect('forestry_city_specialization')]"
+												}
+											}
+										}
+									}
+								}
+								# Commercial City (15)
+								icon = {
+									size = { 30 30 }
+									using = eul_vis_locview_commercial_city
+									texture = "gfx/interface/mapitems/purple_city.dds"
+									glow = {
+										name = "drop_shadow"
+										glow_radius = 3
+										color = {0.0 0.0 0.0 1.0}
+										alpha = 0.3
+									}
+									tooltipwidget = {
+										SimpleContextualTooltipType = {
+											blockoverride "title_text" {
+												text = "STATIC_MODIFIER_NAME_commercial_city_specialization"
+											}
+											blockoverride "title_icon" {
+												icon = {
+													using = tooltip_title_icon_size
+													texture = "gfx/interface/mapitems/purple_city.dds"
+												}
+											}
+											blockoverride "tooltip_content" {
+												TooltipStringPairList = {
+													textcontext = "[ShowModifierEffect('commercial_city_specialization')]"
+												}
+											}
+										}
+									}
+								}
 
 								# HOLY SITES
 								icon = {
@@ -3703,7 +3897,9 @@ lateralview = {
 
 										datamodel = "[LocationView.GetLocation.GetTimedModifiers]"
 										item = {
+											# EUL: Filter out specialization modifiers (displayed via custom icon)
 											timed_modifier_icon = {
+												using = eul_hide_if_specialization_modifier
 												datacontext = "[TimedModifier]"
 												tooltipwidget = {
 													using = timed_modifier_tooltip
@@ -3752,7 +3948,9 @@ lateralview = {
 															blockoverride "rowlist_datamodel_has_items" { visible = "[DataModelHasItems(LocationView.GetLocation.GetTimedModifiers)]"}
 															blockoverride "rowlist_datamodel" { datamodel = "[LocationView.GetLocation.GetTimedModifiers]" }
 															blockoverride "rowlist_content" {
+																# EUL: Filter out specialization modifiers (displayed via custom icon)
 																hbox = {
+																	using = eul_hide_if_specialization_modifier
 																	layoutpolicy_horizontal = expanding
 																	spacing = 10
 																	datacontext = "[TimedModifier]"
@@ -5440,507 +5638,6 @@ lateralview = {
 										}
 									}
 
-
-									# Possible Colony
-									# location_conditions_item = {
-									# 	blockoverride "location_conditions_card_visible" {
-									# 		visible = "[Or(LocationView.ShowColonialCharterListWidget, LocationView.ShowCurrentColonyWidget)]"
-									# 	}
-
-									# 	blockoverride "location_conditions_card_header" {
-									# 		#POSSIBLE COLONY
-									# 		card_header_action_button_01 = {
-									# 			datacontext = "[LocationView.GetColonialCharter]"
-									# 			allow_outside = yes
-									# 			size = { 100% 100% }
-									# 			visible = "[LocationView.ShowPossibleColonyWidget]"
-
-									# 			name = "create colonial charter button"
-									# 			title = "create_colonial_charter"
-									# 			actor = "[Player]"
-									# 			enabled = "[UIAction.IsEnabled]"
-									# 			left_action = {
-									# 				action_name = "create_colonial_charter"
-									# 				parameter = {
-									# 					parameter_name = "target"
-									# 					parameter_value = "[ColonialCharterItem.GetProvinceDefinition]"
-									# 				}
-									# 			}
-									# 			onmousehierarchyenter = "[PdxGuiWidget.SetHighlightProvinceDefinition(ColonialCharterItem.GetProvinceDefinition)]"
-
-									# 			tooltipwidget = {
-									# 				ContextualTooltipType = {
-									# 					blockoverride "title_icon"
-									# 					{
-									# 						icon = {
-									# 							using = tooltip_title_icon_size
-									# 							texture = "gfx/interface/icons/flat_icons/geopolitics/current_explorers.dds"
-
-									# 							glow = {
-									# 								name = "drop_shadow"
-									# 								glow_radius = 3
-									# 								color = {0.0 0.0 0.0 1.0}
-									# 								alpha = 0.3
-									# 							}
-									# 						}
-									# 					}
-
-									# 					datacontext = "[ColonialCharterItem.GetProvinceDefinition]"
-									# 					blockoverride "title_text" {
-									# 						text = "CREATE_COLONIAL_CHARTER_LOC"
-									# 					}
-
-									# 					blockoverride "concept_link" {
-									# 						text = "[colonial_charter|e]"
-									# 					}
-
-									# 					blockoverride "tooltip_content"	{
-									# 						TooltipTextBlock = {
-									# 							blockoverride "text" {
-									# 								text = "create_colonial_charter_desc_t"
-									# 							}
-									# 						}
-									# 						TooltipStringPairList = {
-
-									# 							blockoverride "field_background" {
-									# 								background = {
-									# 									visible = "[EqualTo_int32(PdxGuiWidget.GetIndexInDataModel, '(int32)0')]"
-									# 									using = bg_round_corners_up
-									# 									margin = { 3 0 }
-									# 								}
-									# 								background = {
-									# 									visible = "[Not(IsOdd_int32(PdxGuiWidget.GetIndexInDataModel))]"
-									# 									using = color_light_blue_texture
-									# 									alpha = 0.3
-									# 								}
-									# 							}
-									# 							textcontext = "create_colonial_charter_desc_content"
-									# 						}
-									# 						TooltipTextBlock = {
-									# 							visible = "[Not( StringIsEmpty(UIAction.GetConditions) )]"
-									# 							blockoverride "text" {
-									# 								text = "[UIAction.GetConditions]"
-									# 							}
-									# 						}
-									# 					}
-									# 				}
-									# 			}
-
-									# 			icon = {
-									# 				size = { 22 22 }
-									# 				parentanchor = center
-									# 				position = {-1 0}
-									# 				texture = "gfx/interface/icons/flat_icons/geopolitics/available_colonies.dds"
-									# 				glow = {
-									# 					name = "drop_shadow"
-									# 					glow_radius = 3
-									# 					color = {0.0 0.0 0.0 1.0}
-									# 					alpha = 0.3
-									# 				}
-									# 			}
-									# 		}
-
-									# 		#CURRENT CHARTER
-									# 		card_header_action_button_01 = {
-									# 			datacontext = "[LocationView.GetColonialCharter]"
-									# 			allow_outside = yes
-									# 			size = { 100% 100% }
-									# 			visible = "[LocationView.ShowCurrentColonyWidget]"
-
-									# 			default_format = "#color_white"
-									# 			name = "abandon charter button"
-									# 			title = "ABANDON_BUTTON"
-									# 			actor = "[Player]"
-									# 			right_click_and_hold_action = {
-									# 				action_name = "abandon_colonial_charter"
-									# 				parameter = {
-									# 					parameter_name = "target"
-									# 					parameter_value = "[ColonialCharterItem.GetColonialCharter]"
-									# 				}
-									# 			}
-
-									# 			onclick = "[ShowProvinceDefinition(ColonialCharterItem.GetProvinceDefinition)]"
-
-									# 			datacontext = "[ColonialCharterItem.GetColonialCharter]"
-									# 			tooltipwidget = {
-									# 				using = ColonialCharter_tooltip
-									# 			}
-
-									# 			icon = {
-									# 				size = { 22 22 }
-									# 				parentanchor = center
-									# 				position = {-1 0}
-									# 				texture = "gfx/interface/icons/flat_icons/geopolitics/available_colonies.dds"
-									# 				glow = {
-									# 					name = "drop_shadow"
-									# 					glow_radius = 3
-									# 					color = {0.0 0.0 0.0 1.0}
-									# 					alpha = 0.3
-									# 				}
-									# 			}
-									# 		}
-
-									# 		#OTHERS CHARTERS
-									# 		widget = {
-									# 			size = {100% 100%}
-									# 			visible = "[Not(Or(LocationView.ShowPossibleColonyWidget, LocationView.ShowCurrentColonyWidget))]"
-									# 			tooltip = "game_concept_colonial_charter"
-									# 			icon = {
-									# 				size = { 22 22 }
-									# 				parentanchor = center
-									# 				position = {-1 0}
-									# 				texture = "gfx/interface/icons/flat_icons/geopolitics/available_colonies.dds"
-									# 				glow = {
-									# 					name = "drop_shadow"
-									# 					glow_radius = 3
-									# 					color = {0.0 0.0 0.0 1.0}
-									# 					alpha = 0.3
-									# 				}
-									# 			}
-									# 		}
-									# 	}
-
-									# 	blockoverride "location_conditions_card_main_content" {
-									# 		hbox = {
-									# 			layoutpolicy_vertical = expanding
-									# 			spacing = 8
-									# 			widget = {
-									# 				visible = "[LocationView.ShowCurrentColonyWidget]"
-									# 				size = { 110 25 }
-									# 				datacontext = "[LocationView.GetColonialCharter]"
-									# 				using = bg_number_container_bckg
-									# 				blockoverride "number_container_alpha" {
-									# 					alpha = 0.5
-									# 				}
-									# 				blockoverride "number_container_color" {
-									# 					modify_texture = {
-									# 						using = color_bg_blue_texture
-									# 						blend_mode = multiply
-									# 					}
-									# 				}
-									# 				hbox = {
-									# 					datacontext = "[ColonialCharterItem.GetColonialCharter]"
-									# 					piechart = {
-									# 						using = bg_circle
-									# 						size = { 22 22 }
-									# 						using = piechart_angles
-									# 						using = bg_circle_piechart
-									# 						tooltipwidget = {
-									# 							using = colonial_charter_progress_tooltip
-									# 						}
-									# 						icon = {
-									# 							texture = "gfx/interface/pie_charts/pie_chart_alpha_80.dds"
-									# 							size = { 97% 97% }
-									# 							parentanchor = center
-									# 							color = { 0 0 0 1 }
-									# 						}
-
-									# 						pieslice_no_highlight = {
-									# 							texture = "gfx/interface/pie_charts/pie_chart_alpha_80.dds"
-									# 							value = "[ColonialCharterItem.GetProgress]"
-									# 							color = { 0.3 0.8 0.3 1 }
-									# 							alpha = 0.8
-									# 						}
-
-									# 						pieslice_no_highlight = {
-									# 							texture = "gfx/interface/pie_charts/pie_chart_alpha_80.dds"
-									# 							value = "[Subtract_float('(float)100.0', ColonialCharterItem.GetProgress)]"
-									# 							color = { 0.8 0.3 0.3 1 }
-									# 							alpha = 0.8
-									# 						}
-
-									# 						icon = {
-									# 							size = { 61% 61% }
-									# 							parentanchor = center
-									# 							texture = "gfx/interface/icons/flat_icons/geopolitics/available_colonies.dds"
-									# 						}
-									# 					}
-
-									# 					country_flag_small = {
-									# 						datacontext = "[ColonialCharterItem.GetColonialCharter.GetOwner]"
-									# 					}
-
-									# 					text_single = {
-									# 						layoutpolicy_vertical = expanding
-									# 						size = { 40 -1 }
-									# 						autoresize = no
-									# 						align = center|nobaseline
-									# 						raw_text = "[ColonialCharterItem.GetColonialCharter.GetMonthlyMigration]@population!"
-									# 						tooltipwidget = {
-									# 							using = colonial_charter_migration_tooltip
-									# 						}
-									# 					}
-									# 				}
-									# 			}
-
-									# 			hbox = {
-									# 				layoutpolicy_horizontal = expanding
-									# 				spacing = 8
-									# 				datamodel = "[DataModelFirst(LocationView.GetColonialCharters,'(int32)2')]"
-									# 				item = {
-									# 					colonial_charter_small_item = {}
-									# 				}
-									# 			}
-									# 		}
-									# 	}
-
-									# 	blockoverride "location_conditions_card_extra_text" {
-									# 		text_single = {
-									# 			margin = {5 5}
-									# 			using = Font_Type_Headers
-									# 			raw_text = "+[Subtract_int32(GetDataModelSize(LocationView.GetColonialCharters), '(int32)2')]"
-									# 			align = nobaseline
-									# 			visible = "[GreaterThan_int32(GetDataModelSize(LocationView.GetColonialCharters), '(int32)2')]"
-									# 			using = bg_number_container_bckg
-									# 			tooltipwidget = {
-									# 				ContextualTooltipType = {
-									# 					blockoverride "title_text" {
-									# 						text = "game_concept_colonial_charter"
-									# 					}
-
-									# 					blockoverride "concept_link" {
-									# 						text = "[colonial_charter|e]"
-									# 					}
-
-									# 					blockoverride "title_icon" {
-									# 						icon = {
-									# 							using = tooltip_title_icon_size
-									# 							texture = "gfx/interface/icons/flat_icons/geopolitics/available_colonies.dds"
-
-									# 							glow = {
-									# 								name = "drop_shadow"
-									# 								glow_radius = 3
-									# 								color = {0.0 0.0 0.0 1.0}
-									# 								alpha = 0.4
-									# 							}
-									# 						}
-									# 					}
-
-									# 					blockoverride "tooltip_content" {
-									# 						TooltipListScrollArea = {
-									# 							blockoverride "block_scrollarea" {
-									# 								maximumsize = { -1 500 }
-									# 							}
-
-									# 							blockoverride "scrollarea_content" {
-									# 								fixedgridbox = {
-									# 									resizeparent = yes
-									# 									addcolumn = 480
-									# 									addrow = 55
-
-									# 									datamodel = "[LocationView.GetColonialCharters]"
-									# 									item = {
-									# 										colonial_charter_item = {
-									# 											blockoverride "colony_item_size"{
-									# 												size = {480 50}
-									# 											}
-									# 											blockoverride "highlight_cost" {
-									# 											}
-									# 											blockoverride "highlight_name" {
-									# 											}
-									# 											blockoverride "highlight_migration" {
-									# 											}
-									# 											blockoverride "highlight_progress" {
-									# 											}
-
-									# 										}
-									# 									}
-									# 								}
-									# 							}
-									# 						}
-									# 					}
-									# 				}
-									# 			}
-									# 			blockoverride "number_container_alpha" {
-									# 				alpha = 0.5
-									# 			}
-									# 			blockoverride "number_container_color" {
-									# 				modify_texture = {
-									# 					using = color_bg_blue_texture
-									# 					blend_mode = multiply
-									# 				}
-									# 			}
-									# 		}
-									# 	}
-									# }
-
-									# # DISEASES
-									# location_conditions_item = {
-									# 	blockoverride "location_conditions_card_visible" {
-									# 		visible = "[LocationView.ShowDisease]"
-									# 	}
-									# 	blockoverride "location_conditions_card_header_tooltip" {
-									# 		tooltip = "[disease|e]"
-									# 	}
-									# 	blockoverride "location_conditions_card_header_texture" {
-                					# 		texture = "gfx/interface/icons/map_modes/disease.dds"
-									# 	}
-
-									# 	blockoverride "location_conditions_card_main_content" {
-									# 		hbox = {
-									# 			layoutpolicy_vertical = expanding
-									# 			spacing = 7
-
-									# 			#DISEASES
-									# 			piechart = {
-									# 				datacontext = "[LocationView.GetLocation]"
-									# 				visible = "[LocationView.ShowDisease]"
-									# 				using = bg_circle
-									# 				size = { 22 22 }
-									# 				using = piechart_angles
-									# 				using = bg_circle_piechart
-									# 				tooltipwidget = {
-									# 					using = location_disease_tooltip
-									# 				}
-
-									# 				icon = {
-									# 					texture = "gfx/interface/pie_charts/pie_chart_alpha_80.dds"
-									# 					size = { 97% 97% }
-									# 					parentanchor = center
-									# 					color = { 0 0 0 1 }
-									# 				}
-
-									# 				pieslice_no_highlight = {
-									# 					texture = "gfx/interface/pie_charts/pie_chart_alpha_80.dds"
-									# 					value = "[FixedPointToFloat(LocationView.GetDiseasePercentage)]"
-									# 					color = { 0.3 0.8 0.3 1 }
-									# 					alpha = 0.8
-									# 				}
-
-									# 				pieslice_no_highlight = {
-									# 					texture = "gfx/interface/pie_charts/pie_chart_alpha_80.dds"
-									# 					value = "[Subtract_float('(float)1.0', FixedPointToFloat(LocationView.GetDiseasePercentage))]"
-									# 					color = { 0.8 0.3 0.3 1 }
-									# 					alpha = 0.8
-									# 				}
-
-									# 				icon = {
-									# 					size = { 61% 61% }
-									# 					parentanchor = center
-									# 					texture = "[GetDiseaseIcon(LocationView.GetHigherPresenceDisease)]"
-									# 				}
-									# 			}
-									# 		}
-									# 	}
-
-									# 	blockoverride "location_conditions_card_extra_text" {}
-									# }
-
-									# # WORKS OF ART
-									# location_conditions_item = {
-									# 	blockoverride "location_conditions_card_visible" {
-									# 		visible = "[GreaterThan_int32(Location.GetNumWorksOfArt, '(int32)0')]"
-									# 	}
-
-									# 	blockoverride "location_conditions_card_header" {
-									# 		#POSSIBLE COLONY
-									# 		card_header_button_01 = {
-									# 			allow_outside = yes
-									# 			size = { 100% 100% }
-									# 			onclick = "[OpenLateralViewWithParams('country_culture', 'subtab = works_of_art')]"
-
-									# 			tooltipwidget = {
-									# 				using = location_art_tooltip
-
-									# 				blockoverride "tooltip_ui_action_block" {
-									# 					TooltipFunctionalBlock = {
-									# 						using = tooltip_left_click_template
-									# 						blockoverride "action_left_text" { text = "OPEN_WORKS_OF_ART_TAB" }
-									# 					}
-									# 				}
-									# 			}
-
-									# 			icon = {
-									# 				size = { 22 22 }
-									# 				parentanchor = center
-									# 				texture = "gfx/interface/icons/flat_icons/art_works.dds"
-									# 				glow = {
-									# 					name = "drop_shadow"
-									# 					glow_radius = 3
-									# 					color = {0.0 0.0 0.0 1.0}
-									# 					alpha = 0.3
-									# 				}
-									# 			}
-									# 		}
-									# 	}
-
-									# 	blockoverride "location_conditions_card_datamodel" {
-									# 		datamodel = "[DataModelFirst(Location.GetWorksOfArt,'(int32)13')]"
-									# 	}
-									# 	blockoverride "location_conditions_card_item" {
-
-									# 		widget = {
-									# 			size = { 30 30}
-									# 			background = {
-									# 				texture = "gfx/interface/icons/laws/background_frame.dds"
-									# 				texture_density = 2
-									# 				spriteType = corneredstretched
-									# 				spriteBorder = { 0 0 }
-
-									# 				modify_texture = {
-									# 					using = color_black_texture
-									# 					blend_mode = multiply
-									# 					alpha = 0.3
-									# 				}
-
-									# 				#GOLD QUALITY
-									# 				modify_texture = {
-									# 				visible = "[GreaterThanOrEqualTo_CFixedPoint(WorkOfArt.GetQuality, '(CFixedPoint)80')]"
-									# 					using = color_gold_texture
-									# 					alpha = 0.7
-									# 				}
-
-									# 				#SILVER QUALITY
-									# 				modify_texture = {
-									# 					visible = "[Between_CFixedPoint(WorkOfArt.GetQuality, '(CFixedPoint)50', '(CFixedPoint)80')]"
-									# 					using = color_silver_texture
-									# 					alpha = 0.5
-									# 				}
-
-									# 				#BRONZE QUALITY
-									# 				modify_texture = {
-									# 					visible = "[LessThanOrEqualTo_CFixedPoint(WorkOfArt.GetQuality, '(CFixedPoint)50')]"
-									# 					using = color_bronze_texture
-									# 					alpha = 1.5
-									# 				}
-									# 			}
-
-									# 			tooltipwidget = {
-									# 				using = WorkOfArt_tooltip
-									# 			}
-
-									# 			icon = {
-									# 				size = { 80% 80% }
-									# 				parentanchor = center
-									# 				texture ="[GetWorkOfArtIcon(WorkOfArt.GetDefinition)]"
-									# 			}
-									# 		}
-									# 	}
-
-									# 	blockoverride "location_conditions_card_extra_text" {
-									# 		text_single = {
-									# 			margin = {5 5}
-									# 			using = Font_Type_Headers
-									# 			raw_text = "+[Subtract_int32(GetDataModelSize(Location.GetWorksOfArt), '(int32)13')]"
-									# 			align = nobaseline
-									# 			visible = "[GreaterThan_int32(GetDataModelSize(Location.GetWorksOfArt), '(int32)13')]"
-									# 			using = bg_number_container_bckg
-									# 			tooltipwidget = {
-									# 				using = location_art_tooltip
-									# 			}
-									# 			blockoverride "number_container_alpha" {
-									# 				alpha = 0.5
-									# 			}
-									# 			blockoverride "number_container_color" {
-									# 				modify_texture = {
-									# 					using = color_bg_blue_texture
-									# 					blend_mode = multiply
-									# 				}
-									# 			}
-									# 		}
-									# 	}
-									# }
-
 									expand = {}
 								}
 							}
@@ -6565,54 +6262,6 @@ lateralview = {
 										}
 									}
 									
-									
-
-									# blockoverride "location_conditions_card_item" {
-									# 	hbox = {
-									# 		country_flag_small = {}
-									# 		# tooltipwidget = {
-									# 		# 	ContextualTooltipType = {
-									# 		# 		blockoverride "title_text" {
-									# 		# 			text = "[Location.GetIntegrationHeader]"
-									# 		# 		}
-									# 		# 		blockoverride "title_icon" {
-									# 		# 			icon = {
-									# 		# 				using = tooltip_title_icon_size
-									# 		# 				texture = "[GetIntegrationLevelIcon(Location.GetIntegrationLevelForCountry(Country.Self))]"
-									# 		# 			}
-									# 		# 		}
-									# 		# 		blockoverride "concept_link" {
-									# 		# 			text = [integration_status|e]
-									# 		# 		}
-									# 		# 		blockoverride "tooltip_content" {
-									# 		# 			TooltipTextBlock = {
-									# 		# 				visible = "[Location.IsCurrentlyBeingIntegrated]"
-
-									# 		# 				blockoverride "text" {
-									# 		# 					text = "LOCATION_INTEGRATION_TT_TEXT"
-									# 		# 				}
-									# 		# 			}
-									# 		# 			TooltipStringPairList = {
-									# 		# 				visible = "[Location.IsCurrentlyBeingIntegrated]"
-									# 		# 				textcontext = "[Location.GetIntegrationFinishedInfo]"
-									# 		# 			}
-
-									# 		# 			TooltipStringPairList = {
-									# 		# 				blockoverride "block_title" {
-									# 		# 					text = "LOCATION_INTEGRATION_TT_LIST"
-									# 		# 				}
-									# 		# 				textcontext = "[Location.GetCurrentIntegrationInfoForCountry(Country.Self)]"
-									# 		# 			}
-
-									# 		# 			TooltipRowList = {
-									# 		# 				textcontext = "[Location.GetCoresList]"
-									# 		# 			}
-									# 		# 		}
-									# 		# 	}
-									# 		# }
-									# 	}
-									# }
-
 									blockoverride "location_conditions_card_extra_text" {}
 								}
 

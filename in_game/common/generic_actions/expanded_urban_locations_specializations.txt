@@ -29,7 +29,7 @@ designate_mining_specialization = {
 
 		enabled = {
 			has_mining_resources = yes
-			NOT = { var:specialization_designation = flag:mining }
+			has_mining_specialization = no
 		}
 	}
 
@@ -37,24 +37,16 @@ designate_mining_specialization = {
 		if = {
 			limit = { exists = scope:target }
 			scope:target = {
-				# Remove any existing specialization modifiers
 				clear_all_specialization_modifiers = yes
-
-				# Set the specialization variable
-				set_variable = { name = specialization_designation value = flag:mining }
-
-				# Destroy incompatible buildings
-				destroy_non_mining_buildings = yes
-
-				# Apply appropriate modifier based on current rank
 				if = {
 					limit = { location_rank = location_rank:town }
-					add_location_modifier = { modifier = mining_town_specialization }
+					set_variable = { name = specialization_designation value = eul_mining_town_value }
 				}
-				else_if = {
-					limit = { location_rank = location_rank:city }
-					add_location_modifier = { modifier = mining_city_specialization }
+				else = {
+					set_variable = { name = specialization_designation value = eul_mining_city_value }
 				}
+				destroy_non_mining_buildings = yes
+				apply_specialization_modifier = yes
 			}
 		}
 	}
@@ -86,7 +78,7 @@ designate_farming_specialization = {
 
 		enabled = {
 			has_farming_resources = yes
-			NOT = { var:specialization_designation = flag:farming }
+			has_farming_specialization = no
 		}
 	}
 
@@ -94,24 +86,16 @@ designate_farming_specialization = {
 		if = {
 			limit = { exists = scope:target }
 			scope:target = {
-				# Remove any existing specialization modifiers
 				clear_all_specialization_modifiers = yes
-
-				# Set the specialization variable
-				set_variable = { name = specialization_designation value = flag:farming }
-
-				# Destroy incompatible buildings
-				destroy_non_farming_buildings = yes
-
-				# Apply appropriate modifier based on current rank
 				if = {
 					limit = { location_rank = location_rank:town }
-					add_location_modifier = { modifier = farming_town_specialization }
+					set_variable = { name = specialization_designation value = eul_farming_town_value }
 				}
-				else_if = {
-					limit = { location_rank = location_rank:city }
-					add_location_modifier = { modifier = farming_city_specialization }
+				else = {
+					set_variable = { name = specialization_designation value = eul_farming_city_value }
 				}
+				destroy_non_farming_buildings = yes
+				apply_specialization_modifier = yes
 			}
 		}
 	}
@@ -143,7 +127,7 @@ designate_forestry_specialization = {
 
 		enabled = {
 			has_forestry_resources = yes
-			NOT = { var:specialization_designation = flag:forestry }
+			has_forestry_specialization = no
 		}
 	}
 
@@ -151,24 +135,16 @@ designate_forestry_specialization = {
 		if = {
 			limit = { exists = scope:target }
 			scope:target = {
-				# Remove any existing specialization modifiers
 				clear_all_specialization_modifiers = yes
-
-				# Set the specialization variable
-				set_variable = { name = specialization_designation value = flag:forestry }
-
-				# Destroy incompatible buildings
-				destroy_non_forestry_buildings = yes
-
-				# Apply appropriate modifier based on current rank
 				if = {
 					limit = { location_rank = location_rank:town }
-					add_location_modifier = { modifier = forestry_town_specialization }
+					set_variable = { name = specialization_designation value = eul_forestry_town_value }
 				}
-				else_if = {
-					limit = { location_rank = location_rank:city }
-					add_location_modifier = { modifier = forestry_city_specialization }
+				else = {
+					set_variable = { name = specialization_designation value = eul_forestry_city_value }
 				}
+				destroy_non_forestry_buildings = yes
+				apply_specialization_modifier = yes
 			}
 		}
 	}
@@ -200,7 +176,7 @@ designate_gathering_specialization = {
 
 		enabled = {
 			has_gathering_resources = yes
-			NOT = { var:specialization_designation = flag:gathering }
+			has_gathering_specialization = no
 		}
 	}
 
@@ -208,24 +184,16 @@ designate_gathering_specialization = {
 		if = {
 			limit = { exists = scope:target }
 			scope:target = {
-				# Remove any existing specialization modifiers
 				clear_all_specialization_modifiers = yes
-
-				# Set the specialization variable
-				set_variable = { name = specialization_designation value = flag:gathering }
-
-				# Destroy incompatible buildings
-				destroy_non_gathering_buildings = yes
-
-				# Apply appropriate modifier based on current rank
 				if = {
 					limit = { location_rank = location_rank:town }
-					add_location_modifier = { modifier = gathering_town_specialization }
+					set_variable = { name = specialization_designation value = eul_gathering_town_value }
 				}
-				else_if = {
-					limit = { location_rank = location_rank:city }
-					add_location_modifier = { modifier = gathering_city_specialization }
+				else = {
+					set_variable = { name = specialization_designation value = eul_gathering_city_value }
 				}
+				destroy_non_gathering_buildings = yes
+				apply_specialization_modifier = yes
 			}
 		}
 	}
@@ -257,7 +225,7 @@ designate_commercial_specialization = {
 
 		# Commercial has no resource requirement - but cannot already be commercial
 		enabled = {
-			NOT = { var:specialization_designation = flag:commercial }
+			has_commercial_specialization = no
 		}
 	}
 
@@ -265,24 +233,16 @@ designate_commercial_specialization = {
 		if = {
 			limit = { exists = scope:target }
 			scope:target = {
-				# Remove any existing specialization modifiers
 				clear_all_specialization_modifiers = yes
-
-				# Set the specialization variable
-				set_variable = { name = specialization_designation value = flag:commercial }
-
-				# Destroy incompatible buildings
-				destroy_non_commercial_buildings = yes
-
-				# Apply appropriate modifier based on current rank
 				if = {
 					limit = { location_rank = location_rank:town }
-					add_location_modifier = { modifier = commercial_town_specialization }
+					set_variable = { name = specialization_designation value = eul_commercial_town_value }
 				}
-				else_if = {
-					limit = { location_rank = location_rank:city }
-					add_location_modifier = { modifier = commercial_city_specialization }
+				else = {
+					set_variable = { name = specialization_designation value = eul_commercial_city_value }
 				}
+				destroy_non_commercial_buildings = yes
+				apply_specialization_modifier = yes
 			}
 		}
 	}

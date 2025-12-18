@@ -153,8 +153,9 @@ is_destroyable_specialization_building = {
 		# building_type = building_type:cathedral
 
 		# ==================
-		# MINING PRODUCTION (tools, weapons, cannons)
+		# MINING PRODUCTION (tools, weapons, cannons, firearms, steel, jewelry)
 		# ==================
+		building_type = building_type:mason
 		building_type = building_type:tools_guild
 		building_type = building_type:tools_workshop
 		building_type = building_type:iron_foundry
@@ -167,9 +168,16 @@ is_destroyable_specialization_building = {
 		building_type = building_type:cannon_workshop
 		building_type = building_type:cannon_foundry
 		building_type = building_type:cannons_factory
+		building_type = building_type:hand_cannon_guild
+		building_type = building_type:gun_smith
+		building_type = building_type:guns_workshop
+		building_type = building_type:firearms_manufactory
+		building_type = building_type:firearms_factory
+		building_type = building_type:steel_mill
+		building_type = building_type:jewelry_guild
 
 		# ==================
-		# GATHERING PRODUCTION (glass, pottery)
+		# GATHERING PRODUCTION (glass, pottery, porcelain, apothecary)
 		# ==================
 		building_type = building_type:glass_guild
 		building_type = building_type:glass_workshop
@@ -179,37 +187,31 @@ is_destroyable_specialization_building = {
 		building_type = building_type:pottery_workshop
 		building_type = building_type:pottery_manufactory
 		building_type = building_type:pottery_mill
+		building_type = building_type:porcelain_guild
+		building_type = building_type:porcelain_manufactory
+		building_type = building_type:apothecary
 
 		# ==================
-		# FORESTRY PRODUCTION (furniture, naval supplies)
+		# FORESTRY PRODUCTION (furniture, dyes, lacquerware, leather)
 		# ==================
 		building_type = building_type:furniture_guild
 		building_type = building_type:furniture_workshop
 		building_type = building_type:furniture_manufactory
 		building_type = building_type:furniture_mill
-		building_type = building_type:naval_supplies_guild
-		building_type = building_type:naval_supplies_workshop
-		building_type = building_type:naval_supplies_manufactory
-		building_type = building_type:naval_supplies_mill
-
-		# ==================
-		# FARMING PRODUCTION (cloth, fine cloth, leather, beer, wine, liquor)
-		# ==================
-		# Cloth
-		building_type = building_type:cloth_guild
-		building_type = building_type:cloth_workshop
-		building_type = building_type:cloth_manufactory
-		building_type = building_type:textile_mill
-		# Fine cloth
-		building_type = building_type:fine_cloth_guild
-		building_type = building_type:fine_cloth_workshop
-		building_type = building_type:fine_cloth_manufactory
-		building_type = building_type:fine_cloth_mill
-		# Leather
+		building_type = building_type:dyes_guild
+		building_type = building_type:dyes_workshop
+		building_type = building_type:dyesworks
+		building_type = building_type:dyes_mill
+		building_type = building_type:lacquerware_guild
+		building_type = building_type:lacquerware_manufactory
 		building_type = building_type:tannery
 		building_type = building_type:tanning_workshop
 		building_type = building_type:tannery_manufactory
 		building_type = building_type:tannery_mill
+
+		# ==================
+		# FARMING PRODUCTION (beer, wine, liquor, saltpeter)
+		# ==================
 		# Beer
 		building_type = building_type:brewery
 		building_type = building_type:beer_workshop
@@ -223,5 +225,164 @@ is_destroyable_specialization_building = {
 		building_type = building_type:distillers_workshop
 		building_type = building_type:distiller_manufactory
 		building_type = building_type:distiller_mill
+		# Saltpeter
+		building_type = building_type:saltpeter_guild
+		building_type = building_type:saltpeter_workshop
+		building_type = building_type:putrefaction_works
+		building_type = building_type:putrefaction_mill
+
+		# ==================
+		# COMMERCIAL PRODUCTION (cloth, fine cloth, paper, printing, naval supplies)
+		# ==================
+		# Cloth
+		building_type = building_type:cloth_guild
+		building_type = building_type:cloth_workshop
+		building_type = building_type:cloth_manufactory
+		building_type = building_type:textile_mill
+		# Fine cloth
+		building_type = building_type:fine_cloth_guild
+		building_type = building_type:fine_cloth_workshop
+		building_type = building_type:fine_cloth_manufactory
+		building_type = building_type:fine_cloth_mill
+		# Paper
+		building_type = building_type:paper_guild
+		building_type = building_type:paper_workshop
+		building_type = building_type:paper_manufactory
+		building_type = building_type:paper_mill
+		# Printing
+		building_type = building_type:scriptorium
+		building_type = building_type:printing_press_shop
+		building_type = building_type:printing_manufactory
+		building_type = building_type:printing_mill
+		# Naval supplies
+		building_type = building_type:naval_supplies_guild
+		building_type = building_type:naval_supplies_workshop
+		building_type = building_type:naval_supplies_manufactory
+		building_type = building_type:naval_supplies_mill
+		# Misc commercial
+		building_type = building_type:funduq
+		building_type = building_type:perfumery
+		building_type = building_type:university
+
+		# ==================
+		# TRADE BUILDINGS
+		# ==================
+		building_type = building_type:entrepot
+		building_type = building_type:trading_hub
+		building_type = building_type:customs_house
+		building_type = building_type:stock_exchange
+		building_type = building_type:clearing_house
+		building_type = building_type:market_warehouse
 	}
+}
+
+# ============================================
+# SPECIALIZATION DESIGNATION TRIGGERS
+# ============================================
+# These triggers check the specialization_designation variable.
+# We use NUMERIC values (not flags) because the GUI needs to read
+# this variable via GetVariable().GetValue, which only works with numbers.
+# Using triggers keeps the script code readable while allowing GUI access.
+#
+# Number mapping:
+#   Towns:  1=mining, 2=farming, 3=gathering, 4=forestry, 5=commercial
+#   Cities: 11=mining, 12=farming, 13=gathering, 14=forestry, 15=commercial
+# ============================================
+
+# Individual town checks (using constants from expanded_urban_locations_specialization_constants.txt)
+is_mining_town = {
+	has_variable = specialization_designation
+	var:specialization_designation = eul_mining_town_value
+}
+
+is_farming_town = {
+	has_variable = specialization_designation
+	var:specialization_designation = eul_farming_town_value
+}
+
+is_gathering_town = {
+	has_variable = specialization_designation
+	var:specialization_designation = eul_gathering_town_value
+}
+
+is_forestry_town = {
+	has_variable = specialization_designation
+	var:specialization_designation = eul_forestry_town_value
+}
+
+is_commercial_town = {
+	has_variable = specialization_designation
+	var:specialization_designation = eul_commercial_town_value
+}
+
+# Individual city checks (using constants from expanded_urban_locations_specialization_constants.txt)
+is_mining_city = {
+	has_variable = specialization_designation
+	var:specialization_designation = eul_mining_city_value
+}
+
+is_farming_city = {
+	has_variable = specialization_designation
+	var:specialization_designation = eul_farming_city_value
+}
+
+is_gathering_city = {
+	has_variable = specialization_designation
+	var:specialization_designation = eul_gathering_city_value
+}
+
+is_forestry_city = {
+	has_variable = specialization_designation
+	var:specialization_designation = eul_forestry_city_value
+}
+
+is_commercial_city = {
+	has_variable = specialization_designation
+	var:specialization_designation = eul_commercial_city_value
+}
+
+# Combined checks (town or city of same type)
+has_mining_specialization = {
+	has_variable = specialization_designation
+	OR = {
+		var:specialization_designation = eul_mining_town_value
+		var:specialization_designation = eul_mining_city_value
+	}
+}
+
+has_farming_specialization = {
+	has_variable = specialization_designation
+	OR = {
+		var:specialization_designation = eul_farming_town_value
+		var:specialization_designation = eul_farming_city_value
+	}
+}
+
+has_gathering_specialization = {
+	has_variable = specialization_designation
+	OR = {
+		var:specialization_designation = eul_gathering_town_value
+		var:specialization_designation = eul_gathering_city_value
+	}
+}
+
+has_forestry_specialization = {
+	has_variable = specialization_designation
+	OR = {
+		var:specialization_designation = eul_forestry_town_value
+		var:specialization_designation = eul_forestry_city_value
+	}
+}
+
+has_commercial_specialization = {
+	has_variable = specialization_designation
+	OR = {
+		var:specialization_designation = eul_commercial_town_value
+		var:specialization_designation = eul_commercial_city_value
+	}
+}
+
+# Check if location has any specialization
+has_any_specialization = {
+	has_variable = specialization_designation
 }

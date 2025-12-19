@@ -12,7 +12,49 @@ designate_mining_specialization = {
 	allow = {
 	}
 
-	ai_tick = never
+	ai_tick = monthly
+	ai_tick_frequency = 12
+
+	ai_prerequisite = {
+		at_war = no
+		treasury >= 100
+	}
+
+	ai_will_do = {
+		# Base inertia - AI resists changing specializations
+		add = {
+			desc = "inertia"
+			value = -100
+		}
+
+		# Strong desire if location has mining resources but wrong specialization
+		if = {
+			limit = {
+				exists = scope:target
+				scope:target = {
+					has_mining_resources = yes
+					has_any_specialization = yes
+					has_mining_specialization = no
+				}
+			}
+			add = {
+				desc = "resource_mismatch_correction"
+				value = 150
+			}
+		}
+
+		# Bonus for cities (higher value targets)
+		if = {
+			limit = {
+				exists = scope:target
+				scope:target = { location_rank = location_rank:city }
+			}
+			add = {
+				desc = "city_priority"
+				value = 25
+			}
+		}
+	}
 
 	price = price:designate_specialization_price
 
@@ -61,7 +103,49 @@ designate_farming_specialization = {
 	allow = {
 	}
 
-	ai_tick = never
+	ai_tick = monthly
+	ai_tick_frequency = 12
+
+	ai_prerequisite = {
+		at_war = no
+		treasury >= 100
+	}
+
+	ai_will_do = {
+		# Base inertia - AI resists changing specializations
+		add = {
+			desc = "inertia"
+			value = -100
+		}
+
+		# Strong desire if location has farming resources but wrong specialization
+		if = {
+			limit = {
+				exists = scope:target
+				scope:target = {
+					has_farming_resources = yes
+					has_any_specialization = yes
+					has_farming_specialization = no
+				}
+			}
+			add = {
+				desc = "resource_mismatch_correction"
+				value = 150
+			}
+		}
+
+		# Bonus for cities (higher value targets)
+		if = {
+			limit = {
+				exists = scope:target
+				scope:target = { location_rank = location_rank:city }
+			}
+			add = {
+				desc = "city_priority"
+				value = 25
+			}
+		}
+	}
 
 	price = price:designate_specialization_price
 
@@ -110,7 +194,49 @@ designate_forestry_specialization = {
 	allow = {
 	}
 
-	ai_tick = never
+	ai_tick = monthly
+	ai_tick_frequency = 12
+
+	ai_prerequisite = {
+		at_war = no
+		treasury >= 100
+	}
+
+	ai_will_do = {
+		# Base inertia - AI resists changing specializations
+		add = {
+			desc = "inertia"
+			value = -100
+		}
+
+		# Strong desire if location has forestry resources but wrong specialization
+		if = {
+			limit = {
+				exists = scope:target
+				scope:target = {
+					has_forestry_resources = yes
+					has_any_specialization = yes
+					has_forestry_specialization = no
+				}
+			}
+			add = {
+				desc = "resource_mismatch_correction"
+				value = 150
+			}
+		}
+
+		# Bonus for cities (higher value targets)
+		if = {
+			limit = {
+				exists = scope:target
+				scope:target = { location_rank = location_rank:city }
+			}
+			add = {
+				desc = "city_priority"
+				value = 25
+			}
+		}
+	}
 
 	price = price:designate_specialization_price
 
@@ -159,7 +285,49 @@ designate_gathering_specialization = {
 	allow = {
 	}
 
-	ai_tick = never
+	ai_tick = monthly
+	ai_tick_frequency = 12
+
+	ai_prerequisite = {
+		at_war = no
+		treasury >= 100
+	}
+
+	ai_will_do = {
+		# Base inertia - AI resists changing specializations
+		add = {
+			desc = "inertia"
+			value = -100
+		}
+
+		# Strong desire if location has gathering resources but wrong specialization
+		if = {
+			limit = {
+				exists = scope:target
+				scope:target = {
+					has_gathering_resources = yes
+					has_any_specialization = yes
+					has_gathering_specialization = no
+				}
+			}
+			add = {
+				desc = "resource_mismatch_correction"
+				value = 150
+			}
+		}
+
+		# Bonus for cities (higher value targets)
+		if = {
+			limit = {
+				exists = scope:target
+				scope:target = { location_rank = location_rank:city }
+			}
+			add = {
+				desc = "city_priority"
+				value = 25
+			}
+		}
+	}
 
 	price = price:designate_specialization_price
 
@@ -208,7 +376,63 @@ designate_commercial_specialization = {
 	allow = {
 	}
 
-	ai_tick = never
+	ai_tick = monthly
+	ai_tick_frequency = 12
+
+	ai_prerequisite = {
+		at_war = no
+		treasury >= 100
+	}
+
+	ai_will_do = {
+		# Base inertia - AI resists changing specializations
+		add = {
+			desc = "inertia"
+			value = -100
+		}
+
+		# Strong desire if location is market center but not commercial
+		if = {
+			limit = {
+				exists = scope:target
+				scope:target = {
+					is_market_center = yes
+					has_commercial_specialization = no
+				}
+			}
+			add = {
+				desc = "market_center_should_be_commercial"
+				value = 200
+			}
+		}
+
+		# Moderate desire for high harbor locations
+		if = {
+			limit = {
+				exists = scope:target
+				scope:target = {
+					modifier:harbor_suitability > 0.7
+					has_commercial_specialization = no
+				}
+			}
+			add = {
+				desc = "harbor_commercial_potential"
+				value = 100
+			}
+		}
+
+		# Bonus for cities (higher value targets)
+		if = {
+			limit = {
+				exists = scope:target
+				scope:target = { location_rank = location_rank:city }
+			}
+			add = {
+				desc = "city_priority"
+				value = 25
+			}
+		}
+	}
 
 	price = price:designate_specialization_price
 

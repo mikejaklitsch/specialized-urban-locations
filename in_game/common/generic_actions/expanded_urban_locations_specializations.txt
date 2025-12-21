@@ -34,7 +34,7 @@ designate_mining_specialization = {
 				scope:target = {
 					has_mining_resources = yes
 					has_any_specialization = yes
-					has_mining_specialization = no
+					NOT = { has_mining_specialization = yes }
 				}
 			}
 			add = {
@@ -66,12 +66,12 @@ designate_mining_specialization = {
 
 		visible = {
 			owner = scope:actor
-			is_town_or_city = yes
+			is_rural_or_higher = yes
 		}
 
 		enabled = {
 			has_mining_resources = yes
-			has_mining_specialization = no
+			NOT = { has_mining_specialization = yes }
 		}
 	}
 
@@ -81,14 +81,20 @@ designate_mining_specialization = {
 			scope:target = {
 				clear_all_specialization_modifiers = yes
 				if = {
+					limit = { location_rank = location_rank:rural_settlement }
+					set_variable = { name = specialization_designation value = eul_mining_rural_value }
+					add_location_modifier = { modifier = mining_rural_specialization }
+				}
+				else_if = {
 					limit = { location_rank = location_rank:town }
 					set_variable = { name = specialization_designation value = eul_mining_town_value }
+					add_location_modifier = { modifier = mining_town_specialization }
 				}
 				else = {
 					set_variable = { name = specialization_designation value = eul_mining_city_value }
+					add_location_modifier = { modifier = mining_city_specialization }
 				}
 				destroy_non_mining_buildings = yes
-				apply_specialization_modifier = yes
 			}
 		}
 	}
@@ -125,7 +131,7 @@ designate_farming_specialization = {
 				scope:target = {
 					has_farming_resources = yes
 					has_any_specialization = yes
-					has_farming_specialization = no
+					NOT = { has_farming_specialization = yes }
 				}
 			}
 			add = {
@@ -157,12 +163,12 @@ designate_farming_specialization = {
 
 		visible = {
 			owner = scope:actor
-			is_town_or_city = yes
+			is_rural_or_higher = yes
 		}
 
 		enabled = {
 			has_farming_resources = yes
-			has_farming_specialization = no
+			NOT = { has_farming_specialization = yes }
 		}
 	}
 
@@ -172,20 +178,26 @@ designate_farming_specialization = {
 			scope:target = {
 				clear_all_specialization_modifiers = yes
 				if = {
+					limit = { location_rank = location_rank:rural_settlement }
+					set_variable = { name = specialization_designation value = eul_farming_rural_value }
+					add_location_modifier = { modifier = farming_rural_specialization }
+				}
+				else_if = {
 					limit = { location_rank = location_rank:town }
 					set_variable = { name = specialization_designation value = eul_farming_town_value }
+					add_location_modifier = { modifier = farming_town_specialization }
 				}
 				else = {
 					set_variable = { name = specialization_designation value = eul_farming_city_value }
+					add_location_modifier = { modifier = farming_city_specialization }
 				}
 				destroy_non_farming_buildings = yes
-				apply_specialization_modifier = yes
 			}
 		}
 	}
 }
 
-designate_forestry_specialization = {
+designate_woodland_specialization = {
 	type = owncountry
 
 	potential = {
@@ -209,14 +221,14 @@ designate_forestry_specialization = {
 			value = -100
 		}
 
-		# Strong desire if location has forestry resources but wrong specialization
+		# Strong desire if location has woodland resources but wrong specialization
 		if = {
 			limit = {
 				exists = scope:target
 				scope:target = {
-					has_forestry_resources = yes
+					has_woodland_resources = yes
 					has_any_specialization = yes
-					has_forestry_specialization = no
+					NOT = { has_woodland_specialization = yes }
 				}
 			}
 			add = {
@@ -244,16 +256,16 @@ designate_forestry_specialization = {
 		looking_for_a = location
 		target_flag = target
 		source = actor
-		name = "designate_forestry_select"
+		name = "designate_woodland_select"
 
 		visible = {
 			owner = scope:actor
-			is_town_or_city = yes
+			is_rural_or_higher = yes
 		}
 
 		enabled = {
-			has_forestry_resources = yes
-			has_forestry_specialization = no
+			has_woodland_resources = yes
+			NOT = { has_woodland_specialization = yes }
 		}
 	}
 
@@ -263,14 +275,20 @@ designate_forestry_specialization = {
 			scope:target = {
 				clear_all_specialization_modifiers = yes
 				if = {
+					limit = { location_rank = location_rank:rural_settlement }
+					set_variable = { name = specialization_designation value = eul_woodland_rural_value }
+					add_location_modifier = { modifier = woodland_rural_specialization }
+				}
+				else_if = {
 					limit = { location_rank = location_rank:town }
-					set_variable = { name = specialization_designation value = eul_forestry_town_value }
+					set_variable = { name = specialization_designation value = eul_woodland_town_value }
+					add_location_modifier = { modifier = woodland_town_specialization }
 				}
 				else = {
-					set_variable = { name = specialization_designation value = eul_forestry_city_value }
+					set_variable = { name = specialization_designation value = eul_woodland_city_value }
+					add_location_modifier = { modifier = woodland_city_specialization }
 				}
-				destroy_non_forestry_buildings = yes
-				apply_specialization_modifier = yes
+				destroy_non_woodland_buildings = yes
 			}
 		}
 	}
@@ -307,7 +325,7 @@ designate_gathering_specialization = {
 				scope:target = {
 					has_gathering_resources = yes
 					has_any_specialization = yes
-					has_gathering_specialization = no
+					NOT = { has_gathering_specialization = yes }
 				}
 			}
 			add = {
@@ -339,12 +357,12 @@ designate_gathering_specialization = {
 
 		visible = {
 			owner = scope:actor
-			is_town_or_city = yes
+			is_rural_or_higher = yes
 		}
 
 		enabled = {
 			has_gathering_resources = yes
-			has_gathering_specialization = no
+			NOT = { has_gathering_specialization = yes }
 		}
 	}
 
@@ -354,14 +372,20 @@ designate_gathering_specialization = {
 			scope:target = {
 				clear_all_specialization_modifiers = yes
 				if = {
+					limit = { location_rank = location_rank:rural_settlement }
+					set_variable = { name = specialization_designation value = eul_gathering_rural_value }
+					add_location_modifier = { modifier = gathering_rural_specialization }
+				}
+				else_if = {
 					limit = { location_rank = location_rank:town }
 					set_variable = { name = specialization_designation value = eul_gathering_town_value }
+					add_location_modifier = { modifier = gathering_town_specialization }
 				}
 				else = {
 					set_variable = { name = specialization_designation value = eul_gathering_city_value }
+					add_location_modifier = { modifier = gathering_city_specialization }
 				}
 				destroy_non_gathering_buildings = yes
-				apply_specialization_modifier = yes
 			}
 		}
 	}
@@ -397,7 +421,7 @@ designate_commercial_specialization = {
 				exists = scope:target
 				scope:target = {
 					is_market_center = yes
-					has_commercial_specialization = no
+					NOT = { has_commercial_specialization = yes }
 				}
 			}
 			add = {
@@ -412,7 +436,7 @@ designate_commercial_specialization = {
 				exists = scope:target
 				scope:target = {
 					modifier:harbor_suitability > 0.7
-					has_commercial_specialization = no
+					NOT = { has_commercial_specialization = yes }
 				}
 			}
 			add = {
@@ -444,12 +468,12 @@ designate_commercial_specialization = {
 
 		visible = {
 			owner = scope:actor
-			is_town_or_city = yes
+			is_rural_or_higher = yes
 		}
 
 		# Commercial has no resource requirement - but cannot already be commercial
 		enabled = {
-			has_commercial_specialization = no
+			NOT = { has_commercial_specialization = yes }
 		}
 	}
 
@@ -459,14 +483,20 @@ designate_commercial_specialization = {
 			scope:target = {
 				clear_all_specialization_modifiers = yes
 				if = {
+					limit = { location_rank = location_rank:rural_settlement }
+					set_variable = { name = specialization_designation value = eul_commercial_rural_value }
+					add_location_modifier = { modifier = commercial_rural_specialization }
+				}
+				else_if = {
 					limit = { location_rank = location_rank:town }
 					set_variable = { name = specialization_designation value = eul_commercial_town_value }
+					add_location_modifier = { modifier = commercial_town_specialization }
 				}
 				else = {
 					set_variable = { name = specialization_designation value = eul_commercial_city_value }
+					add_location_modifier = { modifier = commercial_city_specialization }
 				}
 				destroy_non_commercial_buildings = yes
-				apply_specialization_modifier = yes
 			}
 		}
 	}

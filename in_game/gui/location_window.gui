@@ -1,66 +1,5 @@
-﻿# EUL: Specialization designation values - REFERENCE ONLY
-# These cannot be used in '(float)...' casts - @variables are not expanded inside string literals.
-# Hardcoded float values must be used in visibility templates.
-# Towns: mining=1.0, farming=2.0, gathering=3.0, forestry=4.0, commercial=5.0
-# Cities: mining=11.0, farming=12.0, gathering=13.0, forestry=14.0, commercial=15.0
-
-# EUL: Template to hide specialization modifiers from timed modifier lists
-# Checks if TimedModifier.GetModifier.GetName matches any of the 10 specialization modifier names
-# Usage: using = eul_hide_if_specialization_modifier
-template eul_hide_if_specialization_modifier {
-	visible = "[Not(Or(
-		Or5(
-			EqualTo_string(TimedModifier.GetModifier.GetName, Localize('STATIC_MODIFIER_NAME_mining_town_specialization')),
-			EqualTo_string(TimedModifier.GetModifier.GetName, Localize('STATIC_MODIFIER_NAME_farming_town_specialization')),
-			EqualTo_string(TimedModifier.GetModifier.GetName, Localize('STATIC_MODIFIER_NAME_gathering_town_specialization')),
-			EqualTo_string(TimedModifier.GetModifier.GetName, Localize('STATIC_MODIFIER_NAME_forestry_town_specialization')),
-			EqualTo_string(TimedModifier.GetModifier.GetName, Localize('STATIC_MODIFIER_NAME_commercial_town_specialization'))
-		),
-		Or5(
-			EqualTo_string(TimedModifier.GetModifier.GetName, Localize('STATIC_MODIFIER_NAME_mining_city_specialization')),
-			EqualTo_string(TimedModifier.GetModifier.GetName, Localize('STATIC_MODIFIER_NAME_farming_city_specialization')),
-			EqualTo_string(TimedModifier.GetModifier.GetName, Localize('STATIC_MODIFIER_NAME_gathering_city_specialization')),
-			EqualTo_string(TimedModifier.GetModifier.GetName, Localize('STATIC_MODIFIER_NAME_forestry_city_specialization')),
-			EqualTo_string(TimedModifier.GetModifier.GetName, Localize('STATIC_MODIFIER_NAME_commercial_city_specialization'))
-		)
-	))]"
-}
-
-# EUL: Visibility templates for specialization icons in LocationView context
-# Usage: using = eul_vis_locview_mining_town (etc.)
-template eul_vis_locview_mining_town {
-	visible = "[And(LocationView.GetLocation.MakeScope.GetVariable('specialization_designation').IsSet, EqualTo_float(FixedPointToFloat(LocationView.GetLocation.MakeScope.GetVariable('specialization_designation').GetValue), '(float)1.0'))]"
-}
-template eul_vis_locview_farming_town {
-	visible = "[And(LocationView.GetLocation.MakeScope.GetVariable('specialization_designation').IsSet, EqualTo_float(FixedPointToFloat(LocationView.GetLocation.MakeScope.GetVariable('specialization_designation').GetValue), '(float)2.0'))]"
-}
-template eul_vis_locview_gathering_town {
-	visible = "[And(LocationView.GetLocation.MakeScope.GetVariable('specialization_designation').IsSet, EqualTo_float(FixedPointToFloat(LocationView.GetLocation.MakeScope.GetVariable('specialization_designation').GetValue), '(float)3.0'))]"
-}
-template eul_vis_locview_forestry_town {
-	visible = "[And(LocationView.GetLocation.MakeScope.GetVariable('specialization_designation').IsSet, EqualTo_float(FixedPointToFloat(LocationView.GetLocation.MakeScope.GetVariable('specialization_designation').GetValue), '(float)4.0'))]"
-}
-template eul_vis_locview_commercial_town {
-	visible = "[And(LocationView.GetLocation.MakeScope.GetVariable('specialization_designation').IsSet, EqualTo_float(FixedPointToFloat(LocationView.GetLocation.MakeScope.GetVariable('specialization_designation').GetValue), '(float)5.0'))]"
-}
-template eul_vis_locview_mining_city {
-	visible = "[And(LocationView.GetLocation.MakeScope.GetVariable('specialization_designation').IsSet, EqualTo_float(FixedPointToFloat(LocationView.GetLocation.MakeScope.GetVariable('specialization_designation').GetValue), '(float)11.0'))]"
-}
-template eul_vis_locview_farming_city {
-	visible = "[And(LocationView.GetLocation.MakeScope.GetVariable('specialization_designation').IsSet, EqualTo_float(FixedPointToFloat(LocationView.GetLocation.MakeScope.GetVariable('specialization_designation').GetValue), '(float)12.0'))]"
-}
-template eul_vis_locview_gathering_city {
-	visible = "[And(LocationView.GetLocation.MakeScope.GetVariable('specialization_designation').IsSet, EqualTo_float(FixedPointToFloat(LocationView.GetLocation.MakeScope.GetVariable('specialization_designation').GetValue), '(float)13.0'))]"
-}
-template eul_vis_locview_forestry_city {
-	visible = "[And(LocationView.GetLocation.MakeScope.GetVariable('specialization_designation').IsSet, EqualTo_float(FixedPointToFloat(LocationView.GetLocation.MakeScope.GetVariable('specialization_designation').GetValue), '(float)14.0'))]"
-}
-template eul_vis_locview_commercial_city {
-	visible = "[And(LocationView.GetLocation.MakeScope.GetVariable('specialization_designation').IsSet, EqualTo_float(FixedPointToFloat(LocationView.GetLocation.MakeScope.GetVariable('specialization_designation').GetValue), '(float)15.0'))]"
-}
-template eul_vis_locview_not_specialized {
-	visible = "[Not(LocationView.GetLocation.MakeScope.GetVariable('specialization_designation').IsSet)]"
-}
+﻿# Expanded Urban Locations - Location Window Override
+# Templates are defined in aaa_eul_templates.gui
 
 types LocationWindowTypes
 {
@@ -791,13 +730,13 @@ types LocationWindowTypes
 							icon = { size = { 100% 100% } parentanchor = center using = eul_vis_loc_noisset_gathering_city_capital using = eul_tex_blue_capital_city }
 							icon = { size = { 100% 100% } parentanchor = center using = eul_vis_loc_noisset_gathering_city_prov_capital using = eul_tex_blue_province_capital_city }
 							icon = { size = { 100% 100% } parentanchor = center using = eul_vis_loc_noisset_gathering_city_regular using = eul_tex_blue_city }
-							# Forestry
-							icon = { size = { 100% 100% } parentanchor = center using = eul_vis_loc_noisset_forestry_town_capital using = eul_tex_brown_capital_town }
-							icon = { size = { 100% 100% } parentanchor = center using = eul_vis_loc_noisset_forestry_town_prov_capital using = eul_tex_brown_province_capital_town }
-							icon = { size = { 100% 100% } parentanchor = center using = eul_vis_loc_noisset_forestry_town_regular using = eul_tex_brown_town }
-							icon = { size = { 100% 100% } parentanchor = center using = eul_vis_loc_noisset_forestry_city_capital using = eul_tex_brown_capital_city }
-							icon = { size = { 100% 100% } parentanchor = center using = eul_vis_loc_noisset_forestry_city_prov_capital using = eul_tex_brown_province_capital_city }
-							icon = { size = { 100% 100% } parentanchor = center using = eul_vis_loc_noisset_forestry_city_regular using = eul_tex_brown_city }
+							# Woodland
+							icon = { size = { 100% 100% } parentanchor = center using = eul_vis_loc_noisset_woodland_town_capital using = eul_tex_brown_capital_town }
+							icon = { size = { 100% 100% } parentanchor = center using = eul_vis_loc_noisset_woodland_town_prov_capital using = eul_tex_brown_province_capital_town }
+							icon = { size = { 100% 100% } parentanchor = center using = eul_vis_loc_noisset_woodland_town_regular using = eul_tex_brown_town }
+							icon = { size = { 100% 100% } parentanchor = center using = eul_vis_loc_noisset_woodland_city_capital using = eul_tex_brown_capital_city }
+							icon = { size = { 100% 100% } parentanchor = center using = eul_vis_loc_noisset_woodland_city_prov_capital using = eul_tex_brown_province_capital_city }
+							icon = { size = { 100% 100% } parentanchor = center using = eul_vis_loc_noisset_woodland_city_regular using = eul_tex_brown_city }
 							# Commercial
 							icon = { size = { 100% 100% } parentanchor = center using = eul_vis_loc_noisset_commercial_town_capital using = eul_tex_purple_capital_town }
 							icon = { size = { 100% 100% } parentanchor = center using = eul_vis_loc_noisset_commercial_town_prov_capital using = eul_tex_purple_province_capital_town }
@@ -805,6 +744,26 @@ types LocationWindowTypes
 							icon = { size = { 100% 100% } parentanchor = center using = eul_vis_loc_noisset_commercial_city_capital using = eul_tex_purple_capital_city }
 							icon = { size = { 100% 100% } parentanchor = center using = eul_vis_loc_noisset_commercial_city_prov_capital using = eul_tex_purple_province_capital_city }
 							icon = { size = { 100% 100% } parentanchor = center using = eul_vis_loc_noisset_commercial_city_regular using = eul_tex_purple_city }
+							# Rural - Mining
+							icon = { size = { 100% 100% } parentanchor = center using = eul_vis_loc_noisset_mining_rural_capital using = eul_tex_red_capital_rural }
+							icon = { size = { 100% 100% } parentanchor = center using = eul_vis_loc_noisset_mining_rural_prov_capital using = eul_tex_red_province_capital_rural }
+							icon = { size = { 100% 100% } parentanchor = center using = eul_vis_loc_noisset_mining_rural_regular using = eul_tex_red_rural }
+							# Rural - Farming
+							icon = { size = { 100% 100% } parentanchor = center using = eul_vis_loc_noisset_farming_rural_capital using = eul_tex_green_capital_rural }
+							icon = { size = { 100% 100% } parentanchor = center using = eul_vis_loc_noisset_farming_rural_prov_capital using = eul_tex_green_province_capital_rural }
+							icon = { size = { 100% 100% } parentanchor = center using = eul_vis_loc_noisset_farming_rural_regular using = eul_tex_green_rural }
+							# Rural - Gathering
+							icon = { size = { 100% 100% } parentanchor = center using = eul_vis_loc_noisset_gathering_rural_capital using = eul_tex_blue_capital_rural }
+							icon = { size = { 100% 100% } parentanchor = center using = eul_vis_loc_noisset_gathering_rural_prov_capital using = eul_tex_blue_province_capital_rural }
+							icon = { size = { 100% 100% } parentanchor = center using = eul_vis_loc_noisset_gathering_rural_regular using = eul_tex_blue_rural }
+							# Rural - Woodland
+							icon = { size = { 100% 100% } parentanchor = center using = eul_vis_loc_noisset_woodland_rural_capital using = eul_tex_brown_capital_rural }
+							icon = { size = { 100% 100% } parentanchor = center using = eul_vis_loc_noisset_woodland_rural_prov_capital using = eul_tex_brown_province_capital_rural }
+							icon = { size = { 100% 100% } parentanchor = center using = eul_vis_loc_noisset_woodland_rural_regular using = eul_tex_brown_rural }
+							# Rural - Commercial
+							icon = { size = { 100% 100% } parentanchor = center using = eul_vis_loc_noisset_commercial_rural_capital using = eul_tex_purple_capital_rural }
+							icon = { size = { 100% 100% } parentanchor = center using = eul_vis_loc_noisset_commercial_rural_prov_capital using = eul_tex_purple_province_capital_rural }
+							icon = { size = { 100% 100% } parentanchor = center using = eul_vis_loc_noisset_commercial_rural_regular using = eul_tex_purple_rural }
 							# Fallback
 							icon = { size = { 100% 100% } parentanchor = center using = eul_vis_loc_not_specialized texture = "[Location.GetRankIcon]" }
 						}
@@ -2371,13 +2330,13 @@ lateralview = {
 						icon = { size = { 90% 90% } parentanchor = center using = eul_vis_loc_noisset_gathering_city_capital using = eul_tex_blue_capital_city }
 						icon = { size = { 90% 90% } parentanchor = center using = eul_vis_loc_noisset_gathering_city_prov_capital using = eul_tex_blue_province_capital_city }
 						icon = { size = { 90% 90% } parentanchor = center using = eul_vis_loc_noisset_gathering_city_regular using = eul_tex_blue_city }
-						# Forestry
-						icon = { size = { 90% 90% } parentanchor = center using = eul_vis_loc_noisset_forestry_town_capital using = eul_tex_brown_capital_town }
-						icon = { size = { 90% 90% } parentanchor = center using = eul_vis_loc_noisset_forestry_town_prov_capital using = eul_tex_brown_province_capital_town }
-						icon = { size = { 90% 90% } parentanchor = center using = eul_vis_loc_noisset_forestry_town_regular using = eul_tex_brown_town }
-						icon = { size = { 90% 90% } parentanchor = center using = eul_vis_loc_noisset_forestry_city_capital using = eul_tex_brown_capital_city }
-						icon = { size = { 90% 90% } parentanchor = center using = eul_vis_loc_noisset_forestry_city_prov_capital using = eul_tex_brown_province_capital_city }
-						icon = { size = { 90% 90% } parentanchor = center using = eul_vis_loc_noisset_forestry_city_regular using = eul_tex_brown_city }
+						# Woodland
+						icon = { size = { 90% 90% } parentanchor = center using = eul_vis_loc_noisset_woodland_town_capital using = eul_tex_brown_capital_town }
+						icon = { size = { 90% 90% } parentanchor = center using = eul_vis_loc_noisset_woodland_town_prov_capital using = eul_tex_brown_province_capital_town }
+						icon = { size = { 90% 90% } parentanchor = center using = eul_vis_loc_noisset_woodland_town_regular using = eul_tex_brown_town }
+						icon = { size = { 90% 90% } parentanchor = center using = eul_vis_loc_noisset_woodland_city_capital using = eul_tex_brown_capital_city }
+						icon = { size = { 90% 90% } parentanchor = center using = eul_vis_loc_noisset_woodland_city_prov_capital using = eul_tex_brown_province_capital_city }
+						icon = { size = { 90% 90% } parentanchor = center using = eul_vis_loc_noisset_woodland_city_regular using = eul_tex_brown_city }
 						# Commercial
 						icon = { size = { 90% 90% } parentanchor = center using = eul_vis_loc_noisset_commercial_town_capital using = eul_tex_purple_capital_town }
 						icon = { size = { 90% 90% } parentanchor = center using = eul_vis_loc_noisset_commercial_town_prov_capital using = eul_tex_purple_province_capital_town }
@@ -2385,6 +2344,26 @@ lateralview = {
 						icon = { size = { 90% 90% } parentanchor = center using = eul_vis_loc_noisset_commercial_city_capital using = eul_tex_purple_capital_city }
 						icon = { size = { 90% 90% } parentanchor = center using = eul_vis_loc_noisset_commercial_city_prov_capital using = eul_tex_purple_province_capital_city }
 						icon = { size = { 90% 90% } parentanchor = center using = eul_vis_loc_noisset_commercial_city_regular using = eul_tex_purple_city }
+						# Rural - Mining
+						icon = { size = { 90% 90% } parentanchor = center using = eul_vis_loc_noisset_mining_rural_capital using = eul_tex_red_capital_rural }
+						icon = { size = { 90% 90% } parentanchor = center using = eul_vis_loc_noisset_mining_rural_prov_capital using = eul_tex_red_province_capital_rural }
+						icon = { size = { 90% 90% } parentanchor = center using = eul_vis_loc_noisset_mining_rural_regular using = eul_tex_red_rural }
+						# Rural - Farming
+						icon = { size = { 90% 90% } parentanchor = center using = eul_vis_loc_noisset_farming_rural_capital using = eul_tex_green_capital_rural }
+						icon = { size = { 90% 90% } parentanchor = center using = eul_vis_loc_noisset_farming_rural_prov_capital using = eul_tex_green_province_capital_rural }
+						icon = { size = { 90% 90% } parentanchor = center using = eul_vis_loc_noisset_farming_rural_regular using = eul_tex_green_rural }
+						# Rural - Gathering
+						icon = { size = { 90% 90% } parentanchor = center using = eul_vis_loc_noisset_gathering_rural_capital using = eul_tex_blue_capital_rural }
+						icon = { size = { 90% 90% } parentanchor = center using = eul_vis_loc_noisset_gathering_rural_prov_capital using = eul_tex_blue_province_capital_rural }
+						icon = { size = { 90% 90% } parentanchor = center using = eul_vis_loc_noisset_gathering_rural_regular using = eul_tex_blue_rural }
+						# Rural - Woodland
+						icon = { size = { 90% 90% } parentanchor = center using = eul_vis_loc_noisset_woodland_rural_capital using = eul_tex_brown_capital_rural }
+						icon = { size = { 90% 90% } parentanchor = center using = eul_vis_loc_noisset_woodland_rural_prov_capital using = eul_tex_brown_province_capital_rural }
+						icon = { size = { 90% 90% } parentanchor = center using = eul_vis_loc_noisset_woodland_rural_regular using = eul_tex_brown_rural }
+						# Rural - Commercial
+						icon = { size = { 90% 90% } parentanchor = center using = eul_vis_loc_noisset_commercial_rural_capital using = eul_tex_purple_capital_rural }
+						icon = { size = { 90% 90% } parentanchor = center using = eul_vis_loc_noisset_commercial_rural_prov_capital using = eul_tex_purple_province_capital_rural }
+						icon = { size = { 90% 90% } parentanchor = center using = eul_vis_loc_noisset_commercial_rural_regular using = eul_tex_purple_rural }
 						# Fallback (when variable doesn't exist)
 						icon = { size = { 90% 90% } parentanchor = center using = eul_vis_loc_not_specialized texture = "[Location.GetRankIcon]" }
 
@@ -2394,11 +2373,12 @@ lateralview = {
 					}
 
 					header_title = {
+						datacontext = "[LocationView.GetLocation]"
 						layoutpolicy_horizontal = fixed
 						autoresize = yes
 						maximumsize = { 380 -1 }
 						visible = "[Not(LocationView.Vars.Exists('edit_name'))]"
-						using = eul_text_specialized_name_locview
+						using = eul_text_specialized_name_loc
 						using = snd_UI_window_state
 					}
 
@@ -3543,10 +3523,10 @@ lateralview = {
 										}
 									}
 								}
-								# Forestry Town (4)
+								# Woodland Town (4)
 								icon = {
 									size = { 30 30 }
-									using = eul_vis_locview_forestry_town
+									using = eul_vis_locview_woodland_town
 									texture = "gfx/interface/mapitems/brown_town.dds"
 									glow = {
 										name = "drop_shadow"
@@ -3557,7 +3537,7 @@ lateralview = {
 									tooltipwidget = {
 										SimpleContextualTooltipType = {
 											blockoverride "title_text" {
-												text = "STATIC_MODIFIER_NAME_forestry_town_specialization"
+												text = "STATIC_MODIFIER_NAME_woodland_town_specialization"
 											}
 											blockoverride "title_icon" {
 												icon = {
@@ -3567,7 +3547,7 @@ lateralview = {
 											}
 											blockoverride "tooltip_content" {
 												TooltipStringPairList = {
-													textcontext = "[ShowModifierEffect('forestry_town_specialization')]"
+													textcontext = "[ShowModifierEffect('woodland_town_specialization')]"
 												}
 											}
 										}
@@ -3693,10 +3673,10 @@ lateralview = {
 										}
 									}
 								}
-								# Forestry City (14)
+								# Woodland City (14)
 								icon = {
 									size = { 30 30 }
-									using = eul_vis_locview_forestry_city
+									using = eul_vis_locview_woodland_city
 									texture = "gfx/interface/mapitems/brown_city.dds"
 									glow = {
 										name = "drop_shadow"
@@ -3707,7 +3687,7 @@ lateralview = {
 									tooltipwidget = {
 										SimpleContextualTooltipType = {
 											blockoverride "title_text" {
-												text = "STATIC_MODIFIER_NAME_forestry_city_specialization"
+												text = "STATIC_MODIFIER_NAME_woodland_city_specialization"
 											}
 											blockoverride "title_icon" {
 												icon = {
@@ -3717,7 +3697,7 @@ lateralview = {
 											}
 											blockoverride "tooltip_content" {
 												TooltipStringPairList = {
-													textcontext = "[ShowModifierEffect('forestry_city_specialization')]"
+													textcontext = "[ShowModifierEffect('woodland_city_specialization')]"
 												}
 											}
 										}
@@ -3748,6 +3728,156 @@ lateralview = {
 											blockoverride "tooltip_content" {
 												TooltipStringPairList = {
 													textcontext = "[ShowModifierEffect('commercial_city_specialization')]"
+												}
+											}
+										}
+									}
+								}
+								# Mining Rural (21)
+								icon = {
+									size = { 30 30 }
+									using = eul_vis_locview_mining_rural
+									texture = "gfx/interface/mapitems/red_rural.dds"
+									glow = {
+										name = "drop_shadow"
+										glow_radius = 3
+										color = {0.0 0.0 0.0 1.0}
+										alpha = 0.3
+									}
+									tooltipwidget = {
+										SimpleContextualTooltipType = {
+											blockoverride "title_text" {
+												text = "STATIC_MODIFIER_NAME_mining_rural_specialization"
+											}
+											blockoverride "title_icon" {
+												icon = {
+													using = tooltip_title_icon_size
+													texture = "gfx/interface/mapitems/red_rural.dds"
+												}
+											}
+											blockoverride "tooltip_content" {
+												TooltipStringPairList = {
+													textcontext = "[ShowModifierEffect('mining_rural_specialization')]"
+												}
+											}
+										}
+									}
+								}
+								# Farming Rural (22)
+								icon = {
+									size = { 30 30 }
+									using = eul_vis_locview_farming_rural
+									texture = "gfx/interface/mapitems/green_rural.dds"
+									glow = {
+										name = "drop_shadow"
+										glow_radius = 3
+										color = {0.0 0.0 0.0 1.0}
+										alpha = 0.3
+									}
+									tooltipwidget = {
+										SimpleContextualTooltipType = {
+											blockoverride "title_text" {
+												text = "STATIC_MODIFIER_NAME_farming_rural_specialization"
+											}
+											blockoverride "title_icon" {
+												icon = {
+													using = tooltip_title_icon_size
+													texture = "gfx/interface/mapitems/green_rural.dds"
+												}
+											}
+											blockoverride "tooltip_content" {
+												TooltipStringPairList = {
+													textcontext = "[ShowModifierEffect('farming_rural_specialization')]"
+												}
+											}
+										}
+									}
+								}
+								# Gathering Rural (23)
+								icon = {
+									size = { 30 30 }
+									using = eul_vis_locview_gathering_rural
+									texture = "gfx/interface/mapitems/blue_rural.dds"
+									glow = {
+										name = "drop_shadow"
+										glow_radius = 3
+										color = {0.0 0.0 0.0 1.0}
+										alpha = 0.3
+									}
+									tooltipwidget = {
+										SimpleContextualTooltipType = {
+											blockoverride "title_text" {
+												text = "STATIC_MODIFIER_NAME_gathering_rural_specialization"
+											}
+											blockoverride "title_icon" {
+												icon = {
+													using = tooltip_title_icon_size
+													texture = "gfx/interface/mapitems/blue_rural.dds"
+												}
+											}
+											blockoverride "tooltip_content" {
+												TooltipStringPairList = {
+													textcontext = "[ShowModifierEffect('gathering_rural_specialization')]"
+												}
+											}
+										}
+									}
+								}
+								# Woodland Rural (24)
+								icon = {
+									size = { 30 30 }
+									using = eul_vis_locview_woodland_rural
+									texture = "gfx/interface/mapitems/brown_rural.dds"
+									glow = {
+										name = "drop_shadow"
+										glow_radius = 3
+										color = {0.0 0.0 0.0 1.0}
+										alpha = 0.3
+									}
+									tooltipwidget = {
+										SimpleContextualTooltipType = {
+											blockoverride "title_text" {
+												text = "STATIC_MODIFIER_NAME_woodland_rural_specialization"
+											}
+											blockoverride "title_icon" {
+												icon = {
+													using = tooltip_title_icon_size
+													texture = "gfx/interface/mapitems/brown_rural.dds"
+												}
+											}
+											blockoverride "tooltip_content" {
+												TooltipStringPairList = {
+													textcontext = "[ShowModifierEffect('woodland_rural_specialization')]"
+												}
+											}
+										}
+									}
+								}
+								# Commercial Rural (25)
+								icon = {
+									size = { 30 30 }
+									using = eul_vis_locview_commercial_rural
+									texture = "gfx/interface/mapitems/purple_rural.dds"
+									glow = {
+										name = "drop_shadow"
+										glow_radius = 3
+										color = {0.0 0.0 0.0 1.0}
+										alpha = 0.3
+									}
+									tooltipwidget = {
+										SimpleContextualTooltipType = {
+											blockoverride "title_text" {
+												text = "STATIC_MODIFIER_NAME_commercial_rural_specialization"
+											}
+											blockoverride "title_icon" {
+												icon = {
+													using = tooltip_title_icon_size
+													texture = "gfx/interface/mapitems/purple_rural.dds"
+												}
+											}
+											blockoverride "tooltip_content" {
+												TooltipStringPairList = {
+													textcontext = "[ShowModifierEffect('commercial_rural_specialization')]"
 												}
 											}
 										}
@@ -4123,7 +4253,7 @@ lateralview = {
 							size = { 36 36 }
 							blockoverride "button_icon_stretch_sprite" {}
 							blockoverride "header_button_frame_inner" { visible = no }
-							blockoverride "header_button_icon_size" { size = { 30 30 } }
+							blockoverride "header_button_icon_size" { size = { 24 24 } }
 							blockoverride "header_button_text_layout" {}
 							blockoverride "icon_texture" { visible = no }
 							title = "designate_mining_specialization"
@@ -4136,12 +4266,18 @@ lateralview = {
 
 							widget = {
 								parentanchor = center
-								size = { 30 30 }
+								size = { 24 24 }
+								icon = {
+									size = { 100% 100% }
+									using = eul_tex_red_rural
+									texture_density = 2
+									visible = "[Not(LocationView.GetLocation.GetRank.IsCity)]"
+								}
 								icon = {
 									size = { 100% 100% }
 									using = eul_tex_red_town
 									texture_density = 2
-									visible = "[Not(LocationView.GetLocation.GetRank.IsMaxRank)]"
+									visible = "[And(LocationView.GetLocation.GetRank.IsCity, Not(LocationView.GetLocation.GetRank.IsMaxRank))]"
 								}
 								icon = {
 									size = { 100% 100% }
@@ -4157,7 +4293,7 @@ lateralview = {
 							size = { 36 36 }
 							blockoverride "button_icon_stretch_sprite" {}
 							blockoverride "header_button_frame_inner" { visible = no }
-							blockoverride "header_button_icon_size" { size = { 30 30 } }
+							blockoverride "header_button_icon_size" { size = { 24 24 } }
 							blockoverride "header_button_text_layout" {}
 							blockoverride "icon_texture" { visible = no }
 							title = "designate_farming_specialization"
@@ -4170,12 +4306,18 @@ lateralview = {
 
 							widget = {
 								parentanchor = center
-								size = { 30 30 }
+								size = { 24 24 }
+								icon = {
+									size = { 100% 100% }
+									using = eul_tex_green_rural
+									texture_density = 2
+									visible = "[Not(LocationView.GetLocation.GetRank.IsCity)]"
+								}
 								icon = {
 									size = { 100% 100% }
 									using = eul_tex_green_town
 									texture_density = 2
-									visible = "[Not(LocationView.GetLocation.GetRank.IsMaxRank)]"
+									visible = "[And(LocationView.GetLocation.GetRank.IsCity, Not(LocationView.GetLocation.GetRank.IsMaxRank))]"
 								}
 								icon = {
 									size = { 100% 100% }
@@ -4186,30 +4328,36 @@ lateralview = {
 							}
 						}
 
-						# Forestry button
+						# Woodland button
 						header_action_button_left = {
 							size = { 36 36 }
 							blockoverride "button_icon_stretch_sprite" {}
 							blockoverride "header_button_frame_inner" { visible = no }
-							blockoverride "header_button_icon_size" { size = { 30 30 } }
+							blockoverride "header_button_icon_size" { size = { 24 24 } }
 							blockoverride "header_button_text_layout" {}
 							blockoverride "icon_texture" { visible = no }
-							title = "designate_forestry_specialization"
+							title = "designate_woodland_specialization"
 							actor = "[GetPlayer]"
 							parameter = {
 								parameter_name = "target"
 								parameter_value = "[LocationView.GetLocation]"
 							}
-							left_click_and_hold_action = { action_name = "designate_forestry_specialization" }
+							left_click_and_hold_action = { action_name = "designate_woodland_specialization" }
 
 							widget = {
 								parentanchor = center
-								size = { 30 30 }
+								size = { 24 24 }
+								icon = {
+									size = { 100% 100% }
+									using = eul_tex_brown_rural
+									texture_density = 2
+									visible = "[Not(LocationView.GetLocation.GetRank.IsCity)]"
+								}
 								icon = {
 									size = { 100% 100% }
 									using = eul_tex_brown_town
 									texture_density = 2
-									visible = "[Not(LocationView.GetLocation.GetRank.IsMaxRank)]"
+									visible = "[And(LocationView.GetLocation.GetRank.IsCity, Not(LocationView.GetLocation.GetRank.IsMaxRank))]"
 								}
 								icon = {
 									size = { 100% 100% }
@@ -4225,7 +4373,7 @@ lateralview = {
 							size = { 36 36 }
 							blockoverride "button_icon_stretch_sprite" {}
 							blockoverride "header_button_frame_inner" { visible = no }
-							blockoverride "header_button_icon_size" { size = { 30 30 } }
+							blockoverride "header_button_icon_size" { size = { 24 24 } }
 							blockoverride "header_button_text_layout" {}
 							blockoverride "icon_texture" { visible = no }
 							title = "designate_gathering_specialization"
@@ -4238,12 +4386,18 @@ lateralview = {
 
 							widget = {
 								parentanchor = center
-								size = { 30 30 }
+								size = { 24 24 }
+								icon = {
+									size = { 100% 100% }
+									using = eul_tex_blue_rural
+									texture_density = 2
+									visible = "[Not(LocationView.GetLocation.GetRank.IsCity)]"
+								}
 								icon = {
 									size = { 100% 100% }
 									using = eul_tex_blue_town
 									texture_density = 2
-									visible = "[Not(LocationView.GetLocation.GetRank.IsMaxRank)]"
+									visible = "[And(LocationView.GetLocation.GetRank.IsCity, Not(LocationView.GetLocation.GetRank.IsMaxRank))]"
 								}
 								icon = {
 									size = { 100% 100% }
@@ -4259,7 +4413,7 @@ lateralview = {
 							size = { 36 36 }
 							blockoverride "button_icon_stretch_sprite" {}
 							blockoverride "header_button_frame_inner" { visible = no }
-							blockoverride "header_button_icon_size" { size = { 30 30 } }
+							blockoverride "header_button_icon_size" { size = { 24 24 } }
 							blockoverride "header_button_text_layout" {}
 							blockoverride "icon_texture" { visible = no }
 							title = "designate_commercial_specialization"
@@ -4272,12 +4426,18 @@ lateralview = {
 
 							widget = {
 								parentanchor = center
-								size = { 30 30 }
+								size = { 24 24 }
+								icon = {
+									size = { 100% 100% }
+									using = eul_tex_purple_rural
+									texture_density = 2
+									visible = "[Not(LocationView.GetLocation.GetRank.IsCity)]"
+								}
 								icon = {
 									size = { 100% 100% }
 									using = eul_tex_purple_town
 									texture_density = 2
-									visible = "[Not(LocationView.GetLocation.GetRank.IsMaxRank)]"
+									visible = "[And(LocationView.GetLocation.GetRank.IsCity, Not(LocationView.GetLocation.GetRank.IsMaxRank))]"
 								}
 								icon = {
 									size = { 100% 100% }

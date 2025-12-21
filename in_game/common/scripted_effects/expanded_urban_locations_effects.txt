@@ -4,6 +4,7 @@
 # BUILDING DESTRUCTION EFFECTS
 # Each effect destroys all specialization-relevant buildings EXCEPT those matching the specialization
 # root = location
+# NOTE: Building destruction only applies to towns/cities, NOT rural settlements
 # ============================================
 
 # Mining Specialization - keeps mining raw + mining production (tools, weapons, cannons, firearms, steel, jewelry)
@@ -88,13 +89,13 @@ destroy_non_farming_buildings = {
 	}
 }
 
-# Forestry Specialization - keeps forestry raw + forestry production (furniture, dyes, lacquerware, leather)
-destroy_non_forestry_buildings = {
+# Woodland Specialization - keeps woodland raw + woodland production (furniture, dyes, lacquerware, leather)
+destroy_non_woodland_buildings = {
 	every_buildings_in_location = {
 		limit = {
 			is_destroyable_specialization_building = yes
 			NOR = {
-				# Forestry raw buildings
+				# Woodland raw buildings
 				building_type = building_type:forest_village
 				building_type = building_type:sawmill
 				building_type = building_type:charcoal_maker
@@ -102,20 +103,20 @@ destroy_non_forestry_buildings = {
 				building_type = building_type:tar_kiln
 				building_type = building_type:lumber_mill
 				building_type = building_type:elephant_hunting_grounds
-				# Forestry production - furniture
+				# Woodland production - furniture
 				building_type = building_type:furniture_guild
 				building_type = building_type:furniture_workshop
 				building_type = building_type:furniture_manufactory
 				building_type = building_type:furniture_mill
-				# Forestry production - dyes
+				# Woodland production - dyes
 				building_type = building_type:dyes_guild
 				building_type = building_type:dyes_workshop
 				building_type = building_type:dyesworks
 				building_type = building_type:dyes_mill
-				# Forestry production - lacquerware
+				# Woodland production - lacquerware
 				building_type = building_type:lacquerware_guild
 				building_type = building_type:lacquerware_manufactory
-				# Forestry production - leather
+				# Woodland production - leather
 				building_type = building_type:tannery
 				building_type = building_type:tanning_workshop
 				building_type = building_type:tannery_manufactory
@@ -215,7 +216,7 @@ destroy_non_commercial_buildings = {
 				building_type = building_type:beer_workshop
 				building_type = building_type:brewery_manufactory
 				building_type = building_type:brewery_mill
-				# Shared with forestry (dyes)
+				# Shared with woodland (dyes)
 				building_type = building_type:dyes_guild
 				building_type = building_type:dyes_workshop
 				building_type = building_type:dyesworks
@@ -231,8 +232,30 @@ destroy_non_commercial_buildings = {
 # root = location
 # ============================================
 
-# Remove all specialization modifiers
+# Remove all specialization modifiers (rural, town, and city)
 clear_all_specialization_modifiers = {
+	# Rural modifiers
+	if = {
+		limit = { has_location_modifier = mining_rural_specialization }
+		remove_location_modifier = mining_rural_specialization
+	}
+	if = {
+		limit = { has_location_modifier = farming_rural_specialization }
+		remove_location_modifier = farming_rural_specialization
+	}
+	if = {
+		limit = { has_location_modifier = gathering_rural_specialization }
+		remove_location_modifier = gathering_rural_specialization
+	}
+	if = {
+		limit = { has_location_modifier = woodland_rural_specialization }
+		remove_location_modifier = woodland_rural_specialization
+	}
+	if = {
+		limit = { has_location_modifier = commercial_rural_specialization }
+		remove_location_modifier = commercial_rural_specialization
+	}
+	# Town modifiers
 	if = {
 		limit = { has_location_modifier = mining_town_specialization }
 		remove_location_modifier = mining_town_specialization
@@ -258,12 +281,12 @@ clear_all_specialization_modifiers = {
 		remove_location_modifier = gathering_city_specialization
 	}
 	if = {
-		limit = { has_location_modifier = forestry_town_specialization }
-		remove_location_modifier = forestry_town_specialization
+		limit = { has_location_modifier = woodland_town_specialization }
+		remove_location_modifier = woodland_town_specialization
 	}
 	if = {
-		limit = { has_location_modifier = forestry_city_specialization }
-		remove_location_modifier = forestry_city_specialization
+		limit = { has_location_modifier = woodland_city_specialization }
+		remove_location_modifier = woodland_city_specialization
 	}
 	if = {
 		limit = { has_location_modifier = commercial_town_specialization }
@@ -278,6 +301,7 @@ clear_all_specialization_modifiers = {
 # Grant tier 1 buildings for a specialization (guilds valid for towns/cities)
 # Checks advance requirements - only grants buildings the owner has unlocked
 # root = location (must have specialization_designation variable set)
+# NOTE: Only runs for towns/cities, not rural settlements
 grant_specialization_starter_buildings = {
 	# Mining - grant tier 1 production guilds
 	if = {
@@ -350,9 +374,9 @@ grant_specialization_starter_buildings = {
 			}
 		}
 	}
-	# Forestry - grant tier 1 production guilds
+	# Woodland - grant tier 1 production guilds
 	else_if = {
-		limit = { has_forestry_specialization = yes }
+		limit = { has_woodland_specialization = yes }
 		# No advance requirements for these
 		change_building_level_in_location = {
 			building = building_type:furniture_guild
@@ -450,32 +474,37 @@ grant_specialization_starter_buildings = {
 
 # Destroy non-matching buildings based on specialization variable
 # root = location (must have specialization_designation variable set)
+# NOTE: Only runs for towns/cities, not rural settlements (rural keeps all buildings)
 destroy_non_matching_buildings = {
+	# Only destroy buildings for towns/cities, not rural
 	if = {
-		limit = { has_mining_specialization = yes }
-		destroy_non_mining_buildings = yes
-	}
-	else_if = {
-		limit = { has_farming_specialization = yes }
-		destroy_non_farming_buildings = yes
-	}
-	else_if = {
-		limit = { has_forestry_specialization = yes }
-		destroy_non_forestry_buildings = yes
-	}
-	else_if = {
-		limit = { has_gathering_specialization = yes }
-		destroy_non_gathering_buildings = yes
-	}
-	else_if = {
-		limit = { has_commercial_specialization = yes }
-		destroy_non_commercial_buildings = yes
+		limit = { is_town_or_city = yes }
+		if = {
+			limit = { has_mining_specialization = yes }
+			destroy_non_mining_buildings = yes
+		}
+		else_if = {
+			limit = { has_farming_specialization = yes }
+			destroy_non_farming_buildings = yes
+		}
+		else_if = {
+			limit = { has_woodland_specialization = yes }
+			destroy_non_woodland_buildings = yes
+		}
+		else_if = {
+			limit = { has_gathering_specialization = yes }
+			destroy_non_gathering_buildings = yes
+		}
+		else_if = {
+			limit = { has_commercial_specialization = yes }
+			destroy_non_commercial_buildings = yes
+		}
 	}
 }
 
 # Assign specialization based on local resources
-# Priority: Commercial (special conditions) > Farming > Mining > Gathering > Forestry
-# root = location (town or city)
+# Priority: Commercial (special conditions) > Farming > Mining > Gathering > Woodland
+# root = location (rural, town, or city)
 # Uses constants from expanded_urban_locations_specialization_constants.txt
 assign_specialization_by_resources = {
 	# Commercial specialization (priority for market centers, harbors, republic capitals)
@@ -492,6 +521,10 @@ assign_specialization_by_resources = {
 			}
 		}
 		if = {
+			limit = { location_rank = location_rank:rural_settlement }
+			set_variable = { name = specialization_designation value = eul_commercial_rural_value }
+		}
+		else_if = {
 			limit = { location_rank = location_rank:town }
 			set_variable = { name = specialization_designation value = eul_commercial_town_value }
 		}
@@ -503,6 +536,10 @@ assign_specialization_by_resources = {
 	else_if = {
 		limit = { has_farming_resources = yes }
 		if = {
+			limit = { location_rank = location_rank:rural_settlement }
+			set_variable = { name = specialization_designation value = eul_farming_rural_value }
+		}
+		else_if = {
 			limit = { location_rank = location_rank:town }
 			set_variable = { name = specialization_designation value = eul_farming_town_value }
 		}
@@ -514,6 +551,10 @@ assign_specialization_by_resources = {
 	else_if = {
 		limit = { has_mining_resources = yes }
 		if = {
+			limit = { location_rank = location_rank:rural_settlement }
+			set_variable = { name = specialization_designation value = eul_mining_rural_value }
+		}
+		else_if = {
 			limit = { location_rank = location_rank:town }
 			set_variable = { name = specialization_designation value = eul_mining_town_value }
 		}
@@ -525,6 +566,10 @@ assign_specialization_by_resources = {
 	else_if = {
 		limit = { has_gathering_resources = yes }
 		if = {
+			limit = { location_rank = location_rank:rural_settlement }
+			set_variable = { name = specialization_designation value = eul_gathering_rural_value }
+		}
+		else_if = {
 			limit = { location_rank = location_rank:town }
 			set_variable = { name = specialization_designation value = eul_gathering_town_value }
 		}
@@ -532,15 +577,19 @@ assign_specialization_by_resources = {
 			set_variable = { name = specialization_designation value = eul_gathering_city_value }
 		}
 	}
-	# Forestry specialization
+	# Woodland specialization
 	else_if = {
-		limit = { has_forestry_resources = yes }
+		limit = { has_woodland_resources = yes }
 		if = {
+			limit = { location_rank = location_rank:rural_settlement }
+			set_variable = { name = specialization_designation value = eul_woodland_rural_value }
+		}
+		else_if = {
 			limit = { location_rank = location_rank:town }
-			set_variable = { name = specialization_designation value = eul_forestry_town_value }
+			set_variable = { name = specialization_designation value = eul_woodland_town_value }
 		}
 		else = {
-			set_variable = { name = specialization_designation value = eul_forestry_city_value }
+			set_variable = { name = specialization_designation value = eul_woodland_city_value }
 		}
 	}
 }
@@ -550,6 +599,10 @@ assign_specialization_by_resources = {
 apply_specialization_modifier = {
 	# Mining
 	if = {
+		limit = { is_mining_rural = yes }
+		add_location_modifier = { modifier = mining_rural_specialization }
+	}
+	else_if = {
 		limit = { is_mining_town = yes }
 		add_location_modifier = { modifier = mining_town_specialization }
 	}
@@ -559,6 +612,10 @@ apply_specialization_modifier = {
 	}
 	# Farming
 	else_if = {
+		limit = { is_farming_rural = yes }
+		add_location_modifier = { modifier = farming_rural_specialization }
+	}
+	else_if = {
 		limit = { is_farming_town = yes }
 		add_location_modifier = { modifier = farming_town_specialization }
 	}
@@ -566,16 +623,24 @@ apply_specialization_modifier = {
 		limit = { is_farming_city = yes }
 		add_location_modifier = { modifier = farming_city_specialization }
 	}
-	# Forestry
+	# Woodland
 	else_if = {
-		limit = { is_forestry_town = yes }
-		add_location_modifier = { modifier = forestry_town_specialization }
+		limit = { is_woodland_rural = yes }
+		add_location_modifier = { modifier = woodland_rural_specialization }
 	}
 	else_if = {
-		limit = { is_forestry_city = yes }
-		add_location_modifier = { modifier = forestry_city_specialization }
+		limit = { is_woodland_town = yes }
+		add_location_modifier = { modifier = woodland_town_specialization }
+	}
+	else_if = {
+		limit = { is_woodland_city = yes }
+		add_location_modifier = { modifier = woodland_city_specialization }
 	}
 	# Gathering
+	else_if = {
+		limit = { is_gathering_rural = yes }
+		add_location_modifier = { modifier = gathering_rural_specialization }
+	}
 	else_if = {
 		limit = { is_gathering_town = yes }
 		add_location_modifier = { modifier = gathering_town_specialization }
@@ -585,6 +650,10 @@ apply_specialization_modifier = {
 		add_location_modifier = { modifier = gathering_city_specialization }
 	}
 	# Commercial
+	else_if = {
+		limit = { is_commercial_rural = yes }
+		add_location_modifier = { modifier = commercial_rural_specialization }
+	}
 	else_if = {
 		limit = { is_commercial_town = yes }
 		add_location_modifier = { modifier = commercial_town_specialization }

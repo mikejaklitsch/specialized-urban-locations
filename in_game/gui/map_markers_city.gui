@@ -1,0 +1,377 @@
+﻿# Expanded Urban Locations - Map Markers City Override
+# This file REPLACES the vanilla map_markers_city.gui to properly override map marker icons
+# with specialization-based colored icons
+#
+# NOTE: Texture, Location visibility, and icon size templates are defined in map_markers.gui
+# This file only contains CityMarker-specific content (marker_rank_icon, city_marker widget)
+
+# =====================================================
+# SIZE VARIABLES
+# =====================================================
+@city_marker_icon_size = 25
+@city_marker_fort_icon_size = 16
+@town_marker_icon_size = 20
+@rural_marker_icon_size = 15
+
+# =====================================================
+# VISIBILITY TEMPLATES - CityMarker Context (for marker_rank_icon)
+# =====================================================
+# Specialization value templates (no capital check - used inside capital branch widgets)
+template eul_vis_marker_mining_town { visible = "[EqualTo_float(FixedPointToFloat(CityMarker.GetLocation.MakeScope.GetVariable('specialization_designation').GetValue), '(float)1.0')]" }
+template eul_vis_marker_farming_town { visible = "[EqualTo_float(FixedPointToFloat(CityMarker.GetLocation.MakeScope.GetVariable('specialization_designation').GetValue), '(float)2.0')]" }
+template eul_vis_marker_gathering_town { visible = "[EqualTo_float(FixedPointToFloat(CityMarker.GetLocation.MakeScope.GetVariable('specialization_designation').GetValue), '(float)3.0')]" }
+template eul_vis_marker_woodland_town { visible = "[EqualTo_float(FixedPointToFloat(CityMarker.GetLocation.MakeScope.GetVariable('specialization_designation').GetValue), '(float)4.0')]" }
+template eul_vis_marker_commercial_town { visible = "[EqualTo_float(FixedPointToFloat(CityMarker.GetLocation.MakeScope.GetVariable('specialization_designation').GetValue), '(float)5.0')]" }
+template eul_vis_marker_mining_city { visible = "[EqualTo_float(FixedPointToFloat(CityMarker.GetLocation.MakeScope.GetVariable('specialization_designation').GetValue), '(float)11.0')]" }
+template eul_vis_marker_farming_city { visible = "[EqualTo_float(FixedPointToFloat(CityMarker.GetLocation.MakeScope.GetVariable('specialization_designation').GetValue), '(float)12.0')]" }
+template eul_vis_marker_gathering_city { visible = "[EqualTo_float(FixedPointToFloat(CityMarker.GetLocation.MakeScope.GetVariable('specialization_designation').GetValue), '(float)13.0')]" }
+template eul_vis_marker_woodland_city { visible = "[EqualTo_float(FixedPointToFloat(CityMarker.GetLocation.MakeScope.GetVariable('specialization_designation').GetValue), '(float)14.0')]" }
+template eul_vis_marker_commercial_city { visible = "[EqualTo_float(FixedPointToFloat(CityMarker.GetLocation.MakeScope.GetVariable('specialization_designation').GetValue), '(float)15.0')]" }
+template eul_vis_marker_mining_rural { visible = "[EqualTo_float(FixedPointToFloat(CityMarker.GetLocation.MakeScope.GetVariable('specialization_designation').GetValue), '(float)21.0')]" }
+template eul_vis_marker_farming_rural { visible = "[EqualTo_float(FixedPointToFloat(CityMarker.GetLocation.MakeScope.GetVariable('specialization_designation').GetValue), '(float)22.0')]" }
+template eul_vis_marker_gathering_rural { visible = "[EqualTo_float(FixedPointToFloat(CityMarker.GetLocation.MakeScope.GetVariable('specialization_designation').GetValue), '(float)23.0')]" }
+template eul_vis_marker_woodland_rural { visible = "[EqualTo_float(FixedPointToFloat(CityMarker.GetLocation.MakeScope.GetVariable('specialization_designation').GetValue), '(float)24.0')]" }
+template eul_vis_marker_commercial_rural { visible = "[EqualTo_float(FixedPointToFloat(CityMarker.GetLocation.MakeScope.GetVariable('specialization_designation').GetValue), '(float)25.0')]" }
+
+# =====================================================
+# VANILLA MAPMARKERFLAGS TEMPLATE (unchanged from base game)
+# =====================================================
+template MapMarkerFlags
+{
+	country_flag_small = {
+		name = "controller_flag_country_capital"
+		tooltip_enabled = no
+		datacontext = "[CityMarker.GetLocation.GetController]"
+		blockoverride "click" { onclick = "[CityMarker.OnClick]" }
+		blockoverride "double_click" {}
+		visible = "[And(CityMarker.ShouldShowOccupationFlag, CityMarker.GetLocation.IsCapital)]"
+	}
+
+	country_flag_very_small = {
+		name = "controller_flag_province_capital"
+		tooltip_enabled = no
+		datacontext = "[CityMarker.GetLocation.GetController]"
+		blockoverride "click" { onclick = "[CityMarker.OnClick]" }
+		blockoverride "double_click" {}
+		visible = "[And3(CityMarker.ShouldShowOccupationFlag, CityMarker.GetLocation.IsProvinceCapital, Not(CityMarker.GetLocation.IsCapital))]"
+	}
+
+	country_flag_mini = {
+		tooltip_enabled = no
+		datacontext = "[CityMarker.GetLocation.GetController]"
+		blockoverride "click" { onclick = "[CityMarker.OnClick]" }
+		blockoverride "double_click" {}
+		visible = "[And3(CityMarker.ShouldShowOccupationFlag, Not(CityMarker.GetLocation.IsProvinceCapital), Not(CityMarker.GetLocation.IsCapital))]"
+	}
+
+	country_flag_small_plus = {
+		tooltip_enabled = no
+		blockoverride "click" { onclick = "[CityMarker.OnClick]" }
+		blockoverride "double_click" {}
+		visible = "[And(GreaterThanOrEqualTo_int32(CityMarker.GetLocation.GetOwner.GetRank.GetLevelNumber, '(int32)4'), CityMarker.ShouldBeShownAsCapital)]"
+	}
+
+	country_flag_small = {
+		tooltip_enabled = no
+		blockoverride "click" { onclick = "[CityMarker.OnClick]" }
+		blockoverride "double_click" {}
+		visible = "[And(EqualTo_int32(CityMarker.GetLocation.GetOwner.GetRank.GetLevelNumber, '(int32)3'), CityMarker.ShouldBeShownAsCapital)]"
+	}
+
+	country_flag_very_small = {
+		tooltip_enabled = no
+		blockoverride "click" { onclick = "[CityMarker.OnClick]" }
+		blockoverride "double_click" {}
+		visible = "[And(EqualTo_int32(CityMarker.GetLocation.GetOwner.GetRank.GetLevelNumber, '(int32)2'), CityMarker.ShouldBeShownAsCapital)]"
+	}
+
+	country_flag_mini = {
+		size = { 24 16 }
+		tooltip_enabled = no
+		blockoverride "click" { onclick = "[CityMarker.OnClick]" }
+		blockoverride "double_click" {}
+		visible = "[And(LessThanOrEqualTo_int32(CityMarker.GetLocation.GetOwner.GetRank.GetLevelNumber, '(int32)1'), CityMarker.ShouldBeShownAsCapital)]"
+	}
+}
+
+# =====================================================
+# TYPE DEFINITIONS
+# =====================================================
+types map_marker_city {
+
+	# marker_rank_icon - zoomed-out map view
+	# Icon is the centered anchor point, flags extend left, name extends right
+	type marker_rank_icon = widget {
+		allow_outside = yes
+		size = { @city_marker_icon_size @city_marker_icon_size }
+		widgetanchor = center
+		parentanchor = center
+
+		# FLAGS - positioned to the LEFT of the icon
+		flowcontainer = {
+			parentanchor = vcenter
+			widgetanchor = vcenter|right
+			visible = "[MapMarkerFlagsVisible]"
+			ignoreinvisible = yes
+			datacontext = "[CityMarker.GetLocation.GetOwner]"
+			using = MapMarkerFlags
+		}
+
+		# ICON CONTAINER - centered in this widget
+		widget = {
+			size = { 100% 100% }
+
+				# CITY BRANCH (values 11-15)
+				widget = {
+					size = { 100% 100% }
+					visible = "[And3(CityMarker.GetLocation.MakeScope.GetVariable('specialization_designation').IsSet, GreaterThanOrEqualTo_float(FixedPointToFloat(CityMarker.GetLocation.MakeScope.GetVariable('specialization_designation').GetValue), '(float)11.0'), LessThanOrEqualTo_float(FixedPointToFloat(CityMarker.GetLocation.MakeScope.GetVariable('specialization_designation').GetValue), '(float)15.0'))]"
+					# Provincial Capital
+					widget = {
+						size = { 100% 100% }
+						visible = "[And(CityMarker.GetLocation.IsProvinceCapital, Not(CityMarker.GetLocation.IsCapital))]"
+						icon = { parentanchor = center using = eul_vis_marker_mining_city using = eul_tex_red_province_capital_city using = eul_icon_size_city }
+						icon = { parentanchor = center using = eul_vis_marker_farming_city using = eul_tex_green_province_capital_city using = eul_icon_size_city }
+						icon = { parentanchor = center using = eul_vis_marker_gathering_city using = eul_tex_blue_province_capital_city using = eul_icon_size_city }
+						icon = { parentanchor = center using = eul_vis_marker_woodland_city using = eul_tex_brown_province_capital_city using = eul_icon_size_city }
+						icon = { parentanchor = center using = eul_vis_marker_commercial_city using = eul_tex_purple_province_capital_city using = eul_icon_size_city }
+					}
+					# National Capital
+					widget = {
+						size = { 100% 100% }
+						visible = "[CityMarker.GetLocation.IsCapital]"
+						icon = { parentanchor = center using = eul_vis_marker_mining_city using = eul_tex_red_capital_city using = eul_icon_size_city }
+						icon = { parentanchor = center using = eul_vis_marker_farming_city using = eul_tex_green_capital_city using = eul_icon_size_city }
+						icon = { parentanchor = center using = eul_vis_marker_gathering_city using = eul_tex_blue_capital_city using = eul_icon_size_city }
+						icon = { parentanchor = center using = eul_vis_marker_woodland_city using = eul_tex_brown_capital_city using = eul_icon_size_city }
+						icon = { parentanchor = center using = eul_vis_marker_commercial_city using = eul_tex_purple_capital_city using = eul_icon_size_city }
+					}
+					# Regular
+					widget = {
+						size = { 100% 100% }
+						visible = "[And(Not(CityMarker.GetLocation.IsProvinceCapital), Not(CityMarker.GetLocation.IsCapital))]"
+						icon = { parentanchor = center using = eul_vis_marker_mining_city using = eul_tex_red_city using = eul_icon_size_city }
+						icon = { parentanchor = center using = eul_vis_marker_farming_city using = eul_tex_green_city using = eul_icon_size_city }
+						icon = { parentanchor = center using = eul_vis_marker_gathering_city using = eul_tex_blue_city using = eul_icon_size_city }
+						icon = { parentanchor = center using = eul_vis_marker_woodland_city using = eul_tex_brown_city using = eul_icon_size_city }
+						icon = { parentanchor = center using = eul_vis_marker_commercial_city using = eul_tex_purple_city using = eul_icon_size_city }
+					}
+				}
+
+				# TOWN BRANCH (values 1-5)
+				widget = {
+					size = { 100% 100% }
+					visible = "[And(CityMarker.GetLocation.MakeScope.GetVariable('specialization_designation').IsSet, LessThanOrEqualTo_float(FixedPointToFloat(CityMarker.GetLocation.MakeScope.GetVariable('specialization_designation').GetValue), '(float)5.0'))]"
+					# Provincial Capital
+					widget = {
+						size = { 100% 100% }
+						visible = "[And(CityMarker.GetLocation.IsProvinceCapital, Not(CityMarker.GetLocation.IsCapital))]"
+						icon = { parentanchor = center using = eul_vis_marker_mining_town using = eul_tex_red_province_capital_town using = eul_icon_size_town }
+						icon = { parentanchor = center using = eul_vis_marker_farming_town using = eul_tex_green_province_capital_town using = eul_icon_size_town }
+						icon = { parentanchor = center using = eul_vis_marker_gathering_town using = eul_tex_blue_province_capital_town using = eul_icon_size_town }
+						icon = { parentanchor = center using = eul_vis_marker_woodland_town using = eul_tex_brown_province_capital_town using = eul_icon_size_town }
+						icon = { parentanchor = center using = eul_vis_marker_commercial_town using = eul_tex_purple_province_capital_town using = eul_icon_size_town }
+					}
+					# National Capital
+					widget = {
+						size = { 100% 100% }
+						visible = "[CityMarker.GetLocation.IsCapital]"
+						icon = { parentanchor = center using = eul_vis_marker_mining_town using = eul_tex_red_capital_town using = eul_icon_size_town }
+						icon = { parentanchor = center using = eul_vis_marker_farming_town using = eul_tex_green_capital_town using = eul_icon_size_town }
+						icon = { parentanchor = center using = eul_vis_marker_gathering_town using = eul_tex_blue_capital_town using = eul_icon_size_town }
+						icon = { parentanchor = center using = eul_vis_marker_woodland_town using = eul_tex_brown_capital_town using = eul_icon_size_town }
+						icon = { parentanchor = center using = eul_vis_marker_commercial_town using = eul_tex_purple_capital_town using = eul_icon_size_town }
+					}
+					# Regular
+					widget = {
+						size = { 100% 100% }
+						visible = "[And(Not(CityMarker.GetLocation.IsProvinceCapital), Not(CityMarker.GetLocation.IsCapital))]"
+						icon = { parentanchor = center using = eul_vis_marker_mining_town using = eul_tex_red_town using = eul_icon_size_town }
+						icon = { parentanchor = center using = eul_vis_marker_farming_town using = eul_tex_green_town using = eul_icon_size_town }
+						icon = { parentanchor = center using = eul_vis_marker_gathering_town using = eul_tex_blue_town using = eul_icon_size_town }
+						icon = { parentanchor = center using = eul_vis_marker_woodland_town using = eul_tex_brown_town using = eul_icon_size_town }
+						icon = { parentanchor = center using = eul_vis_marker_commercial_town using = eul_tex_purple_town using = eul_icon_size_town }
+					}
+				}
+
+				# RURAL BRANCH (values 21-25)
+				widget = {
+					size = { 100% 100% }
+					visible = "[And(CityMarker.GetLocation.MakeScope.GetVariable('specialization_designation').IsSet, GreaterThanOrEqualTo_float(FixedPointToFloat(CityMarker.GetLocation.MakeScope.GetVariable('specialization_designation').GetValue), '(float)21.0'))]"
+					# Provincial Capital
+					widget = {
+						size = { 100% 100% }
+						visible = "[And(CityMarker.GetLocation.IsProvinceCapital, Not(CityMarker.GetLocation.IsCapital))]"
+						icon = { parentanchor = center using = eul_vis_marker_mining_rural using = eul_tex_red_province_capital_rural using = eul_icon_size_rural }
+						icon = { parentanchor = center using = eul_vis_marker_farming_rural using = eul_tex_green_province_capital_rural using = eul_icon_size_rural }
+						icon = { parentanchor = center using = eul_vis_marker_gathering_rural using = eul_tex_blue_province_capital_rural using = eul_icon_size_rural }
+						icon = { parentanchor = center using = eul_vis_marker_woodland_rural using = eul_tex_brown_province_capital_rural using = eul_icon_size_rural }
+						icon = { parentanchor = center using = eul_vis_marker_commercial_rural using = eul_tex_purple_province_capital_rural using = eul_icon_size_rural }
+					}
+					# National Capital
+					widget = {
+						size = { 100% 100% }
+						visible = "[CityMarker.GetLocation.IsCapital]"
+						icon = { parentanchor = center using = eul_vis_marker_mining_rural using = eul_tex_red_capital_rural using = eul_icon_size_rural }
+						icon = { parentanchor = center using = eul_vis_marker_farming_rural using = eul_tex_green_capital_rural using = eul_icon_size_rural }
+						icon = { parentanchor = center using = eul_vis_marker_gathering_rural using = eul_tex_blue_capital_rural using = eul_icon_size_rural }
+						icon = { parentanchor = center using = eul_vis_marker_woodland_rural using = eul_tex_brown_capital_rural using = eul_icon_size_rural }
+						icon = { parentanchor = center using = eul_vis_marker_commercial_rural using = eul_tex_purple_capital_rural using = eul_icon_size_rural }
+					}
+					# Regular
+					widget = {
+						size = { 100% 100% }
+						visible = "[And(Not(CityMarker.GetLocation.IsProvinceCapital), Not(CityMarker.GetLocation.IsCapital))]"
+						icon = { parentanchor = center using = eul_vis_marker_mining_rural using = eul_tex_red_rural using = eul_icon_size_rural }
+						icon = { parentanchor = center using = eul_vis_marker_farming_rural using = eul_tex_green_rural using = eul_icon_size_rural }
+						icon = { parentanchor = center using = eul_vis_marker_gathering_rural using = eul_tex_blue_rural using = eul_icon_size_rural }
+						icon = { parentanchor = center using = eul_vis_marker_woodland_rural using = eul_tex_brown_rural using = eul_icon_size_rural }
+						icon = { parentanchor = center using = eul_vis_marker_commercial_rural using = eul_tex_purple_rural using = eul_icon_size_rural }
+					}
+				}
+
+				# FALLBACK - non-specialized locations use vanilla icon
+				icon = {
+					parentanchor = center
+					visible = "[Not(CityMarker.GetLocation.MakeScope.GetVariable('specialization_designation').IsSet)]"
+					texture = "[CityMarker.GetLocation.GetRankIcon]"
+					size = { 20 20 }
+				}
+		}
+
+		# NAME - positioned to the RIGHT of the icon
+		flowcontainer = {
+			parentanchor = vcenter
+			widgetanchor = vcenter|left
+			position = { @city_marker_icon_size 0 }
+			ignoreinvisible = yes
+
+			text_single = {
+				text = "[CityMarker.GetLocation.GetNameWithNoTooltip|U]"
+				snap_to_pixels = no
+				default_format = "#map_city_label_capital"
+				align = nobaseline
+				visible = "[CityMarker.ShouldBeShownAsCapital]"
+			}
+			text_single = {
+				text = "[CityMarker.GetLocation.GetNameWithNoTooltip|U]"
+				snap_to_pixels = no
+				default_format = "#map_city_label"
+				align = nobaseline
+				visible = "[CityMarker.ShouldBeShownAsCity]"
+			}
+		}
+	}
+}
+
+# =====================================================
+# CITY MARKER WIDGET (from vanilla - unchanged)
+# =====================================================
+widget = {
+	name = "city_marker"
+	allow_outside = yes
+
+	widget = {
+		parentanchor = center
+		allow_outside = yes
+
+		visible = "[CityMarker.ShowDetailsOrHasWarFort]"
+		size = { @city_marker_icon_size @city_marker_icon_size }
+
+		widget = {
+			parentanchor = left|vcenter
+			widgetanchor = right|vcenter
+
+			hbox = {
+				margin = { 0 0 }
+				minimumsize = { -1 @city_marker_icon_size }
+				set_parent_size_to_minimum = yes
+				visible = "[CityMarker.ShouldShowOccupationFlag]"
+				datacontext = "[CityMarker.GetLocation.GetController]"
+				country_flag_small = {
+					visible = "[MapMarkerFlagsVisible]"
+				}
+			}
+		}
+
+		widget = {
+			parentanchor = left|vcenter
+			widgetanchor = left|vcenter
+
+			background = {
+				visible = "[CityMarker.ShowDetails]"
+				using = simple_paper_card_texture
+				alpha = 0.5
+				margin = { 0 -2 }
+				margin_right = 8
+				mirror = horizontal
+
+				modify_texture = {
+					using = color_bg_blue_texture
+				}
+			}
+
+			hbox = {
+				minimumsize = { -1 @city_marker_icon_size }
+				set_parent_size_to_minimum = yes
+				ignoreinvisible = yes
+				spacing = 2
+
+				location_rank_icon = {
+					datacontext = "[CityMarker.GetLocation]"
+				}
+
+				hbox = {
+					tooltipwidget = {
+						ContextualTooltipType = {
+							blockoverride "title_icon" {
+								icon = {
+									texture = "[GetBuildingIcon(CityMarker.GetLocation.GetBestFortBuilding.GetType)]"
+									using = tooltip_title_icon_size
+								}
+							}
+							blockoverride "title_text" {
+								text = "FORT_LEVEL"
+							}
+							blockoverride "concept_link" {
+								text = "[fort|e]"
+							}
+							blockoverride "tooltip_content" {
+								TooltipStringPairList = {
+									textcontext = "[CityMarker.GetLocation.GetDescriptionFor('fort_level')]"
+								}
+							}
+						}
+					}
+
+					icon = {
+						alwaystransparent = no
+						onmousehierarchyenter = "[PdxGuiWidget.SetHighlightFort(CityMarker.GetLocation)]"
+						visible = "[CityMarker.GetLocation.HasAnyFort]"
+						texture = "gfx/interface/icons/map_modes/fort_level_icon.dds"
+						size = { @city_marker_fort_icon_size @city_marker_fort_icon_size }
+					}
+				}
+
+				text_single = {
+					visible = "[CityMarker.ShowDetails]"
+					text = "[CityMarker.GetLocation.GetNameWithNoTooltip|U]"
+					snap_to_pixels = yes
+					fontsize = 12
+					align = nobaseline
+					default_format = "#map_city_label"
+				}
+			}
+		}
+	}
+
+	marker_rank_icon = {
+		visible = "[CityMarker.GetRankVisible]"
+		# blockoverride "marker_rank_icon_size" {
+		# 	size = "[CityMarker.GetRankSize]"
+		# }
+		# blockoverride "marker_rank_icon_position" {
+		# 	align = vcenter
+		# 	position = "[CityMarker.GetRankPosition]"
+		# }
+	}
+}

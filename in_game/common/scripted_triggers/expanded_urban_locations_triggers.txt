@@ -16,6 +16,11 @@ has_mining_resources = {
 		raw_material = goods:gems
 		raw_material = goods:marble
 		raw_material = goods:mercury
+		# Wetlands with iron working technology (bog iron)
+		AND = {
+			topography = wetlands
+			owner = { has_advance = iron_working }
+		}
 	}
 }
 
@@ -23,14 +28,11 @@ has_farming_resources = {
 	OR = {
 		raw_material = goods:horses
 		raw_material = goods:silk
-		raw_material = goods:dyes
-		raw_material = goods:incense
 		raw_material = goods:tea
 		raw_material = goods:cocoa
 		raw_material = goods:coffee
 		raw_material = goods:fiber_crops
 		raw_material = goods:wine
-		raw_material = goods:elephants
 		raw_material = goods:saffron
 		raw_material = goods:pepper
 		raw_material = goods:cloves
@@ -48,7 +50,8 @@ has_farming_resources = {
 		raw_material = goods:livestock
 		raw_material = goods:olives
 		raw_material = goods:fruit
-		raw_material = goods:beeswax
+		# Farmland terrain
+		vegetation = farmland
 	}
 }
 
@@ -61,20 +64,44 @@ has_gathering_resources = {
 		raw_material = goods:pearls
 		raw_material = goods:amber
 		raw_material = goods:fish
+		# Coastal and river locations
+		is_coastal = yes
+		has_river = yes
 	}
 }
 
-has_forestry_resources = {
+has_woodland_resources = {
 	OR = {
 		raw_material = goods:lumber
 		raw_material = goods:wild_game
 		raw_material = goods:fur
+		raw_material = goods:incense
+		raw_material = goods:elephants
+		raw_material = goods:beeswax
+		raw_material = goods:dyes
+		# Forest and woods terrain
+		vegetation = forest
+		vegetation = woods
 	}
 }
 
 # Check if location is town or city (for specialization designation)
 is_town_or_city = {
 	OR = {
+		location_rank = location_rank:town
+		location_rank = location_rank:city
+	}
+}
+
+# Check if location is rural (for specialization designation)
+is_rural_settlement = {
+	location_rank = location_rank:rural_settlement
+}
+
+# Check if location is rural, town, or city (for specialization designation)
+is_rural_or_higher = {
+	OR = {
+		location_rank = location_rank:rural_settlement
 		location_rank = location_rank:town
 		location_rank = location_rank:city
 	}
@@ -106,7 +133,7 @@ is_destroyable_specialization_building = {
 		building_type = building_type:fruit_orchard
 		building_type = building_type:horse_breeders
 
-		# Forestry raw
+		# Woodland raw
 		building_type = building_type:sawmill
 		building_type = building_type:charcoal_maker
 		building_type = building_type:improved_charcoal_maker
@@ -192,7 +219,7 @@ is_destroyable_specialization_building = {
 		building_type = building_type:apothecary
 
 		# ==================
-		# FORESTRY PRODUCTION (furniture, dyes, lacquerware, leather)
+		# WOODLAND PRODUCTION (furniture, dyes, lacquerware, leather)
 		# ==================
 		building_type = building_type:furniture_guild
 		building_type = building_type:furniture_workshop
@@ -285,9 +312,36 @@ is_destroyable_specialization_building = {
 # Using triggers keeps the script code readable while allowing GUI access.
 #
 # Number mapping:
-#   Towns:  1=mining, 2=farming, 3=gathering, 4=forestry, 5=commercial
-#   Cities: 11=mining, 12=farming, 13=gathering, 14=forestry, 15=commercial
+#   Rural:  21=mining, 22=farming, 23=gathering, 24=woodland, 25=commercial
+#   Towns:  1=mining, 2=farming, 3=gathering, 4=woodland, 5=commercial
+#   Cities: 11=mining, 12=farming, 13=gathering, 14=woodland, 15=commercial
 # ============================================
+
+# Individual rural checks (using constants from expanded_urban_locations_specialization_constants.txt)
+is_mining_rural = {
+	has_variable = specialization_designation
+	var:specialization_designation = eul_mining_rural_value
+}
+
+is_farming_rural = {
+	has_variable = specialization_designation
+	var:specialization_designation = eul_farming_rural_value
+}
+
+is_gathering_rural = {
+	has_variable = specialization_designation
+	var:specialization_designation = eul_gathering_rural_value
+}
+
+is_woodland_rural = {
+	has_variable = specialization_designation
+	var:specialization_designation = eul_woodland_rural_value
+}
+
+is_commercial_rural = {
+	has_variable = specialization_designation
+	var:specialization_designation = eul_commercial_rural_value
+}
 
 # Individual town checks (using constants from expanded_urban_locations_specialization_constants.txt)
 is_mining_town = {
@@ -305,9 +359,9 @@ is_gathering_town = {
 	var:specialization_designation = eul_gathering_town_value
 }
 
-is_forestry_town = {
+is_woodland_town = {
 	has_variable = specialization_designation
-	var:specialization_designation = eul_forestry_town_value
+	var:specialization_designation = eul_woodland_town_value
 }
 
 is_commercial_town = {
@@ -331,9 +385,9 @@ is_gathering_city = {
 	var:specialization_designation = eul_gathering_city_value
 }
 
-is_forestry_city = {
+is_woodland_city = {
 	has_variable = specialization_designation
-	var:specialization_designation = eul_forestry_city_value
+	var:specialization_designation = eul_woodland_city_value
 }
 
 is_commercial_city = {
@@ -341,10 +395,11 @@ is_commercial_city = {
 	var:specialization_designation = eul_commercial_city_value
 }
 
-# Combined checks (town or city of same type)
+# Combined checks (rural, town, or city of same type)
 has_mining_specialization = {
 	has_variable = specialization_designation
 	OR = {
+		var:specialization_designation = eul_mining_rural_value
 		var:specialization_designation = eul_mining_town_value
 		var:specialization_designation = eul_mining_city_value
 	}
@@ -353,6 +408,7 @@ has_mining_specialization = {
 has_farming_specialization = {
 	has_variable = specialization_designation
 	OR = {
+		var:specialization_designation = eul_farming_rural_value
 		var:specialization_designation = eul_farming_town_value
 		var:specialization_designation = eul_farming_city_value
 	}
@@ -361,22 +417,25 @@ has_farming_specialization = {
 has_gathering_specialization = {
 	has_variable = specialization_designation
 	OR = {
+		var:specialization_designation = eul_gathering_rural_value
 		var:specialization_designation = eul_gathering_town_value
 		var:specialization_designation = eul_gathering_city_value
 	}
 }
 
-has_forestry_specialization = {
+has_woodland_specialization = {
 	has_variable = specialization_designation
 	OR = {
-		var:specialization_designation = eul_forestry_town_value
-		var:specialization_designation = eul_forestry_city_value
+		var:specialization_designation = eul_woodland_rural_value
+		var:specialization_designation = eul_woodland_town_value
+		var:specialization_designation = eul_woodland_city_value
 	}
 }
 
 has_commercial_specialization = {
 	has_variable = specialization_designation
 	OR = {
+		var:specialization_designation = eul_commercial_rural_value
 		var:specialization_designation = eul_commercial_town_value
 		var:specialization_designation = eul_commercial_city_value
 	}

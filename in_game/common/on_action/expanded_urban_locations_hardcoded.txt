@@ -1,5 +1,5 @@
 ﻿# Handle modifier tier transitions when location rank changes
-# This ensures the correct modifier tier (town/city) is applied when a
+# This ensures the correct modifier tier (rural/town/city) is applied when a
 # specialized location upgrades or downgrades via normal gameplay
 # root = location
 
@@ -29,11 +29,11 @@ check_uninitialized_specializations = {
 		NOT = { has_global_variable = eul_specializations_initialized }
 	}
 	effect = {
-		# Initialize any towns/cities missing specialization
+		# Initialize any rural/towns/cities missing specialization
 		every_location_in_the_world = {
 			limit = {
 				exists = owner
-				is_town_or_city = yes
+				is_rural_or_higher = yes
 				NOT = { has_variable = specialization_designation }
 			}
 			assign_specialization_by_resources = yes
@@ -48,6 +48,16 @@ specialized_locations_setup = {
 	effect = {
 		# Mark as initialized so monthly pulse skips
 		set_global_variable = { name = eul_specializations_initialized value = yes }
+		# Initialize all rural settlements (icons + modifiers only, no building changes)
+		every_location_in_the_world = {
+			limit = {
+				exists = owner
+				is_rural_settlement = yes
+			}
+			assign_specialization_by_resources = yes
+			apply_specialization_modifier = yes
+		}
+		# Initialize all towns/cities (icons + modifiers + building changes)
 		every_location_in_the_world = {
 			limit = {
 				exists = owner
@@ -71,8 +81,32 @@ on_location_updates_specialization_by_rankup = {
 
 			# Update variable to match new rank (using constants from expanded_urban_locations_specialization_constants.txt)
 			if = {
+				limit = { location_rank = location_rank:rural_settlement }
+				# Convert to rural values
+				if = {
+					limit = { has_mining_specialization = yes }
+					set_variable = { name = specialization_designation value = eul_mining_rural_value }
+				}
+				else_if = {
+					limit = { has_farming_specialization = yes }
+					set_variable = { name = specialization_designation value = eul_farming_rural_value }
+				}
+				else_if = {
+					limit = { has_gathering_specialization = yes }
+					set_variable = { name = specialization_designation value = eul_gathering_rural_value }
+				}
+				else_if = {
+					limit = { has_woodland_specialization = yes }
+					set_variable = { name = specialization_designation value = eul_woodland_rural_value }
+				}
+				else_if = {
+					limit = { has_commercial_specialization = yes }
+					set_variable = { name = specialization_designation value = eul_commercial_rural_value }
+				}
+			}
+			else_if = {
 				limit = { location_rank = location_rank:town }
-				# Convert city values back to town values
+				# Convert to town values
 				if = {
 					limit = { has_mining_specialization = yes }
 					set_variable = { name = specialization_designation value = eul_mining_town_value }
@@ -86,17 +120,20 @@ on_location_updates_specialization_by_rankup = {
 					set_variable = { name = specialization_designation value = eul_gathering_town_value }
 				}
 				else_if = {
-					limit = { has_forestry_specialization = yes }
-					set_variable = { name = specialization_designation value = eul_forestry_town_value }
+					limit = { has_woodland_specialization = yes }
+					set_variable = { name = specialization_designation value = eul_woodland_town_value }
 				}
 				else_if = {
 					limit = { has_commercial_specialization = yes }
 					set_variable = { name = specialization_designation value = eul_commercial_town_value }
 				}
+				# When upgrading from rural to town, destroy buildings and grant starter buildings
+				destroy_non_matching_buildings = yes
+				grant_specialization_starter_buildings = yes
 			}
 			else_if = {
 				limit = { location_rank = location_rank:city }
-				# Convert town values to city values
+				# Convert to city values
 				if = {
 					limit = { has_mining_specialization = yes }
 					set_variable = { name = specialization_designation value = eul_mining_city_value }
@@ -110,8 +147,8 @@ on_location_updates_specialization_by_rankup = {
 					set_variable = { name = specialization_designation value = eul_gathering_city_value }
 				}
 				else_if = {
-					limit = { has_forestry_specialization = yes }
-					set_variable = { name = specialization_designation value = eul_forestry_city_value }
+					limit = { has_woodland_specialization = yes }
+					set_variable = { name = specialization_designation value = eul_woodland_city_value }
 				}
 				else_if = {
 					limit = { has_commercial_specialization = yes }
@@ -120,14 +157,19 @@ on_location_updates_specialization_by_rankup = {
 			}
 
 			# Apply the correct modifier tier based on new rank
-			# (If downgraded to rural, no modifier is applied - specialization is lost)
 			apply_specialization_modifier = yes
 		}
-		# New town/city without specialization - assign based on resources
-		else = {
+		# New rural/town/city without specialization - assign based on resources
+		else_if = {
+			limit = { is_rural_or_higher = yes }
 			assign_specialization_by_resources = yes
+			# Only destroy buildings for towns/cities, not rural
+			if = {
+				limit = { is_town_or_city = yes }
+				destroy_non_matching_buildings = yes
+				grant_specialization_starter_buildings = yes
+			}
 			apply_specialization_modifier = yes
 		}
 	}
 }
-

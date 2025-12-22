@@ -1,5 +1,7 @@
-﻿# Triggers to check if a location has resources matching each specialization type
-# Used by the specialization selection GUI to enable/disable options
+﻿# ============================================
+# RESOURCE TRIGGERS (raw materials only)
+# Used for initialization - assigns specialization based on actual goods
+# ============================================
 
 has_mining_resources = {
 	OR = {
@@ -16,11 +18,6 @@ has_mining_resources = {
 		raw_material = goods:gems
 		raw_material = goods:marble
 		raw_material = goods:mercury
-		# Wetlands with iron working technology (bog iron)
-		AND = {
-			topography = wetlands
-			owner = { has_advance = iron_working }
-		}
 	}
 }
 
@@ -50,8 +47,6 @@ has_farming_resources = {
 		raw_material = goods:livestock
 		raw_material = goods:olives
 		raw_material = goods:fruit
-		# Farmland terrain
-		vegetation = farmland
 	}
 }
 
@@ -64,9 +59,6 @@ has_gathering_resources = {
 		raw_material = goods:pearls
 		raw_material = goods:amber
 		raw_material = goods:fish
-		# Coastal and river locations
-		is_coastal = yes
-		has_river = yes
 	}
 }
 
@@ -79,6 +71,45 @@ has_woodland_resources = {
 		raw_material = goods:elephants
 		raw_material = goods:beeswax
 		raw_material = goods:dyes
+	}
+}
+
+# ============================================
+# SPECIALIZATION ELIGIBILITY TRIGGERS
+# Used for player/AI selection - includes terrain bonuses
+# ============================================
+
+can_specialize_mining = {
+	OR = {
+		has_mining_resources = yes
+		# Wetlands with iron working technology (bog iron)
+		AND = {
+			topography = wetlands
+			owner = { has_advance = iron_working }
+		}
+	}
+}
+
+can_specialize_farming = {
+	OR = {
+		has_farming_resources = yes
+		# Farmland terrain
+		vegetation = farmland
+	}
+}
+
+can_specialize_gathering = {
+	OR = {
+		has_gathering_resources = yes
+		# Coastal and river locations
+		is_coastal = yes
+		has_river = yes
+	}
+}
+
+can_specialize_woodland = {
+	OR = {
+		has_woodland_resources = yes
 		# Forest and woods terrain
 		vegetation = forest
 		vegetation = woods

@@ -663,3 +663,99 @@ apply_specialization_modifier = {
 		add_location_modifier = { modifier = commercial_city_specialization }
 	}
 }
+
+# ============================================
+# DIVERSITY TRACKING INITIALIZATION
+# Counts all existing specializations and populates cache variables
+# root = country
+# Called when variables don't exist (first run after mod update or for existing saves)
+# ============================================
+# ============================================
+# STARTER VILLAGE GRANT
+# Adds 1 level of appropriate village based on terrain
+# root = location (rural settlement)
+# Priority: coastal > forest/woods > farmland > market
+# ============================================
+grant_starter_village = {
+	if = {
+		limit = { is_coastal = yes }
+		change_building_level_in_location = {
+			building = building_type:fishing_village
+			value = 1
+		}
+	}
+	else_if = {
+		limit = {
+			OR = {
+				vegetation = forest
+				vegetation = woods
+			}
+		}
+		change_building_level_in_location = {
+			building = building_type:forest_village
+			value = 1
+		}
+	}
+	else_if = {
+		limit = { vegetation = farmland }
+		change_building_level_in_location = {
+			building = building_type:farming_village
+			value = 1
+		}
+	}
+	else = {
+		change_building_level_in_location = {
+			building = building_type:market_village
+			value = 1
+		}
+	}
+}
+
+eul_initialize_specialization_counts = {
+	# Initialize all counts to 0
+	set_variable = { name = eul_mining_count value = 0 }
+	set_variable = { name = eul_farming_count value = 0 }
+	set_variable = { name = eul_woodland_count value = 0 }
+	set_variable = { name = eul_gathering_count value = 0 }
+	set_variable = { name = eul_commercial_count value = 0 }
+	set_variable = { name = eul_total_weighted value = 0 }
+
+	# Count all existing specializations
+	every_owned_location = {
+		if = {
+			limit = { has_mining_specialization = yes }
+			owner = {
+				change_variable = { name = eul_mining_count add = 1 }
+				change_variable = { name = eul_total_weighted add = 1 }
+			}
+		}
+		else_if = {
+			limit = { has_farming_specialization = yes }
+			owner = {
+				change_variable = { name = eul_farming_count add = 1 }
+				change_variable = { name = eul_total_weighted add = 2 }
+			}
+		}
+		else_if = {
+			limit = { has_woodland_specialization = yes }
+			owner = {
+				change_variable = { name = eul_woodland_count add = 1 }
+				change_variable = { name = eul_total_weighted add = 1 }
+			}
+		}
+		else_if = {
+			limit = { has_gathering_specialization = yes }
+			owner = {
+				change_variable = { name = eul_gathering_count add = 1 }
+				change_variable = { name = eul_total_weighted add = 1 }
+			}
+		}
+		else_if = {
+			limit = { has_commercial_specialization = yes }
+			owner = {
+				change_variable = { name = eul_commercial_count add = 1 }
+				change_variable = { name = eul_total_weighted add = 1 }
+			}
+		}
+	}
+}

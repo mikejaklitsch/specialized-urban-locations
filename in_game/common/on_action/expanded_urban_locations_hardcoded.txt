@@ -29,11 +29,22 @@ check_uninitialized_specializations = {
 		NOT = { has_global_variable = eul_specializations_initialized }
 	}
 	effect = {
-		# Initialize any rural/towns/cities missing specialization
+		# Initialize any rural settlements missing specialization
 		every_location_in_the_world = {
 			limit = {
 				exists = owner
-				is_rural_or_higher = yes
+				is_rural_settlement = yes
+				NOT = { has_variable = specialization_designation }
+			}
+			grant_starter_village = yes
+			assign_specialization_by_resources = yes
+			apply_specialization_modifier = yes
+		}
+		# Initialize any towns/cities missing specialization
+		every_location_in_the_world = {
+			limit = {
+				exists = owner
+				is_town_or_city = yes
 				NOT = { has_variable = specialization_designation }
 			}
 			assign_specialization_by_resources = yes
@@ -48,12 +59,13 @@ specialized_locations_setup = {
 	effect = {
 		# Mark as initialized so monthly pulse skips
 		set_global_variable = { name = eul_specializations_initialized value = yes }
-		# Initialize all rural settlements (icons + modifiers only, no building changes)
+		# Initialize all rural settlements (starter village + specialization + modifiers)
 		every_location_in_the_world = {
 			limit = {
 				exists = owner
 				is_rural_settlement = yes
 			}
+			grant_starter_village = yes
 			assign_specialization_by_resources = yes
 			apply_specialization_modifier = yes
 		}
@@ -162,6 +174,11 @@ on_location_updates_specialization_by_rankup = {
 		# New rural/town/city without specialization - assign based on resources
 		else_if = {
 			limit = { is_rural_or_higher = yes }
+			# Grant starter village for new rural settlements
+			if = {
+				limit = { is_rural_settlement = yes }
+				grant_starter_village = yes
+			}
 			assign_specialization_by_resources = yes
 			# Only destroy buildings for towns/cities, not rural
 			if = {

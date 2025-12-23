@@ -4,6 +4,7 @@
 # ============================================
 
 has_mining_resources = {
+	exists = raw_material
 	OR = {
 		raw_material = goods:coal
 		raw_material = goods:iron
@@ -22,6 +23,7 @@ has_mining_resources = {
 }
 
 has_farming_resources = {
+	exists = raw_material
 	OR = {
 		raw_material = goods:horses
 		raw_material = goods:silk
@@ -51,6 +53,7 @@ has_farming_resources = {
 }
 
 has_gathering_resources = {
+	exists = raw_material
 	OR = {
 		raw_material = goods:clay
 		raw_material = goods:sand
@@ -63,6 +66,7 @@ has_gathering_resources = {
 }
 
 has_woodland_resources = {
+	exists = raw_material
 	OR = {
 		raw_material = goods:lumber
 		raw_material = goods:wild_game
@@ -75,45 +79,46 @@ has_woodland_resources = {
 }
 
 # ============================================
+# VALID LAND LOCATION CHECK
+# Used to filter out sea and wastelands for eligibility calculation
+# Note: is_land = yes already excludes lakes and ocean
+# ============================================
+
+eul_is_valid_land_location = {
+	is_land = yes
+	NOR = {
+		# Wastelands
+		topography = flatland_wasteland
+		topography = hills_wasteland
+		topography = plateau_wasteland
+		topography = wetlands_wasteland
+		topography = dune_wasteland
+		topography = mesa_wasteland
+		topography = mountain_wasteland
+		topography = ocean_wasteland
+	}
+}
+
+# ============================================
 # SPECIALIZATION ELIGIBILITY TRIGGERS
-# Used for player/AI selection - includes terrain bonuses
+# These check cached variables set by eul_calculate_specialization_eligibility
+# Variables are calculated on: game start, colonization, raw material change
 # ============================================
 
 can_specialize_mining = {
-	OR = {
-		has_mining_resources = yes
-		# Wetlands with iron working technology (bog iron)
-		AND = {
-			topography = wetlands
-			owner = { has_advance = iron_working }
-		}
-	}
+	has_variable = eul_can_mine
 }
 
 can_specialize_farming = {
-	OR = {
-		has_farming_resources = yes
-		# Farmland terrain
-		vegetation = farmland
-	}
+	has_variable = eul_can_farm
 }
 
 can_specialize_gathering = {
-	OR = {
-		has_gathering_resources = yes
-		# Coastal and river locations
-		is_coastal = yes
-		has_river = yes
-	}
+	has_variable = eul_can_gather
 }
 
 can_specialize_woodland = {
-	OR = {
-		has_woodland_resources = yes
-		# Forest and woods terrain
-		vegetation = forest
-		vegetation = woods
-	}
+	has_variable = eul_can_woodland
 }
 
 # Check if location is town or city (for specialization designation)
@@ -139,198 +144,127 @@ is_rural_or_higher = {
 }
 
 # ============================================
-# BUILDING DESTRUCTION TRIGGER
+# BUILDING CLASSIFICATION TRIGGERS
 # root = building
-# Returns yes if this building type can be destroyed when assigning a specialization
-# Includes: raw resource buildings, burgher estate, clergy, and all production buildings
+# Used by destruction effects to determine if a building belongs to a specialization
+# Optimized: uses building_produced_goods for production buildings (72% fewer checks)
 # ============================================
 
-is_destroyable_specialization_building = {
+# Mining buildings: raw ore enhancement + metal/tool production
+is_mining_building = {
 	OR = {
-		# ==================
-		# RAW RESOURCE BUILDINGS
-		# ==================
-
-		# Mining raw
+		# Enhancement buildings (no produced goods - must be explicit)
 		building_type = building_type:local_smelters
 		building_type = building_type:mercury_patio
-		building_type = building_type:stone_quarry
-		building_type = building_type:bog_iron_smelter
+		# Production buildings (check by output goods)
+		building_produced_goods = goods:iron
+		building_produced_goods = goods:stone
+		building_produced_goods = goods:tools
+		building_produced_goods = goods:weaponry
+		building_produced_goods = goods:cannons
+		building_produced_goods = goods:firearms
+		building_produced_goods = goods:steel
+		building_produced_goods = goods:jewelry
+	}
+}
 
-		# Farming raw
+# Farming buildings: crop enhancement + food/drink production
+is_farming_building = {
+	OR = {
+		# Enhancement buildings (no produced goods - must be explicit)
 		building_type = building_type:windmill
-		building_type = building_type:sheep_farms
-		building_type = building_type:fiber_crops_farm
-		building_type = building_type:fruit_orchard
-		building_type = building_type:horse_breeders
+		# Production buildings (check by output goods)
+		building_produced_goods = goods:wool
+		building_produced_goods = goods:fiber_crops
+		building_produced_goods = goods:fruit
+		building_produced_goods = goods:horses
+		building_produced_goods = goods:sugar
+		building_produced_goods = goods:cotton
+		building_produced_goods = goods:tobacco
+		building_produced_goods = goods:beer
+		building_produced_goods = goods:wine
+		building_produced_goods = goods:liquor
+		building_produced_goods = goods:saltpeter
+	}
+}
 
-		# Woodland raw
+# Woodland buildings: forest enhancement + wood/leather production
+is_woodland_building = {
+	OR = {
+		# Enhancement buildings (no produced goods - must be explicit)
 		building_type = building_type:sawmill
-		building_type = building_type:charcoal_maker
-		building_type = building_type:improved_charcoal_maker
-		building_type = building_type:tar_kiln
-		building_type = building_type:lumber_mill
+		# Production buildings (check by output goods)
+		building_produced_goods = goods:leather
+		building_produced_goods = goods:coal
+		building_produced_goods = goods:tar
+		building_produced_goods = goods:lumber
+		building_produced_goods = goods:ivory
+		building_produced_goods = goods:furniture
+		building_produced_goods = goods:dyes
+		building_produced_goods = goods:lacquerware
+	}
+}
 
-		# Gathering raw
-		# building_type = building_type:fishing_village
-		building_type = building_type:clay_pit
-		building_type = building_type:sand_pit
-		building_type = building_type:salt_collector
+# Gathering buildings: all use produced goods (no enhancement buildings)
+is_gathering_building = {
+	OR = {
+		building_produced_goods = goods:clay
+		building_produced_goods = goods:sand
+		building_produced_goods = goods:salt
+		building_produced_goods = goods:glass
+		building_produced_goods = goods:pottery
+		building_produced_goods = goods:porcelain
+		building_produced_goods = goods:medicaments
+	}
+}
 
-		# ==================
-		# BURGHER ESTATE BUILDINGS
-		# ==================
-		# building_type = building_type:guild_hall
-		# building_type = building_type:merchants_guild
-		# building_type = building_type:local_markets
-		# building_type = building_type:burgher_mansion
-		# building_type = building_type:artisan_guilds
-		# building_type = building_type:local_newspaper
+# Commercial buildings: trade infrastructure + textile/paper production
+is_commercial_building = {
+	OR = {
+		# Trade buildings (no produced goods - must be explicit)
 		building_type = building_type:marketplace
 		building_type = building_type:merchants_quarters
 		building_type = building_type:grand_marketplace
 		building_type = building_type:commerce_center
 		building_type = building_type:port_authority
-		building_type = building_type:counting_house
-
-		# ==================
-		# CLERGY BUILDINGS
-		# ==================
-		# building_type = building_type:parish_church
-		# building_type = building_type:local_shrine
-		# building_type = building_type:clerical_archives
-		# building_type = building_type:spiritual_retreat
-		# building_type = building_type:warrior_monks_training_grounds
-		# building_type = building_type:monastery
-		# building_type = building_type:fortress_church
-		# building_type = building_type:madrasa
-		# building_type = building_type:sufi_lodge
-		# building_type = building_type:orthodox_monastery
-		# building_type = building_type:miaphysite_monastery
-		# building_type = building_type:temple
-		# building_type = building_type:cathedral
-
-		# ==================
-		# MINING PRODUCTION (tools, weapons, cannons, firearms, steel, jewelry)
-		# ==================
-		building_type = building_type:mason
-		building_type = building_type:tools_guild
-		building_type = building_type:tools_workshop
-		building_type = building_type:iron_foundry
-		building_type = building_type:iron_mill
-		building_type = building_type:weapon_guild
-		building_type = building_type:weapon_workshop
-		building_type = building_type:weapon_manufactory
-		building_type = building_type:weapon_factory
-		building_type = building_type:cannon_maker
-		building_type = building_type:cannon_workshop
-		building_type = building_type:cannon_foundry
-		building_type = building_type:cannons_factory
-		building_type = building_type:hand_cannon_guild
-		building_type = building_type:gun_smith
-		building_type = building_type:guns_workshop
-		building_type = building_type:firearms_manufactory
-		building_type = building_type:firearms_factory
-		building_type = building_type:steel_mill
-		building_type = building_type:jewelry_guild
-
-		# ==================
-		# GATHERING PRODUCTION (glass, pottery, porcelain, apothecary)
-		# ==================
-		building_type = building_type:glass_guild
-		building_type = building_type:glass_workshop
-		building_type = building_type:glassworks
-		building_type = building_type:glass_mill
-		building_type = building_type:pottery_guild
-		building_type = building_type:pottery_workshop
-		building_type = building_type:pottery_manufactory
-		building_type = building_type:pottery_mill
-		building_type = building_type:porcelain_guild
-		building_type = building_type:porcelain_manufactory
-		building_type = building_type:apothecary
-
-		# ==================
-		# WOODLAND PRODUCTION (furniture, dyes, lacquerware, leather)
-		# ==================
-		building_type = building_type:furniture_guild
-		building_type = building_type:furniture_workshop
-		building_type = building_type:furniture_manufactory
-		building_type = building_type:furniture_mill
-		building_type = building_type:dyes_guild
-		building_type = building_type:dyes_workshop
-		building_type = building_type:dyesworks
-		building_type = building_type:dyes_mill
-		building_type = building_type:lacquerware_guild
-		building_type = building_type:lacquerware_manufactory
-		building_type = building_type:tannery
-		building_type = building_type:tanning_workshop
-		building_type = building_type:tannery_manufactory
-		building_type = building_type:tannery_mill
-
-		# ==================
-		# FARMING PRODUCTION (beer, wine, liquor, saltpeter)
-		# ==================
-		# Beer
-		building_type = building_type:brewery
-		building_type = building_type:beer_workshop
-		building_type = building_type:brewery_manufactory
-		building_type = building_type:brewery_mill
-		# Wine
-		building_type = building_type:winery
-		building_type = building_type:winery_manufactory
-		# Liquor
-		building_type = building_type:distillers_guild
-		building_type = building_type:distillers_workshop
-		building_type = building_type:distiller_manufactory
-		building_type = building_type:distiller_mill
-		# Saltpeter
-		building_type = building_type:saltpeter_guild
-		building_type = building_type:saltpeter_workshop
-		building_type = building_type:putrefaction_works
-		building_type = building_type:putrefaction_mill
-
-		# ==================
-		# COMMERCIAL PRODUCTION (cloth, fine cloth, paper, printing, naval supplies)
-		# ==================
-		# Cloth
-		building_type = building_type:cloth_guild
-		building_type = building_type:cloth_workshop
-		building_type = building_type:cloth_manufactory
-		building_type = building_type:textile_mill
-		# Fine cloth
-		building_type = building_type:fine_cloth_guild
-		building_type = building_type:fine_cloth_workshop
-		building_type = building_type:fine_cloth_manufactory
-		building_type = building_type:fine_cloth_mill
-		# Paper
-		building_type = building_type:paper_guild
-		building_type = building_type:paper_workshop
-		building_type = building_type:paper_manufactory
-		building_type = building_type:paper_mill
-		# Printing
-		building_type = building_type:scriptorium
-		building_type = building_type:printing_press_shop
-		building_type = building_type:printing_manufactory
-		building_type = building_type:printing_mill
-		# Naval supplies
-		building_type = building_type:naval_supplies_guild
-		building_type = building_type:naval_supplies_workshop
-		building_type = building_type:naval_supplies_manufactory
-		building_type = building_type:naval_supplies_mill
-		# Misc commercial
-		building_type = building_type:funduq
-		building_type = building_type:perfumery
-		building_type = building_type:university
-
-		# ==================
-		# TRADE BUILDINGS
-		# ==================
 		building_type = building_type:entrepot
 		building_type = building_type:trading_hub
 		building_type = building_type:customs_house
 		building_type = building_type:stock_exchange
 		building_type = building_type:clearing_house
 		building_type = building_type:market_warehouse
+		building_type = building_type:funduq
+		building_type = building_type:university
+		building_type = building_type:perfumery
+		# Production buildings (check by output goods)
+		building_produced_goods = goods:books
+		building_produced_goods = goods:cloth
+		building_produced_goods = goods:fine_cloth
+		building_produced_goods = goods:paper
+		building_produced_goods = goods:naval_supplies
+		# Shared with other specializations
+		building_produced_goods = goods:cannons
+		building_produced_goods = goods:beer
+		building_produced_goods = goods:dyes
+	}
+}
+
+# ============================================
+# BUILDING DESTRUCTION TRIGGER
+# root = building
+# Returns yes if this building type can be destroyed when assigning a specialization
+# Optimized: uses specialization triggers instead of 336 explicit building checks
+# ============================================
+
+is_destroyable_specialization_building = {
+	# Never destroy village buildings (peasant-worked rural buildings)
+	NOT = { building_category = village_category }
+	OR = {
+		is_mining_building = yes
+		is_farming_building = yes
+		is_woodland_building = yes
+		is_gathering_building = yes
+		is_commercial_building = yes
 	}
 }
 

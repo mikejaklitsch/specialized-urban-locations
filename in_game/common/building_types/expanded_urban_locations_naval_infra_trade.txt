@@ -4,7 +4,7 @@
 
 # ============================================
 # VANILLA NAVAL BUILDING ENHANCEMENTS
-# Add trade capacity and merchant power to ports
+# Add trade capacity, merchant power, and market access to ports
 # These should be better than river equivalents
 # ============================================
 
@@ -12,6 +12,7 @@ INJECT:dock = {
 	modifier = {
 		merchant_capacity_from_building = 0.5
 		merchant_power_from_building = 0.5
+		local_market_access = 0.02
 	}
 }
 
@@ -19,6 +20,7 @@ INJECT:dry_dock = {
 	modifier = {
 		merchant_capacity_from_building = 1.0
 		merchant_power_from_building = 1.0
+		local_market_access = 0.02
 	}
 }
 
@@ -26,6 +28,7 @@ INJECT:shipyard = {
 	modifier = {
 		merchant_capacity_from_building = 2.0
 		merchant_power_from_building = 2.0
+		local_market_access = 0.02
 	}
 }
 
@@ -33,6 +36,7 @@ INJECT:grand_shipyard = {
 	modifier = {
 		merchant_capacity_from_building = 4.0
 		merchant_power_from_building = 4.0
+		local_market_access = 0.02
 	}
 }
 
@@ -40,17 +44,19 @@ INJECT:naval_base = {
 	modifier = {
 		merchant_capacity_from_building = 8.0
 		merchant_power_from_building = 8.0
+		local_market_access = 0.02
 	}
 }
 
 # ============================================
-# RIVER TRADE BUILDINGS
+# INLAND NAVAL INFRASTRUCTURE
+# River-based alternatives to coastal naval buildings
 # ============================================
 
-river_wharf = {
+inland_wharf = { # River Wharf
 	is_foreign = no
 	max_levels = 1
-	increase_per_level_cost = 0.15
+	
 	pop_type = laborers
 
 	category = trade_category
@@ -61,31 +67,29 @@ river_wharf = {
 	town = yes
 	city = yes
 
-	country_potential = {
-		has_unlocked_advance = advance:dock_advance
-	}
-
 	location_potential = {
 		has_river = yes
 	}
 
 	build_time = medium_port_building_time
 
-	unique_production_methods = { river_wharf_maintenance }
-
 	construction_demand = town_building_construction
 
 	modifier = {
 		merchant_capacity_from_building = 0.25
 		merchant_power_from_building = 0.25
-		local_market_access = 0.002
+		local_market_access = 0.02
+		local_sailors = 0.001
+		local_distance_from_capital_cost_modifier = -0.025
 	}
+
+	unique_production_methods = { inland_wharf_maintenance }
 }
 
-river_dock = {
+inland_dock = { # River Dock
 	is_foreign = no
 	max_levels = 1
-	increase_per_level_cost = 0.15
+	
 	pop_type = laborers
 
 	category = trade_category
@@ -95,9 +99,39 @@ river_dock = {
 	town = yes
 	city = yes
 
-	country_potential = {
-		has_unlocked_advance = advance:dry_dock_advance
+	location_potential = {
+		has_river = yes
 	}
+
+	build_time = medium_port_building_time
+
+	construction_demand = town_building_construction
+
+	modifier = {
+		merchant_capacity_from_building = 0.5
+		merchant_power_from_building = 0.5
+		local_market_access = 0.02
+		local_sailors = 0.008
+		local_distance_from_capital_cost_modifier = -0.025
+	}
+
+	unique_production_methods = { inland_dock_maintenance }
+}
+
+inland_dry_dock = { # River Barge Yard
+	is_foreign = no
+	max_levels = 1
+	
+	pop_type = laborers
+
+	category = trade_category
+
+	obsolete = inland_dock
+
+	employment_size = dry_dock_employment
+
+	town = yes
+	city = yes
 
 	location_potential = {
 		has_river = yes
@@ -105,36 +139,34 @@ river_dock = {
 
 	build_time = medium_port_building_time
 
-	unique_production_methods = { river_dock_maintenance }
-
 	construction_demand = town_building_construction
 
 	modifier = {
-		merchant_capacity_from_building = 0.5
-		merchant_power_from_building = 0.5
-		local_market_access = 0.003
+		merchant_capacity_from_building = 1.0
+		merchant_power_from_building = 1.0
+		local_market_access = 0.02
+		local_sailors = 0.016
+		local_distance_from_capital_cost_modifier = -0.05
 		local_burghers_estate_power = 0.05
-		local_trades_per_burgher = 0.1
 	}
+
+	unique_production_methods = { inland_dry_dock_maintenance }
 }
 
-# City-only upgrade: River Exchange
-# A major inland trading hub with warehousing and barge coordination
-river_exchange = {
+inland_shipyard = { # River Quay
 	is_foreign = no
 	max_levels = 1
-	increase_per_level_cost = 0.15
+	
 	pop_type = laborers
 
 	category = trade_category
 
-	employment_size = dry_dock_employment
+	obsolete = inland_dry_dock
 
+	employment_size = shipyard_employment
+
+	town = yes
 	city = yes
-
-	country_potential = {
-		has_unlocked_advance = advance:shipyard_advance
-	}
 
 	location_potential = {
 		has_river = yes
@@ -142,16 +174,90 @@ river_exchange = {
 
 	build_time = large_port_building_time
 
-	unique_production_methods = { river_exchange_maintenance }
+	construction_demand = town_building_construction
+
+	modifier = {
+		merchant_capacity_from_building = 2.0
+		merchant_power_from_building = 2.0
+		local_market_access = 0.02
+		local_sailors = 0.032
+		local_distance_from_capital_cost_modifier = -0.075
+		local_burghers_estate_power = 0.1
+		local_trades_per_burgher = 0.1
+	}
+
+	unique_production_methods = { inland_shipyard_maintenance }
+}
+
+inland_grand_shipyard = { # Grand River Quay
+	is_foreign = no
+	max_levels = 1
+	
+	pop_type = laborers
+
+	category = trade_category
+
+	obsolete = inland_shipyard
+
+	employment_size = grand_shipyard_employment
+
+	town = yes
+	city = yes
+
+	location_potential = {
+		has_river = yes
+	}
+
+	build_time = large_port_building_time
 
 	construction_demand = town_building_construction
 
 	modifier = {
-		merchant_capacity_from_building = 1.0
-		merchant_power_from_building = 1.0
-		local_market_access = 0.005
-		local_burghers_estate_power = 0.1
+		merchant_capacity_from_building = 4.0
+		merchant_power_from_building = 4.0
+		local_market_access = 0.02
+		local_sailors = 0.063
+		local_distance_from_capital_cost_modifier = -0.1
+		local_burghers_estate_power = 0.15
 		local_trades_per_burgher = 0.15
+	}
+
+	unique_production_methods = { inland_grand_shipyard_maintenance }
+}
+
+inland_naval_base = { # Merchant Levee
+	is_foreign = no
+	max_levels = 1
+	
+	pop_type = laborers
+
+	category = trade_category
+
+	obsolete = inland_grand_shipyard
+
+	employment_size = naval_base_employment
+
+	town = yes
+	city = yes
+
+	location_potential = {
+		has_river = yes
+	}
+
+	build_time = large_port_building_time
+
+	construction_demand = town_building_construction
+
+	modifier = {
+		merchant_capacity_from_building = 8.0
+		merchant_power_from_building = 8.0
+		local_market_access = 0.02
+		local_sailors = 0.1
+		local_distance_from_capital_cost_modifier = -0.125
+		local_burghers_estate_power = 0.2
+		local_trades_per_burgher = 0.2
 		local_pop_assimilation_speed_modifier = 0.005
 	}
+
+	unique_production_methods = { inland_naval_base_maintenance }
 }

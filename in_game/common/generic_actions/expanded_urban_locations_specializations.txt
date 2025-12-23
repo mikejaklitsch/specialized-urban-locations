@@ -13,7 +13,7 @@ designate_mining_specialization = {
 	}
 
 	ai_tick = monthly
-	ai_tick_frequency = 1  # TEMP: was 12
+	ai_tick_frequency = 12
 
 	ai_prerequisite = {
 		current_year >= 1338
@@ -23,125 +23,50 @@ designate_mining_specialization = {
 	}
 
 	ai_will_do = {
-		# === AFFORDABILITY CHECK ===
-		# Town: need 300 gold + 5 prestige
-		if = {
-			limit = {
-				exists = scope:target
-				scope:target = { location_rank = location_rank:town }
-				scope:actor = {
-					OR = {
-						gold < 300
-						prestige < 5
-					}
-				}
-			}
-			add = { desc = "cannot_afford" value = -1000 }
-		}
-		# City: need 1000 gold + 10 prestige
-		if = {
-			limit = {
-				exists = scope:target
-				scope:target = { location_rank = location_rank:city }
-				scope:actor = {
-					OR = {
-						gold < 1000
-						prestige < 10
-					}
-				}
-			}
-			add = { desc = "cannot_afford" value = -1000 }
-		}
-
-		# Base inertia - AI resists changing specializations
-		add = {
-			desc = "inertia"
-			value = -6
-		}
-
-		# Town inertia - towns resist change more
+		# === AFFORDABILITY + INERTIA (branched by rank) ===
+		add = { desc = "inertia" value = -6 }
 		if = {
 			limit = { exists = scope:target scope:target = { location_rank = location_rank:town } }
 			add = { desc = "town_inertia" value = -5 }
+			if = {
+				limit = { scope:actor = { OR = { gold < 300 prestige < 5 } } }
+				add = { desc = "cannot_afford" value = -1000 }
+			}
 		}
-
-		# City inertia - cities resist change significantly
-		if = {
+		else_if = {
 			limit = { exists = scope:target scope:target = { location_rank = location_rank:city } }
 			add = { desc = "city_inertia" value = -10 }
-		}
-
-		# === TERRAIN BONUSES ===
-		# Mountains: big bonus (+8)
-		if = {
-			limit = {
-				exists = scope:target
-				scope:target = {
-					topography = mountains
-					can_specialize_mining = yes
-					NOT = { has_mining_specialization = yes }
-				}
-			}
-			add = {
-				desc = "mountains_terrain"
-				value = 4
+			if = {
+				limit = { scope:actor = { OR = { gold < 1000 prestige < 10 } } }
+				add = { desc = "cannot_afford" value = -1000 }
 			}
 		}
 
-		# Wetlands (bog iron): moderate bonus (+4)
-		if = {
-			limit = {
-				exists = scope:target
-				scope:target = {
-					topography = wetlands
-					can_specialize_mining = yes
-					NOT = { has_mining_specialization = yes }
-				}
-			}
-			add = {
-				desc = "wetlands_bog_iron"
-				value = 2
-			}
-		}
-
-		# Hills or plateau: small bonus (+2)
-		if = {
-			limit = {
-				exists = scope:target
-				scope:target = {
-					OR = {
-						topography = hills
-						topography = plateau
-					}
-					can_specialize_mining = yes
-					NOT = { has_mining_specialization = yes }
-				}
-			}
-			add = {
-				desc = "hills_plateau_terrain"
-				value = 1
-			}
-		}
-
-		# Has mining resources but no terrain bonus: base bonus (+3)
+		# === TERRAIN BONUSES (else_if chain - only one terrain can match) ===
 		if = {
 			limit = {
 				exists = scope:target
 				scope:target = {
 					can_specialize_mining = yes
 					NOT = { has_mining_specialization = yes }
-					NOR = {
-						topography = mountains
-						topography = hills
-						topography = plateau
-						topography = wetlands
-					}
 				}
 			}
-			add = {
-				desc = "mining_resources_base"
-				value = 3
+			# Wetlands (bog iron): best for mining - iron is more valuable than stone
+			if = {
+				limit = { scope:target = { topography = wetlands } }
+				add = { desc = "wetlands_bog_iron" value = 3 }
 			}
+			# Mountains: good for mining
+			else_if = {
+				limit = { scope:target = { topography = mountains } }
+				add = { desc = "mountains_terrain" value = 2 }
+			}
+			# Hills or plateau: marginal mining terrain
+			else_if = {
+				limit = { scope:target = { OR = { topography = hills topography = plateau } } }
+				add = { desc = "hills_plateau_terrain" value = 1 }
+			}
+			# Other terrain: no terrain bonus (resources still get value bonus)
 		}
 
 		# === RESOURCE VALUE BONUS ===
@@ -189,8 +114,12 @@ designate_mining_specialization = {
 			}
 		}
 
-		# === MARKET FACTORS ===
-		# High demand for raw mining goods: bonus (+4) - all location types
+		# === MARKET PRICE BONUSES (uses cached scaled values from market scope) ===
+		# Formula: (price / base_price - 1) × 8, capped at -8 to +16
+		# Positive = shortage (high prices encourage production)
+		# Negative = surplus (low prices discourage production)
+
+		# Raw mining goods (iron) price bonus - all location types
 		if = {
 			limit = {
 				exists = scope:target
@@ -198,18 +127,18 @@ designate_mining_specialization = {
 					can_specialize_mining = yes
 					NOT = { has_mining_specialization = yes }
 				}
-				OR = {
-					goods:iron = { price_in_market = { market = scope:actor.capital.market value > eul_iron_high } }
-					goods:stone = { price_in_market = { market = scope:actor.capital.market value > eul_stone_high } }
-				}
 			}
-			add = {
-				desc = "high_demand_raw"
-				value = 4
+			scope:target = {
+				market ?= {
+					add = {
+						desc = "iron_price_bonus"
+						value = location.var:eul_mining_raw_price_bonus
+					}
+				}
 			}
 		}
 
-		# High demand for finished mining products: bonus (+4) - towns/cities only
+		# Finished mining goods (tools) price bonus - towns/cities only
 		if = {
 			limit = {
 				exists = scope:target
@@ -218,21 +147,40 @@ designate_mining_specialization = {
 					NOT = { has_mining_specialization = yes }
 					NOT = { location_rank = location_rank:rural_settlement }
 				}
-				OR = {
-					goods:tools = { price_in_market = { market = scope:actor.capital.market value > eul_tools_high } }
-					goods:weaponry = { price_in_market = { market = scope:actor.capital.market value > eul_weaponry_high } }
-					goods:steel = { price_in_market = { market = scope:actor.capital.market value > eul_steel_high } }
-				}
 			}
-			add = {
-				desc = "high_demand_finished"
-				value = 4
+			scope:target = {
+				market ?= {
+					add = {
+						desc = "tools_price_bonus"
+						value = location.var:eul_mining_finished_price_bonus
+					}
+				}
 			}
 		}
 
 		# === MARKET SUPPLY/DEMAND RATIO ===
 		# Iron shortage/surplus: ±5 based on demand vs supply ratio
+		# Uses cached pressure value, falls back to calculation if cache missing
 		if = {
+			limit = {
+				exists = scope:target
+				scope:target = {
+					can_specialize_mining = yes
+					NOT = { has_mining_specialization = yes }
+					market ?= { location = { has_variable = eul_iron_pressure } }
+				}
+			}
+			scope:target = {
+				market ?= {
+					add = {
+						desc = "iron_market_pressure"
+						value = location.var:eul_iron_pressure
+					}
+				}
+			}
+		}
+		# Fallback for uncached markets
+		else_if = {
 			limit = {
 				exists = scope:target
 				scope:target = {
@@ -251,101 +199,92 @@ designate_mining_specialization = {
 		}
 
 		# === STAY PUT: Resist changing away from optimal spec/terrain matches ===
-		# Mining resource value - subtract price to resist changing away
+		# Branched by current specialization to reduce evaluations (was 16 flat checks, now max 4)
 		if = {
 			limit = { exists = scope:target scope:target = { has_mining_specialization = yes } }
-			scope:target.raw_material = {
-				subtract = "price_in_market(scope:actor.capital.market)"
+			# Resource value penalty
+			scope:target.raw_material = { subtract = "price_in_market(scope:actor.capital.market)" }
+			# Precious metals: never change
+			if = {
+				limit = { scope:target = { raw_material = goods:goods_gold } }
+				add = { desc = "stay_put_gold" value = -100 }
+			}
+			else_if = {
+				limit = { scope:target = { raw_material = goods:silver } }
+				add = { desc = "stay_put_silver" value = -100 }
+			}
+			# Terrain bonuses
+			if = {
+				limit = { scope:target = { topography = mountains } }
+				add = { desc = "stay_put_mining" value = -8 }
+			}
+			else_if = {
+				limit = { scope:target = { topography = wetlands } }
+				add = { desc = "stay_put_mining" value = -4 }
+			}
+			else_if = {
+				limit = { scope:target = { OR = { topography = hills topography = plateau } } }
+				add = { desc = "stay_put_mining" value = -2 }
 			}
 		}
-		# Gold: never change away from mining
-		if = {
-			limit = { exists = scope:target scope:target = { has_mining_specialization = yes raw_material = goods:goods_gold } }
-			add = { desc = "stay_put_gold" value = -100 }
-		}
-		# Silver: never change away from mining
-		if = {
-			limit = { exists = scope:target scope:target = { has_mining_specialization = yes raw_material = goods:silver } }
-			add = { desc = "stay_put_silver" value = -100 }
-		}
-		# Mining optimal terrain
-		if = {
-			limit = { exists = scope:target scope:target = { has_mining_specialization = yes topography = mountains } }
-			add = { desc = "stay_put_mining" value = -8 }
-		}
-		if = {
-			limit = { exists = scope:target scope:target = { has_mining_specialization = yes topography = wetlands } }
-			add = { desc = "stay_put_mining" value = -4 }
-		}
-		if = {
-			limit = { exists = scope:target scope:target = { has_mining_specialization = yes OR = { topography = hills topography = plateau } NOT = { topography = mountains } NOT = { topography = wetlands } } }
-			add = { desc = "stay_put_mining" value = -2 }
-		}
-		# Farming optimal terrain
-		if = {
-			limit = { exists = scope:target scope:target = { has_farming_specialization = yes vegetation = farmland } }
-			add = { desc = "stay_put_farming" value = -8 }
-		}
-		if = {
-			limit = { exists = scope:target scope:target = { has_farming_specialization = yes topography = flatland vegetation = grasslands NOT = { vegetation = farmland } } }
-			add = { desc = "stay_put_farming" value = -5 }
-		}
-		if = {
-			limit = { exists = scope:target scope:target = { has_farming_specialization = yes vegetation = grasslands NOT = { topography = flatland } NOT = { vegetation = farmland } } }
-			add = { desc = "stay_put_farming" value = -2 }
-		}
-		# Woodland optimal terrain
-		if = {
-			limit = { exists = scope:target scope:target = { has_woodland_specialization = yes OR = { vegetation = forest vegetation = woods } } }
-			add = { desc = "stay_put_woodland" value = -8 }
-		}
-		if = {
-			limit = { exists = scope:target scope:target = { has_woodland_specialization = yes OR = { topography = hills topography = plateau } NOR = { vegetation = forest vegetation = woods } } }
-			add = { desc = "stay_put_woodland" value = -2 }
-		}
-		# Gathering optimal terrain
-		if = {
-			limit = { exists = scope:target scope:target = { has_gathering_specialization = yes is_coastal = yes } }
-			add = { desc = "stay_put_gathering" value = -8 }
-		}
-		if = {
-			limit = { exists = scope:target scope:target = { has_gathering_specialization = yes has_river = yes NOT = { is_coastal = yes } } }
-			add = { desc = "stay_put_gathering" value = -7 }
-		}
-		if = {
-			limit = { exists = scope:target scope:target = { has_gathering_specialization = yes OR = { vegetation = forest vegetation = woods } NOT = { is_coastal = yes } NOT = { has_river = yes } } }
-			add = { desc = "stay_put_gathering" value = -2 }
-		}
-		# Commercial optimal terrain
-		if = {
-			limit = { exists = scope:target scope:target = { has_commercial_specialization = yes is_market_center = yes } }
-			add = { desc = "stay_put_commercial" value = -10 }
-		}
-		if = {
-			limit = { exists = scope:target scope:target = { has_commercial_specialization = yes modifier:harbor_suitability > 0.7 NOT = { is_market_center = yes } } }
-			add = { desc = "stay_put_commercial" value = -5 }
-		}
-		if = {
-			limit = { exists = scope:target scope:target = { has_commercial_specialization = yes OR = { is_coastal = yes has_river = yes } NOT = { is_market_center = yes } NOT = { modifier:harbor_suitability > 0.7 } } }
-			add = { desc = "stay_put_commercial" value = -2 }
-		}
-
-		# === CROSS-SPECIALIZATION RESOURCE VALUE STAY-PUT ===
-		# Penalize switching away from other specializations by their resource value
-		if = {
-			limit = {
-				exists = scope:target
-				scope:target = {
-					OR = {
-						has_farming_specialization = yes
-						has_woodland_specialization = yes
-						has_gathering_specialization = yes
-						has_commercial_specialization = yes
-					}
-				}
+		else_if = {
+			limit = { exists = scope:target scope:target = { has_farming_specialization = yes } }
+			scope:target.raw_material = { subtract = "price_in_market(scope:actor.capital.market)" }
+			if = {
+				limit = { scope:target = { vegetation = farmland } }
+				add = { desc = "stay_put_farming" value = -8 }
 			}
-			scope:target.raw_material = {
-				subtract = "price_in_market(scope:actor.capital.market)"
+			else_if = {
+				limit = { scope:target = { topography = flatland vegetation = grasslands } }
+				add = { desc = "stay_put_farming" value = -5 }
+			}
+			else_if = {
+				limit = { scope:target = { vegetation = grasslands } }
+				add = { desc = "stay_put_farming" value = -2 }
+			}
+		}
+		else_if = {
+			limit = { exists = scope:target scope:target = { has_woodland_specialization = yes } }
+			scope:target.raw_material = { subtract = "price_in_market(scope:actor.capital.market)" }
+			if = {
+				limit = { scope:target = { OR = { vegetation = forest vegetation = woods } } }
+				add = { desc = "stay_put_woodland" value = -8 }
+			}
+			else_if = {
+				limit = { scope:target = { OR = { topography = hills topography = plateau } } }
+				add = { desc = "stay_put_woodland" value = -2 }
+			}
+		}
+		else_if = {
+			limit = { exists = scope:target scope:target = { has_gathering_specialization = yes } }
+			scope:target.raw_material = { subtract = "price_in_market(scope:actor.capital.market)" }
+			if = {
+				limit = { scope:target = { is_coastal = yes } }
+				add = { desc = "stay_put_gathering" value = -8 }
+			}
+			else_if = {
+				limit = { scope:target = { has_river = yes } }
+				add = { desc = "stay_put_gathering" value = -7 }
+			}
+			else_if = {
+				limit = { scope:target = { OR = { vegetation = forest vegetation = woods } } }
+				add = { desc = "stay_put_gathering" value = -2 }
+			}
+		}
+		else_if = {
+			limit = { exists = scope:target scope:target = { has_commercial_specialization = yes } }
+			scope:target.raw_material = { subtract = "price_in_market(scope:actor.capital.market)" }
+			if = {
+				limit = { scope:target = { is_market_center = yes } }
+				add = { desc = "stay_put_commercial" value = -10 }
+			}
+			else_if = {
+				limit = { scope:target = { modifier:harbor_suitability > 0.7 } }
+				add = { desc = "stay_put_commercial" value = -5 }
+			}
+			else_if = {
+				limit = { scope:target = { OR = { is_coastal = yes has_river = yes } } }
+				add = { desc = "stay_put_commercial" value = -2 }
 			}
 		}
 
@@ -396,7 +335,7 @@ designate_mining_specialization = {
 		enabled = {
 			can_specialize_mining = yes
 			NOT = { has_mining_specialization = yes }
-			NOT = { has_cooldown = eul_specialization_cooldown }
+			NOT = { has_location_modifier = eul_specialization_cooldown }
 		}
 	}
 
@@ -545,8 +484,8 @@ designate_mining_specialization = {
 					add_location_modifier = { modifier = mining_city_specialization }
 				}
 				destroy_non_mining_buildings = yes
-				add_cooldown = {
-					type = eul_specialization_cooldown
+				add_location_modifier = {
+					modifier = eul_specialization_cooldown
 					years = 5
 				}
 			}
@@ -564,7 +503,7 @@ designate_farming_specialization = {
 	}
 
 	ai_tick = monthly
-	ai_tick_frequency = 1  # TEMP: was 12
+	ai_tick_frequency = 12
 
 	ai_prerequisite = {
 		current_year >= 1338
@@ -574,52 +513,23 @@ designate_farming_specialization = {
 	}
 
 	ai_will_do = {
-		# === AFFORDABILITY CHECK ===
-		# Town: need 300 gold + 5 prestige
-		if = {
-			limit = {
-				exists = scope:target
-				scope:target = { location_rank = location_rank:town }
-				scope:actor = {
-					OR = {
-						gold < 300
-						prestige < 5
-					}
-				}
-			}
-			add = { desc = "cannot_afford" value = -1000 }
-		}
-		# City: need 1000 gold + 10 prestige
-		if = {
-			limit = {
-				exists = scope:target
-				scope:target = { location_rank = location_rank:city }
-				scope:actor = {
-					OR = {
-						gold < 1000
-						prestige < 10
-					}
-				}
-			}
-			add = { desc = "cannot_afford" value = -1000 }
-		}
-
-		# Base inertia - AI resists changing specializations
-		add = {
-			desc = "inertia"
-			value = -6
-		}
-
-		# Town inertia - towns resist change more
+		# === AFFORDABILITY + INERTIA (branched by rank) ===
+		add = { desc = "inertia" value = -6 }
 		if = {
 			limit = { exists = scope:target scope:target = { location_rank = location_rank:town } }
 			add = { desc = "town_inertia" value = -5 }
+			if = {
+				limit = { scope:actor = { OR = { gold < 300 prestige < 5 } } }
+				add = { desc = "cannot_afford" value = -1000 }
+			}
 		}
-
-		# City inertia - cities resist change significantly
-		if = {
+		else_if = {
 			limit = { exists = scope:target scope:target = { location_rank = location_rank:city } }
 			add = { desc = "city_inertia" value = -10 }
+			if = {
+				limit = { scope:actor = { OR = { gold < 1000 prestige < 10 } } }
+				add = { desc = "cannot_afford" value = -1000 }
+			}
 		}
 
 		# === TERRAIN BONUSES ===
@@ -727,8 +637,10 @@ designate_farming_specialization = {
 			}
 		}
 
-		# === MARKET FACTORS ===
-		# High demand for raw farming goods: bonus (+4) - all location types
+		# === MARKET PRICE BONUSES (uses cached scaled values from market_center) ===
+		# Formula: (price / base_price - 1) × 8, capped at -8 to +16
+
+		# Raw farming goods (wool) price bonus - all location types
 		if = {
 			limit = {
 				exists = scope:target
@@ -736,19 +648,18 @@ designate_farming_specialization = {
 					can_specialize_farming = yes
 					NOT = { has_farming_specialization = yes }
 				}
-				OR = {
-					goods:wool = { price_in_market = { market = scope:actor.capital.market value > eul_wool_high } }
-					goods:fiber_crops = { price_in_market = { market = scope:actor.capital.market value > eul_fiber_crops_high } }
-					goods:fruit = { price_in_market = { market = scope:actor.capital.market value > eul_fruit_high } }
-				}
 			}
-			add = {
-				desc = "high_demand_raw"
-				value = 4
+			scope:target = {
+				market ?= {
+					add = {
+						desc = "wool_price_bonus"
+						value = location.var:eul_farming_raw_price_bonus
+					}
+				}
 			}
 		}
 
-		# High demand for finished farming products: bonus (+4) - towns/cities only
+		# Finished farming goods (leather) price bonus - towns/cities only
 		if = {
 			limit = {
 				exists = scope:target
@@ -757,22 +668,39 @@ designate_farming_specialization = {
 					NOT = { has_farming_specialization = yes }
 					NOT = { location_rank = location_rank:rural_settlement }
 				}
-				OR = {
-					goods:beer = { price_in_market = { market = scope:actor.capital.market value > eul_beer_high } }
-					goods:liquor = { price_in_market = { market = scope:actor.capital.market value > eul_liquor_high } }
-					goods:leather = { price_in_market = { market = scope:actor.capital.market value > eul_leather_high } }
-					goods:wine = { price_in_market = { market = scope:actor.capital.market value > eul_wine_high } }
-				}
 			}
-			add = {
-				desc = "high_demand_finished"
-				value = 4
+			scope:target = {
+				market ?= {
+					add = {
+						desc = "leather_price_bonus"
+						value = location.var:eul_farming_finished_price_bonus
+					}
+				}
 			}
 		}
 
 		# === MARKET SUPPLY/DEMAND RATIO ===
 		# Wool shortage/surplus: ±5 based on demand vs supply ratio
 		if = {
+			limit = {
+				exists = scope:target
+				scope:target = {
+					can_specialize_farming = yes
+					NOT = { has_farming_specialization = yes }
+					market ?= { location = { has_variable = eul_wool_pressure } }
+				}
+			}
+			scope:target = {
+				market ?= {
+					add = {
+						desc = "wool_market_pressure"
+						value = location.var:eul_wool_pressure
+					}
+				}
+			}
+		}
+		# Fallback for uncached markets
+		else_if = {
 			limit = {
 				exists = scope:target
 				scope:target = {
@@ -797,6 +725,25 @@ designate_farming_specialization = {
 				scope:target = {
 					can_specialize_farming = yes
 					NOT = { has_farming_specialization = yes }
+					market ?= { location = { has_variable = eul_wheat_pressure } }
+				}
+			}
+			scope:target = {
+				market ?= {
+					add = {
+						desc = "wheat_market_pressure"
+						value = location.var:eul_wheat_pressure
+					}
+				}
+			}
+		}
+		# Fallback for uncached markets
+		else_if = {
+			limit = {
+				exists = scope:target
+				scope:target = {
+					can_specialize_farming = yes
+					NOT = { has_farming_specialization = yes }
 				}
 			}
 			scope:target = {
@@ -810,91 +757,89 @@ designate_farming_specialization = {
 		}
 
 		# === STAY PUT: Resist changing away from optimal spec/terrain matches ===
-		# Farming resource value - subtract price to resist changing away
+		# Branched by current specialization to reduce evaluations (was 16 flat checks, now max 4)
 		if = {
+			limit = { exists = scope:target scope:target = { has_mining_specialization = yes } }
+			scope:target.raw_material = { subtract = "price_in_market(scope:actor.capital.market)" }
+			if = {
+				limit = { scope:target = { raw_material = goods:goods_gold } }
+				add = { desc = "stay_put_gold" value = -100 }
+			}
+			else_if = {
+				limit = { scope:target = { raw_material = goods:silver } }
+				add = { desc = "stay_put_silver" value = -100 }
+			}
+			if = {
+				limit = { scope:target = { topography = mountains } }
+				add = { desc = "stay_put_mining" value = -8 }
+			}
+			else_if = {
+				limit = { scope:target = { topography = wetlands } }
+				add = { desc = "stay_put_mining" value = -4 }
+			}
+			else_if = {
+				limit = { scope:target = { OR = { topography = hills topography = plateau } } }
+				add = { desc = "stay_put_mining" value = -2 }
+			}
+		}
+		else_if = {
 			limit = { exists = scope:target scope:target = { has_farming_specialization = yes } }
-			scope:target.raw_material = {
-				subtract = "price_in_market(scope:actor.capital.market)"
+			scope:target.raw_material = { subtract = "price_in_market(scope:actor.capital.market)" }
+			if = {
+				limit = { scope:target = { vegetation = farmland } }
+				add = { desc = "stay_put_farming" value = -8 }
+			}
+			else_if = {
+				limit = { scope:target = { topography = flatland vegetation = grasslands } }
+				add = { desc = "stay_put_farming" value = -5 }
+			}
+			else_if = {
+				limit = { scope:target = { vegetation = grasslands } }
+				add = { desc = "stay_put_farming" value = -2 }
 			}
 		}
-		# Mining optimal terrain
-		if = {
-			limit = { exists = scope:target scope:target = { has_mining_specialization = yes topography = mountains } }
-			add = { desc = "stay_put_mining" value = -8 }
-		}
-		if = {
-			limit = { exists = scope:target scope:target = { has_mining_specialization = yes topography = wetlands } }
-			add = { desc = "stay_put_mining" value = -4 }
-		}
-		if = {
-			limit = { exists = scope:target scope:target = { has_mining_specialization = yes OR = { topography = hills topography = plateau } NOT = { topography = mountains } NOT = { topography = wetlands } } }
-			add = { desc = "stay_put_mining" value = -2 }
-		}
-		# Farming optimal terrain
-		if = {
-			limit = { exists = scope:target scope:target = { has_farming_specialization = yes vegetation = farmland } }
-			add = { desc = "stay_put_farming" value = -8 }
-		}
-		if = {
-			limit = { exists = scope:target scope:target = { has_farming_specialization = yes topography = flatland vegetation = grasslands NOT = { vegetation = farmland } } }
-			add = { desc = "stay_put_farming" value = -5 }
-		}
-		if = {
-			limit = { exists = scope:target scope:target = { has_farming_specialization = yes vegetation = grasslands NOT = { topography = flatland } NOT = { vegetation = farmland } } }
-			add = { desc = "stay_put_farming" value = -2 }
-		}
-		# Woodland optimal terrain
-		if = {
-			limit = { exists = scope:target scope:target = { has_woodland_specialization = yes OR = { vegetation = forest vegetation = woods } } }
-			add = { desc = "stay_put_woodland" value = -8 }
-		}
-		if = {
-			limit = { exists = scope:target scope:target = { has_woodland_specialization = yes OR = { topography = hills topography = plateau } NOR = { vegetation = forest vegetation = woods } } }
-			add = { desc = "stay_put_woodland" value = -2 }
-		}
-		# Gathering optimal terrain
-		if = {
-			limit = { exists = scope:target scope:target = { has_gathering_specialization = yes is_coastal = yes } }
-			add = { desc = "stay_put_gathering" value = -8 }
-		}
-		if = {
-			limit = { exists = scope:target scope:target = { has_gathering_specialization = yes has_river = yes NOT = { is_coastal = yes } } }
-			add = { desc = "stay_put_gathering" value = -7 }
-		}
-		if = {
-			limit = { exists = scope:target scope:target = { has_gathering_specialization = yes OR = { vegetation = forest vegetation = woods } NOT = { is_coastal = yes } NOT = { has_river = yes } } }
-			add = { desc = "stay_put_gathering" value = -2 }
-		}
-		# Commercial optimal terrain
-		if = {
-			limit = { exists = scope:target scope:target = { has_commercial_specialization = yes is_market_center = yes } }
-			add = { desc = "stay_put_commercial" value = -10 }
-		}
-		if = {
-			limit = { exists = scope:target scope:target = { has_commercial_specialization = yes modifier:harbor_suitability > 0.7 NOT = { is_market_center = yes } } }
-			add = { desc = "stay_put_commercial" value = -5 }
-		}
-		if = {
-			limit = { exists = scope:target scope:target = { has_commercial_specialization = yes OR = { is_coastal = yes has_river = yes } NOT = { is_market_center = yes } NOT = { modifier:harbor_suitability > 0.7 } } }
-			add = { desc = "stay_put_commercial" value = -2 }
-		}
-
-		# === CROSS-SPECIALIZATION RESOURCE VALUE STAY-PUT ===
-		# Penalize switching away from other specializations by their resource value
-		if = {
-			limit = {
-				exists = scope:target
-				scope:target = {
-					OR = {
-						has_mining_specialization = yes
-						has_woodland_specialization = yes
-						has_gathering_specialization = yes
-						has_commercial_specialization = yes
-					}
-				}
+		else_if = {
+			limit = { exists = scope:target scope:target = { has_woodland_specialization = yes } }
+			scope:target.raw_material = { subtract = "price_in_market(scope:actor.capital.market)" }
+			if = {
+				limit = { scope:target = { OR = { vegetation = forest vegetation = woods } } }
+				add = { desc = "stay_put_woodland" value = -8 }
 			}
-			scope:target.raw_material = {
-				subtract = "price_in_market(scope:actor.capital.market)"
+			else_if = {
+				limit = { scope:target = { OR = { topography = hills topography = plateau } } }
+				add = { desc = "stay_put_woodland" value = -2 }
+			}
+		}
+		else_if = {
+			limit = { exists = scope:target scope:target = { has_gathering_specialization = yes } }
+			scope:target.raw_material = { subtract = "price_in_market(scope:actor.capital.market)" }
+			if = {
+				limit = { scope:target = { is_coastal = yes } }
+				add = { desc = "stay_put_gathering" value = -8 }
+			}
+			else_if = {
+				limit = { scope:target = { has_river = yes } }
+				add = { desc = "stay_put_gathering" value = -7 }
+			}
+			else_if = {
+				limit = { scope:target = { OR = { vegetation = forest vegetation = woods } } }
+				add = { desc = "stay_put_gathering" value = -2 }
+			}
+		}
+		else_if = {
+			limit = { exists = scope:target scope:target = { has_commercial_specialization = yes } }
+			scope:target.raw_material = { subtract = "price_in_market(scope:actor.capital.market)" }
+			if = {
+				limit = { scope:target = { is_market_center = yes } }
+				add = { desc = "stay_put_commercial" value = -10 }
+			}
+			else_if = {
+				limit = { scope:target = { modifier:harbor_suitability > 0.7 } }
+				add = { desc = "stay_put_commercial" value = -5 }
+			}
+			else_if = {
+				limit = { scope:target = { OR = { is_coastal = yes has_river = yes } } }
+				add = { desc = "stay_put_commercial" value = -2 }
 			}
 		}
 
@@ -945,7 +890,7 @@ designate_farming_specialization = {
 		enabled = {
 			can_specialize_farming = yes
 			NOT = { has_farming_specialization = yes }
-			NOT = { has_cooldown = eul_specialization_cooldown }
+			NOT = { has_location_modifier = eul_specialization_cooldown }
 		}
 	}
 
@@ -1094,8 +1039,8 @@ designate_farming_specialization = {
 					add_location_modifier = { modifier = farming_city_specialization }
 				}
 				destroy_non_farming_buildings = yes
-				add_cooldown = {
-					type = eul_specialization_cooldown
+				add_location_modifier = {
+					modifier = eul_specialization_cooldown
 					years = 5
 				}
 			}
@@ -1113,7 +1058,7 @@ designate_woodland_specialization = {
 	}
 
 	ai_tick = monthly
-	ai_tick_frequency = 1  # TEMP: was 12
+	ai_tick_frequency = 12
 
 	ai_prerequisite = {
 		current_year >= 1338
@@ -1123,52 +1068,23 @@ designate_woodland_specialization = {
 	}
 
 	ai_will_do = {
-		# === AFFORDABILITY CHECK ===
-		# Town: need 300 gold + 5 prestige
-		if = {
-			limit = {
-				exists = scope:target
-				scope:target = { location_rank = location_rank:town }
-				scope:actor = {
-					OR = {
-						gold < 300
-						prestige < 5
-					}
-				}
-			}
-			add = { desc = "cannot_afford" value = -1000 }
-		}
-		# City: need 1000 gold + 10 prestige
-		if = {
-			limit = {
-				exists = scope:target
-				scope:target = { location_rank = location_rank:city }
-				scope:actor = {
-					OR = {
-						gold < 1000
-						prestige < 10
-					}
-				}
-			}
-			add = { desc = "cannot_afford" value = -1000 }
-		}
-
-		# Base inertia - AI resists changing specializations
-		add = {
-			desc = "inertia"
-			value = -6
-		}
-
-		# Town inertia - towns resist change more
+		# === AFFORDABILITY + INERTIA (branched by rank) ===
+		add = { desc = "inertia" value = -6 }
 		if = {
 			limit = { exists = scope:target scope:target = { location_rank = location_rank:town } }
 			add = { desc = "town_inertia" value = -5 }
+			if = {
+				limit = { scope:actor = { OR = { gold < 300 prestige < 5 } } }
+				add = { desc = "cannot_afford" value = -1000 }
+			}
 		}
-
-		# City inertia - cities resist change significantly
-		if = {
+		else_if = {
 			limit = { exists = scope:target scope:target = { location_rank = location_rank:city } }
 			add = { desc = "city_inertia" value = -10 }
+			if = {
+				limit = { scope:actor = { OR = { gold < 1000 prestige < 10 } } }
+				add = { desc = "cannot_afford" value = -1000 }
+			}
 		}
 
 		# === TERRAIN BONUSES ===
@@ -1247,8 +1163,10 @@ designate_woodland_specialization = {
 			}
 		}
 
-		# === MARKET FACTORS ===
-		# High demand for raw woodland goods: bonus (+4) - all location types
+		# === MARKET PRICE BONUSES (uses cached scaled values from market_center) ===
+		# Formula: (price / base_price - 1) × 8, capped at -8 to +16
+
+		# Raw woodland goods (lumber) price bonus - all location types
 		if = {
 			limit = {
 				exists = scope:target
@@ -1256,19 +1174,18 @@ designate_woodland_specialization = {
 					can_specialize_woodland = yes
 					NOT = { has_woodland_specialization = yes }
 				}
-				OR = {
-					goods:lumber = { price_in_market = { market = scope:actor.capital.market value > eul_lumber_high } }
-					goods:tar = { price_in_market = { market = scope:actor.capital.market value > eul_tar_high } }
-					goods:coal = { price_in_market = { market = scope:actor.capital.market value > eul_coal_high } }
-				}
 			}
-			add = {
-				desc = "high_demand_raw"
-				value = 4
+			scope:target = {
+				market ?= {
+					add = {
+						desc = "lumber_price_bonus"
+						value = location.var:eul_woodland_raw_price_bonus
+					}
+				}
 			}
 		}
 
-		# High demand for finished woodland products: bonus (+4) - towns/cities only
+		# Finished woodland goods (furniture) price bonus - towns/cities only
 		if = {
 			limit = {
 				exists = scope:target
@@ -1277,20 +1194,39 @@ designate_woodland_specialization = {
 					NOT = { has_woodland_specialization = yes }
 					NOT = { location_rank = location_rank:rural_settlement }
 				}
-				OR = {
-					goods:furniture = { price_in_market = { market = scope:actor.capital.market value > eul_furniture_high } }
-					goods:naval_supplies = { price_in_market = { market = scope:actor.capital.market value > eul_naval_supplies_high } }
-				}
 			}
-			add = {
-				desc = "high_demand_finished"
-				value = 4
+			scope:target = {
+				market ?= {
+					add = {
+						desc = "furniture_price_bonus"
+						value = location.var:eul_woodland_finished_price_bonus
+					}
+				}
 			}
 		}
 
 		# === MARKET SUPPLY/DEMAND RATIO ===
 		# Lumber shortage/surplus: ±5 based on demand vs supply ratio
 		if = {
+			limit = {
+				exists = scope:target
+				scope:target = {
+					can_specialize_woodland = yes
+					NOT = { has_woodland_specialization = yes }
+					market ?= { location = { has_variable = eul_lumber_pressure } }
+				}
+			}
+			scope:target = {
+				market ?= {
+					add = {
+						desc = "lumber_market_pressure"
+						value = location.var:eul_lumber_pressure
+					}
+				}
+			}
+		}
+		# Fallback for uncached markets
+		else_if = {
 			limit = {
 				exists = scope:target
 				scope:target = {
@@ -1309,91 +1245,81 @@ designate_woodland_specialization = {
 		}
 
 		# === STAY PUT: Resist changing away from optimal spec/terrain matches ===
-		# Woodland resource value - subtract price to resist changing away
+		# Branched by current specialization to reduce evaluations (was 16 flat checks, now max 4)
 		if = {
+			limit = { exists = scope:target scope:target = { has_mining_specialization = yes } }
+			scope:target.raw_material = { subtract = "price_in_market(scope:actor.capital.market)" }
+			if = {
+				limit = { scope:target = { topography = mountains } }
+				add = { desc = "stay_put_mining" value = -8 }
+			}
+			else_if = {
+				limit = { scope:target = { topography = wetlands } }
+				add = { desc = "stay_put_mining" value = -4 }
+			}
+			else_if = {
+				limit = { scope:target = { OR = { topography = hills topography = plateau } } }
+				add = { desc = "stay_put_mining" value = -2 }
+			}
+		}
+		else_if = {
+			limit = { exists = scope:target scope:target = { has_farming_specialization = yes } }
+			scope:target.raw_material = { subtract = "price_in_market(scope:actor.capital.market)" }
+			if = {
+				limit = { scope:target = { vegetation = farmland } }
+				add = { desc = "stay_put_farming" value = -8 }
+			}
+			else_if = {
+				limit = { scope:target = { topography = flatland vegetation = grasslands } }
+				add = { desc = "stay_put_farming" value = -5 }
+			}
+			else_if = {
+				limit = { scope:target = { vegetation = grasslands } }
+				add = { desc = "stay_put_farming" value = -2 }
+			}
+		}
+		else_if = {
 			limit = { exists = scope:target scope:target = { has_woodland_specialization = yes } }
-			scope:target.raw_material = {
-				subtract = "price_in_market(scope:actor.capital.market)"
+			scope:target.raw_material = { subtract = "price_in_market(scope:actor.capital.market)" }
+			if = {
+				limit = { scope:target = { OR = { vegetation = forest vegetation = woods } } }
+				add = { desc = "stay_put_woodland" value = -8 }
+			}
+			else_if = {
+				limit = { scope:target = { OR = { topography = hills topography = plateau } } }
+				add = { desc = "stay_put_woodland" value = -2 }
 			}
 		}
-		# Mining optimal terrain
-		if = {
-			limit = { exists = scope:target scope:target = { has_mining_specialization = yes topography = mountains } }
-			add = { desc = "stay_put_mining" value = -8 }
-		}
-		if = {
-			limit = { exists = scope:target scope:target = { has_mining_specialization = yes topography = wetlands } }
-			add = { desc = "stay_put_mining" value = -4 }
-		}
-		if = {
-			limit = { exists = scope:target scope:target = { has_mining_specialization = yes OR = { topography = hills topography = plateau } NOT = { topography = mountains } NOT = { topography = wetlands } } }
-			add = { desc = "stay_put_mining" value = -2 }
-		}
-		# Farming optimal terrain
-		if = {
-			limit = { exists = scope:target scope:target = { has_farming_specialization = yes vegetation = farmland } }
-			add = { desc = "stay_put_farming" value = -8 }
-		}
-		if = {
-			limit = { exists = scope:target scope:target = { has_farming_specialization = yes topography = flatland vegetation = grasslands NOT = { vegetation = farmland } } }
-			add = { desc = "stay_put_farming" value = -5 }
-		}
-		if = {
-			limit = { exists = scope:target scope:target = { has_farming_specialization = yes vegetation = grasslands NOT = { topography = flatland } NOT = { vegetation = farmland } } }
-			add = { desc = "stay_put_farming" value = -2 }
-		}
-		# Woodland optimal terrain
-		if = {
-			limit = { exists = scope:target scope:target = { has_woodland_specialization = yes OR = { vegetation = forest vegetation = woods } } }
-			add = { desc = "stay_put_woodland" value = -8 }
-		}
-		if = {
-			limit = { exists = scope:target scope:target = { has_woodland_specialization = yes OR = { topography = hills topography = plateau } NOR = { vegetation = forest vegetation = woods } } }
-			add = { desc = "stay_put_woodland" value = -2 }
-		}
-		# Gathering optimal terrain
-		if = {
-			limit = { exists = scope:target scope:target = { has_gathering_specialization = yes is_coastal = yes } }
-			add = { desc = "stay_put_gathering" value = -8 }
-		}
-		if = {
-			limit = { exists = scope:target scope:target = { has_gathering_specialization = yes has_river = yes NOT = { is_coastal = yes } } }
-			add = { desc = "stay_put_gathering" value = -7 }
-		}
-		if = {
-			limit = { exists = scope:target scope:target = { has_gathering_specialization = yes OR = { vegetation = forest vegetation = woods } NOT = { is_coastal = yes } NOT = { has_river = yes } } }
-			add = { desc = "stay_put_gathering" value = -2 }
-		}
-		# Commercial optimal terrain
-		if = {
-			limit = { exists = scope:target scope:target = { has_commercial_specialization = yes is_market_center = yes } }
-			add = { desc = "stay_put_commercial" value = -10 }
-		}
-		if = {
-			limit = { exists = scope:target scope:target = { has_commercial_specialization = yes modifier:harbor_suitability > 0.7 NOT = { is_market_center = yes } } }
-			add = { desc = "stay_put_commercial" value = -5 }
-		}
-		if = {
-			limit = { exists = scope:target scope:target = { has_commercial_specialization = yes OR = { is_coastal = yes has_river = yes } NOT = { is_market_center = yes } NOT = { modifier:harbor_suitability > 0.7 } } }
-			add = { desc = "stay_put_commercial" value = -2 }
-		}
-
-		# === CROSS-SPECIALIZATION RESOURCE VALUE STAY-PUT ===
-		# Penalize switching away from other specializations by their resource value
-		if = {
-			limit = {
-				exists = scope:target
-				scope:target = {
-					OR = {
-						has_mining_specialization = yes
-						has_farming_specialization = yes
-						has_gathering_specialization = yes
-						has_commercial_specialization = yes
-					}
-				}
+		else_if = {
+			limit = { exists = scope:target scope:target = { has_gathering_specialization = yes } }
+			scope:target.raw_material = { subtract = "price_in_market(scope:actor.capital.market)" }
+			if = {
+				limit = { scope:target = { is_coastal = yes } }
+				add = { desc = "stay_put_gathering" value = -8 }
 			}
-			scope:target.raw_material = {
-				subtract = "price_in_market(scope:actor.capital.market)"
+			else_if = {
+				limit = { scope:target = { has_river = yes } }
+				add = { desc = "stay_put_gathering" value = -7 }
+			}
+			else_if = {
+				limit = { scope:target = { OR = { vegetation = forest vegetation = woods } } }
+				add = { desc = "stay_put_gathering" value = -2 }
+			}
+		}
+		else_if = {
+			limit = { exists = scope:target scope:target = { has_commercial_specialization = yes } }
+			scope:target.raw_material = { subtract = "price_in_market(scope:actor.capital.market)" }
+			if = {
+				limit = { scope:target = { is_market_center = yes } }
+				add = { desc = "stay_put_commercial" value = -10 }
+			}
+			else_if = {
+				limit = { scope:target = { modifier:harbor_suitability > 0.7 } }
+				add = { desc = "stay_put_commercial" value = -5 }
+			}
+			else_if = {
+				limit = { scope:target = { OR = { is_coastal = yes has_river = yes } } }
+				add = { desc = "stay_put_commercial" value = -2 }
 			}
 		}
 
@@ -1444,7 +1370,7 @@ designate_woodland_specialization = {
 		enabled = {
 			can_specialize_woodland = yes
 			NOT = { has_woodland_specialization = yes }
-			NOT = { has_cooldown = eul_specialization_cooldown }
+			NOT = { has_location_modifier = eul_specialization_cooldown }
 		}
 	}
 
@@ -1593,8 +1519,8 @@ designate_woodland_specialization = {
 					add_location_modifier = { modifier = woodland_city_specialization }
 				}
 				destroy_non_woodland_buildings = yes
-				add_cooldown = {
-					type = eul_specialization_cooldown
+				add_location_modifier = {
+					modifier = eul_specialization_cooldown
 					years = 5
 				}
 			}
@@ -1612,7 +1538,7 @@ designate_gathering_specialization = {
 	}
 
 	ai_tick = monthly
-	ai_tick_frequency = 1  # TEMP: was 12
+	ai_tick_frequency = 12
 
 	ai_prerequisite = {
 		current_year >= 1338
@@ -1622,52 +1548,23 @@ designate_gathering_specialization = {
 	}
 
 	ai_will_do = {
-		# === AFFORDABILITY CHECK ===
-		# Town: need 300 gold + 5 prestige
-		if = {
-			limit = {
-				exists = scope:target
-				scope:target = { location_rank = location_rank:town }
-				scope:actor = {
-					OR = {
-						gold < 300
-						prestige < 5
-					}
-				}
-			}
-			add = { desc = "cannot_afford" value = -1000 }
-		}
-		# City: need 1000 gold + 10 prestige
-		if = {
-			limit = {
-				exists = scope:target
-				scope:target = { location_rank = location_rank:city }
-				scope:actor = {
-					OR = {
-						gold < 1000
-						prestige < 10
-					}
-				}
-			}
-			add = { desc = "cannot_afford" value = -1000 }
-		}
-
-		# Base inertia - AI resists changing specializations
-		add = {
-			desc = "inertia"
-			value = -6
-		}
-
-		# Town inertia - towns resist change more
+		# === AFFORDABILITY + INERTIA (branched by rank) ===
+		add = { desc = "inertia" value = -6 }
 		if = {
 			limit = { exists = scope:target scope:target = { location_rank = location_rank:town } }
 			add = { desc = "town_inertia" value = -5 }
+			if = {
+				limit = { scope:actor = { OR = { gold < 300 prestige < 5 } } }
+				add = { desc = "cannot_afford" value = -1000 }
+			}
 		}
-
-		# City inertia - cities resist change significantly
-		if = {
+		else_if = {
 			limit = { exists = scope:target scope:target = { location_rank = location_rank:city } }
 			add = { desc = "city_inertia" value = -10 }
+			if = {
+				limit = { scope:actor = { OR = { gold < 1000 prestige < 10 } } }
+				add = { desc = "cannot_afford" value = -1000 }
+			}
 		}
 
 		# === TERRAIN BONUSES ===
@@ -1754,8 +1651,10 @@ designate_gathering_specialization = {
 			}
 		}
 
-		# === MARKET FACTORS ===
-		# High demand for raw gathering goods: bonus (+4) - all location types
+		# === MARKET PRICE BONUSES (uses cached scaled values from market_center) ===
+		# Formula: (price / base_price - 1) × 8, capped at -8 to +16
+
+		# Raw gathering goods (salt) price bonus - all location types
 		if = {
 			limit = {
 				exists = scope:target
@@ -1763,19 +1662,18 @@ designate_gathering_specialization = {
 					can_specialize_gathering = yes
 					NOT = { has_gathering_specialization = yes }
 				}
-				OR = {
-					goods:salt = { price_in_market = { market = scope:actor.capital.market value > eul_salt_high } }
-					goods:fish = { price_in_market = { market = scope:actor.capital.market value > eul_fish_high } }
-					goods:clay = { price_in_market = { market = scope:actor.capital.market value > eul_clay_high } }
-				}
 			}
-			add = {
-				desc = "high_demand_raw"
-				value = 4
+			scope:target = {
+				market ?= {
+					add = {
+						desc = "salt_price_bonus"
+						value = location.var:eul_gathering_raw_price_bonus
+					}
+				}
 			}
 		}
 
-		# High demand for finished gathering products: bonus (+4) - towns/cities only
+		# Finished gathering goods (pottery) price bonus - towns/cities only
 		if = {
 			limit = {
 				exists = scope:target
@@ -1784,20 +1682,39 @@ designate_gathering_specialization = {
 					NOT = { has_gathering_specialization = yes }
 					NOT = { location_rank = location_rank:rural_settlement }
 				}
-				OR = {
-					goods:pottery = { price_in_market = { market = scope:actor.capital.market value > eul_pottery_high } }
-					goods:porcelain = { price_in_market = { market = scope:actor.capital.market value > eul_porcelain_high } }
-				}
 			}
-			add = {
-				desc = "high_demand_finished"
-				value = 4
+			scope:target = {
+				market ?= {
+					add = {
+						desc = "pottery_price_bonus"
+						value = location.var:eul_gathering_finished_price_bonus
+					}
+				}
 			}
 		}
 
 		# === MARKET SUPPLY/DEMAND RATIO ===
 		# Salt shortage/surplus: ±5 based on demand vs supply ratio
 		if = {
+			limit = {
+				exists = scope:target
+				scope:target = {
+					can_specialize_gathering = yes
+					NOT = { has_gathering_specialization = yes }
+					market ?= { location = { has_variable = eul_salt_pressure } }
+				}
+			}
+			scope:target = {
+				market ?= {
+					add = {
+						desc = "salt_market_pressure"
+						value = location.var:eul_salt_pressure
+					}
+				}
+			}
+		}
+		# Fallback for uncached markets
+		else_if = {
 			limit = {
 				exists = scope:target
 				scope:target = {
@@ -1822,6 +1739,25 @@ designate_gathering_specialization = {
 				scope:target = {
 					can_specialize_gathering = yes
 					NOT = { has_gathering_specialization = yes }
+					market ?= { location = { has_variable = eul_clay_pressure } }
+				}
+			}
+			scope:target = {
+				market ?= {
+					add = {
+						desc = "clay_market_pressure"
+						value = location.var:eul_clay_pressure
+					}
+				}
+			}
+		}
+		# Fallback for uncached markets
+		else_if = {
+			limit = {
+				exists = scope:target
+				scope:target = {
+					can_specialize_gathering = yes
+					NOT = { has_gathering_specialization = yes }
 				}
 			}
 			scope:target = {
@@ -1835,91 +1771,81 @@ designate_gathering_specialization = {
 		}
 
 		# === STAY PUT: Resist changing away from optimal spec/terrain matches ===
-		# Gathering resource value - subtract price to resist changing away
+		# Branched by current specialization to reduce evaluations (was 16 flat checks, now max 4)
 		if = {
+			limit = { exists = scope:target scope:target = { has_mining_specialization = yes } }
+			scope:target.raw_material = { subtract = "price_in_market(scope:actor.capital.market)" }
+			if = {
+				limit = { scope:target = { topography = mountains } }
+				add = { desc = "stay_put_mining" value = -8 }
+			}
+			else_if = {
+				limit = { scope:target = { topography = wetlands } }
+				add = { desc = "stay_put_mining" value = -4 }
+			}
+			else_if = {
+				limit = { scope:target = { OR = { topography = hills topography = plateau } } }
+				add = { desc = "stay_put_mining" value = -2 }
+			}
+		}
+		else_if = {
+			limit = { exists = scope:target scope:target = { has_farming_specialization = yes } }
+			scope:target.raw_material = { subtract = "price_in_market(scope:actor.capital.market)" }
+			if = {
+				limit = { scope:target = { vegetation = farmland } }
+				add = { desc = "stay_put_farming" value = -8 }
+			}
+			else_if = {
+				limit = { scope:target = { topography = flatland vegetation = grasslands } }
+				add = { desc = "stay_put_farming" value = -5 }
+			}
+			else_if = {
+				limit = { scope:target = { vegetation = grasslands } }
+				add = { desc = "stay_put_farming" value = -2 }
+			}
+		}
+		else_if = {
+			limit = { exists = scope:target scope:target = { has_woodland_specialization = yes } }
+			scope:target.raw_material = { subtract = "price_in_market(scope:actor.capital.market)" }
+			if = {
+				limit = { scope:target = { OR = { vegetation = forest vegetation = woods } } }
+				add = { desc = "stay_put_woodland" value = -8 }
+			}
+			else_if = {
+				limit = { scope:target = { OR = { topography = hills topography = plateau } } }
+				add = { desc = "stay_put_woodland" value = -2 }
+			}
+		}
+		else_if = {
 			limit = { exists = scope:target scope:target = { has_gathering_specialization = yes } }
-			scope:target.raw_material = {
-				subtract = "price_in_market(scope:actor.capital.market)"
+			scope:target.raw_material = { subtract = "price_in_market(scope:actor.capital.market)" }
+			if = {
+				limit = { scope:target = { is_coastal = yes } }
+				add = { desc = "stay_put_gathering" value = -8 }
+			}
+			else_if = {
+				limit = { scope:target = { has_river = yes } }
+				add = { desc = "stay_put_gathering" value = -7 }
+			}
+			else_if = {
+				limit = { scope:target = { OR = { vegetation = forest vegetation = woods } } }
+				add = { desc = "stay_put_gathering" value = -2 }
 			}
 		}
-		# Mining optimal terrain
-		if = {
-			limit = { exists = scope:target scope:target = { has_mining_specialization = yes topography = mountains } }
-			add = { desc = "stay_put_mining" value = -8 }
-		}
-		if = {
-			limit = { exists = scope:target scope:target = { has_mining_specialization = yes topography = wetlands } }
-			add = { desc = "stay_put_mining" value = -4 }
-		}
-		if = {
-			limit = { exists = scope:target scope:target = { has_mining_specialization = yes OR = { topography = hills topography = plateau } NOT = { topography = mountains } NOT = { topography = wetlands } } }
-			add = { desc = "stay_put_mining" value = -2 }
-		}
-		# Farming optimal terrain
-		if = {
-			limit = { exists = scope:target scope:target = { has_farming_specialization = yes vegetation = farmland } }
-			add = { desc = "stay_put_farming" value = -8 }
-		}
-		if = {
-			limit = { exists = scope:target scope:target = { has_farming_specialization = yes topography = flatland vegetation = grasslands NOT = { vegetation = farmland } } }
-			add = { desc = "stay_put_farming" value = -5 }
-		}
-		if = {
-			limit = { exists = scope:target scope:target = { has_farming_specialization = yes vegetation = grasslands NOT = { topography = flatland } NOT = { vegetation = farmland } } }
-			add = { desc = "stay_put_farming" value = -2 }
-		}
-		# Woodland optimal terrain
-		if = {
-			limit = { exists = scope:target scope:target = { has_woodland_specialization = yes OR = { vegetation = forest vegetation = woods } } }
-			add = { desc = "stay_put_woodland" value = -8 }
-		}
-		if = {
-			limit = { exists = scope:target scope:target = { has_woodland_specialization = yes OR = { topography = hills topography = plateau } NOR = { vegetation = forest vegetation = woods } } }
-			add = { desc = "stay_put_woodland" value = -2 }
-		}
-		# Gathering optimal terrain
-		if = {
-			limit = { exists = scope:target scope:target = { has_gathering_specialization = yes is_coastal = yes } }
-			add = { desc = "stay_put_gathering" value = -8 }
-		}
-		if = {
-			limit = { exists = scope:target scope:target = { has_gathering_specialization = yes has_river = yes NOT = { is_coastal = yes } } }
-			add = { desc = "stay_put_gathering" value = -7 }
-		}
-		if = {
-			limit = { exists = scope:target scope:target = { has_gathering_specialization = yes OR = { vegetation = forest vegetation = woods } NOT = { is_coastal = yes } NOT = { has_river = yes } } }
-			add = { desc = "stay_put_gathering" value = -2 }
-		}
-		# Commercial optimal terrain
-		if = {
-			limit = { exists = scope:target scope:target = { has_commercial_specialization = yes is_market_center = yes } }
-			add = { desc = "stay_put_commercial" value = -10 }
-		}
-		if = {
-			limit = { exists = scope:target scope:target = { has_commercial_specialization = yes modifier:harbor_suitability > 0.7 NOT = { is_market_center = yes } } }
-			add = { desc = "stay_put_commercial" value = -5 }
-		}
-		if = {
-			limit = { exists = scope:target scope:target = { has_commercial_specialization = yes OR = { is_coastal = yes has_river = yes } NOT = { is_market_center = yes } NOT = { modifier:harbor_suitability > 0.7 } } }
-			add = { desc = "stay_put_commercial" value = -2 }
-		}
-
-		# === CROSS-SPECIALIZATION RESOURCE VALUE STAY-PUT ===
-		# Penalize switching away from other specializations by their resource value
-		if = {
-			limit = {
-				exists = scope:target
-				scope:target = {
-					OR = {
-						has_mining_specialization = yes
-						has_farming_specialization = yes
-						has_woodland_specialization = yes
-						has_commercial_specialization = yes
-					}
-				}
+		else_if = {
+			limit = { exists = scope:target scope:target = { has_commercial_specialization = yes } }
+			scope:target.raw_material = { subtract = "price_in_market(scope:actor.capital.market)" }
+			if = {
+				limit = { scope:target = { is_market_center = yes } }
+				add = { desc = "stay_put_commercial" value = -10 }
 			}
-			scope:target.raw_material = {
-				subtract = "price_in_market(scope:actor.capital.market)"
+			else_if = {
+				limit = { scope:target = { modifier:harbor_suitability > 0.7 } }
+				add = { desc = "stay_put_commercial" value = -5 }
+			}
+			else_if = {
+				limit = { scope:target = { OR = { is_coastal = yes has_river = yes } } }
+				add = { desc = "stay_put_commercial" value = -2 }
 			}
 		}
 
@@ -1970,7 +1896,7 @@ designate_gathering_specialization = {
 		enabled = {
 			can_specialize_gathering = yes
 			NOT = { has_gathering_specialization = yes }
-			NOT = { has_cooldown = eul_specialization_cooldown }
+			NOT = { has_location_modifier = eul_specialization_cooldown }
 		}
 	}
 
@@ -2119,8 +2045,8 @@ designate_gathering_specialization = {
 					add_location_modifier = { modifier = gathering_city_specialization }
 				}
 				destroy_non_gathering_buildings = yes
-				add_cooldown = {
-					type = eul_specialization_cooldown
+				add_location_modifier = {
+					modifier = eul_specialization_cooldown
 					years = 5
 				}
 			}
@@ -2138,7 +2064,7 @@ designate_commercial_specialization = {
 	}
 
 	ai_tick = monthly
-	ai_tick_frequency = 1  # TEMP: was 12
+	ai_tick_frequency = 12
 
 	ai_prerequisite = {
 		current_year >= 1338
@@ -2239,21 +2165,33 @@ designate_commercial_specialization = {
 			}
 		}
 
-		# Coastal or river: small bonus (+2)
+		# Coastal: bonus (+3)
 		if = {
 			limit = {
 				exists = scope:target
 				scope:target = {
-					OR = {
-						is_coastal = yes
-						has_river = yes
-					}
+					is_coastal = yes
 					NOT = { has_commercial_specialization = yes }
 				}
 			}
 			add = {
-				desc = "water_access"
-				value = 4
+				desc = "coastal_access"
+				value = 3
+			}
+		}
+
+		# River: bonus (+3)
+		if = {
+			limit = {
+				exists = scope:target
+				scope:target = {
+					has_river = yes
+					NOT = { has_commercial_specialization = yes }
+				}
+			}
+			add = {
+				desc = "river_access"
+				value = 3
 			}
 		}
 
@@ -2271,143 +2209,101 @@ designate_commercial_specialization = {
 			}
 		}
 
-		# === MARKET FACTORS ===
-		# Raw goods are cheap locally (surplus for export): bonus (+5) - all location types
+		# === TRADE SPREAD BONUS ===
+		# Uses cached trade spread calculated from all goods price deviations
+		# Higher spread = more trade opportunity (prices deviate from normal = arbitrage)
+		# Range: -10 to +20 after normalization
+		# NOTE: Variable stored on market_center because markets don't support variables
 		if = {
 			limit = {
 				exists = scope:target
 				scope:target = { NOT = { has_commercial_specialization = yes } }
-				OR = {
-					goods:wheat = { price_in_market = { market = scope:actor.capital.market value < eul_wheat_low } }
-					goods:iron = { price_in_market = { market = scope:actor.capital.market value < eul_iron_low } }
-					goods:lumber = { price_in_market = { market = scope:actor.capital.market value < eul_lumber_low } }
-				}
 			}
-			add = {
-				desc = "surplus_raw_for_export"
-				value = 5
-			}
-		}
-
-		# Finished goods are cheap locally (surplus for export): bonus (+5) - towns/cities only
-		if = {
-			limit = {
-				exists = scope:target
-				scope:target = {
-					NOT = { has_commercial_specialization = yes }
-					NOT = { location_rank = location_rank:rural_settlement }
+			scope:target = {
+				market ?= {
+					add = {
+						desc = "trade_spread"
+						value = location.var:eul_trade_spread
+					}
 				}
-				OR = {
-					goods:cloth = { price_in_market = { market = scope:actor.capital.market value < eul_cloth_low } }
-					goods:wine = { price_in_market = { market = scope:actor.capital.market value < eul_wine_low } }
-				}
-			}
-			add = {
-				desc = "surplus_finished_for_export"
-				value = 5
-			}
-		}
-
-		# High value luxury goods available: bonus (+3) - towns/cities only
-		if = {
-			limit = {
-				exists = scope:target
-				scope:target = {
-					NOT = { has_commercial_specialization = yes }
-					NOT = { location_rank = location_rank:rural_settlement }
-				}
-				OR = {
-					goods:silk = { price_in_market = { market = scope:actor.capital.market value < eul_silk_low } }
-					goods:pepper = { price_in_market = { market = scope:actor.capital.market value < eul_pepper_low } }
-					goods:gems = { price_in_market = { market = scope:actor.capital.market value < eul_gems_low } }
-					goods:dyes = { price_in_market = { market = scope:actor.capital.market value < eul_dyes_low } }
-				}
-			}
-			add = {
-				desc = "luxury_trade_potential"
-				value = 3
 			}
 		}
 
 		# === STAY PUT: Resist changing away from optimal spec/terrain matches ===
-		# Mining optimal terrain
+		# Branched by current specialization to reduce evaluations (was 16 flat checks, now max 4)
 		if = {
-			limit = { exists = scope:target scope:target = { has_mining_specialization = yes topography = mountains } }
-			add = { desc = "stay_put_mining" value = -8 }
-		}
-		if = {
-			limit = { exists = scope:target scope:target = { has_mining_specialization = yes topography = wetlands } }
-			add = { desc = "stay_put_mining" value = -4 }
-		}
-		if = {
-			limit = { exists = scope:target scope:target = { has_mining_specialization = yes OR = { topography = hills topography = plateau } NOT = { topography = mountains } NOT = { topography = wetlands } } }
-			add = { desc = "stay_put_mining" value = -2 }
-		}
-		# Farming optimal terrain
-		if = {
-			limit = { exists = scope:target scope:target = { has_farming_specialization = yes vegetation = farmland } }
-			add = { desc = "stay_put_farming" value = -8 }
-		}
-		if = {
-			limit = { exists = scope:target scope:target = { has_farming_specialization = yes topography = flatland vegetation = grasslands NOT = { vegetation = farmland } } }
-			add = { desc = "stay_put_farming" value = -5 }
-		}
-		if = {
-			limit = { exists = scope:target scope:target = { has_farming_specialization = yes vegetation = grasslands NOT = { topography = flatland } NOT = { vegetation = farmland } } }
-			add = { desc = "stay_put_farming" value = -2 }
-		}
-		# Woodland optimal terrain
-		if = {
-			limit = { exists = scope:target scope:target = { has_woodland_specialization = yes OR = { vegetation = forest vegetation = woods } } }
-			add = { desc = "stay_put_woodland" value = -8 }
-		}
-		if = {
-			limit = { exists = scope:target scope:target = { has_woodland_specialization = yes OR = { topography = hills topography = plateau } NOR = { vegetation = forest vegetation = woods } } }
-			add = { desc = "stay_put_woodland" value = -2 }
-		}
-		# Gathering optimal terrain
-		if = {
-			limit = { exists = scope:target scope:target = { has_gathering_specialization = yes is_coastal = yes } }
-			add = { desc = "stay_put_gathering" value = -8 }
-		}
-		if = {
-			limit = { exists = scope:target scope:target = { has_gathering_specialization = yes has_river = yes NOT = { is_coastal = yes } } }
-			add = { desc = "stay_put_gathering" value = -7 }
-		}
-		if = {
-			limit = { exists = scope:target scope:target = { has_gathering_specialization = yes OR = { vegetation = forest vegetation = woods } NOT = { is_coastal = yes } NOT = { has_river = yes } } }
-			add = { desc = "stay_put_gathering" value = -2 }
-		}
-		# Commercial optimal terrain
-		if = {
-			limit = { exists = scope:target scope:target = { has_commercial_specialization = yes is_market_center = yes } }
-			add = { desc = "stay_put_commercial" value = -10 }
-		}
-		if = {
-			limit = { exists = scope:target scope:target = { has_commercial_specialization = yes modifier:harbor_suitability > 0.7 NOT = { is_market_center = yes } } }
-			add = { desc = "stay_put_commercial" value = -5 }
-		}
-		if = {
-			limit = { exists = scope:target scope:target = { has_commercial_specialization = yes OR = { is_coastal = yes has_river = yes } NOT = { is_market_center = yes } NOT = { modifier:harbor_suitability > 0.7 } } }
-			add = { desc = "stay_put_commercial" value = -2 }
-		}
-
-		# === CROSS-SPECIALIZATION RESOURCE VALUE STAY-PUT ===
-		# Penalize switching away from other specializations by their resource value
-		if = {
-			limit = {
-				exists = scope:target
-				scope:target = {
-					OR = {
-						has_mining_specialization = yes
-						has_farming_specialization = yes
-						has_woodland_specialization = yes
-						has_gathering_specialization = yes
-					}
-				}
+			limit = { exists = scope:target scope:target = { has_mining_specialization = yes } }
+			scope:target.raw_material = { subtract = "price_in_market(scope:actor.capital.market)" }
+			if = {
+				limit = { scope:target = { topography = mountains } }
+				add = { desc = "stay_put_mining" value = -8 }
 			}
-			scope:target.raw_material = {
-				subtract = "price_in_market(scope:actor.capital.market)"
+			else_if = {
+				limit = { scope:target = { topography = wetlands } }
+				add = { desc = "stay_put_mining" value = -4 }
+			}
+			else_if = {
+				limit = { scope:target = { OR = { topography = hills topography = plateau } } }
+				add = { desc = "stay_put_mining" value = -2 }
+			}
+		}
+		else_if = {
+			limit = { exists = scope:target scope:target = { has_farming_specialization = yes } }
+			scope:target.raw_material = { subtract = "price_in_market(scope:actor.capital.market)" }
+			if = {
+				limit = { scope:target = { vegetation = farmland } }
+				add = { desc = "stay_put_farming" value = -8 }
+			}
+			else_if = {
+				limit = { scope:target = { topography = flatland vegetation = grasslands } }
+				add = { desc = "stay_put_farming" value = -5 }
+			}
+			else_if = {
+				limit = { scope:target = { vegetation = grasslands } }
+				add = { desc = "stay_put_farming" value = -2 }
+			}
+		}
+		else_if = {
+			limit = { exists = scope:target scope:target = { has_woodland_specialization = yes } }
+			scope:target.raw_material = { subtract = "price_in_market(scope:actor.capital.market)" }
+			if = {
+				limit = { scope:target = { OR = { vegetation = forest vegetation = woods } } }
+				add = { desc = "stay_put_woodland" value = -8 }
+			}
+			else_if = {
+				limit = { scope:target = { OR = { topography = hills topography = plateau } } }
+				add = { desc = "stay_put_woodland" value = -2 }
+			}
+		}
+		else_if = {
+			limit = { exists = scope:target scope:target = { has_gathering_specialization = yes } }
+			scope:target.raw_material = { subtract = "price_in_market(scope:actor.capital.market)" }
+			if = {
+				limit = { scope:target = { is_coastal = yes } }
+				add = { desc = "stay_put_gathering" value = -8 }
+			}
+			else_if = {
+				limit = { scope:target = { has_river = yes } }
+				add = { desc = "stay_put_gathering" value = -7 }
+			}
+			else_if = {
+				limit = { scope:target = { OR = { vegetation = forest vegetation = woods } } }
+				add = { desc = "stay_put_gathering" value = -2 }
+			}
+		}
+		else_if = {
+			limit = { exists = scope:target scope:target = { has_commercial_specialization = yes } }
+			if = {
+				limit = { scope:target = { is_market_center = yes } }
+				add = { desc = "stay_put_commercial" value = -10 }
+			}
+			else_if = {
+				limit = { scope:target = { modifier:harbor_suitability > 0.7 } }
+				add = { desc = "stay_put_commercial" value = -5 }
+			}
+			else_if = {
+				limit = { scope:target = { OR = { is_coastal = yes has_river = yes } } }
+				add = { desc = "stay_put_commercial" value = -2 }
 			}
 		}
 
@@ -2458,7 +2354,7 @@ designate_commercial_specialization = {
 		# Commercial has no resource requirement - but cannot already be commercial
 		enabled = {
 			NOT = { has_commercial_specialization = yes }
-			NOT = { has_cooldown = eul_specialization_cooldown }
+			NOT = { has_location_modifier = eul_specialization_cooldown }
 		}
 	}
 
@@ -2607,8 +2503,8 @@ designate_commercial_specialization = {
 					add_location_modifier = { modifier = commercial_city_specialization }
 				}
 				destroy_non_commercial_buildings = yes
-				add_cooldown = {
-					type = eul_specialization_cooldown
+				add_location_modifier = {
+					modifier = eul_specialization_cooldown
 					years = 5
 				}
 			}

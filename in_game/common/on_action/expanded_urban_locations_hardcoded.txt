@@ -12,73 +12,72 @@ on_location_changed_rank = {
 on_game_start = {
 	on_actions = {
 		specialized_locations_setup
+		eul_refresh_market_cache
 	}
 }
 
-# Monthly pulse to initialize specializations for saves that predate the mod
-# Uses a global flag so this only runs once per save, then skips immediately
 monthly_country_pulse = {
 	on_actions = {
-		check_uninitialized_specializations
+		eul_refresh_market_cache
 	}
 }
 
-check_uninitialized_specializations = {
-	trigger = {
-		# Global flag ensures this only runs once across all countries
-		NOT = { has_global_variable = eul_specializations_initialized }
+# Handle raw material changes - recalculate eligibility and validate specialization
+# root = location, scope:old_goods = previous trade goods, scope:new_goods = new trade goods
+on_raw_material_changed = {
+	on_actions = {
+		eul_on_raw_material_changed
 	}
+}
+
+eul_on_raw_material_changed = {
 	effect = {
-		# Initialize any rural settlements missing specialization
-		every_location_in_the_world = {
-			limit = {
-				exists = owner
-				is_rural_settlement = yes
-				NOT = { has_variable = specialization_designation }
+		# Only process owned locations
+		if = {
+			limit = { exists = owner }
+			# Recalculate eligibility based on new resources
+			eul_calculate_specialization_eligibility = yes
+			# Validate current specialization - switch to commercial if invalid
+			eul_validate_specialization = yes
+			# Clear specialization cooldown - raw material change allows immediate re-specialization
+			if = {
+				limit = { has_location_modifier = eul_specialization_cooldown }
+				remove_location_modifier = eul_specialization_cooldown
 			}
-			grant_starter_village = yes
-			assign_specialization_by_resources = yes
-			apply_specialization_modifier = yes
 		}
-		# Initialize any towns/cities missing specialization
-		every_location_in_the_world = {
-			limit = {
-				exists = owner
-				is_town_or_city = yes
-				NOT = { has_variable = specialization_designation }
-			}
-			assign_specialization_by_resources = yes
-			apply_specialization_modifier = yes
-		}
-		# Set flag so this never runs again for this save
-		set_global_variable = { name = eul_specializations_initialized value = yes }
 	}
 }
 
 specialized_locations_setup = {
 	effect = {
-		# Mark as initialized so monthly pulse skips
-		set_global_variable = { name = eul_specializations_initialized value = yes }
-		# Initialize all rural settlements (starter village + specialization + modifiers)
+		# Single pass: calculate eligibility for all valid land, initialize owned locations
 		every_location_in_the_world = {
-			limit = {
-				exists = owner
-				is_rural_settlement = yes
+			limit = { eul_is_valid_land_location = yes }
+
+			# Always calculate eligibility (for potential map modes)
+			eul_calculate_specialization_eligibility = yes
+
+			# Only initialize owned locations
+			if = {
+				limit = { exists = owner }
+
+				if = {
+					limit = { is_rural_settlement = yes }
+					# Assign specialization FIRST so village building requirements are met
+					assign_specialization_by_resources = yes
+					destroy_non_matching_buildings = yes
+					grant_starter_village = yes
+					apply_specialization_modifier = yes
+				}
+				else_if = {
+					limit = { is_town_or_city = yes }
+					assign_specialization_by_resources = yes
+					destroy_non_matching_buildings = yes
+					grant_specialization_starter_buildings = yes
+					grant_specialization_rgo_building = yes
+					apply_specialization_modifier = yes
+				}
 			}
-			grant_starter_village = yes
-			assign_specialization_by_resources = yes
-			apply_specialization_modifier = yes
-		}
-		# Initialize all towns/cities (icons + modifiers + building changes)
-		every_location_in_the_world = {
-			limit = {
-				exists = owner
-				is_town_or_city = yes
-			}
-			assign_specialization_by_resources = yes
-			destroy_non_matching_buildings = yes
-			grant_specialization_starter_buildings = yes
-			apply_specialization_modifier = yes
 		}
 	}
 }
@@ -142,6 +141,7 @@ on_location_updates_specialization_by_rankup = {
 				# When upgrading from rural to town, destroy buildings and grant starter buildings
 				destroy_non_matching_buildings = yes
 				grant_specialization_starter_buildings = yes
+				grant_specialization_rgo_building = yes
 			}
 			else_if = {
 				limit = { location_rank = location_rank:city }
@@ -185,8 +185,58 @@ on_location_updates_specialization_by_rankup = {
 				limit = { is_town_or_city = yes }
 				destroy_non_matching_buildings = yes
 				grant_specialization_starter_buildings = yes
+				grant_specialization_rgo_building = yes
 			}
 			apply_specialization_modifier = yes
+		}
+	}
+}
+
+# ============================================
+# MARKET DEMAND CACHE SYSTEM
+# Caches supply/demand ratios and high-demand flags on market center locations
+# to avoid recalculating for every AI location evaluation
+# NOTE: Variables stored on market center location because markets don't support variables
+# Uses market.location to access the market center
+# ============================================
+
+# Refresh market cache if expired or not initialized
+# Called on game start and monthly - only updates when cache doesn't exist
+eul_refresh_market_cache = {
+	effect = {
+		if = {
+			limit = { NOT = { has_global_variable = eul_market_demand_cached } }
+
+			# Update standard market caches (pressure values, price bonuses)
+			every_market_in_world = {
+				eul_update_market_cache = yes
+			}
+
+			# Calculate trade spread for commercial specialization
+			# Step 1: Reset trade_spread on all market centers
+			every_market_in_world = {
+				eul_calculate_trade_spread = yes
+			}
+			# Step 2: Iterate all goods, accumulating price deviation to each market center
+			every_goods = {
+				eul_accumulate_trade_spread_for_markets = yes
+			}
+			# Step 3: Normalize trade_spread to a reasonable AI weight range
+			# Weighted formula: sum of |price/base - 1| × base for all goods
+			# With ~30 goods and avg base ~10, typical active market might have ~50-100 total
+			every_market_in_world = {
+				location = {
+					# Divide by 10 to scale to 0-10 range for typical markets
+					change_variable = { name = eul_trade_spread divide = 10 }
+					clamp_variable = { name = eul_trade_spread min = 0 max = 10 }
+				}
+			}
+
+			set_global_variable = {
+				name = eul_market_demand_cached
+				value = 1
+				days = 2
+			}
 		}
 	}
 }

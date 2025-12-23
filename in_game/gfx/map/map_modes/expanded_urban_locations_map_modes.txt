@@ -1,4 +1,4 @@
-# ============================================
+﻿# ============================================
 # EXPANDED URBAN LOCATIONS - MAP MODE OVERRIDE
 # Adds specialization overlay colors to the cities map mode
 # ============================================
@@ -17,7 +17,7 @@
 @data_before_lighting_blend = 0.5
 @data_after_lighting_blend = 0.5
 
-cities = {
+REPLACE:cities = {
 	# Primary color: specialization
 	map_color = {
 		if = {
@@ -53,15 +53,18 @@ cities = {
 	}
 
 	# Slashed line overlay: location rank colors
+	# Guard with exists check to prevent errors on sea/wasteland tiles
 	secondary_map_color = {
 		if = {
 			limit = {
+				exists = location_rank
 				location_rank = location_rank:city
 			}
 			value = rgb { 255 230 128 }
 		}
 		else_if = {
 			limit = {
+				exists = location_rank
 				location_rank = location_rank:town
 			}
 			value = rgb { 40 40 40 }
@@ -138,7 +141,7 @@ cities = {
 	}
 
 	# Added Month for periodic specialization updates
-	color_refresh_counters = { ProductionList Month }
+	color_refresh_counters = { Month }
 	color_and_names_refresh_counters = { LocationOwnerChanged CountryStatus }
 }
 
@@ -159,6 +162,21 @@ mining_potential = {
 	legend_key = {
 		desc = "EUL_LEGEND_MINING_POTENTIAL"
 		color = rgb { 128 0 0 }
+	}
+
+	tooltip_key = {
+		if = {
+			limit = { location_rank = location_rank:city }
+			value = "mining_city_specialization"
+		}
+		else_if = {
+			limit = { location_rank = location_rank:town }
+			value = "mining_town_specialization"
+		}
+		else_if = {
+			limit = { location_rank = location_rank:rural_settlement }
+			value = "mining_rural_specialization"
+		}
 	}
 
 	small_map_names = location
@@ -216,6 +234,21 @@ gathering_potential = {
 		color = rgb { 0 0 128 }
 	}
 
+	tooltip_key = {
+		if = {
+			limit = { location_rank = location_rank:city }
+			value = "gathering_city_specialization"
+		}
+		else_if = {
+			limit = { location_rank = location_rank:town }
+			value = "gathering_town_specialization"
+		}
+		else_if = {
+			limit = { location_rank = location_rank:rural_settlement }
+			value = "gathering_rural_specialization"
+		}
+	}
+
 	small_map_names = location
 	medium_map_names = province
 	large_map_names = country
@@ -271,6 +304,21 @@ woodland_potential = {
 		color = rgb { 85 34 0 }
 	}
 
+	tooltip_key = {
+		if = {
+			limit = { location_rank = location_rank:city }
+			value = "woodland_city_specialization"
+		}
+		else_if = {
+			limit = { location_rank = location_rank:town }
+			value = "woodland_town_specialization"
+		}
+		else_if = {
+			limit = { location_rank = location_rank:rural_settlement }
+			value = "woodland_rural_specialization"
+		}
+	}
+
 	small_map_names = location
 	medium_map_names = province
 	large_map_names = country
@@ -324,6 +372,21 @@ farming_potential = {
 	legend_key = {
 		desc = "EUL_LEGEND_FARMING_POTENTIAL"
 		color = rgb { 34 85 0 }
+	}
+
+	tooltip_key = {
+		if = {
+			limit = { location_rank = location_rank:city }
+			value = "farming_city_specialization"
+		}
+		else_if = {
+			limit = { location_rank = location_rank:town }
+			value = "farming_town_specialization"
+		}
+		else_if = {
+			limit = { location_rank = location_rank:rural_settlement }
+			value = "farming_rural_specialization"
+		}
 	}
 
 	small_map_names = location

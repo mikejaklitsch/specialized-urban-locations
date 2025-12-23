@@ -1,14 +1,14 @@
-﻿# Expanded Urban Locations - On Actions
+﻿# Specialized Urban Locations - On Actions
 
 # Hook into hardcoded on_action
 on_location_changed_owner = {
 	on_actions = {
-		eul_on_location_ownership_changed
+		sul_on_location_ownership_changed
 	}
 }
 
 # root = location, scope:loser = previous owner, scope:winner = new owner
-eul_on_location_ownership_changed = {
+sul_on_location_ownership_changed = {
 	effect = {
 		# Assign specialization if location doesn't have one (colonization, etc.)
 		if = {
@@ -36,41 +36,41 @@ eul_on_location_ownership_changed = {
 		if = {
 			limit = {
 				exists = scope:loser
-				scope:loser = { has_variable = eul_mining_count }
+				scope:loser = { has_variable = sul_mining_count }
 			}
 			if = {
 				limit = { has_mining_specialization = yes }
 				scope:loser = {
-					change_variable = { name = eul_mining_count subtract = 1 }
-					change_variable = { name = eul_total_weighted subtract = 1 }
+					change_variable = { name = sul_mining_count subtract = 1 }
+					change_variable = { name = sul_total_weighted subtract = 1 }
 				}
 			}
 			else_if = {
 				limit = { has_farming_specialization = yes }
 				scope:loser = {
-					change_variable = { name = eul_farming_count subtract = 1 }
-					change_variable = { name = eul_total_weighted subtract = 2 }
+					change_variable = { name = sul_farming_count subtract = 1 }
+					change_variable = { name = sul_total_weighted subtract = 2 }
 				}
 			}
 			else_if = {
 				limit = { has_woodland_specialization = yes }
 				scope:loser = {
-					change_variable = { name = eul_woodland_count subtract = 1 }
-					change_variable = { name = eul_total_weighted subtract = 1 }
+					change_variable = { name = sul_woodland_count subtract = 1 }
+					change_variable = { name = sul_total_weighted subtract = 1 }
 				}
 			}
 			else_if = {
 				limit = { has_gathering_specialization = yes }
 				scope:loser = {
-					change_variable = { name = eul_gathering_count subtract = 1 }
-					change_variable = { name = eul_total_weighted subtract = 1 }
+					change_variable = { name = sul_gathering_count subtract = 1 }
+					change_variable = { name = sul_total_weighted subtract = 1 }
 				}
 			}
 			else_if = {
 				limit = { has_commercial_specialization = yes }
 				scope:loser = {
-					change_variable = { name = eul_commercial_count subtract = 1 }
-					change_variable = { name = eul_total_weighted subtract = 1 }
+					change_variable = { name = sul_commercial_count subtract = 1 }
+					change_variable = { name = sul_total_weighted subtract = 1 }
 				}
 			}
 		}
@@ -80,44 +80,44 @@ eul_on_location_ownership_changed = {
 			limit = { exists = scope:winner }
 			# Initialize if winner doesn't have tracking yet
 			if = {
-				limit = { scope:winner = { NOT = { has_variable = eul_mining_count } } }
-				scope:winner = { eul_initialize_specialization_counts = yes }
+				limit = { scope:winner = { NOT = { has_variable = sul_mining_count } } }
+				scope:winner = { sul_initialize_specialization_counts = yes }
 			}
 			# Only increment if variables already existed (initialization already counted this location)
 			else = {
 				if = {
 					limit = { has_mining_specialization = yes }
 					scope:winner = {
-						change_variable = { name = eul_mining_count add = 1 }
-						change_variable = { name = eul_total_weighted add = 1 }
+						change_variable = { name = sul_mining_count add = 1 }
+						change_variable = { name = sul_total_weighted add = 1 }
 					}
 				}
 				else_if = {
 					limit = { has_farming_specialization = yes }
 					scope:winner = {
-						change_variable = { name = eul_farming_count add = 1 }
-						change_variable = { name = eul_total_weighted add = 2 }
+						change_variable = { name = sul_farming_count add = 1 }
+						change_variable = { name = sul_total_weighted add = 2 }
 					}
 				}
 				else_if = {
 					limit = { has_woodland_specialization = yes }
 					scope:winner = {
-						change_variable = { name = eul_woodland_count add = 1 }
-						change_variable = { name = eul_total_weighted add = 1 }
+						change_variable = { name = sul_woodland_count add = 1 }
+						change_variable = { name = sul_total_weighted add = 1 }
 					}
 				}
 				else_if = {
 					limit = { has_gathering_specialization = yes }
 					scope:winner = {
-						change_variable = { name = eul_gathering_count add = 1 }
-						change_variable = { name = eul_total_weighted add = 1 }
+						change_variable = { name = sul_gathering_count add = 1 }
+						change_variable = { name = sul_total_weighted add = 1 }
 					}
 				}
 				else_if = {
 					limit = { has_commercial_specialization = yes }
 					scope:winner = {
-						change_variable = { name = eul_commercial_count add = 1 }
-						change_variable = { name = eul_total_weighted add = 1 }
+						change_variable = { name = sul_commercial_count add = 1 }
+						change_variable = { name = sul_total_weighted add = 1 }
 					}
 				}
 			}

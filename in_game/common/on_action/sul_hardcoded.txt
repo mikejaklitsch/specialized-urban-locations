@@ -12,13 +12,13 @@ on_location_changed_rank = {
 on_game_start = {
 	on_actions = {
 		specialized_locations_setup
-		eul_refresh_market_cache
+		sul_refresh_market_cache
 	}
 }
 
 monthly_country_pulse = {
 	on_actions = {
-		eul_refresh_market_cache
+		sul_refresh_market_cache
 	}
 }
 
@@ -26,23 +26,23 @@ monthly_country_pulse = {
 # root = location, scope:old_goods = previous trade goods, scope:new_goods = new trade goods
 on_raw_material_changed = {
 	on_actions = {
-		eul_on_raw_material_changed
+		sul_on_raw_material_changed
 	}
 }
 
-eul_on_raw_material_changed = {
+sul_on_raw_material_changed = {
 	effect = {
 		# Only process owned locations
 		if = {
 			limit = { exists = owner }
 			# Recalculate eligibility based on new resources
-			eul_calculate_specialization_eligibility = yes
+			sul_calculate_specialization_eligibility = yes
 			# Validate current specialization - switch to commercial if invalid
-			eul_validate_specialization = yes
+			sul_validate_specialization = yes
 			# Clear specialization cooldown - raw material change allows immediate re-specialization
 			if = {
-				limit = { has_location_modifier = eul_specialization_cooldown }
-				remove_location_modifier = eul_specialization_cooldown
+				limit = { has_location_modifier = sul_specialization_cooldown }
+				remove_location_modifier = sul_specialization_cooldown
 			}
 		}
 	}
@@ -52,10 +52,10 @@ specialized_locations_setup = {
 	effect = {
 		# Single pass: calculate eligibility for all valid land, initialize owned locations
 		every_location_in_the_world = {
-			limit = { eul_is_valid_land_location = yes }
+			limit = { sul_is_valid_land_location = yes }
 
 			# Always calculate eligibility (for potential map modes)
-			eul_calculate_specialization_eligibility = yes
+			sul_calculate_specialization_eligibility = yes
 
 			# Only initialize owned locations
 			if = {
@@ -96,23 +96,23 @@ on_location_updates_specialization_by_rankup = {
 				# Convert to rural values
 				if = {
 					limit = { has_mining_specialization = yes }
-					set_variable = { name = specialization_designation value = eul_mining_rural_value }
+					set_variable = { name = specialization_designation value = sul_mining_rural_value }
 				}
 				else_if = {
 					limit = { has_farming_specialization = yes }
-					set_variable = { name = specialization_designation value = eul_farming_rural_value }
+					set_variable = { name = specialization_designation value = sul_farming_rural_value }
 				}
 				else_if = {
 					limit = { has_gathering_specialization = yes }
-					set_variable = { name = specialization_designation value = eul_gathering_rural_value }
+					set_variable = { name = specialization_designation value = sul_gathering_rural_value }
 				}
 				else_if = {
 					limit = { has_woodland_specialization = yes }
-					set_variable = { name = specialization_designation value = eul_woodland_rural_value }
+					set_variable = { name = specialization_designation value = sul_woodland_rural_value }
 				}
 				else_if = {
 					limit = { has_commercial_specialization = yes }
-					set_variable = { name = specialization_designation value = eul_commercial_rural_value }
+					set_variable = { name = specialization_designation value = sul_commercial_rural_value }
 				}
 			}
 			else_if = {
@@ -120,23 +120,23 @@ on_location_updates_specialization_by_rankup = {
 				# Convert to town values
 				if = {
 					limit = { has_mining_specialization = yes }
-					set_variable = { name = specialization_designation value = eul_mining_town_value }
+					set_variable = { name = specialization_designation value = sul_mining_town_value }
 				}
 				else_if = {
 					limit = { has_farming_specialization = yes }
-					set_variable = { name = specialization_designation value = eul_farming_town_value }
+					set_variable = { name = specialization_designation value = sul_farming_town_value }
 				}
 				else_if = {
 					limit = { has_gathering_specialization = yes }
-					set_variable = { name = specialization_designation value = eul_gathering_town_value }
+					set_variable = { name = specialization_designation value = sul_gathering_town_value }
 				}
 				else_if = {
 					limit = { has_woodland_specialization = yes }
-					set_variable = { name = specialization_designation value = eul_woodland_town_value }
+					set_variable = { name = specialization_designation value = sul_woodland_town_value }
 				}
 				else_if = {
 					limit = { has_commercial_specialization = yes }
-					set_variable = { name = specialization_designation value = eul_commercial_town_value }
+					set_variable = { name = specialization_designation value = sul_commercial_town_value }
 				}
 				# When upgrading from rural to town, destroy buildings and grant starter buildings
 				destroy_non_matching_buildings = yes
@@ -148,23 +148,23 @@ on_location_updates_specialization_by_rankup = {
 				# Convert to city values
 				if = {
 					limit = { has_mining_specialization = yes }
-					set_variable = { name = specialization_designation value = eul_mining_city_value }
+					set_variable = { name = specialization_designation value = sul_mining_city_value }
 				}
 				else_if = {
 					limit = { has_farming_specialization = yes }
-					set_variable = { name = specialization_designation value = eul_farming_city_value }
+					set_variable = { name = specialization_designation value = sul_farming_city_value }
 				}
 				else_if = {
 					limit = { has_gathering_specialization = yes }
-					set_variable = { name = specialization_designation value = eul_gathering_city_value }
+					set_variable = { name = specialization_designation value = sul_gathering_city_value }
 				}
 				else_if = {
 					limit = { has_woodland_specialization = yes }
-					set_variable = { name = specialization_designation value = eul_woodland_city_value }
+					set_variable = { name = specialization_designation value = sul_woodland_city_value }
 				}
 				else_if = {
 					limit = { has_commercial_specialization = yes }
-					set_variable = { name = specialization_designation value = eul_commercial_city_value }
+					set_variable = { name = specialization_designation value = sul_commercial_city_value }
 				}
 			}
 
@@ -202,24 +202,24 @@ on_location_updates_specialization_by_rankup = {
 
 # Refresh market cache if expired or not initialized
 # Called on game start and monthly - only updates when cache doesn't exist
-eul_refresh_market_cache = {
+sul_refresh_market_cache = {
 	effect = {
 		if = {
-			limit = { NOT = { has_global_variable = eul_market_demand_cached } }
+			limit = { NOT = { has_global_variable = sul_market_demand_cached } }
 
 			# Update standard market caches (pressure values, price bonuses)
 			every_market_in_world = {
-				eul_update_market_cache = yes
+				sul_update_market_cache = yes
 			}
 
 			# Calculate trade spread for commercial specialization
 			# Step 1: Reset trade_spread on all market centers
 			every_market_in_world = {
-				eul_calculate_trade_spread = yes
+				sul_calculate_trade_spread = yes
 			}
 			# Step 2: Iterate all goods, accumulating price deviation to each market center
 			every_goods = {
-				eul_accumulate_trade_spread_for_markets = yes
+				sul_accumulate_trade_spread_for_markets = yes
 			}
 			# Step 3: Normalize trade_spread to a reasonable AI weight range
 			# Weighted formula: sum of |price/base - 1| × base for all goods
@@ -227,13 +227,13 @@ eul_refresh_market_cache = {
 			every_market_in_world = {
 				location = {
 					# Divide by 10 to scale to 0-10 range for typical markets
-					change_variable = { name = eul_trade_spread divide = 10 }
-					clamp_variable = { name = eul_trade_spread min = 0 max = 10 }
+					change_variable = { name = sul_trade_spread divide = 10 }
+					clamp_variable = { name = sul_trade_spread min = 0 max = 10 }
 				}
 			}
 
 			set_global_variable = {
-				name = eul_market_demand_cached
+				name = sul_market_demand_cached
 				value = 1
 				days = 2
 			}

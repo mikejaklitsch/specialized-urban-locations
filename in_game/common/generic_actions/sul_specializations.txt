@@ -1,4 +1,4 @@
-﻿# Expanded Urban Locations - Specialization Designation Actions
+﻿# Specialized Urban Locations - Specialization Designation Actions
 # These actions allow players to designate a specialization for towns/cities
 # Costs gold + prestige, destroys non-matching buildings, applies modifier
 # scope:actor = country, scope:target = location
@@ -132,7 +132,7 @@ designate_mining_specialization = {
 				market ?= {
 					add = {
 						desc = "iron_price_bonus"
-						value = location.var:eul_mining_raw_price_bonus
+						value = location.var:sul_mining_raw_price_bonus
 					}
 				}
 			}
@@ -152,7 +152,7 @@ designate_mining_specialization = {
 				market ?= {
 					add = {
 						desc = "tools_price_bonus"
-						value = location.var:eul_mining_finished_price_bonus
+						value = location.var:sul_mining_finished_price_bonus
 					}
 				}
 			}
@@ -167,14 +167,14 @@ designate_mining_specialization = {
 				scope:target = {
 					can_specialize_mining = yes
 					NOT = { has_mining_specialization = yes }
-					market ?= { location = { has_variable = eul_iron_pressure } }
+					market ?= { location = { has_variable = sul_iron_pressure } }
 				}
 			}
 			scope:target = {
 				market ?= {
 					add = {
 						desc = "iron_market_pressure"
-						value = location.var:eul_iron_pressure
+						value = location.var:sul_iron_pressure
 					}
 				}
 			}
@@ -192,7 +192,7 @@ designate_mining_specialization = {
 				market ?= {
 					add = {
 						desc = "iron_market_pressure"
-						value = eul_iron_market_pressure
+						value = sul_iron_market_pressure
 					}
 				}
 			}
@@ -303,7 +303,7 @@ designate_mining_specialization = {
 		# Positive if under-represented, negative if over-represented
 		add = {
 			desc = "diversity_pressure"
-			value = scope:actor.eul_mining_diversity
+			value = scope:actor.sul_mining_diversity
 		}
 	}
 
@@ -335,7 +335,7 @@ designate_mining_specialization = {
 		enabled = {
 			can_specialize_mining = yes
 			NOT = { has_mining_specialization = yes }
-			NOT = { has_location_modifier = eul_specialization_cooldown }
+			NOT = { has_location_modifier = sul_specialization_cooldown }
 		}
 	}
 
@@ -433,59 +433,59 @@ designate_mining_specialization = {
 			scope:actor = {
 				# Initialize counts if they don't exist (existing saves)
 				if = {
-					limit = { NOT = { has_variable = eul_mining_count } }
-					eul_initialize_specialization_counts = yes
+					limit = { NOT = { has_variable = sul_mining_count } }
+					sul_initialize_specialization_counts = yes
 				}
 				# Decrement old type (if changing from another specialization)
 				if = {
 					limit = { scope:target = { has_mining_specialization = yes } }
-					change_variable = { name = eul_mining_count subtract = 1 }
-					change_variable = { name = eul_total_weighted subtract = 1 }
+					change_variable = { name = sul_mining_count subtract = 1 }
+					change_variable = { name = sul_total_weighted subtract = 1 }
 				}
 				else_if = {
 					limit = { scope:target = { has_farming_specialization = yes } }
-					change_variable = { name = eul_farming_count subtract = 1 }
-					change_variable = { name = eul_total_weighted subtract = 2 }
+					change_variable = { name = sul_farming_count subtract = 1 }
+					change_variable = { name = sul_total_weighted subtract = 2 }
 				}
 				else_if = {
 					limit = { scope:target = { has_woodland_specialization = yes } }
-					change_variable = { name = eul_woodland_count subtract = 1 }
-					change_variable = { name = eul_total_weighted subtract = 1 }
+					change_variable = { name = sul_woodland_count subtract = 1 }
+					change_variable = { name = sul_total_weighted subtract = 1 }
 				}
 				else_if = {
 					limit = { scope:target = { has_gathering_specialization = yes } }
-					change_variable = { name = eul_gathering_count subtract = 1 }
-					change_variable = { name = eul_total_weighted subtract = 1 }
+					change_variable = { name = sul_gathering_count subtract = 1 }
+					change_variable = { name = sul_total_weighted subtract = 1 }
 				}
 				else_if = {
 					limit = { scope:target = { has_commercial_specialization = yes } }
-					change_variable = { name = eul_commercial_count subtract = 1 }
-					change_variable = { name = eul_total_weighted subtract = 1 }
+					change_variable = { name = sul_commercial_count subtract = 1 }
+					change_variable = { name = sul_total_weighted subtract = 1 }
 				}
 				# Increment new type
-				change_variable = { name = eul_mining_count add = 1 }
-				change_variable = { name = eul_total_weighted add = 1 }
+				change_variable = { name = sul_mining_count add = 1 }
+				change_variable = { name = sul_total_weighted add = 1 }
 			}
 
 			scope:target = {
 				clear_all_specialization_modifiers = yes
 				if = {
 					limit = { location_rank = location_rank:rural_settlement }
-					set_variable = { name = specialization_designation value = eul_mining_rural_value }
+					set_variable = { name = specialization_designation value = sul_mining_rural_value }
 					add_location_modifier = { modifier = mining_rural_specialization }
 				}
 				else_if = {
 					limit = { location_rank = location_rank:town }
-					set_variable = { name = specialization_designation value = eul_mining_town_value }
+					set_variable = { name = specialization_designation value = sul_mining_town_value }
 					add_location_modifier = { modifier = mining_town_specialization }
 				}
 				else = {
-					set_variable = { name = specialization_designation value = eul_mining_city_value }
+					set_variable = { name = specialization_designation value = sul_mining_city_value }
 					add_location_modifier = { modifier = mining_city_specialization }
 				}
 				destroy_non_mining_buildings = yes
 				add_location_modifier = {
-					modifier = eul_specialization_cooldown
+					modifier = sul_specialization_cooldown
 					years = 5
 				}
 			}
@@ -653,7 +653,7 @@ designate_farming_specialization = {
 				market ?= {
 					add = {
 						desc = "wool_price_bonus"
-						value = location.var:eul_farming_raw_price_bonus
+						value = location.var:sul_farming_raw_price_bonus
 					}
 				}
 			}
@@ -673,7 +673,7 @@ designate_farming_specialization = {
 				market ?= {
 					add = {
 						desc = "leather_price_bonus"
-						value = location.var:eul_farming_finished_price_bonus
+						value = location.var:sul_farming_finished_price_bonus
 					}
 				}
 			}
@@ -687,14 +687,14 @@ designate_farming_specialization = {
 				scope:target = {
 					can_specialize_farming = yes
 					NOT = { has_farming_specialization = yes }
-					market ?= { location = { has_variable = eul_wool_pressure } }
+					market ?= { location = { has_variable = sul_wool_pressure } }
 				}
 			}
 			scope:target = {
 				market ?= {
 					add = {
 						desc = "wool_market_pressure"
-						value = location.var:eul_wool_pressure
+						value = location.var:sul_wool_pressure
 					}
 				}
 			}
@@ -712,7 +712,7 @@ designate_farming_specialization = {
 				market ?= {
 					add = {
 						desc = "wool_market_pressure"
-						value = eul_wool_market_pressure
+						value = sul_wool_market_pressure
 					}
 				}
 			}
@@ -725,14 +725,14 @@ designate_farming_specialization = {
 				scope:target = {
 					can_specialize_farming = yes
 					NOT = { has_farming_specialization = yes }
-					market ?= { location = { has_variable = eul_wheat_pressure } }
+					market ?= { location = { has_variable = sul_wheat_pressure } }
 				}
 			}
 			scope:target = {
 				market ?= {
 					add = {
 						desc = "wheat_market_pressure"
-						value = location.var:eul_wheat_pressure
+						value = location.var:sul_wheat_pressure
 					}
 				}
 			}
@@ -750,7 +750,7 @@ designate_farming_specialization = {
 				market ?= {
 					add = {
 						desc = "wheat_market_pressure"
-						value = eul_wheat_market_pressure
+						value = sul_wheat_market_pressure
 					}
 				}
 			}
@@ -858,7 +858,7 @@ designate_farming_specialization = {
 		# Positive if under-represented, negative if over-represented
 		add = {
 			desc = "diversity_pressure"
-			value = scope:actor.eul_farming_diversity
+			value = scope:actor.sul_farming_diversity
 		}
 	}
 
@@ -890,7 +890,7 @@ designate_farming_specialization = {
 		enabled = {
 			can_specialize_farming = yes
 			NOT = { has_farming_specialization = yes }
-			NOT = { has_location_modifier = eul_specialization_cooldown }
+			NOT = { has_location_modifier = sul_specialization_cooldown }
 		}
 	}
 
@@ -988,59 +988,59 @@ designate_farming_specialization = {
 			scope:actor = {
 				# Initialize counts if they don't exist (existing saves)
 				if = {
-					limit = { NOT = { has_variable = eul_mining_count } }
-					eul_initialize_specialization_counts = yes
+					limit = { NOT = { has_variable = sul_mining_count } }
+					sul_initialize_specialization_counts = yes
 				}
 				# Decrement old type (if changing from another specialization)
 				if = {
 					limit = { scope:target = { has_mining_specialization = yes } }
-					change_variable = { name = eul_mining_count subtract = 1 }
-					change_variable = { name = eul_total_weighted subtract = 1 }
+					change_variable = { name = sul_mining_count subtract = 1 }
+					change_variable = { name = sul_total_weighted subtract = 1 }
 				}
 				else_if = {
 					limit = { scope:target = { has_farming_specialization = yes } }
-					change_variable = { name = eul_farming_count subtract = 1 }
-					change_variable = { name = eul_total_weighted subtract = 2 }
+					change_variable = { name = sul_farming_count subtract = 1 }
+					change_variable = { name = sul_total_weighted subtract = 2 }
 				}
 				else_if = {
 					limit = { scope:target = { has_woodland_specialization = yes } }
-					change_variable = { name = eul_woodland_count subtract = 1 }
-					change_variable = { name = eul_total_weighted subtract = 1 }
+					change_variable = { name = sul_woodland_count subtract = 1 }
+					change_variable = { name = sul_total_weighted subtract = 1 }
 				}
 				else_if = {
 					limit = { scope:target = { has_gathering_specialization = yes } }
-					change_variable = { name = eul_gathering_count subtract = 1 }
-					change_variable = { name = eul_total_weighted subtract = 1 }
+					change_variable = { name = sul_gathering_count subtract = 1 }
+					change_variable = { name = sul_total_weighted subtract = 1 }
 				}
 				else_if = {
 					limit = { scope:target = { has_commercial_specialization = yes } }
-					change_variable = { name = eul_commercial_count subtract = 1 }
-					change_variable = { name = eul_total_weighted subtract = 1 }
+					change_variable = { name = sul_commercial_count subtract = 1 }
+					change_variable = { name = sul_total_weighted subtract = 1 }
 				}
 				# Increment new type (farming = weight 2)
-				change_variable = { name = eul_farming_count add = 1 }
-				change_variable = { name = eul_total_weighted add = 2 }
+				change_variable = { name = sul_farming_count add = 1 }
+				change_variable = { name = sul_total_weighted add = 2 }
 			}
 
 			scope:target = {
 				clear_all_specialization_modifiers = yes
 				if = {
 					limit = { location_rank = location_rank:rural_settlement }
-					set_variable = { name = specialization_designation value = eul_farming_rural_value }
+					set_variable = { name = specialization_designation value = sul_farming_rural_value }
 					add_location_modifier = { modifier = farming_rural_specialization }
 				}
 				else_if = {
 					limit = { location_rank = location_rank:town }
-					set_variable = { name = specialization_designation value = eul_farming_town_value }
+					set_variable = { name = specialization_designation value = sul_farming_town_value }
 					add_location_modifier = { modifier = farming_town_specialization }
 				}
 				else = {
-					set_variable = { name = specialization_designation value = eul_farming_city_value }
+					set_variable = { name = specialization_designation value = sul_farming_city_value }
 					add_location_modifier = { modifier = farming_city_specialization }
 				}
 				destroy_non_farming_buildings = yes
 				add_location_modifier = {
-					modifier = eul_specialization_cooldown
+					modifier = sul_specialization_cooldown
 					years = 5
 				}
 			}
@@ -1179,7 +1179,7 @@ designate_woodland_specialization = {
 				market ?= {
 					add = {
 						desc = "lumber_price_bonus"
-						value = location.var:eul_woodland_raw_price_bonus
+						value = location.var:sul_woodland_raw_price_bonus
 					}
 				}
 			}
@@ -1199,7 +1199,7 @@ designate_woodland_specialization = {
 				market ?= {
 					add = {
 						desc = "furniture_price_bonus"
-						value = location.var:eul_woodland_finished_price_bonus
+						value = location.var:sul_woodland_finished_price_bonus
 					}
 				}
 			}
@@ -1213,14 +1213,14 @@ designate_woodland_specialization = {
 				scope:target = {
 					can_specialize_woodland = yes
 					NOT = { has_woodland_specialization = yes }
-					market ?= { location = { has_variable = eul_lumber_pressure } }
+					market ?= { location = { has_variable = sul_lumber_pressure } }
 				}
 			}
 			scope:target = {
 				market ?= {
 					add = {
 						desc = "lumber_market_pressure"
-						value = location.var:eul_lumber_pressure
+						value = location.var:sul_lumber_pressure
 					}
 				}
 			}
@@ -1238,7 +1238,7 @@ designate_woodland_specialization = {
 				market ?= {
 					add = {
 						desc = "lumber_market_pressure"
-						value = eul_lumber_market_pressure
+						value = sul_lumber_market_pressure
 					}
 				}
 			}
@@ -1338,7 +1338,7 @@ designate_woodland_specialization = {
 		# Positive if under-represented, negative if over-represented
 		add = {
 			desc = "diversity_pressure"
-			value = scope:actor.eul_woodland_diversity
+			value = scope:actor.sul_woodland_diversity
 		}
 	}
 
@@ -1370,7 +1370,7 @@ designate_woodland_specialization = {
 		enabled = {
 			can_specialize_woodland = yes
 			NOT = { has_woodland_specialization = yes }
-			NOT = { has_location_modifier = eul_specialization_cooldown }
+			NOT = { has_location_modifier = sul_specialization_cooldown }
 		}
 	}
 
@@ -1468,59 +1468,59 @@ designate_woodland_specialization = {
 			scope:actor = {
 				# Initialize counts if they don't exist (existing saves)
 				if = {
-					limit = { NOT = { has_variable = eul_mining_count } }
-					eul_initialize_specialization_counts = yes
+					limit = { NOT = { has_variable = sul_mining_count } }
+					sul_initialize_specialization_counts = yes
 				}
 				# Decrement old type (if changing from another specialization)
 				if = {
 					limit = { scope:target = { has_mining_specialization = yes } }
-					change_variable = { name = eul_mining_count subtract = 1 }
-					change_variable = { name = eul_total_weighted subtract = 1 }
+					change_variable = { name = sul_mining_count subtract = 1 }
+					change_variable = { name = sul_total_weighted subtract = 1 }
 				}
 				else_if = {
 					limit = { scope:target = { has_farming_specialization = yes } }
-					change_variable = { name = eul_farming_count subtract = 1 }
-					change_variable = { name = eul_total_weighted subtract = 2 }
+					change_variable = { name = sul_farming_count subtract = 1 }
+					change_variable = { name = sul_total_weighted subtract = 2 }
 				}
 				else_if = {
 					limit = { scope:target = { has_woodland_specialization = yes } }
-					change_variable = { name = eul_woodland_count subtract = 1 }
-					change_variable = { name = eul_total_weighted subtract = 1 }
+					change_variable = { name = sul_woodland_count subtract = 1 }
+					change_variable = { name = sul_total_weighted subtract = 1 }
 				}
 				else_if = {
 					limit = { scope:target = { has_gathering_specialization = yes } }
-					change_variable = { name = eul_gathering_count subtract = 1 }
-					change_variable = { name = eul_total_weighted subtract = 1 }
+					change_variable = { name = sul_gathering_count subtract = 1 }
+					change_variable = { name = sul_total_weighted subtract = 1 }
 				}
 				else_if = {
 					limit = { scope:target = { has_commercial_specialization = yes } }
-					change_variable = { name = eul_commercial_count subtract = 1 }
-					change_variable = { name = eul_total_weighted subtract = 1 }
+					change_variable = { name = sul_commercial_count subtract = 1 }
+					change_variable = { name = sul_total_weighted subtract = 1 }
 				}
 				# Increment new type
-				change_variable = { name = eul_woodland_count add = 1 }
-				change_variable = { name = eul_total_weighted add = 1 }
+				change_variable = { name = sul_woodland_count add = 1 }
+				change_variable = { name = sul_total_weighted add = 1 }
 			}
 
 			scope:target = {
 				clear_all_specialization_modifiers = yes
 				if = {
 					limit = { location_rank = location_rank:rural_settlement }
-					set_variable = { name = specialization_designation value = eul_woodland_rural_value }
+					set_variable = { name = specialization_designation value = sul_woodland_rural_value }
 					add_location_modifier = { modifier = woodland_rural_specialization }
 				}
 				else_if = {
 					limit = { location_rank = location_rank:town }
-					set_variable = { name = specialization_designation value = eul_woodland_town_value }
+					set_variable = { name = specialization_designation value = sul_woodland_town_value }
 					add_location_modifier = { modifier = woodland_town_specialization }
 				}
 				else = {
-					set_variable = { name = specialization_designation value = eul_woodland_city_value }
+					set_variable = { name = specialization_designation value = sul_woodland_city_value }
 					add_location_modifier = { modifier = woodland_city_specialization }
 				}
 				destroy_non_woodland_buildings = yes
 				add_location_modifier = {
-					modifier = eul_specialization_cooldown
+					modifier = sul_specialization_cooldown
 					years = 5
 				}
 			}
@@ -1667,7 +1667,7 @@ designate_gathering_specialization = {
 				market ?= {
 					add = {
 						desc = "salt_price_bonus"
-						value = location.var:eul_gathering_raw_price_bonus
+						value = location.var:sul_gathering_raw_price_bonus
 					}
 				}
 			}
@@ -1687,7 +1687,7 @@ designate_gathering_specialization = {
 				market ?= {
 					add = {
 						desc = "pottery_price_bonus"
-						value = location.var:eul_gathering_finished_price_bonus
+						value = location.var:sul_gathering_finished_price_bonus
 					}
 				}
 			}
@@ -1701,14 +1701,14 @@ designate_gathering_specialization = {
 				scope:target = {
 					can_specialize_gathering = yes
 					NOT = { has_gathering_specialization = yes }
-					market ?= { location = { has_variable = eul_salt_pressure } }
+					market ?= { location = { has_variable = sul_salt_pressure } }
 				}
 			}
 			scope:target = {
 				market ?= {
 					add = {
 						desc = "salt_market_pressure"
-						value = location.var:eul_salt_pressure
+						value = location.var:sul_salt_pressure
 					}
 				}
 			}
@@ -1726,7 +1726,7 @@ designate_gathering_specialization = {
 				market ?= {
 					add = {
 						desc = "salt_market_pressure"
-						value = eul_salt_market_pressure
+						value = sul_salt_market_pressure
 					}
 				}
 			}
@@ -1739,14 +1739,14 @@ designate_gathering_specialization = {
 				scope:target = {
 					can_specialize_gathering = yes
 					NOT = { has_gathering_specialization = yes }
-					market ?= { location = { has_variable = eul_clay_pressure } }
+					market ?= { location = { has_variable = sul_clay_pressure } }
 				}
 			}
 			scope:target = {
 				market ?= {
 					add = {
 						desc = "clay_market_pressure"
-						value = location.var:eul_clay_pressure
+						value = location.var:sul_clay_pressure
 					}
 				}
 			}
@@ -1764,7 +1764,7 @@ designate_gathering_specialization = {
 				market ?= {
 					add = {
 						desc = "clay_market_pressure"
-						value = eul_clay_market_pressure
+						value = sul_clay_market_pressure
 					}
 				}
 			}
@@ -1864,7 +1864,7 @@ designate_gathering_specialization = {
 		# Positive if under-represented, negative if over-represented
 		add = {
 			desc = "diversity_pressure"
-			value = scope:actor.eul_gathering_diversity
+			value = scope:actor.sul_gathering_diversity
 		}
 	}
 
@@ -1896,7 +1896,7 @@ designate_gathering_specialization = {
 		enabled = {
 			can_specialize_gathering = yes
 			NOT = { has_gathering_specialization = yes }
-			NOT = { has_location_modifier = eul_specialization_cooldown }
+			NOT = { has_location_modifier = sul_specialization_cooldown }
 		}
 	}
 
@@ -1994,59 +1994,59 @@ designate_gathering_specialization = {
 			scope:actor = {
 				# Initialize counts if they don't exist (existing saves)
 				if = {
-					limit = { NOT = { has_variable = eul_mining_count } }
-					eul_initialize_specialization_counts = yes
+					limit = { NOT = { has_variable = sul_mining_count } }
+					sul_initialize_specialization_counts = yes
 				}
 				# Decrement old type (if changing from another specialization)
 				if = {
 					limit = { scope:target = { has_mining_specialization = yes } }
-					change_variable = { name = eul_mining_count subtract = 1 }
-					change_variable = { name = eul_total_weighted subtract = 1 }
+					change_variable = { name = sul_mining_count subtract = 1 }
+					change_variable = { name = sul_total_weighted subtract = 1 }
 				}
 				else_if = {
 					limit = { scope:target = { has_farming_specialization = yes } }
-					change_variable = { name = eul_farming_count subtract = 1 }
-					change_variable = { name = eul_total_weighted subtract = 2 }
+					change_variable = { name = sul_farming_count subtract = 1 }
+					change_variable = { name = sul_total_weighted subtract = 2 }
 				}
 				else_if = {
 					limit = { scope:target = { has_woodland_specialization = yes } }
-					change_variable = { name = eul_woodland_count subtract = 1 }
-					change_variable = { name = eul_total_weighted subtract = 1 }
+					change_variable = { name = sul_woodland_count subtract = 1 }
+					change_variable = { name = sul_total_weighted subtract = 1 }
 				}
 				else_if = {
 					limit = { scope:target = { has_gathering_specialization = yes } }
-					change_variable = { name = eul_gathering_count subtract = 1 }
-					change_variable = { name = eul_total_weighted subtract = 1 }
+					change_variable = { name = sul_gathering_count subtract = 1 }
+					change_variable = { name = sul_total_weighted subtract = 1 }
 				}
 				else_if = {
 					limit = { scope:target = { has_commercial_specialization = yes } }
-					change_variable = { name = eul_commercial_count subtract = 1 }
-					change_variable = { name = eul_total_weighted subtract = 1 }
+					change_variable = { name = sul_commercial_count subtract = 1 }
+					change_variable = { name = sul_total_weighted subtract = 1 }
 				}
 				# Increment new type
-				change_variable = { name = eul_gathering_count add = 1 }
-				change_variable = { name = eul_total_weighted add = 1 }
+				change_variable = { name = sul_gathering_count add = 1 }
+				change_variable = { name = sul_total_weighted add = 1 }
 			}
 
 			scope:target = {
 				clear_all_specialization_modifiers = yes
 				if = {
 					limit = { location_rank = location_rank:rural_settlement }
-					set_variable = { name = specialization_designation value = eul_gathering_rural_value }
+					set_variable = { name = specialization_designation value = sul_gathering_rural_value }
 					add_location_modifier = { modifier = gathering_rural_specialization }
 				}
 				else_if = {
 					limit = { location_rank = location_rank:town }
-					set_variable = { name = specialization_designation value = eul_gathering_town_value }
+					set_variable = { name = specialization_designation value = sul_gathering_town_value }
 					add_location_modifier = { modifier = gathering_town_specialization }
 				}
 				else = {
-					set_variable = { name = specialization_designation value = eul_gathering_city_value }
+					set_variable = { name = specialization_designation value = sul_gathering_city_value }
 					add_location_modifier = { modifier = gathering_city_specialization }
 				}
 				destroy_non_gathering_buildings = yes
 				add_location_modifier = {
-					modifier = eul_specialization_cooldown
+					modifier = sul_specialization_cooldown
 					years = 5
 				}
 			}
@@ -2223,7 +2223,7 @@ designate_commercial_specialization = {
 				market ?= {
 					add = {
 						desc = "trade_spread"
-						value = location.var:eul_trade_spread
+						value = location.var:sul_trade_spread
 					}
 				}
 			}
@@ -2322,7 +2322,7 @@ designate_commercial_specialization = {
 		# Positive if under-represented, negative if over-represented
 		add = {
 			desc = "diversity_pressure"
-			value = scope:actor.eul_commercial_diversity
+			value = scope:actor.sul_commercial_diversity
 		}
 	}
 
@@ -2354,7 +2354,7 @@ designate_commercial_specialization = {
 		# Commercial has no resource requirement - but cannot already be commercial
 		enabled = {
 			NOT = { has_commercial_specialization = yes }
-			NOT = { has_location_modifier = eul_specialization_cooldown }
+			NOT = { has_location_modifier = sul_specialization_cooldown }
 		}
 	}
 
@@ -2452,59 +2452,59 @@ designate_commercial_specialization = {
 			scope:actor = {
 				# Initialize counts if they don't exist (existing saves)
 				if = {
-					limit = { NOT = { has_variable = eul_mining_count } }
-					eul_initialize_specialization_counts = yes
+					limit = { NOT = { has_variable = sul_mining_count } }
+					sul_initialize_specialization_counts = yes
 				}
 				# Decrement old type (if changing from another specialization)
 				if = {
 					limit = { scope:target = { has_mining_specialization = yes } }
-					change_variable = { name = eul_mining_count subtract = 1 }
-					change_variable = { name = eul_total_weighted subtract = 1 }
+					change_variable = { name = sul_mining_count subtract = 1 }
+					change_variable = { name = sul_total_weighted subtract = 1 }
 				}
 				else_if = {
 					limit = { scope:target = { has_farming_specialization = yes } }
-					change_variable = { name = eul_farming_count subtract = 1 }
-					change_variable = { name = eul_total_weighted subtract = 2 }
+					change_variable = { name = sul_farming_count subtract = 1 }
+					change_variable = { name = sul_total_weighted subtract = 2 }
 				}
 				else_if = {
 					limit = { scope:target = { has_woodland_specialization = yes } }
-					change_variable = { name = eul_woodland_count subtract = 1 }
-					change_variable = { name = eul_total_weighted subtract = 1 }
+					change_variable = { name = sul_woodland_count subtract = 1 }
+					change_variable = { name = sul_total_weighted subtract = 1 }
 				}
 				else_if = {
 					limit = { scope:target = { has_gathering_specialization = yes } }
-					change_variable = { name = eul_gathering_count subtract = 1 }
-					change_variable = { name = eul_total_weighted subtract = 1 }
+					change_variable = { name = sul_gathering_count subtract = 1 }
+					change_variable = { name = sul_total_weighted subtract = 1 }
 				}
 				else_if = {
 					limit = { scope:target = { has_commercial_specialization = yes } }
-					change_variable = { name = eul_commercial_count subtract = 1 }
-					change_variable = { name = eul_total_weighted subtract = 1 }
+					change_variable = { name = sul_commercial_count subtract = 1 }
+					change_variable = { name = sul_total_weighted subtract = 1 }
 				}
 				# Increment new type
-				change_variable = { name = eul_commercial_count add = 1 }
-				change_variable = { name = eul_total_weighted add = 1 }
+				change_variable = { name = sul_commercial_count add = 1 }
+				change_variable = { name = sul_total_weighted add = 1 }
 			}
 
 			scope:target = {
 				clear_all_specialization_modifiers = yes
 				if = {
 					limit = { location_rank = location_rank:rural_settlement }
-					set_variable = { name = specialization_designation value = eul_commercial_rural_value }
+					set_variable = { name = specialization_designation value = sul_commercial_rural_value }
 					add_location_modifier = { modifier = commercial_rural_specialization }
 				}
 				else_if = {
 					limit = { location_rank = location_rank:town }
-					set_variable = { name = specialization_designation value = eul_commercial_town_value }
+					set_variable = { name = specialization_designation value = sul_commercial_town_value }
 					add_location_modifier = { modifier = commercial_town_specialization }
 				}
 				else = {
-					set_variable = { name = specialization_designation value = eul_commercial_city_value }
+					set_variable = { name = specialization_designation value = sul_commercial_city_value }
 					add_location_modifier = { modifier = commercial_city_specialization }
 				}
 				destroy_non_commercial_buildings = yes
 				add_location_modifier = {
-					modifier = eul_specialization_cooldown
+					modifier = sul_specialization_cooldown
 					years = 5
 				}
 			}

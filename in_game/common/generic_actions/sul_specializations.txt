@@ -7,9 +7,11 @@ designate_mining_specialization = {
 	type = owncountry
 
 	potential = {
+		always = yes
 	}
 
 	allow = {
+		always = yes
 	}
 
 	ai_tick = monthly
@@ -343,92 +345,6 @@ designate_mining_specialization = {
 		if = {
 			limit = { exists = scope:target }
 
-			# === AI TRACKING (France/Bohemia only) ===
-			if = {
-				limit = {
-					scope:actor = {
-						is_ai = yes
-						OR = {
-							tag = FRA
-							tag = BOH
-						}
-					}
-				}
-
-				# Count mining specializations
-				scope:actor = {
-					if = {
-						limit = { NOT = { has_variable = ai_mining_changes } }
-						set_variable = { name = ai_mining_changes value = 1 }
-					}
-					else = {
-						change_variable = { name = ai_mining_changes add = 1 }
-					}
-				}
-
-				# Count by location rank
-				if = {
-					limit = { scope:target = { location_rank = location_rank:rural_settlement } }
-					scope:actor = {
-						if = {
-							limit = { NOT = { has_variable = ai_changes_rural } }
-							set_variable = { name = ai_changes_rural value = 1 }
-						}
-						else = {
-							change_variable = { name = ai_changes_rural add = 1 }
-						}
-					}
-				}
-				else_if = {
-					limit = { scope:target = { location_rank = location_rank:town } }
-					scope:actor = {
-						if = {
-							limit = { NOT = { has_variable = ai_changes_town } }
-							set_variable = { name = ai_changes_town value = 1 }
-						}
-						else = {
-							change_variable = { name = ai_changes_town add = 1 }
-						}
-					}
-				}
-				else = {
-					scope:actor = {
-						if = {
-							limit = { NOT = { has_variable = ai_changes_city } }
-							set_variable = { name = ai_changes_city value = 1 }
-						}
-						else = {
-							change_variable = { name = ai_changes_city add = 1 }
-						}
-					}
-				}
-
-				# Track repeat changes on location
-				scope:target = {
-					if = {
-						limit = { NOT = { has_variable = times_specialized } }
-						set_variable = { name = times_specialized value = 1 }
-					}
-					else = {
-						change_variable = { name = times_specialized add = 1 }
-					}
-				}
-
-				# Count repeat changes (location changed 2+ times)
-				if = {
-					limit = { scope:target = { has_variable = times_specialized var:times_specialized >= 2 } }
-					scope:actor = {
-						if = {
-							limit = { NOT = { has_variable = ai_repeat_changes } }
-							set_variable = { name = ai_repeat_changes value = 1 }
-						}
-						else = {
-							change_variable = { name = ai_repeat_changes add = 1 }
-						}
-					}
-				}
-			}
-
 			# === UPDATE SPECIALIZATION COUNTS ===
 			scope:actor = {
 				# Initialize counts if they don't exist (existing saves)
@@ -497,9 +413,11 @@ designate_farming_specialization = {
 	type = owncountry
 
 	potential = {
+		always = yes
 	}
 
 	allow = {
+		always = yes
 	}
 
 	ai_tick = monthly
@@ -898,92 +816,6 @@ designate_farming_specialization = {
 		if = {
 			limit = { exists = scope:target }
 
-			# === AI TRACKING (France/Bohemia only) ===
-			if = {
-				limit = {
-					scope:actor = {
-						is_ai = yes
-						OR = {
-							tag = FRA
-							tag = BOH
-						}
-					}
-				}
-
-				# Count farming specializations
-				scope:actor = {
-					if = {
-						limit = { NOT = { has_variable = ai_farming_changes } }
-						set_variable = { name = ai_farming_changes value = 1 }
-					}
-					else = {
-						change_variable = { name = ai_farming_changes add = 1 }
-					}
-				}
-
-				# Count by location rank
-				if = {
-					limit = { scope:target = { location_rank = location_rank:rural_settlement } }
-					scope:actor = {
-						if = {
-							limit = { NOT = { has_variable = ai_changes_rural } }
-							set_variable = { name = ai_changes_rural value = 1 }
-						}
-						else = {
-							change_variable = { name = ai_changes_rural add = 1 }
-						}
-					}
-				}
-				else_if = {
-					limit = { scope:target = { location_rank = location_rank:town } }
-					scope:actor = {
-						if = {
-							limit = { NOT = { has_variable = ai_changes_town } }
-							set_variable = { name = ai_changes_town value = 1 }
-						}
-						else = {
-							change_variable = { name = ai_changes_town add = 1 }
-						}
-					}
-				}
-				else = {
-					scope:actor = {
-						if = {
-							limit = { NOT = { has_variable = ai_changes_city } }
-							set_variable = { name = ai_changes_city value = 1 }
-						}
-						else = {
-							change_variable = { name = ai_changes_city add = 1 }
-						}
-					}
-				}
-
-				# Track repeat changes on location
-				scope:target = {
-					if = {
-						limit = { NOT = { has_variable = times_specialized } }
-						set_variable = { name = times_specialized value = 1 }
-					}
-					else = {
-						change_variable = { name = times_specialized add = 1 }
-					}
-				}
-
-				# Count repeat changes (location changed 2+ times)
-				if = {
-					limit = { scope:target = { has_variable = times_specialized var:times_specialized >= 2 } }
-					scope:actor = {
-						if = {
-							limit = { NOT = { has_variable = ai_repeat_changes } }
-							set_variable = { name = ai_repeat_changes value = 1 }
-						}
-						else = {
-							change_variable = { name = ai_repeat_changes add = 1 }
-						}
-					}
-				}
-			}
-
 			# === UPDATE SPECIALIZATION COUNTS ===
 			scope:actor = {
 				# Initialize counts if they don't exist (existing saves)
@@ -1052,9 +884,11 @@ designate_woodland_specialization = {
 	type = owncountry
 
 	potential = {
+		always = yes
 	}
 
 	allow = {
+		always = yes
 	}
 
 	ai_tick = monthly
@@ -1378,92 +1212,6 @@ designate_woodland_specialization = {
 		if = {
 			limit = { exists = scope:target }
 
-			# === AI TRACKING (France/Bohemia only) ===
-			if = {
-				limit = {
-					scope:actor = {
-						is_ai = yes
-						OR = {
-							tag = FRA
-							tag = BOH
-						}
-					}
-				}
-
-				# Count woodland specializations
-				scope:actor = {
-					if = {
-						limit = { NOT = { has_variable = ai_woodland_changes } }
-						set_variable = { name = ai_woodland_changes value = 1 }
-					}
-					else = {
-						change_variable = { name = ai_woodland_changes add = 1 }
-					}
-				}
-
-				# Count by location rank
-				if = {
-					limit = { scope:target = { location_rank = location_rank:rural_settlement } }
-					scope:actor = {
-						if = {
-							limit = { NOT = { has_variable = ai_changes_rural } }
-							set_variable = { name = ai_changes_rural value = 1 }
-						}
-						else = {
-							change_variable = { name = ai_changes_rural add = 1 }
-						}
-					}
-				}
-				else_if = {
-					limit = { scope:target = { location_rank = location_rank:town } }
-					scope:actor = {
-						if = {
-							limit = { NOT = { has_variable = ai_changes_town } }
-							set_variable = { name = ai_changes_town value = 1 }
-						}
-						else = {
-							change_variable = { name = ai_changes_town add = 1 }
-						}
-					}
-				}
-				else = {
-					scope:actor = {
-						if = {
-							limit = { NOT = { has_variable = ai_changes_city } }
-							set_variable = { name = ai_changes_city value = 1 }
-						}
-						else = {
-							change_variable = { name = ai_changes_city add = 1 }
-						}
-					}
-				}
-
-				# Track repeat changes on location
-				scope:target = {
-					if = {
-						limit = { NOT = { has_variable = times_specialized } }
-						set_variable = { name = times_specialized value = 1 }
-					}
-					else = {
-						change_variable = { name = times_specialized add = 1 }
-					}
-				}
-
-				# Count repeat changes (location changed 2+ times)
-				if = {
-					limit = { scope:target = { has_variable = times_specialized var:times_specialized >= 2 } }
-					scope:actor = {
-						if = {
-							limit = { NOT = { has_variable = ai_repeat_changes } }
-							set_variable = { name = ai_repeat_changes value = 1 }
-						}
-						else = {
-							change_variable = { name = ai_repeat_changes add = 1 }
-						}
-					}
-				}
-			}
-
 			# === UPDATE SPECIALIZATION COUNTS ===
 			scope:actor = {
 				# Initialize counts if they don't exist (existing saves)
@@ -1532,9 +1280,11 @@ designate_gathering_specialization = {
 	type = owncountry
 
 	potential = {
+		always = yes
 	}
 
 	allow = {
+		always = yes
 	}
 
 	ai_tick = monthly
@@ -1904,92 +1654,6 @@ designate_gathering_specialization = {
 		if = {
 			limit = { exists = scope:target }
 
-			# === AI TRACKING (France/Bohemia only) ===
-			if = {
-				limit = {
-					scope:actor = {
-						is_ai = yes
-						OR = {
-							tag = FRA
-							tag = BOH
-						}
-					}
-				}
-
-				# Count gathering specializations
-				scope:actor = {
-					if = {
-						limit = { NOT = { has_variable = ai_gathering_changes } }
-						set_variable = { name = ai_gathering_changes value = 1 }
-					}
-					else = {
-						change_variable = { name = ai_gathering_changes add = 1 }
-					}
-				}
-
-				# Count by location rank
-				if = {
-					limit = { scope:target = { location_rank = location_rank:rural_settlement } }
-					scope:actor = {
-						if = {
-							limit = { NOT = { has_variable = ai_changes_rural } }
-							set_variable = { name = ai_changes_rural value = 1 }
-						}
-						else = {
-							change_variable = { name = ai_changes_rural add = 1 }
-						}
-					}
-				}
-				else_if = {
-					limit = { scope:target = { location_rank = location_rank:town } }
-					scope:actor = {
-						if = {
-							limit = { NOT = { has_variable = ai_changes_town } }
-							set_variable = { name = ai_changes_town value = 1 }
-						}
-						else = {
-							change_variable = { name = ai_changes_town add = 1 }
-						}
-					}
-				}
-				else = {
-					scope:actor = {
-						if = {
-							limit = { NOT = { has_variable = ai_changes_city } }
-							set_variable = { name = ai_changes_city value = 1 }
-						}
-						else = {
-							change_variable = { name = ai_changes_city add = 1 }
-						}
-					}
-				}
-
-				# Track repeat changes on location
-				scope:target = {
-					if = {
-						limit = { NOT = { has_variable = times_specialized } }
-						set_variable = { name = times_specialized value = 1 }
-					}
-					else = {
-						change_variable = { name = times_specialized add = 1 }
-					}
-				}
-
-				# Count repeat changes (location changed 2+ times)
-				if = {
-					limit = { scope:target = { has_variable = times_specialized var:times_specialized >= 2 } }
-					scope:actor = {
-						if = {
-							limit = { NOT = { has_variable = ai_repeat_changes } }
-							set_variable = { name = ai_repeat_changes value = 1 }
-						}
-						else = {
-							change_variable = { name = ai_repeat_changes add = 1 }
-						}
-					}
-				}
-			}
-
 			# === UPDATE SPECIALIZATION COUNTS ===
 			scope:actor = {
 				# Initialize counts if they don't exist (existing saves)
@@ -2058,9 +1722,11 @@ designate_commercial_specialization = {
 	type = owncountry
 
 	potential = {
+		always = yes
 	}
 
 	allow = {
+		always = yes
 	}
 
 	ai_tick = monthly
@@ -2361,92 +2027,6 @@ designate_commercial_specialization = {
 	effect = {
 		if = {
 			limit = { exists = scope:target }
-
-			# === AI TRACKING (France/Bohemia only) ===
-			if = {
-				limit = {
-					scope:actor = {
-						is_ai = yes
-						OR = {
-							tag = FRA
-							tag = BOH
-						}
-					}
-				}
-
-				# Count commercial specializations
-				scope:actor = {
-					if = {
-						limit = { NOT = { has_variable = ai_commercial_changes } }
-						set_variable = { name = ai_commercial_changes value = 1 }
-					}
-					else = {
-						change_variable = { name = ai_commercial_changes add = 1 }
-					}
-				}
-
-				# Count by location rank
-				if = {
-					limit = { scope:target = { location_rank = location_rank:rural_settlement } }
-					scope:actor = {
-						if = {
-							limit = { NOT = { has_variable = ai_changes_rural } }
-							set_variable = { name = ai_changes_rural value = 1 }
-						}
-						else = {
-							change_variable = { name = ai_changes_rural add = 1 }
-						}
-					}
-				}
-				else_if = {
-					limit = { scope:target = { location_rank = location_rank:town } }
-					scope:actor = {
-						if = {
-							limit = { NOT = { has_variable = ai_changes_town } }
-							set_variable = { name = ai_changes_town value = 1 }
-						}
-						else = {
-							change_variable = { name = ai_changes_town add = 1 }
-						}
-					}
-				}
-				else = {
-					scope:actor = {
-						if = {
-							limit = { NOT = { has_variable = ai_changes_city } }
-							set_variable = { name = ai_changes_city value = 1 }
-						}
-						else = {
-							change_variable = { name = ai_changes_city add = 1 }
-						}
-					}
-				}
-
-				# Track repeat changes on location
-				scope:target = {
-					if = {
-						limit = { NOT = { has_variable = times_specialized } }
-						set_variable = { name = times_specialized value = 1 }
-					}
-					else = {
-						change_variable = { name = times_specialized add = 1 }
-					}
-				}
-
-				# Count repeat changes (location changed 2+ times)
-				if = {
-					limit = { scope:target = { has_variable = times_specialized var:times_specialized >= 2 } }
-					scope:actor = {
-						if = {
-							limit = { NOT = { has_variable = ai_repeat_changes } }
-							set_variable = { name = ai_repeat_changes value = 1 }
-						}
-						else = {
-							change_variable = { name = ai_repeat_changes add = 1 }
-						}
-					}
-				}
-			}
 
 			# === UPDATE SPECIALIZATION COUNTS ===
 			scope:actor = {

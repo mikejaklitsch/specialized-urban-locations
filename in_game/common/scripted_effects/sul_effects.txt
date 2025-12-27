@@ -587,13 +587,14 @@ grant_starter_village = {
 #       separately when actually designating a specialization
 # ============================================
 sul_calculate_specialization_eligibility = {
-	# Mining eligibility: mining resources OR mountains OR wetlands
+	# Mining eligibility: mining resources OR mountains OR wetlands OR lake adjacency
 	if = {
 		limit = {
 			OR = {
 				has_mining_resources = yes
 				topography = mountains
 				topography = wetlands
+				is_adjacent_to_lake = yes
 			}
 		}
 		set_variable = { name = sul_can_mine value = 1 }
@@ -626,13 +627,14 @@ sul_calculate_specialization_eligibility = {
 		remove_variable = sul_can_farm
 	}
 
-	# Gathering eligibility: gathering resources OR coastal OR river
+	# Gathering eligibility: gathering resources OR coastal OR river OR lake adjacency
 	if = {
 		limit = {
 			OR = {
 				has_gathering_resources = yes
 				is_coastal = yes
 				has_river = yes
+				is_adjacent_to_lake = yes
 			}
 		}
 		set_variable = { name = sul_can_gather value = 1 }
@@ -641,13 +643,14 @@ sul_calculate_specialization_eligibility = {
 		remove_variable = sul_can_gather
 	}
 
-	# Woodland eligibility: woodland resources OR forest/woods
+	# Woodland eligibility: woodland resources OR forest/woods/jungle
 	if = {
 		limit = {
 			OR = {
 				has_woodland_resources = yes
 				vegetation = forest
 				vegetation = woods
+				vegetation = jungle
 			}
 		}
 		set_variable = { name = sul_can_woodland value = 1 }

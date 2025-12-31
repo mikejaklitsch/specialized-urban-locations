@@ -14,20 +14,20 @@ sul_on_location_ownership_changed = {
 		if = {
 			limit = {
 				NOR = {
-					has_mining_specialization = yes
-					has_farming_specialization = yes
-					has_woodland_specialization = yes
-					has_gathering_specialization = yes
-					has_commercial_specialization = yes
+					sul_has_mining_specialization = yes
+					sul_has_farming_specialization = yes
+					sul_has_woodland_specialization = yes
+					sul_has_gathering_specialization = yes
+					sul_has_commercial_specialization = yes
 				}
 			}
 			# Grant starter village for rural settlements
 			if = {
-				limit = { is_rural_settlement = yes }
-				grant_starter_village = yes
+				limit = { location_rank = location_rank:rural_settlement }
+				sul_grant_starter_village = yes
 			}
-			assign_specialization_by_resources = yes
-			apply_specialization_modifier = yes
+			sul_assign_specialization_by_resources = yes
+			sul_apply_specialization_modifier = yes
 		}
 
 		# Now location definitely has a specialization - update counts
@@ -39,35 +39,35 @@ sul_on_location_ownership_changed = {
 				scope:loser = { has_variable = sul_mining_count }
 			}
 			if = {
-				limit = { has_mining_specialization = yes }
+				limit = { sul_has_mining_specialization = yes }
 				scope:loser = {
 					change_variable = { name = sul_mining_count subtract = 1 }
 					change_variable = { name = sul_total_weighted subtract = 1 }
 				}
 			}
 			else_if = {
-				limit = { has_farming_specialization = yes }
+				limit = { sul_has_farming_specialization = yes }
 				scope:loser = {
 					change_variable = { name = sul_farming_count subtract = 1 }
 					change_variable = { name = sul_total_weighted subtract = 2 }
 				}
 			}
 			else_if = {
-				limit = { has_woodland_specialization = yes }
+				limit = { sul_has_woodland_specialization = yes }
 				scope:loser = {
 					change_variable = { name = sul_woodland_count subtract = 1 }
 					change_variable = { name = sul_total_weighted subtract = 1 }
 				}
 			}
 			else_if = {
-				limit = { has_gathering_specialization = yes }
+				limit = { sul_has_gathering_specialization = yes }
 				scope:loser = {
 					change_variable = { name = sul_gathering_count subtract = 1 }
 					change_variable = { name = sul_total_weighted subtract = 1 }
 				}
 			}
 			else_if = {
-				limit = { has_commercial_specialization = yes }
+				limit = { sul_has_commercial_specialization = yes }
 				scope:loser = {
 					change_variable = { name = sul_commercial_count subtract = 1 }
 					change_variable = { name = sul_total_weighted subtract = 1 }
@@ -86,35 +86,35 @@ sul_on_location_ownership_changed = {
 			# Only increment if variables already existed (initialization already counted this location)
 			else = {
 				if = {
-					limit = { has_mining_specialization = yes }
+					limit = { sul_has_mining_specialization = yes }
 					scope:winner = {
 						change_variable = { name = sul_mining_count add = 1 }
 						change_variable = { name = sul_total_weighted add = 1 }
 					}
 				}
 				else_if = {
-					limit = { has_farming_specialization = yes }
+					limit = { sul_has_farming_specialization = yes }
 					scope:winner = {
 						change_variable = { name = sul_farming_count add = 1 }
 						change_variable = { name = sul_total_weighted add = 2 }
 					}
 				}
 				else_if = {
-					limit = { has_woodland_specialization = yes }
+					limit = { sul_has_woodland_specialization = yes }
 					scope:winner = {
 						change_variable = { name = sul_woodland_count add = 1 }
 						change_variable = { name = sul_total_weighted add = 1 }
 					}
 				}
 				else_if = {
-					limit = { has_gathering_specialization = yes }
+					limit = { sul_has_gathering_specialization = yes }
 					scope:winner = {
 						change_variable = { name = sul_gathering_count add = 1 }
 						change_variable = { name = sul_total_weighted add = 1 }
 					}
 				}
 				else_if = {
-					limit = { has_commercial_specialization = yes }
+					limit = { sul_has_commercial_specialization = yes }
 					scope:winner = {
 						change_variable = { name = sul_commercial_count add = 1 }
 						change_variable = { name = sul_total_weighted add = 1 }

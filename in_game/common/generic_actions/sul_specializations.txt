@@ -49,8 +49,8 @@ designate_mining_specialization = {
 			limit = {
 				exists = scope:target
 				scope:target = {
-					can_specialize_mining = yes
-					NOT = { has_mining_specialization = yes }
+					sul_can_specialize_mining = yes
+					NOT = { sul_has_mining_specialization = yes }
 				}
 			}
 			# Wetlands (bog iron): best for mining - iron is more valuable than stone
@@ -77,8 +77,8 @@ designate_mining_specialization = {
 			limit = {
 				exists = scope:target
 				scope:target = {
-					can_specialize_mining = yes
-					NOT = { has_mining_specialization = yes }
+					sul_can_specialize_mining = yes
+					NOT = { sul_has_mining_specialization = yes }
 				}
 			}
 			scope:target.raw_material = {
@@ -92,7 +92,7 @@ designate_mining_specialization = {
 				exists = scope:target
 				scope:target = {
 					raw_material = goods:goods_gold
-					NOT = { has_mining_specialization = yes }
+					NOT = { sul_has_mining_specialization = yes }
 				}
 			}
 			add = {
@@ -107,7 +107,7 @@ designate_mining_specialization = {
 				exists = scope:target
 				scope:target = {
 					raw_material = goods:silver
-					NOT = { has_mining_specialization = yes }
+					NOT = { sul_has_mining_specialization = yes }
 				}
 			}
 			add = {
@@ -126,8 +126,8 @@ designate_mining_specialization = {
 			limit = {
 				exists = scope:target
 				scope:target = {
-					can_specialize_mining = yes
-					NOT = { has_mining_specialization = yes }
+					sul_can_specialize_mining = yes
+					NOT = { sul_has_mining_specialization = yes }
 				}
 			}
 			scope:target = {
@@ -145,8 +145,8 @@ designate_mining_specialization = {
 			limit = {
 				exists = scope:target
 				scope:target = {
-					can_specialize_mining = yes
-					NOT = { has_mining_specialization = yes }
+					sul_can_specialize_mining = yes
+					NOT = { sul_has_mining_specialization = yes }
 					NOT = { location_rank = location_rank:rural_settlement }
 				}
 			}
@@ -167,8 +167,8 @@ designate_mining_specialization = {
 			limit = {
 				exists = scope:target
 				scope:target = {
-					can_specialize_mining = yes
-					NOT = { has_mining_specialization = yes }
+					sul_can_specialize_mining = yes
+					NOT = { sul_has_mining_specialization = yes }
 					market ?= { location = { has_variable = sul_iron_pressure } }
 				}
 			}
@@ -186,8 +186,8 @@ designate_mining_specialization = {
 			limit = {
 				exists = scope:target
 				scope:target = {
-					can_specialize_mining = yes
-					NOT = { has_mining_specialization = yes }
+					sul_can_specialize_mining = yes
+					NOT = { sul_has_mining_specialization = yes }
 				}
 			}
 			scope:target = {
@@ -203,7 +203,7 @@ designate_mining_specialization = {
 		# === STAY PUT: Resist changing away from optimal spec/terrain matches ===
 		# Branched by current specialization to reduce evaluations (was 16 flat checks, now max 4)
 		if = {
-			limit = { exists = scope:target scope:target = { has_mining_specialization = yes } }
+			limit = { exists = scope:target scope:target = { sul_has_mining_specialization = yes } }
 			# Resource value penalty
 			scope:target.raw_material = { subtract = "price_in_market(scope:actor.capital.market)" }
 			# Precious metals: never change
@@ -230,7 +230,7 @@ designate_mining_specialization = {
 			}
 		}
 		else_if = {
-			limit = { exists = scope:target scope:target = { has_farming_specialization = yes } }
+			limit = { exists = scope:target scope:target = { sul_has_farming_specialization = yes } }
 			scope:target.raw_material = { subtract = "price_in_market(scope:actor.capital.market)" }
 			if = {
 				limit = { scope:target = { vegetation = farmland } }
@@ -246,7 +246,7 @@ designate_mining_specialization = {
 			}
 		}
 		else_if = {
-			limit = { exists = scope:target scope:target = { has_woodland_specialization = yes } }
+			limit = { exists = scope:target scope:target = { sul_has_woodland_specialization = yes } }
 			scope:target.raw_material = { subtract = "price_in_market(scope:actor.capital.market)" }
 			if = {
 				limit = { scope:target = { OR = { vegetation = forest vegetation = woods } } }
@@ -258,7 +258,7 @@ designate_mining_specialization = {
 			}
 		}
 		else_if = {
-			limit = { exists = scope:target scope:target = { has_gathering_specialization = yes } }
+			limit = { exists = scope:target scope:target = { sul_has_gathering_specialization = yes } }
 			scope:target.raw_material = { subtract = "price_in_market(scope:actor.capital.market)" }
 			if = {
 				limit = { scope:target = { is_coastal = yes } }
@@ -274,7 +274,7 @@ designate_mining_specialization = {
 			}
 		}
 		else_if = {
-			limit = { exists = scope:target scope:target = { has_commercial_specialization = yes } }
+			limit = { exists = scope:target scope:target = { sul_has_commercial_specialization = yes } }
 			scope:target.raw_material = { subtract = "price_in_market(scope:actor.capital.market)" }
 			if = {
 				limit = { scope:target = { is_market_center = yes } }
@@ -331,14 +331,18 @@ designate_mining_specialization = {
 
 		visible = {
 			owner = scope:actor
-			is_rural_or_higher = yes
+			OR = {
+				location_rank = location_rank:rural_settlement
+				location_rank = location_rank:town
+				location_rank = location_rank:city
+			}
 		}
 
 		enabled = {
-			can_specialize_mining = yes
-			NOT = { has_mining_specialization = yes }
+			sul_can_specialize_mining = yes
+			NOT = { sul_has_mining_specialization = yes }
 			NOT = { has_location_modifier = sul_specialization_cooldown }
-			is_occupied = no
+			controller = owner
 		}
 	}
 
@@ -355,27 +359,27 @@ designate_mining_specialization = {
 				}
 				# Decrement old type (if changing from another specialization)
 				if = {
-					limit = { scope:target = { has_mining_specialization = yes } }
+					limit = { scope:target = { sul_has_mining_specialization = yes } }
 					change_variable = { name = sul_mining_count subtract = 1 }
 					change_variable = { name = sul_total_weighted subtract = 1 }
 				}
 				else_if = {
-					limit = { scope:target = { has_farming_specialization = yes } }
+					limit = { scope:target = { sul_has_farming_specialization = yes } }
 					change_variable = { name = sul_farming_count subtract = 1 }
 					change_variable = { name = sul_total_weighted subtract = 2 }
 				}
 				else_if = {
-					limit = { scope:target = { has_woodland_specialization = yes } }
+					limit = { scope:target = { sul_has_woodland_specialization = yes } }
 					change_variable = { name = sul_woodland_count subtract = 1 }
 					change_variable = { name = sul_total_weighted subtract = 1 }
 				}
 				else_if = {
-					limit = { scope:target = { has_gathering_specialization = yes } }
+					limit = { scope:target = { sul_has_gathering_specialization = yes } }
 					change_variable = { name = sul_gathering_count subtract = 1 }
 					change_variable = { name = sul_total_weighted subtract = 1 }
 				}
 				else_if = {
-					limit = { scope:target = { has_commercial_specialization = yes } }
+					limit = { scope:target = { sul_has_commercial_specialization = yes } }
 					change_variable = { name = sul_commercial_count subtract = 1 }
 					change_variable = { name = sul_total_weighted subtract = 1 }
 				}
@@ -385,7 +389,7 @@ designate_mining_specialization = {
 			}
 
 			scope:target = {
-				clear_all_specialization_modifiers = yes
+				sul_clear_all_specialization_modifiers = yes
 				if = {
 					limit = { location_rank = location_rank:rural_settlement }
 					set_variable = { name = specialization_designation value = sul_mining_rural_value }
@@ -400,7 +404,7 @@ designate_mining_specialization = {
 					set_variable = { name = specialization_designation value = sul_mining_city_value }
 					add_location_modifier = { modifier = mining_city_specialization }
 				}
-				destroy_non_mining_buildings = yes
+				sul_destroy_non_mining_buildings = yes
 				add_location_modifier = {
 					modifier = sul_specialization_cooldown
 					years = 5
@@ -458,8 +462,8 @@ designate_farming_specialization = {
 				exists = scope:target
 				scope:target = {
 					vegetation = farmland
-					can_specialize_farming = yes
-					NOT = { has_farming_specialization = yes }
+					sul_can_specialize_farming = yes
+					NOT = { sul_has_farming_specialization = yes }
 				}
 			}
 			add = {
@@ -475,8 +479,8 @@ designate_farming_specialization = {
 				scope:target = {
 					topography = flatland
 					vegetation = grasslands
-					can_specialize_farming = yes
-					NOT = { has_farming_specialization = yes }
+					sul_can_specialize_farming = yes
+					NOT = { sul_has_farming_specialization = yes }
 				}
 			}
 			add = {
@@ -493,8 +497,8 @@ designate_farming_specialization = {
 					vegetation = grasslands
 					NOT = { topography = flatland }
 					NOT = { vegetation = farmland }
-					can_specialize_farming = yes
-					NOT = { has_farming_specialization = yes }
+					sul_can_specialize_farming = yes
+					NOT = { sul_has_farming_specialization = yes }
 				}
 			}
 			add = {
@@ -509,8 +513,8 @@ designate_farming_specialization = {
 				exists = scope:target
 				scope:target = {
 					has_river = yes
-					can_specialize_farming = yes
-					NOT = { has_farming_specialization = yes }
+					sul_can_specialize_farming = yes
+					NOT = { sul_has_farming_specialization = yes }
 				}
 			}
 			add = {
@@ -531,8 +535,8 @@ designate_farming_specialization = {
 				}
 				exists = scope:target
 				scope:target = {
-					can_specialize_farming = yes
-					NOT = { has_farming_specialization = yes }
+					sul_can_specialize_farming = yes
+					NOT = { sul_has_farming_specialization = yes }
 				}
 			}
 			add = {
@@ -547,8 +551,8 @@ designate_farming_specialization = {
 			limit = {
 				exists = scope:target
 				scope:target = {
-					can_specialize_farming = yes
-					NOT = { has_farming_specialization = yes }
+					sul_can_specialize_farming = yes
+					NOT = { sul_has_farming_specialization = yes }
 				}
 			}
 			scope:target.raw_material = {
@@ -564,8 +568,8 @@ designate_farming_specialization = {
 			limit = {
 				exists = scope:target
 				scope:target = {
-					can_specialize_farming = yes
-					NOT = { has_farming_specialization = yes }
+					sul_can_specialize_farming = yes
+					NOT = { sul_has_farming_specialization = yes }
 				}
 			}
 			scope:target = {
@@ -583,8 +587,8 @@ designate_farming_specialization = {
 			limit = {
 				exists = scope:target
 				scope:target = {
-					can_specialize_farming = yes
-					NOT = { has_farming_specialization = yes }
+					sul_can_specialize_farming = yes
+					NOT = { sul_has_farming_specialization = yes }
 					NOT = { location_rank = location_rank:rural_settlement }
 				}
 			}
@@ -604,8 +608,8 @@ designate_farming_specialization = {
 			limit = {
 				exists = scope:target
 				scope:target = {
-					can_specialize_farming = yes
-					NOT = { has_farming_specialization = yes }
+					sul_can_specialize_farming = yes
+					NOT = { sul_has_farming_specialization = yes }
 					market ?= { location = { has_variable = sul_wool_pressure } }
 				}
 			}
@@ -623,8 +627,8 @@ designate_farming_specialization = {
 			limit = {
 				exists = scope:target
 				scope:target = {
-					can_specialize_farming = yes
-					NOT = { has_farming_specialization = yes }
+					sul_can_specialize_farming = yes
+					NOT = { sul_has_farming_specialization = yes }
 				}
 			}
 			scope:target = {
@@ -642,8 +646,8 @@ designate_farming_specialization = {
 			limit = {
 				exists = scope:target
 				scope:target = {
-					can_specialize_farming = yes
-					NOT = { has_farming_specialization = yes }
+					sul_can_specialize_farming = yes
+					NOT = { sul_has_farming_specialization = yes }
 					market ?= { location = { has_variable = sul_wheat_pressure } }
 				}
 			}
@@ -661,8 +665,8 @@ designate_farming_specialization = {
 			limit = {
 				exists = scope:target
 				scope:target = {
-					can_specialize_farming = yes
-					NOT = { has_farming_specialization = yes }
+					sul_can_specialize_farming = yes
+					NOT = { sul_has_farming_specialization = yes }
 				}
 			}
 			scope:target = {
@@ -678,7 +682,7 @@ designate_farming_specialization = {
 		# === STAY PUT: Resist changing away from optimal spec/terrain matches ===
 		# Branched by current specialization to reduce evaluations (was 16 flat checks, now max 4)
 		if = {
-			limit = { exists = scope:target scope:target = { has_mining_specialization = yes } }
+			limit = { exists = scope:target scope:target = { sul_has_mining_specialization = yes } }
 			scope:target.raw_material = { subtract = "price_in_market(scope:actor.capital.market)" }
 			if = {
 				limit = { scope:target = { raw_material = goods:goods_gold } }
@@ -702,7 +706,7 @@ designate_farming_specialization = {
 			}
 		}
 		else_if = {
-			limit = { exists = scope:target scope:target = { has_farming_specialization = yes } }
+			limit = { exists = scope:target scope:target = { sul_has_farming_specialization = yes } }
 			scope:target.raw_material = { subtract = "price_in_market(scope:actor.capital.market)" }
 			if = {
 				limit = { scope:target = { vegetation = farmland } }
@@ -718,7 +722,7 @@ designate_farming_specialization = {
 			}
 		}
 		else_if = {
-			limit = { exists = scope:target scope:target = { has_woodland_specialization = yes } }
+			limit = { exists = scope:target scope:target = { sul_has_woodland_specialization = yes } }
 			scope:target.raw_material = { subtract = "price_in_market(scope:actor.capital.market)" }
 			if = {
 				limit = { scope:target = { OR = { vegetation = forest vegetation = woods } } }
@@ -730,7 +734,7 @@ designate_farming_specialization = {
 			}
 		}
 		else_if = {
-			limit = { exists = scope:target scope:target = { has_gathering_specialization = yes } }
+			limit = { exists = scope:target scope:target = { sul_has_gathering_specialization = yes } }
 			scope:target.raw_material = { subtract = "price_in_market(scope:actor.capital.market)" }
 			if = {
 				limit = { scope:target = { is_coastal = yes } }
@@ -746,7 +750,7 @@ designate_farming_specialization = {
 			}
 		}
 		else_if = {
-			limit = { exists = scope:target scope:target = { has_commercial_specialization = yes } }
+			limit = { exists = scope:target scope:target = { sul_has_commercial_specialization = yes } }
 			scope:target.raw_material = { subtract = "price_in_market(scope:actor.capital.market)" }
 			if = {
 				limit = { scope:target = { is_market_center = yes } }
@@ -803,14 +807,18 @@ designate_farming_specialization = {
 
 		visible = {
 			owner = scope:actor
-			is_rural_or_higher = yes
+			OR = {
+				location_rank = location_rank:rural_settlement
+				location_rank = location_rank:town
+				location_rank = location_rank:city
+			}
 		}
 
 		enabled = {
-			can_specialize_farming = yes
-			NOT = { has_farming_specialization = yes }
+			sul_can_specialize_farming = yes
+			NOT = { sul_has_farming_specialization = yes }
 			NOT = { has_location_modifier = sul_specialization_cooldown }
-			is_occupied = no
+			controller = owner
 		}
 	}
 
@@ -827,27 +835,27 @@ designate_farming_specialization = {
 				}
 				# Decrement old type (if changing from another specialization)
 				if = {
-					limit = { scope:target = { has_mining_specialization = yes } }
+					limit = { scope:target = { sul_has_mining_specialization = yes } }
 					change_variable = { name = sul_mining_count subtract = 1 }
 					change_variable = { name = sul_total_weighted subtract = 1 }
 				}
 				else_if = {
-					limit = { scope:target = { has_farming_specialization = yes } }
+					limit = { scope:target = { sul_has_farming_specialization = yes } }
 					change_variable = { name = sul_farming_count subtract = 1 }
 					change_variable = { name = sul_total_weighted subtract = 2 }
 				}
 				else_if = {
-					limit = { scope:target = { has_woodland_specialization = yes } }
+					limit = { scope:target = { sul_has_woodland_specialization = yes } }
 					change_variable = { name = sul_woodland_count subtract = 1 }
 					change_variable = { name = sul_total_weighted subtract = 1 }
 				}
 				else_if = {
-					limit = { scope:target = { has_gathering_specialization = yes } }
+					limit = { scope:target = { sul_has_gathering_specialization = yes } }
 					change_variable = { name = sul_gathering_count subtract = 1 }
 					change_variable = { name = sul_total_weighted subtract = 1 }
 				}
 				else_if = {
-					limit = { scope:target = { has_commercial_specialization = yes } }
+					limit = { scope:target = { sul_has_commercial_specialization = yes } }
 					change_variable = { name = sul_commercial_count subtract = 1 }
 					change_variable = { name = sul_total_weighted subtract = 1 }
 				}
@@ -857,7 +865,7 @@ designate_farming_specialization = {
 			}
 
 			scope:target = {
-				clear_all_specialization_modifiers = yes
+				sul_clear_all_specialization_modifiers = yes
 				if = {
 					limit = { location_rank = location_rank:rural_settlement }
 					set_variable = { name = specialization_designation value = sul_farming_rural_value }
@@ -872,7 +880,7 @@ designate_farming_specialization = {
 					set_variable = { name = specialization_designation value = sul_farming_city_value }
 					add_location_modifier = { modifier = farming_city_specialization }
 				}
-				destroy_non_farming_buildings = yes
+				sul_destroy_non_farming_buildings = yes
 				add_location_modifier = {
 					modifier = sul_specialization_cooldown
 					years = 5
@@ -933,8 +941,8 @@ designate_woodland_specialization = {
 						vegetation = forest
 						vegetation = woods
 					}
-					can_specialize_woodland = yes
-					NOT = { has_woodland_specialization = yes }
+					sul_can_specialize_woodland = yes
+					NOT = { sul_has_woodland_specialization = yes }
 				}
 			}
 			add = {
@@ -952,8 +960,8 @@ designate_woodland_specialization = {
 						topography = hills
 						topography = plateau
 					}
-					can_specialize_woodland = yes
-					NOT = { has_woodland_specialization = yes }
+					sul_can_specialize_woodland = yes
+					NOT = { sul_has_woodland_specialization = yes }
 				}
 			}
 			add = {
@@ -974,8 +982,8 @@ designate_woodland_specialization = {
 				}
 				exists = scope:target
 				scope:target = {
-					can_specialize_woodland = yes
-					NOT = { has_woodland_specialization = yes }
+					sul_can_specialize_woodland = yes
+					NOT = { sul_has_woodland_specialization = yes }
 				}
 			}
 			add = {
@@ -990,8 +998,8 @@ designate_woodland_specialization = {
 			limit = {
 				exists = scope:target
 				scope:target = {
-					can_specialize_woodland = yes
-					NOT = { has_woodland_specialization = yes }
+					sul_can_specialize_woodland = yes
+					NOT = { sul_has_woodland_specialization = yes }
 				}
 			}
 			scope:target.raw_material = {
@@ -1007,8 +1015,8 @@ designate_woodland_specialization = {
 			limit = {
 				exists = scope:target
 				scope:target = {
-					can_specialize_woodland = yes
-					NOT = { has_woodland_specialization = yes }
+					sul_can_specialize_woodland = yes
+					NOT = { sul_has_woodland_specialization = yes }
 				}
 			}
 			scope:target = {
@@ -1026,8 +1034,8 @@ designate_woodland_specialization = {
 			limit = {
 				exists = scope:target
 				scope:target = {
-					can_specialize_woodland = yes
-					NOT = { has_woodland_specialization = yes }
+					sul_can_specialize_woodland = yes
+					NOT = { sul_has_woodland_specialization = yes }
 					NOT = { location_rank = location_rank:rural_settlement }
 				}
 			}
@@ -1047,8 +1055,8 @@ designate_woodland_specialization = {
 			limit = {
 				exists = scope:target
 				scope:target = {
-					can_specialize_woodland = yes
-					NOT = { has_woodland_specialization = yes }
+					sul_can_specialize_woodland = yes
+					NOT = { sul_has_woodland_specialization = yes }
 					market ?= { location = { has_variable = sul_lumber_pressure } }
 				}
 			}
@@ -1066,8 +1074,8 @@ designate_woodland_specialization = {
 			limit = {
 				exists = scope:target
 				scope:target = {
-					can_specialize_woodland = yes
-					NOT = { has_woodland_specialization = yes }
+					sul_can_specialize_woodland = yes
+					NOT = { sul_has_woodland_specialization = yes }
 				}
 			}
 			scope:target = {
@@ -1083,7 +1091,7 @@ designate_woodland_specialization = {
 		# === STAY PUT: Resist changing away from optimal spec/terrain matches ===
 		# Branched by current specialization to reduce evaluations (was 16 flat checks, now max 4)
 		if = {
-			limit = { exists = scope:target scope:target = { has_mining_specialization = yes } }
+			limit = { exists = scope:target scope:target = { sul_has_mining_specialization = yes } }
 			scope:target.raw_material = { subtract = "price_in_market(scope:actor.capital.market)" }
 			if = {
 				limit = { scope:target = { topography = mountains } }
@@ -1099,7 +1107,7 @@ designate_woodland_specialization = {
 			}
 		}
 		else_if = {
-			limit = { exists = scope:target scope:target = { has_farming_specialization = yes } }
+			limit = { exists = scope:target scope:target = { sul_has_farming_specialization = yes } }
 			scope:target.raw_material = { subtract = "price_in_market(scope:actor.capital.market)" }
 			if = {
 				limit = { scope:target = { vegetation = farmland } }
@@ -1115,7 +1123,7 @@ designate_woodland_specialization = {
 			}
 		}
 		else_if = {
-			limit = { exists = scope:target scope:target = { has_woodland_specialization = yes } }
+			limit = { exists = scope:target scope:target = { sul_has_woodland_specialization = yes } }
 			scope:target.raw_material = { subtract = "price_in_market(scope:actor.capital.market)" }
 			if = {
 				limit = { scope:target = { OR = { vegetation = forest vegetation = woods } } }
@@ -1127,7 +1135,7 @@ designate_woodland_specialization = {
 			}
 		}
 		else_if = {
-			limit = { exists = scope:target scope:target = { has_gathering_specialization = yes } }
+			limit = { exists = scope:target scope:target = { sul_has_gathering_specialization = yes } }
 			scope:target.raw_material = { subtract = "price_in_market(scope:actor.capital.market)" }
 			if = {
 				limit = { scope:target = { is_coastal = yes } }
@@ -1143,7 +1151,7 @@ designate_woodland_specialization = {
 			}
 		}
 		else_if = {
-			limit = { exists = scope:target scope:target = { has_commercial_specialization = yes } }
+			limit = { exists = scope:target scope:target = { sul_has_commercial_specialization = yes } }
 			scope:target.raw_material = { subtract = "price_in_market(scope:actor.capital.market)" }
 			if = {
 				limit = { scope:target = { is_market_center = yes } }
@@ -1200,14 +1208,18 @@ designate_woodland_specialization = {
 
 		visible = {
 			owner = scope:actor
-			is_rural_or_higher = yes
+			OR = {
+				location_rank = location_rank:rural_settlement
+				location_rank = location_rank:town
+				location_rank = location_rank:city
+			}
 		}
 
 		enabled = {
-			can_specialize_woodland = yes
-			NOT = { has_woodland_specialization = yes }
+			sul_can_specialize_woodland = yes
+			NOT = { sul_has_woodland_specialization = yes }
 			NOT = { has_location_modifier = sul_specialization_cooldown }
-			is_occupied = no
+			controller = owner
 		}
 	}
 
@@ -1224,27 +1236,27 @@ designate_woodland_specialization = {
 				}
 				# Decrement old type (if changing from another specialization)
 				if = {
-					limit = { scope:target = { has_mining_specialization = yes } }
+					limit = { scope:target = { sul_has_mining_specialization = yes } }
 					change_variable = { name = sul_mining_count subtract = 1 }
 					change_variable = { name = sul_total_weighted subtract = 1 }
 				}
 				else_if = {
-					limit = { scope:target = { has_farming_specialization = yes } }
+					limit = { scope:target = { sul_has_farming_specialization = yes } }
 					change_variable = { name = sul_farming_count subtract = 1 }
 					change_variable = { name = sul_total_weighted subtract = 2 }
 				}
 				else_if = {
-					limit = { scope:target = { has_woodland_specialization = yes } }
+					limit = { scope:target = { sul_has_woodland_specialization = yes } }
 					change_variable = { name = sul_woodland_count subtract = 1 }
 					change_variable = { name = sul_total_weighted subtract = 1 }
 				}
 				else_if = {
-					limit = { scope:target = { has_gathering_specialization = yes } }
+					limit = { scope:target = { sul_has_gathering_specialization = yes } }
 					change_variable = { name = sul_gathering_count subtract = 1 }
 					change_variable = { name = sul_total_weighted subtract = 1 }
 				}
 				else_if = {
-					limit = { scope:target = { has_commercial_specialization = yes } }
+					limit = { scope:target = { sul_has_commercial_specialization = yes } }
 					change_variable = { name = sul_commercial_count subtract = 1 }
 					change_variable = { name = sul_total_weighted subtract = 1 }
 				}
@@ -1254,7 +1266,7 @@ designate_woodland_specialization = {
 			}
 
 			scope:target = {
-				clear_all_specialization_modifiers = yes
+				sul_clear_all_specialization_modifiers = yes
 				if = {
 					limit = { location_rank = location_rank:rural_settlement }
 					set_variable = { name = specialization_designation value = sul_woodland_rural_value }
@@ -1269,7 +1281,7 @@ designate_woodland_specialization = {
 					set_variable = { name = specialization_designation value = sul_woodland_city_value }
 					add_location_modifier = { modifier = woodland_city_specialization }
 				}
-				destroy_non_woodland_buildings = yes
+				sul_destroy_non_woodland_buildings = yes
 				add_location_modifier = {
 					modifier = sul_specialization_cooldown
 					years = 5
@@ -1327,8 +1339,8 @@ designate_gathering_specialization = {
 				exists = scope:target
 				scope:target = {
 					is_coastal = yes
-					can_specialize_gathering = yes
-					NOT = { has_gathering_specialization = yes }
+					sul_can_specialize_gathering = yes
+					NOT = { sul_has_gathering_specialization = yes }
 				}
 			}
 			add = {
@@ -1344,8 +1356,8 @@ designate_gathering_specialization = {
 				scope:target = {
 					has_river = yes
 					NOT = { is_coastal = yes }
-					can_specialize_gathering = yes
-					NOT = { has_gathering_specialization = yes }
+					sul_can_specialize_gathering = yes
+					NOT = { sul_has_gathering_specialization = yes }
 				}
 			}
 			add = {
@@ -1360,8 +1372,8 @@ designate_gathering_specialization = {
 				exists = scope:target
 				scope:target = {
 					is_adjacent_to_lake = yes
-					can_specialize_gathering = yes
-					NOT = { has_gathering_specialization = yes }
+					sul_can_specialize_gathering = yes
+					NOT = { sul_has_gathering_specialization = yes }
 				}
 			}
 			add = {
@@ -1379,8 +1391,8 @@ designate_gathering_specialization = {
 						vegetation = forest
 						vegetation = woods
 					}
-					can_specialize_gathering = yes
-					NOT = { has_gathering_specialization = yes }
+					sul_can_specialize_gathering = yes
+					NOT = { sul_has_gathering_specialization = yes }
 				}
 			}
 			add = {
@@ -1395,8 +1407,8 @@ designate_gathering_specialization = {
 			limit = {
 				exists = scope:target
 				scope:target = {
-					can_specialize_gathering = yes
-					NOT = { has_gathering_specialization = yes }
+					sul_can_specialize_gathering = yes
+					NOT = { sul_has_gathering_specialization = yes }
 				}
 			}
 			scope:target.raw_material = {
@@ -1412,8 +1424,8 @@ designate_gathering_specialization = {
 			limit = {
 				exists = scope:target
 				scope:target = {
-					can_specialize_gathering = yes
-					NOT = { has_gathering_specialization = yes }
+					sul_can_specialize_gathering = yes
+					NOT = { sul_has_gathering_specialization = yes }
 				}
 			}
 			scope:target = {
@@ -1431,8 +1443,8 @@ designate_gathering_specialization = {
 			limit = {
 				exists = scope:target
 				scope:target = {
-					can_specialize_gathering = yes
-					NOT = { has_gathering_specialization = yes }
+					sul_can_specialize_gathering = yes
+					NOT = { sul_has_gathering_specialization = yes }
 					NOT = { location_rank = location_rank:rural_settlement }
 				}
 			}
@@ -1452,8 +1464,8 @@ designate_gathering_specialization = {
 			limit = {
 				exists = scope:target
 				scope:target = {
-					can_specialize_gathering = yes
-					NOT = { has_gathering_specialization = yes }
+					sul_can_specialize_gathering = yes
+					NOT = { sul_has_gathering_specialization = yes }
 					market ?= { location = { has_variable = sul_salt_pressure } }
 				}
 			}
@@ -1471,8 +1483,8 @@ designate_gathering_specialization = {
 			limit = {
 				exists = scope:target
 				scope:target = {
-					can_specialize_gathering = yes
-					NOT = { has_gathering_specialization = yes }
+					sul_can_specialize_gathering = yes
+					NOT = { sul_has_gathering_specialization = yes }
 				}
 			}
 			scope:target = {
@@ -1490,8 +1502,8 @@ designate_gathering_specialization = {
 			limit = {
 				exists = scope:target
 				scope:target = {
-					can_specialize_gathering = yes
-					NOT = { has_gathering_specialization = yes }
+					sul_can_specialize_gathering = yes
+					NOT = { sul_has_gathering_specialization = yes }
 					market ?= { location = { has_variable = sul_clay_pressure } }
 				}
 			}
@@ -1509,8 +1521,8 @@ designate_gathering_specialization = {
 			limit = {
 				exists = scope:target
 				scope:target = {
-					can_specialize_gathering = yes
-					NOT = { has_gathering_specialization = yes }
+					sul_can_specialize_gathering = yes
+					NOT = { sul_has_gathering_specialization = yes }
 				}
 			}
 			scope:target = {
@@ -1526,7 +1538,7 @@ designate_gathering_specialization = {
 		# === STAY PUT: Resist changing away from optimal spec/terrain matches ===
 		# Branched by current specialization to reduce evaluations (was 16 flat checks, now max 4)
 		if = {
-			limit = { exists = scope:target scope:target = { has_mining_specialization = yes } }
+			limit = { exists = scope:target scope:target = { sul_has_mining_specialization = yes } }
 			scope:target.raw_material = { subtract = "price_in_market(scope:actor.capital.market)" }
 			if = {
 				limit = { scope:target = { topography = mountains } }
@@ -1542,7 +1554,7 @@ designate_gathering_specialization = {
 			}
 		}
 		else_if = {
-			limit = { exists = scope:target scope:target = { has_farming_specialization = yes } }
+			limit = { exists = scope:target scope:target = { sul_has_farming_specialization = yes } }
 			scope:target.raw_material = { subtract = "price_in_market(scope:actor.capital.market)" }
 			if = {
 				limit = { scope:target = { vegetation = farmland } }
@@ -1558,7 +1570,7 @@ designate_gathering_specialization = {
 			}
 		}
 		else_if = {
-			limit = { exists = scope:target scope:target = { has_woodland_specialization = yes } }
+			limit = { exists = scope:target scope:target = { sul_has_woodland_specialization = yes } }
 			scope:target.raw_material = { subtract = "price_in_market(scope:actor.capital.market)" }
 			if = {
 				limit = { scope:target = { OR = { vegetation = forest vegetation = woods } } }
@@ -1570,7 +1582,7 @@ designate_gathering_specialization = {
 			}
 		}
 		else_if = {
-			limit = { exists = scope:target scope:target = { has_gathering_specialization = yes } }
+			limit = { exists = scope:target scope:target = { sul_has_gathering_specialization = yes } }
 			scope:target.raw_material = { subtract = "price_in_market(scope:actor.capital.market)" }
 			if = {
 				limit = { scope:target = { is_coastal = yes } }
@@ -1586,7 +1598,7 @@ designate_gathering_specialization = {
 			}
 		}
 		else_if = {
-			limit = { exists = scope:target scope:target = { has_commercial_specialization = yes } }
+			limit = { exists = scope:target scope:target = { sul_has_commercial_specialization = yes } }
 			scope:target.raw_material = { subtract = "price_in_market(scope:actor.capital.market)" }
 			if = {
 				limit = { scope:target = { is_market_center = yes } }
@@ -1643,14 +1655,18 @@ designate_gathering_specialization = {
 
 		visible = {
 			owner = scope:actor
-			is_rural_or_higher = yes
+			OR = {
+				location_rank = location_rank:rural_settlement
+				location_rank = location_rank:town
+				location_rank = location_rank:city
+			}
 		}
 
 		enabled = {
-			can_specialize_gathering = yes
-			NOT = { has_gathering_specialization = yes }
+			sul_can_specialize_gathering = yes
+			NOT = { sul_has_gathering_specialization = yes }
 			NOT = { has_location_modifier = sul_specialization_cooldown }
-			is_occupied = no
+			controller = owner
 		}
 	}
 
@@ -1667,27 +1683,27 @@ designate_gathering_specialization = {
 				}
 				# Decrement old type (if changing from another specialization)
 				if = {
-					limit = { scope:target = { has_mining_specialization = yes } }
+					limit = { scope:target = { sul_has_mining_specialization = yes } }
 					change_variable = { name = sul_mining_count subtract = 1 }
 					change_variable = { name = sul_total_weighted subtract = 1 }
 				}
 				else_if = {
-					limit = { scope:target = { has_farming_specialization = yes } }
+					limit = { scope:target = { sul_has_farming_specialization = yes } }
 					change_variable = { name = sul_farming_count subtract = 1 }
 					change_variable = { name = sul_total_weighted subtract = 2 }
 				}
 				else_if = {
-					limit = { scope:target = { has_woodland_specialization = yes } }
+					limit = { scope:target = { sul_has_woodland_specialization = yes } }
 					change_variable = { name = sul_woodland_count subtract = 1 }
 					change_variable = { name = sul_total_weighted subtract = 1 }
 				}
 				else_if = {
-					limit = { scope:target = { has_gathering_specialization = yes } }
+					limit = { scope:target = { sul_has_gathering_specialization = yes } }
 					change_variable = { name = sul_gathering_count subtract = 1 }
 					change_variable = { name = sul_total_weighted subtract = 1 }
 				}
 				else_if = {
-					limit = { scope:target = { has_commercial_specialization = yes } }
+					limit = { scope:target = { sul_has_commercial_specialization = yes } }
 					change_variable = { name = sul_commercial_count subtract = 1 }
 					change_variable = { name = sul_total_weighted subtract = 1 }
 				}
@@ -1697,7 +1713,7 @@ designate_gathering_specialization = {
 			}
 
 			scope:target = {
-				clear_all_specialization_modifiers = yes
+				sul_clear_all_specialization_modifiers = yes
 				if = {
 					limit = { location_rank = location_rank:rural_settlement }
 					set_variable = { name = specialization_designation value = sul_gathering_rural_value }
@@ -1712,7 +1728,7 @@ designate_gathering_specialization = {
 					set_variable = { name = specialization_designation value = sul_gathering_city_value }
 					add_location_modifier = { modifier = gathering_city_specialization }
 				}
-				destroy_non_gathering_buildings = yes
+				sul_destroy_non_gathering_buildings = yes
 				add_location_modifier = {
 					modifier = sul_specialization_cooldown
 					years = 5
@@ -1811,7 +1827,7 @@ designate_commercial_specialization = {
 				exists = scope:target
 				scope:target = {
 					is_market_center = yes
-					NOT = { has_commercial_specialization = yes }
+					NOT = { sul_has_commercial_specialization = yes }
 				}
 			}
 			add = {
@@ -1826,7 +1842,7 @@ designate_commercial_specialization = {
 				exists = scope:target
 				scope:target = {
 					modifier:harbor_suitability > 0.7
-					NOT = { has_commercial_specialization = yes }
+					NOT = { sul_has_commercial_specialization = yes }
 				}
 			}
 			add = {
@@ -1841,7 +1857,7 @@ designate_commercial_specialization = {
 				exists = scope:target
 				scope:target = {
 					is_coastal = yes
-					NOT = { has_commercial_specialization = yes }
+					NOT = { sul_has_commercial_specialization = yes }
 				}
 			}
 			add = {
@@ -1856,7 +1872,7 @@ designate_commercial_specialization = {
 				exists = scope:target
 				scope:target = {
 					has_river = yes
-					NOT = { has_commercial_specialization = yes }
+					NOT = { sul_has_commercial_specialization = yes }
 				}
 			}
 			add = {
@@ -1871,7 +1887,7 @@ designate_commercial_specialization = {
 			limit = {
 				scope:actor = { government_type = government_type:republic }
 				exists = scope:target
-				scope:target = { NOT = { has_commercial_specialization = yes } }
+				scope:target = { NOT = { sul_has_commercial_specialization = yes } }
 			}
 			add = {
 				desc = "republic_preference"
@@ -1887,7 +1903,7 @@ designate_commercial_specialization = {
 		if = {
 			limit = {
 				exists = scope:target
-				scope:target = { NOT = { has_commercial_specialization = yes } }
+				scope:target = { NOT = { sul_has_commercial_specialization = yes } }
 			}
 			scope:target = {
 				market ?= {
@@ -1902,7 +1918,7 @@ designate_commercial_specialization = {
 		# === STAY PUT: Resist changing away from optimal spec/terrain matches ===
 		# Branched by current specialization to reduce evaluations (was 16 flat checks, now max 4)
 		if = {
-			limit = { exists = scope:target scope:target = { has_mining_specialization = yes } }
+			limit = { exists = scope:target scope:target = { sul_has_mining_specialization = yes } }
 			scope:target.raw_material = { subtract = "price_in_market(scope:actor.capital.market)" }
 			if = {
 				limit = { scope:target = { topography = mountains } }
@@ -1918,7 +1934,7 @@ designate_commercial_specialization = {
 			}
 		}
 		else_if = {
-			limit = { exists = scope:target scope:target = { has_farming_specialization = yes } }
+			limit = { exists = scope:target scope:target = { sul_has_farming_specialization = yes } }
 			scope:target.raw_material = { subtract = "price_in_market(scope:actor.capital.market)" }
 			if = {
 				limit = { scope:target = { vegetation = farmland } }
@@ -1934,7 +1950,7 @@ designate_commercial_specialization = {
 			}
 		}
 		else_if = {
-			limit = { exists = scope:target scope:target = { has_woodland_specialization = yes } }
+			limit = { exists = scope:target scope:target = { sul_has_woodland_specialization = yes } }
 			scope:target.raw_material = { subtract = "price_in_market(scope:actor.capital.market)" }
 			if = {
 				limit = { scope:target = { OR = { vegetation = forest vegetation = woods } } }
@@ -1946,7 +1962,7 @@ designate_commercial_specialization = {
 			}
 		}
 		else_if = {
-			limit = { exists = scope:target scope:target = { has_gathering_specialization = yes } }
+			limit = { exists = scope:target scope:target = { sul_has_gathering_specialization = yes } }
 			scope:target.raw_material = { subtract = "price_in_market(scope:actor.capital.market)" }
 			if = {
 				limit = { scope:target = { is_coastal = yes } }
@@ -1962,7 +1978,7 @@ designate_commercial_specialization = {
 			}
 		}
 		else_if = {
-			limit = { exists = scope:target scope:target = { has_commercial_specialization = yes } }
+			limit = { exists = scope:target scope:target = { sul_has_commercial_specialization = yes } }
 			if = {
 				limit = { scope:target = { is_market_center = yes } }
 				add = { desc = "stay_put_commercial" value = -10 }
@@ -2018,14 +2034,18 @@ designate_commercial_specialization = {
 
 		visible = {
 			owner = scope:actor
-			is_rural_or_higher = yes
+			OR = {
+				location_rank = location_rank:rural_settlement
+				location_rank = location_rank:town
+				location_rank = location_rank:city
+			}
 		}
 
 		# Commercial has no resource requirement - but cannot already be commercial
 		enabled = {
-			NOT = { has_commercial_specialization = yes }
+			NOT = { sul_has_commercial_specialization = yes }
 			NOT = { has_location_modifier = sul_specialization_cooldown }
-			is_occupied = no
+			controller = owner
 		}
 	}
 
@@ -2042,27 +2062,27 @@ designate_commercial_specialization = {
 				}
 				# Decrement old type (if changing from another specialization)
 				if = {
-					limit = { scope:target = { has_mining_specialization = yes } }
+					limit = { scope:target = { sul_has_mining_specialization = yes } }
 					change_variable = { name = sul_mining_count subtract = 1 }
 					change_variable = { name = sul_total_weighted subtract = 1 }
 				}
 				else_if = {
-					limit = { scope:target = { has_farming_specialization = yes } }
+					limit = { scope:target = { sul_has_farming_specialization = yes } }
 					change_variable = { name = sul_farming_count subtract = 1 }
 					change_variable = { name = sul_total_weighted subtract = 2 }
 				}
 				else_if = {
-					limit = { scope:target = { has_woodland_specialization = yes } }
+					limit = { scope:target = { sul_has_woodland_specialization = yes } }
 					change_variable = { name = sul_woodland_count subtract = 1 }
 					change_variable = { name = sul_total_weighted subtract = 1 }
 				}
 				else_if = {
-					limit = { scope:target = { has_gathering_specialization = yes } }
+					limit = { scope:target = { sul_has_gathering_specialization = yes } }
 					change_variable = { name = sul_gathering_count subtract = 1 }
 					change_variable = { name = sul_total_weighted subtract = 1 }
 				}
 				else_if = {
-					limit = { scope:target = { has_commercial_specialization = yes } }
+					limit = { scope:target = { sul_has_commercial_specialization = yes } }
 					change_variable = { name = sul_commercial_count subtract = 1 }
 					change_variable = { name = sul_total_weighted subtract = 1 }
 				}
@@ -2072,7 +2092,7 @@ designate_commercial_specialization = {
 			}
 
 			scope:target = {
-				clear_all_specialization_modifiers = yes
+				sul_clear_all_specialization_modifiers = yes
 				if = {
 					limit = { location_rank = location_rank:rural_settlement }
 					set_variable = { name = specialization_designation value = sul_commercial_rural_value }
@@ -2087,7 +2107,7 @@ designate_commercial_specialization = {
 					set_variable = { name = specialization_designation value = sul_commercial_city_value }
 					add_location_modifier = { modifier = commercial_city_specialization }
 				}
-				destroy_non_commercial_buildings = yes
+				sul_destroy_non_commercial_buildings = yes
 				add_location_modifier = {
 					modifier = sul_specialization_cooldown
 					years = 5

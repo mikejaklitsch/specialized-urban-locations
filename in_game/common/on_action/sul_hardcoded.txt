@@ -147,10 +147,8 @@ on_location_updates_specialization_by_rankup = {
 					limit = { has_commercial_specialization = yes }
 					set_variable = { name = specialization_designation value = sul_commercial_town_value }
 				}
-				# When upgrading from rural to town, destroy buildings and grant starter buildings
+				# Destroy buildings that don't match specialization
 				destroy_non_matching_buildings = yes
-				grant_specialization_starter_buildings = yes
-				grant_specialization_rgo_building = yes
 			}
 			else_if = {
 				limit = { location_rank = location_rank:city }
@@ -181,20 +179,14 @@ on_location_updates_specialization_by_rankup = {
 			apply_specialization_modifier = yes
 		}
 		# New rural/town/city without specialization - assign based on resources
+		# Note: Buildings are NOT granted on rank-up, only on game start
 		else_if = {
 			limit = { is_rural_or_higher = yes }
-			# Grant starter village for new rural settlements
-			if = {
-				limit = { is_rural_settlement = yes }
-				grant_starter_village = yes
-			}
 			assign_specialization_by_resources = yes
-			# Only destroy buildings for towns/cities, not rural
+			# Destroy buildings that don't match the assigned specialization
 			if = {
 				limit = { is_town_or_city = yes }
 				destroy_non_matching_buildings = yes
-				grant_specialization_starter_buildings = yes
-				grant_specialization_rgo_building = yes
 			}
 			apply_specialization_modifier = yes
 		}

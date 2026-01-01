@@ -58,29 +58,51 @@ sul_gems_low = { value = "default_price(goods:gems)" multiply = 0.75 }
 sul_dyes_low = { value = "default_price(goods:dyes)" multiply = 0.75 }
 
 # ============================================
+# SPECIALIZATION TYPE CONSTANTS
+# ============================================
+# Base type values (1-5) - the last digit of all designation values
+@sul_mining_type = 1
+@sul_farming_type = 2
+@sul_gathering_type = 3
+@sul_woodland_type = 4
+@sul_commercial_type = 5
+
+# ============================================
 # SPECIALIZATION DESIGNATION VALUES
 # ============================================
+# Full designation = rank offset + type
+# Town: 0+type, City: 10+type, Rural: 20+type
 
-# Rural specialization values
+# Rural specialization values (20 + type)
 sul_mining_rural_value = 21
 sul_farming_rural_value = 22
 sul_gathering_rural_value = 23
 sul_woodland_rural_value = 24
 sul_commercial_rural_value = 25
 
-# Town specialization values
+# Town specialization values (0 + type)
 sul_mining_town_value = 1
 sul_farming_town_value = 2
 sul_gathering_town_value = 3
 sul_woodland_town_value = 4
 sul_commercial_town_value = 5
 
-# City specialization values
+# City specialization values (10 + type)
 sul_mining_city_value = 11
 sul_farming_city_value = 12
 sul_gathering_city_value = 13
 sul_woodland_city_value = 14
 sul_commercial_city_value = 15
+
+# ============================================
+# SPECIALIZATION TYPE EXTRACTION (location scope)
+# ============================================
+# Extracts type (1-5) from designation using modulo
+# Usage: sul_specialization_type = @sul_mining_type
+sul_specialization_type = {
+	value = var:specialization_designation
+	modulo = 10
+}
 
 # ============================================
 # DIVERSITY PRESSURE (percentage-based, cached)

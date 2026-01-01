@@ -75,80 +75,38 @@ sul_destroy_non_commercial_buildings = {
 # ============================================
 
 # Remove all specialization modifiers (rural, town, and city)
-# Optimized: branch by rank first, then by specialization type
-# Reduces from 15 checks to max 6 (1 rank + 5 specialization)
+# Checks specialization TYPE from variable and removes ALL rank variants that exist
+# This handles rank transitions where the rank has changed but variable still has old value
 sul_clear_all_specialization_modifiers = {
 	if = {
-		limit = { location_rank = location_rank:rural_settlement }
-		# Rural modifiers
-		if = {
-			limit = { sul_has_mining_specialization = yes }
-			remove_location_modifier = mining_rural_specialization
-		}
-		else_if = {
-			limit = { sul_has_farming_specialization = yes }
-			remove_location_modifier = farming_rural_specialization
-		}
-		else_if = {
-			limit = { sul_has_gathering_specialization = yes }
-			remove_location_modifier = gathering_rural_specialization
-		}
-		else_if = {
-			limit = { sul_has_woodland_specialization = yes }
-			remove_location_modifier = woodland_rural_specialization
-		}
-		else_if = {
-			limit = { sul_has_commercial_specialization = yes }
-			remove_location_modifier = commercial_rural_specialization
-		}
+		limit = { sul_has_mining_specialization = yes }
+		if = { limit = { has_location_modifier = mining_rural_specialization } remove_location_modifier = mining_rural_specialization }
+		if = { limit = { has_location_modifier = mining_town_specialization } remove_location_modifier = mining_town_specialization }
+		if = { limit = { has_location_modifier = mining_city_specialization } remove_location_modifier = mining_city_specialization }
 	}
 	else_if = {
-		limit = { location_rank = location_rank:town }
-		# Town modifiers
-		if = {
-			limit = { sul_has_mining_specialization = yes }
-			remove_location_modifier = mining_town_specialization
-		}
-		else_if = {
-			limit = { sul_has_farming_specialization = yes }
-			remove_location_modifier = farming_town_specialization
-		}
-		else_if = {
-			limit = { sul_has_gathering_specialization = yes }
-			remove_location_modifier = gathering_town_specialization
-		}
-		else_if = {
-			limit = { sul_has_woodland_specialization = yes }
-			remove_location_modifier = woodland_town_specialization
-		}
-		else_if = {
-			limit = { sul_has_commercial_specialization = yes }
-			remove_location_modifier = commercial_town_specialization
-		}
+		limit = { sul_has_farming_specialization = yes }
+		if = { limit = { has_location_modifier = farming_rural_specialization } remove_location_modifier = farming_rural_specialization }
+		if = { limit = { has_location_modifier = farming_town_specialization } remove_location_modifier = farming_town_specialization }
+		if = { limit = { has_location_modifier = farming_city_specialization } remove_location_modifier = farming_city_specialization }
 	}
 	else_if = {
-		limit = { location_rank = location_rank:city }
-		# City modifiers
-		if = {
-			limit = { sul_has_mining_specialization = yes }
-			remove_location_modifier = mining_city_specialization
-		}
-		else_if = {
-			limit = { sul_has_farming_specialization = yes }
-			remove_location_modifier = farming_city_specialization
-		}
-		else_if = {
-			limit = { sul_has_gathering_specialization = yes }
-			remove_location_modifier = gathering_city_specialization
-		}
-		else_if = {
-			limit = { sul_has_woodland_specialization = yes }
-			remove_location_modifier = woodland_city_specialization
-		}
-		else_if = {
-			limit = { sul_has_commercial_specialization = yes }
-			remove_location_modifier = commercial_city_specialization
-		}
+		limit = { sul_has_gathering_specialization = yes }
+		if = { limit = { has_location_modifier = gathering_rural_specialization } remove_location_modifier = gathering_rural_specialization }
+		if = { limit = { has_location_modifier = gathering_town_specialization } remove_location_modifier = gathering_town_specialization }
+		if = { limit = { has_location_modifier = gathering_city_specialization } remove_location_modifier = gathering_city_specialization }
+	}
+	else_if = {
+		limit = { sul_has_woodland_specialization = yes }
+		if = { limit = { has_location_modifier = woodland_rural_specialization } remove_location_modifier = woodland_rural_specialization }
+		if = { limit = { has_location_modifier = woodland_town_specialization } remove_location_modifier = woodland_town_specialization }
+		if = { limit = { has_location_modifier = woodland_city_specialization } remove_location_modifier = woodland_city_specialization }
+	}
+	else_if = {
+		limit = { sul_has_commercial_specialization = yes }
+		if = { limit = { has_location_modifier = commercial_rural_specialization } remove_location_modifier = commercial_rural_specialization }
+		if = { limit = { has_location_modifier = commercial_town_specialization } remove_location_modifier = commercial_town_specialization }
+		if = { limit = { has_location_modifier = commercial_city_specialization } remove_location_modifier = commercial_city_specialization }
 	}
 }
 

@@ -1,0 +1,30 @@
+# =============================================================================
+# CROWN ESTATE MODIFICATIONS
+# =============================================================================
+#
+# Adds building upkeep reduction scaling with crown power.
+# Linear scaling: -50% at 0% crown power → 0% at 100% crown power
+#
+# INJECT adds to vanilla values, so we offset:
+# - Vanilla low_power: +2.0, we want -2.0 final → inject -4.0
+# - Vanilla high_power: -1.0, we want +2.0 final → inject +3.0
+# - Vanilla power: none, we want -1.5 → inject -1.5
+#
+# Final values after combining with vanilla:
+# At 0%:   (-2 × 0.25) + (-1.5 × 0)   = -50%
+# At 25%:  (-2 × 0)    + (-1.5 × 0.25) = -37.5%
+# At 50%:  (+2 × 0.25) + (-1.5 × 0.5)  = -25%
+# At 100%: (+2 × 0.75) + (-1.5 × 1)    = 0%
+# =============================================================================
+
+INJECT:crown_estate = {
+	low_power = {
+		building_upkeep_costs = -4.0
+	}
+	high_power = {
+		building_upkeep_costs = 3.0
+	}
+	power = {
+		building_upkeep_costs = -1.5
+	}
+}

@@ -2,268 +2,38 @@
 # ESTATE INCOME FROM CONTROL SHORTFALL
 # =============================================================================
 #
-# OVERVIEW:
 # Estates receive income from taxes the crown loses due to low control.
-# This calculates total taxes lost across all locations, then splits by estate power.
 #
-# KEY GAME VALUES:
-# - location_tax_base: POST-control, POST-market_access (actual tax collected)
-# - raw_material_output: Physical RGO output (NOT affected by control or MA)
-# - price_in_market(): Actual market price for a good
-# - local_control: 0.0 to 1.0 (percentage of tax collected)
-# - market_access: 0.0 to 1.0 (percentage of production that reaches market)
+# ARCHITECTURE:
+# - sul_update_all_location_gdp (monthly) calculates and caches:
+#   - sul_local_gdp on each location (for pop demand scaling)
+#   - sul_total_taxes_lost on country (for estate shortfall)
 #
-# TWO TYPES OF LOCATIONS:
-# 1. Controlled Locations (CL): control > 0
-#    - Can calculate exact shortfall: (tax_base / control) - tax_base
-#    - Also used to build averages for ZCL estimation
-#
-# 2. Zero Control Locations (ZCL): control = 0
-#    - Cannot use tax_base (would be 0 or undefined)
-#    - Estimate using averages from controlled locations
-#    - Shortfall = full potential (since actual = 0)
+# - This file just reads the cached values and splits by estate power.
 #
 # =============================================================================
-
-# Calculate total taxes lost due to low control across all owned locations
-# Called from country scope
-sul_calculate_total_taxes_lost_from_low_control = {
-
-	# =========================================================================
-	# INITIALIZE TRACKING VARIABLES
-	# =========================================================================
-
-	# --- For Controlled Location direct calculation ---
-	set_local_variable = { name = taxes_lost value = 0 }
-
-	# --- For ZCL estimation: RGO averages ---
-	# rgo_value includes MA (taxable value), but rgo_output does NOT (physical output)
-	# This gives avg = Σ(output * price * MA) / Σ(output)
-	# For ZCL: zcl_rgo = avg * (zcl_output * zcl_MA) - MA applied twice, normalizes across locations
-	set_local_variable = { name = rgo_value_sum value = 0 }      # Σ(output * price * MA) - taxable value
-	set_local_variable = { name = rgo_output_sum value = 0 }     # Σ(output) - physical output, NO MA
-
-	# --- For ZCL estimation: Building averages ---
-	# Building values are at current MA level (potential_at_MA - rgo_at_MA)
-	set_local_variable = { name = building_value_sum value = 0 } # Σ(building value at current MA)
-	set_local_variable = { name = building_level_sum value = 0 } # Σ(building_levels)
-
-	# --- For ZCL: accumulate output/levels weighted by market_access ---
-	set_local_variable = { name = zcl_rgo_output_ma value = 0 }      # Σ(output * MA)
-	set_local_variable = { name = zcl_building_levels_ma value = 0 } # Σ(levels * MA)
-
-	# =========================================================================
-	# ITERATE ALL OWNED LOCATIONS
-	# =========================================================================
-
-	every_owned_location = {
-		save_scope_as = cur_loc
-
-		# Skip locations with 0 market access - no tax possible
-		if = {
-			limit = { market_access > 0 }
-
-			if = {
-				# =============================================================
-				# CONTROLLED LOCATIONS (control > 0)
-				# =============================================================
-				limit = { local_control > 0 }
-
-				# ---------------------------------------------------------
-				# STEP 1: Calculate RGO taxable value (at current MA)
-				# ---------------------------------------------------------
-				# RGO taxable value = output * price * market_access
-				# - output: physical production (not affected by MA)
-				# - price: from market
-				# - market_access: reduces how much reaches market for tax
-				#
-				# We scope into raw_material (goods) to get price_in_market
-
-				set_local_variable = { name = loc_rgo_value value = 0 }
-				raw_material ?= {
-					set_local_variable = {
-						name = loc_rgo_value
-						value = {
-							value = "price_in_market(scope:cur_loc.market)"
-							multiply = scope:cur_loc.raw_material_output
-							multiply = scope:cur_loc.market_access
-							# MA included because it affects taxable value
-							# (only goods that reach market generate tax)
-						}
-					}
-				}
-
-				# ---------------------------------------------------------
-				# STEP 2: Calculate building value (at current MA)
-				# ---------------------------------------------------------
-				# potential_at_current_MA = tax_base / control
-				# building_value = potential_at_current_MA - rgo_at_current_MA
-				#
-				# Both values are at current MA level, so subtraction is valid
-				# We only remove control factor (not MA) to keep consistency
-
-				set_local_variable = {
-					name = loc_building_value
-					value = {
-						value = location_tax_base
-						divide = local_control       # Remove control factor only
-						subtract = local_var:loc_rgo_value
-						min = 0
-					}
-				}
-
-				# ---------------------------------------------------------
-				# STEP 3: Accumulate to country-level sums
-				# ---------------------------------------------------------
-				owner = {
-					# RGO tracking
-					change_local_variable = {
-						name = rgo_value_sum
-						add = local_var:loc_rgo_value    # Σ(output * price * MA) - taxable value
-					}
-					change_local_variable = {
-						name = rgo_output_sum
-						add = prev.raw_material_output   # Σ(output) - physical, NO MA
-					}
-
-					# Building tracking (at current MA level)
-					change_local_variable = {
-						name = building_value_sum
-						add = local_var:loc_building_value
-					}
-					change_local_variable = {
-						name = building_level_sum
-						add = prev.total_building_levels
-					}
-
-					# ---------------------------------------------------------
-					# STEP 4: Direct shortfall calculation for CL
-					# ---------------------------------------------------------
-					# This uses POST-MA values (tax_base is post-control, post-MA)
-					# shortfall = potential_at_current_MA - actual
-					#           = (tax_base / control) - tax_base
-					#
-					# NOTE: We do NOT divide by MA here because:
-					# - tax_base is already post-MA
-					# - We want shortfall at current MA, not theoretical 100% MA
-					# - This represents real taxes lost that estates can claim
-
-					change_local_variable = {
-						name = taxes_lost
-						add = {
-							value = prev.location_tax_base
-							divide = prev.local_control
-							subtract = prev.location_tax_base
-						}
-					}
-				}
-			}
-			else = {
-				# =============================================================
-				# ZERO CONTROL LOCATIONS (control = 0)
-				# =============================================================
-				# Cannot calculate directly - tax_base would be 0
-				# Accumulate output and levels weighted by MA for estimation
-				# The MA weighting is applied here so ZCL estimate reflects
-				# their actual potential (not theoretical 100% MA)
-
-				owner = {
-					change_local_variable = {
-						name = zcl_rgo_output_ma
-						add = {
-							value = prev.raw_material_output
-							multiply = prev.market_access
-						}
-					}
-					change_local_variable = {
-						name = zcl_building_levels_ma
-						add = {
-							value = prev.total_building_levels
-							multiply = prev.market_access
-						}
-					}
-				}
-			}
-		}
-	}
-
-	# =========================================================================
-	# ESTIMATE ZCL SHORTFALL
-	# =========================================================================
-	# For ZCL, shortfall = full potential (since control=0 means actual=0)
-	#
-	# RGO estimation:
-	# - avg = Σ(output * price * MA) / Σ(output) = avg taxable value per unit
-	# - zcl_rgo = avg * Σ(zcl_output * zcl_MA)
-	# - MA appears twice: once in CL average, once in ZCL weighting
-	# - This "normalizes" - if ZCL has lower MA than CL avg, estimate is lower
-	#
-	# Building estimation:
-	# - avg = Σ(building_value_at_MA) / Σ(levels) = avg value per level
-	# - zcl_building = avg * Σ(zcl_levels * zcl_MA)
-
-	set_local_variable = { name = zcl_taxes_lost value = 0 }
-
-	# --- RGO estimate ---
-	# avg = Σ(output * price * MA) / Σ(output)
-	# zcl_rgo = avg * Σ(zcl_output * zcl_MA)
-	if = {
-		limit = { local_var:rgo_output_sum > 0 }
-		change_local_variable = {
-			name = zcl_taxes_lost
-			add = {
-				value = local_var:rgo_value_sum
-				divide = local_var:rgo_output_sum
-				multiply = local_var:zcl_rgo_output_ma
-			}
-		}
-	}
-
-	# --- Building estimate ---
-	# avg_building = Σ(potential_building) / Σ(levels) = average value per level
-	# zcl_building = avg_building * Σ(zcl_levels * zcl_MA)
-	if = {
-		limit = { local_var:building_level_sum > 0 }
-		change_local_variable = {
-			name = zcl_taxes_lost
-			add = {
-				value = local_var:building_value_sum
-				divide = local_var:building_level_sum
-				multiply = local_var:zcl_building_levels_ma
-			}
-		}
-	}
-
-	# =========================================================================
-	# TOTAL SHORTFALL
-	# =========================================================================
-	# CL shortfall (direct) + ZCL shortfall (estimated)
-
-	set_variable = {
-		name = sul_total_taxes_lost
-		value = {
-			value = local_var:taxes_lost
-			add = local_var:zcl_taxes_lost
-			min = 0
-		}
-	}
-
-}
 
 # =============================================================================
 # PER-ESTATE INCOME CALCULATION
 # =============================================================================
-# Called from estate scope after sul_calculate_total_taxes_lost_from_low_control
+# Called from estate scope. Reads cached sul_total_taxes_lost from monthly update.
 # Each estate gets: total_taxes_lost * estate_power
 
 sul_calculate_estate_income_lost = {
-	set_local_variable = {
-		name = income_lost
-		value = {
-			value = owner.var:sul_total_taxes_lost
-			multiply = power
-			min = 0
+	# Only calculate if the monthly GDP update has run
+	if = {
+		limit = { owner = { has_variable = sul_total_taxes_lost } }
+		set_local_variable = {
+			name = income_lost
+			value = {
+				value = owner.var:sul_total_taxes_lost
+				multiply = power
+				min = 0
+			}
 		}
+	}
+	else = {
+		set_local_variable = { name = income_lost value = 0 }
 	}
 
 	# Store per-estate for GUI display
@@ -281,4 +51,15 @@ sul_calculate_estate_income_lost = {
 		owner = { set_variable = { name = sul_estate_dhimmi_income_lost value = local_var:income_lost } } }
 	else_if = { limit = { estate_type = estate_type:cossacks_estate }
 		owner = { set_variable = { name = sul_estate_cossacks_income_lost value = local_var:income_lost } } }
+}
+
+# =============================================================================
+# LEGACY COMPATIBILITY
+# =============================================================================
+# Old effect name for any code still calling it. Now just a no-op since
+# sul_update_all_location_gdp handles this monthly.
+
+sul_calculate_total_taxes_lost_from_low_control = {
+	# Calculation now happens in sul_update_all_location_gdp (monthly pulse)
+	# This is kept for compatibility but does nothing
 }

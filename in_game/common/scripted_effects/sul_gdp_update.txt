@@ -1,0 +1,198 @@
+﻿# =============================================================================
+# MONTHLY GDP UPDATE
+# =============================================================================
+#
+# Sets sul_local_gdp on every owned location for use by:
+# - Pop demand scaling (sul_gdp_per_capita_scale)
+# - Estate income from control shortfall
+#
+# Two-pass algorithm:
+# Pass 1: Calculate GDP for controlled locations (CL), accumulate averages
+# Pass 2: Estimate GDP for zero-control locations (ZCL) using CL averages
+#
+# Also caches sul_total_taxes_lost for estate shortfall calculation.
+# =============================================================================
+
+sul_update_all_location_gdp = {
+	# =========================================================================
+	# INITIALIZE TRACKING VARIABLES
+	# =========================================================================
+
+	# For CL direct calculation
+	set_local_variable = { name = cl_taxes_lost value = 0 }
+
+	# For ZCL estimation: RGO averages
+	set_local_variable = { name = rgo_value_sum value = 0 }
+	set_local_variable = { name = rgo_output_sum value = 0 }
+
+	# For ZCL estimation: Building averages
+	set_local_variable = { name = building_value_sum value = 0 }
+	set_local_variable = { name = building_level_sum value = 0 }
+
+	# =========================================================================
+	# PASS 1: CONTROLLED LOCATIONS
+	# =========================================================================
+
+	every_owned_location = {
+		limit = {
+			market_access > 0
+			local_control > 0
+		}
+
+		save_scope_as = cur_loc
+
+		# Calculate local GDP (potential tax base)
+		set_local_variable = {
+			name = loc_gdp
+			value = {
+				value = location_tax_base
+				divide = local_control
+			}
+		}
+
+		# Set on location for demand scaling
+		set_variable = { name = sul_local_gdp value = local_var:loc_gdp }
+
+		# Calculate RGO value for averaging
+		set_local_variable = { name = loc_rgo_value value = 0 }
+		raw_material ?= {
+			set_local_variable = {
+				name = loc_rgo_value
+				value = {
+					value = "price_in_market(scope:cur_loc.market)"
+					multiply = scope:cur_loc.raw_material_output
+					multiply = scope:cur_loc.market_access
+				}
+			}
+		}
+
+		# Calculate building value (GDP minus RGO)
+		set_local_variable = {
+			name = loc_building_value
+			value = {
+				value = local_var:loc_gdp
+				subtract = local_var:loc_rgo_value
+				min = 0
+			}
+		}
+
+		# Accumulate to country-level sums
+		owner = {
+			# RGO tracking
+			change_local_variable = {
+				name = rgo_value_sum
+				add = local_var:loc_rgo_value
+			}
+			change_local_variable = {
+				name = rgo_output_sum
+				add = prev.raw_material_output
+			}
+
+			# Building tracking
+			change_local_variable = {
+				name = building_value_sum
+				add = local_var:loc_building_value
+			}
+			change_local_variable = {
+				name = building_level_sum
+				add = prev.total_building_levels
+			}
+
+			# Accumulate taxes lost for estate shortfall
+			change_local_variable = {
+				name = cl_taxes_lost
+				add = {
+					value = prev.location_tax_base
+					divide = prev.local_control
+					subtract = prev.location_tax_base
+				}
+			}
+		}
+	}
+
+	# =========================================================================
+	# CALCULATE AVERAGES FOR ZCL ESTIMATION
+	# =========================================================================
+	# Use regular variables (not local_var) so they can be accessed from location scope
+
+	set_variable = {
+		name = sul_avg_rgo_value_per_output
+		value = {
+			if = {
+				limit = { local_var:rgo_output_sum > 0 }
+				value = local_var:rgo_value_sum
+				divide = local_var:rgo_output_sum
+			}
+			else = { value = 0 }
+		}
+	}
+
+	set_variable = {
+		name = sul_avg_building_value_per_level
+		value = {
+			if = {
+				limit = { local_var:building_level_sum > 0 }
+				value = local_var:building_value_sum
+				divide = local_var:building_level_sum
+			}
+			else = { value = 0 }
+		}
+	}
+
+	# =========================================================================
+	# PASS 2: ZERO-CONTROL LOCATIONS
+	# =========================================================================
+
+	set_local_variable = { name = zcl_taxes_lost value = 0 }
+
+	every_owned_location = {
+		limit = {
+			market_access > 0
+			local_control <= 0
+		}
+
+		# Estimate GDP using averages from controlled locations
+		set_local_variable = {
+			name = loc_gdp
+			value = {
+				# RGO component
+				value = owner.var:sul_avg_rgo_value_per_output
+				multiply = raw_material_output
+				multiply = market_access
+			}
+		}
+		change_local_variable = {
+			name = loc_gdp
+			add = {
+				# Building component
+				value = owner.var:sul_avg_building_value_per_level
+				multiply = total_building_levels
+				multiply = market_access
+			}
+		}
+
+		# Set on location for demand scaling
+		set_variable = { name = sul_local_gdp value = local_var:loc_gdp }
+
+		# Accumulate to ZCL taxes lost (full potential since control = 0)
+		owner = {
+			change_local_variable = {
+				name = zcl_taxes_lost
+				add = local_var:loc_gdp
+			}
+		}
+	}
+
+	# =========================================================================
+	# CACHE TOTAL TAXES LOST FOR ESTATE SHORTFALL
+	# =========================================================================
+
+	set_variable = {
+		name = sul_total_taxes_lost
+		value = {
+			value = local_var:cl_taxes_lost
+			add = local_var:zcl_taxes_lost
+			min = 0
+		}
+	}
+}

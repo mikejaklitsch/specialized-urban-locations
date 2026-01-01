@@ -1,18 +1,44 @@
-﻿# Specialized Urban Locations - AI RGO Importance Overrides
+# =============================================================================
+# GOODS MODIFICATIONS
+# =============================================================================
+#
+# AI RGO Importance Overrides:
 # Lower ai_rgo_size_importance = AI more willing to upgrade location to town/city
-# Gold/silver should upgrade first (mining specialization)
-# Mining resources should upgrade before food/other resources
+#
+# Pop Demand Adjustments:
+# Based on "SoL Based Pop Demands" mod by 1onepower
+# https://steamcommunity.com/sharedfiles/filedetails/?id=3618308174
+#
+# =============================================================================
 
-# Precious metals - upgrade first (0.5)
+# -----------------------------------------------------------------------------
+# PRECIOUS METALS - upgrade first (0.5)
+# -----------------------------------------------------------------------------
+
 INJECT:goods_gold = {
 	ai_rgo_size_importance = 0.5
+	demand_add = {
+		burghers = 0.002
+	}
+	wealth_impact_threshold = {
+		all = -1.05
+	}
 }
 
 INJECT:silver = {
 	ai_rgo_size_importance = 0.5
+	demand_add = {
+		burghers = 0.002
+	}
+	wealth_impact_threshold = {
+		all = -1.05
+	}
 }
 
-# Industrial metals - upgrade early (1.0)
+# -----------------------------------------------------------------------------
+# INDUSTRIAL METALS - upgrade early (1.0)
+# -----------------------------------------------------------------------------
+
 INJECT:iron = {
 	ai_rgo_size_importance = 1.0
 }
@@ -31,12 +57,22 @@ INJECT:lead = {
 
 INJECT:mercury = {
 	ai_rgo_size_importance = 1.0
+	wealth_impact_threshold = {
+		all = -1.0
+	}
 }
 
-# Everything else - normal priority (1.5)
-# Food goods
+# -----------------------------------------------------------------------------
+# FOOD GOODS - normal priority (1.5)
+# -----------------------------------------------------------------------------
+
 INJECT:wheat = {
 	ai_rgo_size_importance = 1.5
+	wealth_impact_threshold = {
+		peasants = -1.1
+		laborers = -1.1
+		soldiers = -1.0
+	}
 }
 
 INJECT:rice = {
@@ -49,17 +85,401 @@ INJECT:fish = {
 
 INJECT:livestock = {
 	ai_rgo_size_importance = 1.5
+	wealth_impact_threshold = {
+		peasants = -1.1
+		laborers = -1.1
+		soldiers = -1.1
+	}
 }
 
-# Gathering goods
+INJECT:millet = {
+	demand_multiply = {
+		all = 0.7
+	}
+}
+
+INJECT:potato = {
+	demand_multiply = {
+		all = 4
+	}
+}
+
+INJECT:fruit = {
+	demand_multiply = {
+		all = 0.75
+	}
+	demand_add = {
+		nobles = 0.016
+		clergy = 0.004
+		burghers = 0.004
+	}
+}
+
+INJECT:wild_game = {
+	demand_multiply = {
+		nobles = 5
+		clergy = 5
+		burghers = 5
+	}
+}
+
+INJECT:beeswax = {
+	wealth_impact_threshold = {
+		peasants = -1.1
+		laborers = -1.1
+		soldiers = -1.1
+	}
+}
+
+# -----------------------------------------------------------------------------
+# GATHERING GOODS - normal priority (1.5)
+# -----------------------------------------------------------------------------
+
 INJECT:gems = {
 	ai_rgo_size_importance = 1.5
+	demand_add = {
+		nobles = -0.02
+		burghers = 0.003
+	}
+	wealth_impact_threshold = {
+		all = -1.25
+	}
 }
 
 INJECT:elephants = {
 	ai_rgo_size_importance = 1.5
+	wealth_impact_threshold = {
+		nobles = -2
+	}
 }
 
 INJECT:amber = {
 	ai_rgo_size_importance = 1.5
+	demand_add = {
+		nobles = -0.05
+	}
+	wealth_impact_threshold = {
+		nobles = -1.0
+		burghers = -1.5
+	}
+}
+
+INJECT:pearls = {
+	demand_add = {
+		nobles = -0.02
+		burghers = 0.003
+	}
+	wealth_impact_threshold = {
+		nobles = -1.0
+		burghers = -1.5
+	}
+}
+
+INJECT:ivory = {
+	demand_add = {
+		nobles = -0.02
+		burghers = 0.003
+	}
+	wealth_impact_threshold = {
+		all = -1.1
+	}
+}
+
+INJECT:marble = {
+	development_threshold = -10
+	demand_add = {
+		nobles = -0.02
+		burghers = 0.001
+	}
+	wealth_impact_threshold = {
+		nobles = -1.5
+	}
+}
+
+INJECT:fur = {
+	demand_add = {
+		nobles = -0.05
+	}
+}
+
+# -----------------------------------------------------------------------------
+# HORSES & MILITARY
+# -----------------------------------------------------------------------------
+
+INJECT:horses = {
+	demand_add = {
+		nobles = -0.2
+	}
+}
+
+INJECT:firearms = {
+	demand_add = {
+		nobles = -0.15
+		soldiers = 0.001
+	}
+	wealth_impact_threshold = {
+		all = -1.2
+	}
+}
+
+INJECT:weaponry = {
+	demand_add = {
+		nobles = -0.075
+		soldiers = 0.0025
+	}
+	wealth_impact_threshold = {
+		all = -1.1
+	}
+}
+
+# -----------------------------------------------------------------------------
+# LUXURY & TRADE GOODS
+# -----------------------------------------------------------------------------
+
+INJECT:incense = {
+	demand_add = {
+		clergy = 0.01
+	}
+	wealth_impact_threshold = {
+		all = -0.5
+	}
+}
+
+INJECT:sugar = {
+	demand_add = {
+		nobles = -0.02
+		clergy = -0.002
+		burghers = -0.002
+	}
+}
+
+INJECT:tea = {
+	demand_add = {
+		nobles = -0.15
+		clergy = -0.005
+		burghers = -0.005
+	}
+	wealth_impact_threshold = {
+		all = -0.75
+	}
+}
+
+INJECT:cocoa = {
+	demand_add = {
+		nobles = -0.05
+		burghers = -0.005
+		clergy = -0.005
+	}
+	wealth_impact_threshold = {
+		all = -0.75
+	}
+}
+
+INJECT:coffee = {
+	demand_add = {
+		nobles = 0.02
+		clergy = 0.0025
+		burghers = 0.002
+	}
+	wealth_impact_threshold = {
+		all = -0.75
+	}
+}
+
+INJECT:wine = {
+	demand_add = {
+		nobles = 0.014
+		clergy = 0.002
+		burghers = 0.002
+	}
+}
+
+INJECT:salt = {
+	demand_add = {
+		clergy = 0.005
+		burghers = 0.001
+	}
+}
+
+INJECT:saffron = {
+	demand_add = {
+		nobles = -0.02
+		clergy = 0.005
+		burghers = 0.001
+	}
+	wealth_impact_threshold = {
+		all = -1.1
+	}
+}
+
+INJECT:pepper = {
+	demand_add = {
+		clergy = 0.005
+		burghers = 0.0025
+	}
+	wealth_impact_threshold = {
+		all = -1.1
+	}
+}
+
+INJECT:cloves = {
+	demand_add = {
+		nobles = -0.02
+		clergy = -0.002
+		burghers = 0.0005
+	}
+	wealth_impact_threshold = {
+		all = -1.1
+	}
+}
+
+INJECT:chili = {
+	demand_add = {
+		burghers = 0.0025
+	}
+	wealth_impact_threshold = {
+		all = -1.1
+	}
+}
+
+INJECT:medicaments = {
+	wealth_impact_threshold = {
+		all = -1.1
+	}
+}
+
+# -----------------------------------------------------------------------------
+# MANUFACTURED GOODS
+# -----------------------------------------------------------------------------
+
+INJECT:porcelain = {
+	demand_add = {
+		nobles = 0.04
+		clergy = 0.0045
+		burghers = 0.0045
+	}
+	wealth_impact_threshold = {
+		all = -1.1
+	}
+}
+
+INJECT:fine_cloth = {
+	demand_multiply = {
+		nobles = 0.75
+	}
+	wealth_impact_threshold = {
+		all = -1.25
+	}
+}
+
+INJECT:jewelry = {
+	demand_multiply = {
+		nobles = 0.5
+	}
+	wealth_impact_threshold = {
+		all = -1.2
+	}
+}
+
+INJECT:cloth = {
+	wealth_impact_threshold = {
+		all = -1.0
+	}
+}
+
+INJECT:liquor = {
+	wealth_impact_threshold = {
+		all = -0.5
+	}
+}
+
+INJECT:beer = {
+	wealth_impact_threshold = {
+		all = -0.75
+	}
+}
+
+INJECT:paper = {
+	wealth_impact_threshold = {
+		all = -1.2
+	}
+}
+
+INJECT:books = {
+	wealth_impact_threshold = {
+		all = -1.1
+	}
+}
+
+INJECT:tools = {
+	wealth_impact_threshold = {
+		all = -0.75
+	}
+}
+
+INJECT:masonry = {
+	wealth_impact_threshold = {
+		all = -1.0
+	}
+}
+
+INJECT:lacquerware = {
+	wealth_impact_threshold = {
+		all = -1.2
+	}
+}
+
+INJECT:pottery = {
+	wealth_impact_threshold = {
+		all = -1.0
+	}
+}
+
+INJECT:furniture = {
+	wealth_impact_threshold = {
+		all = -1.0
+	}
+}
+
+# -----------------------------------------------------------------------------
+# RAW MATERIALS (empty injects to ensure compatibility)
+# -----------------------------------------------------------------------------
+
+INJECT:clay = {
+}
+
+INJECT:sand = {
+}
+
+INJECT:coal = {
+}
+
+INJECT:stone = {
+}
+
+INJECT:fiber_crops = {
+}
+
+INJECT:silk = {
+}
+
+INJECT:dyes = {
+}
+
+INJECT:saltpeter = {
+}
+
+INJECT:alum = {
+}
+
+INJECT:lumber = {
+}
+
+INJECT:maize = {
+}
+
+INJECT:legumes = {
+}
+
+INJECT:olives = {
 }

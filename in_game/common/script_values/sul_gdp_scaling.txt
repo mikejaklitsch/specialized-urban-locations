@@ -1,0 +1,196 @@
+# =============================================================================
+# GDP PER CAPITA SCALING FOR POP DEMAND
+# =============================================================================
+#
+# Scales pop demand based on local wealth. Richer locations = more demand.
+# Uses tax share weights to differentiate pop types (nobles rich, peasants poor).
+#
+# Requires: sul_local_gdp variable set on each location by sul_update_all_location_gdp
+# =============================================================================
+
+# -----------------------------------------------------------------------------
+# TAX SHARE WEIGHTS (income proxy per pop)
+# -----------------------------------------------------------------------------
+# Higher weight = larger share of local GDP attributed to that pop type
+
+@sul_noble_weight = 150
+@sul_clergy_weight = 25
+@sul_burgher_weight = 20
+@sul_commoner_weight = 1
+@sul_tribesman_weight = 0.01
+@sul_slave_weight = 0.01
+
+# -----------------------------------------------------------------------------
+# TUNING MULTIPLIERS AND FLOORS
+# -----------------------------------------------------------------------------
+# Multipliers scale the raw GDP per capita to reasonable demand levels
+# Floors prevent zero demand when GDP is very low
+
+@sul_noble_multiplier = 0.05
+@sul_clergy_multiplier = 0.15
+@sul_burgher_multiplier = 0.15
+@sul_commoner_multiplier = 1.5
+@sul_upper_class_floor = 0.5
+@sul_lower_class_floor = 0.8
+
+# -----------------------------------------------------------------------------
+# PER-LOCATION TAX SHARES (location scope)
+# -----------------------------------------------------------------------------
+# Each pop type's total share = count × weight
+
+sul_local_noble_tax_share = {
+	value = num_pop_type:nobles
+	multiply = @sul_noble_weight
+}
+
+sul_local_clergy_tax_share = {
+	value = num_pop_type:clergy
+	multiply = @sul_clergy_weight
+}
+
+sul_local_burgher_tax_share = {
+	value = num_pop_type:burghers
+	multiply = @sul_burgher_weight
+}
+
+sul_local_commoner_population = {
+	add = num_pop_type:laborers
+	add = num_pop_type:peasants
+	add = num_pop_type:soldiers
+}
+
+sul_local_commoner_tax_share = {
+	value = sul_local_commoner_population
+	multiply = @sul_commoner_weight
+}
+
+sul_local_tribesman_tax_share = {
+	value = num_pop_type:tribesmen
+	multiply = @sul_tribesman_weight
+}
+
+sul_local_slave_tax_share = {
+	value = num_pop_type:slaves
+	multiply = @sul_slave_weight
+}
+
+sul_local_total_tax_share = {
+	add = sul_local_noble_tax_share
+	add = sul_local_clergy_tax_share
+	add = sul_local_burgher_tax_share
+	add = sul_local_commoner_tax_share
+	add = sul_local_tribesman_tax_share
+	add = sul_local_slave_tax_share
+	min = 0.01  # prevent division by zero
+}
+
+# -----------------------------------------------------------------------------
+# GDP PER CAPITA BY POP TYPE (location scope)
+# -----------------------------------------------------------------------------
+# Formula: (local_gdp × pop_share / total_share) / pop_count
+# With tuning multiplier and floor to prevent zero demand
+
+sul_local_noble_gdp_per_capita = {
+	value = var:sul_local_gdp
+	multiply = sul_local_noble_tax_share
+	divide = sul_local_total_tax_share
+	divide = { value = num_pop_type:nobles min = 0.001 }
+	multiply = @sul_noble_multiplier
+	add = @sul_upper_class_floor
+	min = @sul_upper_class_floor
+}
+
+sul_local_clergy_gdp_per_capita = {
+	value = var:sul_local_gdp
+	multiply = sul_local_clergy_tax_share
+	divide = sul_local_total_tax_share
+	divide = { value = num_pop_type:clergy min = 0.001 }
+	multiply = @sul_clergy_multiplier
+	add = @sul_upper_class_floor
+	min = @sul_upper_class_floor
+}
+
+sul_local_burgher_gdp_per_capita = {
+	value = var:sul_local_gdp
+	multiply = sul_local_burgher_tax_share
+	divide = sul_local_total_tax_share
+	divide = { value = num_pop_type:burghers min = 0.001 }
+	multiply = @sul_burgher_multiplier
+	add = @sul_upper_class_floor
+	min = @sul_upper_class_floor
+}
+
+sul_local_commoner_gdp_per_capita = {
+	value = var:sul_local_gdp
+	multiply = sul_local_commoner_tax_share
+	divide = sul_local_total_tax_share
+	divide = { value = sul_local_commoner_population min = 0.001 }
+	multiply = @sul_commoner_multiplier
+	add = @sul_lower_class_floor
+	min = @sul_lower_class_floor
+}
+
+sul_local_tribesman_gdp_per_capita = {
+	value = var:sul_local_gdp
+	multiply = sul_local_tribesman_tax_share
+	divide = sul_local_total_tax_share
+	divide = { value = num_pop_type:tribesmen min = 0.001 }
+	multiply = @sul_commoner_multiplier
+	add = @sul_lower_class_floor
+	min = @sul_lower_class_floor
+}
+
+sul_local_slave_gdp_per_capita = {
+	value = var:sul_local_gdp
+	multiply = sul_local_slave_tax_share
+	divide = sul_local_total_tax_share
+	divide = { value = num_pop_type:slaves min = 0.001 }
+	multiply = @sul_commoner_multiplier
+	add = @sul_lower_class_floor
+	min = @sul_lower_class_floor
+}
+
+# -----------------------------------------------------------------------------
+# MAIN DISPATCHER (pop scope)
+# -----------------------------------------------------------------------------
+# Called from goods_demand. Dispatches to correct per-capita calc by pop type.
+# Returns 1 (no scaling) if sul_local_gdp not yet set on location.
+
+sul_gdp_per_capita_scale = {
+	value = 1
+	if = {
+		limit = { location = { has_variable = sul_local_gdp } }
+		if = {
+			limit = { pop_type = pop_type:nobles }
+			multiply = location.sul_local_noble_gdp_per_capita
+		}
+		else_if = {
+			limit = { pop_type = pop_type:clergy }
+			multiply = location.sul_local_clergy_gdp_per_capita
+		}
+		else_if = {
+			limit = { pop_type = pop_type:burghers }
+			multiply = location.sul_local_burgher_gdp_per_capita
+		}
+		else_if = {
+			limit = { pop_type = pop_type:laborers }
+			multiply = location.sul_local_commoner_gdp_per_capita
+		}
+		else_if = {
+			limit = { pop_type = pop_type:soldiers }
+			multiply = location.sul_local_commoner_gdp_per_capita
+		}
+		else_if = {
+			limit = { pop_type = pop_type:peasants }
+			multiply = location.sul_local_commoner_gdp_per_capita
+		}
+		else_if = {
+			limit = { pop_type = pop_type:tribesmen }
+			multiply = location.sul_local_tribesman_gdp_per_capita
+		}
+		else_if = {
+			limit = { pop_type = pop_type:slaves }
+			multiply = location.sul_local_slave_gdp_per_capita
+		}
+	}
+}

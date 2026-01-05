@@ -8,12 +8,43 @@
 monthly_country_pulse = {
 	on_actions = {
 		sul_monthly_gdp_update
+		sul_monthly_capacity_update
 	}
 }
 
 sul_monthly_gdp_update = {
 	effect = {
 		sul_update_all_location_gdp = yes
+	}
+}
+
+# =============================================================================
+# CAPACITY PRESSURE UPDATES
+# =============================================================================
+# Monthly for player nations, yearly for AI nations
+# Variable always updated (cheap), modifier only switches on 10% tier change
+
+sul_monthly_capacity_update = {
+	trigger = {
+		is_ai = no
+	}
+	effect = {
+		sul_update_all_location_capacity = yes
+	}
+}
+
+yearly_country_pulse = {
+	on_actions = {
+		sul_yearly_capacity_update
+	}
+}
+
+sul_yearly_capacity_update = {
+	trigger = {
+		is_ai = yes
+	}
+	effect = {
+		sul_update_all_location_capacity = yes
 	}
 }
 
@@ -42,13 +73,10 @@ sul_on_location_ownership_changed = {
 					sul_has_commercial_specialization = yes
 				}
 			}
-			# Grant starter village for rural settlements
-			if = {
-				limit = { location_rank = location_rank:rural_settlement }
-				sul_grant_starter_village = yes
-			}
 			sul_assign_specialization_by_resources = yes
 			sul_apply_specialization_modifier = yes
+			# Clear any cooldown from previous owner
+			remove_location_modifier = sul_recently_respecialized
 		}
 
 		# Now location definitely has a specialization - update counts

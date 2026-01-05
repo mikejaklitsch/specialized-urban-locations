@@ -14,7 +14,6 @@ sul_has_mining_resources = {
 		raw_material = goods:stone
 		raw_material = goods:tin
 		raw_material = goods:lead
-		raw_material = goods:saltpeter
 		raw_material = goods:alum
 		raw_material = goods:gems
 		raw_material = goods:marble
@@ -39,7 +38,6 @@ sul_has_farming_resources = {
 		raw_material = goods:cotton
 		raw_material = goods:sugar
 		raw_material = goods:tobacco
-		raw_material = goods:wool
 		raw_material = goods:wheat
 		raw_material = goods:maize
 		raw_material = goods:rice
@@ -58,10 +56,12 @@ sul_has_gathering_resources = {
 		raw_material = goods:clay
 		raw_material = goods:sand
 		raw_material = goods:salt
+		raw_material = goods:saltpeter
 		raw_material = goods:medicaments
 		raw_material = goods:pearls
 		raw_material = goods:amber
 		raw_material = goods:fish
+		raw_material = goods:wool
 	}
 }
 
@@ -75,27 +75,6 @@ sul_has_woodland_resources = {
 		raw_material = goods:elephants
 		raw_material = goods:beeswax
 		raw_material = goods:dyes
-	}
-}
-
-# ============================================
-# VALID LAND LOCATION CHECK
-# Used to filter out sea and wastelands for eligibility calculation
-# Note: is_land = yes already excludes lakes and ocean
-# ============================================
-
-sul_is_valid_land_location = {
-	is_land = yes
-	NOR = {
-		# Wastelands
-		topography = flatland_wasteland
-		topography = hills_wasteland
-		topography = plateau_wasteland
-		topography = wetlands_wasteland
-		topography = dune_wasteland
-		topography = mesa_wasteland
-		topography = mountain_wasteland
-		topography = ocean_wasteland
 	}
 }
 
@@ -125,86 +104,145 @@ sul_can_specialize_woodland = {
 # BUILDING CLASSIFICATION TRIGGERS
 # root = building
 # Used by destruction effects to determine if a building belongs to a specialization
-# Optimized: uses building_produced_goods for production buildings (72% fewer checks)
+# Uses explicit building_type checks for reliability during initialization
 # ============================================
 
-# Mining buildings: raw ore enhancement + metal/tool production
+# Mining buildings: ore extraction, smelting, metalworking
 sul_is_mining_building = {
 	OR = {
-		# Enhancement buildings (no produced goods - must be explicit)
+		# Enhancement/RGO buildings
 		building_type = building_type:local_smelters
 		building_type = building_type:mercury_patio
-		# Production buildings (check by output goods)
-		building_produced_goods = goods:iron
-		building_produced_goods = goods:stone
-		building_produced_goods = goods:tools
-		building_produced_goods = goods:weaponry
-		building_produced_goods = goods:cannons
-		building_produced_goods = goods:firearms
-		building_produced_goods = goods:steel
-		building_produced_goods = goods:jewelry
+		building_type = building_type:stone_quarry
+		building_type = building_type:bog_iron_smelter
+		# Tools production chain
+		building_type = building_type:tools_guild
+		building_type = building_type:tools_workshop
+		building_type = building_type:iron_foundry
+		building_type = building_type:iron_mill
+		# Weapons production chain
+		building_type = building_type:weapon_guild
+		building_type = building_type:weapon_workshop
+		building_type = building_type:weapon_manufactory
+		building_type = building_type:weapon_factory
+		# Cannons production chain
+		building_type = building_type:cannon_maker
+		building_type = building_type:cannon_workshop
+		building_type = building_type:cannon_foundry
+		building_type = building_type:cannons_factory
+		# Firearms production chain
+		building_type = building_type:hand_cannon_guild
+		building_type = building_type:gun_smith
+		building_type = building_type:guns_workshop
+		building_type = building_type:firearms_manufactory
+		building_type = building_type:firearms_factory
+		# Luxury metalworking
+		building_type = building_type:jewelry_guild
+		building_type = building_type:steel_mill
 	}
 }
 
-# Farming buildings: crop enhancement + food/drink production
+# Farming buildings: crop cultivation, animal husbandry, food/drink production
 sul_is_farming_building = {
 	OR = {
-		# Enhancement buildings (no produced goods - must be explicit)
+		# Enhancement/RGO buildings
 		building_type = building_type:windmill
-		# Production buildings (check by output goods)
-		building_produced_goods = goods:wool
-		building_produced_goods = goods:fiber_crops
-		building_produced_goods = goods:fruit
-		building_produced_goods = goods:horses
-		building_produced_goods = goods:sugar
-		building_produced_goods = goods:cotton
-		building_produced_goods = goods:tobacco
-		building_produced_goods = goods:beer
-		building_produced_goods = goods:wine
-		building_produced_goods = goods:liquor
-		building_produced_goods = goods:saltpeter
+		building_type = building_type:fiber_crops_farm
+		building_type = building_type:fruit_orchard
+		building_type = building_type:horse_breeders
+		building_type = building_type:cotton_plantation
+		building_type = building_type:tobacco_plantation
+		# Beer production chain
+		building_type = building_type:brewery
+		building_type = building_type:beer_workshop
+		building_type = building_type:brewery_manufactory
+		building_type = building_type:brewery_mill
+		# Wine production chain
+		building_type = building_type:winery
+		building_type = building_type:winery_manufactory
+		# Liquor production chain
+		building_type = building_type:distillers_guild
+		building_type = building_type:distillers_workshop
+		building_type = building_type:distiller_manufactory
+		building_type = building_type:distiller_mill
 	}
 }
 
-# Woodland buildings: forest enhancement + wood/leather/paper production
+# Woodland buildings: forestry, hunting, wood/leather processing
 sul_is_woodland_building = {
 	OR = {
-		# Enhancement buildings (no produced goods - must be explicit)
+		# Enhancement/RGO buildings
 		building_type = building_type:sawmill
-		# Production buildings (check by output goods)
-		building_produced_goods = goods:leather
-		building_produced_goods = goods:coal
-		building_produced_goods = goods:tar
-		building_produced_goods = goods:lumber
-		building_produced_goods = goods:ivory
-		building_produced_goods = goods:furniture
-		building_produced_goods = goods:dyes
-		building_produced_goods = goods:lacquerware
-		building_produced_goods = goods:paper
+		building_type = building_type:lumber_mill
+		building_type = building_type:tar_kiln
+		building_type = building_type:charcoal_maker
+		building_type = building_type:improved_charcoal_maker
+		building_type = building_type:elephant_hunting_grounds
+		# Leather production chain
+		building_type = building_type:tannery
+		building_type = building_type:tanning_workshop
+		building_type = building_type:tannery_manufactory
+		building_type = building_type:tannery_mill
+		# Furniture production chain
+		building_type = building_type:furniture_guild
+		building_type = building_type:furniture_workshop
+		building_type = building_type:furniture_manufactory
+		building_type = building_type:furniture_mill
+		# Dyes production chain
+		building_type = building_type:dyes_guild
+		building_type = building_type:dyes_workshop
+		building_type = building_type:dyesworks
+		building_type = building_type:dyes_mill
+		# Lacquerware production chain
+		building_type = building_type:lacquerware_guild
+		building_type = building_type:lacquerware_manufactory
+		# Paper production chain
+		building_type = building_type:paper_guild
+		building_type = building_type:paper_workshop
+		building_type = building_type:paper_manufactory
+		building_type = building_type:paper_mill
 	}
 }
 
-# Gathering buildings: all use produced goods (no enhancement buildings)
+# Gathering buildings: resource collection, ceramics, salt/glass production
 sul_is_gathering_building = {
 	OR = {
-		building_produced_goods = goods:clay
-		building_produced_goods = goods:sand
-		building_produced_goods = goods:salt
-		building_produced_goods = goods:glass
-		building_produced_goods = goods:pottery
-		building_produced_goods = goods:porcelain
-		building_produced_goods = goods:medicaments
+		# RGO buildings
+		building_type = building_type:clay_pit
+		building_type = building_type:sand_pit
+		building_type = building_type:salt_collector
+		building_type = building_type:sheep_farms
+		building_type = building_type:apothecary
+		# Pottery production chain
+		building_type = building_type:pottery_guild
+		building_type = building_type:pottery_workshop
+		building_type = building_type:pottery_manufactory
+		building_type = building_type:pottery_mill
+		# Glass production chain
+		building_type = building_type:glass_guild
+		building_type = building_type:glass_workshop
+		building_type = building_type:glassworks
+		building_type = building_type:glass_mill
+		# Saltpeter production chain
+		building_type = building_type:saltpeter_guild
+		building_type = building_type:saltpeter_workshop
+		building_type = building_type:putrefaction_works
+		building_type = building_type:putrefaction_mill
+		# Porcelain production chain
+		building_type = building_type:porcelain_guild
+		building_type = building_type:porcelain_manufactory
 	}
 }
 
-# Commercial buildings: trade infrastructure + textile production
+# Commercial buildings: trade infrastructure, textile production
 sul_is_commercial_building = {
 	OR = {
-		# Trade buildings (no produced goods - must be explicit)
+		# Marketplace tiers
 		building_type = building_type:marketplace
 		building_type = building_type:merchants_quarters
 		building_type = building_type:grand_marketplace
 		building_type = building_type:commerce_center
+		# Port/trade infrastructure
 		building_type = building_type:port_authority
 		building_type = building_type:entrepot
 		building_type = building_type:trading_hub
@@ -213,13 +251,30 @@ sul_is_commercial_building = {
 		building_type = building_type:clearing_house
 		building_type = building_type:market_warehouse
 		building_type = building_type:funduq
+		# Education/culture
 		building_type = building_type:university
 		building_type = building_type:perfumery
-		# Production buildings (check by output goods)
-		building_produced_goods = goods:books
-		building_produced_goods = goods:cloth
-		building_produced_goods = goods:fine_cloth
-		building_produced_goods = goods:naval_supplies
+		# Cloth production chain
+		building_type = building_type:cloth_guild
+		building_type = building_type:cloth_workshop
+		building_type = building_type:cloth_manufactory
+		building_type = building_type:textile_mill
+		building_type = building_type:rural_clothmaker
+		# Fine cloth production chain
+		building_type = building_type:fine_cloth_guild
+		building_type = building_type:fine_cloth_workshop
+		building_type = building_type:fine_cloth_manufactory
+		building_type = building_type:fine_cloth_mill
+		# Naval supplies production chain
+		building_type = building_type:naval_supplies_guild
+		building_type = building_type:naval_supplies_workshop
+		building_type = building_type:naval_supplies_manufactory
+		building_type = building_type:naval_supplies_mill
+		# Books production chain
+		building_type = building_type:scriptorium
+		building_type = building_type:printing_press_shop
+		building_type = building_type:printing_manufactory
+		building_type = building_type:printing_mill
 	}
 }
 
@@ -245,7 +300,7 @@ sul_is_destroyable_specialization_building = {
 # ============================================
 # SPECIALIZATION DESIGNATION TRIGGERS
 # ============================================
-# These triggers check the specialization_designation variable.
+# These triggers check the sul_specialization_designation variable.
 # We use NUMERIC values (not flags) because the GUI needs to read
 # this variable via GetVariable().GetValue, which only works with numbers.
 # Using triggers keeps the script code readable while allowing GUI access.
@@ -258,110 +313,115 @@ sul_is_destroyable_specialization_building = {
 
 # Individual rural checks (using constants from expanded_urban_locations_specialization_constants.txt)
 sul_is_mining_rural = {
-	has_variable = specialization_designation
-	var:specialization_designation = sul_mining_rural_value
+	has_variable = sul_specialization_designation
+	var:sul_specialization_designation = sul_mining_rural_value
 }
 
 sul_is_farming_rural = {
-	has_variable = specialization_designation
-	var:specialization_designation = sul_farming_rural_value
+	has_variable = sul_specialization_designation
+	var:sul_specialization_designation = sul_farming_rural_value
 }
 
 sul_is_gathering_rural = {
-	has_variable = specialization_designation
-	var:specialization_designation = sul_gathering_rural_value
+	has_variable = sul_specialization_designation
+	var:sul_specialization_designation = sul_gathering_rural_value
 }
 
 sul_is_woodland_rural = {
-	has_variable = specialization_designation
-	var:specialization_designation = sul_woodland_rural_value
+	has_variable = sul_specialization_designation
+	var:sul_specialization_designation = sul_woodland_rural_value
 }
 
 sul_is_commercial_rural = {
-	has_variable = specialization_designation
-	var:specialization_designation = sul_commercial_rural_value
+	has_variable = sul_specialization_designation
+	var:sul_specialization_designation = sul_commercial_rural_value
 }
 
 # Individual town checks (using constants from expanded_urban_locations_specialization_constants.txt)
 sul_is_mining_town = {
-	has_variable = specialization_designation
-	var:specialization_designation = sul_mining_town_value
+	has_variable = sul_specialization_designation
+	var:sul_specialization_designation = sul_mining_town_value
 }
 
 sul_is_farming_town = {
-	has_variable = specialization_designation
-	var:specialization_designation = sul_farming_town_value
+	has_variable = sul_specialization_designation
+	var:sul_specialization_designation = sul_farming_town_value
 }
 
 sul_is_gathering_town = {
-	has_variable = specialization_designation
-	var:specialization_designation = sul_gathering_town_value
+	has_variable = sul_specialization_designation
+	var:sul_specialization_designation = sul_gathering_town_value
 }
 
 sul_is_woodland_town = {
-	has_variable = specialization_designation
-	var:specialization_designation = sul_woodland_town_value
+	has_variable = sul_specialization_designation
+	var:sul_specialization_designation = sul_woodland_town_value
 }
 
 sul_is_commercial_town = {
-	has_variable = specialization_designation
-	var:specialization_designation = sul_commercial_town_value
+	has_variable = sul_specialization_designation
+	var:sul_specialization_designation = sul_commercial_town_value
 }
 
 # Individual city checks (using constants from expanded_urban_locations_specialization_constants.txt)
 sul_is_mining_city = {
-	has_variable = specialization_designation
-	var:specialization_designation = sul_mining_city_value
+	has_variable = sul_specialization_designation
+	var:sul_specialization_designation = sul_mining_city_value
 }
 
 sul_is_farming_city = {
-	has_variable = specialization_designation
-	var:specialization_designation = sul_farming_city_value
+	has_variable = sul_specialization_designation
+	var:sul_specialization_designation = sul_farming_city_value
 }
 
 sul_is_gathering_city = {
-	has_variable = specialization_designation
-	var:specialization_designation = sul_gathering_city_value
+	has_variable = sul_specialization_designation
+	var:sul_specialization_designation = sul_gathering_city_value
 }
 
 sul_is_woodland_city = {
-	has_variable = specialization_designation
-	var:specialization_designation = sul_woodland_city_value
+	has_variable = sul_specialization_designation
+	var:sul_specialization_designation = sul_woodland_city_value
 }
 
 sul_is_commercial_city = {
-	has_variable = specialization_designation
-	var:specialization_designation = sul_commercial_city_value
+	has_variable = sul_specialization_designation
+	var:sul_specialization_designation = sul_commercial_city_value
 }
 
 # Combined checks (rural, town, or city of same type)
 # Uses modulo to extract type (1-5) from designation
 sul_has_mining_specialization = {
-	has_variable = specialization_designation
+	has_variable = sul_specialization_designation
 	sul_specialization_type = 1
 }
 
 sul_has_farming_specialization = {
-	has_variable = specialization_designation
+	has_variable = sul_specialization_designation
 	sul_specialization_type = 2
 }
 
 sul_has_gathering_specialization = {
-	has_variable = specialization_designation
+	has_variable = sul_specialization_designation
 	sul_specialization_type = 3
 }
 
 sul_has_woodland_specialization = {
-	has_variable = specialization_designation
+	has_variable = sul_specialization_designation
 	sul_specialization_type = 4
 }
 
 sul_has_commercial_specialization = {
-	has_variable = specialization_designation
+	has_variable = sul_specialization_designation
 	sul_specialization_type = 5
 }
 
 # Check if location has any specialization
 sul_has_any_specialization = {
-	has_variable = specialization_designation
+	has_variable = sul_specialization_designation
+}
+
+# Check if location can respecialize (no cooldown active)
+sul_can_respecialize = {
+	NOT = { modifier:sul_can_respecialize = no }
 }

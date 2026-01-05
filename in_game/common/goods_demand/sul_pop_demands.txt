@@ -329,6 +329,43 @@ REPLACE:pop_demand = {
 			}
 		}
 
+		# Climate-based demand
+		if = {
+			limit = { location = { climate = arctic } }
+			multiply = {
+				value = 2.0
+				desc = "POP_DEMAND_CLIMATE"
+			}
+		}
+		else_if = {
+			limit = { location = { climate = cold_arid } }
+			multiply = {
+				value = 1.5
+				desc = "POP_DEMAND_CLIMATE"
+			}
+		}
+		else_if = {
+			limit = { location = { climate = continental } }
+			multiply = {
+				value = 1.0
+				desc = "POP_DEMAND_CLIMATE"
+			}
+		}
+		else_if = {
+			limit = { location = { climate = oceanic } }
+			multiply = {
+				value = 0.5
+				desc = "POP_DEMAND_CLIMATE"
+			}
+		}
+		else = {
+			# mediterranean, subtropical, arid, tropical
+			multiply = {
+				value = 0
+				desc = "POP_DEMAND_CLIMATE"
+			}
+		}
+
 		if = {	#non-violent
 			limit = { religion = religion:jain }
 			multiply = {
@@ -1249,12 +1286,12 @@ REPLACE:pop_demand = {
 	}	
 	
 	millet = {
-		value = 1
+		value = 0.8
 		if = {
 			limit = {
 				location.sub_continent = sub_continent:south_asia
 			}
-			
+
 			multiply = {
 				value = 2
 				desc = "POP_DEMAND_INDIA"
@@ -1290,7 +1327,7 @@ REPLACE:pop_demand = {
 				desc = "POP_DEMAND_BALTIC"
 			}
 		}
-		
+
 		if = {
 			limit = {
 				NOT = {
@@ -1299,7 +1336,7 @@ REPLACE:pop_demand = {
 			}
 			multiply = {
 				value = 0
-				
+
 				desc = "POP_DEMAND_LOCAL_CUISINE"
 			}
 		}
@@ -1387,9 +1424,24 @@ REPLACE:pop_demand = {
 		value = 1
 		if = {
 			limit = {
+				location = { is_coastal = yes }
+			}
+			multiply = {
+				value = 4
+				desc = "POP_DEMAND_COASTAL"
+			}
+		}
+		else = {
+			multiply = {
+				value = 0.25
+				desc = "POP_DEMAND_INLAND"
+			}
+		}
+		if = {
+			limit = {
 				religion = religion:catholic
 			}
-			
+
 			multiply = {
 				value = 1.25
 				desc = "POP_DEMAND_CATHOLIC"
@@ -1547,7 +1599,7 @@ REPLACE:pop_demand = {
 	}
 	
 	wheat = {
-		value = 1
+		value = 0.8
 		if = {
 			limit = {
 				location.continent = continent:europe
@@ -1609,7 +1661,7 @@ REPLACE:pop_demand = {
 	}
 	
 	fruit = {
-		value = 1
+		value = 0.8
 		if = {
 			limit = {
 				location = { climate = arctic }
@@ -1667,7 +1719,7 @@ REPLACE:pop_demand = {
 	}
 	
 	livestock = {
-		value = 1
+		value = 0.8
 
 		if = {
 			limit = {

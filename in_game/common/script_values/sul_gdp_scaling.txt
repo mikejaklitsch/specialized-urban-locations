@@ -1,4 +1,4 @@
-# =============================================================================
+﻿# =============================================================================
 # GDP PER CAPITA SCALING FOR POP DEMAND
 # =============================================================================
 #
@@ -30,8 +30,8 @@
 @sul_clergy_multiplier = 0.15
 @sul_burgher_multiplier = 0.15
 @sul_commoner_multiplier = 1.5
-@sul_upper_class_floor = 0.4
-@sul_lower_class_floor = 0.8
+@sul_upper_class_floor = 0.8
+@sul_lower_class_floor = 0.25
 
 # -----------------------------------------------------------------------------
 # PER-LOCATION TAX SHARES (location scope)
@@ -91,62 +91,80 @@ sul_local_total_tax_share = {
 # With tuning multiplier and floor to prevent zero demand
 
 sul_local_noble_gdp_per_capita = {
-	value = var:sul_local_gdp
-	multiply = sul_local_noble_tax_share
-	divide = sul_local_total_tax_share
-	divide = { value = num_pop_type:nobles min = 0.001 }
-	multiply = @sul_noble_multiplier
-	add = @sul_upper_class_floor
+	if = {
+		limit = { has_variable = sul_local_gdp }
+		value = var:sul_local_gdp
+		multiply = sul_local_noble_tax_share
+		divide = sul_local_total_tax_share
+		divide = { value = num_pop_type:nobles min = 0.001 }
+		multiply = @sul_noble_multiplier
+		add = @sul_upper_class_floor
+	}
 	min = @sul_upper_class_floor
 }
 
 sul_local_clergy_gdp_per_capita = {
-	value = var:sul_local_gdp
-	multiply = sul_local_clergy_tax_share
-	divide = sul_local_total_tax_share
-	divide = { value = num_pop_type:clergy min = 0.001 }
-	multiply = @sul_clergy_multiplier
-	add = @sul_upper_class_floor
+	if = {
+		limit = { has_variable = sul_local_gdp }
+		value = var:sul_local_gdp
+		multiply = sul_local_clergy_tax_share
+		divide = sul_local_total_tax_share
+		divide = { value = num_pop_type:clergy min = 0.001 }
+		multiply = @sul_clergy_multiplier
+		add = @sul_upper_class_floor
+	}
 	min = @sul_upper_class_floor
 }
 
 sul_local_burgher_gdp_per_capita = {
-	value = var:sul_local_gdp
-	multiply = sul_local_burgher_tax_share
-	divide = sul_local_total_tax_share
-	divide = { value = num_pop_type:burghers min = 0.001 }
-	multiply = @sul_burgher_multiplier
-	add = @sul_upper_class_floor
+	if = {
+		limit = { has_variable = sul_local_gdp }
+		value = var:sul_local_gdp
+		multiply = sul_local_burgher_tax_share
+		divide = sul_local_total_tax_share
+		divide = { value = num_pop_type:burghers min = 0.001 }
+		multiply = @sul_burgher_multiplier
+		add = @sul_upper_class_floor
+	}
 	min = @sul_upper_class_floor
 }
 
 sul_local_commoner_gdp_per_capita = {
-	value = var:sul_local_gdp
-	multiply = sul_local_commoner_tax_share
-	divide = sul_local_total_tax_share
-	divide = { value = sul_local_commoner_population min = 0.001 }
-	multiply = @sul_commoner_multiplier
-	add = @sul_lower_class_floor
+	if = {
+		limit = { has_variable = sul_local_gdp }
+		value = var:sul_local_gdp
+		multiply = sul_local_commoner_tax_share
+		divide = sul_local_total_tax_share
+		divide = { value = sul_local_commoner_population min = 0.001 }
+		multiply = @sul_commoner_multiplier
+		add = @sul_lower_class_floor
+	}
 	min = @sul_lower_class_floor
 }
 
 sul_local_tribesman_gdp_per_capita = {
-	value = var:sul_local_gdp
-	multiply = sul_local_tribesman_tax_share
-	divide = sul_local_total_tax_share
-	divide = { value = num_pop_type:tribesmen min = 0.001 }
-	multiply = @sul_commoner_multiplier
-	add = @sul_lower_class_floor
+	if = {
+		limit = { has_variable = sul_local_gdp }
+		value = var:sul_local_gdp
+		multiply = sul_local_tribesman_tax_share
+		divide = sul_local_total_tax_share
+		divide = { value = num_pop_type:tribesmen min = 0.001 }
+		multiply = @sul_commoner_multiplier
+		add = @sul_lower_class_floor
+	}
 	min = @sul_lower_class_floor
 }
 
 sul_local_slave_gdp_per_capita = {
-	value = var:sul_local_gdp
-	multiply = sul_local_slave_tax_share
-	divide = sul_local_total_tax_share
-	divide = { value = num_pop_type:slaves min = 0.001 }
-	multiply = @sul_commoner_multiplier
-	add = @sul_lower_class_floor
+	if = {
+		limit = { has_variable = sul_local_gdp }
+		value = var:sul_local_gdp
+		multiply = sul_local_slave_tax_share
+		divide = sul_local_total_tax_share
+		divide = { value = num_pop_type:slaves min = 0.001 }
+		multiply = @sul_commoner_multiplier
+		add = @sul_lower_class_floor
+	}
 	min = @sul_lower_class_floor
 }
 

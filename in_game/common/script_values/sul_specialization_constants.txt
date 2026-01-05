@@ -100,7 +100,7 @@ sul_commercial_city_value = 15
 # Extracts type (1-5) from designation using modulo
 # Usage: sul_specialization_type = @sul_mining_type
 sul_specialization_type = {
-	value = var:specialization_designation
+	value = var:sul_specialization_designation
 	modulo = 10
 }
 
@@ -216,7 +216,7 @@ sul_iron_market_pressure = {
 	multiply = 5
 }
 
-# Farming: Wool market pressure
+# Gathering: Wool market pressure
 sul_wool_market_pressure = {
 	value = "goods_demand_in_market(goods:wool)"
 	divide = {
@@ -307,8 +307,18 @@ sul_mining_finished_price_bonus = {
 	max = 16
 }
 
-# Farming raw: wool price bonus
+# Farming raw: cotton price bonus
 sul_farming_raw_price_bonus = {
+	value = "market_price(goods:cotton)"
+	divide = "default_price(goods:cotton)"
+	subtract = 1
+	multiply = 8
+	min = -8
+	max = 16
+}
+
+# Gathering raw: wool price bonus
+sul_gathering_raw_price_bonus = {
 	value = "market_price(goods:wool)"
 	divide = "default_price(goods:wool)"
 	subtract = 1
@@ -365,5 +375,39 @@ sul_gathering_finished_price_bonus = {
 	multiply = 8
 	min = -8
 	max = 16
+}
+
+# ============================================
+# FOOD PRICE BONUSES (market scope)
+# ============================================
+# Uses explicit food_price from market scope
+# Scale: 0.01 = minimum, 0.02 = baseline, higher = shortage
+# Farming gets stronger food price pressure (main food producer)
+# Gathering gets weaker food price pressure (supplementary food)
+
+# Farming food price bonus: (food_price - 0.02) × 400 (strong)
+# At 0.01 (minimum): -4 penalty
+# At 0.02 (baseline): 0 bonus
+# At 0.04 (shortage): +8 bonus
+# At 0.045+: +10 bonus (capped)
+sul_farming_food_price_bonus = {
+	value = food_price
+	subtract = 0.02
+	multiply = 400
+	min = -4
+	max = 10
+}
+
+# Gathering food price bonus: (food_price - 0.02) × 200 (weak)
+# At 0.01 (minimum): -2 penalty
+# At 0.02 (baseline): 0 bonus
+# At 0.04 (shortage): +4 bonus
+# At 0.05+: +6 bonus (capped)
+sul_gathering_food_price_bonus = {
+	value = food_price
+	subtract = 0.02
+	multiply = 200
+	min = -2
+	max = 6
 }
 

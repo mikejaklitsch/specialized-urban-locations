@@ -23,7 +23,7 @@
 
 # Location scope version (for map_markers tooltips)
 template sul_text_specialized_name_loc {
-	text = "[Select_CString(Location.MakeScope.GetVariable('specialization_designation').IsSet, Concatenate(Select_CString(EqualTo_int32(Modulo_int32(FixedPointToInt(Location.MakeScope.GetVariable('specialization_designation').GetValue), '(int32)10'), '(int32)1'), Localize('EUL_SPEC_MINING'), Select_CString(EqualTo_int32(Modulo_int32(FixedPointToInt(Location.MakeScope.GetVariable('specialization_designation').GetValue), '(int32)10'), '(int32)2'), Localize('EUL_SPEC_FARMING'), Select_CString(EqualTo_int32(Modulo_int32(FixedPointToInt(Location.MakeScope.GetVariable('specialization_designation').GetValue), '(int32)10'), '(int32)3'), Localize('EUL_SPEC_GATHERING'), Select_CString(EqualTo_int32(Modulo_int32(FixedPointToInt(Location.MakeScope.GetVariable('specialization_designation').GetValue), '(int32)10'), '(int32)4'), Localize('EUL_SPEC_WOODLAND'), Localize('EUL_SPEC_COMMERCIAL'))))), Concatenate(Select_CString(GreaterThanOrEqualTo_int32(FixedPointToInt(Location.MakeScope.GetVariable('specialization_designation').GetValue), '(int32)21'), Localize('EUL_RANK_VILLAGE'), Select_CString(GreaterThanOrEqualTo_int32(FixedPointToInt(Location.MakeScope.GetVariable('specialization_designation').GetValue), '(int32)11'), Localize('EUL_RANK_CITY'), Localize('EUL_RANK_TOWN'))), Concatenate(Localize('EUL_OF'), Location.GetNameWithNoTooltip))), Location.GetRankAndName)]"
+	text = "[Select_CString(Location.MakeScope.GetVariable('sul_specialization_designation').IsSet, Concatenate(Select_CString(EqualTo_int32(Modulo_int32(FixedPointToInt(Location.MakeScope.GetVariable('sul_specialization_designation').GetValue), '(int32)10'), '(int32)1'), Localize('EUL_SPEC_MINING'), Select_CString(EqualTo_int32(Modulo_int32(FixedPointToInt(Location.MakeScope.GetVariable('sul_specialization_designation').GetValue), '(int32)10'), '(int32)2'), Localize('EUL_SPEC_FARMING'), Select_CString(EqualTo_int32(Modulo_int32(FixedPointToInt(Location.MakeScope.GetVariable('sul_specialization_designation').GetValue), '(int32)10'), '(int32)3'), Localize('EUL_SPEC_GATHERING'), Select_CString(EqualTo_int32(Modulo_int32(FixedPointToInt(Location.MakeScope.GetVariable('sul_specialization_designation').GetValue), '(int32)10'), '(int32)4'), Localize('EUL_SPEC_WOODLAND'), Localize('EUL_SPEC_COMMERCIAL'))))), Concatenate(Select_CString(GreaterThanOrEqualTo_int32(FixedPointToInt(Location.MakeScope.GetVariable('sul_specialization_designation').GetValue), '(int32)21'), Localize('EUL_RANK_VILLAGE'), Select_CString(GreaterThanOrEqualTo_int32(FixedPointToInt(Location.MakeScope.GetVariable('sul_specialization_designation').GetValue), '(int32)11'), Localize('EUL_RANK_CITY'), Localize('EUL_RANK_TOWN'))), Concatenate(Localize('EUL_OF'), Location.GetNameWithNoTooltip))), Location.GetRankAndName)]"
 }
 
 
@@ -95,156 +95,212 @@ template sul_icon_size_rural { size = { @rural_marker_icon_size @rural_marker_ic
 # =====================================================
 # VISIBILITY TEMPLATES - Location Context (with IsSet check)
 # =====================================================
-template sul_vis_loc_mining_town { visible = "[And(Location.MakeScope.GetVariable('specialization_designation').IsSet, EqualTo_float(FixedPointToFloat(Location.MakeScope.GetVariable('specialization_designation').GetValue), '(float)1.0'))]" }
-template sul_vis_loc_farming_town { visible = "[And(Location.MakeScope.GetVariable('specialization_designation').IsSet, EqualTo_float(FixedPointToFloat(Location.MakeScope.GetVariable('specialization_designation').GetValue), '(float)2.0'))]" }
-template sul_vis_loc_gathering_town { visible = "[And(Location.MakeScope.GetVariable('specialization_designation').IsSet, EqualTo_float(FixedPointToFloat(Location.MakeScope.GetVariable('specialization_designation').GetValue), '(float)3.0'))]" }
-template sul_vis_loc_woodland_town { visible = "[And(Location.MakeScope.GetVariable('specialization_designation').IsSet, EqualTo_float(FixedPointToFloat(Location.MakeScope.GetVariable('specialization_designation').GetValue), '(float)4.0'))]" }
-template sul_vis_loc_commercial_town { visible = "[And(Location.MakeScope.GetVariable('specialization_designation').IsSet, EqualTo_float(FixedPointToFloat(Location.MakeScope.GetVariable('specialization_designation').GetValue), '(float)5.0'))]" }
-template sul_vis_loc_mining_city { visible = "[And(Location.MakeScope.GetVariable('specialization_designation').IsSet, EqualTo_float(FixedPointToFloat(Location.MakeScope.GetVariable('specialization_designation').GetValue), '(float)11.0'))]" }
-template sul_vis_loc_farming_city { visible = "[And(Location.MakeScope.GetVariable('specialization_designation').IsSet, EqualTo_float(FixedPointToFloat(Location.MakeScope.GetVariable('specialization_designation').GetValue), '(float)12.0'))]" }
-template sul_vis_loc_gathering_city { visible = "[And(Location.MakeScope.GetVariable('specialization_designation').IsSet, EqualTo_float(FixedPointToFloat(Location.MakeScope.GetVariable('specialization_designation').GetValue), '(float)13.0'))]" }
-template sul_vis_loc_woodland_city { visible = "[And(Location.MakeScope.GetVariable('specialization_designation').IsSet, EqualTo_float(FixedPointToFloat(Location.MakeScope.GetVariable('specialization_designation').GetValue), '(float)14.0'))]" }
-template sul_vis_loc_commercial_city { visible = "[And(Location.MakeScope.GetVariable('specialization_designation').IsSet, EqualTo_float(FixedPointToFloat(Location.MakeScope.GetVariable('specialization_designation').GetValue), '(float)15.0'))]" }
-template sul_vis_loc_mining_rural { visible = "[And(Location.MakeScope.GetVariable('specialization_designation').IsSet, EqualTo_float(FixedPointToFloat(Location.MakeScope.GetVariable('specialization_designation').GetValue), '(float)21.0'))]" }
-template sul_vis_loc_farming_rural { visible = "[And(Location.MakeScope.GetVariable('specialization_designation').IsSet, EqualTo_float(FixedPointToFloat(Location.MakeScope.GetVariable('specialization_designation').GetValue), '(float)22.0'))]" }
-template sul_vis_loc_gathering_rural { visible = "[And(Location.MakeScope.GetVariable('specialization_designation').IsSet, EqualTo_float(FixedPointToFloat(Location.MakeScope.GetVariable('specialization_designation').GetValue), '(float)23.0'))]" }
-template sul_vis_loc_woodland_rural { visible = "[And(Location.MakeScope.GetVariable('specialization_designation').IsSet, EqualTo_float(FixedPointToFloat(Location.MakeScope.GetVariable('specialization_designation').GetValue), '(float)24.0'))]" }
-template sul_vis_loc_commercial_rural { visible = "[And(Location.MakeScope.GetVariable('specialization_designation').IsSet, EqualTo_float(FixedPointToFloat(Location.MakeScope.GetVariable('specialization_designation').GetValue), '(float)25.0'))]" }
-template sul_vis_loc_not_specialized { visible = "[Not(Location.MakeScope.GetVariable('specialization_designation').IsSet)]" }
+template sul_vis_loc_mining_town { visible = "[And(Location.MakeScope.GetVariable('sul_specialization_designation').IsSet, EqualTo_float(FixedPointToFloat(Location.MakeScope.GetVariable('sul_specialization_designation').GetValue), '(float)1.0'))]" }
+template sul_vis_loc_farming_town { visible = "[And(Location.MakeScope.GetVariable('sul_specialization_designation').IsSet, EqualTo_float(FixedPointToFloat(Location.MakeScope.GetVariable('sul_specialization_designation').GetValue), '(float)2.0'))]" }
+template sul_vis_loc_gathering_town { visible = "[And(Location.MakeScope.GetVariable('sul_specialization_designation').IsSet, EqualTo_float(FixedPointToFloat(Location.MakeScope.GetVariable('sul_specialization_designation').GetValue), '(float)3.0'))]" }
+template sul_vis_loc_woodland_town { visible = "[And(Location.MakeScope.GetVariable('sul_specialization_designation').IsSet, EqualTo_float(FixedPointToFloat(Location.MakeScope.GetVariable('sul_specialization_designation').GetValue), '(float)4.0'))]" }
+template sul_vis_loc_commercial_town { visible = "[And(Location.MakeScope.GetVariable('sul_specialization_designation').IsSet, EqualTo_float(FixedPointToFloat(Location.MakeScope.GetVariable('sul_specialization_designation').GetValue), '(float)5.0'))]" }
+template sul_vis_loc_mining_city { visible = "[And(Location.MakeScope.GetVariable('sul_specialization_designation').IsSet, EqualTo_float(FixedPointToFloat(Location.MakeScope.GetVariable('sul_specialization_designation').GetValue), '(float)11.0'))]" }
+template sul_vis_loc_farming_city { visible = "[And(Location.MakeScope.GetVariable('sul_specialization_designation').IsSet, EqualTo_float(FixedPointToFloat(Location.MakeScope.GetVariable('sul_specialization_designation').GetValue), '(float)12.0'))]" }
+template sul_vis_loc_gathering_city { visible = "[And(Location.MakeScope.GetVariable('sul_specialization_designation').IsSet, EqualTo_float(FixedPointToFloat(Location.MakeScope.GetVariable('sul_specialization_designation').GetValue), '(float)13.0'))]" }
+template sul_vis_loc_woodland_city { visible = "[And(Location.MakeScope.GetVariable('sul_specialization_designation').IsSet, EqualTo_float(FixedPointToFloat(Location.MakeScope.GetVariable('sul_specialization_designation').GetValue), '(float)14.0'))]" }
+template sul_vis_loc_commercial_city { visible = "[And(Location.MakeScope.GetVariable('sul_specialization_designation').IsSet, EqualTo_float(FixedPointToFloat(Location.MakeScope.GetVariable('sul_specialization_designation').GetValue), '(float)15.0'))]" }
+template sul_vis_loc_mining_rural { visible = "[And(Location.MakeScope.GetVariable('sul_specialization_designation').IsSet, EqualTo_float(FixedPointToFloat(Location.MakeScope.GetVariable('sul_specialization_designation').GetValue), '(float)21.0'))]" }
+template sul_vis_loc_farming_rural { visible = "[And(Location.MakeScope.GetVariable('sul_specialization_designation').IsSet, EqualTo_float(FixedPointToFloat(Location.MakeScope.GetVariable('sul_specialization_designation').GetValue), '(float)22.0'))]" }
+template sul_vis_loc_gathering_rural { visible = "[And(Location.MakeScope.GetVariable('sul_specialization_designation').IsSet, EqualTo_float(FixedPointToFloat(Location.MakeScope.GetVariable('sul_specialization_designation').GetValue), '(float)23.0'))]" }
+template sul_vis_loc_woodland_rural { visible = "[And(Location.MakeScope.GetVariable('sul_specialization_designation').IsSet, EqualTo_float(FixedPointToFloat(Location.MakeScope.GetVariable('sul_specialization_designation').GetValue), '(float)24.0'))]" }
+template sul_vis_loc_commercial_rural { visible = "[And(Location.MakeScope.GetVariable('sul_specialization_designation').IsSet, EqualTo_float(FixedPointToFloat(Location.MakeScope.GetVariable('sul_specialization_designation').GetValue), '(float)25.0'))]" }
+template sul_vis_loc_not_specialized { visible = "[Not(Location.MakeScope.GetVariable('sul_specialization_designation').IsSet)]" }
 
 # =====================================================
 # VISIBILITY TEMPLATES - Location Context (without IsSet - for location_rank_tooltip)
 # =====================================================
 # Mining Town (1)
-template sul_vis_loc_noisset_mining_town_capital { visible = "[And(EqualTo_float(FixedPointToFloat(Location.MakeScope.GetVariable('specialization_designation').GetValue), '(float)1.0'), Location.IsCapital)]" }
-template sul_vis_loc_noisset_mining_town_prov_capital { visible = "[And3(EqualTo_float(FixedPointToFloat(Location.MakeScope.GetVariable('specialization_designation').GetValue), '(float)1.0'), Location.IsProvinceCapital, Not(Location.IsCapital))]" }
-template sul_vis_loc_noisset_mining_town_regular { visible = "[And3(EqualTo_float(FixedPointToFloat(Location.MakeScope.GetVariable('specialization_designation').GetValue), '(float)1.0'), Not(Location.IsProvinceCapital), Not(Location.IsCapital))]" }
+template sul_vis_loc_noisset_mining_town_capital { visible = "[And(EqualTo_float(FixedPointToFloat(Location.MakeScope.GetVariable('sul_specialization_designation').GetValue), '(float)1.0'), Location.IsCapital)]" }
+template sul_vis_loc_noisset_mining_town_prov_capital { visible = "[And3(EqualTo_float(FixedPointToFloat(Location.MakeScope.GetVariable('sul_specialization_designation').GetValue), '(float)1.0'), Location.IsProvinceCapital, Not(Location.IsCapital))]" }
+template sul_vis_loc_noisset_mining_town_regular { visible = "[And3(EqualTo_float(FixedPointToFloat(Location.MakeScope.GetVariable('sul_specialization_designation').GetValue), '(float)1.0'), Not(Location.IsProvinceCapital), Not(Location.IsCapital))]" }
 # Mining City (11)
-template sul_vis_loc_noisset_mining_city_capital { visible = "[And(EqualTo_float(FixedPointToFloat(Location.MakeScope.GetVariable('specialization_designation').GetValue), '(float)11.0'), Location.IsCapital)]" }
-template sul_vis_loc_noisset_mining_city_prov_capital { visible = "[And3(EqualTo_float(FixedPointToFloat(Location.MakeScope.GetVariable('specialization_designation').GetValue), '(float)11.0'), Location.IsProvinceCapital, Not(Location.IsCapital))]" }
-template sul_vis_loc_noisset_mining_city_regular { visible = "[And3(EqualTo_float(FixedPointToFloat(Location.MakeScope.GetVariable('specialization_designation').GetValue), '(float)11.0'), Not(Location.IsProvinceCapital), Not(Location.IsCapital))]" }
+template sul_vis_loc_noisset_mining_city_capital { visible = "[And(EqualTo_float(FixedPointToFloat(Location.MakeScope.GetVariable('sul_specialization_designation').GetValue), '(float)11.0'), Location.IsCapital)]" }
+template sul_vis_loc_noisset_mining_city_prov_capital { visible = "[And3(EqualTo_float(FixedPointToFloat(Location.MakeScope.GetVariable('sul_specialization_designation').GetValue), '(float)11.0'), Location.IsProvinceCapital, Not(Location.IsCapital))]" }
+template sul_vis_loc_noisset_mining_city_regular { visible = "[And3(EqualTo_float(FixedPointToFloat(Location.MakeScope.GetVariable('sul_specialization_designation').GetValue), '(float)11.0'), Not(Location.IsProvinceCapital), Not(Location.IsCapital))]" }
 # Mining Rural (21)
-template sul_vis_loc_noisset_mining_rural_capital { visible = "[And(EqualTo_float(FixedPointToFloat(Location.MakeScope.GetVariable('specialization_designation').GetValue), '(float)21.0'), Location.IsCapital)]" }
-template sul_vis_loc_noisset_mining_rural_prov_capital { visible = "[And3(EqualTo_float(FixedPointToFloat(Location.MakeScope.GetVariable('specialization_designation').GetValue), '(float)21.0'), Location.IsProvinceCapital, Not(Location.IsCapital))]" }
-template sul_vis_loc_noisset_mining_rural_regular { visible = "[And3(EqualTo_float(FixedPointToFloat(Location.MakeScope.GetVariable('specialization_designation').GetValue), '(float)21.0'), Not(Location.IsProvinceCapital), Not(Location.IsCapital))]" }
+template sul_vis_loc_noisset_mining_rural_capital { visible = "[And(EqualTo_float(FixedPointToFloat(Location.MakeScope.GetVariable('sul_specialization_designation').GetValue), '(float)21.0'), Location.IsCapital)]" }
+template sul_vis_loc_noisset_mining_rural_prov_capital { visible = "[And3(EqualTo_float(FixedPointToFloat(Location.MakeScope.GetVariable('sul_specialization_designation').GetValue), '(float)21.0'), Location.IsProvinceCapital, Not(Location.IsCapital))]" }
+template sul_vis_loc_noisset_mining_rural_regular { visible = "[And3(EqualTo_float(FixedPointToFloat(Location.MakeScope.GetVariable('sul_specialization_designation').GetValue), '(float)21.0'), Not(Location.IsProvinceCapital), Not(Location.IsCapital))]" }
 
 # Farming Town (2)
-template sul_vis_loc_noisset_farming_town_capital { visible = "[And(EqualTo_float(FixedPointToFloat(Location.MakeScope.GetVariable('specialization_designation').GetValue), '(float)2.0'), Location.IsCapital)]" }
-template sul_vis_loc_noisset_farming_town_prov_capital { visible = "[And3(EqualTo_float(FixedPointToFloat(Location.MakeScope.GetVariable('specialization_designation').GetValue), '(float)2.0'), Location.IsProvinceCapital, Not(Location.IsCapital))]" }
-template sul_vis_loc_noisset_farming_town_regular { visible = "[And3(EqualTo_float(FixedPointToFloat(Location.MakeScope.GetVariable('specialization_designation').GetValue), '(float)2.0'), Not(Location.IsProvinceCapital), Not(Location.IsCapital))]" }
+template sul_vis_loc_noisset_farming_town_capital { visible = "[And(EqualTo_float(FixedPointToFloat(Location.MakeScope.GetVariable('sul_specialization_designation').GetValue), '(float)2.0'), Location.IsCapital)]" }
+template sul_vis_loc_noisset_farming_town_prov_capital { visible = "[And3(EqualTo_float(FixedPointToFloat(Location.MakeScope.GetVariable('sul_specialization_designation').GetValue), '(float)2.0'), Location.IsProvinceCapital, Not(Location.IsCapital))]" }
+template sul_vis_loc_noisset_farming_town_regular { visible = "[And3(EqualTo_float(FixedPointToFloat(Location.MakeScope.GetVariable('sul_specialization_designation').GetValue), '(float)2.0'), Not(Location.IsProvinceCapital), Not(Location.IsCapital))]" }
 # Farming City (12)
-template sul_vis_loc_noisset_farming_city_capital { visible = "[And(EqualTo_float(FixedPointToFloat(Location.MakeScope.GetVariable('specialization_designation').GetValue), '(float)12.0'), Location.IsCapital)]" }
-template sul_vis_loc_noisset_farming_city_prov_capital { visible = "[And3(EqualTo_float(FixedPointToFloat(Location.MakeScope.GetVariable('specialization_designation').GetValue), '(float)12.0'), Location.IsProvinceCapital, Not(Location.IsCapital))]" }
-template sul_vis_loc_noisset_farming_city_regular { visible = "[And3(EqualTo_float(FixedPointToFloat(Location.MakeScope.GetVariable('specialization_designation').GetValue), '(float)12.0'), Not(Location.IsProvinceCapital), Not(Location.IsCapital))]" }
+template sul_vis_loc_noisset_farming_city_capital { visible = "[And(EqualTo_float(FixedPointToFloat(Location.MakeScope.GetVariable('sul_specialization_designation').GetValue), '(float)12.0'), Location.IsCapital)]" }
+template sul_vis_loc_noisset_farming_city_prov_capital { visible = "[And3(EqualTo_float(FixedPointToFloat(Location.MakeScope.GetVariable('sul_specialization_designation').GetValue), '(float)12.0'), Location.IsProvinceCapital, Not(Location.IsCapital))]" }
+template sul_vis_loc_noisset_farming_city_regular { visible = "[And3(EqualTo_float(FixedPointToFloat(Location.MakeScope.GetVariable('sul_specialization_designation').GetValue), '(float)12.0'), Not(Location.IsProvinceCapital), Not(Location.IsCapital))]" }
 # Farming Rural (22)
-template sul_vis_loc_noisset_farming_rural_capital { visible = "[And(EqualTo_float(FixedPointToFloat(Location.MakeScope.GetVariable('specialization_designation').GetValue), '(float)22.0'), Location.IsCapital)]" }
-template sul_vis_loc_noisset_farming_rural_prov_capital { visible = "[And3(EqualTo_float(FixedPointToFloat(Location.MakeScope.GetVariable('specialization_designation').GetValue), '(float)22.0'), Location.IsProvinceCapital, Not(Location.IsCapital))]" }
-template sul_vis_loc_noisset_farming_rural_regular { visible = "[And3(EqualTo_float(FixedPointToFloat(Location.MakeScope.GetVariable('specialization_designation').GetValue), '(float)22.0'), Not(Location.IsProvinceCapital), Not(Location.IsCapital))]" }
+template sul_vis_loc_noisset_farming_rural_capital { visible = "[And(EqualTo_float(FixedPointToFloat(Location.MakeScope.GetVariable('sul_specialization_designation').GetValue), '(float)22.0'), Location.IsCapital)]" }
+template sul_vis_loc_noisset_farming_rural_prov_capital { visible = "[And3(EqualTo_float(FixedPointToFloat(Location.MakeScope.GetVariable('sul_specialization_designation').GetValue), '(float)22.0'), Location.IsProvinceCapital, Not(Location.IsCapital))]" }
+template sul_vis_loc_noisset_farming_rural_regular { visible = "[And3(EqualTo_float(FixedPointToFloat(Location.MakeScope.GetVariable('sul_specialization_designation').GetValue), '(float)22.0'), Not(Location.IsProvinceCapital), Not(Location.IsCapital))]" }
 
 # Gathering Town (3)
-template sul_vis_loc_noisset_gathering_town_capital { visible = "[And(EqualTo_float(FixedPointToFloat(Location.MakeScope.GetVariable('specialization_designation').GetValue), '(float)3.0'), Location.IsCapital)]" }
-template sul_vis_loc_noisset_gathering_town_prov_capital { visible = "[And3(EqualTo_float(FixedPointToFloat(Location.MakeScope.GetVariable('specialization_designation').GetValue), '(float)3.0'), Location.IsProvinceCapital, Not(Location.IsCapital))]" }
-template sul_vis_loc_noisset_gathering_town_regular { visible = "[And3(EqualTo_float(FixedPointToFloat(Location.MakeScope.GetVariable('specialization_designation').GetValue), '(float)3.0'), Not(Location.IsProvinceCapital), Not(Location.IsCapital))]" }
+template sul_vis_loc_noisset_gathering_town_capital { visible = "[And(EqualTo_float(FixedPointToFloat(Location.MakeScope.GetVariable('sul_specialization_designation').GetValue), '(float)3.0'), Location.IsCapital)]" }
+template sul_vis_loc_noisset_gathering_town_prov_capital { visible = "[And3(EqualTo_float(FixedPointToFloat(Location.MakeScope.GetVariable('sul_specialization_designation').GetValue), '(float)3.0'), Location.IsProvinceCapital, Not(Location.IsCapital))]" }
+template sul_vis_loc_noisset_gathering_town_regular { visible = "[And3(EqualTo_float(FixedPointToFloat(Location.MakeScope.GetVariable('sul_specialization_designation').GetValue), '(float)3.0'), Not(Location.IsProvinceCapital), Not(Location.IsCapital))]" }
 # Gathering City (13)
-template sul_vis_loc_noisset_gathering_city_capital { visible = "[And(EqualTo_float(FixedPointToFloat(Location.MakeScope.GetVariable('specialization_designation').GetValue), '(float)13.0'), Location.IsCapital)]" }
-template sul_vis_loc_noisset_gathering_city_prov_capital { visible = "[And3(EqualTo_float(FixedPointToFloat(Location.MakeScope.GetVariable('specialization_designation').GetValue), '(float)13.0'), Location.IsProvinceCapital, Not(Location.IsCapital))]" }
-template sul_vis_loc_noisset_gathering_city_regular { visible = "[And3(EqualTo_float(FixedPointToFloat(Location.MakeScope.GetVariable('specialization_designation').GetValue), '(float)13.0'), Not(Location.IsProvinceCapital), Not(Location.IsCapital))]" }
+template sul_vis_loc_noisset_gathering_city_capital { visible = "[And(EqualTo_float(FixedPointToFloat(Location.MakeScope.GetVariable('sul_specialization_designation').GetValue), '(float)13.0'), Location.IsCapital)]" }
+template sul_vis_loc_noisset_gathering_city_prov_capital { visible = "[And3(EqualTo_float(FixedPointToFloat(Location.MakeScope.GetVariable('sul_specialization_designation').GetValue), '(float)13.0'), Location.IsProvinceCapital, Not(Location.IsCapital))]" }
+template sul_vis_loc_noisset_gathering_city_regular { visible = "[And3(EqualTo_float(FixedPointToFloat(Location.MakeScope.GetVariable('sul_specialization_designation').GetValue), '(float)13.0'), Not(Location.IsProvinceCapital), Not(Location.IsCapital))]" }
 # Gathering Rural (23)
-template sul_vis_loc_noisset_gathering_rural_capital { visible = "[And(EqualTo_float(FixedPointToFloat(Location.MakeScope.GetVariable('specialization_designation').GetValue), '(float)23.0'), Location.IsCapital)]" }
-template sul_vis_loc_noisset_gathering_rural_prov_capital { visible = "[And3(EqualTo_float(FixedPointToFloat(Location.MakeScope.GetVariable('specialization_designation').GetValue), '(float)23.0'), Location.IsProvinceCapital, Not(Location.IsCapital))]" }
-template sul_vis_loc_noisset_gathering_rural_regular { visible = "[And3(EqualTo_float(FixedPointToFloat(Location.MakeScope.GetVariable('specialization_designation').GetValue), '(float)23.0'), Not(Location.IsProvinceCapital), Not(Location.IsCapital))]" }
+template sul_vis_loc_noisset_gathering_rural_capital { visible = "[And(EqualTo_float(FixedPointToFloat(Location.MakeScope.GetVariable('sul_specialization_designation').GetValue), '(float)23.0'), Location.IsCapital)]" }
+template sul_vis_loc_noisset_gathering_rural_prov_capital { visible = "[And3(EqualTo_float(FixedPointToFloat(Location.MakeScope.GetVariable('sul_specialization_designation').GetValue), '(float)23.0'), Location.IsProvinceCapital, Not(Location.IsCapital))]" }
+template sul_vis_loc_noisset_gathering_rural_regular { visible = "[And3(EqualTo_float(FixedPointToFloat(Location.MakeScope.GetVariable('sul_specialization_designation').GetValue), '(float)23.0'), Not(Location.IsProvinceCapital), Not(Location.IsCapital))]" }
 
 # Woodland Town (4)
-template sul_vis_loc_noisset_woodland_town_capital { visible = "[And(EqualTo_float(FixedPointToFloat(Location.MakeScope.GetVariable('specialization_designation').GetValue), '(float)4.0'), Location.IsCapital)]" }
-template sul_vis_loc_noisset_woodland_town_prov_capital { visible = "[And3(EqualTo_float(FixedPointToFloat(Location.MakeScope.GetVariable('specialization_designation').GetValue), '(float)4.0'), Location.IsProvinceCapital, Not(Location.IsCapital))]" }
-template sul_vis_loc_noisset_woodland_town_regular { visible = "[And3(EqualTo_float(FixedPointToFloat(Location.MakeScope.GetVariable('specialization_designation').GetValue), '(float)4.0'), Not(Location.IsProvinceCapital), Not(Location.IsCapital))]" }
+template sul_vis_loc_noisset_woodland_town_capital { visible = "[And(EqualTo_float(FixedPointToFloat(Location.MakeScope.GetVariable('sul_specialization_designation').GetValue), '(float)4.0'), Location.IsCapital)]" }
+template sul_vis_loc_noisset_woodland_town_prov_capital { visible = "[And3(EqualTo_float(FixedPointToFloat(Location.MakeScope.GetVariable('sul_specialization_designation').GetValue), '(float)4.0'), Location.IsProvinceCapital, Not(Location.IsCapital))]" }
+template sul_vis_loc_noisset_woodland_town_regular { visible = "[And3(EqualTo_float(FixedPointToFloat(Location.MakeScope.GetVariable('sul_specialization_designation').GetValue), '(float)4.0'), Not(Location.IsProvinceCapital), Not(Location.IsCapital))]" }
 # Woodland City (14)
-template sul_vis_loc_noisset_woodland_city_capital { visible = "[And(EqualTo_float(FixedPointToFloat(Location.MakeScope.GetVariable('specialization_designation').GetValue), '(float)14.0'), Location.IsCapital)]" }
-template sul_vis_loc_noisset_woodland_city_prov_capital { visible = "[And3(EqualTo_float(FixedPointToFloat(Location.MakeScope.GetVariable('specialization_designation').GetValue), '(float)14.0'), Location.IsProvinceCapital, Not(Location.IsCapital))]" }
-template sul_vis_loc_noisset_woodland_city_regular { visible = "[And3(EqualTo_float(FixedPointToFloat(Location.MakeScope.GetVariable('specialization_designation').GetValue), '(float)14.0'), Not(Location.IsProvinceCapital), Not(Location.IsCapital))]" }
+template sul_vis_loc_noisset_woodland_city_capital { visible = "[And(EqualTo_float(FixedPointToFloat(Location.MakeScope.GetVariable('sul_specialization_designation').GetValue), '(float)14.0'), Location.IsCapital)]" }
+template sul_vis_loc_noisset_woodland_city_prov_capital { visible = "[And3(EqualTo_float(FixedPointToFloat(Location.MakeScope.GetVariable('sul_specialization_designation').GetValue), '(float)14.0'), Location.IsProvinceCapital, Not(Location.IsCapital))]" }
+template sul_vis_loc_noisset_woodland_city_regular { visible = "[And3(EqualTo_float(FixedPointToFloat(Location.MakeScope.GetVariable('sul_specialization_designation').GetValue), '(float)14.0'), Not(Location.IsProvinceCapital), Not(Location.IsCapital))]" }
 # Woodland Rural (24)
-template sul_vis_loc_noisset_woodland_rural_capital { visible = "[And(EqualTo_float(FixedPointToFloat(Location.MakeScope.GetVariable('specialization_designation').GetValue), '(float)24.0'), Location.IsCapital)]" }
-template sul_vis_loc_noisset_woodland_rural_prov_capital { visible = "[And3(EqualTo_float(FixedPointToFloat(Location.MakeScope.GetVariable('specialization_designation').GetValue), '(float)24.0'), Location.IsProvinceCapital, Not(Location.IsCapital))]" }
-template sul_vis_loc_noisset_woodland_rural_regular { visible = "[And3(EqualTo_float(FixedPointToFloat(Location.MakeScope.GetVariable('specialization_designation').GetValue), '(float)24.0'), Not(Location.IsProvinceCapital), Not(Location.IsCapital))]" }
+template sul_vis_loc_noisset_woodland_rural_capital { visible = "[And(EqualTo_float(FixedPointToFloat(Location.MakeScope.GetVariable('sul_specialization_designation').GetValue), '(float)24.0'), Location.IsCapital)]" }
+template sul_vis_loc_noisset_woodland_rural_prov_capital { visible = "[And3(EqualTo_float(FixedPointToFloat(Location.MakeScope.GetVariable('sul_specialization_designation').GetValue), '(float)24.0'), Location.IsProvinceCapital, Not(Location.IsCapital))]" }
+template sul_vis_loc_noisset_woodland_rural_regular { visible = "[And3(EqualTo_float(FixedPointToFloat(Location.MakeScope.GetVariable('sul_specialization_designation').GetValue), '(float)24.0'), Not(Location.IsProvinceCapital), Not(Location.IsCapital))]" }
 
 # Commercial Town (5)
-template sul_vis_loc_noisset_commercial_town_capital { visible = "[And(EqualTo_float(FixedPointToFloat(Location.MakeScope.GetVariable('specialization_designation').GetValue), '(float)5.0'), Location.IsCapital)]" }
-template sul_vis_loc_noisset_commercial_town_prov_capital { visible = "[And3(EqualTo_float(FixedPointToFloat(Location.MakeScope.GetVariable('specialization_designation').GetValue), '(float)5.0'), Location.IsProvinceCapital, Not(Location.IsCapital))]" }
-template sul_vis_loc_noisset_commercial_town_regular { visible = "[And3(EqualTo_float(FixedPointToFloat(Location.MakeScope.GetVariable('specialization_designation').GetValue), '(float)5.0'), Not(Location.IsProvinceCapital), Not(Location.IsCapital))]" }
+template sul_vis_loc_noisset_commercial_town_capital { visible = "[And(EqualTo_float(FixedPointToFloat(Location.MakeScope.GetVariable('sul_specialization_designation').GetValue), '(float)5.0'), Location.IsCapital)]" }
+template sul_vis_loc_noisset_commercial_town_prov_capital { visible = "[And3(EqualTo_float(FixedPointToFloat(Location.MakeScope.GetVariable('sul_specialization_designation').GetValue), '(float)5.0'), Location.IsProvinceCapital, Not(Location.IsCapital))]" }
+template sul_vis_loc_noisset_commercial_town_regular { visible = "[And3(EqualTo_float(FixedPointToFloat(Location.MakeScope.GetVariable('sul_specialization_designation').GetValue), '(float)5.0'), Not(Location.IsProvinceCapital), Not(Location.IsCapital))]" }
 # Commercial City (15)
-template sul_vis_loc_noisset_commercial_city_capital { visible = "[And(EqualTo_float(FixedPointToFloat(Location.MakeScope.GetVariable('specialization_designation').GetValue), '(float)15.0'), Location.IsCapital)]" }
-template sul_vis_loc_noisset_commercial_city_prov_capital { visible = "[And3(EqualTo_float(FixedPointToFloat(Location.MakeScope.GetVariable('specialization_designation').GetValue), '(float)15.0'), Location.IsProvinceCapital, Not(Location.IsCapital))]" }
-template sul_vis_loc_noisset_commercial_city_regular { visible = "[And3(EqualTo_float(FixedPointToFloat(Location.MakeScope.GetVariable('specialization_designation').GetValue), '(float)15.0'), Not(Location.IsProvinceCapital), Not(Location.IsCapital))]" }
+template sul_vis_loc_noisset_commercial_city_capital { visible = "[And(EqualTo_float(FixedPointToFloat(Location.MakeScope.GetVariable('sul_specialization_designation').GetValue), '(float)15.0'), Location.IsCapital)]" }
+template sul_vis_loc_noisset_commercial_city_prov_capital { visible = "[And3(EqualTo_float(FixedPointToFloat(Location.MakeScope.GetVariable('sul_specialization_designation').GetValue), '(float)15.0'), Location.IsProvinceCapital, Not(Location.IsCapital))]" }
+template sul_vis_loc_noisset_commercial_city_regular { visible = "[And3(EqualTo_float(FixedPointToFloat(Location.MakeScope.GetVariable('sul_specialization_designation').GetValue), '(float)15.0'), Not(Location.IsProvinceCapital), Not(Location.IsCapital))]" }
 # Commercial Rural (25)
-template sul_vis_loc_noisset_commercial_rural_capital { visible = "[And(EqualTo_float(FixedPointToFloat(Location.MakeScope.GetVariable('specialization_designation').GetValue), '(float)25.0'), Location.IsCapital)]" }
-template sul_vis_loc_noisset_commercial_rural_prov_capital { visible = "[And3(EqualTo_float(FixedPointToFloat(Location.MakeScope.GetVariable('specialization_designation').GetValue), '(float)25.0'), Location.IsProvinceCapital, Not(Location.IsCapital))]" }
-template sul_vis_loc_noisset_commercial_rural_regular { visible = "[And3(EqualTo_float(FixedPointToFloat(Location.MakeScope.GetVariable('specialization_designation').GetValue), '(float)25.0'), Not(Location.IsProvinceCapital), Not(Location.IsCapital))]" }
+template sul_vis_loc_noisset_commercial_rural_capital { visible = "[And(EqualTo_float(FixedPointToFloat(Location.MakeScope.GetVariable('sul_specialization_designation').GetValue), '(float)25.0'), Location.IsCapital)]" }
+template sul_vis_loc_noisset_commercial_rural_prov_capital { visible = "[And3(EqualTo_float(FixedPointToFloat(Location.MakeScope.GetVariable('sul_specialization_designation').GetValue), '(float)25.0'), Location.IsProvinceCapital, Not(Location.IsCapital))]" }
+template sul_vis_loc_noisset_commercial_rural_regular { visible = "[And3(EqualTo_float(FixedPointToFloat(Location.MakeScope.GetVariable('sul_specialization_designation').GetValue), '(float)25.0'), Not(Location.IsProvinceCapital), Not(Location.IsCapital))]" }
 
 # =====================================================
 # VISIBILITY TEMPLATES - LocationView Context
 # =====================================================
-template sul_vis_locview_mining_town { visible = "[And(LocationView.GetLocation.MakeScope.GetVariable('specialization_designation').IsSet, EqualTo_float(FixedPointToFloat(LocationView.GetLocation.MakeScope.GetVariable('specialization_designation').GetValue), '(float)1.0'))]" }
-template sul_vis_locview_farming_town { visible = "[And(LocationView.GetLocation.MakeScope.GetVariable('specialization_designation').IsSet, EqualTo_float(FixedPointToFloat(LocationView.GetLocation.MakeScope.GetVariable('specialization_designation').GetValue), '(float)2.0'))]" }
-template sul_vis_locview_gathering_town { visible = "[And(LocationView.GetLocation.MakeScope.GetVariable('specialization_designation').IsSet, EqualTo_float(FixedPointToFloat(LocationView.GetLocation.MakeScope.GetVariable('specialization_designation').GetValue), '(float)3.0'))]" }
-template sul_vis_locview_woodland_town { visible = "[And(LocationView.GetLocation.MakeScope.GetVariable('specialization_designation').IsSet, EqualTo_float(FixedPointToFloat(LocationView.GetLocation.MakeScope.GetVariable('specialization_designation').GetValue), '(float)4.0'))]" }
-template sul_vis_locview_commercial_town { visible = "[And(LocationView.GetLocation.MakeScope.GetVariable('specialization_designation').IsSet, EqualTo_float(FixedPointToFloat(LocationView.GetLocation.MakeScope.GetVariable('specialization_designation').GetValue), '(float)5.0'))]" }
-template sul_vis_locview_mining_city { visible = "[And(LocationView.GetLocation.MakeScope.GetVariable('specialization_designation').IsSet, EqualTo_float(FixedPointToFloat(LocationView.GetLocation.MakeScope.GetVariable('specialization_designation').GetValue), '(float)11.0'))]" }
-template sul_vis_locview_farming_city { visible = "[And(LocationView.GetLocation.MakeScope.GetVariable('specialization_designation').IsSet, EqualTo_float(FixedPointToFloat(LocationView.GetLocation.MakeScope.GetVariable('specialization_designation').GetValue), '(float)12.0'))]" }
-template sul_vis_locview_gathering_city { visible = "[And(LocationView.GetLocation.MakeScope.GetVariable('specialization_designation').IsSet, EqualTo_float(FixedPointToFloat(LocationView.GetLocation.MakeScope.GetVariable('specialization_designation').GetValue), '(float)13.0'))]" }
-template sul_vis_locview_woodland_city { visible = "[And(LocationView.GetLocation.MakeScope.GetVariable('specialization_designation').IsSet, EqualTo_float(FixedPointToFloat(LocationView.GetLocation.MakeScope.GetVariable('specialization_designation').GetValue), '(float)14.0'))]" }
-template sul_vis_locview_commercial_city { visible = "[And(LocationView.GetLocation.MakeScope.GetVariable('specialization_designation').IsSet, EqualTo_float(FixedPointToFloat(LocationView.GetLocation.MakeScope.GetVariable('specialization_designation').GetValue), '(float)15.0'))]" }
-template sul_vis_locview_mining_rural { visible = "[And(LocationView.GetLocation.MakeScope.GetVariable('specialization_designation').IsSet, EqualTo_float(FixedPointToFloat(LocationView.GetLocation.MakeScope.GetVariable('specialization_designation').GetValue), '(float)21.0'))]" }
-template sul_vis_locview_farming_rural { visible = "[And(LocationView.GetLocation.MakeScope.GetVariable('specialization_designation').IsSet, EqualTo_float(FixedPointToFloat(LocationView.GetLocation.MakeScope.GetVariable('specialization_designation').GetValue), '(float)22.0'))]" }
-template sul_vis_locview_gathering_rural { visible = "[And(LocationView.GetLocation.MakeScope.GetVariable('specialization_designation').IsSet, EqualTo_float(FixedPointToFloat(LocationView.GetLocation.MakeScope.GetVariable('specialization_designation').GetValue), '(float)23.0'))]" }
-template sul_vis_locview_woodland_rural { visible = "[And(LocationView.GetLocation.MakeScope.GetVariable('specialization_designation').IsSet, EqualTo_float(FixedPointToFloat(LocationView.GetLocation.MakeScope.GetVariable('specialization_designation').GetValue), '(float)24.0'))]" }
-template sul_vis_locview_commercial_rural { visible = "[And(LocationView.GetLocation.MakeScope.GetVariable('specialization_designation').IsSet, EqualTo_float(FixedPointToFloat(LocationView.GetLocation.MakeScope.GetVariable('specialization_designation').GetValue), '(float)25.0'))]" }
-template sul_vis_locview_not_specialized { visible = "[Not(LocationView.GetLocation.MakeScope.GetVariable('specialization_designation').IsSet)]" }
+template sul_vis_locview_mining_town { visible = "[And(LocationView.GetLocation.MakeScope.GetVariable('sul_specialization_designation').IsSet, EqualTo_float(FixedPointToFloat(LocationView.GetLocation.MakeScope.GetVariable('sul_specialization_designation').GetValue), '(float)1.0'))]" }
+template sul_vis_locview_farming_town { visible = "[And(LocationView.GetLocation.MakeScope.GetVariable('sul_specialization_designation').IsSet, EqualTo_float(FixedPointToFloat(LocationView.GetLocation.MakeScope.GetVariable('sul_specialization_designation').GetValue), '(float)2.0'))]" }
+template sul_vis_locview_gathering_town { visible = "[And(LocationView.GetLocation.MakeScope.GetVariable('sul_specialization_designation').IsSet, EqualTo_float(FixedPointToFloat(LocationView.GetLocation.MakeScope.GetVariable('sul_specialization_designation').GetValue), '(float)3.0'))]" }
+template sul_vis_locview_woodland_town { visible = "[And(LocationView.GetLocation.MakeScope.GetVariable('sul_specialization_designation').IsSet, EqualTo_float(FixedPointToFloat(LocationView.GetLocation.MakeScope.GetVariable('sul_specialization_designation').GetValue), '(float)4.0'))]" }
+template sul_vis_locview_commercial_town { visible = "[And(LocationView.GetLocation.MakeScope.GetVariable('sul_specialization_designation').IsSet, EqualTo_float(FixedPointToFloat(LocationView.GetLocation.MakeScope.GetVariable('sul_specialization_designation').GetValue), '(float)5.0'))]" }
+template sul_vis_locview_mining_city { visible = "[And(LocationView.GetLocation.MakeScope.GetVariable('sul_specialization_designation').IsSet, EqualTo_float(FixedPointToFloat(LocationView.GetLocation.MakeScope.GetVariable('sul_specialization_designation').GetValue), '(float)11.0'))]" }
+template sul_vis_locview_farming_city { visible = "[And(LocationView.GetLocation.MakeScope.GetVariable('sul_specialization_designation').IsSet, EqualTo_float(FixedPointToFloat(LocationView.GetLocation.MakeScope.GetVariable('sul_specialization_designation').GetValue), '(float)12.0'))]" }
+template sul_vis_locview_gathering_city { visible = "[And(LocationView.GetLocation.MakeScope.GetVariable('sul_specialization_designation').IsSet, EqualTo_float(FixedPointToFloat(LocationView.GetLocation.MakeScope.GetVariable('sul_specialization_designation').GetValue), '(float)13.0'))]" }
+template sul_vis_locview_woodland_city { visible = "[And(LocationView.GetLocation.MakeScope.GetVariable('sul_specialization_designation').IsSet, EqualTo_float(FixedPointToFloat(LocationView.GetLocation.MakeScope.GetVariable('sul_specialization_designation').GetValue), '(float)14.0'))]" }
+template sul_vis_locview_commercial_city { visible = "[And(LocationView.GetLocation.MakeScope.GetVariable('sul_specialization_designation').IsSet, EqualTo_float(FixedPointToFloat(LocationView.GetLocation.MakeScope.GetVariable('sul_specialization_designation').GetValue), '(float)15.0'))]" }
+template sul_vis_locview_mining_rural { visible = "[And(LocationView.GetLocation.MakeScope.GetVariable('sul_specialization_designation').IsSet, EqualTo_float(FixedPointToFloat(LocationView.GetLocation.MakeScope.GetVariable('sul_specialization_designation').GetValue), '(float)21.0'))]" }
+template sul_vis_locview_farming_rural { visible = "[And(LocationView.GetLocation.MakeScope.GetVariable('sul_specialization_designation').IsSet, EqualTo_float(FixedPointToFloat(LocationView.GetLocation.MakeScope.GetVariable('sul_specialization_designation').GetValue), '(float)22.0'))]" }
+template sul_vis_locview_gathering_rural { visible = "[And(LocationView.GetLocation.MakeScope.GetVariable('sul_specialization_designation').IsSet, EqualTo_float(FixedPointToFloat(LocationView.GetLocation.MakeScope.GetVariable('sul_specialization_designation').GetValue), '(float)23.0'))]" }
+template sul_vis_locview_woodland_rural { visible = "[And(LocationView.GetLocation.MakeScope.GetVariable('sul_specialization_designation').IsSet, EqualTo_float(FixedPointToFloat(LocationView.GetLocation.MakeScope.GetVariable('sul_specialization_designation').GetValue), '(float)24.0'))]" }
+template sul_vis_locview_commercial_rural { visible = "[And(LocationView.GetLocation.MakeScope.GetVariable('sul_specialization_designation').IsSet, EqualTo_float(FixedPointToFloat(LocationView.GetLocation.MakeScope.GetVariable('sul_specialization_designation').GetValue), '(float)25.0'))]" }
+template sul_vis_locview_not_specialized { visible = "[Not(LocationView.GetLocation.MakeScope.GetVariable('sul_specialization_designation').IsSet)]" }
 
 # =====================================================
 # VISIBILITY TEMPLATES - MarketMarker Context
 # =====================================================
-template sul_vis_market_mining_town { visible = "[EqualTo_float(FixedPointToFloat(MarketMarker.GetLocation.MakeScope.GetVariable('specialization_designation').GetValue), '(float)1.0')]" }
-template sul_vis_market_farming_town { visible = "[EqualTo_float(FixedPointToFloat(MarketMarker.GetLocation.MakeScope.GetVariable('specialization_designation').GetValue), '(float)2.0')]" }
-template sul_vis_market_gathering_town { visible = "[EqualTo_float(FixedPointToFloat(MarketMarker.GetLocation.MakeScope.GetVariable('specialization_designation').GetValue), '(float)3.0')]" }
-template sul_vis_market_woodland_town { visible = "[EqualTo_float(FixedPointToFloat(MarketMarker.GetLocation.MakeScope.GetVariable('specialization_designation').GetValue), '(float)4.0')]" }
-template sul_vis_market_commercial_town { visible = "[EqualTo_float(FixedPointToFloat(MarketMarker.GetLocation.MakeScope.GetVariable('specialization_designation').GetValue), '(float)5.0')]" }
-template sul_vis_market_mining_city { visible = "[EqualTo_float(FixedPointToFloat(MarketMarker.GetLocation.MakeScope.GetVariable('specialization_designation').GetValue), '(float)11.0')]" }
-template sul_vis_market_farming_city { visible = "[EqualTo_float(FixedPointToFloat(MarketMarker.GetLocation.MakeScope.GetVariable('specialization_designation').GetValue), '(float)12.0')]" }
-template sul_vis_market_gathering_city { visible = "[EqualTo_float(FixedPointToFloat(MarketMarker.GetLocation.MakeScope.GetVariable('specialization_designation').GetValue), '(float)13.0')]" }
-template sul_vis_market_woodland_city { visible = "[EqualTo_float(FixedPointToFloat(MarketMarker.GetLocation.MakeScope.GetVariable('specialization_designation').GetValue), '(float)14.0')]" }
-template sul_vis_market_commercial_city { visible = "[EqualTo_float(FixedPointToFloat(MarketMarker.GetLocation.MakeScope.GetVariable('specialization_designation').GetValue), '(float)15.0')]" }
-template sul_vis_market_mining_rural { visible = "[EqualTo_float(FixedPointToFloat(MarketMarker.GetLocation.MakeScope.GetVariable('specialization_designation').GetValue), '(float)21.0')]" }
-template sul_vis_market_farming_rural { visible = "[EqualTo_float(FixedPointToFloat(MarketMarker.GetLocation.MakeScope.GetVariable('specialization_designation').GetValue), '(float)22.0')]" }
-template sul_vis_market_gathering_rural { visible = "[EqualTo_float(FixedPointToFloat(MarketMarker.GetLocation.MakeScope.GetVariable('specialization_designation').GetValue), '(float)23.0')]" }
-template sul_vis_market_woodland_rural { visible = "[EqualTo_float(FixedPointToFloat(MarketMarker.GetLocation.MakeScope.GetVariable('specialization_designation').GetValue), '(float)24.0')]" }
-template sul_vis_market_commercial_rural { visible = "[EqualTo_float(FixedPointToFloat(MarketMarker.GetLocation.MakeScope.GetVariable('specialization_designation').GetValue), '(float)25.0')]" }
+template sul_vis_market_mining_town { visible = "[EqualTo_float(FixedPointToFloat(MarketMarker.GetLocation.MakeScope.GetVariable('sul_specialization_designation').GetValue), '(float)1.0')]" }
+template sul_vis_market_farming_town { visible = "[EqualTo_float(FixedPointToFloat(MarketMarker.GetLocation.MakeScope.GetVariable('sul_specialization_designation').GetValue), '(float)2.0')]" }
+template sul_vis_market_gathering_town { visible = "[EqualTo_float(FixedPointToFloat(MarketMarker.GetLocation.MakeScope.GetVariable('sul_specialization_designation').GetValue), '(float)3.0')]" }
+template sul_vis_market_woodland_town { visible = "[EqualTo_float(FixedPointToFloat(MarketMarker.GetLocation.MakeScope.GetVariable('sul_specialization_designation').GetValue), '(float)4.0')]" }
+template sul_vis_market_commercial_town { visible = "[EqualTo_float(FixedPointToFloat(MarketMarker.GetLocation.MakeScope.GetVariable('sul_specialization_designation').GetValue), '(float)5.0')]" }
+template sul_vis_market_mining_city { visible = "[EqualTo_float(FixedPointToFloat(MarketMarker.GetLocation.MakeScope.GetVariable('sul_specialization_designation').GetValue), '(float)11.0')]" }
+template sul_vis_market_farming_city { visible = "[EqualTo_float(FixedPointToFloat(MarketMarker.GetLocation.MakeScope.GetVariable('sul_specialization_designation').GetValue), '(float)12.0')]" }
+template sul_vis_market_gathering_city { visible = "[EqualTo_float(FixedPointToFloat(MarketMarker.GetLocation.MakeScope.GetVariable('sul_specialization_designation').GetValue), '(float)13.0')]" }
+template sul_vis_market_woodland_city { visible = "[EqualTo_float(FixedPointToFloat(MarketMarker.GetLocation.MakeScope.GetVariable('sul_specialization_designation').GetValue), '(float)14.0')]" }
+template sul_vis_market_commercial_city { visible = "[EqualTo_float(FixedPointToFloat(MarketMarker.GetLocation.MakeScope.GetVariable('sul_specialization_designation').GetValue), '(float)15.0')]" }
+template sul_vis_market_mining_rural { visible = "[EqualTo_float(FixedPointToFloat(MarketMarker.GetLocation.MakeScope.GetVariable('sul_specialization_designation').GetValue), '(float)21.0')]" }
+template sul_vis_market_farming_rural { visible = "[EqualTo_float(FixedPointToFloat(MarketMarker.GetLocation.MakeScope.GetVariable('sul_specialization_designation').GetValue), '(float)22.0')]" }
+template sul_vis_market_gathering_rural { visible = "[EqualTo_float(FixedPointToFloat(MarketMarker.GetLocation.MakeScope.GetVariable('sul_specialization_designation').GetValue), '(float)23.0')]" }
+template sul_vis_market_woodland_rural { visible = "[EqualTo_float(FixedPointToFloat(MarketMarker.GetLocation.MakeScope.GetVariable('sul_specialization_designation').GetValue), '(float)24.0')]" }
+template sul_vis_market_commercial_rural { visible = "[EqualTo_float(FixedPointToFloat(MarketMarker.GetLocation.MakeScope.GetVariable('sul_specialization_designation').GetValue), '(float)25.0')]" }
 
 # =====================================================
 # MODIFIER HIDING TEMPLATE
 # =====================================================
 # Template to hide specialization modifiers from timed modifier lists
+# Uses both visibility AND size to ensure proper collapse in scrollable lists
 template sul_hide_if_specialization_modifier {
 	visible = "[Not(Or3(
 		Or5(
-			EqualTo_string(TimedModifier.GetModifier.GetName, Localize('STATIC_MODIFIER_NAME_mining_town_specialization')),
-			EqualTo_string(TimedModifier.GetModifier.GetName, Localize('STATIC_MODIFIER_NAME_farming_town_specialization')),
-			EqualTo_string(TimedModifier.GetModifier.GetName, Localize('STATIC_MODIFIER_NAME_gathering_town_specialization')),
-			EqualTo_string(TimedModifier.GetModifier.GetName, Localize('STATIC_MODIFIER_NAME_woodland_town_specialization')),
-			EqualTo_string(TimedModifier.GetModifier.GetName, Localize('STATIC_MODIFIER_NAME_commercial_town_specialization'))
+			EqualTo_string(TimedModifier.GetModifier.GetName, Localize('STATIC_MODIFIER_NAME_sul_mining_town_specialization')),
+			EqualTo_string(TimedModifier.GetModifier.GetName, Localize('STATIC_MODIFIER_NAME_sul_farming_town_specialization')),
+			EqualTo_string(TimedModifier.GetModifier.GetName, Localize('STATIC_MODIFIER_NAME_sul_gathering_town_specialization')),
+			EqualTo_string(TimedModifier.GetModifier.GetName, Localize('STATIC_MODIFIER_NAME_sul_woodland_town_specialization')),
+			EqualTo_string(TimedModifier.GetModifier.GetName, Localize('STATIC_MODIFIER_NAME_sul_commercial_town_specialization'))
 		),
 		Or5(
-			EqualTo_string(TimedModifier.GetModifier.GetName, Localize('STATIC_MODIFIER_NAME_mining_city_specialization')),
-			EqualTo_string(TimedModifier.GetModifier.GetName, Localize('STATIC_MODIFIER_NAME_farming_city_specialization')),
-			EqualTo_string(TimedModifier.GetModifier.GetName, Localize('STATIC_MODIFIER_NAME_gathering_city_specialization')),
-			EqualTo_string(TimedModifier.GetModifier.GetName, Localize('STATIC_MODIFIER_NAME_woodland_city_specialization')),
-			EqualTo_string(TimedModifier.GetModifier.GetName, Localize('STATIC_MODIFIER_NAME_commercial_city_specialization'))
+			EqualTo_string(TimedModifier.GetModifier.GetName, Localize('STATIC_MODIFIER_NAME_sul_mining_city_specialization')),
+			EqualTo_string(TimedModifier.GetModifier.GetName, Localize('STATIC_MODIFIER_NAME_sul_farming_city_specialization')),
+			EqualTo_string(TimedModifier.GetModifier.GetName, Localize('STATIC_MODIFIER_NAME_sul_gathering_city_specialization')),
+			EqualTo_string(TimedModifier.GetModifier.GetName, Localize('STATIC_MODIFIER_NAME_sul_woodland_city_specialization')),
+			EqualTo_string(TimedModifier.GetModifier.GetName, Localize('STATIC_MODIFIER_NAME_sul_commercial_city_specialization'))
 		),
 		Or5(
-			EqualTo_string(TimedModifier.GetModifier.GetName, Localize('STATIC_MODIFIER_NAME_mining_rural_specialization')),
-			EqualTo_string(TimedModifier.GetModifier.GetName, Localize('STATIC_MODIFIER_NAME_farming_rural_specialization')),
-			EqualTo_string(TimedModifier.GetModifier.GetName, Localize('STATIC_MODIFIER_NAME_gathering_rural_specialization')),
-			EqualTo_string(TimedModifier.GetModifier.GetName, Localize('STATIC_MODIFIER_NAME_woodland_rural_specialization')),
-			EqualTo_string(TimedModifier.GetModifier.GetName, Localize('STATIC_MODIFIER_NAME_commercial_rural_specialization'))
+			EqualTo_string(TimedModifier.GetModifier.GetName, Localize('STATIC_MODIFIER_NAME_sul_mining_rural_specialization')),
+			EqualTo_string(TimedModifier.GetModifier.GetName, Localize('STATIC_MODIFIER_NAME_sul_farming_rural_specialization')),
+			EqualTo_string(TimedModifier.GetModifier.GetName, Localize('STATIC_MODIFIER_NAME_sul_gathering_rural_specialization')),
+			EqualTo_string(TimedModifier.GetModifier.GetName, Localize('STATIC_MODIFIER_NAME_sul_woodland_rural_specialization')),
+			EqualTo_string(TimedModifier.GetModifier.GetName, Localize('STATIC_MODIFIER_NAME_sul_commercial_rural_specialization'))
 		)
 	))]"
+}
+
+# Template to completely collapse specialization modifier rows in tooltip lists (40px height)
+# Uses size = 0 for specialization modifiers to prevent blank space
+template sul_collapse_if_specialization_modifier {
+	size = "[Select_CVector2f(Not(Or3(
+		Or5(
+			EqualTo_string(TimedModifier.GetModifier.GetName, Localize('STATIC_MODIFIER_NAME_sul_mining_town_specialization')),
+			EqualTo_string(TimedModifier.GetModifier.GetName, Localize('STATIC_MODIFIER_NAME_sul_farming_town_specialization')),
+			EqualTo_string(TimedModifier.GetModifier.GetName, Localize('STATIC_MODIFIER_NAME_sul_gathering_town_specialization')),
+			EqualTo_string(TimedModifier.GetModifier.GetName, Localize('STATIC_MODIFIER_NAME_sul_woodland_town_specialization')),
+			EqualTo_string(TimedModifier.GetModifier.GetName, Localize('STATIC_MODIFIER_NAME_sul_commercial_town_specialization'))
+		),
+		Or5(
+			EqualTo_string(TimedModifier.GetModifier.GetName, Localize('STATIC_MODIFIER_NAME_sul_mining_city_specialization')),
+			EqualTo_string(TimedModifier.GetModifier.GetName, Localize('STATIC_MODIFIER_NAME_sul_farming_city_specialization')),
+			EqualTo_string(TimedModifier.GetModifier.GetName, Localize('STATIC_MODIFIER_NAME_sul_gathering_city_specialization')),
+			EqualTo_string(TimedModifier.GetModifier.GetName, Localize('STATIC_MODIFIER_NAME_sul_woodland_city_specialization')),
+			EqualTo_string(TimedModifier.GetModifier.GetName, Localize('STATIC_MODIFIER_NAME_sul_commercial_city_specialization'))
+		),
+		Or5(
+			EqualTo_string(TimedModifier.GetModifier.GetName, Localize('STATIC_MODIFIER_NAME_sul_mining_rural_specialization')),
+			EqualTo_string(TimedModifier.GetModifier.GetName, Localize('STATIC_MODIFIER_NAME_sul_farming_rural_specialization')),
+			EqualTo_string(TimedModifier.GetModifier.GetName, Localize('STATIC_MODIFIER_NAME_sul_gathering_rural_specialization')),
+			EqualTo_string(TimedModifier.GetModifier.GetName, Localize('STATIC_MODIFIER_NAME_sul_woodland_rural_specialization')),
+			EqualTo_string(TimedModifier.GetModifier.GetName, Localize('STATIC_MODIFIER_NAME_sul_commercial_rural_specialization'))
+		)
+	)), '(CVector2f)300,40', '(CVector2f)0,0')]"
+}
+
+# Template for small icon collapse (26x26 for modifier icons in flowcontainer)
+template sul_collapse_if_specialization_modifier_small {
+	size = "[Select_CVector2f(Not(Or3(
+		Or5(
+			EqualTo_string(TimedModifier.GetModifier.GetName, Localize('STATIC_MODIFIER_NAME_sul_mining_town_specialization')),
+			EqualTo_string(TimedModifier.GetModifier.GetName, Localize('STATIC_MODIFIER_NAME_sul_farming_town_specialization')),
+			EqualTo_string(TimedModifier.GetModifier.GetName, Localize('STATIC_MODIFIER_NAME_sul_gathering_town_specialization')),
+			EqualTo_string(TimedModifier.GetModifier.GetName, Localize('STATIC_MODIFIER_NAME_sul_woodland_town_specialization')),
+			EqualTo_string(TimedModifier.GetModifier.GetName, Localize('STATIC_MODIFIER_NAME_sul_commercial_town_specialization'))
+		),
+		Or5(
+			EqualTo_string(TimedModifier.GetModifier.GetName, Localize('STATIC_MODIFIER_NAME_sul_mining_city_specialization')),
+			EqualTo_string(TimedModifier.GetModifier.GetName, Localize('STATIC_MODIFIER_NAME_sul_farming_city_specialization')),
+			EqualTo_string(TimedModifier.GetModifier.GetName, Localize('STATIC_MODIFIER_NAME_sul_gathering_city_specialization')),
+			EqualTo_string(TimedModifier.GetModifier.GetName, Localize('STATIC_MODIFIER_NAME_sul_woodland_city_specialization')),
+			EqualTo_string(TimedModifier.GetModifier.GetName, Localize('STATIC_MODIFIER_NAME_sul_commercial_city_specialization'))
+		),
+		Or5(
+			EqualTo_string(TimedModifier.GetModifier.GetName, Localize('STATIC_MODIFIER_NAME_sul_mining_rural_specialization')),
+			EqualTo_string(TimedModifier.GetModifier.GetName, Localize('STATIC_MODIFIER_NAME_sul_farming_rural_specialization')),
+			EqualTo_string(TimedModifier.GetModifier.GetName, Localize('STATIC_MODIFIER_NAME_sul_gathering_rural_specialization')),
+			EqualTo_string(TimedModifier.GetModifier.GetName, Localize('STATIC_MODIFIER_NAME_sul_woodland_rural_specialization')),
+			EqualTo_string(TimedModifier.GetModifier.GetName, Localize('STATIC_MODIFIER_NAME_sul_commercial_rural_specialization'))
+		)
+	)), '(CVector2f)26,26', '(CVector2f)0,0')]"
 }

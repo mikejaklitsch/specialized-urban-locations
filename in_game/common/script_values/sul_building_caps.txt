@@ -1,4 +1,4 @@
-﻿efficiency_building_caps = {
+﻿sul_efficiency_building_caps = {
 	if = {
 		limit = {
 			location_rank = location_rank:rural_settlement
@@ -49,7 +49,7 @@ REPLACE:guild_max_level = {
 	save_temporary_value_as = sul_base_cap
 	if = {
 		limit = {
-			has_variable = specialization_designation
+			has_variable = sul_specialization_designation
 		}
 		add = {
 			desc = "LOCATION_IS_SPECIALIZED"
@@ -85,7 +85,7 @@ REPLACE:workshop_max_level = {
 	save_temporary_value_as = sul_base_cap
 	if = {
 		limit = {
-			has_variable = specialization_designation
+			has_variable = sul_specialization_designation
 		}
 		add = {
 			desc = "LOCATION_IS_SPECIALIZED"
@@ -121,7 +121,7 @@ REPLACE:manufactory_max_level = {
 	save_temporary_value_as = sul_base_cap
 	if = {
 		limit = {
-			has_variable = specialization_designation
+			has_variable = sul_specialization_designation
 		}
 		add = {
 			desc = "LOCATION_IS_SPECIALIZED"
@@ -158,7 +158,7 @@ REPLACE:mills_max_level = {
 	save_temporary_value_as = sul_base_cap
 	if = {
 		limit = {
-			has_variable = specialization_designation
+			has_variable = sul_specialization_designation
 		}
 		add = {
 			desc = "LOCATION_IS_SPECIALIZED"
@@ -195,7 +195,80 @@ REPLACE:market_max_level = {
 	save_temporary_value_as = sul_base_cap
 	if = {
 		limit = {
-			has_variable = specialization_designation
+			has_variable = sul_specialization_designation
+		}
+		add = {
+			desc = "LOCATION_IS_SPECIALIZED"
+			value = scope:sul_base_cap
+		}
+	}
+}
+
+# Village building cap - add specialization doubling
+REPLACE:rural_building_cap = {
+	add = {
+		desc = "BUILDING_LEVEL_BASE"
+		value = 1
+	}
+	add = {
+		desc = "BUILDING_LEVEL_DEVELOPMENT"
+		value = development
+		multiply = 0.1
+	}
+	add = {
+		desc = "BUILDING_LEVEL_RGO_MAX"
+		value = max_rgo_workers
+		multiply = 0.5
+	}
+	if = {
+		limit = {
+			has_river = yes
+		}
+		add = {
+			desc = "BUILDING_LEVEL_HAS_RIVER"
+			value = 1
+		}
+	}
+	save_temporary_value_as = sul_base_cap
+	if = {
+		limit = {
+			has_variable = sul_specialization_designation
+		}
+		add = {
+			desc = "LOCATION_IS_SPECIALIZED"
+			value = scope:sul_base_cap
+		}
+	}
+}
+
+# Irrigation cap - add specialization doubling
+REPLACE:irrigant_cap = {
+	add = {
+		desc = "BUILDING_LEVEL_BASE"
+		value = 2
+	}
+	add = {
+		desc = "BUILDING_LEVEL_DEVELOPMENT"
+		value = development
+		multiply = 0.2
+	}
+	if = {
+		limit = {
+			has_river = yes
+		}
+		add = {
+			desc = "BUILDING_LEVEL_HAS_RIVER"
+			value = 2
+		}
+	}
+	add = {
+		desc = "BUILDING_LEVEL_FROM_OWNER_MODIFIERS"
+		add = owner.modifier:irrigant_cap_level
+	}
+	save_temporary_value_as = sul_base_cap
+	if = {
+		limit = {
+			has_variable = sul_specialization_designation
 		}
 		add = {
 			desc = "LOCATION_IS_SPECIALIZED"

@@ -3,21 +3,20 @@
 # Costs gold + prestige, destroys non-matching buildings, applies modifier
 # scope:actor = country, scope:target = location
 
-designate_mining_specialization = {
+sul_designate_mining_specialization = {
 	type = owncountry
 
 	potential = {
-		always = yes
 	}
 
 	allow = {
-		always = yes
 	}
 
 	ai_tick = monthly
 	ai_tick_frequency = 12
 
 	ai_prerequisite = {
+		is_real_country = yes
 		current_year >= 1338
 		num_loans = 0
 		gold >= 50
@@ -26,7 +25,7 @@ designate_mining_specialization = {
 
 	ai_will_do = {
 		# === AFFORDABILITY + INERTIA (branched by rank) ===
-		add = { desc = "inertia" value = -6 }
+		add = { desc = "inertia" value = 0 }
 		if = {
 			limit = { exists = scope:target scope:target = { location_rank = location_rank:town } }
 			add = { desc = "town_inertia" value = -5 }
@@ -303,14 +302,14 @@ designate_mining_specialization = {
 	price = {
 		if = {
 			limit = { exists = scope:target scope:target = { location_rank = location_rank:rural_settlement } }
-			value = price:designate_specialization_price_rural
+			value = price:sul_designate_specialization_price_rural
 		}
 		else_if = {
 			limit = { exists = scope:target scope:target = { location_rank = location_rank:town } }
-			value = price:designate_specialization_price_town
+			value = price:sul_designate_specialization_price_town
 		}
 		else = {
-			value = price:designate_specialization_price_city
+			value = price:sul_designate_specialization_price_city
 		}
 	}
 
@@ -330,9 +329,28 @@ designate_mining_specialization = {
 		}
 
 		enabled = {
-			sul_can_specialize_mining = yes
+			# Mining eligibility: resources OR terrain
+			OR = {
+				# Mining resources
+				raw_material = goods:coal
+				raw_material = goods:iron
+				raw_material = goods:copper
+				raw_material = goods:goods_gold
+				raw_material = goods:silver
+				raw_material = goods:stone
+				raw_material = goods:tin
+				raw_material = goods:lead
+				raw_material = goods:alum
+				raw_material = goods:gems
+				raw_material = goods:marble
+				raw_material = goods:mercury
+				# Mining terrain
+				topography = mountains
+				topography = wetlands
+				is_adjacent_to_lake = yes
+			}
 			NOT = { sul_has_mining_specialization = yes }
-			NOT = { has_location_modifier = sul_specialization_cooldown }
+			NOT = { has_location_modifier = sul_recently_respecialized }
 			controller = owner
 		}
 	}
@@ -383,43 +401,39 @@ designate_mining_specialization = {
 				sul_clear_all_specialization_modifiers = yes
 				if = {
 					limit = { location_rank = location_rank:rural_settlement }
-					set_variable = { name = specialization_designation value = sul_mining_rural_value }
-					add_location_modifier = { modifier = mining_rural_specialization }
+					set_variable = { name = sul_specialization_designation value = sul_mining_rural_value }
+					add_location_modifier = { modifier = sul_mining_rural_specialization }
 				}
 				else_if = {
 					limit = { location_rank = location_rank:town }
-					set_variable = { name = specialization_designation value = sul_mining_town_value }
-					add_location_modifier = { modifier = mining_town_specialization }
+					set_variable = { name = sul_specialization_designation value = sul_mining_town_value }
+					add_location_modifier = { modifier = sul_mining_town_specialization }
 				}
 				else = {
-					set_variable = { name = specialization_designation value = sul_mining_city_value }
-					add_location_modifier = { modifier = mining_city_specialization }
+					set_variable = { name = sul_specialization_designation value = sul_mining_city_value }
+					add_location_modifier = { modifier = sul_mining_city_specialization }
 				}
 				sul_destroy_non_mining_buildings = yes
-				add_location_modifier = {
-					modifier = sul_specialization_cooldown
-					years = 5
-				}
+				add_location_modifier = { modifier = sul_recently_respecialized years = 5 }
 			}
 		}
 	}
 }
 
-designate_farming_specialization = {
+sul_designate_farming_specialization = {
 	type = owncountry
 
 	potential = {
-		always = yes
 	}
 
 	allow = {
-		always = yes
 	}
 
 	ai_tick = monthly
 	ai_tick_frequency = 12
 
 	ai_prerequisite = {
+		is_real_country = yes
 		current_year >= 1338
 		num_loans = 0
 		gold >= 50
@@ -428,7 +442,7 @@ designate_farming_specialization = {
 
 	ai_will_do = {
 		# === AFFORDABILITY + INERTIA (branched by rank) ===
-		add = { desc = "inertia" value = -6 }
+		add = { desc = "inertia" value = 0 }
 		if = {
 			limit = { exists = scope:target scope:target = { location_rank = location_rank:town } }
 			add = { desc = "town_inertia" value = -5 }
@@ -554,7 +568,7 @@ designate_farming_specialization = {
 		# === MARKET PRICE BONUSES (uses cached scaled values from market_center) ===
 		# Formula: (price / base_price - 1) × 8, capped at -8 to +16
 
-		# Raw farming goods (wool) price bonus - all location types
+		# Raw farming goods (cotton) price bonus - all location types
 		if = {
 			limit = {
 				exists = scope:target
@@ -566,7 +580,7 @@ designate_farming_specialization = {
 			scope:target = {
 				market ?= {
 					add = {
-						desc = "wool_price_bonus"
+						desc = "cotton_price_bonus"
 						value = location.var:sul_farming_raw_price_bonus
 					}
 				}
@@ -594,44 +608,6 @@ designate_farming_specialization = {
 		}
 
 		# === MARKET SUPPLY/DEMAND RATIO ===
-		# Wool shortage/surplus: ±5 based on demand vs supply ratio
-		if = {
-			limit = {
-				exists = scope:target
-				scope:target = {
-					sul_can_specialize_farming = yes
-					NOT = { sul_has_farming_specialization = yes }
-					market ?= { location = { has_variable = sul_wool_pressure } }
-				}
-			}
-			scope:target = {
-				market ?= {
-					add = {
-						desc = "wool_market_pressure"
-						value = location.var:sul_wool_pressure
-					}
-				}
-			}
-		}
-		# Fallback for uncached markets
-		else_if = {
-			limit = {
-				exists = scope:target
-				scope:target = {
-					sul_can_specialize_farming = yes
-					NOT = { sul_has_farming_specialization = yes }
-				}
-			}
-			scope:target = {
-				market ?= {
-					add = {
-						desc = "wool_market_pressure"
-						value = sul_wool_market_pressure
-					}
-				}
-			}
-		}
-
 		# Wheat (food) shortage/surplus: ±5 based on demand vs supply ratio
 		if = {
 			limit = {
@@ -665,6 +641,25 @@ designate_farming_specialization = {
 					add = {
 						desc = "wheat_market_pressure"
 						value = sul_wheat_market_pressure
+					}
+				}
+			}
+		}
+
+		# === FOOD PRICE BONUS (strong for farming - main food producer) ===
+		if = {
+			limit = {
+				exists = scope:target
+				scope:target = {
+					sul_can_specialize_farming = yes
+					NOT = { sul_has_farming_specialization = yes }
+				}
+			}
+			scope:target = {
+				market ?= {
+					add = {
+						desc = "food_price_bonus"
+						value = sul_farming_food_price_bonus
 					}
 				}
 			}
@@ -775,14 +770,14 @@ designate_farming_specialization = {
 	price = {
 		if = {
 			limit = { exists = scope:target scope:target = { location_rank = location_rank:rural_settlement } }
-			value = price:designate_specialization_price_rural
+			value = price:sul_designate_specialization_price_rural
 		}
 		else_if = {
 			limit = { exists = scope:target scope:target = { location_rank = location_rank:town } }
-			value = price:designate_specialization_price_town
+			value = price:sul_designate_specialization_price_town
 		}
 		else = {
-			value = price:designate_specialization_price_city
+			value = price:sul_designate_specialization_price_city
 		}
 	}
 
@@ -802,9 +797,45 @@ designate_farming_specialization = {
 		}
 
 		enabled = {
-			sul_can_specialize_farming = yes
+			# Farming eligibility: resources OR terrain
+			OR = {
+				# Farming resources
+				raw_material = goods:horses
+				raw_material = goods:silk
+				raw_material = goods:tea
+				raw_material = goods:cocoa
+				raw_material = goods:coffee
+				raw_material = goods:fiber_crops
+				raw_material = goods:wine
+				raw_material = goods:saffron
+				raw_material = goods:pepper
+				raw_material = goods:cloves
+				raw_material = goods:chili
+				raw_material = goods:cotton
+				raw_material = goods:sugar
+				raw_material = goods:tobacco
+				raw_material = goods:wheat
+				raw_material = goods:maize
+				raw_material = goods:rice
+				raw_material = goods:millet
+				raw_material = goods:legumes
+				raw_material = goods:potato
+				raw_material = goods:livestock
+				raw_material = goods:olives
+				raw_material = goods:fruit
+				# Farming terrain
+				vegetation = farmland
+				AND = {
+					topography = flatland
+					has_river = yes
+				}
+				AND = {
+					topography = flatland
+					vegetation = grasslands
+				}
+			}
 			NOT = { sul_has_farming_specialization = yes }
-			NOT = { has_location_modifier = sul_specialization_cooldown }
+			NOT = { has_location_modifier = sul_recently_respecialized }
 			controller = owner
 		}
 	}
@@ -855,43 +886,39 @@ designate_farming_specialization = {
 				sul_clear_all_specialization_modifiers = yes
 				if = {
 					limit = { location_rank = location_rank:rural_settlement }
-					set_variable = { name = specialization_designation value = sul_farming_rural_value }
-					add_location_modifier = { modifier = farming_rural_specialization }
+					set_variable = { name = sul_specialization_designation value = sul_farming_rural_value }
+					add_location_modifier = { modifier = sul_farming_rural_specialization }
 				}
 				else_if = {
 					limit = { location_rank = location_rank:town }
-					set_variable = { name = specialization_designation value = sul_farming_town_value }
-					add_location_modifier = { modifier = farming_town_specialization }
+					set_variable = { name = sul_specialization_designation value = sul_farming_town_value }
+					add_location_modifier = { modifier = sul_farming_town_specialization }
 				}
 				else = {
-					set_variable = { name = specialization_designation value = sul_farming_city_value }
-					add_location_modifier = { modifier = farming_city_specialization }
+					set_variable = { name = sul_specialization_designation value = sul_farming_city_value }
+					add_location_modifier = { modifier = sul_farming_city_specialization }
 				}
 				sul_destroy_non_farming_buildings = yes
-				add_location_modifier = {
-					modifier = sul_specialization_cooldown
-					years = 5
-				}
+				add_location_modifier = { modifier = sul_recently_respecialized years = 5 }
 			}
 		}
 	}
 }
 
-designate_woodland_specialization = {
+sul_designate_woodland_specialization = {
 	type = owncountry
 
 	potential = {
-		always = yes
 	}
 
 	allow = {
-		always = yes
 	}
 
 	ai_tick = monthly
 	ai_tick_frequency = 12
 
 	ai_prerequisite = {
+		is_real_country = yes
 		current_year >= 1338
 		num_loans = 0
 		gold >= 50
@@ -900,7 +927,7 @@ designate_woodland_specialization = {
 
 	ai_will_do = {
 		# === AFFORDABILITY + INERTIA (branched by rank) ===
-		add = { desc = "inertia" value = -6 }
+		add = { desc = "inertia" value = 0 }
 		if = {
 			limit = { exists = scope:target scope:target = { location_rank = location_rank:town } }
 			add = { desc = "town_inertia" value = -5 }
@@ -1172,14 +1199,14 @@ designate_woodland_specialization = {
 	price = {
 		if = {
 			limit = { exists = scope:target scope:target = { location_rank = location_rank:rural_settlement } }
-			value = price:designate_specialization_price_rural
+			value = price:sul_designate_specialization_price_rural
 		}
 		else_if = {
 			limit = { exists = scope:target scope:target = { location_rank = location_rank:town } }
-			value = price:designate_specialization_price_town
+			value = price:sul_designate_specialization_price_town
 		}
 		else = {
-			value = price:designate_specialization_price_city
+			value = price:sul_designate_specialization_price_city
 		}
 	}
 
@@ -1199,9 +1226,23 @@ designate_woodland_specialization = {
 		}
 
 		enabled = {
-			sul_can_specialize_woodland = yes
+			# Woodland eligibility: resources OR terrain
+			OR = {
+				# Woodland resources
+				raw_material = goods:lumber
+				raw_material = goods:wild_game
+				raw_material = goods:fur
+				raw_material = goods:incense
+				raw_material = goods:elephants
+				raw_material = goods:beeswax
+				raw_material = goods:dyes
+				# Woodland terrain
+				vegetation = forest
+				vegetation = woods
+				vegetation = jungle
+			}
 			NOT = { sul_has_woodland_specialization = yes }
-			NOT = { has_location_modifier = sul_specialization_cooldown }
+			NOT = { has_location_modifier = sul_recently_respecialized }
 			controller = owner
 		}
 	}
@@ -1252,43 +1293,39 @@ designate_woodland_specialization = {
 				sul_clear_all_specialization_modifiers = yes
 				if = {
 					limit = { location_rank = location_rank:rural_settlement }
-					set_variable = { name = specialization_designation value = sul_woodland_rural_value }
-					add_location_modifier = { modifier = woodland_rural_specialization }
+					set_variable = { name = sul_specialization_designation value = sul_woodland_rural_value }
+					add_location_modifier = { modifier = sul_woodland_rural_specialization }
 				}
 				else_if = {
 					limit = { location_rank = location_rank:town }
-					set_variable = { name = specialization_designation value = sul_woodland_town_value }
-					add_location_modifier = { modifier = woodland_town_specialization }
+					set_variable = { name = sul_specialization_designation value = sul_woodland_town_value }
+					add_location_modifier = { modifier = sul_woodland_town_specialization }
 				}
 				else = {
-					set_variable = { name = specialization_designation value = sul_woodland_city_value }
-					add_location_modifier = { modifier = woodland_city_specialization }
+					set_variable = { name = sul_specialization_designation value = sul_woodland_city_value }
+					add_location_modifier = { modifier = sul_woodland_city_specialization }
 				}
 				sul_destroy_non_woodland_buildings = yes
-				add_location_modifier = {
-					modifier = sul_specialization_cooldown
-					years = 5
-				}
+				add_location_modifier = { modifier = sul_recently_respecialized years = 5 }
 			}
 		}
 	}
 }
 
-designate_gathering_specialization = {
+sul_designate_gathering_specialization = {
 	type = owncountry
 
 	potential = {
-		always = yes
 	}
 
 	allow = {
-		always = yes
 	}
 
 	ai_tick = monthly
 	ai_tick_frequency = 12
 
 	ai_prerequisite = {
+		is_real_country = yes
 		current_year >= 1338
 		num_loans = 0
 		gold >= 50
@@ -1297,7 +1334,7 @@ designate_gathering_specialization = {
 
 	ai_will_do = {
 		# === AFFORDABILITY + INERTIA (branched by rank) ===
-		add = { desc = "inertia" value = -6 }
+		add = { desc = "inertia" value = 0 }
 		if = {
 			limit = { exists = scope:target scope:target = { location_rank = location_rank:town } }
 			add = { desc = "town_inertia" value = -5 }
@@ -1402,7 +1439,7 @@ designate_gathering_specialization = {
 		# === MARKET PRICE BONUSES (uses cached scaled values from market_center) ===
 		# Formula: (price / base_price - 1) × 8, capped at -8 to +16
 
-		# Raw gathering goods (salt) price bonus - all location types
+		# Raw gathering goods (wool) price bonus - all location types
 		if = {
 			limit = {
 				exists = scope:target
@@ -1414,7 +1451,7 @@ designate_gathering_specialization = {
 			scope:target = {
 				market ?= {
 					add = {
-						desc = "salt_price_bonus"
+						desc = "wool_price_bonus"
 						value = location.var:sul_gathering_raw_price_bonus
 					}
 				}
@@ -1518,6 +1555,63 @@ designate_gathering_specialization = {
 			}
 		}
 
+		# Wool shortage/surplus: ±5 based on demand vs supply ratio
+		if = {
+			limit = {
+				exists = scope:target
+				scope:target = {
+					sul_can_specialize_gathering = yes
+					NOT = { sul_has_gathering_specialization = yes }
+					market ?= { location = { has_variable = sul_wool_pressure } }
+				}
+			}
+			scope:target = {
+				market ?= {
+					add = {
+						desc = "wool_market_pressure"
+						value = location.var:sul_wool_pressure
+					}
+				}
+			}
+		}
+		# Fallback for uncached markets
+		else_if = {
+			limit = {
+				exists = scope:target
+				scope:target = {
+					sul_can_specialize_gathering = yes
+					NOT = { sul_has_gathering_specialization = yes }
+				}
+			}
+			scope:target = {
+				market ?= {
+					add = {
+						desc = "wool_market_pressure"
+						value = sul_wool_market_pressure
+					}
+				}
+			}
+		}
+
+		# === FOOD PRICE BONUS (weak for gathering - supplementary food producer) ===
+		if = {
+			limit = {
+				exists = scope:target
+				scope:target = {
+					sul_can_specialize_gathering = yes
+					NOT = { sul_has_gathering_specialization = yes }
+				}
+			}
+			scope:target = {
+				market ?= {
+					add = {
+						desc = "food_price_bonus"
+						value = sul_gathering_food_price_bonus
+					}
+				}
+			}
+		}
+
 		# === STAY PUT: Resist changing away from optimal spec/terrain matches ===
 		# Branched by current specialization to reduce evaluations (was 16 flat checks, now max 4)
 		if = {
@@ -1615,14 +1709,14 @@ designate_gathering_specialization = {
 	price = {
 		if = {
 			limit = { exists = scope:target scope:target = { location_rank = location_rank:rural_settlement } }
-			value = price:designate_specialization_price_rural
+			value = price:sul_designate_specialization_price_rural
 		}
 		else_if = {
 			limit = { exists = scope:target scope:target = { location_rank = location_rank:town } }
-			value = price:designate_specialization_price_town
+			value = price:sul_designate_specialization_price_town
 		}
 		else = {
-			value = price:designate_specialization_price_city
+			value = price:sul_designate_specialization_price_city
 		}
 	}
 
@@ -1642,9 +1736,24 @@ designate_gathering_specialization = {
 		}
 
 		enabled = {
-			sul_can_specialize_gathering = yes
+			# Gathering eligibility: resources OR geography
+			OR = {
+				# Gathering resources
+				raw_material = goods:clay
+				raw_material = goods:sand
+				raw_material = goods:salt
+				raw_material = goods:medicaments
+				raw_material = goods:pearls
+				raw_material = goods:amber
+				raw_material = goods:fish
+				raw_material = goods:wool
+				# Gathering geography
+				is_coastal = yes
+				has_river = yes
+				is_adjacent_to_lake = yes
+			}
 			NOT = { sul_has_gathering_specialization = yes }
-			NOT = { has_location_modifier = sul_specialization_cooldown }
+			NOT = { has_location_modifier = sul_recently_respecialized }
 			controller = owner
 		}
 	}
@@ -1695,43 +1804,39 @@ designate_gathering_specialization = {
 				sul_clear_all_specialization_modifiers = yes
 				if = {
 					limit = { location_rank = location_rank:rural_settlement }
-					set_variable = { name = specialization_designation value = sul_gathering_rural_value }
-					add_location_modifier = { modifier = gathering_rural_specialization }
+					set_variable = { name = sul_specialization_designation value = sul_gathering_rural_value }
+					add_location_modifier = { modifier = sul_gathering_rural_specialization }
 				}
 				else_if = {
 					limit = { location_rank = location_rank:town }
-					set_variable = { name = specialization_designation value = sul_gathering_town_value }
-					add_location_modifier = { modifier = gathering_town_specialization }
+					set_variable = { name = sul_specialization_designation value = sul_gathering_town_value }
+					add_location_modifier = { modifier = sul_gathering_town_specialization }
 				}
 				else = {
-					set_variable = { name = specialization_designation value = sul_gathering_city_value }
-					add_location_modifier = { modifier = gathering_city_specialization }
+					set_variable = { name = sul_specialization_designation value = sul_gathering_city_value }
+					add_location_modifier = { modifier = sul_gathering_city_specialization }
 				}
 				sul_destroy_non_gathering_buildings = yes
-				add_location_modifier = {
-					modifier = sul_specialization_cooldown
-					years = 5
-				}
+				add_location_modifier = { modifier = sul_recently_respecialized years = 5 }
 			}
 		}
 	}
 }
 
-designate_commercial_specialization = {
+sul_designate_commercial_specialization = {
 	type = owncountry
 
 	potential = {
-		always = yes
 	}
 
 	allow = {
-		always = yes
 	}
 
 	ai_tick = monthly
 	ai_tick_frequency = 12
 
 	ai_prerequisite = {
+		is_real_country = yes
 		current_year >= 1338
 		num_loans = 0
 		gold >= 50
@@ -1990,14 +2095,14 @@ designate_commercial_specialization = {
 	price = {
 		if = {
 			limit = { exists = scope:target scope:target = { location_rank = location_rank:rural_settlement } }
-			value = price:designate_specialization_price_rural
+			value = price:sul_designate_specialization_price_rural
 		}
 		else_if = {
 			limit = { exists = scope:target scope:target = { location_rank = location_rank:town } }
-			value = price:designate_specialization_price_town
+			value = price:sul_designate_specialization_price_town
 		}
 		else = {
-			value = price:designate_specialization_price_city
+			value = price:sul_designate_specialization_price_city
 		}
 	}
 
@@ -2019,7 +2124,7 @@ designate_commercial_specialization = {
 		# Commercial has no resource requirement - but cannot already be commercial
 		enabled = {
 			NOT = { sul_has_commercial_specialization = yes }
-			NOT = { has_location_modifier = sul_specialization_cooldown }
+			NOT = { has_location_modifier = sul_recently_respecialized }
 			controller = owner
 		}
 	}
@@ -2070,23 +2175,20 @@ designate_commercial_specialization = {
 				sul_clear_all_specialization_modifiers = yes
 				if = {
 					limit = { location_rank = location_rank:rural_settlement }
-					set_variable = { name = specialization_designation value = sul_commercial_rural_value }
-					add_location_modifier = { modifier = commercial_rural_specialization }
+					set_variable = { name = sul_specialization_designation value = sul_commercial_rural_value }
+					add_location_modifier = { modifier = sul_commercial_rural_specialization }
 				}
 				else_if = {
 					limit = { location_rank = location_rank:town }
-					set_variable = { name = specialization_designation value = sul_commercial_town_value }
-					add_location_modifier = { modifier = commercial_town_specialization }
+					set_variable = { name = sul_specialization_designation value = sul_commercial_town_value }
+					add_location_modifier = { modifier = sul_commercial_town_specialization }
 				}
 				else = {
-					set_variable = { name = specialization_designation value = sul_commercial_city_value }
-					add_location_modifier = { modifier = commercial_city_specialization }
+					set_variable = { name = sul_specialization_designation value = sul_commercial_city_value }
+					add_location_modifier = { modifier = sul_commercial_city_specialization }
 				}
 				sul_destroy_non_commercial_buildings = yes
-				add_location_modifier = {
-					modifier = sul_specialization_cooldown
-					years = 5
-				}
+				add_location_modifier = { modifier = sul_recently_respecialized years = 5 }
 			}
 		}
 	}

@@ -1,119 +1,186 @@
 ﻿# =============================================================================
-# MONTHLY GDP UPDATE
-# =============================================================================
-#
-# Sets sul_local_gdp on every owned location for use by:
-# - Pop demand scaling (sul_gdp_per_capita_scale)
-# - Estate income from control shortfall
-#
-# Two-pass algorithm:
-# Pass 1: Calculate GDP for controlled locations (CL), accumulate averages
-# Pass 2: Estimate GDP for zero-control locations (ZCL) using CL averages
-#
-# Also caches sul_total_taxes_lost for estate shortfall calculation.
+# GDP UPDATE SYSTEM
 # =============================================================================
 
-sul_update_all_location_gdp = {
-	# =========================================================================
-	# INITIALIZE TRACKING VARIABLES
-	# =========================================================================
+# -----------------------------------------------------------------------------
+# SINGLE LOCATION UPDATE (location scope)
+# -----------------------------------------------------------------------------
+# Updates estate power, GDP, and gdp_pc for one location
+sul_update_location_economy = {
+	sul_update_location_estate_power = yes
+	sul_update_location_gdp = yes
+	sul_cache_gdp_per_capita = yes
+}
 
-	# For CL direct calculation
-	set_local_variable = { name = cl_taxes_lost value = 0 }
-
-	# For ZCL estimation: RGO averages
-	set_local_variable = { name = rgo_value_sum value = 0 }
-	set_local_variable = { name = rgo_output_sum value = 0 }
-
-	# For ZCL estimation: Building averages
-	set_local_variable = { name = building_value_sum value = 0 }
-	set_local_variable = { name = building_level_sum value = 0 }
-
-	# =========================================================================
-	# PASS 1: CONTROLLED LOCATIONS
-	# =========================================================================
-
-	every_owned_location = {
-		limit = {
-			market_access > 0
-			local_control > 0
-		}
-
-		save_scope_as = cur_loc
-
-		# Calculate local GDP (potential tax base)
-		set_local_variable = {
-			name = loc_gdp
+# -----------------------------------------------------------------------------
+# SINGLE LOCATION GDP (location scope)
+# -----------------------------------------------------------------------------
+# Sets sul_local_gdp based on control level and market access
+sul_update_location_gdp = {
+	if = {
+		limit = { market_access <= 0 }
+		set_variable = { name = sul_local_gdp value = 0 }
+	}
+	else_if = {
+		limit = { local_control > 0 }
+		set_variable = {
+			name = sul_local_gdp
 			value = {
 				value = location_tax_base
 				divide = local_control
 			}
 		}
-
-		# Set on location for demand scaling
-		set_variable = { name = sul_local_gdp value = local_var:loc_gdp }
-
-		# Calculate RGO value for averaging
-		set_local_variable = { name = loc_rgo_value value = 0 }
-		raw_material ?= {
-			set_local_variable = {
-				name = loc_rgo_value
+	}
+	else = {
+		# Zero control - estimate from country averages (if available)
+		if = {
+			limit = { owner = { has_variable = sul_avg_rgo_value_per_output } }
+			set_variable = {
+				name = sul_local_gdp
 				value = {
-					value = "price_in_market(scope:cur_loc.market)"
-					multiply = scope:cur_loc.raw_material_output
-					multiply = scope:cur_loc.market_access
+					value = owner.var:sul_avg_rgo_value_per_output
+					multiply = raw_material_output
+					multiply = market_access
+				}
+			}
+			change_variable = {
+				name = sul_local_gdp
+				add = {
+					value = owner.var:sul_avg_building_value_per_level
+					multiply = total_building_levels
+					multiply = market_access
 				}
 			}
 		}
-
-		# Calculate building value (GDP minus RGO)
-		set_local_variable = {
-			name = loc_building_value
-			value = {
-				value = local_var:loc_gdp
-				subtract = local_var:loc_rgo_value
-				min = 0
-			}
+		else = {
+			# No averages yet - use 0 as fallback
+			set_variable = { name = sul_local_gdp value = 0 }
 		}
+	}
+}
 
-		# Accumulate to country-level sums
-		owner = {
-			# RGO tracking
-			change_local_variable = {
-				name = rgo_value_sum
-				add = local_var:loc_rgo_value
+# -----------------------------------------------------------------------------
+# COUNTRY GDP UPDATE (country scope)
+# -----------------------------------------------------------------------------
+# Updates all locations and accumulates taxes lost
+sul_update_all_location_gdp = {
+	# =========================================================================
+	# INITIALIZE TRACKING VARIABLES
+	# =========================================================================
+
+	# Per-estate taxes lost
+	set_variable = { name = sul_nobles_taxes_lost value = 0 }
+	set_variable = { name = sul_clergy_taxes_lost value = 0 }
+	set_variable = { name = sul_burghers_taxes_lost value = 0 }
+	set_variable = { name = sul_peasants_taxes_lost value = 0 }
+	set_variable = { name = sul_tribes_taxes_lost value = 0 }
+
+	# Initialize averages if not set (first run fallback for zero-control estimation)
+	if = {
+		limit = { NOT = { has_variable = sul_avg_rgo_value_per_output } }
+		set_variable = { name = sul_avg_rgo_value_per_output value = 0 }
+		set_variable = { name = sul_avg_building_value_per_level value = 0 }
+	}
+
+	# For calculating NEW averages (to be stored for next month)
+	set_local_variable = { name = rgo_value_sum value = 0 }
+	set_local_variable = { name = rgo_output_sum value = 0 }
+	set_local_variable = { name = building_value_sum value = 0 }
+	set_local_variable = { name = building_level_sum value = 0 }
+
+	# =========================================================================
+	# SINGLE PASS: ALL LOCATIONS
+	# =========================================================================
+	# Each location: estate power -> GDP -> gdp_pc cache
+	# CL uses direct calculation, ZCL uses stored averages from previous month
+
+	every_owned_location = {
+		# Update estate power, GDP, and gdp_pc in one call
+		sul_update_location_economy = yes
+
+		# Accumulate taxes lost and averaging data (only for market-connected locations)
+		if = {
+			limit = { market_access > 0 }
+			save_scope_as = cur_loc
+
+			# For controlled locations: accumulate for averaging
+			if = {
+				limit = { local_control > 0 }
+
+				# Calculate RGO value for averaging
+				set_local_variable = { name = loc_rgo_value value = 0 }
+				raw_material ?= {
+					set_local_variable = {
+						name = loc_rgo_value
+						value = {
+							value = "price_in_market(scope:cur_loc.market)"
+							multiply = scope:cur_loc.raw_material_output
+							multiply = scope:cur_loc.market_access
+						}
+					}
+				}
+
+				# Calculate building value (GDP minus RGO)
+				set_local_variable = {
+					name = loc_building_value
+					value = {
+						value = var:sul_local_gdp
+						subtract = local_var:loc_rgo_value
+						min = 0
+					}
+				}
+
+				# Accumulate for next month's averages
+				owner = {
+					change_local_variable = { name = rgo_value_sum add = local_var:loc_rgo_value }
+					change_local_variable = { name = rgo_output_sum add = prev.raw_material_output }
+					change_local_variable = { name = building_value_sum add = local_var:loc_building_value }
+					change_local_variable = { name = building_level_sum add = prev.total_building_levels }
+				}
+
+				# Calculate taxes lost (GDP - actual tax base)
+				set_local_variable = {
+					name = loc_taxes_lost
+					value = {
+						value = var:sul_local_gdp
+						subtract = location_tax_base
+					}
+				}
 			}
-			change_local_variable = {
-				name = rgo_output_sum
-				add = prev.raw_material_output
+			else = {
+				# Zero-control: full GDP is taxes lost (crown gets nothing)
+				set_local_variable = { name = loc_taxes_lost value = var:sul_local_gdp }
 			}
 
-			# Building tracking
-			change_local_variable = {
-				name = building_value_sum
-				add = local_var:loc_building_value
-			}
-			change_local_variable = {
-				name = building_level_sum
-				add = prev.total_building_levels
-			}
-
-			# Accumulate taxes lost for estate shortfall
-			change_local_variable = {
-				name = cl_taxes_lost
-				add = {
-					value = prev.location_tax_base
-					divide = prev.local_control
-					subtract = prev.location_tax_base
+			# Accumulate taxes lost by estate (both CL and ZCL)
+			owner = {
+				change_variable = {
+					name = sul_nobles_taxes_lost
+					add = { value = local_var:loc_taxes_lost multiply = prev.var:sul_nobles_power_share }
+				}
+				change_variable = {
+					name = sul_clergy_taxes_lost
+					add = { value = local_var:loc_taxes_lost multiply = prev.var:sul_clergy_power_share }
+				}
+				change_variable = {
+					name = sul_burghers_taxes_lost
+					add = { value = local_var:loc_taxes_lost multiply = prev.var:sul_burghers_power_share }
+				}
+				change_variable = {
+					name = sul_peasants_taxes_lost
+					add = { value = local_var:loc_taxes_lost multiply = prev.var:sul_peasants_power_share }
+				}
+				change_variable = {
+					name = sul_tribes_taxes_lost
+					add = { value = local_var:loc_taxes_lost multiply = prev.var:sul_tribes_power_share }
 				}
 			}
 		}
 	}
 
 	# =========================================================================
-	# CALCULATE AVERAGES FOR ZCL ESTIMATION
+	# UPDATE AVERAGES FOR NEXT MONTH
 	# =========================================================================
-	# Use regular variables (not local_var) so they can be accessed from location scope
 
 	set_variable = {
 		name = sul_avg_rgo_value_per_output
@@ -139,60 +206,88 @@ sul_update_all_location_gdp = {
 		}
 	}
 
-	# =========================================================================
-	# PASS 2: ZERO-CONTROL LOCATIONS
-	# =========================================================================
+}
 
-	set_local_variable = { name = zcl_taxes_lost value = 0 }
+# =============================================================================
+# CACHE POP DEMAND MULTIPLIER (location scope)
+# =============================================================================
+# Pre-calculates demand multiplier for each pop type so pop demand reads one
+# variable instead of computing the formula each time.
+#
+# FORMULA: demand_mult = 5 - 200 / (X + 50), where X = gdp × power_share
+#
+# This hyperbolic formula provides diminishing returns:
+#   X=0   → 1.0x (base demand)
+#   X=50  → 3.0x
+#   X=100 → 3.67x
+#   X=150 → 4.0x
+#   X→∞   → 5.0x (asymptote)
+#
+# - Slaves get fixed 1x (no economic power)
+#
+# =============================================================================
 
-	every_owned_location = {
-		limit = {
-			market_access > 0
-			local_control <= 0
-		}
-
-		# Estimate GDP using averages from controlled locations
-		set_local_variable = {
-			name = loc_gdp
-			value = {
-				# RGO component
-				value = owner.var:sul_avg_rgo_value_per_output
-				multiply = raw_material_output
-				multiply = market_access
-			}
-		}
-		change_local_variable = {
-			name = loc_gdp
-			add = {
-				# Building component
-				value = owner.var:sul_avg_building_value_per_level
-				multiply = total_building_levels
-				multiply = market_access
-			}
-		}
-
-		# Set on location for demand scaling
-		set_variable = { name = sul_local_gdp value = local_var:loc_gdp }
-
-		# Accumulate to ZCL taxes lost (full potential since control = 0)
-		owner = {
-			change_local_variable = {
-				name = zcl_taxes_lost
-				add = local_var:loc_gdp
-			}
-		}
-	}
-
-	# =========================================================================
-	# CACHE TOTAL TAXES LOST FOR ESTATE SHORTFALL
-	# =========================================================================
-
+sul_cache_gdp_per_capita = {
+	# Nobles
 	set_variable = {
-		name = sul_total_taxes_lost
+		name = sul_noble_gdp_pc
 		value = {
-			value = local_var:cl_taxes_lost
-			add = local_var:zcl_taxes_lost
-			min = 0
+			value = 5
+			subtract = {
+				value = 200
+				divide = { value = var:sul_local_gdp multiply = var:sul_nobles_power_share add = 50 }
+			}
 		}
 	}
+
+	# Clergy
+	set_variable = {
+		name = sul_clergy_gdp_pc
+		value = {
+			value = 5
+			subtract = {
+				value = 200
+				divide = { value = var:sul_local_gdp multiply = var:sul_clergy_power_share add = 50 }
+			}
+		}
+	}
+
+	# Burghers
+	set_variable = {
+		name = sul_burgher_gdp_pc
+		value = {
+			value = 5
+			subtract = {
+				value = 200
+				divide = { value = var:sul_local_gdp multiply = var:sul_burghers_power_share add = 50 }
+			}
+		}
+	}
+
+	# Commoners (laborers, peasants, soldiers share peasants estate)
+	set_variable = {
+		name = sul_commoner_gdp_pc
+		value = {
+			value = 5
+			subtract = {
+				value = 200
+				divide = { value = var:sul_local_gdp multiply = var:sul_peasants_power_share add = 50 }
+			}
+		}
+	}
+
+	# Tribesmen
+	set_variable = {
+		name = sul_tribesman_gdp_pc
+		value = {
+			value = 5
+			subtract = {
+				value = 200
+				divide = { value = var:sul_local_gdp multiply = var:sul_tribes_power_share add = 50 }
+			}
+		}
+	}
+
+	# Slaves - no economic power, base demand only
+	set_variable = { name = sul_slave_gdp_pc value = 1 }
 }

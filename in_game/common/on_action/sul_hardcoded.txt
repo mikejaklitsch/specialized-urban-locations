@@ -16,16 +16,36 @@ on_game_start = {
 	}
 }
 
-monthly_country_pulse = {
-	on_actions = {
-		sul_refresh_market_cache
-		sul_monthly_estate_income
+# Clear market cache once per month (first country to process clears it)
+sul_clear_market_cache = {
+	effect = {
+		if = {
+			limit = {
+				has_global_variable = sul_market_demand_cached
+				has_global_variable = sul_cache_month
+				NOT = { global_var:sul_cache_month = current_month }
+			}
+			remove_global_variable = sul_market_demand_cached
+		}
+		# Track current month
+		set_global_variable = { name = sul_cache_month value = current_month }
 	}
 }
 
 yearly_country_pulse = {
 	on_actions = {
 		sul_yearly_estate_income
+		sul_ai_economy_update
+	}
+}
+
+sul_ai_economy_update = {
+	trigger = {
+		is_ai = yes
+	}
+	effect = {
+		sul_update_all_location_gdp = yes
+		sul_update_all_location_capacity = yes
 	}
 }
 
@@ -74,7 +94,17 @@ sul_game_start_setup = {
 			# Always calculate eligibility (for potential map modes)
 			sul_calculate_specialization_eligibility = yes
 
-			# Only initialize owned locations
+			# Set default gdp_pc for ALL locations (prevents errors from pops in unowned locations)
+			set_variable = { name = sul_local_gdp value = 0 }
+
+			set_variable = { name = sul_noble_gdp_pc value = 1 }
+			set_variable = { name = sul_clergy_gdp_pc value = 1 }
+			set_variable = { name = sul_burgher_gdp_pc value = 1 }
+			set_variable = { name = sul_commoner_gdp_pc value = 1 }
+			set_variable = { name = sul_tribesman_gdp_pc value = 1 }
+			set_variable = { name = sul_slave_gdp_pc value = 1 }
+
+			# Only do full initialization for owned locations
 			if = {
 				limit = { exists = owner }
 
@@ -101,7 +131,9 @@ sul_game_start_setup = {
 			}
 		}
 
-		# Initialize local GDP for all countries (after location loop)
+		# Initialize local GDP and cache gdp_pc for all countries
+		# sul_update_all_location_gdp calls sul_update_location_economy for each location
+		# which handles: estate power -> GDP -> gdp_pc cache
 		every_country = {
 			sul_update_all_location_gdp = yes
 		}
@@ -265,7 +297,6 @@ sul_refresh_market_cache = {
 			set_global_variable = {
 				name = sul_market_demand_cached
 				value = 1
-				days = 2
 			}
 		}
 	}

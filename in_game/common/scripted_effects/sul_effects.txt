@@ -555,9 +555,7 @@ sul_destroy_non_mining_buildings = {
 				location = { location_rank = location_rank:city }
 			}
 		}
-		location = {
-			change_building_level_in_location = { building = prev.building_type value = -999 }
-		}
+		location = { destroy_building = prev }
 	}
 }
 
@@ -573,9 +571,7 @@ sul_destroy_non_farming_buildings = {
 				location = { location_rank = location_rank:city }
 			}
 		}
-		location = {
-			change_building_level_in_location = { building = prev.building_type value = -999 }
-		}
+		location = { destroy_building = prev }
 	}
 }
 
@@ -591,9 +587,7 @@ sul_destroy_non_woodland_buildings = {
 				location = { location_rank = location_rank:city }
 			}
 		}
-		location = {
-			change_building_level_in_location = { building = prev.building_type value = -999 }
-		}
+		location = { destroy_building = prev }
 	}
 }
 
@@ -609,9 +603,7 @@ sul_destroy_non_gathering_buildings = {
 				location = { location_rank = location_rank:city }
 			}
 		}
-		location = {
-			change_building_level_in_location = { building = prev.building_type value = -999 }
-		}
+		location = { destroy_building = prev }
 	}
 }
 
@@ -622,9 +614,7 @@ sul_destroy_non_commercial_buildings = {
 			sul_is_destroyable_specialization_building = yes
 			NOT = { sul_is_commercial_building = yes }
 		}
-		location = {
-			change_building_level_in_location = { building = prev.building_type value = -999 }
-		}
+		location = { destroy_building = prev }
 	}
 }
 
@@ -1281,25 +1271,16 @@ sul_update_market_cache = {
 	# Save market scope for price lookups, then switch to market center for variable storage
 	save_temporary_scope_as = current_market
 	location = {
-		# Cache market pressure values (supply/demand ratios, ±5 scale)
+		# Cache iron pressure for wetland bog iron bonus
 		set_variable = { name = sul_iron_pressure value = "scope:current_market.sul_iron_market_pressure" }
-		set_variable = { name = sul_wool_pressure value = "scope:current_market.sul_wool_market_pressure" }
-		set_variable = { name = sul_wheat_pressure value = "scope:current_market.sul_wheat_market_pressure" }
-		set_variable = { name = sul_lumber_pressure value = "scope:current_market.sul_lumber_market_pressure" }
-		set_variable = { name = sul_salt_pressure value = "scope:current_market.sul_salt_market_pressure" }
-		set_variable = { name = sul_clay_pressure value = "scope:current_market.sul_clay_market_pressure" }
 
-		# Cache scaled price bonuses for specializations (read from script values)
-		# Formula: (price / base_price - 1) × 8, capped at -8 to +16
-		# Positive = shortage (high prices), negative = surplus (low prices)
-		set_variable = { name = sul_mining_raw_price_bonus value = "scope:current_market.sul_mining_raw_price_bonus" }
-		set_variable = { name = sul_mining_finished_price_bonus value = "scope:current_market.sul_mining_finished_price_bonus" }
-		set_variable = { name = sul_farming_raw_price_bonus value = "scope:current_market.sul_farming_raw_price_bonus" }
-		set_variable = { name = sul_farming_finished_price_bonus value = "scope:current_market.sul_farming_finished_price_bonus" }
-		set_variable = { name = sul_woodland_raw_price_bonus value = "scope:current_market.sul_woodland_raw_price_bonus" }
-		set_variable = { name = sul_woodland_finished_price_bonus value = "scope:current_market.sul_woodland_finished_price_bonus" }
-		set_variable = { name = sul_gathering_raw_price_bonus value = "scope:current_market.sul_gathering_raw_price_bonus" }
-		set_variable = { name = sul_gathering_finished_price_bonus value = "scope:current_market.sul_gathering_finished_price_bonus" }
+		# Cache finished goods composite demand for each specialization
+		# Formula: average (demand/supply - 1) across all finished goods, ×5, capped ±5
+		set_variable = { name = sul_mining_finished_composite value = "scope:current_market.sul_mining_finished_composite" }
+		set_variable = { name = sul_farming_finished_composite value = "scope:current_market.sul_farming_finished_composite" }
+		set_variable = { name = sul_woodland_finished_composite value = "scope:current_market.sul_woodland_finished_composite" }
+		set_variable = { name = sul_gathering_finished_composite value = "scope:current_market.sul_gathering_finished_composite" }
+		set_variable = { name = sul_commercial_finished_composite value = "scope:current_market.sul_commercial_finished_composite" }
 	}
 }
 

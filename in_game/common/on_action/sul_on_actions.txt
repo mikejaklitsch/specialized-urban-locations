@@ -1,47 +1,76 @@
 ﻿# Specialized Urban Locations - On Actions
 
 # =============================================================================
-# MONTHLY GDP UPDATE
+# MONTHLY COUNTRY PULSE
 # =============================================================================
-# Sets sul_local_gdp on all locations for demand scaling and estate shortfall
 
 monthly_country_pulse = {
 	on_actions = {
-		sul_monthly_gdp_update
-		sul_monthly_capacity_update
+		sul_init_unowned_locations
+		sul_init_country_variables
+		sul_clear_market_cache
+		sul_refresh_market_cache
+		sul_player_economy_update
+		sul_monthly_estate_income
+		sul_player_capacity_update
 	}
 }
 
-sul_monthly_gdp_update = {
+# One-time initialization of unowned locations (save migration)
+# Runs once globally, independent of per-country init
+sul_init_unowned_locations = {
+	trigger = {
+		NOT = { has_global_variable = sul_unowned_locations_initialized }
+	}
+	effect = {
+		every_location_in_the_world = {
+			limit = {
+				is_ownable = yes
+				NOT = { exists = owner }
+			}
+			set_variable = { name = sul_noble_gdp_pc value = 1 }
+			set_variable = { name = sul_clergy_gdp_pc value = 1 }
+			set_variable = { name = sul_burgher_gdp_pc value = 1 }
+			set_variable = { name = sul_commoner_gdp_pc value = 1 }
+			set_variable = { name = sul_tribesman_gdp_pc value = 1 }
+			set_variable = { name = sul_slave_gdp_pc value = 1 }
+		}
+		set_global_variable = { name = sul_unowned_locations_initialized value = yes }
+	}
+}
+
+# Initialize country-scope variables if missing (runs first each month)
+# Also initializes location variables for save migration
+sul_init_country_variables = {
+	trigger = {
+		NOT = { has_variable = sul_nobles_taxes_lost }
+	}
+	effect = {
+		# Country-scope taxes lost
+		set_variable = { name = sul_nobles_taxes_lost value = 0 }
+		set_variable = { name = sul_clergy_taxes_lost value = 0 }
+		set_variable = { name = sul_burghers_taxes_lost value = 0 }
+		set_variable = { name = sul_peasants_taxes_lost value = 0 }
+		set_variable = { name = sul_tribes_taxes_lost value = 0 }
+		# Location-scope initialization (save migration)
+		# sul_update_all_location_gdp calls sul_update_location_economy for each location
+		# which handles: estate power -> GDP -> gdp_pc cache
+		sul_update_all_location_gdp = yes
+	}
+}
+
+sul_player_economy_update = {
+	trigger = {
+		is_ai = no
+	}
 	effect = {
 		sul_update_all_location_gdp = yes
 	}
 }
 
-# =============================================================================
-# CAPACITY PRESSURE UPDATES
-# =============================================================================
-# Monthly for player nations, yearly for AI nations
-# Variable always updated (cheap), modifier only switches on 10% tier change
-
-sul_monthly_capacity_update = {
+sul_player_capacity_update = {
 	trigger = {
 		is_ai = no
-	}
-	effect = {
-		sul_update_all_location_capacity = yes
-	}
-}
-
-yearly_country_pulse = {
-	on_actions = {
-		sul_yearly_capacity_update
-	}
-}
-
-sul_yearly_capacity_update = {
-	trigger = {
-		is_ai = yes
 	}
 	effect = {
 		sul_update_all_location_capacity = yes
@@ -78,6 +107,9 @@ sul_on_location_ownership_changed = {
 			# Clear any cooldown from previous owner
 			remove_location_modifier = sul_recently_respecialized
 		}
+
+		# Update economy for new owner (estate power -> GDP -> gdp_pc)
+		sul_update_location_economy = yes
 
 		# Now location definitely has a specialization - update counts
 

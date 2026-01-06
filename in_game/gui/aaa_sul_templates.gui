@@ -304,3 +304,330 @@ template sul_collapse_if_specialization_modifier_small {
 		)
 	)), '(CVector2f)26,26', '(CVector2f)0,0')]"
 }
+
+# =====================================================
+# GDP TOOLTIP TEMPLATE (Location scope)
+# =====================================================
+# Rich tooltip showing Local GDP value and demand multipliers
+# Each multiplier row has a hover tooltip explaining the formula
+
+template sul_local_gdp_tooltip {
+	ContextualTooltipType = {
+		blockoverride "title_icon" {
+			icon = {
+				using = tooltip_title_icon_size
+				texture = "gfx/interface/icons/location_icons/tax_base.dds"
+			}
+		}
+
+		blockoverride "title_text" {
+			text = "SUL_LOCAL_GDP_TITLE"
+		}
+
+		blockoverride "tooltip_content" {
+			# Description
+			TooltipTextBlock = {
+				blockoverride "text" {
+					text = "SUL_LOCAL_GDP_DESC"
+				}
+			}
+
+			# GDP Value Section
+			TooltipListBase = {
+				hbox = {
+					layoutpolicy_horizontal = expanding
+					margin = { 10 6 }
+
+					text_single = {
+						layoutpolicy_horizontal = expanding
+						text = "SUL_LOCAL_GDP_TITLE"
+					}
+					icon = {
+						size = { 20 20 }
+						texture = "gfx/interface/icons/location_icons/tax_base.dds"
+					}
+					text_single = {
+						margin_left = 3
+						raw_text = "#Y [Location.MakeScope.GetVariable('sul_local_gdp').GetValue|1]#!"
+					}
+				}
+			}
+
+			# Demand Multipliers Section
+			TooltipListBase = {
+				blockoverride "block_title" {
+					text = "SUL_DEMAND_MULTIPLIERS_HEADER"
+				}
+
+				TooltipListRowContent = {
+					# Column header row
+					TooltipManualTableField = {
+						blockoverride "field_content" {
+							text_single = {
+								layoutpolicy_horizontal = expanding
+								margin_left = 5
+								raw_text = "#T Pop Type#!"
+							}
+							text_single = {
+								min_width = 130
+								raw_text = "#T GDP Share#!"
+							}
+							text_single = {
+								min_width = 50
+								raw_text = "#T Mult#!"
+							}
+						}
+					}
+
+					# Nobles row
+					TooltipManualTableField = {
+						tooltipwidget = { using = sul_demand_formula_tooltip }
+						blockoverride "field_content" {
+							icon = {
+								size = { 20 20 }
+								texture = "[GetGraphicalCultureTextureForPopType(GetPopTypeByName('nobles'))]"
+							}
+							text_single = {
+								layoutpolicy_horizontal = expanding
+								margin_left = 5
+								text = "SUL_NOBLES_LABEL"
+							}
+							text_single = {
+								min_width = 130
+								raw_text = "[Multiply_CFixedPoint(Location.MakeScope.GetVariable('sul_local_gdp').GetValue, Location.MakeScope.GetVariable('sul_nobles_power_share').GetValue)|1]@gold! ([Location.MakeScope.GetVariable('sul_nobles_power_share').GetValue|%0]@tax_base!)"
+							}
+							text_single = {
+								min_width = 50
+								raw_text = "[Location.MakeScope.GetVariable('sul_noble_gdp_pc').GetValue|2]x"
+							}
+						}
+					}
+
+					# Clergy row
+					TooltipManualTableField = {
+						tooltipwidget = { using = sul_demand_formula_tooltip }
+						blockoverride "field_content" {
+							icon = {
+								size = { 20 20 }
+								texture = "[GetGraphicalCultureTextureForPopType(GetPopTypeByName('clergy'))]"
+							}
+							text_single = {
+								layoutpolicy_horizontal = expanding
+								margin_left = 5
+								text = "SUL_CLERGY_LABEL"
+							}
+							text_single = {
+								min_width = 130
+								raw_text = "[Multiply_CFixedPoint(Location.MakeScope.GetVariable('sul_local_gdp').GetValue, Location.MakeScope.GetVariable('sul_clergy_power_share').GetValue)|1]@gold! ([Location.MakeScope.GetVariable('sul_clergy_power_share').GetValue|%0]@tax_base!)"
+							}
+							text_single = {
+								min_width = 50
+								raw_text = "[Location.MakeScope.GetVariable('sul_clergy_gdp_pc').GetValue|2]x"
+							}
+						}
+					}
+
+					# Burghers row
+					TooltipManualTableField = {
+						tooltipwidget = { using = sul_demand_formula_tooltip }
+						blockoverride "field_content" {
+							icon = {
+								size = { 20 20 }
+								texture = "[GetGraphicalCultureTextureForPopType(GetPopTypeByName('burghers'))]"
+							}
+							text_single = {
+								layoutpolicy_horizontal = expanding
+								margin_left = 5
+								text = "SUL_BURGHERS_LABEL"
+							}
+							text_single = {
+								min_width = 130
+								raw_text = "[Multiply_CFixedPoint(Location.MakeScope.GetVariable('sul_local_gdp').GetValue, Location.MakeScope.GetVariable('sul_burghers_power_share').GetValue)|1]@gold! ([Location.MakeScope.GetVariable('sul_burghers_power_share').GetValue|%0]@tax_base!)"
+							}
+							text_single = {
+								min_width = 50
+								raw_text = "[Location.MakeScope.GetVariable('sul_burgher_gdp_pc').GetValue|2]x"
+							}
+						}
+					}
+
+					# Commoners row
+					TooltipManualTableField = {
+						tooltipwidget = { using = sul_demand_formula_tooltip }
+						blockoverride "field_content" {
+							icon = {
+								size = { 20 20 }
+								texture = "[GetGraphicalCultureTextureForPopType(GetPopTypeByName('laborers'))]"
+							}
+							text_single = {
+								layoutpolicy_horizontal = expanding
+								margin_left = 5
+								text = "SUL_COMMONERS_LABEL"
+							}
+							text_single = {
+								min_width = 130
+								raw_text = "[Multiply_CFixedPoint(Location.MakeScope.GetVariable('sul_local_gdp').GetValue, Location.MakeScope.GetVariable('sul_peasants_power_share').GetValue)|1]@gold! ([Location.MakeScope.GetVariable('sul_peasants_power_share').GetValue|%0]@tax_base!)"
+							}
+							text_single = {
+								min_width = 50
+								raw_text = "[Location.MakeScope.GetVariable('sul_commoner_gdp_pc').GetValue|2]x"
+							}
+						}
+					}
+
+					# Tribesmen row
+					TooltipManualTableField = {
+						tooltipwidget = { using = sul_demand_formula_tooltip }
+						blockoverride "field_content" {
+							icon = {
+								size = { 20 20 }
+								texture = "[GetGraphicalCultureTextureForPopType(GetPopTypeByName('tribesmen'))]"
+							}
+							text_single = {
+								layoutpolicy_horizontal = expanding
+								margin_left = 5
+								text = "SUL_TRIBESMEN_LABEL"
+							}
+							text_single = {
+								min_width = 130
+								raw_text = "[Multiply_CFixedPoint(Location.MakeScope.GetVariable('sul_local_gdp').GetValue, Location.MakeScope.GetVariable('sul_tribes_power_share').GetValue)|1]@gold! ([Location.MakeScope.GetVariable('sul_tribes_power_share').GetValue|%0]@tax_base!)"
+							}
+							text_single = {
+								min_width = 50
+								raw_text = "[Location.MakeScope.GetVariable('sul_tribesman_gdp_pc').GetValue|2]x"
+							}
+						}
+					}
+
+					# Slaves row
+					TooltipManualTableField = {
+						tooltipwidget = { using = sul_demand_formula_tooltip }
+						blockoverride "field_content" {
+							icon = {
+								size = { 20 20 }
+								texture = "[GetGraphicalCultureTextureForPopType(GetPopTypeByName('slaves'))]"
+							}
+							text_single = {
+								layoutpolicy_horizontal = expanding
+								margin_left = 5
+								text = "SUL_SLAVES_LABEL"
+							}
+							text_single = {
+								min_width = 130
+								raw_text = "-"
+							}
+							text_single = {
+								min_width = 50
+								raw_text = "[Location.MakeScope.GetVariable('sul_slave_gdp_pc').GetValue|2]x"
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+}
+
+# =====================================================
+# DEMAND FORMULA TOOLTIP TEMPLATE
+# =====================================================
+# Explains the demand multiplier formula with examples
+
+template sul_demand_formula_tooltip {
+	ContextualTooltipType = {
+		blockoverride "title_icon" {
+			icon = {
+				using = tooltip_title_icon_size
+				texture = "gfx/interface/icons/flat_icons/tabicons/economy.dds"
+			}
+		}
+
+		blockoverride "title_text" {
+			text = "SUL_DEMAND_FORMULA_TITLE"
+		}
+
+		blockoverride "tooltip_content" {
+			# Formula explanation
+			TooltipTextBlock = {
+				blockoverride "text" {
+					text = "SUL_DEMAND_FORMULA_DESC"
+				}
+			}
+
+			# Examples section
+			TooltipListBase = {
+				vbox = {
+					layoutpolicy_horizontal = expanding
+					margin = { 10 6 }
+
+					text_single = {
+						layoutpolicy_horizontal = expanding
+						text = "SUL_DEMAND_FORMULA_EXAMPLES_HEADER"
+						default_format = "#T"
+					}
+
+					hbox = {
+						layoutpolicy_horizontal = expanding
+						margin_top = 4
+						text_single = {
+							layoutpolicy_horizontal = expanding
+							raw_text = "GDP×Share = 0"
+						}
+						text_single = {
+							raw_text = "#G 1.0x#!"
+						}
+					}
+
+					hbox = {
+						layoutpolicy_horizontal = expanding
+						margin_top = 2
+						text_single = {
+							layoutpolicy_horizontal = expanding
+							raw_text = "GDP×Share = 50"
+						}
+						text_single = {
+							raw_text = "#G 3.0x#!"
+						}
+					}
+
+					hbox = {
+						layoutpolicy_horizontal = expanding
+						margin_top = 2
+						text_single = {
+							layoutpolicy_horizontal = expanding
+							raw_text = "GDP×Share = 100"
+						}
+						text_single = {
+							raw_text = "#G 3.67x#!"
+						}
+					}
+
+					hbox = {
+						layoutpolicy_horizontal = expanding
+						margin_top = 2
+						text_single = {
+							layoutpolicy_horizontal = expanding
+							raw_text = "GDP×Share = 150"
+						}
+						text_single = {
+							raw_text = "#G 4.0x#!"
+						}
+					}
+
+					hbox = {
+						layoutpolicy_horizontal = expanding
+						margin_top = 2
+						text_single = {
+							layoutpolicy_horizontal = expanding
+							raw_text = "GDP×Share → ∞"
+						}
+						text_single = {
+							raw_text = "#G 5.0x#!"
+							tooltip = "SUL_ASYMPTOTE_TOOLTIP"
+						}
+					}
+				}
+			}
+		}
+	}
+}

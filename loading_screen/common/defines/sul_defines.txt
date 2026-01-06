@@ -1,12 +1,32 @@
-﻿# Specialized Urban Locations - Building Upkeep Fix
-# Vanilla sets BUILDING_UPKEEP_FACTOR = 0.2 (20%), which means countries only pay 20% of building upkeep
-# Crown power modifiers adjust this, but starting from 20% makes the system ineffective
-# This fix sets it to 100% so buildings cost their full upkeep, and crown power can meaningfully reduce it
+﻿# Specialized Urban Locations - Defines
+# Rural settlements are now less efficient (-50% raw material output)
+# Towns/cities with specializations vastly outperform rural
+# Farming specialization handles food production (+100%/+250%)
 
 NEconomy = {
-	BUILDING_UPKEEP_FACTOR = 1.0
-	# 0.5% production efficiency bonus per building level (vanilla is 1%)
-	PRODUCTION_EFFIENCY_BONUS_PER_LEVEL = 0.005
-	# Double inflation from gold/silver RGOs (vanilla is 0.01)
-	INFLATION_RGO_IMPACT_FACTOR = 0.02
+    # Vanilla sets BUILDING_UPKEEP_FACTOR = 0.2 (20%), meaning countries only pay 20% of building upkeep
+    # This fix sets it to 100% so buildings cost their full upkeep, and crown power can meaningfully reduce it
+    BUILDING_UPKEEP_FACTOR = 1.0
+    OVER_FORT_LIMIT_MULTIPLIER = 5.0
+}
+
+NAI = {
+    AI_MAXIMUM_EXPECT_TOWN_RATIO = 1.0
+
+    # Increase utility per pop - faster upgrade decisions
+    AI_UPGRADE_CITY_POPULATION_UTILITY = 25
+
+    # Less penalty per ongoing upgrade (vanilla 0.5)
+    AI_ONGOING_CITY_UPGRADE_MULT = 0.8
+
+    # Reduce RGO preservation preference (rural RGOs are nerfed)
+    AI_RGO_SIZE_PRICE_UTIL = 0.00
+
+    AI_MAX_ALLOWED_URBANIZE_FOOD_LOCATION_RATIO = 1.0
+    AI_MIN_ALLOWED_URBANIZE_FOOD_LOCATION_RATIO = 0.5
+    AI_AVERAGE_MARKET_FOOD_FOR_MAX_FOOD_URBANIZATION = 3.5  # Reach max ratio sooner (vanilla 5)
+    AI_ALLOWED_FORT_BUDGET = 0.05                     # 5% for forts (vanilla 0.1)
+    AI_ALLOWED_BUILDING_MAINTENANCE = 0.40            # 40% for building maintenance (vanilla 0.25)
+
+	AI_PERFORMANCE_TRADE_PROFIT_PER_WEIGHT_CUTOFF = 0.25 # If expected profit from a trade route is less than this amount per merchant capacity used we skip it
 }

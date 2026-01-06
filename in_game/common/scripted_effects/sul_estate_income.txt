@@ -7,59 +7,76 @@
 # ARCHITECTURE:
 # - sul_update_all_location_gdp (monthly) calculates and caches:
 #   - sul_local_gdp on each location (for pop demand scaling)
-#   - sul_total_taxes_lost on country (for estate shortfall)
+#   - sul_X_taxes_lost on country (per-estate, based on local tax base shares)
 #
-# - This file just reads the cached values and splits by estate power.
+# - This file just reads the pre-calculated per-estate values.
 #
 # =============================================================================
 
 # =============================================================================
 # PER-ESTATE INCOME CALCULATION
 # =============================================================================
-# Called from estate scope. Reads cached sul_total_taxes_lost from monthly update.
-# Each estate gets: total_taxes_lost * estate_power
+# Called from estate scope. Reads pre-calculated sul_X_taxes_lost from monthly update.
+# Distribution is based on LOCAL tax base shares, not national estate power.
 
 sul_calculate_estate_income_lost = {
-	# Only calculate if the monthly GDP update has run
+	# Guard: skip if taxes_lost not calculated yet (newly formed country, etc.)
 	if = {
-		limit = { owner = { has_variable = sul_total_taxes_lost } }
-		set_local_variable = {
-			name = income_lost
-			value = {
-				value = owner.var:sul_total_taxes_lost
-				multiply = power
-				min = 0
-			}
-		}
+		limit = { owner = { NOT = { has_variable = sul_nobles_taxes_lost } } }
+		# Variables not initialized - skip this tick, will be set next economy update
 	}
-	else = {
-		set_local_variable = { name = income_lost value = 0 }
+	# Copy pre-calculated value to estate-specific var (for GUI and event use)
+	else_if = { limit = { estate_type = estate_type:nobles_estate }
+		owner = { set_variable = { name = sul_estate_nobles_income_lost value = { value = var:sul_nobles_taxes_lost min = 0 } } }
 	}
-
-	# Store per-estate for GUI display
-	if = { limit = { estate_type = estate_type:nobles_estate }
-		owner = { set_variable = { name = sul_estate_nobles_income_lost value = local_var:income_lost } } }
-	else_if = { limit = { estate_type = estate_type:burghers_estate }
-		owner = { set_variable = { name = sul_estate_burghers_income_lost value = local_var:income_lost } } }
 	else_if = { limit = { estate_type = estate_type:clergy_estate }
-		owner = { set_variable = { name = sul_estate_clergy_income_lost value = local_var:income_lost } } }
+		owner = { set_variable = { name = sul_estate_clergy_income_lost value = { value = var:sul_clergy_taxes_lost min = 0 } } }
+	}
+	else_if = { limit = { estate_type = estate_type:burghers_estate }
+		owner = { set_variable = { name = sul_estate_burghers_income_lost value = { value = var:sul_burghers_taxes_lost min = 0 } } }
+	}
 	else_if = { limit = { estate_type = estate_type:peasants_estate }
-		owner = { set_variable = { name = sul_estate_peasants_income_lost value = local_var:income_lost } } }
+		owner = { set_variable = { name = sul_estate_peasants_income_lost value = { value = var:sul_peasants_taxes_lost min = 0 } } }
+	}
 	else_if = { limit = { estate_type = estate_type:tribes_estate }
-		owner = { set_variable = { name = sul_estate_tribes_income_lost value = local_var:income_lost } } }
-	else_if = { limit = { estate_type = estate_type:dhimmi_estate }
-		owner = { set_variable = { name = sul_estate_dhimmi_income_lost value = local_var:income_lost } } }
-	else_if = { limit = { estate_type = estate_type:cossacks_estate }
-		owner = { set_variable = { name = sul_estate_cossacks_income_lost value = local_var:income_lost } } }
+		owner = { set_variable = { name = sul_estate_tribes_income_lost value = { value = var:sul_tribes_taxes_lost min = 0 } } }
+	}
 }
 
-# =============================================================================
-# LEGACY COMPATIBILITY
-# =============================================================================
-# Old effect name for any code still calling it. Now just a no-op since
-# sul_update_all_location_gdp handles this monthly.
+# Grant monthly income to estate (player)
+sul_grant_estate_income_lost = {
+	if = { limit = { estate_type = estate_type:nobles_estate }
+		estate_add_gold = { value = owner.var:sul_estate_nobles_income_lost }
+	}
+	else_if = { limit = { estate_type = estate_type:clergy_estate }
+		estate_add_gold = { value = owner.var:sul_estate_clergy_income_lost }
+	}
+	else_if = { limit = { estate_type = estate_type:burghers_estate }
+		estate_add_gold = { value = owner.var:sul_estate_burghers_income_lost }
+	}
+	else_if = { limit = { estate_type = estate_type:peasants_estate }
+		estate_add_gold = { value = owner.var:sul_estate_peasants_income_lost }
+	}
+	else_if = { limit = { estate_type = estate_type:tribes_estate }
+		estate_add_gold = { value = owner.var:sul_estate_tribes_income_lost }
+	}
+}
 
-sul_calculate_total_taxes_lost_from_low_control = {
-	# Calculation now happens in sul_update_all_location_gdp (monthly pulse)
-	# This is kept for compatibility but does nothing
+# Grant yearly income to estate (AI - 12x monthly)
+sul_grant_estate_income_lost_yearly = {
+	if = { limit = { estate_type = estate_type:nobles_estate }
+		estate_add_gold = { value = { value = owner.var:sul_estate_nobles_income_lost multiply = 12 } }
+	}
+	else_if = { limit = { estate_type = estate_type:clergy_estate }
+		estate_add_gold = { value = { value = owner.var:sul_estate_clergy_income_lost multiply = 12 } }
+	}
+	else_if = { limit = { estate_type = estate_type:burghers_estate }
+		estate_add_gold = { value = { value = owner.var:sul_estate_burghers_income_lost multiply = 12 } }
+	}
+	else_if = { limit = { estate_type = estate_type:peasants_estate }
+		estate_add_gold = { value = { value = owner.var:sul_estate_peasants_income_lost multiply = 12 } }
+	}
+	else_if = { limit = { estate_type = estate_type:tribes_estate }
+		estate_add_gold = { value = { value = owner.var:sul_estate_tribes_income_lost multiply = 12 } }
+	}
 }

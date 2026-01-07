@@ -533,6 +533,264 @@ template sul_local_gdp_tooltip {
 # =====================================================
 # Explains the demand multiplier formula with examples
 
+# =====================================================
+# SPECIALIZATION TOOLTIP WITH EXTERNALITIES (UNUSED - inlined in location_window.gui)
+# =====================================================
+# Combined tooltip showing specialization modifier + building externalities
+# Pass $MODIFIER$ as the static modifier name (e.g., sul_mining_town_specialization)
+# Pass $TEXTURE$ as the icon texture path
+# NOTE: Not currently used - tooltip content is inlined in location_window.gui
+#       which uses LocationView context instead of Location context
+
+# template sul_specialization_tooltip {
+# 	ContextualTooltipType = {
+# 		blockoverride "title_icon" {
+# 			icon = {
+# 				using = tooltip_title_icon_size
+# 				texture = "$TEXTURE$"
+# 			}
+# 		}
+#
+# 		blockoverride "title_text" {
+# 			text = "STATIC_MODIFIER_NAME_$MODIFIER$"
+# 		}
+#
+# 		blockoverride "tooltip_content" {
+# 			# Static modifier effects
+# 			TooltipStringPairList = {
+# 				textcontext = "[ShowModifierEffect('$MODIFIER$')]"
+# 			}
+#
+# 			# Building Externalities Section
+# 			TooltipListBase = {
+# 				blockoverride "block_title" {
+# 					text = "SUL_EXTERNALITIES_HEADER"
+# 				}
+#
+# 				TooltipListRowContent = {
+# 					# Food Output
+# 					TooltipManualTableField = {
+# 						blockoverride "field_content" {
+# 							icon = {
+# 								size = { 20 20 }
+# 								texture = "gfx/interface/icons/goods_icons/wheat.dds"
+# 							}
+# 							text_single = {
+# 								layoutpolicy_horizontal = expanding
+# 								margin_left = 5
+# 								text = "SUL_EXTERNALITY_FOOD"
+# 							}
+# 							widget = {
+# 								size = { 60 20 }
+# 								text_single = {
+# 									parentanchor = right|vcenter
+# 									raw_text = "[Location.GetModifierValue('local_monthly_food_modifier')|%+1]"
+# 								}
+# 							}
+# 						}
+# 					}
+#
+# 					# Raw Material Output
+# 					TooltipManualTableField = {
+# 						blockoverride "field_content" {
+# 							icon = {
+# 								size = { 20 20 }
+# 								texture = "gfx/interface/icons/goods_icons/iron.dds"
+# 							}
+# 							text_single = {
+# 								layoutpolicy_horizontal = expanding
+# 								margin_left = 5
+# 								text = "SUL_EXTERNALITY_RAW"
+# 							}
+# 							widget = {
+# 								size = { 60 20 }
+# 								text_single = {
+# 									parentanchor = right|vcenter
+# 									raw_text = "[Location.GetModifierValue('local_raw_material_output')|%+1]"
+# 								}
+# 							}
+# 						}
+# 					}
+#
+# 					# RGO Size
+# 					TooltipManualTableField = {
+# 						blockoverride "field_content" {
+# 							icon = {
+# 								size = { 20 20 }
+# 								texture = "gfx/interface/icons/flat_icons/size.dds"
+# 							}
+# 							text_single = {
+# 								layoutpolicy_horizontal = expanding
+# 								margin_left = 5
+# 								text = "SUL_EXTERNALITY_RGO"
+# 							}
+# 							widget = {
+# 								size = { 60 20 }
+# 								text_single = {
+# 									parentanchor = right|vcenter
+# 									raw_text = "[Location.GetModifierValue('local_max_rgo_size_modifier')|%+1]"
+# 								}
+# 							}
+# 						}
+# 					}
+#
+# 					# Production Efficiency
+# 					TooltipManualTableField = {
+# 						blockoverride "field_content" {
+# 							icon = {
+# 								size = { 20 20 }
+# 								texture = "gfx/interface/icons/flat_icons/tabicons/production.dds"
+# 							}
+# 							text_single = {
+# 								layoutpolicy_horizontal = expanding
+# 								margin_left = 5
+# 								text = "SUL_EXTERNALITY_EFFICIENCY"
+# 							}
+# 							widget = {
+# 								size = { 60 20 }
+# 								text_single = {
+# 									parentanchor = right|vcenter
+# 									raw_text = "[Location.GetModifierValue('local_production_efficiency')|%+1]"
+# 								}
+# 							}
+# 						}
+# 					}
+# 				}
+# 			}
+# 		}
+# 	}
+# }
+
+# =====================================================
+# BUILDING EXTERNALITIES TOOLTIP TEMPLATE (UNUSED - inlined in location_window.gui)
+# =====================================================
+# Shows aggregate modifier values from building externalities
+# NOTE: Not currently used - tooltip content is inlined in location_window.gui
+
+# template sul_building_externalities_tooltip {
+# 	ContextualTooltipType = {
+# 		blockoverride "title_icon" {
+# 			icon = {
+# 				using = tooltip_title_icon_size
+# 				texture = "gfx/interface/icons/flat_icons/tabicons/production.dds"
+# 			}
+# 		}
+#
+# 		blockoverride "title_text" {
+# 			text = "SUL_EXTERNALITIES_TITLE"
+# 		}
+#
+# 		blockoverride "tooltip_content" {
+# 			TooltipTextBlock = {
+# 				blockoverride "text" {
+# 					text = "SUL_EXTERNALITIES_DESC"
+# 				}
+# 			}
+#
+# 			TooltipListBase = {
+# 				blockoverride "block_title" {
+# 					text = "SUL_EXTERNALITIES_HEADER"
+# 				}
+#
+# 				TooltipListRowContent = {
+# 					# Food Output
+# 					TooltipManualTableField = {
+# 						blockoverride "field_content" {
+# 							icon = {
+# 								size = { 20 20 }
+# 								texture = "gfx/interface/icons/goods_icons/wheat.dds"
+# 							}
+# 							text_single = {
+# 								layoutpolicy_horizontal = expanding
+# 								margin_left = 5
+# 								text = "SUL_EXTERNALITY_FOOD"
+# 							}
+# 							widget = {
+# 								size = { 60 20 }
+# 								text_single = {
+# 									parentanchor = right|vcenter
+# 									raw_text = "[Location.GetModifierValue('local_monthly_food_modifier')|%+1]"
+# 								}
+# 							}
+# 						}
+# 					}
+#
+# 					# Raw Material Output
+# 					TooltipManualTableField = {
+# 						blockoverride "field_content" {
+# 							icon = {
+# 								size = { 20 20 }
+# 								texture = "gfx/interface/icons/goods_icons/iron.dds"
+# 							}
+# 							text_single = {
+# 								layoutpolicy_horizontal = expanding
+# 								margin_left = 5
+# 								text = "SUL_EXTERNALITY_RAW"
+# 							}
+# 							widget = {
+# 								size = { 60 20 }
+# 								text_single = {
+# 									parentanchor = right|vcenter
+# 									raw_text = "[Location.GetModifierValue('local_raw_material_output')|%+1]"
+# 								}
+# 							}
+# 						}
+# 					}
+#
+# 					# RGO Size
+# 					TooltipManualTableField = {
+# 						blockoverride "field_content" {
+# 							icon = {
+# 								size = { 20 20 }
+# 								texture = "gfx/interface/icons/flat_icons/size.dds"
+# 							}
+# 							text_single = {
+# 								layoutpolicy_horizontal = expanding
+# 								margin_left = 5
+# 								text = "SUL_EXTERNALITY_RGO"
+# 							}
+# 							widget = {
+# 								size = { 60 20 }
+# 								text_single = {
+# 									parentanchor = right|vcenter
+# 									raw_text = "[Location.GetModifierValue('local_max_rgo_size_modifier')|%+1]"
+# 								}
+# 							}
+# 						}
+# 					}
+#
+# 					# Production Efficiency
+# 					TooltipManualTableField = {
+# 						blockoverride "field_content" {
+# 							icon = {
+# 								size = { 20 20 }
+# 								texture = "gfx/interface/icons/flat_icons/tabicons/production.dds"
+# 							}
+# 							text_single = {
+# 								layoutpolicy_horizontal = expanding
+# 								margin_left = 5
+# 								text = "SUL_EXTERNALITY_EFFICIENCY"
+# 							}
+# 							widget = {
+# 								size = { 60 20 }
+# 								text_single = {
+# 									parentanchor = right|vcenter
+# 									raw_text = "[Location.GetModifierValue('local_production_efficiency')|%+1]"
+# 								}
+# 							}
+# 						}
+# 					}
+# 				}
+# 			}
+# 		}
+# 	}
+# }
+
+# =====================================================
+# DEMAND FORMULA TOOLTIP TEMPLATE
+# =====================================================
+# Explains the demand multiplier formula with examples
+
 template sul_demand_formula_tooltip {
 	ContextualTooltipType = {
 		blockoverride "title_icon" {

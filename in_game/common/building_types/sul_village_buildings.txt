@@ -2,27 +2,41 @@
 # VILLAGE BUILDING MODIFICATIONS
 # ============================================
 # Makes village buildings effectively free by granting +1 max building level per level
+# Also applies Food/Agricultural externality modifiers to support food production
 
 INJECT:fishing_village = {
 	modifier = {
 		free_building_levels = 1
+		# Externality: Infrastructure + Food (low impact)
+		local_monthly_food_modifier = 0.075
+		local_raw_material_output = 0.005
 	}
 }
 
 INJECT:farming_village = {
 	modifier = {
 		free_building_levels = 1
+		# Externality: Food/Agricultural (village)
+		local_monthly_food_modifier = 0.10
+		local_raw_material_output = -0.005
+		local_production_efficiency = -0.005
 	}
 }
 
 INJECT:forest_village = {
 	modifier = {
 		free_building_levels = 1
+		# Note: forest_village externalities defined in sul_woodland.txt via REPLACE
 	}
 }
 
 INJECT:irrigation_systems = {
 	modifier = {
 		free_building_levels = 1
+		# Externality: Food/Agricultural (irrigation)
+		local_monthly_food_modifier = 0.10
+		local_raw_material_output = 0.005
+		local_max_rgo_size_modifier = -0.005
+		local_production_efficiency = -0.005
 	}
 }

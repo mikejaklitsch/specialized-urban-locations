@@ -1,0 +1,630 @@
+# =============================================================================
+# BUILDING EXTERNALITY CALCULATIONS (On-Demand)
+# =============================================================================
+# Calculates building-only contributions to externality modifiers.
+# Used by GUI tooltips to show building-specific modifier sums.
+# Evaluated on-demand when script value is referenced.
+# =============================================================================
+
+# =============================================================================
+# BASELINE COMPONENTS (for tooltip breakdown)
+# =============================================================================
+# These show just the baseline penalty from building_levels static modifier
+
+sul_total_building_levels = {
+	value = total_building_levels
+}
+
+# Effective building levels = sum of building levels weighted by employment ratio
+# Formula: (employed_workers / max_workers) * building_level for each building
+sul_effective_building_levels = {
+	every_buildings_in_location = {
+		add = {
+			value = building_employed_amount
+			multiply = building_level
+			divide = building_employment_size_amount
+		}
+	}
+}
+
+# Per-level rates (for GUI display)
+sul_food_per_level = -0.02
+sul_raw_per_level = -0.005
+sul_rgo_per_level = -0.005
+# sul_efficiency_per_level = -0.005  # REMOVED: Now uses goods-specific penalties
+
+sul_building_baseline_food = {
+	value = sul_effective_building_levels
+	multiply = -0.02
+}
+
+sul_building_baseline_raw = {
+	value = sul_effective_building_levels
+	multiply = -0.005
+}
+
+sul_building_baseline_rgo = {
+	value = sul_effective_building_levels
+	multiply = -0.005
+}
+
+# =============================================================================
+# GOODS-SPECIFIC OUTPUT PENALTIES (for tooltip breakdown)
+# =============================================================================
+# Each finished good gets -0.005 per effective building level
+# Categorized by specialization type
+
+sul_goods_penalty_per_level = -0.005
+
+# Commercial goods
+sul_baseline_cloth = { value = sul_effective_building_levels multiply = -0.005 }
+sul_baseline_fine_cloth = { value = sul_effective_building_levels multiply = -0.005 }
+sul_baseline_books = { value = sul_effective_building_levels multiply = -0.005 }
+sul_baseline_naval_supplies = { value = sul_effective_building_levels multiply = -0.005 }
+
+# Mining goods
+sul_baseline_tools = { value = sul_effective_building_levels multiply = -0.005 }
+sul_baseline_weaponry = { value = sul_effective_building_levels multiply = -0.005 }
+sul_baseline_cannons = { value = sul_effective_building_levels multiply = -0.005 }
+sul_baseline_firearms = { value = sul_effective_building_levels multiply = -0.005 }
+sul_baseline_steel = { value = sul_effective_building_levels multiply = -0.005 }
+sul_baseline_jewelry = { value = sul_effective_building_levels multiply = -0.005 }
+
+# Farming goods
+sul_baseline_wine = { value = sul_effective_building_levels multiply = -0.005 }
+sul_baseline_beer = { value = sul_effective_building_levels multiply = -0.005 }
+sul_baseline_liquor = { value = sul_effective_building_levels multiply = -0.005 }
+
+# Woodland goods
+sul_baseline_paper = { value = sul_effective_building_levels multiply = -0.005 }
+sul_baseline_furniture = { value = sul_effective_building_levels multiply = -0.005 }
+
+# Gathering goods
+sul_baseline_glass = { value = sul_effective_building_levels multiply = -0.005 }
+sul_baseline_pottery = { value = sul_effective_building_levels multiply = -0.005 }
+sul_baseline_porcelain = { value = sul_effective_building_levels multiply = -0.005 }
+sul_baseline_lacquerware = { value = sul_effective_building_levels multiply = -0.005 }
+
+# =============================================================================
+# INDIVIDUAL BUILDING CONTRIBUTIONS - FOOD MODIFIER
+# =============================================================================
+# Each building's contribution to local_monthly_food_modifier
+# Only farming specialized buildings offset baseline penalty (net neutral)
+# Uses effective building levels (employment-weighted) to match game calculations
+
+# Farming buildings with +0.05 food
+sul_food_fruit_orchard = { every_buildings_in_location = { limit = { building_type = building_type:fruit_orchard } add = { value = building_employed_amount multiply = building_level divide = building_employment_size_amount multiply = 0.05 } } }
+sul_food_fiber_crops_farm = { every_buildings_in_location = { limit = { building_type = building_type:fiber_crops_farm } add = { value = building_employed_amount multiply = building_level divide = building_employment_size_amount multiply = 0.05 } } }
+sul_food_sheep_farms = { every_buildings_in_location = { limit = { building_type = building_type:sheep_farms } add = { value = building_employed_amount multiply = building_level divide = building_employment_size_amount multiply = 0.05 } } }
+
+# Force Multipliers with +0.10 food
+sul_food_irrigation_systems = { every_buildings_in_location = { limit = { building_type = building_type:irrigation_systems } add = { value = building_employed_amount multiply = building_level divide = building_employment_size_amount multiply = 0.10 } } }
+sul_food_fishing_village = { every_buildings_in_location = { limit = { building_type = building_type:fishing_village } add = { value = building_employed_amount multiply = building_level divide = building_employment_size_amount multiply = 0.10 } } }
+sul_food_farming_village = { every_buildings_in_location = { limit = { building_type = building_type:farming_village } add = { value = building_employed_amount multiply = building_level divide = building_employment_size_amount multiply = 0.10 } } }
+
+# Food-adjacent buildings with +0.02 food (net neutral with baseline)
+sul_food_windmill = { every_buildings_in_location = { limit = { building_type = building_type:windmill } add = { value = building_employed_amount multiply = building_level divide = building_employment_size_amount multiply = 0.02 } } }
+sul_food_granary = { every_buildings_in_location = { limit = { building_type = building_type:granary } add = { value = building_employed_amount multiply = building_level divide = building_employment_size_amount multiply = 0.02 } } }
+sul_food_elephant_hunting_grounds = { every_buildings_in_location = { limit = { building_type = building_type:elephant_hunting_grounds } add = { value = building_employed_amount multiply = building_level divide = building_employment_size_amount multiply = 0.02 } } }
+sul_food_tannery = { every_buildings_in_location = { limit = { building_type = building_type:tannery } add = { value = building_employed_amount multiply = building_level divide = building_employment_size_amount multiply = 0.02 } } }
+sul_food_tanning_workshop = { every_buildings_in_location = { limit = { building_type = building_type:tanning_workshop } add = { value = building_employed_amount multiply = building_level divide = building_employment_size_amount multiply = 0.02 } } }
+sul_food_tannery_manufactory = { every_buildings_in_location = { limit = { building_type = building_type:tannery_manufactory } add = { value = building_employed_amount multiply = building_level divide = building_employment_size_amount multiply = 0.02 } } }
+sul_food_tannery_mill = { every_buildings_in_location = { limit = { building_type = building_type:tannery_mill } add = { value = building_employed_amount multiply = building_level divide = building_employment_size_amount multiply = 0.02 } } }
+sul_food_brewery = { every_buildings_in_location = { limit = { building_type = building_type:brewery } add = { value = building_employed_amount multiply = building_level divide = building_employment_size_amount multiply = 0.02 } } }
+sul_food_beer_workshop = { every_buildings_in_location = { limit = { building_type = building_type:beer_workshop } add = { value = building_employed_amount multiply = building_level divide = building_employment_size_amount multiply = 0.02 } } }
+sul_food_brewery_manufactory = { every_buildings_in_location = { limit = { building_type = building_type:brewery_manufactory } add = { value = building_employed_amount multiply = building_level divide = building_employment_size_amount multiply = 0.02 } } }
+sul_food_brewery_mill = { every_buildings_in_location = { limit = { building_type = building_type:brewery_mill } add = { value = building_employed_amount multiply = building_level divide = building_employment_size_amount multiply = 0.02 } } }
+sul_food_distillers_guild = { every_buildings_in_location = { limit = { building_type = building_type:distillers_guild } add = { value = building_employed_amount multiply = building_level divide = building_employment_size_amount multiply = 0.02 } } }
+sul_food_distillers_workshop = { every_buildings_in_location = { limit = { building_type = building_type:distillers_workshop } add = { value = building_employed_amount multiply = building_level divide = building_employment_size_amount multiply = 0.02 } } }
+sul_food_distiller_manufactory = { every_buildings_in_location = { limit = { building_type = building_type:distiller_manufactory } add = { value = building_employed_amount multiply = building_level divide = building_employment_size_amount multiply = 0.02 } } }
+sul_food_distiller_mill = { every_buildings_in_location = { limit = { building_type = building_type:distiller_mill } add = { value = building_employed_amount multiply = building_level divide = building_employment_size_amount multiply = 0.02 } } }
+sul_food_winery = { every_buildings_in_location = { limit = { building_type = building_type:winery } add = { value = building_employed_amount multiply = building_level divide = building_employment_size_amount multiply = 0.02 } } }
+sul_food_winery_manufactory = { every_buildings_in_location = { limit = { building_type = building_type:winery_manufactory } add = { value = building_employed_amount multiply = building_level divide = building_employment_size_amount multiply = 0.02 } } }
+
+# =============================================================================
+# INDIVIDUAL BUILDING CONTRIBUTIONS - RAW MATERIAL OUTPUT
+# =============================================================================
+# Each building's contribution to local_raw_material_output
+# Uses effective building levels (employment-weighted) to match game calculations
+
+# Food/Agricultural buildings with +0.01 raw
+sul_raw_fruit_orchard = { every_buildings_in_location = { limit = { building_type = building_type:fruit_orchard } add = { value = building_employed_amount multiply = building_level divide = building_employment_size_amount multiply = 0.01 } } }
+sul_raw_fiber_crops_farm = { every_buildings_in_location = { limit = { building_type = building_type:fiber_crops_farm } add = { value = building_employed_amount multiply = building_level divide = building_employment_size_amount multiply = 0.01 } } }
+sul_raw_horse_breeders = { every_buildings_in_location = { limit = { building_type = building_type:horse_breeders } add = { value = building_employed_amount multiply = building_level divide = building_employment_size_amount multiply = 0.01 } } }
+sul_raw_windmill = { every_buildings_in_location = { limit = { building_type = building_type:windmill } add = { value = building_employed_amount multiply = building_level divide = building_employment_size_amount multiply = 0.01 } } }
+sul_raw_irrigation_systems = { every_buildings_in_location = { limit = { building_type = building_type:irrigation_systems } add = { value = building_employed_amount multiply = building_level divide = building_employment_size_amount multiply = 0.01 } } }
+sul_raw_fishing_village = { every_buildings_in_location = { limit = { building_type = building_type:fishing_village } add = { value = building_employed_amount multiply = building_level divide = building_employment_size_amount multiply = 0.01 } } }
+sul_raw_farming_village = { every_buildings_in_location = { limit = { building_type = building_type:farming_village } add = { value = building_employed_amount multiply = building_level divide = building_employment_size_amount multiply = 0.01 } } }
+
+# Raw Extraction buildings with +0.02 raw
+sul_raw_sugar_plantation = { every_buildings_in_location = { limit = { building_type = building_type:sugar_plantation } add = { value = building_employed_amount multiply = building_level divide = building_employment_size_amount multiply = 0.02 } } }
+sul_raw_cotton_plantation = { every_buildings_in_location = { limit = { building_type = building_type:cotton_plantation } add = { value = building_employed_amount multiply = building_level divide = building_employment_size_amount multiply = 0.02 } } }
+sul_raw_tobacco_plantation = { every_buildings_in_location = { limit = { building_type = building_type:tobacco_plantation } add = { value = building_employed_amount multiply = building_level divide = building_employment_size_amount multiply = 0.02 } } }
+sul_raw_stone_quarry = { every_buildings_in_location = { limit = { building_type = building_type:stone_quarry } add = { value = building_employed_amount multiply = building_level divide = building_employment_size_amount multiply = 0.02 } } }
+sul_raw_bog_iron_smelter = { every_buildings_in_location = { limit = { building_type = building_type:bog_iron_smelter } add = { value = building_employed_amount multiply = building_level divide = building_employment_size_amount multiply = 0.02 } } }
+sul_raw_local_smelters = { every_buildings_in_location = { limit = { building_type = building_type:local_smelters } add = { value = building_employed_amount multiply = building_level divide = building_employment_size_amount multiply = 0.02 } } }
+sul_raw_clay_pit = { every_buildings_in_location = { limit = { building_type = building_type:clay_pit } add = { value = building_employed_amount multiply = building_level divide = building_employment_size_amount multiply = 0.02 } } }
+sul_raw_salt_collector = { every_buildings_in_location = { limit = { building_type = building_type:salt_collector } add = { value = building_employed_amount multiply = building_level divide = building_employment_size_amount multiply = 0.02 } } }
+sul_raw_sand_pit = { every_buildings_in_location = { limit = { building_type = building_type:sand_pit } add = { value = building_employed_amount multiply = building_level divide = building_employment_size_amount multiply = 0.02 } } }
+sul_raw_sheep_farms = { every_buildings_in_location = { limit = { building_type = building_type:sheep_farms } add = { value = building_employed_amount multiply = building_level divide = building_employment_size_amount multiply = 0.02 } } }
+sul_raw_lumber_mill = { every_buildings_in_location = { limit = { building_type = building_type:lumber_mill } add = { value = building_employed_amount multiply = building_level divide = building_employment_size_amount multiply = 0.02 } } }
+sul_raw_elephant_hunting_grounds = { every_buildings_in_location = { limit = { building_type = building_type:elephant_hunting_grounds } add = { value = building_employed_amount multiply = building_level divide = building_employment_size_amount multiply = 0.02 } } }
+sul_raw_sawmill = { every_buildings_in_location = { limit = { building_type = building_type:sawmill } add = { value = building_employed_amount multiply = building_level divide = building_employment_size_amount multiply = 0.02 } } }
+sul_raw_forest_village = { every_buildings_in_location = { limit = { building_type = building_type:forest_village } add = { value = building_employed_amount multiply = building_level divide = building_employment_size_amount multiply = 0.02 } } }
+
+# Infrastructure buildings with +0.005 raw
+sul_raw_granary = { every_buildings_in_location = { limit = { building_type = building_type:granary } add = { value = building_employed_amount multiply = building_level divide = building_employment_size_amount multiply = 0.005 } } }
+sul_raw_mason = { every_buildings_in_location = { limit = { building_type = building_type:mason } add = { value = building_employed_amount multiply = building_level divide = building_employment_size_amount multiply = 0.005 } } }
+
+# =============================================================================
+# INDIVIDUAL BUILDING CONTRIBUTIONS - RGO SIZE
+# =============================================================================
+# Each building's contribution to local_max_rgo_size_modifier
+# Uses effective building levels (employment-weighted) to match game calculations
+
+# Villages with +0.01 rgo (force multipliers)
+sul_rgo_fishing_village = { every_buildings_in_location = { limit = { building_type = building_type:fishing_village } add = { value = building_employed_amount multiply = building_level divide = building_employment_size_amount multiply = 0.01 } } }
+sul_rgo_farming_village = { every_buildings_in_location = { limit = { building_type = building_type:farming_village } add = { value = building_employed_amount multiply = building_level divide = building_employment_size_amount multiply = 0.01 } } }
+sul_rgo_forest_village = { every_buildings_in_location = { limit = { building_type = building_type:forest_village } add = { value = building_employed_amount multiply = building_level divide = building_employment_size_amount multiply = 0.01 } } }
+
+# Tools/Iron processing with +0.01 rgo
+sul_rgo_tools_guild = { every_buildings_in_location = { limit = { building_type = building_type:tools_guild } add = { value = building_employed_amount multiply = building_level divide = building_employment_size_amount multiply = 0.01 } } }
+sul_rgo_tools_workshop = { every_buildings_in_location = { limit = { building_type = building_type:tools_workshop } add = { value = building_employed_amount multiply = building_level divide = building_employment_size_amount multiply = 0.01 } } }
+sul_rgo_iron_foundry = { every_buildings_in_location = { limit = { building_type = building_type:iron_foundry } add = { value = building_employed_amount multiply = building_level divide = building_employment_size_amount multiply = 0.01 } } }
+sul_rgo_iron_mill = { every_buildings_in_location = { limit = { building_type = building_type:iron_mill } add = { value = building_employed_amount multiply = building_level divide = building_employment_size_amount multiply = 0.01 } } }
+
+# RGO/Agricultural buildings with +0.005 rgo
+sul_rgo_fruit_orchard = { every_buildings_in_location = { limit = { building_type = building_type:fruit_orchard } add = { value = building_employed_amount multiply = building_level divide = building_employment_size_amount multiply = 0.005 } } }
+sul_rgo_fiber_crops_farm = { every_buildings_in_location = { limit = { building_type = building_type:fiber_crops_farm } add = { value = building_employed_amount multiply = building_level divide = building_employment_size_amount multiply = 0.005 } } }
+sul_rgo_horse_breeders = { every_buildings_in_location = { limit = { building_type = building_type:horse_breeders } add = { value = building_employed_amount multiply = building_level divide = building_employment_size_amount multiply = 0.005 } } }
+sul_rgo_windmill = { every_buildings_in_location = { limit = { building_type = building_type:windmill } add = { value = building_employed_amount multiply = building_level divide = building_employment_size_amount multiply = 0.005 } } }
+sul_rgo_sugar_plantation = { every_buildings_in_location = { limit = { building_type = building_type:sugar_plantation } add = { value = building_employed_amount multiply = building_level divide = building_employment_size_amount multiply = 0.005 } } }
+sul_rgo_cotton_plantation = { every_buildings_in_location = { limit = { building_type = building_type:cotton_plantation } add = { value = building_employed_amount multiply = building_level divide = building_employment_size_amount multiply = 0.005 } } }
+sul_rgo_tobacco_plantation = { every_buildings_in_location = { limit = { building_type = building_type:tobacco_plantation } add = { value = building_employed_amount multiply = building_level divide = building_employment_size_amount multiply = 0.005 } } }
+sul_rgo_irrigation_systems = { every_buildings_in_location = { limit = { building_type = building_type:irrigation_systems } add = { value = building_employed_amount multiply = building_level divide = building_employment_size_amount multiply = 0.005 } } }
+sul_rgo_stone_quarry = { every_buildings_in_location = { limit = { building_type = building_type:stone_quarry } add = { value = building_employed_amount multiply = building_level divide = building_employment_size_amount multiply = 0.005 } } }
+sul_rgo_bog_iron_smelter = { every_buildings_in_location = { limit = { building_type = building_type:bog_iron_smelter } add = { value = building_employed_amount multiply = building_level divide = building_employment_size_amount multiply = 0.005 } } }
+sul_rgo_local_smelters = { every_buildings_in_location = { limit = { building_type = building_type:local_smelters } add = { value = building_employed_amount multiply = building_level divide = building_employment_size_amount multiply = 0.005 } } }
+sul_rgo_clay_pit = { every_buildings_in_location = { limit = { building_type = building_type:clay_pit } add = { value = building_employed_amount multiply = building_level divide = building_employment_size_amount multiply = 0.005 } } }
+sul_rgo_salt_collector = { every_buildings_in_location = { limit = { building_type = building_type:salt_collector } add = { value = building_employed_amount multiply = building_level divide = building_employment_size_amount multiply = 0.005 } } }
+sul_rgo_sand_pit = { every_buildings_in_location = { limit = { building_type = building_type:sand_pit } add = { value = building_employed_amount multiply = building_level divide = building_employment_size_amount multiply = 0.005 } } }
+sul_rgo_sheep_farms = { every_buildings_in_location = { limit = { building_type = building_type:sheep_farms } add = { value = building_employed_amount multiply = building_level divide = building_employment_size_amount multiply = 0.005 } } }
+sul_rgo_lumber_mill = { every_buildings_in_location = { limit = { building_type = building_type:lumber_mill } add = { value = building_employed_amount multiply = building_level divide = building_employment_size_amount multiply = 0.005 } } }
+sul_rgo_elephant_hunting_grounds = { every_buildings_in_location = { limit = { building_type = building_type:elephant_hunting_grounds } add = { value = building_employed_amount multiply = building_level divide = building_employment_size_amount multiply = 0.005 } } }
+sul_rgo_sawmill = { every_buildings_in_location = { limit = { building_type = building_type:sawmill } add = { value = building_employed_amount multiply = building_level divide = building_employment_size_amount multiply = 0.005 } } }
+sul_rgo_granary = { every_buildings_in_location = { limit = { building_type = building_type:granary } add = { value = building_employed_amount multiply = building_level divide = building_employment_size_amount multiply = 0.005 } } }
+sul_rgo_mason = { every_buildings_in_location = { limit = { building_type = building_type:mason } add = { value = building_employed_amount multiply = building_level divide = building_employment_size_amount multiply = 0.005 } } }
+
+# =============================================================================
+# INDIVIDUAL BUILDING CONTRIBUTIONS - PRODUCTION EFFICIENCY
+# =============================================================================
+# Selected common buildings that contribute to local_production_efficiency
+# Uses effective building levels (employment-weighted) to match game calculations
+
+sul_eff_cloth_guild = { every_buildings_in_location = { limit = { building_type = building_type:cloth_guild } add = { value = building_employed_amount multiply = building_level divide = building_employment_size_amount multiply = 0.01 } } }
+sul_eff_cloth_workshop = { every_buildings_in_location = { limit = { building_type = building_type:cloth_workshop } add = { value = building_employed_amount multiply = building_level divide = building_employment_size_amount multiply = 0.01 } } }
+sul_eff_cloth_manufactory = { every_buildings_in_location = { limit = { building_type = building_type:cloth_manufactory } add = { value = building_employed_amount multiply = building_level divide = building_employment_size_amount multiply = 0.01 } } }
+sul_eff_textile_mill = { every_buildings_in_location = { limit = { building_type = building_type:textile_mill } add = { value = building_employed_amount multiply = building_level divide = building_employment_size_amount multiply = 0.01 } } }
+sul_eff_brewery = { every_buildings_in_location = { limit = { building_type = building_type:brewery } add = { value = building_employed_amount multiply = building_level divide = building_employment_size_amount multiply = 0.01 } } }
+sul_eff_beer_workshop = { every_buildings_in_location = { limit = { building_type = building_type:beer_workshop } add = { value = building_employed_amount multiply = building_level divide = building_employment_size_amount multiply = 0.01 } } }
+sul_eff_brewery_manufactory = { every_buildings_in_location = { limit = { building_type = building_type:brewery_manufactory } add = { value = building_employed_amount multiply = building_level divide = building_employment_size_amount multiply = 0.01 } } }
+sul_eff_brewery_mill = { every_buildings_in_location = { limit = { building_type = building_type:brewery_mill } add = { value = building_employed_amount multiply = building_level divide = building_employment_size_amount multiply = 0.01 } } }
+sul_eff_winery = { every_buildings_in_location = { limit = { building_type = building_type:winery } add = { value = building_employed_amount multiply = building_level divide = building_employment_size_amount multiply = 0.01 } } }
+sul_eff_winery_manufactory = { every_buildings_in_location = { limit = { building_type = building_type:winery_manufactory } add = { value = building_employed_amount multiply = building_level divide = building_employment_size_amount multiply = 0.01 } } }
+sul_eff_tannery = { every_buildings_in_location = { limit = { building_type = building_type:tannery } add = { value = building_employed_amount multiply = building_level divide = building_employment_size_amount multiply = 0.01 } } }
+sul_eff_tanning_workshop = { every_buildings_in_location = { limit = { building_type = building_type:tanning_workshop } add = { value = building_employed_amount multiply = building_level divide = building_employment_size_amount multiply = 0.01 } } }
+sul_eff_tannery_manufactory = { every_buildings_in_location = { limit = { building_type = building_type:tannery_manufactory } add = { value = building_employed_amount multiply = building_level divide = building_employment_size_amount multiply = 0.01 } } }
+sul_eff_tannery_mill = { every_buildings_in_location = { limit = { building_type = building_type:tannery_mill } add = { value = building_employed_amount multiply = building_level divide = building_employment_size_amount multiply = 0.01 } } }
+sul_eff_tools_guild = { every_buildings_in_location = { limit = { building_type = building_type:tools_guild } add = { value = building_employed_amount multiply = building_level divide = building_employment_size_amount multiply = 0.01 } } }
+sul_eff_tools_workshop = { every_buildings_in_location = { limit = { building_type = building_type:tools_workshop } add = { value = building_employed_amount multiply = building_level divide = building_employment_size_amount multiply = 0.01 } } }
+sul_eff_iron_foundry = { every_buildings_in_location = { limit = { building_type = building_type:iron_foundry } add = { value = building_employed_amount multiply = building_level divide = building_employment_size_amount multiply = 0.01 } } }
+sul_eff_iron_mill = { every_buildings_in_location = { limit = { building_type = building_type:iron_mill } add = { value = building_employed_amount multiply = building_level divide = building_employment_size_amount multiply = 0.01 } } }
+sul_eff_weapon_guild = { every_buildings_in_location = { limit = { building_type = building_type:weapon_guild } add = { value = building_employed_amount multiply = building_level divide = building_employment_size_amount multiply = 0.01 } } }
+sul_eff_weapon_workshop = { every_buildings_in_location = { limit = { building_type = building_type:weapon_workshop } add = { value = building_employed_amount multiply = building_level divide = building_employment_size_amount multiply = 0.01 } } }
+sul_eff_weapon_manufactory = { every_buildings_in_location = { limit = { building_type = building_type:weapon_manufactory } add = { value = building_employed_amount multiply = building_level divide = building_employment_size_amount multiply = 0.01 } } }
+sul_eff_weapon_factory = { every_buildings_in_location = { limit = { building_type = building_type:weapon_factory } add = { value = building_employed_amount multiply = building_level divide = building_employment_size_amount multiply = 0.01 } } }
+sul_eff_glass_guild = { every_buildings_in_location = { limit = { building_type = building_type:glass_guild } add = { value = building_employed_amount multiply = building_level divide = building_employment_size_amount multiply = 0.01 } } }
+sul_eff_glass_workshop = { every_buildings_in_location = { limit = { building_type = building_type:glass_workshop } add = { value = building_employed_amount multiply = building_level divide = building_employment_size_amount multiply = 0.01 } } }
+sul_eff_glassworks = { every_buildings_in_location = { limit = { building_type = building_type:glassworks } add = { value = building_employed_amount multiply = building_level divide = building_employment_size_amount multiply = 0.01 } } }
+sul_eff_glass_mill = { every_buildings_in_location = { limit = { building_type = building_type:glass_mill } add = { value = building_employed_amount multiply = building_level divide = building_employment_size_amount multiply = 0.01 } } }
+sul_eff_pottery_guild = { every_buildings_in_location = { limit = { building_type = building_type:pottery_guild } add = { value = building_employed_amount multiply = building_level divide = building_employment_size_amount multiply = 0.01 } } }
+sul_eff_pottery_workshop = { every_buildings_in_location = { limit = { building_type = building_type:pottery_workshop } add = { value = building_employed_amount multiply = building_level divide = building_employment_size_amount multiply = 0.01 } } }
+sul_eff_pottery_manufactory = { every_buildings_in_location = { limit = { building_type = building_type:pottery_manufactory } add = { value = building_employed_amount multiply = building_level divide = building_employment_size_amount multiply = 0.01 } } }
+sul_eff_pottery_mill = { every_buildings_in_location = { limit = { building_type = building_type:pottery_mill } add = { value = building_employed_amount multiply = building_level divide = building_employment_size_amount multiply = 0.01 } } }
+# Advanced processing (+0.015)
+sul_eff_paper_guild = { every_buildings_in_location = { limit = { building_type = building_type:paper_guild } add = { value = building_employed_amount multiply = building_level divide = building_employment_size_amount multiply = 0.015 } } }
+sul_eff_paper_workshop = { every_buildings_in_location = { limit = { building_type = building_type:paper_workshop } add = { value = building_employed_amount multiply = building_level divide = building_employment_size_amount multiply = 0.015 } } }
+sul_eff_paper_manufactory = { every_buildings_in_location = { limit = { building_type = building_type:paper_manufactory } add = { value = building_employed_amount multiply = building_level divide = building_employment_size_amount multiply = 0.015 } } }
+sul_eff_paper_mill = { every_buildings_in_location = { limit = { building_type = building_type:paper_mill } add = { value = building_employed_amount multiply = building_level divide = building_employment_size_amount multiply = 0.015 } } }
+sul_eff_glass_guild = { every_buildings_in_location = { limit = { building_type = building_type:glass_guild } add = { value = building_employed_amount multiply = building_level divide = building_employment_size_amount multiply = 0.015 } } }
+sul_eff_glass_workshop = { every_buildings_in_location = { limit = { building_type = building_type:glass_workshop } add = { value = building_employed_amount multiply = building_level divide = building_employment_size_amount multiply = 0.015 } } }
+sul_eff_glassworks = { every_buildings_in_location = { limit = { building_type = building_type:glassworks } add = { value = building_employed_amount multiply = building_level divide = building_employment_size_amount multiply = 0.015 } } }
+sul_eff_glass_mill = { every_buildings_in_location = { limit = { building_type = building_type:glass_mill } add = { value = building_employed_amount multiply = building_level divide = building_employment_size_amount multiply = 0.015 } } }
+sul_eff_distillers_guild = { every_buildings_in_location = { limit = { building_type = building_type:distillers_guild } add = { value = building_employed_amount multiply = building_level divide = building_employment_size_amount multiply = 0.015 } } }
+sul_eff_distillers_workshop = { every_buildings_in_location = { limit = { building_type = building_type:distillers_workshop } add = { value = building_employed_amount multiply = building_level divide = building_employment_size_amount multiply = 0.015 } } }
+sul_eff_distiller_manufactory = { every_buildings_in_location = { limit = { building_type = building_type:distiller_manufactory } add = { value = building_employed_amount multiply = building_level divide = building_employment_size_amount multiply = 0.015 } } }
+sul_eff_distiller_mill = { every_buildings_in_location = { limit = { building_type = building_type:distiller_mill } add = { value = building_employed_amount multiply = building_level divide = building_employment_size_amount multiply = 0.015 } } }
+sul_eff_cannon_maker = { every_buildings_in_location = { limit = { building_type = building_type:cannon_maker } add = { value = building_employed_amount multiply = building_level divide = building_employment_size_amount multiply = 0.015 } } }
+sul_eff_cannon_workshop = { every_buildings_in_location = { limit = { building_type = building_type:cannon_workshop } add = { value = building_employed_amount multiply = building_level divide = building_employment_size_amount multiply = 0.015 } } }
+sul_eff_cannon_foundry = { every_buildings_in_location = { limit = { building_type = building_type:cannon_foundry } add = { value = building_employed_amount multiply = building_level divide = building_employment_size_amount multiply = 0.015 } } }
+sul_eff_cannons_factory = { every_buildings_in_location = { limit = { building_type = building_type:cannons_factory } add = { value = building_employed_amount multiply = building_level divide = building_employment_size_amount multiply = 0.015 } } }
+sul_eff_hand_cannon_guild = { every_buildings_in_location = { limit = { building_type = building_type:hand_cannon_guild } add = { value = building_employed_amount multiply = building_level divide = building_employment_size_amount multiply = 0.015 } } }
+sul_eff_gun_smith = { every_buildings_in_location = { limit = { building_type = building_type:gun_smith } add = { value = building_employed_amount multiply = building_level divide = building_employment_size_amount multiply = 0.015 } } }
+sul_eff_guns_workshop = { every_buildings_in_location = { limit = { building_type = building_type:guns_workshop } add = { value = building_employed_amount multiply = building_level divide = building_employment_size_amount multiply = 0.015 } } }
+sul_eff_firearms_manufactory = { every_buildings_in_location = { limit = { building_type = building_type:firearms_manufactory } add = { value = building_employed_amount multiply = building_level divide = building_employment_size_amount multiply = 0.015 } } }
+sul_eff_firearms_factory = { every_buildings_in_location = { limit = { building_type = building_type:firearms_factory } add = { value = building_employed_amount multiply = building_level divide = building_employment_size_amount multiply = 0.015 } } }
+sul_eff_furniture_guild = { every_buildings_in_location = { limit = { building_type = building_type:furniture_guild } add = { value = building_employed_amount multiply = building_level divide = building_employment_size_amount multiply = 0.015 } } }
+sul_eff_furniture_workshop = { every_buildings_in_location = { limit = { building_type = building_type:furniture_workshop } add = { value = building_employed_amount multiply = building_level divide = building_employment_size_amount multiply = 0.015 } } }
+sul_eff_furniture_manufactory = { every_buildings_in_location = { limit = { building_type = building_type:furniture_manufactory } add = { value = building_employed_amount multiply = building_level divide = building_employment_size_amount multiply = 0.015 } } }
+sul_eff_furniture_mill = { every_buildings_in_location = { limit = { building_type = building_type:furniture_mill } add = { value = building_employed_amount multiply = building_level divide = building_employment_size_amount multiply = 0.015 } } }
+sul_eff_jewelry_guild = { every_buildings_in_location = { limit = { building_type = building_type:jewelry_guild } add = { value = building_employed_amount multiply = building_level divide = building_employment_size_amount multiply = 0.015 } } }
+sul_eff_porcelain_guild = { every_buildings_in_location = { limit = { building_type = building_type:porcelain_guild } add = { value = building_employed_amount multiply = building_level divide = building_employment_size_amount multiply = 0.015 } } }
+sul_eff_porcelain_manufactory = { every_buildings_in_location = { limit = { building_type = building_type:porcelain_manufactory } add = { value = building_employed_amount multiply = building_level divide = building_employment_size_amount multiply = 0.015 } } }
+sul_eff_lacquerware_guild = { every_buildings_in_location = { limit = { building_type = building_type:lacquerware_guild } add = { value = building_employed_amount multiply = building_level divide = building_employment_size_amount multiply = 0.015 } } }
+sul_eff_lacquerware_manufactory = { every_buildings_in_location = { limit = { building_type = building_type:lacquerware_manufactory } add = { value = building_employed_amount multiply = building_level divide = building_employment_size_amount multiply = 0.015 } } }
+sul_eff_scriptorium = { every_buildings_in_location = { limit = { building_type = building_type:scriptorium } add = { value = building_employed_amount multiply = building_level divide = building_employment_size_amount multiply = 0.015 } } }
+sul_eff_printing_press_shop = { every_buildings_in_location = { limit = { building_type = building_type:printing_press_shop } add = { value = building_employed_amount multiply = building_level divide = building_employment_size_amount multiply = 0.015 } } }
+sul_eff_printing_manufactory = { every_buildings_in_location = { limit = { building_type = building_type:printing_manufactory } add = { value = building_employed_amount multiply = building_level divide = building_employment_size_amount multiply = 0.015 } } }
+sul_eff_printing_mill = { every_buildings_in_location = { limit = { building_type = building_type:printing_mill } add = { value = building_employed_amount multiply = building_level divide = building_employment_size_amount multiply = 0.015 } } }
+sul_eff_perfumery = { every_buildings_in_location = { limit = { building_type = building_type:perfumery } add = { value = building_employed_amount multiply = building_level divide = building_employment_size_amount multiply = 0.015 } } }
+
+# Intermediate processing (+0.01)
+sul_eff_granary = { every_buildings_in_location = { limit = { building_type = building_type:granary } add = { value = building_employed_amount multiply = building_level divide = building_employment_size_amount multiply = 0.005 } } }
+sul_eff_market_village = { every_buildings_in_location = { limit = { building_type = building_type:market_village } add = { value = building_employed_amount multiply = building_level divide = building_employment_size_amount multiply = 0.005 } } }
+sul_eff_mason = { every_buildings_in_location = { limit = { building_type = building_type:mason } add = { value = building_employed_amount multiply = building_level divide = building_employment_size_amount multiply = 0.01 } } }
+sul_eff_rural_clothmaker = { every_buildings_in_location = { limit = { building_type = building_type:rural_clothmaker } add = { value = building_employed_amount multiply = building_level divide = building_employment_size_amount multiply = 0.01 } } }
+sul_eff_local_smelters = { every_buildings_in_location = { limit = { building_type = building_type:local_smelters } add = { value = building_employed_amount multiply = building_level divide = building_employment_size_amount multiply = 0.01 } } }
+sul_eff_charcoal_maker = { every_buildings_in_location = { limit = { building_type = building_type:charcoal_maker } add = { value = building_employed_amount multiply = building_level divide = building_employment_size_amount multiply = 0.01 } } }
+sul_eff_improved_charcoal_maker = { every_buildings_in_location = { limit = { building_type = building_type:improved_charcoal_maker } add = { value = building_employed_amount multiply = building_level divide = building_employment_size_amount multiply = 0.01 } } }
+sul_eff_fine_cloth_guild = { every_buildings_in_location = { limit = { building_type = building_type:fine_cloth_guild } add = { value = building_employed_amount multiply = building_level divide = building_employment_size_amount multiply = 0.01 } } }
+sul_eff_fine_cloth_workshop = { every_buildings_in_location = { limit = { building_type = building_type:fine_cloth_workshop } add = { value = building_employed_amount multiply = building_level divide = building_employment_size_amount multiply = 0.01 } } }
+sul_eff_fine_cloth_manufactory = { every_buildings_in_location = { limit = { building_type = building_type:fine_cloth_manufactory } add = { value = building_employed_amount multiply = building_level divide = building_employment_size_amount multiply = 0.01 } } }
+sul_eff_fine_cloth_mill = { every_buildings_in_location = { limit = { building_type = building_type:fine_cloth_mill } add = { value = building_employed_amount multiply = building_level divide = building_employment_size_amount multiply = 0.01 } } }
+sul_eff_naval_supplies_guild = { every_buildings_in_location = { limit = { building_type = building_type:naval_supplies_guild } add = { value = building_employed_amount multiply = building_level divide = building_employment_size_amount multiply = 0.01 } } }
+sul_eff_naval_supplies_workshop = { every_buildings_in_location = { limit = { building_type = building_type:naval_supplies_workshop } add = { value = building_employed_amount multiply = building_level divide = building_employment_size_amount multiply = 0.01 } } }
+sul_eff_naval_supplies_manufactory = { every_buildings_in_location = { limit = { building_type = building_type:naval_supplies_manufactory } add = { value = building_employed_amount multiply = building_level divide = building_employment_size_amount multiply = 0.01 } } }
+sul_eff_naval_supplies_mill = { every_buildings_in_location = { limit = { building_type = building_type:naval_supplies_mill } add = { value = building_employed_amount multiply = building_level divide = building_employment_size_amount multiply = 0.01 } } }
+sul_eff_dyes_guild = { every_buildings_in_location = { limit = { building_type = building_type:dyes_guild } add = { value = building_employed_amount multiply = building_level divide = building_employment_size_amount multiply = 0.01 } } }
+sul_eff_dyes_workshop = { every_buildings_in_location = { limit = { building_type = building_type:dyes_workshop } add = { value = building_employed_amount multiply = building_level divide = building_employment_size_amount multiply = 0.01 } } }
+sul_eff_dyesworks = { every_buildings_in_location = { limit = { building_type = building_type:dyesworks } add = { value = building_employed_amount multiply = building_level divide = building_employment_size_amount multiply = 0.01 } } }
+sul_eff_dyes_mill = { every_buildings_in_location = { limit = { building_type = building_type:dyes_mill } add = { value = building_employed_amount multiply = building_level divide = building_employment_size_amount multiply = 0.01 } } }
+sul_eff_tar_kiln = { every_buildings_in_location = { limit = { building_type = building_type:tar_kiln } add = { value = building_employed_amount multiply = building_level divide = building_employment_size_amount multiply = 0.01 } } }
+sul_eff_apothecary = { every_buildings_in_location = { limit = { building_type = building_type:apothecary } add = { value = building_employed_amount multiply = building_level divide = building_employment_size_amount multiply = 0.01 } } }
+sul_eff_saltpeter_guild = { every_buildings_in_location = { limit = { building_type = building_type:saltpeter_guild } add = { value = building_employed_amount multiply = building_level divide = building_employment_size_amount multiply = 0.01 } } }
+sul_eff_saltpeter_workshop = { every_buildings_in_location = { limit = { building_type = building_type:saltpeter_workshop } add = { value = building_employed_amount multiply = building_level divide = building_employment_size_amount multiply = 0.01 } } }
+sul_eff_putrefaction_works = { every_buildings_in_location = { limit = { building_type = building_type:putrefaction_works } add = { value = building_employed_amount multiply = building_level divide = building_employment_size_amount multiply = 0.01 } } }
+sul_eff_putrefaction_mill = { every_buildings_in_location = { limit = { building_type = building_type:putrefaction_mill } add = { value = building_employed_amount multiply = building_level divide = building_employment_size_amount multiply = 0.01 } } }
+sul_eff_steel_mill = { every_buildings_in_location = { limit = { building_type = building_type:steel_mill } add = { value = building_employed_amount multiply = building_level divide = building_employment_size_amount multiply = 0.01 } } }
+sul_eff_entrepot = { every_buildings_in_location = { limit = { building_type = building_type:entrepot } add = { value = building_employed_amount multiply = building_level divide = building_employment_size_amount multiply = 0.01 } } }
+sul_eff_trading_hub = { every_buildings_in_location = { limit = { building_type = building_type:trading_hub } add = { value = building_employed_amount multiply = building_level divide = building_employment_size_amount multiply = 0.01 } } }
+sul_eff_customs_house = { every_buildings_in_location = { limit = { building_type = building_type:customs_house } add = { value = building_employed_amount multiply = building_level divide = building_employment_size_amount multiply = 0.01 } } }
+sul_eff_stock_exchange = { every_buildings_in_location = { limit = { building_type = building_type:stock_exchange } add = { value = building_employed_amount multiply = building_level divide = building_employment_size_amount multiply = 0.01 } } }
+sul_eff_clearing_house = { every_buildings_in_location = { limit = { building_type = building_type:clearing_house } add = { value = building_employed_amount multiply = building_level divide = building_employment_size_amount multiply = 0.01 } } }
+sul_eff_market_warehouse = { every_buildings_in_location = { limit = { building_type = building_type:market_warehouse } add = { value = building_employed_amount multiply = building_level divide = building_employment_size_amount multiply = 0.01 } } }
+sul_eff_funduq = { every_buildings_in_location = { limit = { building_type = building_type:funduq } add = { value = building_employed_amount multiply = building_level divide = building_employment_size_amount multiply = 0.01 } } }
+sul_eff_marketplace = { every_buildings_in_location = { limit = { building_type = building_type:marketplace } add = { value = building_employed_amount multiply = building_level divide = building_employment_size_amount multiply = 0.01 } } }
+sul_eff_merchants_quarters = { every_buildings_in_location = { limit = { building_type = building_type:merchants_quarters } add = { value = building_employed_amount multiply = building_level divide = building_employment_size_amount multiply = 0.01 } } }
+sul_eff_grand_marketplace = { every_buildings_in_location = { limit = { building_type = building_type:grand_marketplace } add = { value = building_employed_amount multiply = building_level divide = building_employment_size_amount multiply = 0.01 } } }
+sul_eff_commerce_center = { every_buildings_in_location = { limit = { building_type = building_type:commerce_center } add = { value = building_employed_amount multiply = building_level divide = building_employment_size_amount multiply = 0.01 } } }
+sul_eff_port_authority = { every_buildings_in_location = { limit = { building_type = building_type:port_authority } add = { value = building_employed_amount multiply = building_level divide = building_employment_size_amount multiply = 0.01 } } }
+
+# -----------------------------------------------------------------------------
+# FOOD MODIFIER FROM BUILDINGS (location scope)
+# -----------------------------------------------------------------------------
+# Sum of local_monthly_food_modifier from all buildings at this location
+# Includes baseline from building_levels static modifier (-0.02 per level)
+# Uses effective building levels (employment-weighted) to match game calculations
+sul_building_food_modifier = {
+	# Baseline: -0.02 per effective building level (from building_levels static modifier)
+	add = { value = sul_effective_building_levels multiply = -0.02 }
+
+	# Building contributions use effective levels via iterator
+	every_buildings_in_location = {
+		# Force Multipliers (+0.10)
+		if = {
+			limit = {
+				OR = {
+					building_type = building_type:irrigation_systems
+					building_type = building_type:fishing_village
+					building_type = building_type:farming_village
+				}
+			}
+			add = { value = building_employed_amount multiply = building_level divide = building_employment_size_amount multiply = 0.10 }
+		}
+		# Farming buildings (+0.05)
+		else_if = {
+			limit = {
+				OR = {
+					building_type = building_type:fruit_orchard
+					building_type = building_type:sheep_farms
+				}
+			}
+			add = { value = building_employed_amount multiply = building_level divide = building_employment_size_amount multiply = 0.05 }
+		}
+		# Food-adjacent buildings (+0.02 = net neutral with baseline)
+		else_if = {
+			limit = {
+				OR = {
+					building_type = building_type:windmill
+					building_type = building_type:granary
+					building_type = building_type:elephant_hunting_grounds
+					building_type = building_type:tannery
+					building_type = building_type:tanning_workshop
+					building_type = building_type:tannery_manufactory
+					building_type = building_type:tannery_mill
+					building_type = building_type:brewery
+					building_type = building_type:beer_workshop
+					building_type = building_type:brewery_manufactory
+					building_type = building_type:brewery_mill
+					building_type = building_type:distillers_guild
+					building_type = building_type:distillers_workshop
+					building_type = building_type:distiller_manufactory
+					building_type = building_type:distiller_mill
+					building_type = building_type:winery
+					building_type = building_type:winery_manufactory
+				}
+			}
+			add = { value = building_employed_amount multiply = building_level divide = building_employment_size_amount multiply = 0.02 }
+		}
+		# All other buildings get no food bonus - just baseline penalty
+	}
+}
+
+# -----------------------------------------------------------------------------
+# RAW MATERIAL OUTPUT FROM BUILDINGS (location scope)
+# -----------------------------------------------------------------------------
+# Sum of local_raw_material_output from all buildings at this location
+# Includes baseline from building_levels static modifier (-0.005 per level)
+# Uses effective building levels (employment-weighted) to match game calculations
+sul_building_raw_material = {
+	# Baseline: -0.005 per effective building level (from building_levels static modifier)
+	add = { value = sul_effective_building_levels multiply = -0.005 }
+
+	# Building contributions use effective levels via iterator
+	every_buildings_in_location = {
+		# Raw Extraction (+0.02 each)
+		if = {
+			limit = {
+				OR = {
+					building_type = building_type:sugar_plantation
+					building_type = building_type:cotton_plantation
+					building_type = building_type:tobacco_plantation
+					building_type = building_type:stone_quarry
+					building_type = building_type:bog_iron_smelter
+					building_type = building_type:local_smelters
+					building_type = building_type:clay_pit
+					building_type = building_type:salt_collector
+					building_type = building_type:sand_pit
+					building_type = building_type:sheep_farms
+					building_type = building_type:lumber_mill
+					building_type = building_type:elephant_hunting_grounds
+					building_type = building_type:sawmill
+					building_type = building_type:forest_village
+				}
+			}
+			add = { value = building_employed_amount multiply = building_level divide = building_employment_size_amount multiply = 0.02 }
+		}
+		# Farming RGO (+0.01 each)
+		else_if = {
+			limit = {
+				OR = {
+					building_type = building_type:fruit_orchard
+					building_type = building_type:fiber_crops_farm
+					building_type = building_type:horse_breeders
+					building_type = building_type:windmill
+					building_type = building_type:irrigation_systems
+					building_type = building_type:fishing_village
+					building_type = building_type:farming_village
+				}
+			}
+			add = { value = building_employed_amount multiply = building_level divide = building_employment_size_amount multiply = 0.01 }
+		}
+		# Infrastructure (+0.005 each)
+		else_if = {
+			limit = {
+				OR = {
+					building_type = building_type:granary
+					building_type = building_type:mason
+				}
+			}
+			add = { value = building_employed_amount multiply = building_level divide = building_employment_size_amount multiply = 0.005 }
+		}
+	}
+}
+
+# -----------------------------------------------------------------------------
+# RGO SIZE MODIFIER FROM BUILDINGS (location scope)
+# -----------------------------------------------------------------------------
+# Sum of local_max_rgo_size_modifier from all buildings at this location
+# Includes baseline from building_levels static modifier (-0.005 per level)
+# Uses effective building levels (employment-weighted) to match game calculations
+sul_building_rgo_size = {
+	# Baseline: -0.005 per effective building level (from building_levels static modifier)
+	add = { value = sul_effective_building_levels multiply = -0.005 }
+
+	# Building contributions use effective levels via iterator
+	every_buildings_in_location = {
+		# Villages and Tools/Iron (+0.01 each)
+		if = {
+			limit = {
+				OR = {
+					building_type = building_type:fishing_village
+					building_type = building_type:farming_village
+					building_type = building_type:forest_village
+					building_type = building_type:tools_guild
+					building_type = building_type:tools_workshop
+					building_type = building_type:iron_foundry
+					building_type = building_type:iron_mill
+				}
+			}
+			add = { value = building_employed_amount multiply = building_level divide = building_employment_size_amount multiply = 0.01 }
+		}
+		# RGO/agricultural buildings (+0.005 each)
+		else_if = {
+			limit = {
+				OR = {
+					building_type = building_type:fruit_orchard
+					building_type = building_type:fiber_crops_farm
+					building_type = building_type:horse_breeders
+					building_type = building_type:windmill
+					building_type = building_type:sugar_plantation
+					building_type = building_type:cotton_plantation
+					building_type = building_type:tobacco_plantation
+					building_type = building_type:irrigation_systems
+					building_type = building_type:stone_quarry
+					building_type = building_type:bog_iron_smelter
+					building_type = building_type:local_smelters
+					building_type = building_type:clay_pit
+					building_type = building_type:salt_collector
+					building_type = building_type:sand_pit
+					building_type = building_type:sheep_farms
+					building_type = building_type:lumber_mill
+					building_type = building_type:elephant_hunting_grounds
+					building_type = building_type:sawmill
+					building_type = building_type:granary
+					building_type = building_type:mason
+				}
+			}
+			add = { value = building_employed_amount multiply = building_level divide = building_employment_size_amount multiply = 0.005 }
+		}
+	}
+}
+
+# -----------------------------------------------------------------------------
+# PRODUCTION EFFICIENCY FROM BUILDINGS (location scope)
+# -----------------------------------------------------------------------------
+# Sum of local_production_efficiency from all buildings at this location
+# NOTE: Baseline penalty removed - now uses goods-specific output penalties
+# See building_levels in sul_location_modifier.txt for per-goods penalties
+# Uses effective building levels (employment-weighted) to match game calculations
+sul_building_production_efficiency = {
+	# No baseline - goods-specific penalties in building_levels instead
+	value = 0
+
+	# Building contributions use effective levels via iterator
+	every_buildings_in_location = {
+		# Advanced processing (+0.015 each)
+		if = {
+			limit = {
+				OR = {
+					building_type = building_type:jewelry_guild
+					building_type = building_type:porcelain_guild
+					building_type = building_type:porcelain_manufactory
+					building_type = building_type:furniture_guild
+					building_type = building_type:furniture_workshop
+					building_type = building_type:furniture_manufactory
+					building_type = building_type:furniture_mill
+					building_type = building_type:lacquerware_guild
+					building_type = building_type:lacquerware_manufactory
+					building_type = building_type:scriptorium
+					building_type = building_type:printing_press_shop
+					building_type = building_type:printing_manufactory
+					building_type = building_type:printing_mill
+					building_type = building_type:perfumery
+					building_type = building_type:paper_guild
+					building_type = building_type:paper_workshop
+					building_type = building_type:paper_manufactory
+					building_type = building_type:paper_mill
+					building_type = building_type:glass_guild
+					building_type = building_type:glass_workshop
+					building_type = building_type:glassworks
+					building_type = building_type:glass_mill
+					building_type = building_type:distillers_guild
+					building_type = building_type:distillers_workshop
+					building_type = building_type:distiller_manufactory
+					building_type = building_type:distiller_mill
+					building_type = building_type:cannon_maker
+					building_type = building_type:cannon_workshop
+					building_type = building_type:cannon_foundry
+					building_type = building_type:cannons_factory
+					building_type = building_type:hand_cannon_guild
+					building_type = building_type:gun_smith
+					building_type = building_type:guns_workshop
+					building_type = building_type:firearms_manufactory
+					building_type = building_type:firearms_factory
+				}
+			}
+			add = { value = building_employed_amount multiply = building_level divide = building_employment_size_amount multiply = 0.015 }
+		}
+		# Intermediate processing (+0.01 each)
+		else_if = {
+			limit = {
+				OR = {
+					building_type = building_type:brewery
+					building_type = building_type:beer_workshop
+					building_type = building_type:brewery_manufactory
+					building_type = building_type:brewery_mill
+					building_type = building_type:saltpeter_guild
+					building_type = building_type:saltpeter_workshop
+					building_type = building_type:putrefaction_works
+					building_type = building_type:putrefaction_mill
+					building_type = building_type:winery
+					building_type = building_type:winery_manufactory
+					building_type = building_type:local_smelters
+					building_type = building_type:tools_guild
+					building_type = building_type:tools_workshop
+					building_type = building_type:iron_foundry
+					building_type = building_type:iron_mill
+					building_type = building_type:weapon_guild
+					building_type = building_type:weapon_workshop
+					building_type = building_type:weapon_manufactory
+					building_type = building_type:weapon_factory
+					building_type = building_type:steel_mill
+					building_type = building_type:pottery_guild
+					building_type = building_type:pottery_workshop
+					building_type = building_type:pottery_manufactory
+					building_type = building_type:pottery_mill
+					building_type = building_type:apothecary
+					building_type = building_type:tar_kiln
+					building_type = building_type:dyes_guild
+					building_type = building_type:dyes_workshop
+					building_type = building_type:dyesworks
+					building_type = building_type:dyes_mill
+					building_type = building_type:tannery
+					building_type = building_type:tanning_workshop
+					building_type = building_type:tannery_manufactory
+					building_type = building_type:tannery_mill
+					building_type = building_type:charcoal_maker
+					building_type = building_type:improved_charcoal_maker
+					building_type = building_type:cloth_guild
+					building_type = building_type:cloth_workshop
+					building_type = building_type:cloth_manufactory
+					building_type = building_type:textile_mill
+					building_type = building_type:fine_cloth_guild
+					building_type = building_type:fine_cloth_workshop
+					building_type = building_type:fine_cloth_manufactory
+					building_type = building_type:fine_cloth_mill
+					building_type = building_type:naval_supplies_guild
+					building_type = building_type:naval_supplies_workshop
+					building_type = building_type:naval_supplies_manufactory
+					building_type = building_type:naval_supplies_mill
+					building_type = building_type:rural_clothmaker
+					building_type = building_type:mason
+					building_type = building_type:entrepot
+					building_type = building_type:trading_hub
+					building_type = building_type:customs_house
+					building_type = building_type:stock_exchange
+					building_type = building_type:clearing_house
+					building_type = building_type:market_warehouse
+					building_type = building_type:funduq
+					building_type = building_type:marketplace
+					building_type = building_type:merchants_quarters
+					building_type = building_type:grand_marketplace
+					building_type = building_type:commerce_center
+					building_type = building_type:port_authority
+				}
+			}
+			add = { value = building_employed_amount multiply = building_level divide = building_employment_size_amount multiply = 0.01 }
+		}
+		# Granary and Market Village (+0.005)
+		else_if = {
+			limit = {
+				OR = {
+					building_type = building_type:granary
+					building_type = building_type:market_village
+				}
+			}
+			add = { value = building_employed_amount multiply = building_level divide = building_employment_size_amount multiply = 0.005 }
+		}
+	}
+}

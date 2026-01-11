@@ -1,6 +1,8 @@
-# Specialized Urban Locations - Location Rank Overrides
+﻿# Specialized Urban Locations - Location Rank Overrides
 # Population thresholds: Town 10k, City 50k (vanilla: 5k, 30k)
-# Food consumption increased in urban areas
+# Zero base population capacity - comes from buildings/food instead
+# Negative base population growth - requires food surplus to grow
+# Increased food consumption in urban areas
 # Rural settlements have reduced raw material output
 
 REPLACE:town = {
@@ -12,15 +14,16 @@ REPLACE:town = {
 		local_clergy_desired_pop = 0.05
 
 		local_max_control = 0.05
-		local_population_capacity = 20
+		# Pop capacity comes from buildings/food, not rank
 		local_population_capacity_modifier = 0.10
-		local_food_capacity = 250
+		# Food capacity comes from buildings, not rank
 		local_integration_speed_modifier = -0.25
+
+		# Negative base growth - requires food surplus to grow
+		local_population_growth = -0.0025
 
 		free_building_levels = 25
 
-		# Mod changes: neutralize food penalty, add consumption
-		local_pop_food_consumption = 0.25
 	}
 
 	country_modifier = {
@@ -51,14 +54,16 @@ REPLACE:city = {
 		local_clergy_desired_pop = 0.1
 
 		local_max_control = 0.1
-		local_population_capacity = 100
+		# Pop capacity comes from buildings/food, not rank
 		local_population_capacity_modifier = 0.25
-
-		local_food_capacity = 500
+		# Food capacity comes from buildings, not rank
 
 		local_construction_speed = 0.25
 
 		local_integration_speed_modifier = -0.5
+
+		# Negative base growth - requires food surplus to grow
+		local_population_growth = -0.003
 
 		local_pop_promotion_speed_modifier = 0.25
 
@@ -66,8 +71,6 @@ REPLACE:city = {
 
 		max_constructions_at_same_time = 1
 
-		# Mod changes: neutralize food penalty, add consumption
-		local_pop_food_consumption = 0.50
 	}
 
 	country_modifier = {
@@ -95,13 +98,12 @@ REPLACE:city = {
 
 REPLACE:rural_settlement = {
 	rank_modifier = {
-		# No bonus RGO size
-		# local_max_rgo_size_modifier = 1.0
-		local_population_growth = 0.001
+		# Negative base growth - requires food surplus to grow
+		local_population_growth = -0.002
 
-		# Mod changes: boost food, penalize raw materials
-		local_monthly_food_modifier = 0.3
+		# Mod changes: penalize raw materials but boost food production
 		local_raw_material_output = -0.5
+		local_monthly_food_modifier = 0.5
 	}
 
 	country_modifier = {

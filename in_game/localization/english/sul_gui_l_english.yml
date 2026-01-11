@@ -108,30 +108,6 @@
  # Can Respecialize modifier type
  modifier_sul_can_respecialize: "Can Respecialize"
 
- # Population Pressure Modifiers (30% = balanced point)
- STATIC_MODIFIER_NAME_sul_capacity_pressure_0: "Very Low Population Density"
- STATIC_MODIFIER_DESC_sul_capacity_pressure_0: "This settlement has abundant space for new residents. Migrants are drawn to the opportunity and the peaceful atmosphere."
- STATIC_MODIFIER_NAME_sul_capacity_pressure_10: "Low Population Density"
- STATIC_MODIFIER_DESC_sul_capacity_pressure_10: "Plenty of room remains for growth. The settlement attracts newcomers seeking a fresh start."
- STATIC_MODIFIER_NAME_sul_capacity_pressure_20: "Moderate Population Density"
- STATIC_MODIFIER_DESC_sul_capacity_pressure_20: "The settlement has room to grow. New residents find the area appealing and tensions are low."
- STATIC_MODIFIER_NAME_sul_capacity_pressure_30: "Balanced Population Density"
- STATIC_MODIFIER_DESC_sul_capacity_pressure_30: "Population and capacity are in perfect balance. The settlement thrives with ideal conditions for sustained development."
- STATIC_MODIFIER_NAME_sul_capacity_pressure_40: "Mild Overcrowding"
- STATIC_MODIFIER_DESC_sul_capacity_pressure_40: "The settlement is becoming crowded. Some residents consider leaving for less congested areas."
- STATIC_MODIFIER_NAME_sul_capacity_pressure_50: "Moderate Overcrowding"
- STATIC_MODIFIER_DESC_sul_capacity_pressure_50: "Competition for space is noticeable. Residents grow restless and some migrate elsewhere."
- STATIC_MODIFIER_NAME_sul_capacity_pressure_60: "Overcrowded"
- STATIC_MODIFIER_DESC_sul_capacity_pressure_60: "The settlement strains under its population. Discontent rises as people compete for limited resources."
- STATIC_MODIFIER_NAME_sul_capacity_pressure_70: "Heavy Overcrowding"
- STATIC_MODIFIER_DESC_sul_capacity_pressure_70: "Severe crowding creates tension among residents. Many leave in search of better conditions."
- STATIC_MODIFIER_NAME_sul_capacity_pressure_80: "Severe Overcrowding"
- STATIC_MODIFIER_DESC_sul_capacity_pressure_80: "The settlement groans under unsustainable population pressure. Unrest spreads as residents struggle for basic necessities."
- STATIC_MODIFIER_NAME_sul_capacity_pressure_90: "Critical Overcrowding"
- STATIC_MODIFIER_DESC_sul_capacity_pressure_90: "Living conditions have deteriorated dramatically. The desperate population threatens civil order as people flee in droves."
- STATIC_MODIFIER_NAME_sul_capacity_pressure_100: "Extreme Overcrowding"
- STATIC_MODIFIER_DESC_sul_capacity_pressure_100: "The settlement has reached a breaking point. Chaos reigns as the population far exceeds any sustainable capacity."
-
  # Message Types (disabled via messagetypes.txt)
  PERFORM_sul_designate_mining_specialization_ACTION: "Mining specialization designated"
  PERFORM_sul_designate_farming_specialization_ACTION: "Farming specialization designated"
@@ -351,6 +327,7 @@
  sul_elephant_hunting_grounds_maintenance: "Elephant Hunting Grounds Maintenance"
  sul_sawmill_maintenance: "Sawmill Maintenance"
  sul_forest_village_maintenance: "Forest Village Maintenance"
+ sul_fishing_village_maintenance: "Fishing Village Maintenance"
 
  # Farming building maintenance
  sul_fruit_orchard_maintenance: "Fruit Orchard Maintenance"
@@ -362,6 +339,8 @@
  sul_saltpeter_guild_maintenance: "Saltpeter Guild Maintenance"
  sul_windmill_maintenance: "Windmill Maintenance"
  sul_sheep_farm_maintenance: "Sheep Farm Maintenance"
+ sul_farming_village_maintenance: "Farming Village Maintenance"
+ sul_irrigation_maintenance: "Irrigation Maintenance"
 
  # Inland naval buildings
  sul_inland_wharf: "River Wharf"
@@ -457,25 +436,53 @@
  SUL_NOBLES_LABEL: "Nobles"
  SUL_CLERGY_LABEL: "Clergy"
  SUL_BURGHERS_LABEL: "Burghers"
- SUL_COMMONERS_LABEL: "Commoners"
+ SUL_SOLDIERS_LABEL: "Soldiers"
+ SUL_LABORERS_LABEL: "Laborers"
+ SUL_PEASANTS_LABEL: "Peasants"
  SUL_TRIBESMEN_LABEL: "Tribesmen"
  SUL_SLAVES_LABEL: "Slaves"
 
- SUL_DEMAND_FORMULA_TOOLTIP: "Formula: 5 - 200 / (GDP × Power Share + 50)\n\nProvides diminishing returns:\n  GDP×Share=0 → 1.0x\n  GDP×Share=50 → 3.0x\n  GDP×Share=100 → 3.67x\n  GDP×Share=150 → 4.0x"
+ SUL_DEMAND_FORMULA_TOOLTIP: "This multiplier scales how much each pop demands goods.\n\n#bold Formula:#!\n  multiplier = floor + (ceiling - floor) × X / (X + k)\n  where X = Local GDP × Estate Power Share\n\n#bold How it works:#!\n• At zero wealth, demand equals the #italic floor#! value\n• As wealth increases, demand approaches the #italic ceiling#!\n• The curve is asymptotic - early gains are fast, later gains diminish\n• k controls the curve steepness (k=100 for most pop types)\n\n#bold Why floors differ:#!\nHigher-status pops maintain baseline consumption even when poor. A noble still expects better food than a peasant.\n\n  Pop Type   | Floor | Ceiling\n  -----------|-------|--------\n  Nobles     |  0.8  |  3.0\n  Clergy     |  0.8  |  2.5\n  Burghers   |  0.6  |  2.2\n  Soldiers   |  0.3  |  1.5\n  Laborers   |  0.3  |  1.5\n  Peasants   |  0.3  |  1.5\n  Tribesmen  |  0.3  |  1.3\n  Slaves     |  0.1  |  1.0"
 
  # Structured formula tooltip (used in GDP tooltip widget)
  SUL_DEMAND_FORMULA_TITLE: "Demand Multiplier Formula"
- SUL_DEMAND_FORMULA_DESC: "Pop consumption scales with local wealth.\n\nThe multiplier is calculated from the location's GDP and each pop type's share of economic power.\n\nSlaves have no economic power and always demand at base rate."
- SUL_DEMAND_FORMULA_EXAMPLES_HEADER: "Scaling Examples"
- SUL_ASYMPTOTE_TOOLTIP: "Maximum theoretical multiplier (asymptote)"
+ SUL_DEMAND_FORMULA_DESC: "This multiplier scales how much each pop demands goods.\n\n#bold Formula:#!\nmultiplier = floor + (ceiling - floor) × X / (X + k)\nwhere X = Local GDP × Estate Power Share\n\n#bold How it works:#!\n• At zero wealth, demand equals the #italic floor#!\n• As wealth increases, demand approaches the #italic ceiling#!\n• Early gains are fast, later gains diminish (asymptotic curve)\n\n#bold Why floors differ:#!\nHigher-status pops maintain baseline consumption even when poor."
+ SUL_DEMAND_FORMULA_MAXIMUMS_HEADER: "Class Ranges (Floor → Ceiling)"
+ SUL_ASYMPTOTE_TOOLTIP: "Demand range from minimum to maximum"
 
  # ============================================
- # BUILDING EXTERNALITIES DISPLAY
+ # SPECIALIZATION BUILDING EFFECTS DISPLAY
  # ============================================
- SUL_EXTERNALITIES_TITLE: "Building Externalities"
- SUL_EXTERNALITIES_DESC: "Aggregate effects from all buildings in this location.\n\nEach building level contributes modifiers based on its category - mining extracts resources, farms grow food, workshops process goods."
- SUL_EXTERNALITIES_HEADER: "Location Modifiers"
- SUL_EXTERNALITY_FOOD: "Food Output"
- SUL_EXTERNALITY_RAW: "Raw Materials"
- SUL_EXTERNALITY_RGO: "RGO Capacity"
- SUL_EXTERNALITY_EFFICIENCY: "Production Efficiency"
+ SUL_BUILDING_EFFECTS_TITLE: "Specialization Building Effects"
+ SUL_BUILDING_EFFECTS_DESC: "Aggregate effects from all buildings in this location.\n\nEach building level contributes modifiers based on its category - mining extracts resources, farms grow food, workshops process goods."
+ SUL_BUILDING_EFFECTS_HEADER: "Specialization Building Effects"
+ SUL_BUILDING_EFFECT_FOOD: "Food Output"
+ SUL_BUILDING_EFFECT_RAW: "Raw Materials"
+ SUL_BUILDING_EFFECT_RGO: "RGO Capacity"
+ SUL_BUILDING_EFFECT_EFFICIENCY: "Production Efficiency"
+ SUL_GOODS_OUTPUT_MODIFIERS: "Finished Goods Output"
+
+ SUL_FOOD_CONSUMPTION_HEADER: "Pop Food Consumption"
+
+ # ============================================
+ # POP TYPE NEEDS TOOLTIP
+ # ============================================
+ SUL_POP_NEEDS_LABEL: "Needs Fulfilled"
+ SUL_POP_COUNT_LABEL: "Population"
+ SUL_POP_SUBCATEGORIES_LABEL: "Subcategories"
+ SUL_NO_POPS_OF_TYPE: "No pops of this type"
+
+ # ============================================
+ # POP TYPE NAMES (for food consumption tooltip)
+ # ============================================
+ POPTYPE_nobles: "Nobles"
+ POPTYPE_clergy: "Clergy"
+ POPTYPE_burghers: "Burghers"
+ POPTYPE_soldiers: "Soldiers"
+ POPTYPE_laborers: "Laborers"
+ POPTYPE_peasants: "Peasants"
+ POPTYPE_slaves: "Slaves"
+ POPTYPE_tribesmen: "Tribesmen"
+
+ # Generic pop food consumption label
+ SUL_ALL_POPS_LABEL: "All Pops"

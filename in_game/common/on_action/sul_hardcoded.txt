@@ -34,7 +34,6 @@ sul_clear_market_cache = {
 
 yearly_country_pulse = {
 	on_actions = {
-		sul_yearly_estate_income
 		sul_ai_economy_update
 	}
 }
@@ -45,7 +44,6 @@ sul_ai_economy_update = {
 	}
 	effect = {
 		sul_update_all_location_gdp = yes
-		sul_update_all_location_capacity = yes
 	}
 }
 
@@ -53,12 +51,6 @@ sul_ai_economy_update = {
 sul_monthly_estate_income = {
 	events = {
 		sul_estate_income.1
-	}
-}
-
-sul_yearly_estate_income = {
-	events = {
-		sul_estate_income.2
 	}
 }
 
@@ -100,7 +92,9 @@ sul_game_start_setup = {
 			set_variable = { name = sul_noble_gdp_pc value = 1 }
 			set_variable = { name = sul_clergy_gdp_pc value = 1 }
 			set_variable = { name = sul_burgher_gdp_pc value = 1 }
-			set_variable = { name = sul_commoner_gdp_pc value = 1 }
+			set_variable = { name = sul_soldier_gdp_pc value = 1 }
+			set_variable = { name = sul_laborer_gdp_pc value = 1 }
+			set_variable = { name = sul_peasant_gdp_pc value = 1 }
 			set_variable = { name = sul_tribesman_gdp_pc value = 1 }
 			set_variable = { name = sul_slave_gdp_pc value = 1 }
 
@@ -126,8 +120,6 @@ sul_game_start_setup = {
 					sul_apply_specialization_modifier = yes
 				}
 
-				# Initialize capacity pressure modifier
-				sul_update_capacity_pressure = yes
 			}
 		}
 
@@ -135,6 +127,7 @@ sul_game_start_setup = {
 		# sul_update_all_location_gdp calls sul_update_location_economy for each location
 		# which handles: estate power -> GDP -> gdp_pc cache
 		every_country = {
+			limit = { sul_is_valid_location_owner = yes }
 			sul_update_all_location_gdp = yes
 		}
 	}

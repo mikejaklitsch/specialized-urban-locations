@@ -1774,14 +1774,15 @@ sul_designate_commercial_specialization = {
 		if = {
 			limit = {
 				exists = scope:target
-				scope:target = { NOT = { sul_has_commercial_specialization = yes } }
+				scope:target = {
+					NOT = { sul_has_commercial_specialization = yes }
+					market ?= { location = { has_variable = sul_trade_spread } }
+				}
 			}
-			scope:target = {
-				market ?= {
-					add = {
-						desc = "trade_spread"
-						value = location.var:sul_trade_spread
-					}
+			scope:target.market ?= {
+				add = {
+					desc = "trade_spread"
+					value = location.var:sul_trade_spread
 				}
 			}
 		}

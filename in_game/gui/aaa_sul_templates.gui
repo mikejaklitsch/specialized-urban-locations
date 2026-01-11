@@ -93,6 +93,361 @@ template sul_icon_size_city { size = { @city_marker_icon_size @city_marker_icon_
 template sul_icon_size_rural { size = { @rural_marker_icon_size @rural_marker_icon_size } }
 
 # =====================================================
+# TOOLTIP VALUE CELL TEMPLATES
+# =====================================================
+# Reusable widgets for tooltip table cells
+# Usage: using = sul_value_cell blockoverride "val" { raw_text = "..." }
+
+template sul_value_cell {
+	size = { 50 20 }
+	text_single = {
+		parentanchor = right|vcenter
+		block "val" {}
+	}
+}
+
+template sul_value_cell_wide {
+	size = { 60 20 }
+	text_single = {
+		parentanchor = right|vcenter
+		block "val" {}
+		block "tip" {}
+	}
+}
+
+# Modifier display cells - simple GetModifierValue accessors
+template sul_food_modifier_cell {
+	size = { 60 20 }
+	text_single = {
+		parentanchor = right|vcenter
+		raw_text = "[LocationView.GetLocation.GetModifierValue('local_monthly_food_modifier')]"
+	}
+}
+
+template sul_raw_modifier_cell {
+	size = { 60 20 }
+	text_single = {
+		parentanchor = right|vcenter
+		raw_text = "[LocationView.GetLocation.GetModifierValue('local_raw_material_output')]"
+	}
+}
+
+template sul_rgo_modifier_cell {
+	size = { 60 20 }
+	text_single = {
+		parentanchor = right|vcenter
+		raw_text = "[LocationView.GetLocation.GetModifierValue('local_max_rgo_size_modifier')]"
+	}
+}
+
+template sul_efficiency_modifier_cell {
+	size = { 60 20 }
+	text_single = {
+		parentanchor = right|vcenter
+		raw_text = "[LocationView.GetLocation.GetModifierValue('local_production_efficiency')]"
+	}
+}
+
+# Complete food consumption tooltip block (all pop types)
+template sul_food_consumption_block {
+	TooltipTableHeader = {
+		blockoverride "tableheader_text" { text = "SUL_FOOD_CONSUMPTION_HEADER" }
+	}
+	TooltipListRowContent = {
+		vbox = {
+			layoutpolicy_horizontal = expanding
+			TooltipManualTableField = {
+				blockoverride "field_content" {
+					hbox = { spacing = 5 icon = { size = { 28 28 } texture = "gfx/interface/icons/modifier_types/global_pop_food_consumption.dds" } text_single = { text = "MODIFIER_TYPE_NAME_local_pop_food_consumption" tooltipwidget = { ContextualTooltipType = { blockoverride "title_text" { text = "MODIFIER_TYPE_NAME_local_pop_food_consumption" } blockoverride "title_icon" { icon = { using = tooltip_title_icon_size texture = "gfx/interface/icons/modifier_types/global_pop_food_consumption.dds" } } blockoverride "tooltip_content" { TooltipTextBlock = { blockoverride "text" { text = "MODIFIER_TYPE_DESC_local_pop_food_consumption" } } } } } } }
+					expand = {}
+					widget = { size = { 50 20 } text_single = { parentanchor = right|vcenter raw_text = "[LocationView.GetLocation.GetModifierValue('local_pop_food_consumption')|%+0]" } }
+				}
+			}
+			TooltipManualTableField = {
+				blockoverride "field_content" {
+					hbox = { spacing = 5 icon = { size = { 28 28 } texture = "gfx/interface/icons/modifier_types/global_nobles_food_consumption.dds" } text_single = { text = "MODIFIER_TYPE_NAME_local_nobles_food_consumption" tooltipwidget = { ContextualTooltipType = { blockoverride "title_text" { text = "MODIFIER_TYPE_NAME_local_nobles_food_consumption" } blockoverride "title_icon" { icon = { using = tooltip_title_icon_size texture = "gfx/interface/icons/modifier_types/global_nobles_food_consumption.dds" } } blockoverride "tooltip_content" { TooltipTextBlock = { blockoverride "text" { text = "MODIFIER_TYPE_DESC_local_nobles_food_consumption" } } } } } } }
+					expand = {}
+					widget = { size = { 50 20 } text_single = { parentanchor = right|vcenter raw_text = "[LocationView.GetLocation.GetModifierValue('local_nobles_food_consumption')|%+0]" } }
+				}
+			}
+			TooltipManualTableField = {
+				blockoverride "field_content" {
+					hbox = { spacing = 5 icon = { size = { 28 28 } texture = "gfx/interface/icons/modifier_types/global_clergy_food_consumption.dds" } text_single = { text = "MODIFIER_TYPE_NAME_local_clergy_food_consumption" tooltipwidget = { ContextualTooltipType = { blockoverride "title_text" { text = "MODIFIER_TYPE_NAME_local_clergy_food_consumption" } blockoverride "title_icon" { icon = { using = tooltip_title_icon_size texture = "gfx/interface/icons/modifier_types/global_clergy_food_consumption.dds" } } blockoverride "tooltip_content" { TooltipTextBlock = { blockoverride "text" { text = "MODIFIER_TYPE_DESC_local_clergy_food_consumption" } } } } } } }
+					expand = {}
+					widget = { size = { 50 20 } text_single = { parentanchor = right|vcenter raw_text = "[LocationView.GetLocation.GetModifierValue('local_clergy_food_consumption')|%+0]" } }
+				}
+			}
+			TooltipManualTableField = {
+				blockoverride "field_content" {
+					hbox = { spacing = 5 icon = { size = { 28 28 } texture = "gfx/interface/icons/modifier_types/global_burghers_food_consumption.dds" } text_single = { text = "MODIFIER_TYPE_NAME_local_burghers_food_consumption" tooltipwidget = { ContextualTooltipType = { blockoverride "title_text" { text = "MODIFIER_TYPE_NAME_local_burghers_food_consumption" } blockoverride "title_icon" { icon = { using = tooltip_title_icon_size texture = "gfx/interface/icons/modifier_types/global_burghers_food_consumption.dds" } } blockoverride "tooltip_content" { TooltipTextBlock = { blockoverride "text" { text = "MODIFIER_TYPE_DESC_local_burghers_food_consumption" } } } } } } }
+					expand = {}
+					widget = { size = { 50 20 } text_single = { parentanchor = right|vcenter raw_text = "[LocationView.GetLocation.GetModifierValue('local_burghers_food_consumption')|%+0]" } }
+				}
+			}
+			TooltipManualTableField = {
+				blockoverride "field_content" {
+					hbox = { spacing = 5 icon = { size = { 28 28 } texture = "gfx/interface/icons/modifier_types/local_soldiers_food_consumption.dds" } text_single = { text = "MODIFIER_TYPE_NAME_local_soldiers_food_consumption" tooltipwidget = { ContextualTooltipType = { blockoverride "title_text" { text = "MODIFIER_TYPE_NAME_local_soldiers_food_consumption" } blockoverride "title_icon" { icon = { using = tooltip_title_icon_size texture = "gfx/interface/icons/modifier_types/local_soldiers_food_consumption.dds" } } blockoverride "tooltip_content" { TooltipTextBlock = { blockoverride "text" { text = "MODIFIER_TYPE_DESC_local_soldiers_food_consumption" } } } } } } }
+					expand = {}
+					widget = { size = { 50 20 } text_single = { parentanchor = right|vcenter raw_text = "[LocationView.GetLocation.GetModifierValue('local_soldiers_food_consumption')|%+0]" } }
+				}
+			}
+			TooltipManualTableField = {
+				blockoverride "field_content" {
+					hbox = { spacing = 5 icon = { size = { 28 28 } texture = "gfx/interface/icons/modifier_types/global_laborers_food_consumption.dds" } text_single = { text = "MODIFIER_TYPE_NAME_local_laborers_food_consumption" tooltipwidget = { ContextualTooltipType = { blockoverride "title_text" { text = "MODIFIER_TYPE_NAME_local_laborers_food_consumption" } blockoverride "title_icon" { icon = { using = tooltip_title_icon_size texture = "gfx/interface/icons/modifier_types/global_laborers_food_consumption.dds" } } blockoverride "tooltip_content" { TooltipTextBlock = { blockoverride "text" { text = "MODIFIER_TYPE_DESC_local_laborers_food_consumption" } } } } } } }
+					expand = {}
+					widget = { size = { 50 20 } text_single = { parentanchor = right|vcenter raw_text = "[LocationView.GetLocation.GetModifierValue('local_laborers_food_consumption')|%+0]" } }
+				}
+			}
+			TooltipManualTableField = {
+				blockoverride "field_content" {
+					hbox = { spacing = 5 icon = { size = { 28 28 } texture = "gfx/interface/icons/modifier_types/global_peasants_food_consumption.dds" } text_single = { text = "MODIFIER_TYPE_NAME_local_peasants_food_consumption" tooltipwidget = { ContextualTooltipType = { blockoverride "title_text" { text = "MODIFIER_TYPE_NAME_local_peasants_food_consumption" } blockoverride "title_icon" { icon = { using = tooltip_title_icon_size texture = "gfx/interface/icons/modifier_types/global_peasants_food_consumption.dds" } } blockoverride "tooltip_content" { TooltipTextBlock = { blockoverride "text" { text = "MODIFIER_TYPE_DESC_local_peasants_food_consumption" } } } } } } }
+					expand = {}
+					widget = { size = { 50 20 } text_single = { parentanchor = right|vcenter raw_text = "[LocationView.GetLocation.GetModifierValue('local_peasants_food_consumption')|%+0]" } }
+				}
+			}
+			TooltipManualTableField = {
+				blockoverride "field_content" {
+					hbox = { spacing = 5 icon = { size = { 28 28 } texture = "gfx/interface/icons/modifier_types/global_slaves_food_consumption.dds" } text_single = { text = "MODIFIER_TYPE_NAME_local_slaves_food_consumption" tooltipwidget = { ContextualTooltipType = { blockoverride "title_text" { text = "MODIFIER_TYPE_NAME_local_slaves_food_consumption" } blockoverride "title_icon" { icon = { using = tooltip_title_icon_size texture = "gfx/interface/icons/modifier_types/global_slaves_food_consumption.dds" } } blockoverride "tooltip_content" { TooltipTextBlock = { blockoverride "text" { text = "MODIFIER_TYPE_DESC_local_slaves_food_consumption" } } } } } } }
+					expand = {}
+					widget = { size = { 50 20 } text_single = { parentanchor = right|vcenter raw_text = "[LocationView.GetLocation.GetModifierValue('local_slaves_food_consumption')|%+0]" } }
+				}
+			}
+			TooltipManualTableField = {
+				blockoverride "field_content" {
+					hbox = { spacing = 5 icon = { size = { 28 28 } texture = "gfx/interface/icons/modifier_types/global_tribesmen_food_consumption.dds" } text_single = { text = "MODIFIER_TYPE_NAME_local_tribesmen_food_consumption" tooltipwidget = { ContextualTooltipType = { blockoverride "title_text" { text = "MODIFIER_TYPE_NAME_local_tribesmen_food_consumption" } blockoverride "title_icon" { icon = { using = tooltip_title_icon_size texture = "gfx/interface/icons/modifier_types/global_tribesmen_food_consumption.dds" } } blockoverride "tooltip_content" { TooltipTextBlock = { blockoverride "text" { text = "MODIFIER_TYPE_DESC_local_tribesmen_food_consumption" } } } } } } }
+					expand = {}
+					widget = { size = { 50 20 } text_single = { parentanchor = right|vcenter raw_text = "[LocationView.GetLocation.GetModifierValue('local_tribesmen_food_consumption')|%+0]" } }
+				}
+			}
+		}
+	}
+}
+
+# Specialization Building Effects tooltip block - uses GetModifierValue with proper tooltipwidgets
+template sul_specialization_building_effects_block {
+	TooltipTableHeader = {
+		blockoverride "tableheader_text" { text = "SUL_BUILDING_EFFECTS_HEADER" }
+	}
+	TooltipListRowContent = {
+		# Core modifiers - always visible
+		TooltipManualTableField = {
+			blockoverride "field_content" {
+				hbox = { spacing = 5 icon = { size = { 28 28 } texture = "gfx/interface/icons/modifier_types/global_monthly_food_modifier.dds" } text_single = { text = "MODIFIER_TYPE_NAME_local_monthly_food_modifier" tooltipwidget = { ContextualTooltipType = { blockoverride "title_text" { text = "MODIFIER_TYPE_NAME_local_monthly_food_modifier" } blockoverride "title_icon" { icon = { using = tooltip_title_icon_size texture = "gfx/interface/icons/modifier_types/global_monthly_food_modifier.dds" } } blockoverride "tooltip_content" { TooltipTextBlock = { blockoverride "text" { text = "MODIFIER_TYPE_DESC_local_monthly_food_modifier" } } } } } } }
+				expand = {}
+				widget = { using = sul_food_modifier_cell }
+			}
+		}
+		TooltipManualTableField = {
+			blockoverride "field_content" {
+				hbox = { spacing = 5 icon = { size = { 28 28 } texture = "gfx/interface/icons/modifier_types/global_raw_material_output.dds" } text_single = { text = "MODIFIER_TYPE_NAME_local_raw_material_output" tooltipwidget = { ContextualTooltipType = { blockoverride "title_text" { text = "MODIFIER_TYPE_NAME_local_raw_material_output" } blockoverride "title_icon" { icon = { using = tooltip_title_icon_size texture = "gfx/interface/icons/modifier_types/global_raw_material_output.dds" } } blockoverride "tooltip_content" { TooltipTextBlock = { blockoverride "text" { text = "MODIFIER_TYPE_DESC_local_raw_material_output" } } } } } } }
+				expand = {}
+				widget = { using = sul_raw_modifier_cell }
+			}
+		}
+		TooltipManualTableField = {
+			blockoverride "field_content" {
+				hbox = { spacing = 5 icon = { size = { 28 28 } texture = "gfx/interface/icons/modifier_types/global_max_rgo_size_modifier.dds" } text_single = { text = "MODIFIER_TYPE_NAME_local_max_rgo_size_modifier" tooltipwidget = { ContextualTooltipType = { blockoverride "title_text" { text = "MODIFIER_TYPE_NAME_local_max_rgo_size_modifier" } blockoverride "title_icon" { icon = { using = tooltip_title_icon_size texture = "gfx/interface/icons/modifier_types/global_max_rgo_size_modifier.dds" } } blockoverride "tooltip_content" { TooltipTextBlock = { blockoverride "text" { text = "MODIFIER_TYPE_DESC_local_max_rgo_size_modifier" } } } } } } }
+				expand = {}
+				widget = { using = sul_rgo_modifier_cell }
+			}
+		}
+		TooltipManualTableField = {
+			blockoverride "field_content" {
+				hbox = { spacing = 5 icon = { size = { 28 28 } texture = "gfx/interface/icons/modifier_types/global_production_efficiency.dds" } text_single = { text = "MODIFIER_TYPE_NAME_local_production_efficiency" tooltipwidget = { ContextualTooltipType = { blockoverride "title_text" { text = "MODIFIER_TYPE_NAME_local_production_efficiency" } blockoverride "title_icon" { icon = { using = tooltip_title_icon_size texture = "gfx/interface/icons/modifier_types/global_production_efficiency.dds" } } blockoverride "tooltip_content" { TooltipTextBlock = { blockoverride "text" { text = "MODIFIER_TYPE_DESC_local_production_efficiency" } } } } } } }
+				expand = {}
+				widget = { using = sul_efficiency_modifier_cell }
+			}
+		}
+		# =====================================================
+		# PER-GOOD OUTPUT MODIFIERS - Commercial Specialization (5/15/25)
+		# =====================================================
+		TooltipManualTableField = {
+			visible = "[Or3(EqualTo_float(FixedPointToFloat(LocationView.GetLocation.MakeScope.GetVariable('sul_specialization_designation').GetValue), '(float)5.0'), EqualTo_float(FixedPointToFloat(LocationView.GetLocation.MakeScope.GetVariable('sul_specialization_designation').GetValue), '(float)15.0'), EqualTo_float(FixedPointToFloat(LocationView.GetLocation.MakeScope.GetVariable('sul_specialization_designation').GetValue), '(float)25.0'))]"
+			blockoverride "field_content" {
+				hbox = { spacing = 5 icon = { size = { 28 28 } texture = "gfx/interface/icons/modifier_types/cloth_positive.dds" } text_single = { text = "MODIFIER_TYPE_NAME_local_cloth_output_modifier" tooltipwidget = { ContextualTooltipType = { blockoverride "title_text" { text = "MODIFIER_TYPE_NAME_local_cloth_output_modifier" } blockoverride "title_icon" { icon = { using = tooltip_title_icon_size texture = "gfx/interface/icons/modifier_types/cloth_positive.dds" } } blockoverride "tooltip_content" { TooltipTextBlock = { blockoverride "text" { text = "MODIFIER_TYPE_DESC_local_cloth_output_modifier" } } } } } } }
+				expand = {}
+				widget = { size = { 60 20 } text_single = { parentanchor = right|vcenter raw_text = "[LocationView.GetLocation.GetModifierValue('local_cloth_output_modifier')]" } }
+			}
+		}
+		TooltipManualTableField = {
+			visible = "[Or3(EqualTo_float(FixedPointToFloat(LocationView.GetLocation.MakeScope.GetVariable('sul_specialization_designation').GetValue), '(float)5.0'), EqualTo_float(FixedPointToFloat(LocationView.GetLocation.MakeScope.GetVariable('sul_specialization_designation').GetValue), '(float)15.0'), EqualTo_float(FixedPointToFloat(LocationView.GetLocation.MakeScope.GetVariable('sul_specialization_designation').GetValue), '(float)25.0'))]"
+			blockoverride "field_content" {
+				hbox = { spacing = 5 icon = { size = { 28 28 } texture = "gfx/interface/icons/modifier_types/fine_cloth_positive.dds" } text_single = { text = "MODIFIER_TYPE_NAME_local_fine_cloth_output_modifier" tooltipwidget = { ContextualTooltipType = { blockoverride "title_text" { text = "MODIFIER_TYPE_NAME_local_fine_cloth_output_modifier" } blockoverride "title_icon" { icon = { using = tooltip_title_icon_size texture = "gfx/interface/icons/modifier_types/fine_cloth_positive.dds" } } blockoverride "tooltip_content" { TooltipTextBlock = { blockoverride "text" { text = "MODIFIER_TYPE_DESC_local_fine_cloth_output_modifier" } } } } } } }
+				expand = {}
+				widget = { size = { 60 20 } text_single = { parentanchor = right|vcenter raw_text = "[LocationView.GetLocation.GetModifierValue('local_fine_cloth_output_modifier')]" } }
+			}
+		}
+		TooltipManualTableField = {
+			visible = "[Or3(EqualTo_float(FixedPointToFloat(LocationView.GetLocation.MakeScope.GetVariable('sul_specialization_designation').GetValue), '(float)5.0'), EqualTo_float(FixedPointToFloat(LocationView.GetLocation.MakeScope.GetVariable('sul_specialization_designation').GetValue), '(float)15.0'), EqualTo_float(FixedPointToFloat(LocationView.GetLocation.MakeScope.GetVariable('sul_specialization_designation').GetValue), '(float)25.0'))]"
+			blockoverride "field_content" {
+				hbox = { spacing = 5 icon = { size = { 28 28 } texture = "gfx/interface/icons/modifier_types/books_positive.dds" } text_single = { text = "MODIFIER_TYPE_NAME_local_books_output_modifier" tooltipwidget = { ContextualTooltipType = { blockoverride "title_text" { text = "MODIFIER_TYPE_NAME_local_books_output_modifier" } blockoverride "title_icon" { icon = { using = tooltip_title_icon_size texture = "gfx/interface/icons/modifier_types/books_positive.dds" } } blockoverride "tooltip_content" { TooltipTextBlock = { blockoverride "text" { text = "MODIFIER_TYPE_DESC_local_books_output_modifier" } } } } } } }
+				expand = {}
+				widget = { size = { 60 20 } text_single = { parentanchor = right|vcenter raw_text = "[LocationView.GetLocation.GetModifierValue('local_books_output_modifier')]" } }
+			}
+		}
+		TooltipManualTableField = {
+			visible = "[Or3(EqualTo_float(FixedPointToFloat(LocationView.GetLocation.MakeScope.GetVariable('sul_specialization_designation').GetValue), '(float)5.0'), EqualTo_float(FixedPointToFloat(LocationView.GetLocation.MakeScope.GetVariable('sul_specialization_designation').GetValue), '(float)15.0'), EqualTo_float(FixedPointToFloat(LocationView.GetLocation.MakeScope.GetVariable('sul_specialization_designation').GetValue), '(float)25.0'))]"
+			blockoverride "field_content" {
+				hbox = { spacing = 5 icon = { size = { 28 28 } texture = "gfx/interface/icons/modifier_types/naval_supplies_positive.dds" } text_single = { text = "MODIFIER_TYPE_NAME_local_naval_supplies_output_modifier" tooltipwidget = { ContextualTooltipType = { blockoverride "title_text" { text = "MODIFIER_TYPE_NAME_local_naval_supplies_output_modifier" } blockoverride "title_icon" { icon = { using = tooltip_title_icon_size texture = "gfx/interface/icons/modifier_types/naval_supplies_positive.dds" } } blockoverride "tooltip_content" { TooltipTextBlock = { blockoverride "text" { text = "MODIFIER_TYPE_DESC_local_naval_supplies_output_modifier" } } } } } } }
+				expand = {}
+				widget = { size = { 60 20 } text_single = { parentanchor = right|vcenter raw_text = "[LocationView.GetLocation.GetModifierValue('local_naval_supplies_output_modifier')]" } }
+			}
+		}
+		# =====================================================
+		# PER-GOOD OUTPUT MODIFIERS - Mining Specialization (1/11/21)
+		# =====================================================
+		TooltipManualTableField = {
+			visible = "[Or3(EqualTo_float(FixedPointToFloat(LocationView.GetLocation.MakeScope.GetVariable('sul_specialization_designation').GetValue), '(float)1.0'), EqualTo_float(FixedPointToFloat(LocationView.GetLocation.MakeScope.GetVariable('sul_specialization_designation').GetValue), '(float)11.0'), EqualTo_float(FixedPointToFloat(LocationView.GetLocation.MakeScope.GetVariable('sul_specialization_designation').GetValue), '(float)21.0'))]"
+			blockoverride "field_content" {
+				hbox = { spacing = 5 icon = { size = { 28 28 } texture = "gfx/interface/icons/modifier_types/tools_positive.dds" } text_single = { text = "MODIFIER_TYPE_NAME_local_tools_output_modifier" tooltipwidget = { ContextualTooltipType = { blockoverride "title_text" { text = "MODIFIER_TYPE_NAME_local_tools_output_modifier" } blockoverride "title_icon" { icon = { using = tooltip_title_icon_size texture = "gfx/interface/icons/modifier_types/tools_positive.dds" } } blockoverride "tooltip_content" { TooltipTextBlock = { blockoverride "text" { text = "MODIFIER_TYPE_DESC_local_tools_output_modifier" } } } } } } }
+				expand = {}
+				widget = { size = { 60 20 } text_single = { parentanchor = right|vcenter raw_text = "[LocationView.GetLocation.GetModifierValue('local_tools_output_modifier')]" } }
+			}
+		}
+		TooltipManualTableField = {
+			visible = "[Or3(EqualTo_float(FixedPointToFloat(LocationView.GetLocation.MakeScope.GetVariable('sul_specialization_designation').GetValue), '(float)1.0'), EqualTo_float(FixedPointToFloat(LocationView.GetLocation.MakeScope.GetVariable('sul_specialization_designation').GetValue), '(float)11.0'), EqualTo_float(FixedPointToFloat(LocationView.GetLocation.MakeScope.GetVariable('sul_specialization_designation').GetValue), '(float)21.0'))]"
+			blockoverride "field_content" {
+				hbox = { spacing = 5 icon = { size = { 28 28 } texture = "gfx/interface/icons/modifier_types/weaponry_positive.dds" } text_single = { text = "MODIFIER_TYPE_NAME_local_weaponry_output_modifier" tooltipwidget = { ContextualTooltipType = { blockoverride "title_text" { text = "MODIFIER_TYPE_NAME_local_weaponry_output_modifier" } blockoverride "title_icon" { icon = { using = tooltip_title_icon_size texture = "gfx/interface/icons/modifier_types/weaponry_positive.dds" } } blockoverride "tooltip_content" { TooltipTextBlock = { blockoverride "text" { text = "MODIFIER_TYPE_DESC_local_weaponry_output_modifier" } } } } } } }
+				expand = {}
+				widget = { size = { 60 20 } text_single = { parentanchor = right|vcenter raw_text = "[LocationView.GetLocation.GetModifierValue('local_weaponry_output_modifier')]" } }
+			}
+		}
+		TooltipManualTableField = {
+			visible = "[Or3(EqualTo_float(FixedPointToFloat(LocationView.GetLocation.MakeScope.GetVariable('sul_specialization_designation').GetValue), '(float)1.0'), EqualTo_float(FixedPointToFloat(LocationView.GetLocation.MakeScope.GetVariable('sul_specialization_designation').GetValue), '(float)11.0'), EqualTo_float(FixedPointToFloat(LocationView.GetLocation.MakeScope.GetVariable('sul_specialization_designation').GetValue), '(float)21.0'))]"
+			blockoverride "field_content" {
+				hbox = { spacing = 5 icon = { size = { 28 28 } texture = "gfx/interface/icons/modifier_types/cannons_positive.dds" } text_single = { text = "MODIFIER_TYPE_NAME_local_cannons_output_modifier" tooltipwidget = { ContextualTooltipType = { blockoverride "title_text" { text = "MODIFIER_TYPE_NAME_local_cannons_output_modifier" } blockoverride "title_icon" { icon = { using = tooltip_title_icon_size texture = "gfx/interface/icons/modifier_types/cannons_positive.dds" } } blockoverride "tooltip_content" { TooltipTextBlock = { blockoverride "text" { text = "MODIFIER_TYPE_DESC_local_cannons_output_modifier" } } } } } } }
+				expand = {}
+				widget = { size = { 60 20 } text_single = { parentanchor = right|vcenter raw_text = "[LocationView.GetLocation.GetModifierValue('local_cannons_output_modifier')]" } }
+			}
+		}
+		TooltipManualTableField = {
+			visible = "[Or3(EqualTo_float(FixedPointToFloat(LocationView.GetLocation.MakeScope.GetVariable('sul_specialization_designation').GetValue), '(float)1.0'), EqualTo_float(FixedPointToFloat(LocationView.GetLocation.MakeScope.GetVariable('sul_specialization_designation').GetValue), '(float)11.0'), EqualTo_float(FixedPointToFloat(LocationView.GetLocation.MakeScope.GetVariable('sul_specialization_designation').GetValue), '(float)21.0'))]"
+			blockoverride "field_content" {
+				hbox = { spacing = 5 icon = { size = { 28 28 } texture = "gfx/interface/icons/modifier_types/firearms_positive.dds" } text_single = { text = "MODIFIER_TYPE_NAME_local_firearms_output_modifier" tooltipwidget = { ContextualTooltipType = { blockoverride "title_text" { text = "MODIFIER_TYPE_NAME_local_firearms_output_modifier" } blockoverride "title_icon" { icon = { using = tooltip_title_icon_size texture = "gfx/interface/icons/modifier_types/firearms_positive.dds" } } blockoverride "tooltip_content" { TooltipTextBlock = { blockoverride "text" { text = "MODIFIER_TYPE_DESC_local_firearms_output_modifier" } } } } } } }
+				expand = {}
+				widget = { size = { 60 20 } text_single = { parentanchor = right|vcenter raw_text = "[LocationView.GetLocation.GetModifierValue('local_firearms_output_modifier')]" } }
+			}
+		}
+		TooltipManualTableField = {
+			visible = "[Or3(EqualTo_float(FixedPointToFloat(LocationView.GetLocation.MakeScope.GetVariable('sul_specialization_designation').GetValue), '(float)1.0'), EqualTo_float(FixedPointToFloat(LocationView.GetLocation.MakeScope.GetVariable('sul_specialization_designation').GetValue), '(float)11.0'), EqualTo_float(FixedPointToFloat(LocationView.GetLocation.MakeScope.GetVariable('sul_specialization_designation').GetValue), '(float)21.0'))]"
+			blockoverride "field_content" {
+				hbox = { spacing = 5 icon = { size = { 28 28 } texture = "gfx/interface/icons/modifier_types/steel_positive.dds" } text_single = { text = "MODIFIER_TYPE_NAME_local_steel_output_modifier" tooltipwidget = { ContextualTooltipType = { blockoverride "title_text" { text = "MODIFIER_TYPE_NAME_local_steel_output_modifier" } blockoverride "title_icon" { icon = { using = tooltip_title_icon_size texture = "gfx/interface/icons/modifier_types/steel_positive.dds" } } blockoverride "tooltip_content" { TooltipTextBlock = { blockoverride "text" { text = "MODIFIER_TYPE_DESC_local_steel_output_modifier" } } } } } } }
+				expand = {}
+				widget = { size = { 60 20 } text_single = { parentanchor = right|vcenter raw_text = "[LocationView.GetLocation.GetModifierValue('local_steel_output_modifier')]" } }
+			}
+		}
+		TooltipManualTableField = {
+			visible = "[Or3(EqualTo_float(FixedPointToFloat(LocationView.GetLocation.MakeScope.GetVariable('sul_specialization_designation').GetValue), '(float)1.0'), EqualTo_float(FixedPointToFloat(LocationView.GetLocation.MakeScope.GetVariable('sul_specialization_designation').GetValue), '(float)11.0'), EqualTo_float(FixedPointToFloat(LocationView.GetLocation.MakeScope.GetVariable('sul_specialization_designation').GetValue), '(float)21.0'))]"
+			blockoverride "field_content" {
+				hbox = { spacing = 5 icon = { size = { 28 28 } texture = "gfx/interface/icons/modifier_types/jewelry_positive.dds" } text_single = { text = "MODIFIER_TYPE_NAME_local_jewelry_output_modifier" tooltipwidget = { ContextualTooltipType = { blockoverride "title_text" { text = "MODIFIER_TYPE_NAME_local_jewelry_output_modifier" } blockoverride "title_icon" { icon = { using = tooltip_title_icon_size texture = "gfx/interface/icons/modifier_types/jewelry_positive.dds" } } blockoverride "tooltip_content" { TooltipTextBlock = { blockoverride "text" { text = "MODIFIER_TYPE_DESC_local_jewelry_output_modifier" } } } } } } }
+				expand = {}
+				widget = { size = { 60 20 } text_single = { parentanchor = right|vcenter raw_text = "[LocationView.GetLocation.GetModifierValue('local_jewelry_output_modifier')]" } }
+			}
+		}
+		# =====================================================
+		# PER-GOOD OUTPUT MODIFIERS - Farming Specialization (2/12/22)
+		# =====================================================
+		TooltipManualTableField = {
+			visible = "[Or3(EqualTo_float(FixedPointToFloat(LocationView.GetLocation.MakeScope.GetVariable('sul_specialization_designation').GetValue), '(float)2.0'), EqualTo_float(FixedPointToFloat(LocationView.GetLocation.MakeScope.GetVariable('sul_specialization_designation').GetValue), '(float)12.0'), EqualTo_float(FixedPointToFloat(LocationView.GetLocation.MakeScope.GetVariable('sul_specialization_designation').GetValue), '(float)22.0'))]"
+			blockoverride "field_content" {
+				hbox = { spacing = 5 icon = { size = { 28 28 } texture = "gfx/interface/icons/modifier_types/wine_positive.dds" } text_single = { text = "MODIFIER_TYPE_NAME_local_wine_output_modifier" tooltipwidget = { ContextualTooltipType = { blockoverride "title_text" { text = "MODIFIER_TYPE_NAME_local_wine_output_modifier" } blockoverride "title_icon" { icon = { using = tooltip_title_icon_size texture = "gfx/interface/icons/modifier_types/wine_positive.dds" } } blockoverride "tooltip_content" { TooltipTextBlock = { blockoverride "text" { text = "MODIFIER_TYPE_DESC_local_wine_output_modifier" } } } } } } }
+				expand = {}
+				widget = { size = { 60 20 } text_single = { parentanchor = right|vcenter raw_text = "[LocationView.GetLocation.GetModifierValue('local_wine_output_modifier')]" } }
+			}
+		}
+		TooltipManualTableField = {
+			visible = "[Or3(EqualTo_float(FixedPointToFloat(LocationView.GetLocation.MakeScope.GetVariable('sul_specialization_designation').GetValue), '(float)2.0'), EqualTo_float(FixedPointToFloat(LocationView.GetLocation.MakeScope.GetVariable('sul_specialization_designation').GetValue), '(float)12.0'), EqualTo_float(FixedPointToFloat(LocationView.GetLocation.MakeScope.GetVariable('sul_specialization_designation').GetValue), '(float)22.0'))]"
+			blockoverride "field_content" {
+				hbox = { spacing = 5 icon = { size = { 28 28 } texture = "gfx/interface/icons/modifier_types/beer_positive.dds" } text_single = { text = "MODIFIER_TYPE_NAME_local_beer_output_modifier" tooltipwidget = { ContextualTooltipType = { blockoverride "title_text" { text = "MODIFIER_TYPE_NAME_local_beer_output_modifier" } blockoverride "title_icon" { icon = { using = tooltip_title_icon_size texture = "gfx/interface/icons/modifier_types/beer_positive.dds" } } blockoverride "tooltip_content" { TooltipTextBlock = { blockoverride "text" { text = "MODIFIER_TYPE_DESC_local_beer_output_modifier" } } } } } } }
+				expand = {}
+				widget = { size = { 60 20 } text_single = { parentanchor = right|vcenter raw_text = "[LocationView.GetLocation.GetModifierValue('local_beer_output_modifier')]" } }
+			}
+		}
+		TooltipManualTableField = {
+			visible = "[Or3(EqualTo_float(FixedPointToFloat(LocationView.GetLocation.MakeScope.GetVariable('sul_specialization_designation').GetValue), '(float)2.0'), EqualTo_float(FixedPointToFloat(LocationView.GetLocation.MakeScope.GetVariable('sul_specialization_designation').GetValue), '(float)12.0'), EqualTo_float(FixedPointToFloat(LocationView.GetLocation.MakeScope.GetVariable('sul_specialization_designation').GetValue), '(float)22.0'))]"
+			blockoverride "field_content" {
+				hbox = { spacing = 5 icon = { size = { 28 28 } texture = "gfx/interface/icons/modifier_types/liquor_positive.dds" } text_single = { text = "MODIFIER_TYPE_NAME_local_liquor_output_modifier" tooltipwidget = { ContextualTooltipType = { blockoverride "title_text" { text = "MODIFIER_TYPE_NAME_local_liquor_output_modifier" } blockoverride "title_icon" { icon = { using = tooltip_title_icon_size texture = "gfx/interface/icons/modifier_types/liquor_positive.dds" } } blockoverride "tooltip_content" { TooltipTextBlock = { blockoverride "text" { text = "MODIFIER_TYPE_DESC_local_liquor_output_modifier" } } } } } } }
+				expand = {}
+				widget = { size = { 60 20 } text_single = { parentanchor = right|vcenter raw_text = "[LocationView.GetLocation.GetModifierValue('local_liquor_output_modifier')]" } }
+			}
+		}
+		# =====================================================
+		# PER-GOOD OUTPUT MODIFIERS - Woodland Specialization (4/14/24)
+		# =====================================================
+		TooltipManualTableField = {
+			visible = "[Or3(EqualTo_float(FixedPointToFloat(LocationView.GetLocation.MakeScope.GetVariable('sul_specialization_designation').GetValue), '(float)4.0'), EqualTo_float(FixedPointToFloat(LocationView.GetLocation.MakeScope.GetVariable('sul_specialization_designation').GetValue), '(float)14.0'), EqualTo_float(FixedPointToFloat(LocationView.GetLocation.MakeScope.GetVariable('sul_specialization_designation').GetValue), '(float)24.0'))]"
+			blockoverride "field_content" {
+				hbox = { spacing = 5 icon = { size = { 28 28 } texture = "gfx/interface/icons/modifier_types/paper_positive.dds" } text_single = { text = "MODIFIER_TYPE_NAME_local_paper_output_modifier" tooltipwidget = { ContextualTooltipType = { blockoverride "title_text" { text = "MODIFIER_TYPE_NAME_local_paper_output_modifier" } blockoverride "title_icon" { icon = { using = tooltip_title_icon_size texture = "gfx/interface/icons/modifier_types/paper_positive.dds" } } blockoverride "tooltip_content" { TooltipTextBlock = { blockoverride "text" { text = "MODIFIER_TYPE_DESC_local_paper_output_modifier" } } } } } } }
+				expand = {}
+				widget = { size = { 60 20 } text_single = { parentanchor = right|vcenter raw_text = "[LocationView.GetLocation.GetModifierValue('local_paper_output_modifier')]" } }
+			}
+		}
+		TooltipManualTableField = {
+			visible = "[Or3(EqualTo_float(FixedPointToFloat(LocationView.GetLocation.MakeScope.GetVariable('sul_specialization_designation').GetValue), '(float)4.0'), EqualTo_float(FixedPointToFloat(LocationView.GetLocation.MakeScope.GetVariable('sul_specialization_designation').GetValue), '(float)14.0'), EqualTo_float(FixedPointToFloat(LocationView.GetLocation.MakeScope.GetVariable('sul_specialization_designation').GetValue), '(float)24.0'))]"
+			blockoverride "field_content" {
+				hbox = { spacing = 5 icon = { size = { 28 28 } texture = "gfx/interface/icons/modifier_types/furniture_positive.dds" } text_single = { text = "MODIFIER_TYPE_NAME_local_furniture_output_modifier" tooltipwidget = { ContextualTooltipType = { blockoverride "title_text" { text = "MODIFIER_TYPE_NAME_local_furniture_output_modifier" } blockoverride "title_icon" { icon = { using = tooltip_title_icon_size texture = "gfx/interface/icons/modifier_types/furniture_positive.dds" } } blockoverride "tooltip_content" { TooltipTextBlock = { blockoverride "text" { text = "MODIFIER_TYPE_DESC_local_furniture_output_modifier" } } } } } } }
+				expand = {}
+				widget = { size = { 60 20 } text_single = { parentanchor = right|vcenter raw_text = "[LocationView.GetLocation.GetModifierValue('local_furniture_output_modifier')]" } }
+			}
+		}
+		TooltipManualTableField = {
+			visible = "[Or3(EqualTo_float(FixedPointToFloat(LocationView.GetLocation.MakeScope.GetVariable('sul_specialization_designation').GetValue), '(float)4.0'), EqualTo_float(FixedPointToFloat(LocationView.GetLocation.MakeScope.GetVariable('sul_specialization_designation').GetValue), '(float)14.0'), EqualTo_float(FixedPointToFloat(LocationView.GetLocation.MakeScope.GetVariable('sul_specialization_designation').GetValue), '(float)24.0'))]"
+			blockoverride "field_content" {
+				hbox = { spacing = 5 icon = { size = { 28 28 } texture = "gfx/interface/icons/modifier_types/tar_positive.dds" } text_single = { text = "MODIFIER_TYPE_NAME_local_tar_output_modifier" tooltipwidget = { ContextualTooltipType = { blockoverride "title_text" { text = "MODIFIER_TYPE_NAME_local_tar_output_modifier" } blockoverride "title_icon" { icon = { using = tooltip_title_icon_size texture = "gfx/interface/icons/modifier_types/tar_positive.dds" } } blockoverride "tooltip_content" { TooltipTextBlock = { blockoverride "text" { text = "MODIFIER_TYPE_DESC_local_tar_output_modifier" } } } } } } }
+				expand = {}
+				widget = { size = { 60 20 } text_single = { parentanchor = right|vcenter raw_text = "[LocationView.GetLocation.GetModifierValue('local_tar_output_modifier')]" } }
+			}
+		}
+		# =====================================================
+		# PER-GOOD OUTPUT MODIFIERS - Leather (Farming 2/12/22 OR Woodland 4/14/24)
+		# =====================================================
+		TooltipManualTableField = {
+			visible = "[Or(Or3(EqualTo_float(FixedPointToFloat(LocationView.GetLocation.MakeScope.GetVariable('sul_specialization_designation').GetValue), '(float)2.0'), EqualTo_float(FixedPointToFloat(LocationView.GetLocation.MakeScope.GetVariable('sul_specialization_designation').GetValue), '(float)12.0'), EqualTo_float(FixedPointToFloat(LocationView.GetLocation.MakeScope.GetVariable('sul_specialization_designation').GetValue), '(float)22.0')), Or3(EqualTo_float(FixedPointToFloat(LocationView.GetLocation.MakeScope.GetVariable('sul_specialization_designation').GetValue), '(float)4.0'), EqualTo_float(FixedPointToFloat(LocationView.GetLocation.MakeScope.GetVariable('sul_specialization_designation').GetValue), '(float)14.0'), EqualTo_float(FixedPointToFloat(LocationView.GetLocation.MakeScope.GetVariable('sul_specialization_designation').GetValue), '(float)24.0')))]"
+			blockoverride "field_content" {
+				hbox = { spacing = 5 icon = { size = { 28 28 } texture = "gfx/interface/icons/modifier_types/leather_positive.dds" } text_single = { text = "MODIFIER_TYPE_NAME_local_leather_output_modifier" tooltipwidget = { ContextualTooltipType = { blockoverride "title_text" { text = "MODIFIER_TYPE_NAME_local_leather_output_modifier" } blockoverride "title_icon" { icon = { using = tooltip_title_icon_size texture = "gfx/interface/icons/modifier_types/leather_positive.dds" } } blockoverride "tooltip_content" { TooltipTextBlock = { blockoverride "text" { text = "MODIFIER_TYPE_DESC_local_leather_output_modifier" } } } } } } }
+				expand = {}
+				widget = { size = { 60 20 } text_single = { parentanchor = right|vcenter raw_text = "[LocationView.GetLocation.GetModifierValue('local_leather_output_modifier')]" } }
+			}
+		}
+		# =====================================================
+		# PER-GOOD OUTPUT MODIFIERS - Gathering Specialization (3/13/23)
+		# =====================================================
+		TooltipManualTableField = {
+			visible = "[Or3(EqualTo_float(FixedPointToFloat(LocationView.GetLocation.MakeScope.GetVariable('sul_specialization_designation').GetValue), '(float)3.0'), EqualTo_float(FixedPointToFloat(LocationView.GetLocation.MakeScope.GetVariable('sul_specialization_designation').GetValue), '(float)13.0'), EqualTo_float(FixedPointToFloat(LocationView.GetLocation.MakeScope.GetVariable('sul_specialization_designation').GetValue), '(float)23.0'))]"
+			blockoverride "field_content" {
+				hbox = { spacing = 5 icon = { size = { 28 28 } texture = "gfx/interface/icons/modifier_types/glass_positive.dds" } text_single = { text = "MODIFIER_TYPE_NAME_local_glass_output_modifier" tooltipwidget = { ContextualTooltipType = { blockoverride "title_text" { text = "MODIFIER_TYPE_NAME_local_glass_output_modifier" } blockoverride "title_icon" { icon = { using = tooltip_title_icon_size texture = "gfx/interface/icons/modifier_types/glass_positive.dds" } } blockoverride "tooltip_content" { TooltipTextBlock = { blockoverride "text" { text = "MODIFIER_TYPE_DESC_local_glass_output_modifier" } } } } } } }
+				expand = {}
+				widget = { size = { 60 20 } text_single = { parentanchor = right|vcenter raw_text = "[LocationView.GetLocation.GetModifierValue('local_glass_output_modifier')]" } }
+			}
+		}
+		TooltipManualTableField = {
+			visible = "[Or3(EqualTo_float(FixedPointToFloat(LocationView.GetLocation.MakeScope.GetVariable('sul_specialization_designation').GetValue), '(float)3.0'), EqualTo_float(FixedPointToFloat(LocationView.GetLocation.MakeScope.GetVariable('sul_specialization_designation').GetValue), '(float)13.0'), EqualTo_float(FixedPointToFloat(LocationView.GetLocation.MakeScope.GetVariable('sul_specialization_designation').GetValue), '(float)23.0'))]"
+			blockoverride "field_content" {
+				hbox = { spacing = 5 icon = { size = { 28 28 } texture = "gfx/interface/icons/modifier_types/pottery_positive.dds" } text_single = { text = "MODIFIER_TYPE_NAME_local_pottery_output_modifier" tooltipwidget = { ContextualTooltipType = { blockoverride "title_text" { text = "MODIFIER_TYPE_NAME_local_pottery_output_modifier" } blockoverride "title_icon" { icon = { using = tooltip_title_icon_size texture = "gfx/interface/icons/modifier_types/pottery_positive.dds" } } blockoverride "tooltip_content" { TooltipTextBlock = { blockoverride "text" { text = "MODIFIER_TYPE_DESC_local_pottery_output_modifier" } } } } } } }
+				expand = {}
+				widget = { size = { 60 20 } text_single = { parentanchor = right|vcenter raw_text = "[LocationView.GetLocation.GetModifierValue('local_pottery_output_modifier')]" } }
+			}
+		}
+		TooltipManualTableField = {
+			visible = "[Or3(EqualTo_float(FixedPointToFloat(LocationView.GetLocation.MakeScope.GetVariable('sul_specialization_designation').GetValue), '(float)3.0'), EqualTo_float(FixedPointToFloat(LocationView.GetLocation.MakeScope.GetVariable('sul_specialization_designation').GetValue), '(float)13.0'), EqualTo_float(FixedPointToFloat(LocationView.GetLocation.MakeScope.GetVariable('sul_specialization_designation').GetValue), '(float)23.0'))]"
+			blockoverride "field_content" {
+				hbox = { spacing = 5 icon = { size = { 28 28 } texture = "gfx/interface/icons/modifier_types/porcelain_positive.dds" } text_single = { text = "MODIFIER_TYPE_NAME_local_porcelain_output_modifier" tooltipwidget = { ContextualTooltipType = { blockoverride "title_text" { text = "MODIFIER_TYPE_NAME_local_porcelain_output_modifier" } blockoverride "title_icon" { icon = { using = tooltip_title_icon_size texture = "gfx/interface/icons/modifier_types/porcelain_positive.dds" } } blockoverride "tooltip_content" { TooltipTextBlock = { blockoverride "text" { text = "MODIFIER_TYPE_DESC_local_porcelain_output_modifier" } } } } } } }
+				expand = {}
+				widget = { size = { 60 20 } text_single = { parentanchor = right|vcenter raw_text = "[LocationView.GetLocation.GetModifierValue('local_porcelain_output_modifier')]" } }
+			}
+		}
+		TooltipManualTableField = {
+			visible = "[Or3(EqualTo_float(FixedPointToFloat(LocationView.GetLocation.MakeScope.GetVariable('sul_specialization_designation').GetValue), '(float)3.0'), EqualTo_float(FixedPointToFloat(LocationView.GetLocation.MakeScope.GetVariable('sul_specialization_designation').GetValue), '(float)13.0'), EqualTo_float(FixedPointToFloat(LocationView.GetLocation.MakeScope.GetVariable('sul_specialization_designation').GetValue), '(float)23.0'))]"
+			blockoverride "field_content" {
+				hbox = { spacing = 5 icon = { size = { 28 28 } texture = "gfx/interface/icons/modifier_types/lacquerware_positive.dds" } text_single = { text = "MODIFIER_TYPE_NAME_local_lacquerware_output_modifier" tooltipwidget = { ContextualTooltipType = { blockoverride "title_text" { text = "MODIFIER_TYPE_NAME_local_lacquerware_output_modifier" } blockoverride "title_icon" { icon = { using = tooltip_title_icon_size texture = "gfx/interface/icons/modifier_types/lacquerware_positive.dds" } } blockoverride "tooltip_content" { TooltipTextBlock = { blockoverride "text" { text = "MODIFIER_TYPE_DESC_local_lacquerware_output_modifier" } } } } } } }
+				expand = {}
+				widget = { size = { 60 20 } text_single = { parentanchor = right|vcenter raw_text = "[LocationView.GetLocation.GetModifierValue('local_lacquerware_output_modifier')]" } }
+			}
+		}
+	}
+}
+
+# =====================================================
 # VISIBILITY TEMPLATES - Location Context (with IsSet check)
 # =====================================================
 template sul_vis_loc_mining_town { visible = "[And(Location.MakeScope.GetVariable('sul_specialization_designation').IsSet, EqualTo_float(FixedPointToFloat(Location.MakeScope.GetVariable('sul_specialization_designation').GetValue), '(float)1.0'))]" }
@@ -355,10 +710,9 @@ template sul_local_gdp_tooltip {
 
 			# Demand Multipliers Section
 			TooltipListBase = {
-				blockoverride "block_title" {
-					text = "SUL_DEMAND_MULTIPLIERS_HEADER"
+				TooltipTableHeader = {
+					blockoverride "tableheader_text" { text = "SUL_DEMAND_MULTIPLIERS_HEADER" }
 				}
-
 				TooltipListRowContent = {
 					# Column header row
 					TooltipManualTableField = {
@@ -391,6 +745,8 @@ template sul_local_gdp_tooltip {
 								layoutpolicy_horizontal = expanding
 								margin_left = 5
 								text = "SUL_NOBLES_LABEL"
+								datacontext = "[GetPopTypeByName('nobles')]"
+								tooltipwidget = { using = sul_pop_type_needs_tooltip }
 							}
 							text_single = {
 								min_width = 130
@@ -415,6 +771,8 @@ template sul_local_gdp_tooltip {
 								layoutpolicy_horizontal = expanding
 								margin_left = 5
 								text = "SUL_CLERGY_LABEL"
+								datacontext = "[GetPopTypeByName('clergy')]"
+								tooltipwidget = { using = sul_pop_type_needs_tooltip }
 							}
 							text_single = {
 								min_width = 130
@@ -439,6 +797,8 @@ template sul_local_gdp_tooltip {
 								layoutpolicy_horizontal = expanding
 								margin_left = 5
 								text = "SUL_BURGHERS_LABEL"
+								datacontext = "[GetPopTypeByName('burghers')]"
+								tooltipwidget = { using = sul_pop_type_needs_tooltip }
 							}
 							text_single = {
 								min_width = 130
@@ -451,7 +811,33 @@ template sul_local_gdp_tooltip {
 						}
 					}
 
-					# Commoners row
+					# Soldiers row
+					TooltipManualTableField = {
+						tooltipwidget = { using = sul_demand_formula_tooltip }
+						blockoverride "field_content" {
+							icon = {
+								size = { 20 20 }
+								texture = "[GetGraphicalCultureTextureForPopType(GetPopTypeByName('soldiers'))]"
+							}
+							text_single = {
+								layoutpolicy_horizontal = expanding
+								margin_left = 5
+								text = "SUL_SOLDIERS_LABEL"
+								datacontext = "[GetPopTypeByName('soldiers')]"
+								tooltipwidget = { using = sul_pop_type_needs_tooltip }
+							}
+							text_single = {
+								min_width = 130
+								raw_text = "-"
+							}
+							text_single = {
+								min_width = 50
+								raw_text = "[Location.MakeScope.GetVariable('sul_soldier_gdp_pc').GetValue|2]x"
+							}
+						}
+					}
+
+					# Laborers row
 					TooltipManualTableField = {
 						tooltipwidget = { using = sul_demand_formula_tooltip }
 						blockoverride "field_content" {
@@ -462,7 +848,35 @@ template sul_local_gdp_tooltip {
 							text_single = {
 								layoutpolicy_horizontal = expanding
 								margin_left = 5
-								text = "SUL_COMMONERS_LABEL"
+								text = "SUL_LABORERS_LABEL"
+								datacontext = "[GetPopTypeByName('laborers')]"
+								tooltipwidget = { using = sul_pop_type_needs_tooltip }
+							}
+							text_single = {
+								min_width = 130
+								raw_text = "-"
+							}
+							text_single = {
+								min_width = 50
+								raw_text = "[Location.MakeScope.GetVariable('sul_laborer_gdp_pc').GetValue|2]x"
+							}
+						}
+					}
+
+					# Peasants row
+					TooltipManualTableField = {
+						tooltipwidget = { using = sul_demand_formula_tooltip }
+						blockoverride "field_content" {
+							icon = {
+								size = { 20 20 }
+								texture = "[GetGraphicalCultureTextureForPopType(GetPopTypeByName('peasants'))]"
+							}
+							text_single = {
+								layoutpolicy_horizontal = expanding
+								margin_left = 5
+								text = "SUL_PEASANTS_LABEL"
+								datacontext = "[GetPopTypeByName('peasants')]"
+								tooltipwidget = { using = sul_pop_type_needs_tooltip }
 							}
 							text_single = {
 								min_width = 130
@@ -470,7 +884,7 @@ template sul_local_gdp_tooltip {
 							}
 							text_single = {
 								min_width = 50
-								raw_text = "[Location.MakeScope.GetVariable('sul_commoner_gdp_pc').GetValue|2]x"
+								raw_text = "[Location.MakeScope.GetVariable('sul_peasant_gdp_pc').GetValue|2]x"
 							}
 						}
 					}
@@ -487,6 +901,8 @@ template sul_local_gdp_tooltip {
 								layoutpolicy_horizontal = expanding
 								margin_left = 5
 								text = "SUL_TRIBESMEN_LABEL"
+								datacontext = "[GetPopTypeByName('tribesmen')]"
+								tooltipwidget = { using = sul_pop_type_needs_tooltip }
 							}
 							text_single = {
 								min_width = 130
@@ -511,6 +927,8 @@ template sul_local_gdp_tooltip {
 								layoutpolicy_horizontal = expanding
 								margin_left = 5
 								text = "SUL_SLAVES_LABEL"
+								datacontext = "[GetPopTypeByName('slaves')]"
+								tooltipwidget = { using = sul_pop_type_needs_tooltip }
 							}
 							text_single = {
 								min_width = 130
@@ -529,267 +947,1228 @@ template sul_local_gdp_tooltip {
 }
 
 # =====================================================
-# DEMAND FORMULA TOOLTIP TEMPLATE
+# POP TYPE NEEDS TOOLTIP TEMPLATE
 # =====================================================
-# Explains the demand multiplier formula with examples
+# Shows pop type satisfaction and hoverable subcategories for needs
+# Requires Location and PopType contexts
 
-# =====================================================
-# SPECIALIZATION TOOLTIP WITH EXTERNALITIES (UNUSED - inlined in location_window.gui)
-# =====================================================
-# Combined tooltip showing specialization modifier + building externalities
-# Pass $MODIFIER$ as the static modifier name (e.g., sul_mining_town_specialization)
-# Pass $TEXTURE$ as the icon texture path
-# NOTE: Not currently used - tooltip content is inlined in location_window.gui
-#       which uses LocationView context instead of Location context
+template sul_pop_type_needs_tooltip {
+	ContextualTooltipType = {
+		blockoverride "title_icon" {
+			icon = {
+				using = tooltip_title_icon_size
+				texture = "[GetGraphicalCultureTextureForCountryPopType(PopType.Self, Location.GetOwner.Self)]"
+			}
+		}
 
-# template sul_specialization_tooltip {
-# 	ContextualTooltipType = {
-# 		blockoverride "title_icon" {
-# 			icon = {
-# 				using = tooltip_title_icon_size
-# 				texture = "$TEXTURE$"
-# 			}
-# 		}
-#
-# 		blockoverride "title_text" {
-# 			text = "STATIC_MODIFIER_NAME_$MODIFIER$"
-# 		}
-#
-# 		blockoverride "tooltip_content" {
-# 			# Static modifier effects
-# 			TooltipStringPairList = {
-# 				textcontext = "[ShowModifierEffect('$MODIFIER$')]"
-# 			}
-#
-# 			# Building Externalities Section
-# 			TooltipListBase = {
-# 				blockoverride "block_title" {
-# 					text = "SUL_EXTERNALITIES_HEADER"
-# 				}
-#
-# 				TooltipListRowContent = {
-# 					# Food Output
-# 					TooltipManualTableField = {
-# 						blockoverride "field_content" {
-# 							icon = {
-# 								size = { 20 20 }
-# 								texture = "gfx/interface/icons/goods_icons/wheat.dds"
-# 							}
-# 							text_single = {
-# 								layoutpolicy_horizontal = expanding
-# 								margin_left = 5
-# 								text = "SUL_EXTERNALITY_FOOD"
-# 							}
-# 							widget = {
-# 								size = { 60 20 }
-# 								text_single = {
-# 									parentanchor = right|vcenter
-# 									raw_text = "[Location.GetModifierValue('local_monthly_food_modifier')|%+1]"
-# 								}
-# 							}
-# 						}
-# 					}
-#
-# 					# Raw Material Output
-# 					TooltipManualTableField = {
-# 						blockoverride "field_content" {
-# 							icon = {
-# 								size = { 20 20 }
-# 								texture = "gfx/interface/icons/goods_icons/iron.dds"
-# 							}
-# 							text_single = {
-# 								layoutpolicy_horizontal = expanding
-# 								margin_left = 5
-# 								text = "SUL_EXTERNALITY_RAW"
-# 							}
-# 							widget = {
-# 								size = { 60 20 }
-# 								text_single = {
-# 									parentanchor = right|vcenter
-# 									raw_text = "[Location.GetModifierValue('local_raw_material_output')|%+1]"
-# 								}
-# 							}
-# 						}
-# 					}
-#
-# 					# RGO Size
-# 					TooltipManualTableField = {
-# 						blockoverride "field_content" {
-# 							icon = {
-# 								size = { 20 20 }
-# 								texture = "gfx/interface/icons/flat_icons/size.dds"
-# 							}
-# 							text_single = {
-# 								layoutpolicy_horizontal = expanding
-# 								margin_left = 5
-# 								text = "SUL_EXTERNALITY_RGO"
-# 							}
-# 							widget = {
-# 								size = { 60 20 }
-# 								text_single = {
-# 									parentanchor = right|vcenter
-# 									raw_text = "[Location.GetModifierValue('local_max_rgo_size_modifier')|%+1]"
-# 								}
-# 							}
-# 						}
-# 					}
-#
-# 					# Production Efficiency
-# 					TooltipManualTableField = {
-# 						blockoverride "field_content" {
-# 							icon = {
-# 								size = { 20 20 }
-# 								texture = "gfx/interface/icons/flat_icons/tabicons/production.dds"
-# 							}
-# 							text_single = {
-# 								layoutpolicy_horizontal = expanding
-# 								margin_left = 5
-# 								text = "SUL_EXTERNALITY_EFFICIENCY"
-# 							}
-# 							widget = {
-# 								size = { 60 20 }
-# 								text_single = {
-# 									parentanchor = right|vcenter
-# 									raw_text = "[Location.GetModifierValue('local_production_efficiency')|%+1]"
-# 								}
-# 							}
-# 						}
-# 					}
-# 				}
-# 			}
-# 		}
-# 	}
-# }
+		blockoverride "title_text" {
+			raw_text = "[PopType.GetName] #bold ([Location.GetTotalPopTypeSize(PopType.Self)])#!"
+		}
 
-# =====================================================
-# BUILDING EXTERNALITIES TOOLTIP TEMPLATE (UNUSED - inlined in location_window.gui)
-# =====================================================
-# Shows aggregate modifier values from building externalities
-# NOTE: Not currently used - tooltip content is inlined in location_window.gui
+		blockoverride "concept_link" {
+			text = "[pop_needs|E]"
+		}
 
-# template sul_building_externalities_tooltip {
-# 	ContextualTooltipType = {
-# 		blockoverride "title_icon" {
-# 			icon = {
-# 				using = tooltip_title_icon_size
-# 				texture = "gfx/interface/icons/flat_icons/tabicons/production.dds"
-# 			}
-# 		}
-#
-# 		blockoverride "title_text" {
-# 			text = "SUL_EXTERNALITIES_TITLE"
-# 		}
-#
-# 		blockoverride "tooltip_content" {
-# 			TooltipTextBlock = {
-# 				blockoverride "text" {
-# 					text = "SUL_EXTERNALITIES_DESC"
-# 				}
-# 			}
-#
-# 			TooltipListBase = {
-# 				blockoverride "block_title" {
-# 					text = "SUL_EXTERNALITIES_HEADER"
-# 				}
-#
-# 				TooltipListRowContent = {
-# 					# Food Output
-# 					TooltipManualTableField = {
-# 						blockoverride "field_content" {
-# 							icon = {
-# 								size = { 20 20 }
-# 								texture = "gfx/interface/icons/goods_icons/wheat.dds"
-# 							}
-# 							text_single = {
-# 								layoutpolicy_horizontal = expanding
-# 								margin_left = 5
-# 								text = "SUL_EXTERNALITY_FOOD"
-# 							}
-# 							widget = {
-# 								size = { 60 20 }
-# 								text_single = {
-# 									parentanchor = right|vcenter
-# 									raw_text = "[Location.GetModifierValue('local_monthly_food_modifier')|%+1]"
-# 								}
-# 							}
-# 						}
-# 					}
-#
-# 					# Raw Material Output
-# 					TooltipManualTableField = {
-# 						blockoverride "field_content" {
-# 							icon = {
-# 								size = { 20 20 }
-# 								texture = "gfx/interface/icons/goods_icons/iron.dds"
-# 							}
-# 							text_single = {
-# 								layoutpolicy_horizontal = expanding
-# 								margin_left = 5
-# 								text = "SUL_EXTERNALITY_RAW"
-# 							}
-# 							widget = {
-# 								size = { 60 20 }
-# 								text_single = {
-# 									parentanchor = right|vcenter
-# 									raw_text = "[Location.GetModifierValue('local_raw_material_output')|%+1]"
-# 								}
-# 							}
-# 						}
-# 					}
-#
-# 					# RGO Size
-# 					TooltipManualTableField = {
-# 						blockoverride "field_content" {
-# 							icon = {
-# 								size = { 20 20 }
-# 								texture = "gfx/interface/icons/flat_icons/size.dds"
-# 							}
-# 							text_single = {
-# 								layoutpolicy_horizontal = expanding
-# 								margin_left = 5
-# 								text = "SUL_EXTERNALITY_RGO"
-# 							}
-# 							widget = {
-# 								size = { 60 20 }
-# 								text_single = {
-# 									parentanchor = right|vcenter
-# 									raw_text = "[Location.GetModifierValue('local_max_rgo_size_modifier')|%+1]"
-# 								}
-# 							}
-# 						}
-# 					}
-#
-# 					# Production Efficiency
-# 					TooltipManualTableField = {
-# 						blockoverride "field_content" {
-# 							icon = {
-# 								size = { 20 20 }
-# 								texture = "gfx/interface/icons/flat_icons/tabicons/production.dds"
-# 							}
-# 							text_single = {
-# 								layoutpolicy_horizontal = expanding
-# 								margin_left = 5
-# 								text = "SUL_EXTERNALITY_EFFICIENCY"
-# 							}
-# 							widget = {
-# 								size = { 60 20 }
-# 								text_single = {
-# 									parentanchor = right|vcenter
-# 									raw_text = "[Location.GetModifierValue('local_production_efficiency')|%+1]"
-# 								}
-# 							}
-# 						}
-# 					}
-# 				}
-# 			}
-# 		}
-# 	}
-# }
+		blockoverride "tooltip_content" {
+			# Subcategories - hoverable for Pop_tooltip -> PopNeeds_tooltip
+			TooltipScrolledColumnList = {
+				blockoverride "block_scrollarea" { maximumsize = { -1 300 } }
+				blockoverride "empty_list_text" { text = "SUL_NO_POPS_OF_TYPE" }
+				textcontext = "[Location.GetPopTypeBreakDown(PopType.Self)]"
+			}
+		}
+	}
+}
 
 # =====================================================
 # DEMAND FORMULA TOOLTIP TEMPLATE
 # =====================================================
 # Explains the demand multiplier formula with examples
+
+# =====================================================
+# BUILDING EXTERNALITY BREAKDOWN TOOLTIP - FOOD OUTPUT
+# =====================================================
+template sul_food_breakdown_tooltip {
+	ContextualTooltipType = {
+		blockoverride "title_icon" {
+			icon = {
+				using = tooltip_title_icon_size
+				texture = "gfx/interface/icons/modifier_types/global_monthly_food_modifier.dds"
+			}
+		}
+		blockoverride "title_text" { text = "MODIFIER_TYPE_NAME_local_monthly_food_modifier" }
+		blockoverride "tooltip_content" {
+			TooltipListBase = {
+				TooltipListRowContent = {
+					# Baseline row
+					TooltipManualTableField = {
+						blockoverride "field_content" {
+							text_single = { raw_text = "[LocationView.GetLocation.MakeScope.ScriptValue('sul_effective_building_levels')|1] Building Levels ([LocationView.GetLocation.MakeScope.ScriptValue('sul_food_per_level')|%0] per Level)" }
+							expand = {}
+							widget = {
+								using = sul_value_cell
+								blockoverride "val" { raw_text = "#R [LocationView.GetLocation.MakeScope.ScriptValue('sul_building_baseline_food')|%+1]#!" }
+							}
+						}
+					}
+					# Building rows - only show if > 0
+					TooltipManualTableField = {
+						visible = "[GreaterThan_CFixedPoint(LocationView.GetLocation.MakeScope.ScriptValue('sul_food_granary'), '(CFixedPoint)0')]"
+						blockoverride "field_content" {
+							text_single = { raw_text = "[ShowBuildingTypeName('granary')]" }
+							expand = {}
+							widget = {
+								using = sul_value_cell
+								blockoverride "val" { raw_text = "#G [LocationView.GetLocation.MakeScope.ScriptValue('sul_food_granary')|%+1]#!" }
+							}
+						}
+					}
+					TooltipManualTableField = {
+						visible = "[GreaterThan_CFixedPoint(LocationView.GetLocation.MakeScope.ScriptValue('sul_food_farming_village'), '(CFixedPoint)0')]"
+						blockoverride "field_content" {
+							text_single = { raw_text = "[ShowBuildingTypeName('farming_village')]" }
+							expand = {}
+							widget = {
+								using = sul_value_cell
+								blockoverride "val" { raw_text = "#G [LocationView.GetLocation.MakeScope.ScriptValue('sul_food_farming_village')|%+1]#!" }
+							}
+						}
+					}
+					TooltipManualTableField = {
+						visible = "[GreaterThan_CFixedPoint(LocationView.GetLocation.MakeScope.ScriptValue('sul_food_fishing_village'), '(CFixedPoint)0')]"
+						blockoverride "field_content" {
+							text_single = { raw_text = "[ShowBuildingTypeName('fishing_village')]" }
+							expand = {}
+							widget = {
+								using = sul_value_cell
+								blockoverride "val" { raw_text = "#G [LocationView.GetLocation.MakeScope.ScriptValue('sul_food_fishing_village')|%+1]#!" }
+							}
+						}
+					}
+					TooltipManualTableField = {
+						visible = "[GreaterThan_CFixedPoint(LocationView.GetLocation.MakeScope.ScriptValue('sul_food_fruit_orchard'), '(CFixedPoint)0')]"
+						blockoverride "field_content" {
+							text_single = { raw_text = "[ShowBuildingTypeName('fruit_orchard')]" }
+							expand = {}
+							widget = {
+								using = sul_value_cell
+								blockoverride "val" { raw_text = "#G [LocationView.GetLocation.MakeScope.ScriptValue('sul_food_fruit_orchard')|%+1]#!" }
+							}
+						}
+					}
+					TooltipManualTableField = {
+						visible = "[GreaterThan_CFixedPoint(LocationView.GetLocation.MakeScope.ScriptValue('sul_food_fiber_crops_farm'), '(CFixedPoint)0')]"
+						blockoverride "field_content" {
+							text_single = { raw_text = "[ShowBuildingTypeName('fiber_crops_farm')]" }
+							expand = {}
+							widget = {
+								using = sul_value_cell
+								blockoverride "val" { raw_text = "#G [LocationView.GetLocation.MakeScope.ScriptValue('sul_food_fiber_crops_farm')|%+1]#!" }
+							}
+						}
+					}
+					TooltipManualTableField = {
+						visible = "[GreaterThan_CFixedPoint(LocationView.GetLocation.MakeScope.ScriptValue('sul_food_windmill'), '(CFixedPoint)0')]"
+						blockoverride "field_content" {
+							text_single = { raw_text = "[ShowBuildingTypeName('windmill')]" }
+							expand = {}
+							widget = {
+								using = sul_value_cell
+								blockoverride "val" { raw_text = "#G [LocationView.GetLocation.MakeScope.ScriptValue('sul_food_windmill')|%+1]#!" }
+							}
+						}
+					}
+					TooltipManualTableField = {
+						visible = "[GreaterThan_CFixedPoint(LocationView.GetLocation.MakeScope.ScriptValue('sul_food_irrigation_systems'), '(CFixedPoint)0')]"
+						blockoverride "field_content" {
+							text_single = { raw_text = "[ShowBuildingTypeName('irrigation_systems')]" }
+							expand = {}
+							widget = {
+								using = sul_value_cell
+								blockoverride "val" { raw_text = "#G [LocationView.GetLocation.MakeScope.ScriptValue('sul_food_irrigation_systems')|%+1]#!" }
+							}
+						}
+					}
+					TooltipManualTableField = {
+						visible = "[GreaterThan_CFixedPoint(LocationView.GetLocation.MakeScope.ScriptValue('sul_food_sheep_farms'), '(CFixedPoint)0')]"
+						blockoverride "field_content" {
+							text_single = { raw_text = "[ShowBuildingTypeName('sheep_farms')]" }
+							expand = {}
+							widget = {
+								using = sul_value_cell
+								blockoverride "val" { raw_text = "#G [LocationView.GetLocation.MakeScope.ScriptValue('sul_food_sheep_farms')|%+1]#!" }
+							}
+						}
+					}
+				}
+				# Total row
+				TooltipManualTableField = {
+					blockoverride "field_content" {
+						text_single = { raw_text = "#bold Total#!" }
+						expand = {}
+						widget = {
+							using = sul_value_cell
+							blockoverride "val" { raw_text = "#bold [LocationView.GetLocation.MakeScope.ScriptValue('sul_building_food_modifier')|%+1]#!" }
+						}
+					}
+				}
+			}
+		}
+	}
+}
+
+# =====================================================
+# BUILDING EXTERNALITY BREAKDOWN TOOLTIP - RAW MATERIALS
+# =====================================================
+template sul_raw_breakdown_tooltip {
+	ContextualTooltipType = {
+		blockoverride "title_icon" {
+			icon = {
+				using = tooltip_title_icon_size
+				texture = "gfx/interface/icons/modifier_types/global_raw_material_output.dds"
+			}
+		}
+		blockoverride "title_text" { text = "MODIFIER_TYPE_NAME_local_raw_material_output" }
+		blockoverride "tooltip_content" {
+			TooltipListBase = {
+				TooltipListRowContent = {
+					# Baseline row
+					TooltipManualTableField = {
+						blockoverride "field_content" {
+							text_single = { raw_text = "[LocationView.GetLocation.MakeScope.ScriptValue('sul_effective_building_levels')|1] Building Levels ([LocationView.GetLocation.MakeScope.ScriptValue('sul_raw_per_level')|%1] per Level)" }
+							expand = {}
+							widget = {
+								using = sul_value_cell
+								blockoverride "val" { raw_text = "#R [LocationView.GetLocation.MakeScope.ScriptValue('sul_building_baseline_raw')|%+1]#!" }
+							}
+						}
+					}
+					# Building rows
+					TooltipManualTableField = {
+						visible = "[GreaterThan_CFixedPoint(LocationView.GetLocation.MakeScope.ScriptValue('sul_raw_granary'), '(CFixedPoint)0')]"
+						blockoverride "field_content" {
+							text_single = { raw_text = "[ShowBuildingTypeName('granary')]" }
+							expand = {}
+							widget = {
+								using = sul_value_cell
+								blockoverride "val" { raw_text = "#G [LocationView.GetLocation.MakeScope.ScriptValue('sul_raw_granary')|%+1]#!" }
+							}
+						}
+					}
+					TooltipManualTableField = {
+						visible = "[GreaterThan_CFixedPoint(LocationView.GetLocation.MakeScope.ScriptValue('sul_raw_mason'), '(CFixedPoint)0')]"
+						blockoverride "field_content" {
+							text_single = { raw_text = "[ShowBuildingTypeName('mason')]" }
+							expand = {}
+							widget = {
+								using = sul_value_cell
+								blockoverride "val" { raw_text = "#G [LocationView.GetLocation.MakeScope.ScriptValue('sul_raw_mason')|%+1]#!" }
+							}
+						}
+					}
+					TooltipManualTableField = {
+						visible = "[GreaterThan_CFixedPoint(LocationView.GetLocation.MakeScope.ScriptValue('sul_raw_farming_village'), '(CFixedPoint)0')]"
+						blockoverride "field_content" {
+							text_single = { raw_text = "[ShowBuildingTypeName('farming_village')]" }
+							expand = {}
+							widget = {
+								using = sul_value_cell
+								blockoverride "val" { raw_text = "#G [LocationView.GetLocation.MakeScope.ScriptValue('sul_raw_farming_village')|%+1]#!" }
+							}
+						}
+					}
+					TooltipManualTableField = {
+						visible = "[GreaterThan_CFixedPoint(LocationView.GetLocation.MakeScope.ScriptValue('sul_raw_fishing_village'), '(CFixedPoint)0')]"
+						blockoverride "field_content" {
+							text_single = { raw_text = "[ShowBuildingTypeName('fishing_village')]" }
+							expand = {}
+							widget = {
+								using = sul_value_cell
+								blockoverride "val" { raw_text = "#G [LocationView.GetLocation.MakeScope.ScriptValue('sul_raw_fishing_village')|%+1]#!" }
+							}
+						}
+					}
+					TooltipManualTableField = {
+						visible = "[GreaterThan_CFixedPoint(LocationView.GetLocation.MakeScope.ScriptValue('sul_raw_forest_village'), '(CFixedPoint)0')]"
+						blockoverride "field_content" {
+							text_single = { raw_text = "[ShowBuildingTypeName('forest_village')]" }
+							expand = {}
+							widget = {
+								using = sul_value_cell
+								blockoverride "val" { raw_text = "#G [LocationView.GetLocation.MakeScope.ScriptValue('sul_raw_forest_village')|%+1]#!" }
+							}
+						}
+					}
+					TooltipManualTableField = {
+						visible = "[GreaterThan_CFixedPoint(LocationView.GetLocation.MakeScope.ScriptValue('sul_raw_sheep_farms'), '(CFixedPoint)0')]"
+						blockoverride "field_content" {
+							text_single = { raw_text = "[ShowBuildingTypeName('sheep_farms')]" }
+							expand = {}
+							widget = {
+								using = sul_value_cell
+								blockoverride "val" { raw_text = "#G [LocationView.GetLocation.MakeScope.ScriptValue('sul_raw_sheep_farms')|%+1]#!" }
+							}
+						}
+					}
+					TooltipManualTableField = {
+						visible = "[GreaterThan_CFixedPoint(LocationView.GetLocation.MakeScope.ScriptValue('sul_raw_lumber_mill'), '(CFixedPoint)0')]"
+						blockoverride "field_content" {
+							text_single = { raw_text = "[ShowBuildingTypeName('lumber_mill')]" }
+							expand = {}
+							widget = {
+								using = sul_value_cell
+								blockoverride "val" { raw_text = "#G [LocationView.GetLocation.MakeScope.ScriptValue('sul_raw_lumber_mill')|%+1]#!" }
+							}
+						}
+					}
+					TooltipManualTableField = {
+						visible = "[GreaterThan_CFixedPoint(LocationView.GetLocation.MakeScope.ScriptValue('sul_raw_sawmill'), '(CFixedPoint)0')]"
+						blockoverride "field_content" {
+							text_single = { raw_text = "[ShowBuildingTypeName('sawmill')]" }
+							expand = {}
+							widget = {
+								using = sul_value_cell
+								blockoverride "val" { raw_text = "#G [LocationView.GetLocation.MakeScope.ScriptValue('sul_raw_sawmill')|%+1]#!" }
+							}
+						}
+					}
+					TooltipManualTableField = {
+						visible = "[GreaterThan_CFixedPoint(LocationView.GetLocation.MakeScope.ScriptValue('sul_raw_stone_quarry'), '(CFixedPoint)0')]"
+						blockoverride "field_content" {
+							text_single = { raw_text = "[ShowBuildingTypeName('stone_quarry')]" }
+							expand = {}
+							widget = {
+								using = sul_value_cell
+								blockoverride "val" { raw_text = "#G [LocationView.GetLocation.MakeScope.ScriptValue('sul_raw_stone_quarry')|%+1]#!" }
+							}
+						}
+					}
+					TooltipManualTableField = {
+						visible = "[GreaterThan_CFixedPoint(LocationView.GetLocation.MakeScope.ScriptValue('sul_raw_bog_iron_smelter'), '(CFixedPoint)0')]"
+						blockoverride "field_content" {
+							text_single = { raw_text = "[ShowBuildingTypeName('bog_iron_smelter')]" }
+							expand = {}
+							widget = {
+								using = sul_value_cell
+								blockoverride "val" { raw_text = "#G [LocationView.GetLocation.MakeScope.ScriptValue('sul_raw_bog_iron_smelter')|%+1]#!" }
+							}
+						}
+					}
+				}
+				# Total row
+				TooltipManualTableField = {
+					blockoverride "field_content" {
+						text_single = { raw_text = "#bold Total#!" }
+						expand = {}
+						widget = {
+							using = sul_value_cell
+							blockoverride "val" { raw_text = "#bold [LocationView.GetLocation.MakeScope.ScriptValue('sul_building_raw_material')|%+1]#!" }
+						}
+					}
+				}
+			}
+		}
+	}
+}
+
+# =====================================================
+# BUILDING EXTERNALITY BREAKDOWN TOOLTIP - RGO SIZE
+# =====================================================
+template sul_rgo_breakdown_tooltip {
+	ContextualTooltipType = {
+		blockoverride "title_icon" {
+			icon = {
+				using = tooltip_title_icon_size
+				texture = "gfx/interface/icons/modifier_types/global_max_rgo_size_modifier.dds"
+			}
+		}
+		blockoverride "title_text" { text = "MODIFIER_TYPE_NAME_local_max_rgo_size_modifier" }
+		blockoverride "tooltip_content" {
+			TooltipListBase = {
+				TooltipListRowContent = {
+					# Baseline row
+					TooltipManualTableField = {
+						blockoverride "field_content" {
+							text_single = { raw_text = "[LocationView.GetLocation.MakeScope.ScriptValue('sul_effective_building_levels')|1] Building Levels ([LocationView.GetLocation.MakeScope.ScriptValue('sul_rgo_per_level')|%0] per Level)" }
+							expand = {}
+							widget = {
+								using = sul_value_cell
+								blockoverride "val" { raw_text = "#R [LocationView.GetLocation.MakeScope.ScriptValue('sul_building_baseline_rgo')|%+1]#!" }
+							}
+						}
+					}
+					# Building rows
+					TooltipManualTableField = {
+						visible = "[GreaterThan_CFixedPoint(LocationView.GetLocation.MakeScope.ScriptValue('sul_rgo_granary'), '(CFixedPoint)0')]"
+						blockoverride "field_content" {
+							text_single = { raw_text = "[ShowBuildingTypeName('granary')]" }
+							expand = {}
+							widget = {
+								using = sul_value_cell
+								blockoverride "val" { raw_text = "#G [LocationView.GetLocation.MakeScope.ScriptValue('sul_rgo_granary')|%+1]#!" }
+							}
+						}
+					}
+					TooltipManualTableField = {
+						visible = "[GreaterThan_CFixedPoint(LocationView.GetLocation.MakeScope.ScriptValue('sul_rgo_mason'), '(CFixedPoint)0')]"
+						blockoverride "field_content" {
+							text_single = { raw_text = "[ShowBuildingTypeName('mason')]" }
+							expand = {}
+							widget = {
+								using = sul_value_cell
+								blockoverride "val" { raw_text = "#G [LocationView.GetLocation.MakeScope.ScriptValue('sul_rgo_mason')|%+1]#!" }
+							}
+						}
+					}
+					TooltipManualTableField = {
+						visible = "[GreaterThan_CFixedPoint(LocationView.GetLocation.MakeScope.ScriptValue('sul_rgo_farming_village'), '(CFixedPoint)0')]"
+						blockoverride "field_content" {
+							text_single = { raw_text = "[ShowBuildingTypeName('farming_village')]" }
+							expand = {}
+							widget = {
+								using = sul_value_cell
+								blockoverride "val" { raw_text = "#G [LocationView.GetLocation.MakeScope.ScriptValue('sul_rgo_farming_village')|%+1]#!" }
+							}
+						}
+					}
+					TooltipManualTableField = {
+						visible = "[GreaterThan_CFixedPoint(LocationView.GetLocation.MakeScope.ScriptValue('sul_rgo_fishing_village'), '(CFixedPoint)0')]"
+						blockoverride "field_content" {
+							text_single = { raw_text = "[ShowBuildingTypeName('fishing_village')]" }
+							expand = {}
+							widget = {
+								using = sul_value_cell
+								blockoverride "val" { raw_text = "#G [LocationView.GetLocation.MakeScope.ScriptValue('sul_rgo_fishing_village')|%+1]#!" }
+							}
+						}
+					}
+					TooltipManualTableField = {
+						visible = "[GreaterThan_CFixedPoint(LocationView.GetLocation.MakeScope.ScriptValue('sul_rgo_forest_village'), '(CFixedPoint)0')]"
+						blockoverride "field_content" {
+							text_single = { raw_text = "[ShowBuildingTypeName('forest_village')]" }
+							expand = {}
+							widget = {
+								using = sul_value_cell
+								blockoverride "val" { raw_text = "#G [LocationView.GetLocation.MakeScope.ScriptValue('sul_rgo_forest_village')|%+1]#!" }
+							}
+						}
+					}
+					TooltipManualTableField = {
+						visible = "[GreaterThan_CFixedPoint(LocationView.GetLocation.MakeScope.ScriptValue('sul_rgo_sheep_farms'), '(CFixedPoint)0')]"
+						blockoverride "field_content" {
+							text_single = { raw_text = "[ShowBuildingTypeName('sheep_farms')]" }
+							expand = {}
+							widget = {
+								using = sul_value_cell
+								blockoverride "val" { raw_text = "#G [LocationView.GetLocation.MakeScope.ScriptValue('sul_rgo_sheep_farms')|%+1]#!" }
+							}
+						}
+					}
+					TooltipManualTableField = {
+						visible = "[GreaterThan_CFixedPoint(LocationView.GetLocation.MakeScope.ScriptValue('sul_rgo_lumber_mill'), '(CFixedPoint)0')]"
+						blockoverride "field_content" {
+							text_single = { raw_text = "[ShowBuildingTypeName('lumber_mill')]" }
+							expand = {}
+							widget = {
+								using = sul_value_cell
+								blockoverride "val" { raw_text = "#G [LocationView.GetLocation.MakeScope.ScriptValue('sul_rgo_lumber_mill')|%+1]#!" }
+							}
+						}
+					}
+					TooltipManualTableField = {
+						visible = "[GreaterThan_CFixedPoint(LocationView.GetLocation.MakeScope.ScriptValue('sul_rgo_sawmill'), '(CFixedPoint)0')]"
+						blockoverride "field_content" {
+							text_single = { raw_text = "[ShowBuildingTypeName('sawmill')]" }
+							expand = {}
+							widget = {
+								using = sul_value_cell
+								blockoverride "val" { raw_text = "#G [LocationView.GetLocation.MakeScope.ScriptValue('sul_rgo_sawmill')|%+1]#!" }
+							}
+						}
+					}
+				}
+				# Total row
+				TooltipManualTableField = {
+					blockoverride "field_content" {
+						text_single = { raw_text = "#bold Total#!" }
+						expand = {}
+						widget = {
+							using = sul_value_cell
+							blockoverride "val" { raw_text = "#bold [LocationView.GetLocation.MakeScope.ScriptValue('sul_building_rgo_size')|%+1]#!" }
+						}
+					}
+				}
+			}
+		}
+	}
+}
+
+# =====================================================
+# BUILDING EXTERNALITY BREAKDOWN TOOLTIP - GOODS OUTPUT PENALTIES
+# =====================================================
+template sul_efficiency_breakdown_tooltip {
+	ContextualTooltipType = {
+		blockoverride "title_icon" {
+			icon = {
+				using = tooltip_title_icon_size
+				texture = "gfx/interface/icons/modifier_types/global_production_efficiency.dds"
+			}
+		}
+		blockoverride "title_text" { text = "SUL_GOODS_OUTPUT_PENALTIES" }
+		blockoverride "tooltip_content" {
+			TooltipListBase = {
+				TooltipListRowContent = {
+					# Commercial goods (5=town, 15=city, 25=rural)
+					TooltipManualTableField = {
+						visible = "[Or3(EqualTo_float(FixedPointToFloat(LocationView.GetLocation.MakeScope.GetVariable('sul_specialization_designation').GetValue), '(float)5.0'), EqualTo_float(FixedPointToFloat(LocationView.GetLocation.MakeScope.GetVariable('sul_specialization_designation').GetValue), '(float)15.0'), EqualTo_float(FixedPointToFloat(LocationView.GetLocation.MakeScope.GetVariable('sul_specialization_designation').GetValue), '(float)25.0'))]"
+						blockoverride "field_content" {
+							hbox = {
+								spacing = 5
+								icon = { visible = "[LessThan_CFixedPoint(LocationView.GetLocation.MakeScope.ScriptValue('sul_baseline_cloth'), '(CFixedPoint)0')]" size = { 28 28 } texture = "gfx/interface/icons/modifier_types/cloth_negative.dds" }
+								icon = { visible = "[GreaterThanOrEqualTo_CFixedPoint(LocationView.GetLocation.MakeScope.ScriptValue('sul_baseline_cloth'), '(CFixedPoint)0')]" size = { 28 28 } texture = "gfx/interface/icons/modifier_types/cloth_positive.dds" }
+								text_single = { text = "MODIFIER_TYPE_NAME_local_cloth_output_modifier" }
+							}
+							expand = {}
+							widget = {
+								size = { 60 20 }
+								text_single = { visible = "[LessThan_CFixedPoint(LocationView.GetLocation.MakeScope.ScriptValue('sul_baseline_cloth'), '(CFixedPoint)0')]" parentanchor = right|vcenter raw_text = "#R [LocationView.GetLocation.MakeScope.ScriptValue('sul_baseline_cloth')|%+1]#!" }
+								text_single = { visible = "[GreaterThanOrEqualTo_CFixedPoint(LocationView.GetLocation.MakeScope.ScriptValue('sul_baseline_cloth'), '(CFixedPoint)0')]" parentanchor = right|vcenter raw_text = "#G [LocationView.GetLocation.MakeScope.ScriptValue('sul_baseline_cloth')|%+1]#!" }
+							}
+							widget = {
+								size = { 60 20 }
+								text_single = { parentanchor = right|vcenter raw_text = "[LocationView.GetLocation.GetModifierValue('local_cloth_output_modifier')|%+1]" }
+							}
+						}
+					}
+					TooltipManualTableField = {
+						visible = "[Or3(EqualTo_float(FixedPointToFloat(LocationView.GetLocation.MakeScope.GetVariable('sul_specialization_designation').GetValue), '(float)5.0'), EqualTo_float(FixedPointToFloat(LocationView.GetLocation.MakeScope.GetVariable('sul_specialization_designation').GetValue), '(float)15.0'), EqualTo_float(FixedPointToFloat(LocationView.GetLocation.MakeScope.GetVariable('sul_specialization_designation').GetValue), '(float)25.0'))]"
+						blockoverride "field_content" {
+							hbox = {
+								spacing = 5
+								icon = { visible = "[LessThan_CFixedPoint(LocationView.GetLocation.MakeScope.ScriptValue('sul_baseline_fine_cloth'), '(CFixedPoint)0')]" size = { 28 28 } texture = "gfx/interface/icons/modifier_types/fine_cloth_negative.dds" }
+								icon = { visible = "[GreaterThanOrEqualTo_CFixedPoint(LocationView.GetLocation.MakeScope.ScriptValue('sul_baseline_fine_cloth'), '(CFixedPoint)0')]" size = { 28 28 } texture = "gfx/interface/icons/modifier_types/fine_cloth_positive.dds" }
+								text_single = { text = "MODIFIER_TYPE_NAME_local_fine_cloth_output_modifier" }
+							}
+							expand = {}
+							widget = {
+								size = { 60 20 }
+								text_single = { visible = "[LessThan_CFixedPoint(LocationView.GetLocation.MakeScope.ScriptValue('sul_baseline_fine_cloth'), '(CFixedPoint)0')]" parentanchor = right|vcenter raw_text = "#R [LocationView.GetLocation.MakeScope.ScriptValue('sul_baseline_fine_cloth')|%+1]#!" }
+								text_single = { visible = "[GreaterThanOrEqualTo_CFixedPoint(LocationView.GetLocation.MakeScope.ScriptValue('sul_baseline_fine_cloth'), '(CFixedPoint)0')]" parentanchor = right|vcenter raw_text = "#G [LocationView.GetLocation.MakeScope.ScriptValue('sul_baseline_fine_cloth')|%+1]#!" }
+							}
+							widget = {
+								size = { 60 20 }
+								text_single = { parentanchor = right|vcenter raw_text = "[LocationView.GetLocation.GetModifierValue('local_fine_cloth_output_modifier')|%+1]" }
+							}
+						}
+					}
+					TooltipManualTableField = {
+						visible = "[Or3(EqualTo_float(FixedPointToFloat(LocationView.GetLocation.MakeScope.GetVariable('sul_specialization_designation').GetValue), '(float)5.0'), EqualTo_float(FixedPointToFloat(LocationView.GetLocation.MakeScope.GetVariable('sul_specialization_designation').GetValue), '(float)15.0'), EqualTo_float(FixedPointToFloat(LocationView.GetLocation.MakeScope.GetVariable('sul_specialization_designation').GetValue), '(float)25.0'))]"
+						blockoverride "field_content" {
+							hbox = {
+								spacing = 5
+								icon = { visible = "[LessThan_CFixedPoint(LocationView.GetLocation.MakeScope.ScriptValue('sul_baseline_books'), '(CFixedPoint)0')]" size = { 28 28 } texture = "gfx/interface/icons/modifier_types/books_negative.dds" }
+								icon = { visible = "[GreaterThanOrEqualTo_CFixedPoint(LocationView.GetLocation.MakeScope.ScriptValue('sul_baseline_books'), '(CFixedPoint)0')]" size = { 28 28 } texture = "gfx/interface/icons/modifier_types/books_positive.dds" }
+								text_single = { text = "MODIFIER_TYPE_NAME_local_books_output_modifier" }
+							}
+							expand = {}
+							widget = {
+								size = { 60 20 }
+								text_single = { visible = "[LessThan_CFixedPoint(LocationView.GetLocation.MakeScope.ScriptValue('sul_baseline_books'), '(CFixedPoint)0')]" parentanchor = right|vcenter raw_text = "#R [LocationView.GetLocation.MakeScope.ScriptValue('sul_baseline_books')|%+1]#!" }
+								text_single = { visible = "[GreaterThanOrEqualTo_CFixedPoint(LocationView.GetLocation.MakeScope.ScriptValue('sul_baseline_books'), '(CFixedPoint)0')]" parentanchor = right|vcenter raw_text = "#G [LocationView.GetLocation.MakeScope.ScriptValue('sul_baseline_books')|%+1]#!" }
+							}
+							widget = {
+								size = { 60 20 }
+								text_single = { parentanchor = right|vcenter raw_text = "[LocationView.GetLocation.GetModifierValue('local_books_output_modifier')|%+1]" }
+							}
+						}
+					}
+					TooltipManualTableField = {
+						visible = "[Or3(EqualTo_float(FixedPointToFloat(LocationView.GetLocation.MakeScope.GetVariable('sul_specialization_designation').GetValue), '(float)5.0'), EqualTo_float(FixedPointToFloat(LocationView.GetLocation.MakeScope.GetVariable('sul_specialization_designation').GetValue), '(float)15.0'), EqualTo_float(FixedPointToFloat(LocationView.GetLocation.MakeScope.GetVariable('sul_specialization_designation').GetValue), '(float)25.0'))]"
+						blockoverride "field_content" {
+							hbox = {
+								spacing = 5
+								icon = { visible = "[LessThan_CFixedPoint(LocationView.GetLocation.MakeScope.ScriptValue('sul_baseline_naval_supplies'), '(CFixedPoint)0')]" size = { 28 28 } texture = "gfx/interface/icons/modifier_types/naval_supplies_negative.dds" }
+								icon = { visible = "[GreaterThanOrEqualTo_CFixedPoint(LocationView.GetLocation.MakeScope.ScriptValue('sul_baseline_naval_supplies'), '(CFixedPoint)0')]" size = { 28 28 } texture = "gfx/interface/icons/modifier_types/naval_supplies_positive.dds" }
+								text_single = { text = "MODIFIER_TYPE_NAME_local_naval_supplies_output_modifier" }
+							}
+							expand = {}
+							widget = {
+								size = { 60 20 }
+								text_single = { visible = "[LessThan_CFixedPoint(LocationView.GetLocation.MakeScope.ScriptValue('sul_baseline_naval_supplies'), '(CFixedPoint)0')]" parentanchor = right|vcenter raw_text = "#R [LocationView.GetLocation.MakeScope.ScriptValue('sul_baseline_naval_supplies')|%+1]#!" }
+								text_single = { visible = "[GreaterThanOrEqualTo_CFixedPoint(LocationView.GetLocation.MakeScope.ScriptValue('sul_baseline_naval_supplies'), '(CFixedPoint)0')]" parentanchor = right|vcenter raw_text = "#G [LocationView.GetLocation.MakeScope.ScriptValue('sul_baseline_naval_supplies')|%+1]#!" }
+							}
+							widget = {
+								size = { 60 20 }
+								text_single = { parentanchor = right|vcenter raw_text = "[LocationView.GetLocation.GetModifierValue('local_naval_supplies_output_modifier')|%+1]" }
+							}
+						}
+					}
+					# Mining goods (1=town, 11=city, 21=rural)
+					TooltipManualTableField = {
+						visible = "[Or3(EqualTo_float(FixedPointToFloat(LocationView.GetLocation.MakeScope.GetVariable('sul_specialization_designation').GetValue), '(float)1.0'), EqualTo_float(FixedPointToFloat(LocationView.GetLocation.MakeScope.GetVariable('sul_specialization_designation').GetValue), '(float)11.0'), EqualTo_float(FixedPointToFloat(LocationView.GetLocation.MakeScope.GetVariable('sul_specialization_designation').GetValue), '(float)21.0'))]"
+						blockoverride "field_content" {
+							hbox = {
+								spacing = 5
+								icon = { visible = "[LessThan_CFixedPoint(LocationView.GetLocation.MakeScope.ScriptValue('sul_baseline_tools'), '(CFixedPoint)0')]" size = { 28 28 } texture = "gfx/interface/icons/modifier_types/tools_negative.dds" }
+								icon = { visible = "[GreaterThanOrEqualTo_CFixedPoint(LocationView.GetLocation.MakeScope.ScriptValue('sul_baseline_tools'), '(CFixedPoint)0')]" size = { 28 28 } texture = "gfx/interface/icons/modifier_types/tools_positive.dds" }
+								text_single = { text = "MODIFIER_TYPE_NAME_local_tools_output_modifier" }
+							}
+							expand = {}
+							widget = {
+								size = { 60 20 }
+								text_single = { visible = "[LessThan_CFixedPoint(LocationView.GetLocation.MakeScope.ScriptValue('sul_baseline_tools'), '(CFixedPoint)0')]" parentanchor = right|vcenter raw_text = "#R [LocationView.GetLocation.MakeScope.ScriptValue('sul_baseline_tools')|%+1]#!" }
+								text_single = { visible = "[GreaterThanOrEqualTo_CFixedPoint(LocationView.GetLocation.MakeScope.ScriptValue('sul_baseline_tools'), '(CFixedPoint)0')]" parentanchor = right|vcenter raw_text = "#G [LocationView.GetLocation.MakeScope.ScriptValue('sul_baseline_tools')|%+1]#!" }
+							}
+							widget = {
+								size = { 60 20 }
+								text_single = { parentanchor = right|vcenter raw_text = "[LocationView.GetLocation.GetModifierValue('local_tools_output_modifier')|%+1]" }
+							}
+						}
+					}
+					TooltipManualTableField = {
+						visible = "[Or3(EqualTo_float(FixedPointToFloat(LocationView.GetLocation.MakeScope.GetVariable('sul_specialization_designation').GetValue), '(float)1.0'), EqualTo_float(FixedPointToFloat(LocationView.GetLocation.MakeScope.GetVariable('sul_specialization_designation').GetValue), '(float)11.0'), EqualTo_float(FixedPointToFloat(LocationView.GetLocation.MakeScope.GetVariable('sul_specialization_designation').GetValue), '(float)21.0'))]"
+						blockoverride "field_content" {
+							hbox = {
+								spacing = 5
+								icon = { visible = "[LessThan_CFixedPoint(LocationView.GetLocation.MakeScope.ScriptValue('sul_baseline_weaponry'), '(CFixedPoint)0')]" size = { 28 28 } texture = "gfx/interface/icons/modifier_types/weaponry_negative.dds" }
+								icon = { visible = "[GreaterThanOrEqualTo_CFixedPoint(LocationView.GetLocation.MakeScope.ScriptValue('sul_baseline_weaponry'), '(CFixedPoint)0')]" size = { 28 28 } texture = "gfx/interface/icons/modifier_types/weaponry_positive.dds" }
+								text_single = { text = "MODIFIER_TYPE_NAME_local_weaponry_output_modifier" }
+							}
+							expand = {}
+							widget = {
+								size = { 60 20 }
+								text_single = { visible = "[LessThan_CFixedPoint(LocationView.GetLocation.MakeScope.ScriptValue('sul_baseline_weaponry'), '(CFixedPoint)0')]" parentanchor = right|vcenter raw_text = "#R [LocationView.GetLocation.MakeScope.ScriptValue('sul_baseline_weaponry')|%+1]#!" }
+								text_single = { visible = "[GreaterThanOrEqualTo_CFixedPoint(LocationView.GetLocation.MakeScope.ScriptValue('sul_baseline_weaponry'), '(CFixedPoint)0')]" parentanchor = right|vcenter raw_text = "#G [LocationView.GetLocation.MakeScope.ScriptValue('sul_baseline_weaponry')|%+1]#!" }
+							}
+							widget = {
+								size = { 60 20 }
+								text_single = { parentanchor = right|vcenter raw_text = "[LocationView.GetLocation.GetModifierValue('local_weaponry_output_modifier')|%+1]" }
+							}
+						}
+					}
+					TooltipManualTableField = {
+						visible = "[Or3(EqualTo_float(FixedPointToFloat(LocationView.GetLocation.MakeScope.GetVariable('sul_specialization_designation').GetValue), '(float)1.0'), EqualTo_float(FixedPointToFloat(LocationView.GetLocation.MakeScope.GetVariable('sul_specialization_designation').GetValue), '(float)11.0'), EqualTo_float(FixedPointToFloat(LocationView.GetLocation.MakeScope.GetVariable('sul_specialization_designation').GetValue), '(float)21.0'))]"
+						blockoverride "field_content" {
+							hbox = {
+								spacing = 5
+								icon = { visible = "[LessThan_CFixedPoint(LocationView.GetLocation.MakeScope.ScriptValue('sul_baseline_cannons'), '(CFixedPoint)0')]" size = { 28 28 } texture = "gfx/interface/icons/modifier_types/cannons_negative.dds" }
+								icon = { visible = "[GreaterThanOrEqualTo_CFixedPoint(LocationView.GetLocation.MakeScope.ScriptValue('sul_baseline_cannons'), '(CFixedPoint)0')]" size = { 28 28 } texture = "gfx/interface/icons/modifier_types/cannons_positive.dds" }
+								text_single = { text = "MODIFIER_TYPE_NAME_local_cannons_output_modifier" }
+							}
+							expand = {}
+							widget = {
+								size = { 60 20 }
+								text_single = { visible = "[LessThan_CFixedPoint(LocationView.GetLocation.MakeScope.ScriptValue('sul_baseline_cannons'), '(CFixedPoint)0')]" parentanchor = right|vcenter raw_text = "#R [LocationView.GetLocation.MakeScope.ScriptValue('sul_baseline_cannons')|%+1]#!" }
+								text_single = { visible = "[GreaterThanOrEqualTo_CFixedPoint(LocationView.GetLocation.MakeScope.ScriptValue('sul_baseline_cannons'), '(CFixedPoint)0')]" parentanchor = right|vcenter raw_text = "#G [LocationView.GetLocation.MakeScope.ScriptValue('sul_baseline_cannons')|%+1]#!" }
+							}
+							widget = {
+								size = { 60 20 }
+								text_single = { parentanchor = right|vcenter raw_text = "[LocationView.GetLocation.GetModifierValue('local_cannons_output_modifier')|%+1]" }
+							}
+						}
+					}
+					TooltipManualTableField = {
+						visible = "[Or3(EqualTo_float(FixedPointToFloat(LocationView.GetLocation.MakeScope.GetVariable('sul_specialization_designation').GetValue), '(float)1.0'), EqualTo_float(FixedPointToFloat(LocationView.GetLocation.MakeScope.GetVariable('sul_specialization_designation').GetValue), '(float)11.0'), EqualTo_float(FixedPointToFloat(LocationView.GetLocation.MakeScope.GetVariable('sul_specialization_designation').GetValue), '(float)21.0'))]"
+						blockoverride "field_content" {
+							hbox = {
+								spacing = 5
+								icon = { visible = "[LessThan_CFixedPoint(LocationView.GetLocation.MakeScope.ScriptValue('sul_baseline_firearms'), '(CFixedPoint)0')]" size = { 28 28 } texture = "gfx/interface/icons/modifier_types/firearms_negative.dds" }
+								icon = { visible = "[GreaterThanOrEqualTo_CFixedPoint(LocationView.GetLocation.MakeScope.ScriptValue('sul_baseline_firearms'), '(CFixedPoint)0')]" size = { 28 28 } texture = "gfx/interface/icons/modifier_types/firearms_positive.dds" }
+								text_single = { text = "MODIFIER_TYPE_NAME_local_firearms_output_modifier" }
+							}
+							expand = {}
+							widget = {
+								size = { 60 20 }
+								text_single = { visible = "[LessThan_CFixedPoint(LocationView.GetLocation.MakeScope.ScriptValue('sul_baseline_firearms'), '(CFixedPoint)0')]" parentanchor = right|vcenter raw_text = "#R [LocationView.GetLocation.MakeScope.ScriptValue('sul_baseline_firearms')|%+1]#!" }
+								text_single = { visible = "[GreaterThanOrEqualTo_CFixedPoint(LocationView.GetLocation.MakeScope.ScriptValue('sul_baseline_firearms'), '(CFixedPoint)0')]" parentanchor = right|vcenter raw_text = "#G [LocationView.GetLocation.MakeScope.ScriptValue('sul_baseline_firearms')|%+1]#!" }
+							}
+							widget = {
+								size = { 60 20 }
+								text_single = { parentanchor = right|vcenter raw_text = "[LocationView.GetLocation.GetModifierValue('local_firearms_output_modifier')|%+1]" }
+							}
+						}
+					}
+					TooltipManualTableField = {
+						visible = "[Or3(EqualTo_float(FixedPointToFloat(LocationView.GetLocation.MakeScope.GetVariable('sul_specialization_designation').GetValue), '(float)1.0'), EqualTo_float(FixedPointToFloat(LocationView.GetLocation.MakeScope.GetVariable('sul_specialization_designation').GetValue), '(float)11.0'), EqualTo_float(FixedPointToFloat(LocationView.GetLocation.MakeScope.GetVariable('sul_specialization_designation').GetValue), '(float)21.0'))]"
+						blockoverride "field_content" {
+							hbox = {
+								spacing = 5
+								icon = { visible = "[LessThan_CFixedPoint(LocationView.GetLocation.MakeScope.ScriptValue('sul_baseline_steel'), '(CFixedPoint)0')]" size = { 28 28 } texture = "gfx/interface/icons/modifier_types/steel_negative.dds" }
+								icon = { visible = "[GreaterThanOrEqualTo_CFixedPoint(LocationView.GetLocation.MakeScope.ScriptValue('sul_baseline_steel'), '(CFixedPoint)0')]" size = { 28 28 } texture = "gfx/interface/icons/modifier_types/steel_positive.dds" }
+								text_single = { text = "MODIFIER_TYPE_NAME_local_steel_output_modifier" }
+							}
+							expand = {}
+							widget = {
+								size = { 60 20 }
+								text_single = { visible = "[LessThan_CFixedPoint(LocationView.GetLocation.MakeScope.ScriptValue('sul_baseline_steel'), '(CFixedPoint)0')]" parentanchor = right|vcenter raw_text = "#R [LocationView.GetLocation.MakeScope.ScriptValue('sul_baseline_steel')|%+1]#!" }
+								text_single = { visible = "[GreaterThanOrEqualTo_CFixedPoint(LocationView.GetLocation.MakeScope.ScriptValue('sul_baseline_steel'), '(CFixedPoint)0')]" parentanchor = right|vcenter raw_text = "#G [LocationView.GetLocation.MakeScope.ScriptValue('sul_baseline_steel')|%+1]#!" }
+							}
+							widget = {
+								size = { 60 20 }
+								text_single = { parentanchor = right|vcenter raw_text = "[LocationView.GetLocation.GetModifierValue('local_steel_output_modifier')|%+1]" }
+							}
+						}
+					}
+					TooltipManualTableField = {
+						visible = "[Or3(EqualTo_float(FixedPointToFloat(LocationView.GetLocation.MakeScope.GetVariable('sul_specialization_designation').GetValue), '(float)1.0'), EqualTo_float(FixedPointToFloat(LocationView.GetLocation.MakeScope.GetVariable('sul_specialization_designation').GetValue), '(float)11.0'), EqualTo_float(FixedPointToFloat(LocationView.GetLocation.MakeScope.GetVariable('sul_specialization_designation').GetValue), '(float)21.0'))]"
+						blockoverride "field_content" {
+							hbox = {
+								spacing = 5
+								icon = { visible = "[LessThan_CFixedPoint(LocationView.GetLocation.MakeScope.ScriptValue('sul_baseline_jewelry'), '(CFixedPoint)0')]" size = { 28 28 } texture = "gfx/interface/icons/modifier_types/jewelry_negative.dds" }
+								icon = { visible = "[GreaterThanOrEqualTo_CFixedPoint(LocationView.GetLocation.MakeScope.ScriptValue('sul_baseline_jewelry'), '(CFixedPoint)0')]" size = { 28 28 } texture = "gfx/interface/icons/modifier_types/jewelry_positive.dds" }
+								text_single = { text = "MODIFIER_TYPE_NAME_local_jewelry_output_modifier" }
+							}
+							expand = {}
+							widget = {
+								size = { 60 20 }
+								text_single = { visible = "[LessThan_CFixedPoint(LocationView.GetLocation.MakeScope.ScriptValue('sul_baseline_jewelry'), '(CFixedPoint)0')]" parentanchor = right|vcenter raw_text = "#R [LocationView.GetLocation.MakeScope.ScriptValue('sul_baseline_jewelry')|%+1]#!" }
+								text_single = { visible = "[GreaterThanOrEqualTo_CFixedPoint(LocationView.GetLocation.MakeScope.ScriptValue('sul_baseline_jewelry'), '(CFixedPoint)0')]" parentanchor = right|vcenter raw_text = "#G [LocationView.GetLocation.MakeScope.ScriptValue('sul_baseline_jewelry')|%+1]#!" }
+							}
+							widget = {
+								size = { 60 20 }
+								text_single = { parentanchor = right|vcenter raw_text = "[LocationView.GetLocation.GetModifierValue('local_jewelry_output_modifier')|%+1]" }
+							}
+						}
+					}
+					# Farming goods (2=town, 12=city, 22=rural)
+					TooltipManualTableField = {
+						visible = "[Or3(EqualTo_float(FixedPointToFloat(LocationView.GetLocation.MakeScope.GetVariable('sul_specialization_designation').GetValue), '(float)2.0'), EqualTo_float(FixedPointToFloat(LocationView.GetLocation.MakeScope.GetVariable('sul_specialization_designation').GetValue), '(float)12.0'), EqualTo_float(FixedPointToFloat(LocationView.GetLocation.MakeScope.GetVariable('sul_specialization_designation').GetValue), '(float)22.0'))]"
+						blockoverride "field_content" {
+							hbox = {
+								spacing = 5
+								icon = { visible = "[LessThan_CFixedPoint(LocationView.GetLocation.MakeScope.ScriptValue('sul_baseline_wine'), '(CFixedPoint)0')]" size = { 28 28 } texture = "gfx/interface/icons/modifier_types/wine_negative.dds" }
+								icon = { visible = "[GreaterThanOrEqualTo_CFixedPoint(LocationView.GetLocation.MakeScope.ScriptValue('sul_baseline_wine'), '(CFixedPoint)0')]" size = { 28 28 } texture = "gfx/interface/icons/modifier_types/wine_positive.dds" }
+								text_single = { text = "MODIFIER_TYPE_NAME_local_wine_output_modifier" }
+							}
+							expand = {}
+							widget = {
+								size = { 60 20 }
+								text_single = { visible = "[LessThan_CFixedPoint(LocationView.GetLocation.MakeScope.ScriptValue('sul_baseline_wine'), '(CFixedPoint)0')]" parentanchor = right|vcenter raw_text = "#R [LocationView.GetLocation.MakeScope.ScriptValue('sul_baseline_wine')|%+1]#!" }
+								text_single = { visible = "[GreaterThanOrEqualTo_CFixedPoint(LocationView.GetLocation.MakeScope.ScriptValue('sul_baseline_wine'), '(CFixedPoint)0')]" parentanchor = right|vcenter raw_text = "#G [LocationView.GetLocation.MakeScope.ScriptValue('sul_baseline_wine')|%+1]#!" }
+							}
+							widget = {
+								size = { 60 20 }
+								text_single = { parentanchor = right|vcenter raw_text = "[LocationView.GetLocation.GetModifierValue('local_wine_output_modifier')|%+1]" }
+							}
+						}
+					}
+					TooltipManualTableField = {
+						visible = "[Or3(EqualTo_float(FixedPointToFloat(LocationView.GetLocation.MakeScope.GetVariable('sul_specialization_designation').GetValue), '(float)2.0'), EqualTo_float(FixedPointToFloat(LocationView.GetLocation.MakeScope.GetVariable('sul_specialization_designation').GetValue), '(float)12.0'), EqualTo_float(FixedPointToFloat(LocationView.GetLocation.MakeScope.GetVariable('sul_specialization_designation').GetValue), '(float)22.0'))]"
+						blockoverride "field_content" {
+							hbox = {
+								spacing = 5
+								icon = { visible = "[LessThan_CFixedPoint(LocationView.GetLocation.MakeScope.ScriptValue('sul_baseline_beer'), '(CFixedPoint)0')]" size = { 28 28 } texture = "gfx/interface/icons/modifier_types/beer_negative.dds" }
+								icon = { visible = "[GreaterThanOrEqualTo_CFixedPoint(LocationView.GetLocation.MakeScope.ScriptValue('sul_baseline_beer'), '(CFixedPoint)0')]" size = { 28 28 } texture = "gfx/interface/icons/modifier_types/beer_positive.dds" }
+								text_single = { text = "MODIFIER_TYPE_NAME_local_beer_output_modifier" }
+							}
+							expand = {}
+							widget = {
+								size = { 60 20 }
+								text_single = { visible = "[LessThan_CFixedPoint(LocationView.GetLocation.MakeScope.ScriptValue('sul_baseline_beer'), '(CFixedPoint)0')]" parentanchor = right|vcenter raw_text = "#R [LocationView.GetLocation.MakeScope.ScriptValue('sul_baseline_beer')|%+1]#!" }
+								text_single = { visible = "[GreaterThanOrEqualTo_CFixedPoint(LocationView.GetLocation.MakeScope.ScriptValue('sul_baseline_beer'), '(CFixedPoint)0')]" parentanchor = right|vcenter raw_text = "#G [LocationView.GetLocation.MakeScope.ScriptValue('sul_baseline_beer')|%+1]#!" }
+							}
+							widget = {
+								size = { 60 20 }
+								text_single = { parentanchor = right|vcenter raw_text = "[LocationView.GetLocation.GetModifierValue('local_beer_output_modifier')|%+1]" }
+							}
+						}
+					}
+					TooltipManualTableField = {
+						visible = "[Or3(EqualTo_float(FixedPointToFloat(LocationView.GetLocation.MakeScope.GetVariable('sul_specialization_designation').GetValue), '(float)2.0'), EqualTo_float(FixedPointToFloat(LocationView.GetLocation.MakeScope.GetVariable('sul_specialization_designation').GetValue), '(float)12.0'), EqualTo_float(FixedPointToFloat(LocationView.GetLocation.MakeScope.GetVariable('sul_specialization_designation').GetValue), '(float)22.0'))]"
+						blockoverride "field_content" {
+							hbox = {
+								spacing = 5
+								icon = { visible = "[LessThan_CFixedPoint(LocationView.GetLocation.MakeScope.ScriptValue('sul_baseline_liquor'), '(CFixedPoint)0')]" size = { 28 28 } texture = "gfx/interface/icons/modifier_types/liquor_negative.dds" }
+								icon = { visible = "[GreaterThanOrEqualTo_CFixedPoint(LocationView.GetLocation.MakeScope.ScriptValue('sul_baseline_liquor'), '(CFixedPoint)0')]" size = { 28 28 } texture = "gfx/interface/icons/modifier_types/liquor_positive.dds" }
+								text_single = { text = "MODIFIER_TYPE_NAME_local_liquor_output_modifier" }
+							}
+							expand = {}
+							widget = {
+								size = { 60 20 }
+								text_single = { visible = "[LessThan_CFixedPoint(LocationView.GetLocation.MakeScope.ScriptValue('sul_baseline_liquor'), '(CFixedPoint)0')]" parentanchor = right|vcenter raw_text = "#R [LocationView.GetLocation.MakeScope.ScriptValue('sul_baseline_liquor')|%+1]#!" }
+								text_single = { visible = "[GreaterThanOrEqualTo_CFixedPoint(LocationView.GetLocation.MakeScope.ScriptValue('sul_baseline_liquor'), '(CFixedPoint)0')]" parentanchor = right|vcenter raw_text = "#G [LocationView.GetLocation.MakeScope.ScriptValue('sul_baseline_liquor')|%+1]#!" }
+							}
+							widget = {
+								size = { 60 20 }
+								text_single = { parentanchor = right|vcenter raw_text = "[LocationView.GetLocation.GetModifierValue('local_liquor_output_modifier')|%+1]" }
+							}
+						}
+					}
+					# Woodland goods (4=town, 14=city, 24=rural)
+					TooltipManualTableField = {
+						visible = "[Or3(EqualTo_float(FixedPointToFloat(LocationView.GetLocation.MakeScope.GetVariable('sul_specialization_designation').GetValue), '(float)4.0'), EqualTo_float(FixedPointToFloat(LocationView.GetLocation.MakeScope.GetVariable('sul_specialization_designation').GetValue), '(float)14.0'), EqualTo_float(FixedPointToFloat(LocationView.GetLocation.MakeScope.GetVariable('sul_specialization_designation').GetValue), '(float)24.0'))]"
+						blockoverride "field_content" {
+							hbox = {
+								spacing = 5
+								icon = { visible = "[LessThan_CFixedPoint(LocationView.GetLocation.MakeScope.ScriptValue('sul_baseline_paper'), '(CFixedPoint)0')]" size = { 28 28 } texture = "gfx/interface/icons/modifier_types/paper_negative.dds" }
+								icon = { visible = "[GreaterThanOrEqualTo_CFixedPoint(LocationView.GetLocation.MakeScope.ScriptValue('sul_baseline_paper'), '(CFixedPoint)0')]" size = { 28 28 } texture = "gfx/interface/icons/modifier_types/paper_positive.dds" }
+								text_single = { text = "MODIFIER_TYPE_NAME_local_paper_output_modifier" }
+							}
+							expand = {}
+							widget = {
+								size = { 60 20 }
+								text_single = { visible = "[LessThan_CFixedPoint(LocationView.GetLocation.MakeScope.ScriptValue('sul_baseline_paper'), '(CFixedPoint)0')]" parentanchor = right|vcenter raw_text = "#R [LocationView.GetLocation.MakeScope.ScriptValue('sul_baseline_paper')|%+1]#!" }
+								text_single = { visible = "[GreaterThanOrEqualTo_CFixedPoint(LocationView.GetLocation.MakeScope.ScriptValue('sul_baseline_paper'), '(CFixedPoint)0')]" parentanchor = right|vcenter raw_text = "#G [LocationView.GetLocation.MakeScope.ScriptValue('sul_baseline_paper')|%+1]#!" }
+							}
+							widget = {
+								size = { 60 20 }
+								text_single = { parentanchor = right|vcenter raw_text = "[LocationView.GetLocation.GetModifierValue('local_paper_output_modifier')|%+1]" }
+							}
+						}
+					}
+					TooltipManualTableField = {
+						visible = "[Or3(EqualTo_float(FixedPointToFloat(LocationView.GetLocation.MakeScope.GetVariable('sul_specialization_designation').GetValue), '(float)4.0'), EqualTo_float(FixedPointToFloat(LocationView.GetLocation.MakeScope.GetVariable('sul_specialization_designation').GetValue), '(float)14.0'), EqualTo_float(FixedPointToFloat(LocationView.GetLocation.MakeScope.GetVariable('sul_specialization_designation').GetValue), '(float)24.0'))]"
+						blockoverride "field_content" {
+							hbox = {
+								spacing = 5
+								icon = { visible = "[LessThan_CFixedPoint(LocationView.GetLocation.MakeScope.ScriptValue('sul_baseline_furniture'), '(CFixedPoint)0')]" size = { 28 28 } texture = "gfx/interface/icons/modifier_types/furniture_negative.dds" }
+								icon = { visible = "[GreaterThanOrEqualTo_CFixedPoint(LocationView.GetLocation.MakeScope.ScriptValue('sul_baseline_furniture'), '(CFixedPoint)0')]" size = { 28 28 } texture = "gfx/interface/icons/modifier_types/furniture_positive.dds" }
+								text_single = { text = "MODIFIER_TYPE_NAME_local_furniture_output_modifier" }
+							}
+							expand = {}
+							widget = {
+								size = { 60 20 }
+								text_single = { visible = "[LessThan_CFixedPoint(LocationView.GetLocation.MakeScope.ScriptValue('sul_baseline_furniture'), '(CFixedPoint)0')]" parentanchor = right|vcenter raw_text = "#R [LocationView.GetLocation.MakeScope.ScriptValue('sul_baseline_furniture')|%+1]#!" }
+								text_single = { visible = "[GreaterThanOrEqualTo_CFixedPoint(LocationView.GetLocation.MakeScope.ScriptValue('sul_baseline_furniture'), '(CFixedPoint)0')]" parentanchor = right|vcenter raw_text = "#G [LocationView.GetLocation.MakeScope.ScriptValue('sul_baseline_furniture')|%+1]#!" }
+							}
+							widget = {
+								size = { 60 20 }
+								text_single = { parentanchor = right|vcenter raw_text = "[LocationView.GetLocation.GetModifierValue('local_furniture_output_modifier')|%+1]" }
+							}
+						}
+					}
+					# Gathering goods (3=town, 13=city, 23=rural)
+					TooltipManualTableField = {
+						visible = "[Or3(EqualTo_float(FixedPointToFloat(LocationView.GetLocation.MakeScope.GetVariable('sul_specialization_designation').GetValue), '(float)3.0'), EqualTo_float(FixedPointToFloat(LocationView.GetLocation.MakeScope.GetVariable('sul_specialization_designation').GetValue), '(float)13.0'), EqualTo_float(FixedPointToFloat(LocationView.GetLocation.MakeScope.GetVariable('sul_specialization_designation').GetValue), '(float)23.0'))]"
+						blockoverride "field_content" {
+							hbox = {
+								spacing = 5
+								icon = { visible = "[LessThan_CFixedPoint(LocationView.GetLocation.MakeScope.ScriptValue('sul_baseline_glass'), '(CFixedPoint)0')]" size = { 28 28 } texture = "gfx/interface/icons/modifier_types/glass_negative.dds" }
+								icon = { visible = "[GreaterThanOrEqualTo_CFixedPoint(LocationView.GetLocation.MakeScope.ScriptValue('sul_baseline_glass'), '(CFixedPoint)0')]" size = { 28 28 } texture = "gfx/interface/icons/modifier_types/glass_positive.dds" }
+								text_single = { text = "MODIFIER_TYPE_NAME_local_glass_output_modifier" }
+							}
+							expand = {}
+							widget = {
+								size = { 60 20 }
+								text_single = { visible = "[LessThan_CFixedPoint(LocationView.GetLocation.MakeScope.ScriptValue('sul_baseline_glass'), '(CFixedPoint)0')]" parentanchor = right|vcenter raw_text = "#R [LocationView.GetLocation.MakeScope.ScriptValue('sul_baseline_glass')|%+1]#!" }
+								text_single = { visible = "[GreaterThanOrEqualTo_CFixedPoint(LocationView.GetLocation.MakeScope.ScriptValue('sul_baseline_glass'), '(CFixedPoint)0')]" parentanchor = right|vcenter raw_text = "#G [LocationView.GetLocation.MakeScope.ScriptValue('sul_baseline_glass')|%+1]#!" }
+							}
+							widget = {
+								size = { 60 20 }
+								text_single = { parentanchor = right|vcenter raw_text = "[LocationView.GetLocation.GetModifierValue('local_glass_output_modifier')|%+1]" }
+							}
+						}
+					}
+					TooltipManualTableField = {
+						visible = "[Or3(EqualTo_float(FixedPointToFloat(LocationView.GetLocation.MakeScope.GetVariable('sul_specialization_designation').GetValue), '(float)3.0'), EqualTo_float(FixedPointToFloat(LocationView.GetLocation.MakeScope.GetVariable('sul_specialization_designation').GetValue), '(float)13.0'), EqualTo_float(FixedPointToFloat(LocationView.GetLocation.MakeScope.GetVariable('sul_specialization_designation').GetValue), '(float)23.0'))]"
+						blockoverride "field_content" {
+							hbox = {
+								spacing = 5
+								icon = { visible = "[LessThan_CFixedPoint(LocationView.GetLocation.MakeScope.ScriptValue('sul_baseline_pottery'), '(CFixedPoint)0')]" size = { 28 28 } texture = "gfx/interface/icons/modifier_types/pottery_negative.dds" }
+								icon = { visible = "[GreaterThanOrEqualTo_CFixedPoint(LocationView.GetLocation.MakeScope.ScriptValue('sul_baseline_pottery'), '(CFixedPoint)0')]" size = { 28 28 } texture = "gfx/interface/icons/modifier_types/pottery_positive.dds" }
+								text_single = { text = "MODIFIER_TYPE_NAME_local_pottery_output_modifier" }
+							}
+							expand = {}
+							widget = {
+								size = { 60 20 }
+								text_single = { visible = "[LessThan_CFixedPoint(LocationView.GetLocation.MakeScope.ScriptValue('sul_baseline_pottery'), '(CFixedPoint)0')]" parentanchor = right|vcenter raw_text = "#R [LocationView.GetLocation.MakeScope.ScriptValue('sul_baseline_pottery')|%+1]#!" }
+								text_single = { visible = "[GreaterThanOrEqualTo_CFixedPoint(LocationView.GetLocation.MakeScope.ScriptValue('sul_baseline_pottery'), '(CFixedPoint)0')]" parentanchor = right|vcenter raw_text = "#G [LocationView.GetLocation.MakeScope.ScriptValue('sul_baseline_pottery')|%+1]#!" }
+							}
+							widget = {
+								size = { 60 20 }
+								text_single = { parentanchor = right|vcenter raw_text = "[LocationView.GetLocation.GetModifierValue('local_pottery_output_modifier')|%+1]" }
+							}
+						}
+					}
+					TooltipManualTableField = {
+						visible = "[Or3(EqualTo_float(FixedPointToFloat(LocationView.GetLocation.MakeScope.GetVariable('sul_specialization_designation').GetValue), '(float)3.0'), EqualTo_float(FixedPointToFloat(LocationView.GetLocation.MakeScope.GetVariable('sul_specialization_designation').GetValue), '(float)13.0'), EqualTo_float(FixedPointToFloat(LocationView.GetLocation.MakeScope.GetVariable('sul_specialization_designation').GetValue), '(float)23.0'))]"
+						blockoverride "field_content" {
+							hbox = {
+								spacing = 5
+								icon = { visible = "[LessThan_CFixedPoint(LocationView.GetLocation.MakeScope.ScriptValue('sul_baseline_porcelain'), '(CFixedPoint)0')]" size = { 28 28 } texture = "gfx/interface/icons/modifier_types/porcelain_negative.dds" }
+								icon = { visible = "[GreaterThanOrEqualTo_CFixedPoint(LocationView.GetLocation.MakeScope.ScriptValue('sul_baseline_porcelain'), '(CFixedPoint)0')]" size = { 28 28 } texture = "gfx/interface/icons/modifier_types/porcelain_positive.dds" }
+								text_single = { text = "MODIFIER_TYPE_NAME_local_porcelain_output_modifier" }
+							}
+							expand = {}
+							widget = {
+								size = { 60 20 }
+								text_single = { visible = "[LessThan_CFixedPoint(LocationView.GetLocation.MakeScope.ScriptValue('sul_baseline_porcelain'), '(CFixedPoint)0')]" parentanchor = right|vcenter raw_text = "#R [LocationView.GetLocation.MakeScope.ScriptValue('sul_baseline_porcelain')|%+1]#!" }
+								text_single = { visible = "[GreaterThanOrEqualTo_CFixedPoint(LocationView.GetLocation.MakeScope.ScriptValue('sul_baseline_porcelain'), '(CFixedPoint)0')]" parentanchor = right|vcenter raw_text = "#G [LocationView.GetLocation.MakeScope.ScriptValue('sul_baseline_porcelain')|%+1]#!" }
+							}
+							widget = {
+								size = { 60 20 }
+								text_single = { parentanchor = right|vcenter raw_text = "[LocationView.GetLocation.GetModifierValue('local_porcelain_output_modifier')|%+1]" }
+							}
+						}
+					}
+					TooltipManualTableField = {
+						visible = "[Or3(EqualTo_float(FixedPointToFloat(LocationView.GetLocation.MakeScope.GetVariable('sul_specialization_designation').GetValue), '(float)3.0'), EqualTo_float(FixedPointToFloat(LocationView.GetLocation.MakeScope.GetVariable('sul_specialization_designation').GetValue), '(float)13.0'), EqualTo_float(FixedPointToFloat(LocationView.GetLocation.MakeScope.GetVariable('sul_specialization_designation').GetValue), '(float)23.0'))]"
+						blockoverride "field_content" {
+							hbox = {
+								spacing = 5
+								icon = { visible = "[LessThan_CFixedPoint(LocationView.GetLocation.MakeScope.ScriptValue('sul_baseline_lacquerware'), '(CFixedPoint)0')]" size = { 28 28 } texture = "gfx/interface/icons/modifier_types/lacquerware_negative.dds" }
+								icon = { visible = "[GreaterThanOrEqualTo_CFixedPoint(LocationView.GetLocation.MakeScope.ScriptValue('sul_baseline_lacquerware'), '(CFixedPoint)0')]" size = { 28 28 } texture = "gfx/interface/icons/modifier_types/lacquerware_positive.dds" }
+								text_single = { text = "MODIFIER_TYPE_NAME_local_lacquerware_output_modifier" }
+							}
+							expand = {}
+							widget = {
+								size = { 60 20 }
+								text_single = { visible = "[LessThan_CFixedPoint(LocationView.GetLocation.MakeScope.ScriptValue('sul_baseline_lacquerware'), '(CFixedPoint)0')]" parentanchor = right|vcenter raw_text = "#R [LocationView.GetLocation.MakeScope.ScriptValue('sul_baseline_lacquerware')|%+1]#!" }
+								text_single = { visible = "[GreaterThanOrEqualTo_CFixedPoint(LocationView.GetLocation.MakeScope.ScriptValue('sul_baseline_lacquerware'), '(CFixedPoint)0')]" parentanchor = right|vcenter raw_text = "#G [LocationView.GetLocation.MakeScope.ScriptValue('sul_baseline_lacquerware')|%+1]#!" }
+							}
+							widget = {
+								size = { 60 20 }
+								text_single = { parentanchor = right|vcenter raw_text = "[LocationView.GetLocation.GetModifierValue('local_lacquerware_output_modifier')|%+1]" }
+							}
+						}
+					}
+					# Building rows
+					TooltipManualTableField = {
+						visible = "[GreaterThan_CFixedPoint(LocationView.GetLocation.MakeScope.ScriptValue('sul_eff_granary'), '(CFixedPoint)0')]"
+						blockoverride "field_content" {
+							text_single = { raw_text = "[ShowBuildingTypeName('granary')]" }
+							expand = {}
+							widget = {
+								using = sul_value_cell
+								blockoverride "val" { raw_text = "#G [LocationView.GetLocation.MakeScope.ScriptValue('sul_eff_granary')|%+1]#!" }
+							}
+						}
+					}
+					TooltipManualTableField = {
+						visible = "[GreaterThan_CFixedPoint(LocationView.GetLocation.MakeScope.ScriptValue('sul_eff_mason'), '(CFixedPoint)0')]"
+						blockoverride "field_content" {
+							text_single = { raw_text = "[ShowBuildingTypeName('mason')]" }
+							expand = {}
+							widget = {
+								using = sul_value_cell
+								blockoverride "val" { raw_text = "#G [LocationView.GetLocation.MakeScope.ScriptValue('sul_eff_mason')|%+1]#!" }
+							}
+						}
+					}
+					TooltipManualTableField = {
+						visible = "[GreaterThan_CFixedPoint(LocationView.GetLocation.MakeScope.ScriptValue('sul_eff_cloth_guild'), '(CFixedPoint)0')]"
+						blockoverride "field_content" {
+							text_single = { raw_text = "[ShowBuildingTypeName('cloth_guild')]" }
+							expand = {}
+							widget = {
+								using = sul_value_cell
+								blockoverride "val" { raw_text = "#G [LocationView.GetLocation.MakeScope.ScriptValue('sul_eff_cloth_guild')|%+1]#!" }
+							}
+						}
+					}
+					TooltipManualTableField = {
+						visible = "[GreaterThan_CFixedPoint(LocationView.GetLocation.MakeScope.ScriptValue('sul_eff_brewery'), '(CFixedPoint)0')]"
+						blockoverride "field_content" {
+							text_single = { raw_text = "[ShowBuildingTypeName('brewery')]" }
+							expand = {}
+							widget = {
+								using = sul_value_cell
+								blockoverride "val" { raw_text = "#G [LocationView.GetLocation.MakeScope.ScriptValue('sul_eff_brewery')|%+1]#!" }
+							}
+						}
+					}
+					TooltipManualTableField = {
+						visible = "[GreaterThan_CFixedPoint(LocationView.GetLocation.MakeScope.ScriptValue('sul_eff_winery'), '(CFixedPoint)0')]"
+						blockoverride "field_content" {
+							text_single = { raw_text = "[ShowBuildingTypeName('winery')]" }
+							expand = {}
+							widget = {
+								using = sul_value_cell
+								blockoverride "val" { raw_text = "#G [LocationView.GetLocation.MakeScope.ScriptValue('sul_eff_winery')|%+1]#!" }
+							}
+						}
+					}
+					TooltipManualTableField = {
+						visible = "[GreaterThan_CFixedPoint(LocationView.GetLocation.MakeScope.ScriptValue('sul_eff_tannery'), '(CFixedPoint)0')]"
+						blockoverride "field_content" {
+							text_single = { raw_text = "[ShowBuildingTypeName('tannery')]" }
+							expand = {}
+							widget = {
+								using = sul_value_cell
+								blockoverride "val" { raw_text = "#G [LocationView.GetLocation.MakeScope.ScriptValue('sul_eff_tannery')|%+1]#!" }
+							}
+						}
+					}
+					TooltipManualTableField = {
+						visible = "[GreaterThan_CFixedPoint(LocationView.GetLocation.MakeScope.ScriptValue('sul_eff_tools_guild'), '(CFixedPoint)0')]"
+						blockoverride "field_content" {
+							text_single = { raw_text = "[ShowBuildingTypeName('tools_guild')]" }
+							expand = {}
+							widget = {
+								using = sul_value_cell
+								blockoverride "val" { raw_text = "#G [LocationView.GetLocation.MakeScope.ScriptValue('sul_eff_tools_guild')|%+1]#!" }
+							}
+						}
+					}
+					TooltipManualTableField = {
+						visible = "[GreaterThan_CFixedPoint(LocationView.GetLocation.MakeScope.ScriptValue('sul_eff_weapon_guild'), '(CFixedPoint)0')]"
+						blockoverride "field_content" {
+							text_single = { raw_text = "[ShowBuildingTypeName('weapon_guild')]" }
+							expand = {}
+							widget = {
+								using = sul_value_cell
+								blockoverride "val" { raw_text = "#G [LocationView.GetLocation.MakeScope.ScriptValue('sul_eff_weapon_guild')|%+1]#!" }
+							}
+						}
+					}
+					TooltipManualTableField = {
+						visible = "[GreaterThan_CFixedPoint(LocationView.GetLocation.MakeScope.ScriptValue('sul_eff_glass_guild'), '(CFixedPoint)0')]"
+						blockoverride "field_content" {
+							text_single = { raw_text = "[ShowBuildingTypeName('glass_guild')]" }
+							expand = {}
+							widget = {
+								using = sul_value_cell
+								blockoverride "val" { raw_text = "#G [LocationView.GetLocation.MakeScope.ScriptValue('sul_eff_glass_guild')|%+1]#!" }
+							}
+						}
+					}
+					TooltipManualTableField = {
+						visible = "[GreaterThan_CFixedPoint(LocationView.GetLocation.MakeScope.ScriptValue('sul_eff_pottery_guild'), '(CFixedPoint)0')]"
+						blockoverride "field_content" {
+							text_single = { raw_text = "[ShowBuildingTypeName('pottery_guild')]" }
+							expand = {}
+							widget = {
+								using = sul_value_cell
+								blockoverride "val" { raw_text = "#G [LocationView.GetLocation.MakeScope.ScriptValue('sul_eff_pottery_guild')|%+1]#!" }
+							}
+						}
+					}
+					TooltipManualTableField = {
+						visible = "[GreaterThan_CFixedPoint(LocationView.GetLocation.MakeScope.ScriptValue('sul_eff_paper_guild'), '(CFixedPoint)0')]"
+						blockoverride "field_content" {
+							text_single = { raw_text = "[ShowBuildingTypeName('paper_guild')]" }
+							expand = {}
+							widget = {
+								using = sul_value_cell
+								blockoverride "val" { raw_text = "#G [LocationView.GetLocation.MakeScope.ScriptValue('sul_eff_paper_guild')|%+1]#!" }
+							}
+						}
+					}
+					TooltipManualTableField = {
+						visible = "[GreaterThan_CFixedPoint(LocationView.GetLocation.MakeScope.ScriptValue('sul_eff_furniture_guild'), '(CFixedPoint)0')]"
+						blockoverride "field_content" {
+							text_single = { raw_text = "[ShowBuildingTypeName('furniture_guild')]" }
+							expand = {}
+							widget = {
+								using = sul_value_cell
+								blockoverride "val" { raw_text = "#G [LocationView.GetLocation.MakeScope.ScriptValue('sul_eff_furniture_guild')|%+1]#!" }
+							}
+						}
+					}
+					TooltipManualTableField = {
+						visible = "[GreaterThan_CFixedPoint(LocationView.GetLocation.MakeScope.ScriptValue('sul_eff_jewelry_guild'), '(CFixedPoint)0')]"
+						blockoverride "field_content" {
+							text_single = { raw_text = "[ShowBuildingTypeName('jewelry_guild')]" }
+							expand = {}
+							widget = {
+								using = sul_value_cell
+								blockoverride "val" { raw_text = "#G [LocationView.GetLocation.MakeScope.ScriptValue('sul_eff_jewelry_guild')|%+1]#!" }
+							}
+						}
+					}
+					TooltipManualTableField = {
+						visible = "[GreaterThan_CFixedPoint(LocationView.GetLocation.MakeScope.ScriptValue('sul_eff_local_smelters'), '(CFixedPoint)0')]"
+						blockoverride "field_content" {
+							text_single = { raw_text = "[ShowBuildingTypeName('local_smelters')]" }
+							expand = {}
+							widget = {
+								using = sul_value_cell
+								blockoverride "val" { raw_text = "#G [LocationView.GetLocation.MakeScope.ScriptValue('sul_eff_local_smelters')|%+1]#!" }
+							}
+						}
+					}
+					TooltipManualTableField = {
+						visible = "[GreaterThan_CFixedPoint(LocationView.GetLocation.MakeScope.ScriptValue('sul_eff_rural_clothmaker'), '(CFixedPoint)0')]"
+						blockoverride "field_content" {
+							text_single = { raw_text = "[ShowBuildingTypeName('rural_clothmaker')]" }
+							expand = {}
+							widget = {
+								using = sul_value_cell
+								blockoverride "val" { raw_text = "#G [LocationView.GetLocation.MakeScope.ScriptValue('sul_eff_rural_clothmaker')|%+1]#!" }
+							}
+						}
+					}
+					TooltipManualTableField = {
+						visible = "[GreaterThan_CFixedPoint(LocationView.GetLocation.MakeScope.ScriptValue('sul_eff_fine_cloth_guild'), '(CFixedPoint)0')]"
+						blockoverride "field_content" {
+							text_single = { raw_text = "[ShowBuildingTypeName('fine_cloth_guild')]" }
+							expand = {}
+							widget = {
+								using = sul_value_cell
+								blockoverride "val" { raw_text = "#G [LocationView.GetLocation.MakeScope.ScriptValue('sul_eff_fine_cloth_guild')|%+1]#!" }
+							}
+						}
+					}
+					TooltipManualTableField = {
+						visible = "[GreaterThan_CFixedPoint(LocationView.GetLocation.MakeScope.ScriptValue('sul_eff_naval_supplies_guild'), '(CFixedPoint)0')]"
+						blockoverride "field_content" {
+							text_single = { raw_text = "[ShowBuildingTypeName('naval_supplies_guild')]" }
+							expand = {}
+							widget = {
+								using = sul_value_cell
+								blockoverride "val" { raw_text = "#G [LocationView.GetLocation.MakeScope.ScriptValue('sul_eff_naval_supplies_guild')|%+1]#!" }
+							}
+						}
+					}
+					TooltipManualTableField = {
+						visible = "[GreaterThan_CFixedPoint(LocationView.GetLocation.MakeScope.ScriptValue('sul_eff_dyes_guild'), '(CFixedPoint)0')]"
+						blockoverride "field_content" {
+							text_single = { raw_text = "[ShowBuildingTypeName('dyes_guild')]" }
+							expand = {}
+							widget = {
+								using = sul_value_cell
+								blockoverride "val" { raw_text = "#G [LocationView.GetLocation.MakeScope.ScriptValue('sul_eff_dyes_guild')|%+1]#!" }
+							}
+						}
+					}
+					TooltipManualTableField = {
+						visible = "[GreaterThan_CFixedPoint(LocationView.GetLocation.MakeScope.ScriptValue('sul_eff_tar_kiln'), '(CFixedPoint)0')]"
+						blockoverride "field_content" {
+							text_single = { raw_text = "[ShowBuildingTypeName('tar_kiln')]" }
+							expand = {}
+							widget = {
+								using = sul_value_cell
+								blockoverride "val" { raw_text = "#G [LocationView.GetLocation.MakeScope.ScriptValue('sul_eff_tar_kiln')|%+1]#!" }
+							}
+						}
+					}
+					TooltipManualTableField = {
+						visible = "[GreaterThan_CFixedPoint(LocationView.GetLocation.MakeScope.ScriptValue('sul_eff_apothecary'), '(CFixedPoint)0')]"
+						blockoverride "field_content" {
+							text_single = { raw_text = "[ShowBuildingTypeName('apothecary')]" }
+							expand = {}
+							widget = {
+								using = sul_value_cell
+								blockoverride "val" { raw_text = "#G [LocationView.GetLocation.MakeScope.ScriptValue('sul_eff_apothecary')|%+1]#!" }
+							}
+						}
+					}
+					TooltipManualTableField = {
+						visible = "[GreaterThan_CFixedPoint(LocationView.GetLocation.MakeScope.ScriptValue('sul_eff_saltpeter_guild'), '(CFixedPoint)0')]"
+						blockoverride "field_content" {
+							text_single = { raw_text = "[ShowBuildingTypeName('saltpeter_guild')]" }
+							expand = {}
+							widget = {
+								using = sul_value_cell
+								blockoverride "val" { raw_text = "#G [LocationView.GetLocation.MakeScope.ScriptValue('sul_eff_saltpeter_guild')|%+1]#!" }
+							}
+						}
+					}
+					TooltipManualTableField = {
+						visible = "[GreaterThan_CFixedPoint(LocationView.GetLocation.MakeScope.ScriptValue('sul_eff_distillers_guild'), '(CFixedPoint)0')]"
+						blockoverride "field_content" {
+							text_single = { raw_text = "[ShowBuildingTypeName('distillers_guild')]" }
+							expand = {}
+							widget = {
+								using = sul_value_cell
+								blockoverride "val" { raw_text = "#G [LocationView.GetLocation.MakeScope.ScriptValue('sul_eff_distillers_guild')|%+1]#!" }
+							}
+						}
+					}
+					TooltipManualTableField = {
+						visible = "[GreaterThan_CFixedPoint(LocationView.GetLocation.MakeScope.ScriptValue('sul_eff_cannon_maker'), '(CFixedPoint)0')]"
+						blockoverride "field_content" {
+							text_single = { raw_text = "[ShowBuildingTypeName('cannon_maker')]" }
+							expand = {}
+							widget = {
+								using = sul_value_cell
+								blockoverride "val" { raw_text = "#G [LocationView.GetLocation.MakeScope.ScriptValue('sul_eff_cannon_maker')|%+1]#!" }
+							}
+						}
+					}
+					TooltipManualTableField = {
+						visible = "[GreaterThan_CFixedPoint(LocationView.GetLocation.MakeScope.ScriptValue('sul_eff_hand_cannon_guild'), '(CFixedPoint)0')]"
+						blockoverride "field_content" {
+							text_single = { raw_text = "[ShowBuildingTypeName('hand_cannon_guild')]" }
+							expand = {}
+							widget = {
+								using = sul_value_cell
+								blockoverride "val" { raw_text = "#G [LocationView.GetLocation.MakeScope.ScriptValue('sul_eff_hand_cannon_guild')|%+1]#!" }
+							}
+						}
+					}
+					TooltipManualTableField = {
+						visible = "[GreaterThan_CFixedPoint(LocationView.GetLocation.MakeScope.ScriptValue('sul_eff_steel_mill'), '(CFixedPoint)0')]"
+						blockoverride "field_content" {
+							text_single = { raw_text = "[ShowBuildingTypeName('steel_mill')]" }
+							expand = {}
+							widget = {
+								using = sul_value_cell
+								blockoverride "val" { raw_text = "#G [LocationView.GetLocation.MakeScope.ScriptValue('sul_eff_steel_mill')|%+1]#!" }
+							}
+						}
+					}
+					TooltipManualTableField = {
+						visible = "[GreaterThan_CFixedPoint(LocationView.GetLocation.MakeScope.ScriptValue('sul_eff_porcelain_guild'), '(CFixedPoint)0')]"
+						blockoverride "field_content" {
+							text_single = { raw_text = "[ShowBuildingTypeName('porcelain_guild')]" }
+							expand = {}
+							widget = {
+								using = sul_value_cell
+								blockoverride "val" { raw_text = "#G [LocationView.GetLocation.MakeScope.ScriptValue('sul_eff_porcelain_guild')|%+1]#!" }
+							}
+						}
+					}
+					TooltipManualTableField = {
+						visible = "[GreaterThan_CFixedPoint(LocationView.GetLocation.MakeScope.ScriptValue('sul_eff_lacquerware_guild'), '(CFixedPoint)0')]"
+						blockoverride "field_content" {
+							text_single = { raw_text = "[ShowBuildingTypeName('lacquerware_guild')]" }
+							expand = {}
+							widget = {
+								using = sul_value_cell
+								blockoverride "val" { raw_text = "#G [LocationView.GetLocation.MakeScope.ScriptValue('sul_eff_lacquerware_guild')|%+1]#!" }
+							}
+						}
+					}
+					TooltipManualTableField = {
+						visible = "[GreaterThan_CFixedPoint(LocationView.GetLocation.MakeScope.ScriptValue('sul_eff_scriptorium'), '(CFixedPoint)0')]"
+						blockoverride "field_content" {
+							text_single = { raw_text = "[ShowBuildingTypeName('scriptorium')]" }
+							expand = {}
+							widget = {
+								using = sul_value_cell
+								blockoverride "val" { raw_text = "#G [LocationView.GetLocation.MakeScope.ScriptValue('sul_eff_scriptorium')|%+1]#!" }
+							}
+						}
+					}
+					TooltipManualTableField = {
+						visible = "[GreaterThan_CFixedPoint(LocationView.GetLocation.MakeScope.ScriptValue('sul_eff_perfumery'), '(CFixedPoint)0')]"
+						blockoverride "field_content" {
+							text_single = { raw_text = "[ShowBuildingTypeName('perfumery')]" }
+							expand = {}
+							widget = {
+								using = sul_value_cell
+								blockoverride "val" { raw_text = "#G [LocationView.GetLocation.MakeScope.ScriptValue('sul_eff_perfumery')|%+1]#!" }
+							}
+						}
+					}
+					TooltipManualTableField = {
+						visible = "[GreaterThan_CFixedPoint(LocationView.GetLocation.MakeScope.ScriptValue('sul_eff_charcoal_maker'), '(CFixedPoint)0')]"
+						blockoverride "field_content" {
+							text_single = { raw_text = "[ShowBuildingTypeName('charcoal_maker')]" }
+							expand = {}
+							widget = {
+								using = sul_value_cell
+								blockoverride "val" { raw_text = "#G [LocationView.GetLocation.MakeScope.ScriptValue('sul_eff_charcoal_maker')|%+1]#!" }
+							}
+						}
+					}
+				}
+				# Total row
+				TooltipManualTableField = {
+					blockoverride "field_content" {
+						text_single = { raw_text = "#bold Total#!" }
+						expand = {}
+						widget = {
+							using = sul_value_cell
+							blockoverride "val" { raw_text = "#bold [LocationView.GetLocation.MakeScope.ScriptValue('sul_building_production_efficiency')|%+1]#!" }
+						}
+					}
+				}
+			}
+		}
+	}
+}
 
 template sul_demand_formula_tooltip {
 	ContextualTooltipType = {
@@ -812,7 +2191,7 @@ template sul_demand_formula_tooltip {
 				}
 			}
 
-			# Examples section
+			# Class maximums section
 			TooltipListBase = {
 				vbox = {
 					layoutpolicy_horizontal = expanding
@@ -820,7 +2199,7 @@ template sul_demand_formula_tooltip {
 
 					text_single = {
 						layoutpolicy_horizontal = expanding
-						text = "SUL_DEMAND_FORMULA_EXAMPLES_HEADER"
+						text = "SUL_DEMAND_FORMULA_MAXIMUMS_HEADER"
 						default_format = "#T"
 					}
 
@@ -829,22 +2208,10 @@ template sul_demand_formula_tooltip {
 						margin_top = 4
 						text_single = {
 							layoutpolicy_horizontal = expanding
-							raw_text = "GDP×Share = 0"
+							raw_text = "Nobles"
 						}
 						text_single = {
-							raw_text = "#G 1.0x#!"
-						}
-					}
-
-					hbox = {
-						layoutpolicy_horizontal = expanding
-						margin_top = 2
-						text_single = {
-							layoutpolicy_horizontal = expanding
-							raw_text = "GDP×Share = 50"
-						}
-						text_single = {
-							raw_text = "#G 3.0x#!"
+							raw_text = "#G 1.0x → 5.0x#!"
 						}
 					}
 
@@ -853,22 +2220,10 @@ template sul_demand_formula_tooltip {
 						margin_top = 2
 						text_single = {
 							layoutpolicy_horizontal = expanding
-							raw_text = "GDP×Share = 100"
+							raw_text = "Clergy"
 						}
 						text_single = {
-							raw_text = "#G 3.67x#!"
-						}
-					}
-
-					hbox = {
-						layoutpolicy_horizontal = expanding
-						margin_top = 2
-						text_single = {
-							layoutpolicy_horizontal = expanding
-							raw_text = "GDP×Share = 150"
-						}
-						text_single = {
-							raw_text = "#G 4.0x#!"
+							raw_text = "#G 1.0x → 4.0x#!"
 						}
 					}
 
@@ -877,11 +2232,70 @@ template sul_demand_formula_tooltip {
 						margin_top = 2
 						text_single = {
 							layoutpolicy_horizontal = expanding
-							raw_text = "GDP×Share → ∞"
+							raw_text = "Burghers"
 						}
 						text_single = {
-							raw_text = "#G 5.0x#!"
-							tooltip = "SUL_ASYMPTOTE_TOOLTIP"
+							raw_text = "#G 0.75x → 3.5x#!"
+						}
+					}
+
+					hbox = {
+						layoutpolicy_horizontal = expanding
+						margin_top = 2
+						text_single = {
+							layoutpolicy_horizontal = expanding
+							raw_text = "Soldiers"
+						}
+						text_single = {
+							raw_text = "#G 0.4x → 2.5x#!"
+						}
+					}
+
+					hbox = {
+						layoutpolicy_horizontal = expanding
+						margin_top = 2
+						text_single = {
+							layoutpolicy_horizontal = expanding
+							raw_text = "Laborers"
+						}
+						text_single = {
+							raw_text = "#G 0.4x → 2.5x#!"
+						}
+					}
+
+					hbox = {
+						layoutpolicy_horizontal = expanding
+						margin_top = 2
+						text_single = {
+							layoutpolicy_horizontal = expanding
+							raw_text = "Peasants"
+						}
+						text_single = {
+							raw_text = "#G 0.4x → 2.5x#!"
+						}
+					}
+
+					hbox = {
+						layoutpolicy_horizontal = expanding
+						margin_top = 2
+						text_single = {
+							layoutpolicy_horizontal = expanding
+							raw_text = "Tribesmen"
+						}
+						text_single = {
+							raw_text = "#G 0.4x → 2.0x#!"
+						}
+					}
+
+					hbox = {
+						layoutpolicy_horizontal = expanding
+						margin_top = 2
+						text_single = {
+							layoutpolicy_horizontal = expanding
+							raw_text = "Slaves"
+						}
+						text_single = {
+							raw_text = "#G 0.1x → 1.0x#!"
 						}
 					}
 				}

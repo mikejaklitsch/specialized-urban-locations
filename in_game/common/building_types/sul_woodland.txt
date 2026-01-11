@@ -1,8 +1,8 @@
-﻿REPLACE:lumber_mill = {
+REPLACE:lumber_mill = {
 	increase_per_level_cost = 0.0
 	is_foreign = no
 	max_levels = rural_building_cap
-	
+
 	pop_type = laborers
 	employment_size = rural_peasant_produce_employment
 	rural_settlement = yes
@@ -23,11 +23,9 @@
 
 
 	modifier = {
-		# Externality: Raw Extraction
-		local_monthly_food_modifier = -0.05
-		local_raw_material_output = 0.01
-		local_max_rgo_size_modifier = 0.01
-		local_production_efficiency = -0.005
+		# Raw Extraction: +0.02 raw, +0.005 rgo
+		local_raw_material_output = 0.02
+		local_max_rgo_size_modifier = 0.02
 	}
 
 	category = rgo_building_category
@@ -48,7 +46,7 @@ REPLACE:tar_kiln = {
 	is_foreign = no
 	pop_type = laborers
 	max_levels = rural_building_cap
-	
+
 	employment_size = tiny_rural_peasant_produce_employment
 	category = basic_industry_category
 	rural_settlement = yes
@@ -67,11 +65,11 @@ REPLACE:tar_kiln = {
 	}
 
 	modifier = {
-		# Externality: Intermediate Goods
-		local_monthly_food_modifier = -0.05
-		local_raw_material_output = -0.005
-		local_max_rgo_size_modifier = -0.005
-		local_production_efficiency = 0.005
+		# Woodland goods (spread)
+		local_paper_output_modifier = 0.0075
+		local_furniture_output_modifier = 0.0075
+		local_leather_output_modifier = 0.0075
+		local_tar_output_modifier = 0.0075
 	}
 
 	build_time = rural_build_time
@@ -103,7 +101,7 @@ REPLACE:elephant_hunting_grounds = {
 			}
 		}
 	}
-	
+
 	pop_type = peasants
 	category = rgo_building_category
 	employment_size = elephant_hunting_grounds_employment
@@ -125,11 +123,10 @@ REPLACE:elephant_hunting_grounds = {
 
 	modifier = {
 		local_nobles_desired_pop = 0.010
-		# Externality: Raw Extraction
-		local_monthly_food_modifier = -0.05
-		local_raw_material_output = 0.01
-		local_max_rgo_size_modifier = 0.01
-		local_production_efficiency = -0.005
+		# Food-adjacent: +0.02 food, +0.02 raw, +0.005 rgo
+		local_monthly_food_modifier = 0.02
+		local_raw_material_output = 0.02
+		local_max_rgo_size_modifier = 0.02
 	}
 
 	construction_demand = village_construction
@@ -149,8 +146,8 @@ REPLACE:sawmill = {
 	increase_per_level_cost = 0.0
 	is_foreign = no
 	pop_type = laborers
-	max_levels = sul_efficiency_building_caps
-	
+	max_levels = rural_building_cap
+
 	employment_size = rural_peasant_enhance_employment
 	category = rgo_building_category
 	rural_settlement = yes
@@ -165,11 +162,9 @@ REPLACE:sawmill = {
 
 	modifier = {
 		local_lumber_output_modifier = 0.1
-		# Externality: Raw Extraction (efficiency enhancement)
-		local_monthly_food_modifier = -0.05
-		local_raw_material_output = 0.01
-		local_max_rgo_size_modifier = 0.01
-		local_production_efficiency = -0.005
+		# Raw Extraction: +0.02 raw, +0.005 rgo
+		local_raw_material_output = 0.02
+		local_max_rgo_size_modifier = 0.02
 	}
 
 	build_time = rural_build_time
@@ -182,65 +177,14 @@ REPLACE:sawmill = {
 	}
 }
 
-REPLACE:forest_village = {
-	increase_per_level_cost = 0.0
-	is_foreign = no
-	max_levels = rural_building_cap
-	
-	pop_type = peasants
-	category = village_category
-	employment_size = village_employment_size
-	rural_settlement = yes
-	town = yes
-	city = yes
-	location_potential = {
-		AND = {
-			OR = {
-				raw_material = goods:wild_game
-				vegetation = forest
-				vegetation = woods
-				vegetation = jungle
-			}
-			sul_has_woodland_specialization = yes
-		}
-	}
-
-	build_time = village_build_time
-	construction_demand = village_construction
-
-	modifier = {
-		local_monthly_food = 1.0
-		local_peasants_estate_power = 0.25
-		local_laborers_desired_pop = 0.1
-		local_soldiers_desired_pop = 0.05
-		# Externality: Intermediate Goods (low impact)
-		local_monthly_food_modifier = -0.025
-		local_raw_material_output = -0.0025
-		local_max_rgo_size_modifier = -0.0025
-		local_production_efficiency = 0.0025
-	}
-	unique_production_methods = {
-		sul_forest_village_maintenance = {
-			produced = leather
-			output = 0.25
-			sand = 0.1
-			tar = 0.02
-			wild_game = 0.4
-			category = building_maintenance
-		}
-	}
-}
-
 INJECT:dyes_guild = {
 	location_potential = {
 		sul_has_woodland_specialization = yes
 	}
 	modifier = {
-		# Externality: Intermediate Goods
-		local_monthly_food_modifier = -0.05
-		local_raw_material_output = -0.005
-		local_max_rgo_size_modifier = -0.005
-		local_production_efficiency = 0.005
+		# Woodland goods (spread)
+		local_raw_material_output = 0.02
+		local_max_rgo_size_modifier = 0.02
 	}
 }
 
@@ -249,11 +193,9 @@ INJECT:dyes_workshop = {
 		sul_has_woodland_specialization = yes
 	}
 	modifier = {
-		# Externality: Intermediate Goods
-		local_monthly_food_modifier = -0.05
-		local_raw_material_output = -0.005
-		local_max_rgo_size_modifier = -0.005
-		local_production_efficiency = 0.005
+		# Woodland goods (spread)
+		local_raw_material_output = 0.02
+		local_max_rgo_size_modifier = 0.02
 	}
 }
 
@@ -262,11 +204,9 @@ INJECT:dyesworks = {
 		sul_has_woodland_specialization = yes
 	}
 	modifier = {
-		# Externality: Intermediate Goods
-		local_monthly_food_modifier = -0.05
-		local_raw_material_output = -0.005
-		local_max_rgo_size_modifier = -0.005
-		local_production_efficiency = 0.005
+		# Woodland goods (spread)
+		local_raw_material_output = 0.02
+		local_max_rgo_size_modifier = 0.02
 	}
 }
 
@@ -275,11 +215,9 @@ INJECT:dyes_mill = {
 		sul_has_woodland_specialization = yes
 	}
 	modifier = {
-		# Externality: Intermediate Goods
-		local_monthly_food_modifier = -0.05
-		local_raw_material_output = -0.005
-		local_max_rgo_size_modifier = -0.005
-		local_production_efficiency = 0.005
+		# Woodland goods (spread)
+		local_raw_material_output = 0.02
+		local_max_rgo_size_modifier = 0.02
 	}
 }
 
@@ -288,11 +226,10 @@ INJECT:furniture_guild = {
 		sul_has_woodland_specialization = yes
 	}
 	modifier = {
-		# Externality: Advanced Goods
-		local_monthly_food_modifier = -0.05
-		local_raw_material_output = -0.01
-		local_max_rgo_size_modifier = -0.01
-		local_production_efficiency = 0.01
+		# Woodland goods output
+		local_paper_output_modifier = 0.01
+		local_furniture_output_modifier = 0.01
+		local_leather_output_modifier = 0.01
 	}
 }
 
@@ -301,11 +238,10 @@ INJECT:furniture_workshop = {
 		sul_has_woodland_specialization = yes
 	}
 	modifier = {
-		# Externality: Advanced Goods
-		local_monthly_food_modifier = -0.05
-		local_raw_material_output = -0.01
-		local_max_rgo_size_modifier = -0.01
-		local_production_efficiency = 0.01
+		# Woodland goods output
+		local_paper_output_modifier = 0.01
+		local_furniture_output_modifier = 0.01
+		local_leather_output_modifier = 0.01
 	}
 }
 
@@ -314,11 +250,10 @@ INJECT:furniture_manufactory = {
 		sul_has_woodland_specialization = yes
 	}
 	modifier = {
-		# Externality: Advanced Goods
-		local_monthly_food_modifier = -0.05
-		local_raw_material_output = -0.01
-		local_max_rgo_size_modifier = -0.01
-		local_production_efficiency = 0.01
+		# Woodland goods output
+		local_paper_output_modifier = 0.01
+		local_furniture_output_modifier = 0.01
+		local_leather_output_modifier = 0.01
 	}
 }
 
@@ -327,11 +262,10 @@ INJECT:furniture_mill = {
 		sul_has_woodland_specialization = yes
 	}
 	modifier = {
-		# Externality: Advanced Goods
-		local_monthly_food_modifier = -0.05
-		local_raw_material_output = -0.01
-		local_max_rgo_size_modifier = -0.01
-		local_production_efficiency = 0.01
+		# Woodland goods output
+		local_paper_output_modifier = 0.01
+		local_furniture_output_modifier = 0.01
+		local_leather_output_modifier = 0.01
 	}
 }
 
@@ -340,11 +274,10 @@ INJECT:lacquerware_guild = {
 		sul_has_woodland_specialization = yes
 	}
 	modifier = {
-		# Externality: Advanced Goods
-		local_monthly_food_modifier = -0.05
-		local_raw_material_output = -0.01
-		local_max_rgo_size_modifier = -0.01
-		local_production_efficiency = 0.01
+		# Woodland goods output
+		local_paper_output_modifier = 0.01
+		local_furniture_output_modifier = 0.01
+		local_leather_output_modifier = 0.01
 	}
 }
 
@@ -353,11 +286,10 @@ INJECT:lacquerware_manufactory = {
 		sul_has_woodland_specialization = yes
 	}
 	modifier = {
-		# Externality: Advanced Goods
-		local_monthly_food_modifier = -0.05
-		local_raw_material_output = -0.01
-		local_max_rgo_size_modifier = -0.01
-		local_production_efficiency = 0.01
+		# Woodland goods output
+		local_paper_output_modifier = 0.01
+		local_furniture_output_modifier = 0.01
+		local_leather_output_modifier = 0.01
 	}
 }
 
@@ -369,11 +301,17 @@ INJECT:tannery = {
 		}
 	}
 	modifier = {
-		# Externality: Intermediate Goods
-		local_monthly_food_modifier = -0.05
-		local_raw_material_output = -0.005
-		local_max_rgo_size_modifier = -0.005
-		local_production_efficiency = 0.005
+		local_monthly_food_modifier = 0.02
+		# Woodland goods output
+		local_paper_output_modifier = 0.0075
+		local_furniture_output_modifier = 0.0075
+		local_leather_output_modifier = 0.0075
+		local_tar_output_modifier = 0.0075
+		# Farming goods output
+		local_wine_output_modifier = 0.0075
+		local_beer_output_modifier = 0.0075
+		local_liquor_output_modifier = 0.0075
+		local_leather_output_modifier = 0.0075
 	}
 }
 
@@ -385,11 +323,17 @@ INJECT:tanning_workshop = {
 		}
 	}
 	modifier = {
-		# Externality: Intermediate Goods
-		local_monthly_food_modifier = -0.05
-		local_raw_material_output = -0.005
-		local_max_rgo_size_modifier = -0.005
-		local_production_efficiency = 0.005
+		local_monthly_food_modifier = 0.02
+		# Woodland goods output
+		local_paper_output_modifier = 0.0075
+		local_furniture_output_modifier = 0.0075
+		local_leather_output_modifier = 0.0075
+		local_tar_output_modifier = 0.0075
+		# Farming goods output
+		local_wine_output_modifier = 0.0075
+		local_beer_output_modifier = 0.0075
+		local_liquor_output_modifier = 0.0075
+		local_leather_output_modifier = 0.0075
 	}
 }
 
@@ -401,11 +345,17 @@ INJECT:tannery_manufactory = {
 		}
 	}
 	modifier = {
-		# Externality: Intermediate Goods
-		local_monthly_food_modifier = -0.05
-		local_raw_material_output = -0.005
-		local_max_rgo_size_modifier = -0.005
-		local_production_efficiency = 0.005
+		local_monthly_food_modifier = 0.02
+		# Woodland goods output
+		local_paper_output_modifier = 0.0075
+		local_furniture_output_modifier = 0.0075
+		local_leather_output_modifier = 0.0075
+		local_tar_output_modifier = 0.0075
+		# Farming goods output
+		local_wine_output_modifier = 0.0075
+		local_beer_output_modifier = 0.0075
+		local_liquor_output_modifier = 0.0075
+		local_leather_output_modifier = 0.0075
 	}
 }
 
@@ -417,11 +367,17 @@ INJECT:tannery_mill = {
 		}
 	}
 	modifier = {
-		# Externality: Intermediate Goods
-		local_monthly_food_modifier = -0.05
-		local_raw_material_output = -0.005
-		local_max_rgo_size_modifier = -0.005
-		local_production_efficiency = 0.005
+		local_monthly_food_modifier = 0.02
+		# Woodland goods output
+		local_paper_output_modifier = 0.0075
+		local_furniture_output_modifier = 0.0075
+		local_leather_output_modifier = 0.0075
+		local_tar_output_modifier = 0.0075
+		# Farming goods output
+		local_wine_output_modifier = 0.0075
+		local_beer_output_modifier = 0.0075
+		local_liquor_output_modifier = 0.0075
+		local_leather_output_modifier = 0.0075
 	}
 }
 
@@ -432,11 +388,9 @@ INJECT:charcoal_maker = {
 		sul_has_woodland_specialization = yes
 	}
 	modifier = {
-		# Externality: Intermediate Goods
-		local_monthly_food_modifier = -0.05
-		local_raw_material_output = -0.005
-		local_max_rgo_size_modifier = -0.005
-		local_production_efficiency = 0.005
+		# Woodland goods (spread)
+		local_raw_material_output = 0.02
+		local_max_rgo_size_modifier = 0.02
 	}
 }
 
@@ -447,11 +401,9 @@ INJECT:improved_charcoal_maker = {
 		sul_has_woodland_specialization = yes
 	}
 	modifier = {
-		# Externality: Intermediate Goods
-		local_monthly_food_modifier = -0.05
-		local_raw_material_output = -0.005
-		local_max_rgo_size_modifier = -0.005
-		local_production_efficiency = 0.005
+		# Woodland goods (spread)
+		local_raw_material_output = 0.02
+		local_max_rgo_size_modifier = 0.02
 	}
 }
 
@@ -460,11 +412,10 @@ INJECT:paper_guild = {
 		sul_has_woodland_specialization = yes
 	}
 	modifier = {
-		# Externality: Intermediate Goods
-		local_monthly_food_modifier = -0.05
-		local_raw_material_output = -0.005
-		local_max_rgo_size_modifier = -0.005
-		local_production_efficiency = 0.005
+		# Woodland goods output
+		local_paper_output_modifier = 0.01
+		local_furniture_output_modifier = 0.01
+		local_leather_output_modifier = 0.01
 	}
 }
 
@@ -473,11 +424,10 @@ INJECT:paper_workshop = {
 		sul_has_woodland_specialization = yes
 	}
 	modifier = {
-		# Externality: Intermediate Goods
-		local_monthly_food_modifier = -0.05
-		local_raw_material_output = -0.005
-		local_max_rgo_size_modifier = -0.005
-		local_production_efficiency = 0.005
+		# Woodland goods output
+		local_paper_output_modifier = 0.01
+		local_furniture_output_modifier = 0.01
+		local_leather_output_modifier = 0.01
 	}
 }
 
@@ -486,11 +436,10 @@ INJECT:paper_manufactory = {
 		sul_has_woodland_specialization = yes
 	}
 	modifier = {
-		# Externality: Intermediate Goods
-		local_monthly_food_modifier = -0.05
-		local_raw_material_output = -0.005
-		local_max_rgo_size_modifier = -0.005
-		local_production_efficiency = 0.005
+		# Woodland goods output
+		local_paper_output_modifier = 0.01
+		local_furniture_output_modifier = 0.01
+		local_leather_output_modifier = 0.01
 	}
 }
 
@@ -499,10 +448,9 @@ INJECT:paper_mill = {
 		sul_has_woodland_specialization = yes
 	}
 	modifier = {
-		# Externality: Intermediate Goods
-		local_monthly_food_modifier = -0.05
-		local_raw_material_output = -0.005
-		local_max_rgo_size_modifier = -0.005
-		local_production_efficiency = 0.005
+		# Woodland goods output
+		local_paper_output_modifier = 0.01
+		local_furniture_output_modifier = 0.01
+		local_leather_output_modifier = 0.01
 	}
 }

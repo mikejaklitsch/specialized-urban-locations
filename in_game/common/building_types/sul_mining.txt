@@ -1,4 +1,4 @@
-﻿REPLACE:mercury_patio = {
+REPLACE:mercury_patio = {
 	increase_per_level_cost = 0.0
 	is_foreign = no
 	max_levels = mercury_patio_max_level
@@ -25,11 +25,7 @@
 	modifier = {
 		local_goods_gold_output_modifier = 1.0
 		local_silver_output_modifier = 1.0
-		# Externality: Raw Extraction
-		local_monthly_food_modifier = -0.05
-		local_raw_material_output = 0.01
-		local_max_rgo_size_modifier = 0.01
-		local_production_efficiency = -0.005
+		# Precious metals: no raw material bonus
 	}
 	unique_production_methods = {
 		sul_mercury_patio_maintenance = {
@@ -43,7 +39,7 @@ REPLACE:stone_quarry = {
 	increase_per_level_cost = 0.0
 	is_foreign = no
 	max_levels = rural_building_cap
-	
+
 	pop_type = laborers
 	employment_size = rural_peasant_produce_employment
 	rural_settlement = yes
@@ -61,11 +57,9 @@ REPLACE:stone_quarry = {
 	construction_demand = basic_construction_needs
 
 	modifier = {
-		# Externality: Raw Extraction
-		local_monthly_food_modifier = -0.05
-		local_raw_material_output = 0.01
-		local_max_rgo_size_modifier = 0.01
-		local_production_efficiency = -0.005
+		# Raw Extraction: +0.02 raw, +0.005 rgo
+		local_raw_material_output = 0.02
+		local_max_rgo_size_modifier = 0.02
 	}
 
 	unique_production_methods = {
@@ -112,11 +106,9 @@ REPLACE:bog_iron_smelter = {
 	construction_demand = basic_construction_needs
 
 	modifier = {
-		# Externality: Raw Extraction
-		local_monthly_food_modifier = -0.05
-		local_raw_material_output = 0.01
-		local_max_rgo_size_modifier = 0.01
-		local_production_efficiency = -0.005
+		# Raw Extraction: +0.02 raw, +0.005 rgo
+		local_raw_material_output = 0.02
+		local_max_rgo_size_modifier = 0.02
 	}
 
 	unique_production_methods = {
@@ -133,8 +125,8 @@ REPLACE:local_smelters = {
 	increase_per_level_cost = 0.0
 	is_foreign = no
 	pop_type = laborers
-	max_levels = sul_efficiency_building_caps
-	
+	max_levels = rural_building_cap
+
 	employment_size = rural_peasant_enhance_employment
 	category = rgo_building_category
 	rural_settlement = yes
@@ -157,11 +149,16 @@ REPLACE:local_smelters = {
 		local_copper_output_modifier = 0.1
 		local_tin_output_modifier = 0.1
 		local_lead_output_modifier = 0.1
-		# Externality: Intermediate Goods (processing ores)
-		local_monthly_food_modifier = -0.05
-		local_raw_material_output = -0.005
-		local_max_rgo_size_modifier = -0.01
-		local_production_efficiency = 0.005
+		# Raw Extraction: +0.02 raw, +0.005 rgo
+		local_raw_material_output = 0.02
+		local_max_rgo_size_modifier = 0.02
+		# Mining goods output
+		local_tools_output_modifier = 0.0075
+		local_weaponry_output_modifier = 0.0075
+		local_cannons_output_modifier = 0.0075
+		local_firearms_output_modifier = 0.0075
+		local_steel_output_modifier = 0.0075
+		local_jewelry_output_modifier = 0.0075
 	}
 
 	build_time = rural_build_time
@@ -178,65 +175,61 @@ REPLACE:local_smelters = {
 
 INJECT:cannon_maker = {
 	location_potential = {
-		OR = {
-			sul_has_mining_specialization = yes
-			sul_has_commercial_specialization = yes
-		}
+		sul_has_mining_specialization = yes
 	}
 	modifier = {
-		# Externality: Military Production
-		local_monthly_food_modifier = -0.10
-		local_raw_material_output = -0.005
-		local_max_rgo_size_modifier = -0.005
-		local_production_efficiency = 0.005
+		# Mining goods output
+		local_tools_output_modifier = 0.01
+		local_weaponry_output_modifier = 0.01
+		local_cannons_output_modifier = 0.01
+		local_firearms_output_modifier = 0.01
+		local_steel_output_modifier = 0.01
+		local_jewelry_output_modifier = 0.01
 	}
 }
 
 INJECT:cannon_workshop = {
 	location_potential = {
-		OR = {
-			sul_has_mining_specialization = yes
-			sul_has_commercial_specialization = yes
-		}
+		sul_has_mining_specialization = yes
 	}
 	modifier = {
-		# Externality: Military Production
-		local_monthly_food_modifier = -0.10
-		local_raw_material_output = -0.005
-		local_max_rgo_size_modifier = -0.005
-		local_production_efficiency = 0.005
+		# Mining goods output
+		local_tools_output_modifier = 0.01
+		local_weaponry_output_modifier = 0.01
+		local_cannons_output_modifier = 0.01
+		local_firearms_output_modifier = 0.01
+		local_steel_output_modifier = 0.01
+		local_jewelry_output_modifier = 0.01
 	}
 }
 
 INJECT:cannon_foundry = {
 	location_potential = {
-		OR = {
-			sul_has_mining_specialization = yes
-			sul_has_commercial_specialization = yes
-		}
+		sul_has_mining_specialization = yes
 	}
 	modifier = {
-		# Externality: Military Production
-		local_monthly_food_modifier = -0.10
-		local_raw_material_output = -0.005
-		local_max_rgo_size_modifier = -0.005
-		local_production_efficiency = 0.005
+		# Mining goods output
+		local_tools_output_modifier = 0.01
+		local_weaponry_output_modifier = 0.01
+		local_cannons_output_modifier = 0.01
+		local_firearms_output_modifier = 0.01
+		local_steel_output_modifier = 0.01
+		local_jewelry_output_modifier = 0.01
 	}
 }
 
 INJECT:cannons_factory = {
 	location_potential = {
-		OR = {
-			sul_has_mining_specialization = yes
-			sul_has_commercial_specialization = yes
-		}
+		sul_has_mining_specialization = yes
 	}
 	modifier = {
-		# Externality: Military Production
-		local_monthly_food_modifier = -0.10
-		local_raw_material_output = -0.005
-		local_max_rgo_size_modifier = -0.005
-		local_production_efficiency = 0.005
+		# Mining goods output
+		local_tools_output_modifier = 0.01
+		local_weaponry_output_modifier = 0.01
+		local_cannons_output_modifier = 0.01
+		local_firearms_output_modifier = 0.01
+		local_steel_output_modifier = 0.01
+		local_jewelry_output_modifier = 0.01
 	}
 }
 
@@ -245,11 +238,13 @@ INJECT:hand_cannon_guild = {
 		sul_has_mining_specialization = yes
 	}
 	modifier = {
-		# Externality: Military Production
-		local_monthly_food_modifier = -0.10
-		local_raw_material_output = -0.005
-		local_max_rgo_size_modifier = -0.005
-		local_production_efficiency = 0.005
+		# Mining goods output
+		local_tools_output_modifier = 0.01
+		local_weaponry_output_modifier = 0.01
+		local_cannons_output_modifier = 0.01
+		local_firearms_output_modifier = 0.01
+		local_steel_output_modifier = 0.01
+		local_jewelry_output_modifier = 0.01
 	}
 }
 
@@ -258,11 +253,13 @@ INJECT:gun_smith = {
 		sul_has_mining_specialization = yes
 	}
 	modifier = {
-		# Externality: Military Production
-		local_monthly_food_modifier = -0.10
-		local_raw_material_output = -0.005
-		local_max_rgo_size_modifier = -0.005
-		local_production_efficiency = 0.005
+		# Mining goods output
+		local_tools_output_modifier = 0.01
+		local_weaponry_output_modifier = 0.01
+		local_cannons_output_modifier = 0.01
+		local_firearms_output_modifier = 0.01
+		local_steel_output_modifier = 0.01
+		local_jewelry_output_modifier = 0.01
 	}
 }
 
@@ -271,11 +268,13 @@ INJECT:guns_workshop = {
 		sul_has_mining_specialization = yes
 	}
 	modifier = {
-		# Externality: Military Production
-		local_monthly_food_modifier = -0.10
-		local_raw_material_output = -0.005
-		local_max_rgo_size_modifier = -0.005
-		local_production_efficiency = 0.005
+		# Mining goods output
+		local_tools_output_modifier = 0.01
+		local_weaponry_output_modifier = 0.01
+		local_cannons_output_modifier = 0.01
+		local_firearms_output_modifier = 0.01
+		local_steel_output_modifier = 0.01
+		local_jewelry_output_modifier = 0.01
 	}
 }
 
@@ -284,11 +283,13 @@ INJECT:firearms_manufactory = {
 		sul_has_mining_specialization = yes
 	}
 	modifier = {
-		# Externality: Military Production
-		local_monthly_food_modifier = -0.10
-		local_raw_material_output = -0.005
-		local_max_rgo_size_modifier = -0.005
-		local_production_efficiency = 0.005
+		# Mining goods output
+		local_tools_output_modifier = 0.01
+		local_weaponry_output_modifier = 0.01
+		local_cannons_output_modifier = 0.01
+		local_firearms_output_modifier = 0.01
+		local_steel_output_modifier = 0.01
+		local_jewelry_output_modifier = 0.01
 	}
 }
 
@@ -297,11 +298,13 @@ INJECT:firearms_factory = {
 		sul_has_mining_specialization = yes
 	}
 	modifier = {
-		# Externality: Military Production
-		local_monthly_food_modifier = -0.10
-		local_raw_material_output = -0.005
-		local_max_rgo_size_modifier = -0.005
-		local_production_efficiency = 0.005
+		# Mining goods output
+		local_tools_output_modifier = 0.01
+		local_weaponry_output_modifier = 0.01
+		local_cannons_output_modifier = 0.01
+		local_firearms_output_modifier = 0.01
+		local_steel_output_modifier = 0.01
+		local_jewelry_output_modifier = 0.01
 	}
 }
 
@@ -310,11 +313,15 @@ INJECT:tools_guild = {
 		sul_has_mining_specialization = yes
 	}
 	modifier = {
-		# Externality: Intermediate Goods
-		local_monthly_food_modifier = -0.05
-		local_raw_material_output = -0.005
-		local_max_rgo_size_modifier = -0.01
-		local_production_efficiency = 0.005
+		local_max_rgo_size_modifier = 0.01
+		local_raw_material_output = 0.01
+		# Mining goods output
+		local_tools_output_modifier = 0.005
+		local_weaponry_output_modifier = 0.005
+		local_cannons_output_modifier = 0.005
+		local_firearms_output_modifier = 0.005
+		local_steel_output_modifier = 0.005
+		local_jewelry_output_modifier = 0.005
 	}
 }
 
@@ -323,11 +330,15 @@ INJECT:tools_workshop = {
 		sul_has_mining_specialization = yes
 	}
 	modifier = {
-		# Externality: Intermediate Goods
-		local_monthly_food_modifier = -0.05
-		local_raw_material_output = -0.005
-		local_max_rgo_size_modifier = -0.01
-		local_production_efficiency = 0.005
+		local_max_rgo_size_modifier = 0.01
+		local_raw_material_output = 0.01
+		# Mining goods output
+		local_tools_output_modifier = 0.005
+		local_weaponry_output_modifier = 0.005
+		local_cannons_output_modifier = 0.005
+		local_firearms_output_modifier = 0.005
+		local_steel_output_modifier = 0.005
+		local_jewelry_output_modifier = 0.005
 	}
 }
 
@@ -336,11 +347,15 @@ INJECT:iron_foundry = {
 		sul_has_mining_specialization = yes
 	}
 	modifier = {
-		# Externality: Intermediate Goods
-		local_monthly_food_modifier = -0.05
-		local_raw_material_output = -0.005
-		local_max_rgo_size_modifier = -0.01
-		local_production_efficiency = 0.005
+		local_max_rgo_size_modifier = 0.01
+		local_raw_material_output = 0.01
+		# Mining goods output
+		local_tools_output_modifier = 0.005
+		local_weaponry_output_modifier = 0.005
+		local_cannons_output_modifier = 0.005
+		local_firearms_output_modifier = 0.005
+		local_steel_output_modifier = 0.005
+		local_jewelry_output_modifier = 0.005
 	}
 }
 
@@ -349,11 +364,15 @@ INJECT:iron_mill = {
 		sul_has_mining_specialization = yes
 	}
 	modifier = {
-		# Externality: Intermediate Goods
-		local_monthly_food_modifier = -0.05
-		local_raw_material_output = -0.005
-		local_max_rgo_size_modifier = -0.01
-		local_production_efficiency = 0.005
+		local_max_rgo_size_modifier = 0.01
+		local_raw_material_output = 0.01
+		# Mining goods output
+		local_tools_output_modifier = 0.005
+		local_weaponry_output_modifier = 0.005
+		local_cannons_output_modifier = 0.005
+		local_firearms_output_modifier = 0.005
+		local_steel_output_modifier = 0.005
+		local_jewelry_output_modifier = 0.005
 	}
 }
 
@@ -362,11 +381,13 @@ INJECT:weapon_guild = {
 		sul_has_mining_specialization = yes
 	}
 	modifier = {
-		# Externality: Military Production
-		local_monthly_food_modifier = -0.10
-		local_raw_material_output = -0.005
-		local_max_rgo_size_modifier = -0.005
-		local_production_efficiency = 0.005
+		# Mining goods output
+		local_tools_output_modifier = 0.0075
+		local_weaponry_output_modifier = 0.0075
+		local_cannons_output_modifier = 0.0075
+		local_firearms_output_modifier = 0.0075
+		local_steel_output_modifier = 0.0075
+		local_jewelry_output_modifier = 0.0075
 	}
 }
 
@@ -375,11 +396,13 @@ INJECT:weapon_workshop = {
 		sul_has_mining_specialization = yes
 	}
 	modifier = {
-		# Externality: Military Production
-		local_monthly_food_modifier = -0.10
-		local_raw_material_output = -0.005
-		local_max_rgo_size_modifier = -0.005
-		local_production_efficiency = 0.005
+		# Mining goods output
+		local_tools_output_modifier = 0.0075
+		local_weaponry_output_modifier = 0.0075
+		local_cannons_output_modifier = 0.0075
+		local_firearms_output_modifier = 0.0075
+		local_steel_output_modifier = 0.0075
+		local_jewelry_output_modifier = 0.0075
 	}
 }
 
@@ -388,11 +411,13 @@ INJECT:weapon_manufactory = {
 		sul_has_mining_specialization = yes
 	}
 	modifier = {
-		# Externality: Military Production
-		local_monthly_food_modifier = -0.10
-		local_raw_material_output = -0.005
-		local_max_rgo_size_modifier = -0.005
-		local_production_efficiency = 0.005
+		# Mining goods output
+		local_tools_output_modifier = 0.0075
+		local_weaponry_output_modifier = 0.0075
+		local_cannons_output_modifier = 0.0075
+		local_firearms_output_modifier = 0.0075
+		local_steel_output_modifier = 0.0075
+		local_jewelry_output_modifier = 0.0075
 	}
 }
 
@@ -401,11 +426,13 @@ INJECT:weapon_factory = {
 		sul_has_mining_specialization = yes
 	}
 	modifier = {
-		# Externality: Military Production
-		local_monthly_food_modifier = -0.10
-		local_raw_material_output = -0.005
-		local_max_rgo_size_modifier = -0.005
-		local_production_efficiency = 0.005
+		# Mining goods output
+		local_tools_output_modifier = 0.0075
+		local_weaponry_output_modifier = 0.0075
+		local_cannons_output_modifier = 0.0075
+		local_firearms_output_modifier = 0.0075
+		local_steel_output_modifier = 0.0075
+		local_jewelry_output_modifier = 0.0075
 	}
 }
 
@@ -414,11 +441,13 @@ INJECT:steel_mill = {
 		sul_has_mining_specialization = yes
 	}
 	modifier = {
-		# Externality: Intermediate Goods
-		local_monthly_food_modifier = -0.05
-		local_raw_material_output = -0.005
-		local_max_rgo_size_modifier = -0.01
-		local_production_efficiency = 0.005
+		# Mining goods output
+		local_tools_output_modifier = 0.0075
+		local_weaponry_output_modifier = 0.0075
+		local_cannons_output_modifier = 0.0075
+		local_firearms_output_modifier = 0.0075
+		local_steel_output_modifier = 0.0075
+		local_jewelry_output_modifier = 0.0075
 	}
 }
 
@@ -427,10 +456,12 @@ INJECT:jewelry_guild = {
 		sul_has_mining_specialization = yes
 	}
 	modifier = {
-		# Externality: Advanced Goods
-		local_monthly_food_modifier = -0.05
-		local_raw_material_output = -0.01
-		local_max_rgo_size_modifier = -0.01
-		local_production_efficiency = 0.01
+		# Mining goods output
+		local_tools_output_modifier = 0.01
+		local_weaponry_output_modifier = 0.01
+		local_cannons_output_modifier = 0.01
+		local_firearms_output_modifier = 0.01
+		local_steel_output_modifier = 0.01
+		local_jewelry_output_modifier = 0.01
 	}
 }

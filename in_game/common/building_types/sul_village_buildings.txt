@@ -2,41 +2,232 @@
 # VILLAGE BUILDING MODIFICATIONS
 # ============================================
 # Makes village buildings effectively free by granting +1 max building level per level
-# Also applies Food/Agricultural externality modifiers to support food production
+# Also applies positive externality modifiers to support their industries
 
-INJECT:fishing_village = {
+# market_village has no vanilla location_potential, so INJECT works
+INJECT:market_village = {
+	town = yes
+	city = yes
+	location_potential = {
+		OR = {
+			sul_has_commercial_specialization = yes
+			sul_has_mining_specialization = yes
+		}
+	}
 	modifier = {
 		free_building_levels = 1
-		# Externality: Infrastructure + Food (low impact)
-		local_monthly_food_modifier = 0.075
-		local_raw_material_output = 0.005
+		local_monthly_food = 1.0
+		# Commercial goods output
+		local_cloth_output_modifier = 0.005
+		local_fine_cloth_output_modifier = 0.005
+		local_books_output_modifier = 0.005
+		local_naval_supplies_output_modifier = 0.005
+		# Mining goods output
+		local_tools_output_modifier = 0.005
+		local_weaponry_output_modifier = 0.005
+		local_cannons_output_modifier = 0.005
+		local_firearms_output_modifier = 0.005
+		local_steel_output_modifier = 0.005
+		local_jewelry_output_modifier = 0.005
 	}
 }
 
-INJECT:farming_village = {
+REPLACE:fishing_village = {
+	increase_per_level_cost = 0.0
+	is_foreign = no
+	max_levels = rural_building_cap
+	pop_type = peasants
+
+	category = village_category
+	employment_size = village_employment_size
+
+	rural_settlement = yes
+	town = yes
+	city = yes
+
+	AI_optimization_flag_coastal = yes
+	location_potential = {
+		sul_has_gathering_specialization = yes
+	}
+
+	build_time = village_build_time
+	construction_demand = village_construction
+
 	modifier = {
 		free_building_levels = 1
-		# Externality: Food/Agricultural (village)
+		local_monthly_food = 1.5
+		# Force Multiplier: +0.10 food, +0.01 raw, +0.01 rgo
 		local_monthly_food_modifier = 0.10
-		local_raw_material_output = -0.005
-		local_production_efficiency = -0.005
+		local_raw_material_output = 0.01
+		local_max_rgo_size_modifier = 0.01
+		# Gathering goods output
+		local_glass_output_modifier = 0.01
+		local_pottery_output_modifier = 0.01
+		local_porcelain_output_modifier = 0.01
+		local_lacquerware_output_modifier = 0.01
+	}
+
+	unique_production_methods = {
+		sul_fishing_village_maintenance = {
+			produced = fish
+			output = 0.5
+			salt = 0.08
+			tools = 0.02
+			category = building_maintenance
+		}
 	}
 }
 
-INJECT:forest_village = {
-	modifier = {
-		free_building_levels = 1
-		# Note: forest_village externalities defined in sul_woodland.txt via REPLACE
-	}
-}
+REPLACE:farming_village = {
+	increase_per_level_cost = 0.0
+	is_foreign = no
+	max_levels = rural_building_cap
+	pop_type = peasants
 
-INJECT:irrigation_systems = {
+	category = village_category
+	employment_size = village_employment_size
+
+	rural_settlement = yes
+	town = yes
+	city = yes
+
+	location_potential = {
+		sul_has_farming_specialization = yes
+	}
+
+	build_time = village_build_time
+	construction_demand = village_construction
+
 	modifier = {
 		free_building_levels = 1
-		# Externality: Food/Agricultural (irrigation)
+		local_monthly_food = 2.0
+		local_food_capacity = 50
+		local_food_capacity_modifier = 0.05
+		# Force Multiplier: +0.10 food, +0.01 raw, +0.01 rgo
 		local_monthly_food_modifier = 0.10
+		local_raw_material_output = 0.01
+		local_max_rgo_size_modifier = 0.01
+		# Farming goods output
+		local_wine_output_modifier = 0.01
+		local_beer_output_modifier = 0.01
+		local_liquor_output_modifier = 0.01
+		local_leather_output_modifier = 0.01
+	}
+
+	unique_production_methods = {
+		sul_farming_village_maintenance = {
+			tools = 0.025
+			clay = 1.0
+			output = 0.5
+			produced = livestock
+			category = building_maintenance
+		}
+	}
+}
+
+REPLACE:forest_village = {
+	increase_per_level_cost = 0.0
+	is_foreign = no
+	max_levels = rural_building_cap
+	pop_type = peasants
+
+	category = village_category
+	employment_size = village_employment_size
+
+	rural_settlement = yes
+	town = yes
+	city = yes
+
+	location_potential = {
+		sul_has_woodland_specialization = yes
+	}
+
+	build_time = village_build_time
+	construction_demand = village_construction
+
+	modifier = {
+		free_building_levels = 1
+		local_monthly_food = 1.0
+		# Raw Extraction: +0.02 raw, +0.01 rgo
+		local_raw_material_output = 0.02
+		local_max_rgo_size_modifier = 0.01
+		# Woodland goods output
+		local_paper_output_modifier = 0.01
+		local_furniture_output_modifier = 0.01
+		local_leather_output_modifier = 0.01
+	}
+
+	unique_production_methods = {
+		sul_forest_village_maintenance = {
+			produced = leather
+			output = 0.25
+			sand = 0.1
+			tar = 0.02
+			wild_game = 0.4
+			category = building_maintenance
+		}
+	}
+}
+
+INJECT:granary = {
+	modifier = {
+		# PoP increases capacity from 200 to 600 (+400)
+		local_food_capacity = 400
+		local_food_capacity_modifier = 0.10
+		# Net 0: counteract all baseline penalties (infrastructure)
+		local_monthly_food_modifier = 0.02
 		local_raw_material_output = 0.005
-		local_max_rgo_size_modifier = -0.005
-		local_production_efficiency = -0.005
+		local_max_rgo_size_modifier = 0.005
+		# All manufactured goods output
+		local_cloth_output_modifier = 0.005
+		local_fine_cloth_output_modifier = 0.005
+		local_books_output_modifier = 0.005
+		local_naval_supplies_output_modifier = 0.005
+		local_tools_output_modifier = 0.005
+		local_weaponry_output_modifier = 0.005
+		local_cannons_output_modifier = 0.005
+		local_firearms_output_modifier = 0.005
+		local_steel_output_modifier = 0.005
+		local_jewelry_output_modifier = 0.005
+		local_wine_output_modifier = 0.005
+		local_beer_output_modifier = 0.005
+		local_liquor_output_modifier = 0.005
+		local_leather_output_modifier = 0.005
+		local_paper_output_modifier = 0.005
+		local_furniture_output_modifier = 0.005
+		local_glass_output_modifier = 0.005
+		local_pottery_output_modifier = 0.005
+		local_porcelain_output_modifier = 0.005
+		local_lacquerware_output_modifier = 0.005
+	}
+}
+
+# Mason building produces masonry (intermediate good)
+INJECT:mason = {
+	modifier = {
+		# Intermediate: net 0 raw/rgo
+		local_raw_material_output = 0.005
+		local_max_rgo_size_modifier = 0.005
+		# All manufactured goods output
+		local_cloth_output_modifier = 0.0075
+		local_fine_cloth_output_modifier = 0.0075
+		local_books_output_modifier = 0.0075
+		local_naval_supplies_output_modifier = 0.0075
+		local_tools_output_modifier = 0.0075
+		local_weaponry_output_modifier = 0.0075
+		local_cannons_output_modifier = 0.0075
+		local_firearms_output_modifier = 0.0075
+		local_steel_output_modifier = 0.0075
+		local_jewelry_output_modifier = 0.0075
+		local_wine_output_modifier = 0.0075
+		local_beer_output_modifier = 0.0075
+		local_liquor_output_modifier = 0.0075
+		local_leather_output_modifier = 0.0075
+		local_paper_output_modifier = 0.0075
+		local_furniture_output_modifier = 0.0075
+		local_glass_output_modifier = 0.0075
+		local_pottery_output_modifier = 0.0075
+		local_porcelain_output_modifier = 0.0075
+		local_lacquerware_output_modifier = 0.0075
 	}
 }

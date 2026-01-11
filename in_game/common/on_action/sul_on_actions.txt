@@ -12,7 +12,6 @@ monthly_country_pulse = {
 		sul_refresh_market_cache
 		sul_player_economy_update
 		sul_monthly_estate_income
-		sul_player_capacity_update
 	}
 }
 
@@ -31,7 +30,9 @@ sul_init_unowned_locations = {
 			set_variable = { name = sul_noble_gdp_pc value = 1 }
 			set_variable = { name = sul_clergy_gdp_pc value = 1 }
 			set_variable = { name = sul_burgher_gdp_pc value = 1 }
-			set_variable = { name = sul_commoner_gdp_pc value = 1 }
+			set_variable = { name = sul_soldier_gdp_pc value = 1 }
+			set_variable = { name = sul_laborer_gdp_pc value = 1 }
+			set_variable = { name = sul_peasant_gdp_pc value = 1 }
 			set_variable = { name = sul_tribesman_gdp_pc value = 1 }
 			set_variable = { name = sul_slave_gdp_pc value = 1 }
 		}
@@ -43,15 +44,26 @@ sul_init_unowned_locations = {
 # Also initializes location variables for save migration
 sul_init_country_variables = {
 	trigger = {
-		NOT = { has_variable = sul_nobles_taxes_lost }
+		OR = {
+			NOT = { has_variable = sul_nobles_taxes_lost }
+			NOT = { has_variable = sul_estate_nobles_income_lost }
+		}
 	}
 	effect = {
-		# Country-scope taxes lost
+		# Country-scope taxes lost (raw calculation values)
 		set_variable = { name = sul_nobles_taxes_lost value = 0 }
 		set_variable = { name = sul_clergy_taxes_lost value = 0 }
 		set_variable = { name = sul_burghers_taxes_lost value = 0 }
 		set_variable = { name = sul_peasants_taxes_lost value = 0 }
 		set_variable = { name = sul_tribes_taxes_lost value = 0 }
+		# Country-scope estate income display (read by GUI)
+		set_variable = { name = sul_estate_nobles_income_lost value = 0 }
+		set_variable = { name = sul_estate_clergy_income_lost value = 0 }
+		set_variable = { name = sul_estate_burghers_income_lost value = 0 }
+		set_variable = { name = sul_estate_peasants_income_lost value = 0 }
+		set_variable = { name = sul_estate_tribes_income_lost value = 0 }
+		set_variable = { name = sul_estate_dhimmi_income_lost value = 0 }
+		set_variable = { name = sul_estate_cossacks_income_lost value = 0 }
 		# Location-scope initialization (save migration)
 		# sul_update_all_location_gdp calls sul_update_location_economy for each location
 		# which handles: estate power -> GDP -> gdp_pc cache
@@ -68,14 +80,7 @@ sul_player_economy_update = {
 	}
 }
 
-sul_player_capacity_update = {
-	trigger = {
-		is_ai = no
-	}
-	effect = {
-		sul_update_all_location_capacity = yes
-	}
-}
+# sul_player_capacity_update removed - effect was not implemented
 
 # =============================================================================
 # LOCATION OWNERSHIP CHANGE

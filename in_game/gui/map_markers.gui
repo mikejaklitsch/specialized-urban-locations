@@ -20,7 +20,7 @@ template sul_tooltip_specialization_icons {
 		# CITY BRANCH
 		widget = {
 			size = { 100% 100% }
-			visible = "[And3(Location.MakeScope.GetVariable('sul_specialization_designation').IsSet, GreaterThanOrEqualTo_float(FixedPointToFloat(Location.MakeScope.GetVariable('sul_specialization_designation').GetValue), '(float)11.0'), LessThanOrEqualTo_float(FixedPointToFloat(Location.MakeScope.GetVariable('sul_specialization_designation').GetValue), '(float)15.0'))]"
+			using = sul_vis_loc_any_city
 			widget = {
 				size = { 100% 100% }
 				visible = "[And(Location.IsProvinceCapital, Not(Location.IsCapital))]"
@@ -52,7 +52,7 @@ template sul_tooltip_specialization_icons {
 		# TOWN BRANCH
 		widget = {
 			size = { 100% 100% }
-			visible = "[And(Location.MakeScope.GetVariable('sul_specialization_designation').IsSet, LessThanOrEqualTo_float(FixedPointToFloat(Location.MakeScope.GetVariable('sul_specialization_designation').GetValue), '(float)5.0'))]"
+			using = sul_vis_loc_any_town
 			widget = {
 				size = { 100% 100% }
 				visible = "[And(Location.IsProvinceCapital, Not(Location.IsCapital))]"
@@ -84,7 +84,7 @@ template sul_tooltip_specialization_icons {
 		# RURAL BRANCH
 		widget = {
 			size = { 100% 100% }
-			visible = "[And(Location.MakeScope.GetVariable('sul_specialization_designation').IsSet, GreaterThanOrEqualTo_float(FixedPointToFloat(Location.MakeScope.GetVariable('sul_specialization_designation').GetValue), '(float)21.0'))]"
+			using = sul_vis_loc_any_rural
 			widget = {
 				size = { 100% 100% }
 				visible = "[And(Location.IsProvinceCapital, Not(Location.IsCapital))]"
@@ -166,7 +166,7 @@ template sul_small_specialization_icons {
 		# CITY BRANCH
 		widget = {
 			size = { 20 20 }
-			visible = "[And3(Location.MakeScope.GetVariable('sul_specialization_designation').IsSet, GreaterThanOrEqualTo_float(FixedPointToFloat(Location.MakeScope.GetVariable('sul_specialization_designation').GetValue), '(float)11.0'), LessThanOrEqualTo_float(FixedPointToFloat(Location.MakeScope.GetVariable('sul_specialization_designation').GetValue), '(float)15.0'))]"
+			using = sul_vis_loc_any_city
 			widget = {
 				size = { 20 20 }
 				visible = "[And(Location.IsProvinceCapital, Not(Location.IsCapital))]"
@@ -198,7 +198,7 @@ template sul_small_specialization_icons {
 		# TOWN BRANCH
 		widget = {
 			size = { 20 20 }
-			visible = "[And(Location.MakeScope.GetVariable('sul_specialization_designation').IsSet, LessThanOrEqualTo_float(FixedPointToFloat(Location.MakeScope.GetVariable('sul_specialization_designation').GetValue), '(float)5.0'))]"
+			using = sul_vis_loc_any_town
 			widget = {
 				size = { 20 20 }
 				visible = "[And(Location.IsProvinceCapital, Not(Location.IsCapital))]"
@@ -230,7 +230,7 @@ template sul_small_specialization_icons {
 		# RURAL BRANCH
 		widget = {
 			size = { 20 20 }
-			visible = "[And(Location.MakeScope.GetVariable('sul_specialization_designation').IsSet, GreaterThanOrEqualTo_float(FixedPointToFloat(Location.MakeScope.GetVariable('sul_specialization_designation').GetValue), '(float)21.0'))]"
+			using = sul_vis_loc_any_rural
 			widget = {
 				size = { 20 20 }
 				visible = "[And(Location.IsProvinceCapital, Not(Location.IsCapital))]"
@@ -490,183 +490,172 @@ widget = {
 ### Market
 # =====================================================
 # MARKET MARKER OVERRIDE
+# Structure matches marker_rank_icon from map_markers_city.gui
 # =====================================================
 widget = {
 	name = "market_marker"
 	allow_outside = yes
 
-	# Specialization icons container
 	widget = {
 		allow_outside = yes
-		size = { 20 20 }
+		size = { 25 25 }
 		widgetanchor = center
 		parentanchor = center
 
 		tooltip = "[MarketMarker.GetTooltip]"
 
-		# CITY BRANCH (values 11-15)
-		widget = {
-			size = { 20 20 }
-			visible = "[And3(MarketMarker.GetLocation.MakeScope.GetVariable('sul_specialization_designation').IsSet, GreaterThanOrEqualTo_float(FixedPointToFloat(MarketMarker.GetLocation.MakeScope.GetVariable('sul_specialization_designation').GetValue), '(float)11.0'), LessThanOrEqualTo_float(FixedPointToFloat(MarketMarker.GetLocation.MakeScope.GetVariable('sul_specialization_designation').GetValue), '(float)15.0'))]"
-			# Provincial Capital
-			widget = {
-				size = { 20 20 }
-				visible = "[And(MarketMarker.GetLocation.IsProvinceCapital, Not(MarketMarker.GetLocation.IsCapital))]"
-				icon = { size = { 20 20 } using = sul_vis_market_mining_city using = sul_tex_red_province_capital_city }
-				icon = { size = { 20 20 } using = sul_vis_market_farming_city using = sul_tex_green_province_capital_city }
-				icon = { size = { 20 20 } using = sul_vis_market_gathering_city using = sul_tex_blue_province_capital_city }
-				icon = { size = { 20 20 } using = sul_vis_market_woodland_city using = sul_tex_brown_province_capital_city }
-				icon = { size = { 20 20 } using = sul_vis_market_commercial_city using = sul_tex_purple_province_capital_city }
-			}
-			# National Capital
-			widget = {
-				size = { 20 20 }
-				visible = "[MarketMarker.GetLocation.IsCapital]"
-				icon = { size = { 20 20 } using = sul_vis_market_mining_city using = sul_tex_red_capital_city }
-				icon = { size = { 20 20 } using = sul_vis_market_farming_city using = sul_tex_green_capital_city }
-				icon = { size = { 20 20 } using = sul_vis_market_gathering_city using = sul_tex_blue_capital_city }
-				icon = { size = { 20 20 } using = sul_vis_market_woodland_city using = sul_tex_brown_capital_city }
-				icon = { size = { 20 20 } using = sul_vis_market_commercial_city using = sul_tex_purple_capital_city }
-			}
-			# Regular
-			widget = {
-				size = { 20 20 }
-				visible = "[And(Not(MarketMarker.GetLocation.IsProvinceCapital), Not(MarketMarker.GetLocation.IsCapital))]"
-				icon = { size = { 20 20 } using = sul_vis_market_mining_city using = sul_tex_red_city }
-				icon = { size = { 20 20 } using = sul_vis_market_farming_city using = sul_tex_green_city }
-				icon = { size = { 20 20 } using = sul_vis_market_gathering_city using = sul_tex_blue_city }
-				icon = { size = { 20 20 } using = sul_vis_market_woodland_city using = sul_tex_brown_city }
-				icon = { size = { 20 20 } using = sul_vis_market_commercial_city using = sul_tex_purple_city }
-			}
-		}
-
-		# TOWN BRANCH (values 1-5)
-		widget = {
-			size = { 20 20 }
-			visible = "[And(MarketMarker.GetLocation.MakeScope.GetVariable('sul_specialization_designation').IsSet, LessThanOrEqualTo_float(FixedPointToFloat(MarketMarker.GetLocation.MakeScope.GetVariable('sul_specialization_designation').GetValue), '(float)5.0'))]"
-			# Provincial Capital
-			widget = {
-				size = { 20 20 }
-				visible = "[And(MarketMarker.GetLocation.IsProvinceCapital, Not(MarketMarker.GetLocation.IsCapital))]"
-				icon = { size = { 20 20 } using = sul_vis_market_mining_town using = sul_tex_red_province_capital_town }
-				icon = { size = { 20 20 } using = sul_vis_market_farming_town using = sul_tex_green_province_capital_town }
-				icon = { size = { 20 20 } using = sul_vis_market_gathering_town using = sul_tex_blue_province_capital_town }
-				icon = { size = { 20 20 } using = sul_vis_market_woodland_town using = sul_tex_brown_province_capital_town }
-				icon = { size = { 20 20 } using = sul_vis_market_commercial_town using = sul_tex_purple_province_capital_town }
-			}
-			# National Capital
-			widget = {
-				size = { 20 20 }
-				visible = "[MarketMarker.GetLocation.IsCapital]"
-				icon = { size = { 20 20 } using = sul_vis_market_mining_town using = sul_tex_red_capital_town }
-				icon = { size = { 20 20 } using = sul_vis_market_farming_town using = sul_tex_green_capital_town }
-				icon = { size = { 20 20 } using = sul_vis_market_gathering_town using = sul_tex_blue_capital_town }
-				icon = { size = { 20 20 } using = sul_vis_market_woodland_town using = sul_tex_brown_capital_town }
-				icon = { size = { 20 20 } using = sul_vis_market_commercial_town using = sul_tex_purple_capital_town }
-			}
-			# Regular
-			widget = {
-				size = { 20 20 }
-				visible = "[And(Not(MarketMarker.GetLocation.IsProvinceCapital), Not(MarketMarker.GetLocation.IsCapital))]"
-				icon = { size = { 20 20 } using = sul_vis_market_mining_town using = sul_tex_red_town }
-				icon = { size = { 20 20 } using = sul_vis_market_farming_town using = sul_tex_green_town }
-				icon = { size = { 20 20 } using = sul_vis_market_gathering_town using = sul_tex_blue_town }
-				icon = { size = { 20 20 } using = sul_vis_market_woodland_town using = sul_tex_brown_town }
-				icon = { size = { 20 20 } using = sul_vis_market_commercial_town using = sul_tex_purple_town }
-			}
-		}
-
-		# RURAL BRANCH (values 21-25)
-		widget = {
-			size = { 20 20 }
-			visible = "[And(MarketMarker.GetLocation.MakeScope.GetVariable('sul_specialization_designation').IsSet, GreaterThanOrEqualTo_float(FixedPointToFloat(MarketMarker.GetLocation.MakeScope.GetVariable('sul_specialization_designation').GetValue), '(float)21.0'))]"
-			# Provincial Capital
-			widget = {
-				size = { 20 20 }
-				visible = "[And(MarketMarker.GetLocation.IsProvinceCapital, Not(MarketMarker.GetLocation.IsCapital))]"
-				icon = { size = { 20 20 } using = sul_vis_market_mining_rural using = sul_tex_red_province_capital_rural }
-				icon = { size = { 20 20 } using = sul_vis_market_farming_rural using = sul_tex_green_province_capital_rural }
-				icon = { size = { 20 20 } using = sul_vis_market_gathering_rural using = sul_tex_blue_province_capital_rural }
-				icon = { size = { 20 20 } using = sul_vis_market_woodland_rural using = sul_tex_brown_province_capital_rural }
-				icon = { size = { 20 20 } using = sul_vis_market_commercial_rural using = sul_tex_purple_province_capital_rural }
-			}
-			# National Capital
-			widget = {
-				size = { 20 20 }
-				visible = "[MarketMarker.GetLocation.IsCapital]"
-				icon = { size = { 20 20 } using = sul_vis_market_mining_rural using = sul_tex_red_capital_rural }
-				icon = { size = { 20 20 } using = sul_vis_market_farming_rural using = sul_tex_green_capital_rural }
-				icon = { size = { 20 20 } using = sul_vis_market_gathering_rural using = sul_tex_blue_capital_rural }
-				icon = { size = { 20 20 } using = sul_vis_market_woodland_rural using = sul_tex_brown_capital_rural }
-				icon = { size = { 20 20 } using = sul_vis_market_commercial_rural using = sul_tex_purple_capital_rural }
-			}
-			# Regular
-			widget = {
-				size = { 20 20 }
-				visible = "[And(Not(MarketMarker.GetLocation.IsProvinceCapital), Not(MarketMarker.GetLocation.IsCapital))]"
-				icon = { size = { 20 20 } using = sul_vis_market_mining_rural using = sul_tex_red_rural }
-				icon = { size = { 20 20 } using = sul_vis_market_farming_rural using = sul_tex_green_rural }
-				icon = { size = { 20 20 } using = sul_vis_market_gathering_rural using = sul_tex_blue_rural }
-				icon = { size = { 20 20 } using = sul_vis_market_woodland_rural using = sul_tex_brown_rural }
-				icon = { size = { 20 20 } using = sul_vis_market_commercial_rural using = sul_tex_purple_rural }
-			}
-		}
-
-		# FALLBACK - non-specialized locations use vanilla icon
-		icon = {
-			size = { 20 20 }
-			visible = "[Not(MarketMarker.GetLocation.MakeScope.GetVariable('sul_specialization_designation').IsSet)]"
-			texture = "[MarketMarker.GetLocation.GetRankIcon]"
-		}
-
-		# Country flags (from vanilla)
+		# FLAGS - positioned to the LEFT of the icon
 		flowcontainer = {
-			widgetanchor = right
-			country_flag = {
-				name = "country_flag"
-				parentanchor = top|hcenter
-				size = { 24 16 }
-				tooltip_enabled = no
-				datacontext = "[MarketMarker.GetLocation.GetOwner]"
-
-				blockoverride "flag" {
-					datacontext = "[GetCountryCoatOfArms(MarketMarker.GetLocation.GetOwner.Self)]"
-					texture = "[CoatOfArmsWrapper.GetTexture('(int32)56','(int32)56')]"
-					frame = "[CoatOfArmsWrapper.GetFrame('(int32)56','(int32)56')]"
-					framesize = "[CoatOfArmsWrapper.GetFrameSizeOrFallback('(int32)56','(int32)56','(float)1.0')]"
-				}
-
-				blockoverride "click" {}
-				blockoverride "double_click" {}
-			}
-		}
-
-		flowcontainer = {
-			widgetanchor = right
-
-			country_flag = {
-				size = { 24 16 }
-				name = "country_flag"
-				parentanchor = top|hcenter
-				tooltip_enabled = no
-				datacontext = "[MarketMarker.GetLocation.GetOwner]"
-
-				blockoverride "flag" {
-					datacontext = "[GetCountryCoatOfArms(MarketMarker.GetLocation.GetOwner.Self)]"
-					texture = "[CoatOfArmsWrapper.GetTexture('(int32)56','(int32)56')]"
-					frame = "[CoatOfArmsWrapper.GetFrame('(int32)56','(int32)56')]"
-					framesize = "[CoatOfArmsWrapper.GetFrameSizeOrFallback('(int32)56','(int32)56','(float)1.0')]"
-				}
-
-				blockoverride "click" {}
-				blockoverride "double_click" {}
-			}
-		}
-
-		# City name label (from vanilla)
-		flowcontainer = {
-			position = { 22 0 }
+			parentanchor = vcenter
+			widgetanchor = vcenter|right
 			ignoreinvisible = yes
+			datacontext = "[MarketMarker.GetLocation.GetOwner]"
+
+			country_flag = {
+				name = "country_flag"
+				size = { 36 24 }
+				tooltip_enabled = no
+
+				blockoverride "flag" {
+					datacontext = "[GetCountryCoatOfArms(MarketMarker.GetLocation.GetOwner.Self)]"
+					texture = "[CoatOfArmsWrapper.GetTexture('(int32)56','(int32)56')]"
+					frame = "[CoatOfArmsWrapper.GetFrame('(int32)56','(int32)56')]"
+					framesize = "[CoatOfArmsWrapper.GetFrameSizeOrFallback('(int32)56','(int32)56','(float)1.0')]"
+				}
+
+				blockoverride "click" {}
+				blockoverride "double_click" {}
+			}
+		}
+
+		# ICON CONTAINER - centered in this widget
+		widget = {
+			size = { 100% 100% }
+
+			# CITY BRANCH (values 11-15)
+			widget = {
+				size = { 100% 100% }
+				using = sul_vis_market_any_city
+				# Provincial Capital
+				widget = {
+					size = { 100% 100% }
+					visible = "[And(MarketMarker.GetLocation.IsProvinceCapital, Not(MarketMarker.GetLocation.IsCapital))]"
+					icon = { parentanchor = center size = { 25 25 } using = sul_vis_market_mining_city using = sul_tex_red_province_capital_city }
+					icon = { parentanchor = center size = { 25 25 } using = sul_vis_market_farming_city using = sul_tex_green_province_capital_city }
+					icon = { parentanchor = center size = { 25 25 } using = sul_vis_market_gathering_city using = sul_tex_blue_province_capital_city }
+					icon = { parentanchor = center size = { 25 25 } using = sul_vis_market_woodland_city using = sul_tex_brown_province_capital_city }
+					icon = { parentanchor = center size = { 25 25 } using = sul_vis_market_commercial_city using = sul_tex_purple_province_capital_city }
+				}
+				# National Capital
+				widget = {
+					size = { 100% 100% }
+					visible = "[MarketMarker.GetLocation.IsCapital]"
+					icon = { parentanchor = center size = { 25 25 } using = sul_vis_market_mining_city using = sul_tex_red_capital_city }
+					icon = { parentanchor = center size = { 25 25 } using = sul_vis_market_farming_city using = sul_tex_green_capital_city }
+					icon = { parentanchor = center size = { 25 25 } using = sul_vis_market_gathering_city using = sul_tex_blue_capital_city }
+					icon = { parentanchor = center size = { 25 25 } using = sul_vis_market_woodland_city using = sul_tex_brown_capital_city }
+					icon = { parentanchor = center size = { 25 25 } using = sul_vis_market_commercial_city using = sul_tex_purple_capital_city }
+				}
+				# Regular
+				widget = {
+					size = { 100% 100% }
+					visible = "[And(Not(MarketMarker.GetLocation.IsProvinceCapital), Not(MarketMarker.GetLocation.IsCapital))]"
+					icon = { parentanchor = center size = { 25 25 } using = sul_vis_market_mining_city using = sul_tex_red_city }
+					icon = { parentanchor = center size = { 25 25 } using = sul_vis_market_farming_city using = sul_tex_green_city }
+					icon = { parentanchor = center size = { 25 25 } using = sul_vis_market_gathering_city using = sul_tex_blue_city }
+					icon = { parentanchor = center size = { 25 25 } using = sul_vis_market_woodland_city using = sul_tex_brown_city }
+					icon = { parentanchor = center size = { 25 25 } using = sul_vis_market_commercial_city using = sul_tex_purple_city }
+				}
+			}
+
+			# TOWN BRANCH (values 1-5)
+			widget = {
+				size = { 100% 100% }
+				using = sul_vis_market_any_town
+				# Provincial Capital
+				widget = {
+					size = { 100% 100% }
+					visible = "[And(MarketMarker.GetLocation.IsProvinceCapital, Not(MarketMarker.GetLocation.IsCapital))]"
+					icon = { parentanchor = center size = { 25 25 } using = sul_vis_market_mining_town using = sul_tex_red_province_capital_town }
+					icon = { parentanchor = center size = { 25 25 } using = sul_vis_market_farming_town using = sul_tex_green_province_capital_town }
+					icon = { parentanchor = center size = { 25 25 } using = sul_vis_market_gathering_town using = sul_tex_blue_province_capital_town }
+					icon = { parentanchor = center size = { 25 25 } using = sul_vis_market_woodland_town using = sul_tex_brown_province_capital_town }
+					icon = { parentanchor = center size = { 25 25 } using = sul_vis_market_commercial_town using = sul_tex_purple_province_capital_town }
+				}
+				# National Capital
+				widget = {
+					size = { 100% 100% }
+					visible = "[MarketMarker.GetLocation.IsCapital]"
+					icon = { parentanchor = center size = { 25 25 } using = sul_vis_market_mining_town using = sul_tex_red_capital_town }
+					icon = { parentanchor = center size = { 25 25 } using = sul_vis_market_farming_town using = sul_tex_green_capital_town }
+					icon = { parentanchor = center size = { 25 25 } using = sul_vis_market_gathering_town using = sul_tex_blue_capital_town }
+					icon = { parentanchor = center size = { 25 25 } using = sul_vis_market_woodland_town using = sul_tex_brown_capital_town }
+					icon = { parentanchor = center size = { 25 25 } using = sul_vis_market_commercial_town using = sul_tex_purple_capital_town }
+				}
+				# Regular
+				widget = {
+					size = { 100% 100% }
+					visible = "[And(Not(MarketMarker.GetLocation.IsProvinceCapital), Not(MarketMarker.GetLocation.IsCapital))]"
+					icon = { parentanchor = center size = { 25 25 } using = sul_vis_market_mining_town using = sul_tex_red_town }
+					icon = { parentanchor = center size = { 25 25 } using = sul_vis_market_farming_town using = sul_tex_green_town }
+					icon = { parentanchor = center size = { 25 25 } using = sul_vis_market_gathering_town using = sul_tex_blue_town }
+					icon = { parentanchor = center size = { 25 25 } using = sul_vis_market_woodland_town using = sul_tex_brown_town }
+					icon = { parentanchor = center size = { 25 25 } using = sul_vis_market_commercial_town using = sul_tex_purple_town }
+				}
+			}
+
+			# RURAL BRANCH (values 21-25)
+			widget = {
+				size = { 100% 100% }
+				using = sul_vis_market_any_rural
+				# Provincial Capital
+				widget = {
+					size = { 100% 100% }
+					visible = "[And(MarketMarker.GetLocation.IsProvinceCapital, Not(MarketMarker.GetLocation.IsCapital))]"
+					icon = { parentanchor = center size = { 25 25 } using = sul_vis_market_mining_rural using = sul_tex_red_province_capital_rural }
+					icon = { parentanchor = center size = { 25 25 } using = sul_vis_market_farming_rural using = sul_tex_green_province_capital_rural }
+					icon = { parentanchor = center size = { 25 25 } using = sul_vis_market_gathering_rural using = sul_tex_blue_province_capital_rural }
+					icon = { parentanchor = center size = { 25 25 } using = sul_vis_market_woodland_rural using = sul_tex_brown_province_capital_rural }
+					icon = { parentanchor = center size = { 25 25 } using = sul_vis_market_commercial_rural using = sul_tex_purple_province_capital_rural }
+				}
+				# National Capital
+				widget = {
+					size = { 100% 100% }
+					visible = "[MarketMarker.GetLocation.IsCapital]"
+					icon = { parentanchor = center size = { 25 25 } using = sul_vis_market_mining_rural using = sul_tex_red_capital_rural }
+					icon = { parentanchor = center size = { 25 25 } using = sul_vis_market_farming_rural using = sul_tex_green_capital_rural }
+					icon = { parentanchor = center size = { 25 25 } using = sul_vis_market_gathering_rural using = sul_tex_blue_capital_rural }
+					icon = { parentanchor = center size = { 25 25 } using = sul_vis_market_woodland_rural using = sul_tex_brown_capital_rural }
+					icon = { parentanchor = center size = { 25 25 } using = sul_vis_market_commercial_rural using = sul_tex_purple_capital_rural }
+				}
+				# Regular
+				widget = {
+					size = { 100% 100% }
+					visible = "[And(Not(MarketMarker.GetLocation.IsProvinceCapital), Not(MarketMarker.GetLocation.IsCapital))]"
+					icon = { parentanchor = center size = { 25 25 } using = sul_vis_market_mining_rural using = sul_tex_red_rural }
+					icon = { parentanchor = center size = { 25 25 } using = sul_vis_market_farming_rural using = sul_tex_green_rural }
+					icon = { parentanchor = center size = { 25 25 } using = sul_vis_market_gathering_rural using = sul_tex_blue_rural }
+					icon = { parentanchor = center size = { 25 25 } using = sul_vis_market_woodland_rural using = sul_tex_brown_rural }
+					icon = { parentanchor = center size = { 25 25 } using = sul_vis_market_commercial_rural using = sul_tex_purple_rural }
+				}
+			}
+
+			# FALLBACK - non-specialized locations use vanilla icon
+			icon = {
+				parentanchor = center
+				size = { 25 25 }
+				visible = "[Not(MarketMarker.GetLocation.MakeScope.GetVariable('sul_specialization_designation').IsSet)]"
+				texture = "[MarketMarker.GetLocation.GetRankIcon]"
+			}
+		}
+
+		# NAME - positioned to the RIGHT of the icon
+		flowcontainer = {
+			parentanchor = vcenter
+			widgetanchor = vcenter|left
+			position = { 25 0 }
+			ignoreinvisible = yes
+
 			text_single = {
 				text = "[MarketMarker.GetLocation.GetNameWithNoTooltip|U]"
 				snap_to_pixels = no
@@ -5158,7 +5147,7 @@ types map_markers {
 			# CITY BRANCH (values 11-15)
 			widget = {
 				size = { 100% 100% }
-				visible = "[And3(Location.MakeScope.GetVariable('sul_specialization_designation').IsSet, GreaterThanOrEqualTo_float(FixedPointToFloat(Location.MakeScope.GetVariable('sul_specialization_designation').GetValue), '(float)11.0'), LessThanOrEqualTo_float(FixedPointToFloat(Location.MakeScope.GetVariable('sul_specialization_designation').GetValue), '(float)15.0'))]"
+				using = sul_vis_loc_any_city
 				# Provincial Capital
 				widget = {
 					size = { 100% 100% }
@@ -5194,7 +5183,7 @@ types map_markers {
 			# TOWN BRANCH (values 1-5)
 			widget = {
 				size = { 100% 100% }
-				visible = "[And(Location.MakeScope.GetVariable('sul_specialization_designation').IsSet, LessThanOrEqualTo_float(FixedPointToFloat(Location.MakeScope.GetVariable('sul_specialization_designation').GetValue), '(float)5.0'))]"
+				using = sul_vis_loc_any_town
 				# Provincial Capital
 				widget = {
 					size = { 100% 100% }
@@ -5230,7 +5219,7 @@ types map_markers {
 			# RURAL BRANCH (values 21-25)
 			widget = {
 				size = { 100% 100% }
-				visible = "[And(Location.MakeScope.GetVariable('sul_specialization_designation').IsSet, GreaterThanOrEqualTo_float(FixedPointToFloat(Location.MakeScope.GetVariable('sul_specialization_designation').GetValue), '(float)21.0'))]"
+				using = sul_vis_loc_any_rural
 				# Provincial Capital
 				widget = {
 					size = { 100% 100% }

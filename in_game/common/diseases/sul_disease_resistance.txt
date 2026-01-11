@@ -1,0 +1,362 @@
+# Disease resistance decay adjustments
+# Bubonic plague: doubled from 0.0001 to 0.0002
+# Others: double that value (0.0004)
+
+TRY_INJECT:bubonic_plague = {
+	monthly_resistance_reduction = 0.0005
+}
+
+REPLACE:measles = {
+	monthly_spawn_chance = { value = 0.1 }
+	monthly_resistance_reduction = 0.002
+
+	spawn = {
+		random_ownable_location = {
+			limit = {
+				population > 1
+				trigger_if = {
+					limit = {
+						situation:great_pestilence = {
+							situation_is_active = no
+							situation_has_ended = no
+						}
+					}
+					OR = {
+						continent = continent:asia
+						continent = continent:europe
+						continent = continent:africa
+						continent = continent:oceania
+					}
+				}
+			}
+			spawn_disease = {
+				disease = scope:disease
+				value = 0.5
+				save_scope_as = outbreak_scope
+			}
+		}
+	}
+
+	r0 = {
+		if = { limit = { location_rank ?= location_rank:rural_settlement } value = { 10 15 } }
+		else_if = { limit = { location_rank ?= location_rank:town } value = { 12 18 } }
+		else = { value = { 18 20 } }
+		if = {
+			limit = {
+				OR = {
+					has_building_with_at_least_one_level = market_village
+					has_building_with_at_least_one_level = marketplace
+					has_building_with_at_least_one_level = slave_market
+					has_building_with_at_least_one_level = entrepot
+					has_building_with_at_least_one_level = trading_hub
+					has_building_with_at_least_one_level = stock_exchange
+				}
+			}
+			multiply = 1.2
+		}
+		multiply = { value = "disease_presence(scope:disease)" multiply = 2 add = 1 }
+		# High resistance crushes R0
+		if = {
+			limit = {
+				OR = {
+					disease_has_stagnated = scope:disease
+					"disease_resistance(scope:disease)" > 0.85
+				}
+			}
+			multiply = 0.1
+		}
+	}
+
+	calc_interval_days = { 20 24 }
+	location_stagnation_chance = {
+		if = { limit = { "disease_presence(scope:disease)" > 0.05 }
+			value = "distance_to_squared(scope:disease.origin)"
+			multiply = 0.0006
+			multiply = 0.005
+		}
+		else = { value = "distance_to_squared(scope:disease.origin)" multiply = 0.00006 }
+	}
+	# Block spread from high-resistance locations
+	location_infection_spread_threshold = {
+		if = {
+			limit = { "disease_resistance(scope:disease)" > 0.85 }
+			value = 2  # Impossible - can never reach 200% presence
+		}
+		else = { value = 0.1 }
+	}
+	percentage_to_meet_their_fate_on_calc = { value = 0.25 }
+	location_modifier = { }
+	mortality_rate = { 0.001 0.002 }
+	character_mortality_chance = { value = 0.05 multiply = "disease_presence(scope:disease)" }
+	on_spread_to_country = { trigger_event_non_silently = diseases.1 }
+	map_color = { lerp = { min_color = rgb { 244 187 119 } max_color = rgb { 252 136 0 } factor = "disease_presence(scope:disease)" } }
+	secondary_map_color = { if = { limit = { disease_affects_pops_here = scope:disease } value = rgb { 100 120 188 } } }
+}
+
+REPLACE:influenza = {
+	monthly_spawn_chance = { value = 0.25 }
+	monthly_resistance_reduction = 0.002
+
+	spawn = {
+		random_ownable_location = {
+			limit = {
+				population > 1
+				OR = { winter_level = normal winter_level = severe }
+				trigger_if = {
+					limit = {
+						situation:great_pestilence = {
+							situation_is_active = no
+							situation_has_ended = no
+						}
+					}
+					OR = {
+						continent = continent:asia
+						continent = continent:europe
+						continent = continent:africa
+						continent = continent:oceania
+					}
+				}
+			}
+			spawn_disease = {
+				disease = scope:disease
+				value = 0.5
+				save_scope_as = outbreak_scope
+			}
+		}
+	}
+
+	r0 = {
+		value = { 1 2 }
+		if = { limit = { OR = { climate = continental climate = cold_arid } } multiply = 1.2 }
+		if = {
+			limit = {
+				OR = {
+					has_building_with_at_least_one_level = market_village
+					has_building_with_at_least_one_level = marketplace
+					has_building_with_at_least_one_level = slave_market
+					has_building_with_at_least_one_level = entrepot
+					has_building_with_at_least_one_level = trading_hub
+					has_building_with_at_least_one_level = stock_exchange
+				}
+			}
+			multiply = 1.2
+		}
+		multiply = { value = "disease_presence(scope:disease)" multiply = 2 add = 1 }
+		# High resistance crushes R0
+		if = {
+			limit = {
+				OR = {
+					disease_has_stagnated = scope:disease
+					"disease_resistance(scope:disease)" > 0.85
+				}
+			}
+			multiply = 0.1
+		}
+	}
+
+	calc_interval_days = { 4 12 }
+	location_stagnation_chance = {
+		if = { limit = { "disease_presence(scope:disease)" > 0.05 }
+			value = "distance_to_squared(scope:disease.origin)"
+			multiply = 0.0006
+			multiply = 0.005
+		}
+		else = { value = "distance_to_squared(scope:disease.origin)" multiply = 0.00006 }
+	}
+	# Block spread from high-resistance locations
+	location_infection_spread_threshold = {
+		if = {
+			limit = { "disease_resistance(scope:disease)" > 0.85 }
+			value = 2  # Impossible - can never reach 200% presence
+		}
+		else = { value = 0.1 }
+	}
+	percentage_to_meet_their_fate_on_calc = { value = 0.25 }
+	location_modifier = { }
+	mortality_rate = { value = 0.001 }
+	character_mortality_chance = { value = 0.05 multiply = "disease_presence(scope:disease)" }
+	on_spread_to_country = { trigger_event_non_silently = diseases.1 }
+	map_color = { lerp = { min_color = rgb { 150 177 188 } max_color = rgb { 2 113 141 } factor = "disease_presence(scope:disease)" } }
+	secondary_map_color = { if = { limit = { disease_affects_pops_here = scope:disease } value = rgb { 100 120 188 } } }
+}
+
+REPLACE:typhus = {
+	monthly_spawn_chance = { value = 0.1 }
+	monthly_resistance_reduction = 0.001
+
+	spawn = {
+		random_ownable_location = {
+			limit = {
+				trigger_if = {
+					limit = {
+						population > 1
+						is_endemic_typhus_location = yes
+						has_siege = yes
+					}
+					population > 1
+					is_endemic_typhus_location = yes
+					has_siege = yes
+				}
+				trigger_else = {
+					population > 1
+					is_endemic_typhus_location = yes
+				}
+			}
+			spawn_disease = {
+				disease = scope:disease
+				value = 0.5
+				save_scope_as = outbreak_scope
+			}
+		}
+	}
+
+	r0 = {
+		value = { 0.5 0.9 }
+		if = { limit = { prosperity < 0 } multiply = 5 }
+		multiply = { value = "disease_presence(scope:disease)" multiply = 2 add = 1 }
+		# High resistance crushes R0
+		if = {
+			limit = {
+				OR = {
+					disease_has_stagnated = scope:disease
+					"disease_resistance(scope:disease)" > 0.85
+				}
+			}
+			multiply = 0.1
+		}
+	}
+
+	calc_interval_days = { 24 36 }
+	location_stagnation_chance = {
+		if = { limit = { "disease_presence(scope:disease)" > 0.05 }
+			value = "distance_to_squared(scope:disease.origin)"
+			multiply = 0.0006
+			multiply = 0.005
+		}
+		else = { value = "distance_to_squared(scope:disease.origin)" multiply = 0.00006 }
+	}
+	# Block spread from high-resistance locations
+	location_infection_spread_threshold = {
+		if = {
+			limit = { "disease_resistance(scope:disease)" > 0.85 }
+			value = 2  # Impossible - can never reach 200% presence
+		}
+		else = { value = 0.1 }
+	}
+	sub_unit_stagnation_chance = {
+		value = 0.5
+		subtract = { value = "disease_presence(scope:disease)" multiply = 0.5 }
+	}
+	percentage_to_meet_their_fate_on_calc = { value = 0.25 }
+	location_modifier = { }
+	mortality_rate = { 0.04 0.4 }
+	character_mortality_chance = { value = 0.04 multiply = "disease_presence(scope:disease)" }
+	on_spread_to_country = { trigger_event_non_silently = diseases.1 }
+	map_color = { lerp = { min_color = rgb { 211 157 128 } max_color = rgb { 129 47 3 } factor = "disease_presence(scope:disease)" } }
+	secondary_map_color = { if = { limit = { disease_affects_pops_here = scope:disease } value = rgb { 100 120 188 } } }
+	specific_pop_type_effect = { pop_type = nobles multiplier = 0.3 }
+	specific_pop_type_effect = { pop_type = clergy multiplier = 0.1 }
+	specific_pop_type_effect = { pop_type = burghers multiplier = 0.5 }
+}
+
+REPLACE:smallpox = {
+	monthly_spawn_chance = { value = 0.1 }
+	monthly_resistance_reduction = 0.001
+
+	spawn = {
+		random_ownable_location = {
+			limit = {
+				population > 1
+				OR = {
+					climate = mediterranean
+					climate = continental
+					climate = oceanic
+					climate = cold_arid
+					climate = tropical
+				}
+				trigger_if = {
+					limit = {
+						situation:great_pestilence = {
+							situation_is_active = no
+							situation_has_ended = no
+						}
+					}
+					OR = {
+						continent = continent:asia
+						continent = continent:europe
+						continent = continent:africa
+						continent = continent:oceania
+					}
+				}
+			}
+			spawn_disease = {
+				disease = scope:disease
+				value = 0.5
+				save_scope_as = outbreak
+			}
+		}
+	}
+
+	r0 = {
+		if = { limit = { location_rank ?= location_rank:rural_settlement } value = { 3 6 } }
+		else_if = { limit = { location_rank ?= location_rank:town } value = { 5 10 } }
+		else = { value = { 10 15 } }
+		if = {
+			limit = {
+				OR = {
+					has_building_with_at_least_one_level = market_village
+					has_building_with_at_least_one_level = marketplace
+					has_building_with_at_least_one_level = slave_market
+					has_building_with_at_least_one_level = entrepot
+					has_building_with_at_least_one_level = trading_hub
+					has_building_with_at_least_one_level = stock_exchange
+				}
+			}
+			multiply = 1.2
+		}
+		multiply = { value = "disease_presence(scope:disease)" multiply = 2 add = 1 }
+		# High resistance crushes R0
+		if = {
+			limit = {
+				OR = {
+					disease_has_stagnated = scope:disease
+					"disease_resistance(scope:disease)" > 0.85
+				}
+			}
+			multiply = 0.1
+		}
+	}
+
+	calc_interval_days = { 2 8 }
+	location_stagnation_chance = {
+		if = { limit = { "disease_presence(scope:disease)" > 0.05 }
+			value = "distance_to_squared(scope:disease.origin)"
+			multiply = 0.0006
+			multiply = 0.005
+		}
+		else = { value = "distance_to_squared(scope:disease.origin)" multiply = 0.00006 }
+	}
+	# Block spread from high-resistance locations
+	location_infection_spread_threshold = {
+		if = {
+			limit = { "disease_resistance(scope:disease)" > 0.85 }
+			value = 2  # Impossible - can never reach 200% presence
+		}
+		else = { value = 0.1 }
+	}
+	percentage_to_meet_their_fate_on_calc = { value = 0.25 }
+	location_modifier = { }
+	mortality_rate = { 0.05 0.3 }
+	character_mortality_chance = { value = 0.04 multiply = "disease_presence(scope:disease)" }
+	on_spread_to_country = { trigger_event_non_silently = diseases.1 }
+	map_color = { lerp = { min_color = rgb { 133 195 136 } max_color = rgb { 2 120 9 } factor = "disease_presence(scope:disease)" } }
+	secondary_map_color = { if = { limit = { disease_affects_pops_here = scope:disease } value = rgb { 100 120 188 } } }
+}
+
+TRY_INJECT:malaria = {
+	monthly_resistance_reduction = 0.0002
+	# Lower mortality = more survivors = faster resistance growth
+	# Base: 0.85-0.95 (only 5-15% survive)
+	# New: 0.50-0.70 (30-50% survive)
+	mortality_rate = { 0.50 0.70 }
+}

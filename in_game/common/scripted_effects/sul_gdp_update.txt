@@ -218,17 +218,16 @@ sul_update_all_location_gdp = {
 #          Equivalent to: ceiling - (ceiling - floor) × k / (X + k)
 #          Where X = gdp × power_share
 #
-# Floors based on pop_food_consumption ratios (nobles=10, burghers=8, laborers=3)
-# Higher-status pops maintain higher baseline consumption even when poor.
+# All pop types have floor=1.0 (baseline demand). Ceiling determines max scaling.
 #
 #   Pop Type    | Floor | Ceiling | k   | (c-f)*k
 #   ------------|-------|---------|-----|--------
 #   Nobles      | 1.0   | 5.0     | 200 | 800
 #   Clergy      | 1.0   | 4.0     | 150 | 450
-#   Burghers    | 0.75  | 3.5     | 150 | 413
-#   Commoners   | 0.4   | 2.5     | 100 | 210
-#   Tribesmen   | 0.4   | 2.0     | 75  | 120
-#   Slaves      | 0.1   | 1.0     | 100 | 90
+#   Burghers    | 1.0   | 3.5     | 150 | 375
+#   Commoners   | 1.0   | 2.5     | 100 | 150
+#   Tribesmen   | 1.0   | 2.0     | 75  | 75
+#   Slaves      | 1.0   | 1.0     | -   | 0 (fixed at 1.0)
 #
 # =============================================================================
 
@@ -257,75 +256,69 @@ sul_cache_gdp_per_capita = {
 		}
 	}
 
-	# Burghers: floor=0.75, ceiling=3.5, k=150
+	# Burghers: floor=1.0, ceiling=3.5, k=150
 	set_variable = {
 		name = sul_burgher_gdp_pc
 		value = {
 			value = 3.5
 			subtract = {
-				value = 413
+				value = 375
 				divide = { value = var:sul_local_gdp multiply = var:sul_burghers_power_share add = 150 }
 			}
 		}
 	}
 
-	# Soldiers: floor=0.4, ceiling=2.5, k=100
+	# Soldiers: floor=1.0, ceiling=2.5, k=100
 	set_variable = {
 		name = sul_soldier_gdp_pc
 		value = {
 			value = 2.5
 			subtract = {
-				value = 210
+				value = 150
 				divide = { value = var:sul_local_gdp multiply = var:sul_peasants_power_share add = 100 }
 			}
 		}
 	}
 
-	# Laborers: floor=0.4, ceiling=2.5, k=100
+	# Laborers: floor=1.0, ceiling=2.5, k=100
 	set_variable = {
 		name = sul_laborer_gdp_pc
 		value = {
 			value = 2.5
 			subtract = {
-				value = 210
+				value = 150
 				divide = { value = var:sul_local_gdp multiply = var:sul_peasants_power_share add = 100 }
 			}
 		}
 	}
 
-	# Peasants: floor=0.4, ceiling=2.5, k=100
+	# Peasants: floor=1.0, ceiling=2.5, k=100
 	set_variable = {
 		name = sul_peasant_gdp_pc
 		value = {
 			value = 2.5
 			subtract = {
-				value = 210
+				value = 150
 				divide = { value = var:sul_local_gdp multiply = var:sul_peasants_power_share add = 100 }
 			}
 		}
 	}
 
-	# Tribesmen: floor=0.4, ceiling=2.0, k=75
+	# Tribesmen: floor=1.0, ceiling=2.0, k=75
 	set_variable = {
 		name = sul_tribesman_gdp_pc
 		value = {
 			value = 2.0
 			subtract = {
-				value = 120
+				value = 75
 				divide = { value = var:sul_local_gdp multiply = var:sul_tribes_power_share add = 75 }
 			}
 		}
 	}
 
-	# Slaves: floor=0.1, ceiling=1.0, k=100
+	# Slaves: fixed at 1.0 (no GDP scaling)
 	set_variable = {
 		name = sul_slave_gdp_pc
-		value = {
-			value = 1.0
-			subtract = {
-				value = 90
-				divide = { value = var:sul_local_gdp multiply = var:sul_peasants_power_share add = 100 }
-			}
-		}
+		value = 1.0
 	}
 }

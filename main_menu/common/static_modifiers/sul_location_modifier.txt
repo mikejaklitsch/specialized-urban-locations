@@ -290,6 +290,8 @@ REPLACE:total_population = {
 	# PoP values
 	local_food_capacity = 2                      # +2 per pop
 	local_population_capacity_modifier = 0.0004   # +0.04% per pop
+	local_population_growth = -0.00002              # +0.002% per pop
+	local_migration_attraction = -0.002
 }
 
 # ============================================
@@ -379,8 +381,7 @@ TRY_REPLACE:expensive_food_in_location = {
 	game_data = {
 		category = location
 	}
-	local_population_growth = -0.005
-	local_migration_attraction = -2.0
+	local_population_growth = -0.02
 	local_monthly_development = -0.01
 }
 
@@ -391,4 +392,14 @@ TRY_REPLACE:cheap_food_in_location = {
 	}
 	local_population_growth = 0.0015
 	local_monthly_development = 0.005
+}
+
+TRY_REPLACE:overpopulation = {
+	game_data = {
+		category = location
+	}
+	# cap_maximum_population_growth_at_zero = yes
+	local_pop_demotion_speed_modifier = 0.5
+	local_migration_attraction = -25.0
+	local_migration_speed = 0.05 # Pops migrate faster the more overpopulated the area is
 }

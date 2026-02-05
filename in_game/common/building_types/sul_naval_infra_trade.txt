@@ -1,111 +1,25 @@
-# Specialized Urban Locations - River Trade Buildings
-# River-based alternatives to naval infrastructure for inland trade
-# Also enhances vanilla naval buildings with trade bonuses
-
-# ============================================
-# VANILLA NAVAL BUILDING ENHANCEMENTS
-# Add trade capacity, merchant power, and market access to ports
-# These should be better than river equivalents
+# Specialized Urban Locations - Naval Building Trade Enhancements
+# Adds trade capacity, merchant power, and market access to ports
 # ============================================
 
-INJECT:wharf = {
-	modifier = {
-		local_merchant_capacity = 0.5
-		local_merchant_power = 0.5
-		local_market_access = 0.02
-		# Trade/Commercial: baseline penalty only
-	}
-}
-
-INJECT:dock = {
-	modifier = {
-		local_merchant_capacity = 1.0
-		local_merchant_power = 1.0
-		local_market_access = 0.02
-		local_sailors = -0.008
-		# Trade/Commercial: baseline penalty only
-	}
-}
-
-INJECT:dry_dock = {
-	modifier = {
-		local_merchant_capacity = 1.75
-		local_merchant_power = 2.0
-		local_market_access = 0.02
-		local_sailors = -0.012
-		# Trade/Commercial: baseline penalty only
-	}
-}
-
-INJECT:shipyard = {
-	modifier = {
-		local_merchant_capacity = 3.0
-		local_merchant_power = 4.0
-		local_market_access = 0.02
-		local_sailors = -0.029
-		# Trade/Commercial: baseline penalty only
-	}
-}
-
-INJECT:grand_shipyard = {
-	modifier = {
-		local_merchant_capacity = 4.0
-		local_merchant_power = 6.0
-		local_market_access = 0.02
-		local_sailors = -0.060
-		# Trade/Commercial: baseline penalty only
-	}
-}
-
-INJECT:naval_base = {
-	modifier = {
-		local_merchant_capacity = 5.0
-		local_merchant_power = 8.0
-		local_market_access = 0.02
-		local_sailors = -0.100
-		# Trade/Commercial: baseline penalty only
-	}
-}
-
-# ============================================
-# INLAND NAVAL INFRASTRUCTURE
-# River-based alternatives to coastal naval buildings
-# ============================================
-
-sul_inland_wharf = { # River Wharf
-	increase_per_level_cost = 0.0
+REPLACE:wharf = {
 	is_foreign = no
 	max_levels = 1
-
-	pop_type = laborers
-
-	category = trade_category
-
-	employment_size = dock_employment
-
-	rural_settlement = yes
+	pop_type = burghers
+	employment_size = small_burgher_employment
+	category = naval_category
 	town = yes
 	city = yes
 
 	location_potential = {
-		has_river = yes
+		is_coastal = yes
 	}
 
 	build_time = medium_port_building_time
-
 	construction_demand = town_building_construction
 
-	modifier = {
-		local_merchant_capacity = 0.4
-		local_merchant_power = 0.4
-		local_market_access = 0.02
-		local_manpower = 0.001
-		local_distance_from_capital_cost_modifier = -0.025
-		# Trade/Commercial: baseline penalty only
-	}
-
 	unique_production_methods = {
-		sul_inland_wharf_maintenance = {
+		wharf_maintenance = {
 			tar = 0.1
 			naval_supplies = 0.05
 			tools = 0.1
@@ -113,42 +27,39 @@ sul_inland_wharf = { # River Wharf
 			category = building_maintenance
 		}
 	}
+
+	modifier = {
+		# Base game values
+		local_sailors = 0.001
+		can_build_ships_in_this_location = yes
+		harbor_suitability = 0.1
+		local_repair_speed = 0.01
+		# SUL: Enhanced trade bonuses
+		local_merchant_capacity = 0.6
+		local_merchant_power = 0.5
+		local_market_access = 0.02
+	}
 }
 
-sul_inland_dock = { # River Dock
-	increase_per_level_cost = 0.0
+REPLACE:dock = {
 	is_foreign = no
 	max_levels = 1
-
-	pop_type = laborers
-
-	category = trade_category
-
+	pop_type = soldiers
+	forbidden_for_estates = yes
+	category = naval_category
 	employment_size = dock_employment
-
 	town = yes
 	city = yes
 
 	location_potential = {
-		has_river = yes
+		is_port = yes
 	}
 
 	build_time = medium_port_building_time
-
-	construction_demand = town_building_construction
-
-	modifier = {
-		local_merchant_capacity = 0.8
-		local_merchant_power = 0.8
-		local_market_access = 0.02
-		local_sailors = 0.002
-		local_manpower = 0.006
-		local_distance_from_capital_cost_modifier = -0.025
-		# Trade/Commercial: baseline penalty only
-	}
+	construction_demand = port_building_construction
 
 	unique_production_methods = {
-		sul_inland_dock_maintenance = {
+		dock_maintenance = {
 			tar = 0.2
 			naval_supplies = 0.1
 			tools = 0.2
@@ -156,45 +67,41 @@ sul_inland_dock = { # River Dock
 			category = building_maintenance
 		}
 	}
+
+	modifier = {
+		# Base game values
+		max_ships_built_at_same_time = 1
+		local_sailors = 0.008
+		can_build_ships_in_this_location = yes
+		harbor_suitability = 0.1
+		local_repair_speed = 0.02
+		# SUL: Enhanced trade bonuses
+		local_merchant_capacity = 1.0
+		local_merchant_power = 1.0
+		local_market_access = 0.02
+	}
 }
 
-sul_inland_dry_dock = { # River Barge Yard
-	increase_per_level_cost = 0.0
+REPLACE:dry_dock = {
 	is_foreign = no
 	max_levels = 1
-
-	pop_type = laborers
-
-	category = trade_category
-
-	obsolete = sul_inland_dock
-
+	pop_type = soldiers
+	forbidden_for_estates = yes
+	category = naval_category
+	obsolete = dock
 	employment_size = dry_dock_employment
-
 	town = yes
 	city = yes
 
 	location_potential = {
-		has_river = yes
+		is_port = yes
 	}
 
 	build_time = medium_port_building_time
-
-	construction_demand = town_building_construction
-
-	modifier = {
-		local_merchant_capacity = 1.4
-		local_merchant_power = 1.6
-		local_market_access = 0.02
-		local_sailors = 0.005
-		local_manpower = .015
-		local_distance_from_capital_cost_modifier = -0.05
-		local_burghers_estate_power = 0.05
-		# Trade/Commercial: baseline penalty only
-	}
+	construction_demand = port_building_construction
 
 	unique_production_methods = {
-		sul_inland_dry_dock_maintenance = {
+		dry_dock_maintenance = {
 			tar = 0.4
 			naval_supplies = 0.2
 			tools = 0.4
@@ -202,46 +109,41 @@ sul_inland_dry_dock = { # River Barge Yard
 			category = building_maintenance
 		}
 	}
+
+	modifier = {
+		# Base game values
+		max_ships_built_at_same_time = 2
+		local_sailors = 0.020
+		can_build_ships_in_this_location = yes
+		harbor_suitability = 0.15
+		local_repair_speed = 0.04
+		# SUL: Enhanced trade bonuses
+		local_merchant_capacity = 1.75
+		local_merchant_power = 2.0
+		local_market_access = 0.02
+	}
 }
 
-sul_inland_shipyard = { # River Quay
-	increase_per_level_cost = 0.0
+REPLACE:shipyard = {
 	is_foreign = no
 	max_levels = 1
-
-	pop_type = laborers
-
-	category = trade_category
-
-	obsolete = sul_inland_dry_dock
-
+	pop_type = soldiers
+	forbidden_for_estates = yes
+	category = naval_category
+	obsolete = dry_dock
 	employment_size = shipyard_employment
-
 	town = yes
 	city = yes
 
 	location_potential = {
-		has_river = yes
+		is_port = yes
 	}
 
 	build_time = large_port_building_time
-
-	construction_demand = town_building_construction
-
-	modifier = {
-		local_merchant_capacity = 2.4
-		local_merchant_power = 3.2
-		local_market_access = 0.02
-		local_sailors = 0.010
-		local_manpower = 0.025
-		local_distance_from_capital_cost_modifier = -0.075
-		local_burghers_estate_power = 0.1
-		local_trades_per_burgher = 0.1
-		# Trade/Commercial: baseline penalty only
-	}
+	construction_demand = port_building_construction
 
 	unique_production_methods = {
-		sul_inland_shipyard_maintenance = {
+		shipyard_maintenance = {
 			tar = 0.8
 			naval_supplies = 0.4
 			tools = 0.8
@@ -249,46 +151,41 @@ sul_inland_shipyard = { # River Quay
 			category = building_maintenance
 		}
 	}
+
+	modifier = {
+		# Base game values
+		max_ships_built_at_same_time = 4
+		local_sailors = 0.035
+		can_build_ships_in_this_location = yes
+		harbor_suitability = 0.2
+		local_repair_speed = 0.06
+		# SUL: Enhanced trade bonuses
+		local_merchant_capacity = 3.0
+		local_merchant_power = 4.0
+		local_market_access = 0.02
+	}
 }
 
-sul_inland_grand_shipyard = { # Grand River Quay
-	increase_per_level_cost = 0.0
+REPLACE:grand_shipyard = {
 	is_foreign = no
 	max_levels = 1
-
-	pop_type = laborers
-
-	category = trade_category
-
-	obsolete = sul_inland_shipyard
-
+	pop_type = soldiers
+	forbidden_for_estates = yes
+	category = naval_category
+	obsolete = shipyard
 	employment_size = grand_shipyard_employment
-
 	town = yes
 	city = yes
 
 	location_potential = {
-		has_river = yes
+		is_port = yes
 	}
 
 	build_time = large_port_building_time
-
-	construction_demand = town_building_construction
-
-	modifier = {
-		local_merchant_capacity = 3.2
-		local_merchant_power = 4.8
-		local_market_access = 0.02
-		local_sailors = 0.015
-		local_manpower = 0.050
-		local_distance_from_capital_cost_modifier = -0.1
-		local_burghers_estate_power = 0.15
-		local_trades_per_burgher = 0.15
-		# Trade/Commercial: baseline penalty only
-	}
+	construction_demand = port_building_construction
 
 	unique_production_methods = {
-		sul_inland_grand_shipyard_maintenance = {
+		grand_shipyard_maintenance = {
 			tar = 1.6
 			naval_supplies = 0.8
 			tools = 1.6
@@ -296,52 +193,60 @@ sul_inland_grand_shipyard = { # Grand River Quay
 			category = building_maintenance
 		}
 	}
+
+	modifier = {
+		# Base game values
+		max_ships_built_at_same_time = 8
+		local_sailors = 0.065
+		can_build_ships_in_this_location = yes
+		harbor_suitability = 0.25
+		local_repair_speed = 0.08
+		# SUL: Enhanced trade bonuses
+		local_merchant_capacity = 4.0
+		local_merchant_power = 6.0
+		local_market_access = 0.02
+	}
 }
 
-sul_inland_naval_base = { # Merchant Levee
-	increase_per_level_cost = 0.0
+REPLACE:naval_base = {
 	is_foreign = no
 	max_levels = 1
-
-	pop_type = laborers
-
-	category = trade_category
-
-	obsolete = sul_inland_grand_shipyard
-
+	pop_type = soldiers
+	forbidden_for_estates = yes
+	category = naval_category
+	obsolete = grand_shipyard
 	employment_size = naval_base_employment
-
 	town = yes
 	city = yes
 
 	location_potential = {
-		has_river = yes
+		is_port = yes
 	}
 
 	build_time = large_port_building_time
-
-	construction_demand = town_building_construction
-
-	modifier = {
-		local_merchant_capacity = 4.0
-		local_merchant_power = 6.4
-		local_market_access = 0.02
-		local_sailors = 0.025
-		local_manpower = 0.075
-		local_distance_from_capital_cost_modifier = -0.125
-		local_burghers_estate_power = 0.2
-		local_trades_per_burgher = 0.2
-		local_pop_assimilation_speed_modifier = 0.005
-		# Trade/Commercial: baseline penalty only
-	}
+	construction_demand = port_building_construction
 
 	unique_production_methods = {
-		sul_inland_naval_base_maintenance = {
+		naval_base_maintenance = {
 			tar = 3.0
 			naval_supplies = 1.5
 			tools = 3.0
 			lumber = 3.0
 			category = building_maintenance
 		}
+	}
+
+	modifier = {
+		# Base game values
+		max_ships_built_at_same_time = 12
+		local_sailors = 0.100
+		can_build_ships_in_this_location = yes
+		harbor_suitability = 0.3
+		local_navy_attrition = -1
+		local_repair_speed = 0.1
+		# SUL: Enhanced trade bonuses
+		local_merchant_capacity = 5.0
+		local_merchant_power = 8.0
+		local_market_access = 0.02
 	}
 }

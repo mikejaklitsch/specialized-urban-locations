@@ -1,11 +1,11 @@
 ﻿# =============================================================================
 # GDP UPDATE SYSTEM
 # =============================================================================
-
 # -----------------------------------------------------------------------------
 # SINGLE LOCATION UPDATE (location scope)
 # -----------------------------------------------------------------------------
 # Updates estate power, GDP, and gdp_pc for one location
+
 sul_update_location_economy = {
 	sul_update_location_estate_power = yes
 	sul_update_location_gdp = yes
@@ -16,6 +16,7 @@ sul_update_location_economy = {
 # SINGLE LOCATION GDP (location scope)
 # -----------------------------------------------------------------------------
 # Sets sul_local_gdp based on control level and market access
+
 sul_update_location_gdp = {
 	if = {
 		limit = { market_access <= 0 }
@@ -25,16 +26,16 @@ sul_update_location_gdp = {
 		limit = { local_control > 0 }
 		set_variable = {
 			name = sul_local_gdp
-			value = {
-				value = location_tax_base
-				divide = local_control
-			}
+			value = { value = location_tax_base divide = local_control }
 		}
 	}
 	else = {
 		# Zero control - estimate from country averages (if available)
 		if = {
-			limit = { exists = owner owner = { has_variable = sul_avg_rgo_value_per_output } }
+			limit = {
+				exists = owner
+				owner = { has_variable = sul_avg_rgo_value_per_output }
+			}
 			set_variable = {
 				name = sul_local_gdp
 				value = {
@@ -62,117 +63,85 @@ sul_update_location_gdp = {
 # -----------------------------------------------------------------------------
 # COUNTRY GDP UPDATE (country scope)
 # -----------------------------------------------------------------------------
-# Updates all locations and accumulates taxes lost
+# Updates all locations and caches GDP/gdp_pc values
+
 sul_update_all_location_gdp = {
-	# =========================================================================
-	# INITIALIZE TRACKING VARIABLES
-	# =========================================================================
-
-	# Per-estate taxes lost
-	set_variable = { name = sul_nobles_taxes_lost value = 0 }
-	set_variable = { name = sul_clergy_taxes_lost value = 0 }
-	set_variable = { name = sul_burghers_taxes_lost value = 0 }
-	set_variable = { name = sul_peasants_taxes_lost value = 0 }
-	set_variable = { name = sul_tribes_taxes_lost value = 0 }
-
 	# Initialize averages if not set (first run fallback for zero-control estimation)
 	if = {
-		limit = { NOT = { has_variable = sul_avg_rgo_value_per_output } }
+		limit = {
+			NOT = {
+				has_variable = sul_avg_rgo_value_per_output
+			}
+		}
 		set_variable = { name = sul_avg_rgo_value_per_output value = 0 }
 		set_variable = { name = sul_avg_building_value_per_level value = 0 }
 	}
 
 	# For calculating NEW averages (to be stored for next month)
-	set_local_variable = { name = rgo_value_sum value = 0 }
-	set_local_variable = { name = rgo_output_sum value = 0 }
-	set_local_variable = { name = building_value_sum value = 0 }
-	set_local_variable = { name = building_level_sum value = 0 }
+	set_local_variable = {
+		name = rgo_value_sum
+		value = 0
+	}
+	set_local_variable = {
+		name = rgo_output_sum
+		value = 0
+	}
+	set_local_variable = {
+		name = building_value_sum
+		value = 0
+	}
+	set_local_variable = {
+		name = building_level_sum
+		value = 0
+	}
 
 	# =========================================================================
 	# SINGLE PASS: ALL LOCATIONS
 	# =========================================================================
 	# Each location: estate power -> GDP -> gdp_pc cache
 	# CL uses direct calculation, ZCL uses stored averages from previous month
-
 	every_owned_location = {
 		# Update estate power, GDP, and gdp_pc in one call
 		sul_update_location_economy = yes
-
-		# Accumulate taxes lost and averaging data (only for market-connected locations)
+		# Accumulate averaging data (only for controlled, market-connected locations)
 		if = {
-			limit = { market_access > 0 }
+			limit = { market_access > 0 local_control > 0 }
 			save_scope_as = cur_loc
-
-			# For controlled locations: accumulate for averaging
-			if = {
-				limit = { local_control > 0 }
-
-				# Calculate RGO value for averaging
-				set_local_variable = { name = loc_rgo_value value = 0 }
-				raw_material ?= {
-					set_local_variable = {
-						name = loc_rgo_value
-						value = {
-							value = "price_in_market(scope:cur_loc.market)"
-							multiply = scope:cur_loc.raw_material_output
-							multiply = scope:cur_loc.market_access
-						}
-					}
-				}
-
-				# Calculate building value (GDP minus RGO)
+			# Calculate RGO value for averaging
+			set_local_variable = { name = loc_rgo_value value = 0 }
+			raw_material ?= {
 				set_local_variable = {
-					name = loc_building_value
+					name = loc_rgo_value
 					value = {
-						value = var:sul_local_gdp
-						subtract = local_var:loc_rgo_value
-						min = 0
-					}
-				}
-
-				# Accumulate for next month's averages
-				owner ?= {
-					change_local_variable = { name = rgo_value_sum add = local_var:loc_rgo_value }
-					change_local_variable = { name = rgo_output_sum add = prev.raw_material_output }
-					change_local_variable = { name = building_value_sum add = local_var:loc_building_value }
-					change_local_variable = { name = building_level_sum add = prev.total_building_levels }
-				}
-
-				# Calculate taxes lost (GDP - actual tax base)
-				set_local_variable = {
-					name = loc_taxes_lost
-					value = {
-						value = var:sul_local_gdp
-						subtract = location_tax_base
+						value = "price_in_market(scope:cur_loc.market)"
+						multiply = scope:cur_loc.raw_material_output
+						multiply = scope:cur_loc.market_access
 					}
 				}
 			}
-			else = {
-				# Zero-control: full GDP is taxes lost (crown gets nothing)
-				set_local_variable = { name = loc_taxes_lost value = var:sul_local_gdp }
+			# Calculate building value (GDP minus RGO)
+			set_local_variable = {
+				name = loc_building_value
+				value = {
+					value = var:sul_local_gdp
+					subtract = local_var:loc_rgo_value
+					min = 0
+				}
 			}
-
-			# Accumulate taxes lost by estate (both CL and ZCL)
+			# Accumulate for next month's averages
 			owner ?= {
-				change_variable = {
-					name = sul_nobles_taxes_lost
-					add = { value = local_var:loc_taxes_lost multiply = prev.var:sul_nobles_power_share }
+				change_local_variable = { name = rgo_value_sum add = local_var:loc_rgo_value }
+				change_local_variable = {
+					name = rgo_output_sum
+					add = prev.raw_material_output
 				}
-				change_variable = {
-					name = sul_clergy_taxes_lost
-					add = { value = local_var:loc_taxes_lost multiply = prev.var:sul_clergy_power_share }
+				change_local_variable = {
+					name = building_value_sum
+					add = local_var:loc_building_value
 				}
-				change_variable = {
-					name = sul_burghers_taxes_lost
-					add = { value = local_var:loc_taxes_lost multiply = prev.var:sul_burghers_power_share }
-				}
-				change_variable = {
-					name = sul_peasants_taxes_lost
-					add = { value = local_var:loc_taxes_lost multiply = prev.var:sul_peasants_power_share }
-				}
-				change_variable = {
-					name = sul_tribes_taxes_lost
-					add = { value = local_var:loc_taxes_lost multiply = prev.var:sul_tribes_power_share }
+				change_local_variable = {
+					name = building_level_sum
+					add = prev.total_building_levels
 				}
 			}
 		}
@@ -181,7 +150,6 @@ sul_update_all_location_gdp = {
 	# =========================================================================
 	# UPDATE AVERAGES FOR NEXT MONTH
 	# =========================================================================
-
 	set_variable = {
 		name = sul_avg_rgo_value_per_output
 		value = {
@@ -193,7 +161,6 @@ sul_update_all_location_gdp = {
 			else = { value = 0 }
 		}
 	}
-
 	set_variable = {
 		name = sul_avg_building_value_per_level
 		value = {
@@ -205,7 +172,6 @@ sul_update_all_location_gdp = {
 			else = { value = 0 }
 		}
 	}
-
 }
 
 # =============================================================================
@@ -239,7 +205,11 @@ sul_cache_gdp_per_capita = {
 			value = 5.0
 			subtract = {
 				value = 840
-				divide = { value = var:sul_local_gdp multiply = var:sul_nobles_power_share add = 200 }
+				divide = {
+					value = var:sul_local_gdp
+					multiply = var:sul_nobles_power_share
+					add = 200
+				}
 			}
 		}
 	}
@@ -251,7 +221,11 @@ sul_cache_gdp_per_capita = {
 			value = 4.0
 			subtract = {
 				value = 480
-				divide = { value = var:sul_local_gdp multiply = var:sul_clergy_power_share add = 150 }
+				divide = {
+					value = var:sul_local_gdp
+					multiply = var:sul_clergy_power_share
+					add = 150
+				}
 			}
 		}
 	}
@@ -263,7 +237,11 @@ sul_cache_gdp_per_capita = {
 			value = 3.5
 			subtract = {
 				value = 405
-				divide = { value = var:sul_local_gdp multiply = var:sul_burghers_power_share add = 150 }
+				divide = {
+					value = var:sul_local_gdp
+					multiply = var:sul_burghers_power_share
+					add = 150
+				}
 			}
 		}
 	}
@@ -275,7 +253,11 @@ sul_cache_gdp_per_capita = {
 			value = 2.5
 			subtract = {
 				value = 170
-				divide = { value = var:sul_local_gdp multiply = var:sul_peasants_power_share add = 100 }
+				divide = {
+					value = var:sul_local_gdp
+					multiply = var:sul_peasants_power_share
+					add = 100
+				}
 			}
 		}
 	}
@@ -287,7 +269,11 @@ sul_cache_gdp_per_capita = {
 			value = 2.5
 			subtract = {
 				value = 170
-				divide = { value = var:sul_local_gdp multiply = var:sul_peasants_power_share add = 100 }
+				divide = {
+					value = var:sul_local_gdp
+					multiply = var:sul_peasants_power_share
+					add = 100
+				}
 			}
 		}
 	}
@@ -299,7 +285,11 @@ sul_cache_gdp_per_capita = {
 			value = 2.5
 			subtract = {
 				value = 170
-				divide = { value = var:sul_local_gdp multiply = var:sul_peasants_power_share add = 100 }
+				divide = {
+					value = var:sul_local_gdp
+					multiply = var:sul_peasants_power_share
+					add = 100
+				}
 			}
 		}
 	}
@@ -311,7 +301,11 @@ sul_cache_gdp_per_capita = {
 			value = 2.0
 			subtract = {
 				value = 90
-				divide = { value = var:sul_local_gdp multiply = var:sul_tribes_power_share add = 75 }
+				divide = {
+					value = var:sul_local_gdp
+					multiply = var:sul_tribes_power_share
+					add = 75
+				}
 			}
 		}
 	}

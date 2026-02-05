@@ -1,5 +1,4 @@
 ﻿# Specialized Urban Locations - On Actions
-
 # =============================================================================
 # MONTHLY COUNTRY PULSE
 # =============================================================================
@@ -7,25 +6,29 @@
 monthly_country_pulse = {
 	on_actions = {
 		sul_init_unowned_locations
-		sul_init_country_variables
 		sul_clear_market_cache
 		sul_refresh_market_cache
 		sul_player_economy_update
-		sul_monthly_estate_income
 	}
 }
 
 # One-time initialization of unowned locations (save migration)
 # Runs once globally, independent of per-country init
+
 sul_init_unowned_locations = {
 	trigger = {
-		NOT = { has_global_variable = sul_unowned_locations_initialized }
+		NOT = {
+			has_global_variable = sul_unowned_locations_initialized
+		}
 	}
+
 	effect = {
 		every_location_in_the_world = {
 			limit = {
 				is_ownable = yes
-				NOT = { exists = owner }
+				NOT = {
+					exists = owner
+				}
 			}
 			set_variable = { name = sul_noble_gdp_pc value = 1 }
 			set_variable = { name = sul_clergy_gdp_pc value = 1 }
@@ -40,53 +43,22 @@ sul_init_unowned_locations = {
 	}
 }
 
-# Initialize country-scope variables if missing (runs first each month)
-# Also initializes location variables for save migration
-sul_init_country_variables = {
-	trigger = {
-		OR = {
-			NOT = { has_variable = sul_nobles_taxes_lost }
-			NOT = { has_variable = sul_estate_nobles_income_lost }
-		}
-	}
-	effect = {
-		# Country-scope taxes lost (raw calculation values)
-		set_variable = { name = sul_nobles_taxes_lost value = 0 }
-		set_variable = { name = sul_clergy_taxes_lost value = 0 }
-		set_variable = { name = sul_burghers_taxes_lost value = 0 }
-		set_variable = { name = sul_peasants_taxes_lost value = 0 }
-		set_variable = { name = sul_tribes_taxes_lost value = 0 }
-		# Country-scope estate income display (read by GUI)
-		set_variable = { name = sul_estate_nobles_income_lost value = 0 }
-		set_variable = { name = sul_estate_clergy_income_lost value = 0 }
-		set_variable = { name = sul_estate_burghers_income_lost value = 0 }
-		set_variable = { name = sul_estate_peasants_income_lost value = 0 }
-		set_variable = { name = sul_estate_tribes_income_lost value = 0 }
-		set_variable = { name = sul_estate_dhimmi_income_lost value = 0 }
-		set_variable = { name = sul_estate_cossacks_income_lost value = 0 }
-		# Location-scope initialization (save migration)
-		# sul_update_all_location_gdp calls sul_update_location_economy for each location
-		# which handles: estate power -> GDP -> gdp_pc cache
-		sul_update_all_location_gdp = yes
-	}
-}
-
 sul_player_economy_update = {
 	trigger = {
 		is_ai = no
 	}
+
 	effect = {
 		sul_update_all_location_gdp = yes
 	}
 }
 
 # sul_player_capacity_update removed - effect was not implemented
-
 # =============================================================================
 # LOCATION OWNERSHIP CHANGE
 # =============================================================================
-
 # Hook into hardcoded on_action
+
 on_location_changed_owner = {
 	on_actions = {
 		sul_on_location_ownership_changed
@@ -94,6 +66,7 @@ on_location_changed_owner = {
 }
 
 # root = location, scope:loser = previous owner, scope:winner = new owner
+
 sul_on_location_ownership_changed = {
 	effect = {
 		# Assign specialization if location doesn't have one (colonization, etc.)
@@ -112,12 +85,9 @@ sul_on_location_ownership_changed = {
 			# Clear any cooldown from previous owner
 			remove_location_modifier = sul_recently_respecialized
 		}
-
 		# Update economy for new owner (estate power -> GDP -> gdp_pc)
 		sul_update_location_economy = yes
-
 		# Now location definitely has a specialization - update counts
-
 		# Decrement loser's counts (if loser exists and has tracking variables)
 		if = {
 			limit = {
@@ -160,13 +130,18 @@ sul_on_location_ownership_changed = {
 				}
 			}
 		}
-
 		# Increment winner's counts
 		if = {
 			limit = { exists = scope:winner }
 			# Initialize if winner doesn't have tracking yet
 			if = {
-				limit = { scope:winner = { NOT = { has_variable = sul_mining_count } } }
+				limit = {
+					scope:winner = {
+						NOT = {
+							has_variable = sul_mining_count
+						}
+					}
+				}
 				scope:winner = { sul_initialize_specialization_counts = yes }
 			}
 			# Only increment if variables already existed (initialization already counted this location)

@@ -195,10 +195,46 @@ sul_update_all_location_gdp = {
 #   Tribesmen   | 0.8   | 2.0     | 75  | 90
 #   Slaves      | 0.8   | 0.8     | -   | 0 (fixed at 0.8)
 #
+# ENFRANCHISEMENT: Adjusts peasant/noble shares based on wealth transfer.
+#   - Peasant effective share = peasant_share × enfranchisement
+#   - Noble effective share = noble_share + peasant_share × (1 - enfranchisement)
+#   - Enfranchisement clamped to 10%-100%
+#
 # =============================================================================
 
 sul_cache_gdp_per_capita = {
-	# Nobles: floor=0.8, ceiling=5.0, k=200
+	# -------------------------------------------------------------------------
+	# ENFRANCHISEMENT ADJUSTMENT
+	# -------------------------------------------------------------------------
+	# Get enfranchisement (clamped 0.1 to 1.0)
+	set_variable = {
+		name = sul_enfranchisement
+		value = { value = modifier:local_peasant_enfranchisment min = 0.1 max = 1.0 }
+	}
+
+	# Calculate adjusted shares for wealth transfer (stored for GUI display)
+	set_variable = {
+		name = sul_adjusted_peasant_share
+		value = {
+			value = var:sul_peasants_power_share
+			multiply = var:sul_enfranchisement
+		}
+	}
+	set_variable = {
+		name = sul_adjusted_noble_share
+		value = {
+			value = var:sul_nobles_power_share
+			add = {
+				value = var:sul_peasants_power_share
+				multiply = { value = 1 subtract = var:sul_enfranchisement }
+			}
+		}
+	}
+
+	# -------------------------------------------------------------------------
+	# GDP PER CAPITA CACHING
+	# -------------------------------------------------------------------------
+	# Nobles: floor=0.8, ceiling=5.0, k=200 (uses adjusted share)
 	set_variable = {
 		name = sul_noble_gdp_pc
 		value = {
@@ -207,7 +243,7 @@ sul_cache_gdp_per_capita = {
 				value = 840
 				divide = {
 					value = var:sul_local_gdp
-					multiply = var:sul_nobles_power_share
+					multiply = var:sul_adjusted_noble_share
 					add = 200
 				}
 			}
@@ -246,7 +282,7 @@ sul_cache_gdp_per_capita = {
 		}
 	}
 
-	# Soldiers: floor=0.8, ceiling=2.5, k=100
+	# Soldiers: floor=0.8, ceiling=2.5, k=100 (uses adjusted peasant share)
 	set_variable = {
 		name = sul_soldier_gdp_pc
 		value = {
@@ -255,14 +291,14 @@ sul_cache_gdp_per_capita = {
 				value = 170
 				divide = {
 					value = var:sul_local_gdp
-					multiply = var:sul_peasants_power_share
+					multiply = var:sul_adjusted_peasant_share
 					add = 100
 				}
 			}
 		}
 	}
 
-	# Laborers: floor=0.8, ceiling=2.5, k=100
+	# Laborers: floor=0.8, ceiling=2.5, k=100 (uses adjusted peasant share)
 	set_variable = {
 		name = sul_laborer_gdp_pc
 		value = {
@@ -271,14 +307,14 @@ sul_cache_gdp_per_capita = {
 				value = 170
 				divide = {
 					value = var:sul_local_gdp
-					multiply = var:sul_peasants_power_share
+					multiply = var:sul_adjusted_peasant_share
 					add = 100
 				}
 			}
 		}
 	}
 
-	# Peasants: floor=0.8, ceiling=2.5, k=100
+	# Peasants: floor=0.8, ceiling=2.5, k=100 (uses adjusted peasant share)
 	set_variable = {
 		name = sul_peasant_gdp_pc
 		value = {
@@ -287,7 +323,7 @@ sul_cache_gdp_per_capita = {
 				value = 170
 				divide = {
 					value = var:sul_local_gdp
-					multiply = var:sul_peasants_power_share
+					multiply = var:sul_adjusted_peasant_share
 					add = 100
 				}
 			}

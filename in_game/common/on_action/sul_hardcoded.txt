@@ -80,6 +80,26 @@ sul_on_raw_material_changed = {
 sul_game_start_setup = {
 	effect = {
 		debug_log = "SUL: game_start_setup BEGIN"
+		# Initialize goods-to-specialization-type lookup map
+		sul_setup_goods_spec_map = yes
+		# Migration: convert old sul_specialization_designation to sul_spec_type
+		every_location_in_the_world = {
+			limit = {
+				has_variable = sul_specialization_designation
+				NOT = {
+					has_variable = sul_spec_type
+				}
+			}
+
+			set_variable = {
+				name = sul_spec_type
+				value = { value = var:sul_specialization_designation modulo = 10 }
+			}
+
+			sul_update_designation = yes
+			remove_variable = sul_specialization_designation
+		}
+
 		# Single pass: calculate eligibility for all valid land, initialize owned locations
 		every_location_in_the_world = {
 			limit = { is_ownable = yes }
@@ -125,171 +145,28 @@ sul_game_start_setup = {
 		}
 
 		debug_log = "SUL: game_start_setup END"
-		# Test variable map access from pop scope (same pattern as sul_gdp_per_capita_scale)
-		c:ENG ?= {
-			capital ?= {
-				debug_log = "SUL: testing map access from England capital"
-				# Check if pops exist first
-				if = {
-					limit = { any_pop = { always = yes } }
-					debug_log = "SUL: pops EXIST in capital (trigger check)"
-				}
-				else = { debug_log = "SUL: NO pops in capital (trigger check)" }
-				random_pop = {
-					debug_log = "SUL: found pop via random_pop"
-					debug_log_scopes = yes
-				}
-			}
-		}
 	}
 }
 
 sul_on_location_rank_changed = {
 	effect = {
-		# If already has specialization, update variable for new rank and reapply modifier
+		# If already has specialization, clear old modifier and apply new one for current rank
 		if = {
 			limit = { sul_has_any_specialization = yes }
-			# Clear all existing specialization modifiers
 			sul_clear_all_specialization_modifiers = yes
-			# Update variable to match new rank (using constants from expanded_urban_locations_specialization_constants.txt)
+			sul_update_designation = yes
+			sul_apply_specialization_modifier = yes
+			# Destroy non-matching buildings for towns/cities
 			if = {
-				limit = { location_rank = location_rank:rural_settlement }
-				# Convert to rural values
-				if = {
-					limit = { sul_has_mining_specialization = yes }
-
-					set_variable = {
-						name = sul_specialization_designation
-						value = sul_mining_rural_value
-					}
-				}
-				else_if = {
-					limit = { sul_has_farming_specialization = yes }
-
-					set_variable = {
-						name = sul_specialization_designation
-						value = sul_farming_rural_value
-					}
-				}
-				else_if = {
-					limit = { sul_has_gathering_specialization = yes }
-
-					set_variable = {
-						name = sul_specialization_designation
-						value = sul_gathering_rural_value
-					}
-				}
-				else_if = {
-					limit = { sul_has_woodland_specialization = yes }
-
-					set_variable = {
-						name = sul_specialization_designation
-						value = sul_woodland_rural_value
-					}
-				}
-				else_if = {
-					limit = { sul_has_commercial_specialization = yes }
-
-					set_variable = {
-						name = sul_specialization_designation
-						value = sul_commercial_rural_value
-					}
-				}
-			}
-			else_if = {
-				limit = { location_rank = location_rank:town }
-				# Convert to town values
-				if = {
-					limit = { sul_has_mining_specialization = yes }
-
-					set_variable = {
-						name = sul_specialization_designation
-						value = sul_mining_town_value
-					}
-				}
-				else_if = {
-					limit = { sul_has_farming_specialization = yes }
-
-					set_variable = {
-						name = sul_specialization_designation
-						value = sul_farming_town_value
-					}
-				}
-				else_if = {
-					limit = { sul_has_gathering_specialization = yes }
-
-					set_variable = {
-						name = sul_specialization_designation
-						value = sul_gathering_town_value
-					}
-				}
-				else_if = {
-					limit = { sul_has_woodland_specialization = yes }
-
-					set_variable = {
-						name = sul_specialization_designation
-						value = sul_woodland_town_value
-					}
-				}
-				else_if = {
-					limit = { sul_has_commercial_specialization = yes }
-
-					set_variable = {
-						name = sul_specialization_designation
-						value = sul_commercial_town_value
+				limit = {
+					OR = {
+						location_rank = location_rank:town
+						location_rank = location_rank:city
 					}
 				}
 
-				# Destroy buildings that don't match specialization
 				sul_destroy_non_matching_buildings = yes
 			}
-			else_if = {
-				limit = { location_rank = location_rank:city }
-				# Convert to city values
-				if = {
-					limit = { sul_has_mining_specialization = yes }
-
-					set_variable = {
-						name = sul_specialization_designation
-						value = sul_mining_city_value
-					}
-				}
-				else_if = {
-					limit = { sul_has_farming_specialization = yes }
-
-					set_variable = {
-						name = sul_specialization_designation
-						value = sul_farming_city_value
-					}
-				}
-				else_if = {
-					limit = { sul_has_gathering_specialization = yes }
-
-					set_variable = {
-						name = sul_specialization_designation
-						value = sul_gathering_city_value
-					}
-				}
-				else_if = {
-					limit = { sul_has_woodland_specialization = yes }
-
-					set_variable = {
-						name = sul_specialization_designation
-						value = sul_woodland_city_value
-					}
-				}
-				else_if = {
-					limit = { sul_has_commercial_specialization = yes }
-
-					set_variable = {
-						name = sul_specialization_designation
-						value = sul_commercial_city_value
-					}
-				}
-			}
-
-			# Apply the correct modifier tier based on new rank
-			sul_apply_specialization_modifier = yes
 		}
 
 		# New rural/town/city without specialization - assign based on resources
@@ -304,7 +181,6 @@ sul_on_location_rank_changed = {
 			}
 
 			sul_assign_specialization_by_resources = yes
-			# Destroy buildings that don't match the assigned specialization
 			if = {
 				limit = {
 					OR = {

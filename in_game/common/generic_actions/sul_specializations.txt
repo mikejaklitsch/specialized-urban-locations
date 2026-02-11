@@ -2,6 +2,11 @@
 # These actions allow players to designate a specialization for towns/cities
 # Costs gold + prestige, destroys non-matching buildings, applies modifier
 # scope:actor = country, scope:target = location
+@sul_mining_type = 1
+@sul_farming_type = 2
+@sul_gathering_type = 3
+@sul_woodland_type = 4
+@sul_commercial_type = 5
 
 sul_designate_mining_specialization = {
 	type = owncountry
@@ -478,35 +483,9 @@ sul_designate_mining_specialization = {
 
 			scope:target = {
 				sul_clear_all_specialization_modifiers = yes
-				if = {
-					limit = { location_rank = location_rank:rural_settlement }
-
-					set_variable = {
-						name = sul_specialization_designation
-						value = sul_mining_rural_value
-					}
-
-					add_location_modifier = { modifier = sul_mining_rural_specialization }
-				}
-				else_if = {
-					limit = { location_rank = location_rank:town }
-
-					set_variable = {
-						name = sul_specialization_designation
-						value = sul_mining_town_value
-					}
-
-					add_location_modifier = { modifier = sul_mining_town_specialization }
-				}
-				else = {
-					set_variable = {
-						name = sul_specialization_designation
-						value = sul_mining_city_value
-					}
-
-					add_location_modifier = { modifier = sul_mining_city_specialization }
-				}
-
+				set_variable = { name = sul_spec_type value = @sul_mining_type }
+				sul_update_designation = yes
+				sul_apply_specialization_modifier = yes
 				sul_destroy_non_mining_buildings = yes
 				add_location_modifier = { modifier = sul_recently_respecialized years = 5 }
 			}
@@ -1036,35 +1015,9 @@ sul_designate_farming_specialization = {
 
 			scope:target = {
 				sul_clear_all_specialization_modifiers = yes
-				if = {
-					limit = { location_rank = location_rank:rural_settlement }
-
-					set_variable = {
-						name = sul_specialization_designation
-						value = sul_farming_rural_value
-					}
-
-					add_location_modifier = { modifier = sul_farming_rural_specialization }
-				}
-				else_if = {
-					limit = { location_rank = location_rank:town }
-
-					set_variable = {
-						name = sul_specialization_designation
-						value = sul_farming_town_value
-					}
-
-					add_location_modifier = { modifier = sul_farming_town_specialization }
-				}
-				else = {
-					set_variable = {
-						name = sul_specialization_designation
-						value = sul_farming_city_value
-					}
-
-					add_location_modifier = { modifier = sul_farming_city_specialization }
-				}
-
+				set_variable = { name = sul_spec_type value = @sul_farming_type }
+				sul_update_designation = yes
+				sul_apply_specialization_modifier = yes
 				sul_destroy_non_farming_buildings = yes
 				add_location_modifier = { modifier = sul_recently_respecialized years = 5 }
 			}
@@ -1513,35 +1466,9 @@ sul_designate_woodland_specialization = {
 
 			scope:target = {
 				sul_clear_all_specialization_modifiers = yes
-				if = {
-					limit = { location_rank = location_rank:rural_settlement }
-
-					set_variable = {
-						name = sul_specialization_designation
-						value = sul_woodland_rural_value
-					}
-
-					add_location_modifier = { modifier = sul_woodland_rural_specialization }
-				}
-				else_if = {
-					limit = { location_rank = location_rank:town }
-
-					set_variable = {
-						name = sul_specialization_designation
-						value = sul_woodland_town_value
-					}
-
-					add_location_modifier = { modifier = sul_woodland_town_specialization }
-				}
-				else = {
-					set_variable = {
-						name = sul_specialization_designation
-						value = sul_woodland_city_value
-					}
-
-					add_location_modifier = { modifier = sul_woodland_city_specialization }
-				}
-
+				set_variable = { name = sul_spec_type value = @sul_woodland_type }
+				sul_update_designation = yes
+				sul_apply_specialization_modifier = yes
 				sul_destroy_non_woodland_buildings = yes
 				add_location_modifier = { modifier = sul_recently_respecialized years = 5 }
 			}
@@ -2019,35 +1946,9 @@ sul_designate_gathering_specialization = {
 
 			scope:target = {
 				sul_clear_all_specialization_modifiers = yes
-				if = {
-					limit = { location_rank = location_rank:rural_settlement }
-
-					set_variable = {
-						name = sul_specialization_designation
-						value = sul_gathering_rural_value
-					}
-
-					add_location_modifier = { modifier = sul_gathering_rural_specialization }
-				}
-				else_if = {
-					limit = { location_rank = location_rank:town }
-
-					set_variable = {
-						name = sul_specialization_designation
-						value = sul_gathering_town_value
-					}
-
-					add_location_modifier = { modifier = sul_gathering_town_specialization }
-				}
-				else = {
-					set_variable = {
-						name = sul_specialization_designation
-						value = sul_gathering_city_value
-					}
-
-					add_location_modifier = { modifier = sul_gathering_city_specialization }
-				}
-
+				set_variable = { name = sul_spec_type value = @sul_gathering_type }
+				sul_update_designation = yes
+				sul_apply_specialization_modifier = yes
 				sul_destroy_non_gathering_buildings = yes
 				add_location_modifier = { modifier = sul_recently_respecialized years = 5 }
 			}
@@ -2495,35 +2396,9 @@ sul_designate_commercial_specialization = {
 
 			scope:target = {
 				sul_clear_all_specialization_modifiers = yes
-				if = {
-					limit = { location_rank = location_rank:rural_settlement }
-
-					set_variable = {
-						name = sul_specialization_designation
-						value = sul_commercial_rural_value
-					}
-
-					add_location_modifier = { modifier = sul_commercial_rural_specialization }
-				}
-				else_if = {
-					limit = { location_rank = location_rank:town }
-
-					set_variable = {
-						name = sul_specialization_designation
-						value = sul_commercial_town_value
-					}
-
-					add_location_modifier = { modifier = sul_commercial_town_specialization }
-				}
-				else = {
-					set_variable = {
-						name = sul_specialization_designation
-						value = sul_commercial_city_value
-					}
-
-					add_location_modifier = { modifier = sul_commercial_city_specialization }
-				}
-
+				set_variable = { name = sul_spec_type value = @sul_commercial_type }
+				sul_update_designation = yes
+				sul_apply_specialization_modifier = yes
 				sul_destroy_non_commercial_buildings = yes
 				add_location_modifier = { modifier = sul_recently_respecialized years = 5 }
 			}

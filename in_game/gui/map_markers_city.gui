@@ -1,9 +1,9 @@
 ﻿# Specialized Urban Locations - Map Markers City Override
 # This file REPLACES the vanilla map_markers_city.gui to properly override map marker icons
-# with specialization-based colored icons
+# with specialization-based colored icons using dynamic texture path construction
 #
-# NOTE: Texture, Location visibility, and icon size templates are defined in map_markers.gui
-# This file only contains CityMarker-specific content (marker_rank_icon, city_marker widget)
+# Dynamic texture eliminates 45-icon branching (5 types × 3 ranks × 3 capital statuses)
+# by constructing the texture path from sul_spec_type variable at runtime
 # =====================================================
 # SIZE VARIABLES
 # =====================================================
@@ -11,71 +11,6 @@
 @city_marker_fort_icon_size = 16
 @town_marker_icon_size = 20
 @rural_marker_icon_size = 15
-# =====================================================
-# VISIBILITY TEMPLATES - CityMarker Context (for marker_rank_icon)
-# =====================================================
-# Specialization value templates (no capital check - used inside capital branch widgets)
-
-template sul_vis_marker_mining_town {
-	visible = "[EqualTo_float(FixedPointToFloat(CityMarker.GetLocation.MakeScope.GetVariable('sul_specialization_designation').GetValue), '(float)1.0')]"
-}
-
-template sul_vis_marker_farming_town {
-	visible = "[EqualTo_float(FixedPointToFloat(CityMarker.GetLocation.MakeScope.GetVariable('sul_specialization_designation').GetValue), '(float)2.0')]"
-}
-
-template sul_vis_marker_gathering_town {
-	visible = "[EqualTo_float(FixedPointToFloat(CityMarker.GetLocation.MakeScope.GetVariable('sul_specialization_designation').GetValue), '(float)3.0')]"
-}
-
-template sul_vis_marker_woodland_town {
-	visible = "[EqualTo_float(FixedPointToFloat(CityMarker.GetLocation.MakeScope.GetVariable('sul_specialization_designation').GetValue), '(float)4.0')]"
-}
-
-template sul_vis_marker_commercial_town {
-	visible = "[EqualTo_float(FixedPointToFloat(CityMarker.GetLocation.MakeScope.GetVariable('sul_specialization_designation').GetValue), '(float)5.0')]"
-}
-
-template sul_vis_marker_mining_city {
-	visible = "[EqualTo_float(FixedPointToFloat(CityMarker.GetLocation.MakeScope.GetVariable('sul_specialization_designation').GetValue), '(float)11.0')]"
-}
-
-template sul_vis_marker_farming_city {
-	visible = "[EqualTo_float(FixedPointToFloat(CityMarker.GetLocation.MakeScope.GetVariable('sul_specialization_designation').GetValue), '(float)12.0')]"
-}
-
-template sul_vis_marker_gathering_city {
-	visible = "[EqualTo_float(FixedPointToFloat(CityMarker.GetLocation.MakeScope.GetVariable('sul_specialization_designation').GetValue), '(float)13.0')]"
-}
-
-template sul_vis_marker_woodland_city {
-	visible = "[EqualTo_float(FixedPointToFloat(CityMarker.GetLocation.MakeScope.GetVariable('sul_specialization_designation').GetValue), '(float)14.0')]"
-}
-
-template sul_vis_marker_commercial_city {
-	visible = "[EqualTo_float(FixedPointToFloat(CityMarker.GetLocation.MakeScope.GetVariable('sul_specialization_designation').GetValue), '(float)15.0')]"
-}
-
-template sul_vis_marker_mining_rural {
-	visible = "[EqualTo_float(FixedPointToFloat(CityMarker.GetLocation.MakeScope.GetVariable('sul_specialization_designation').GetValue), '(float)21.0')]"
-}
-
-template sul_vis_marker_farming_rural {
-	visible = "[EqualTo_float(FixedPointToFloat(CityMarker.GetLocation.MakeScope.GetVariable('sul_specialization_designation').GetValue), '(float)22.0')]"
-}
-
-template sul_vis_marker_gathering_rural {
-	visible = "[EqualTo_float(FixedPointToFloat(CityMarker.GetLocation.MakeScope.GetVariable('sul_specialization_designation').GetValue), '(float)23.0')]"
-}
-
-template sul_vis_marker_woodland_rural {
-	visible = "[EqualTo_float(FixedPointToFloat(CityMarker.GetLocation.MakeScope.GetVariable('sul_specialization_designation').GetValue), '(float)24.0')]"
-}
-
-template sul_vis_marker_commercial_rural {
-	visible = "[EqualTo_float(FixedPointToFloat(CityMarker.GetLocation.MakeScope.GetVariable('sul_specialization_designation').GetValue), '(float)25.0')]"
-}
-
 # =====================================================
 # VANILLA MAPMARKERFLAGS TEMPLATE (unchanged from base game)
 # =====================================================
@@ -159,339 +94,35 @@ types map_marker_city
 			datacontext = "[CityMarker.GetLocation.GetOwner]"
 			using = MapMarkerFlags
 		}
-		# ICON CONTAINER - centered in this widget
+
+		# ICON CONTAINER - dynamic texture resolves color from sul_spec_type + capital status + rank
+		# 3 rank branches (for different icon sizes), each with 1 dynamic-texture icon
 		widget = {
 			size = { 100% 100% }
-			# CITY BRANCH (values 11-15)
-			widget = {
-				size = { 100% 100% }
+			# CITY BRANCH
+			icon = {
+				parentanchor = center
 				using = sul_vis_citymarker_any_city
-				# Provincial Capital
-				widget = {
-					size = { 100% 100% }
-					visible = "[And(CityMarker.GetLocation.IsProvinceCapital, Not(CityMarker.GetLocation.IsCapital))]"
-					icon = {
-						parentanchor = center
-						using = sul_vis_marker_mining_city
-						using = sul_tex_red_province_capital_city
-						using = sul_icon_size_city
-					}
-					icon = {
-						parentanchor = center
-						using = sul_vis_marker_farming_city
-						using = sul_tex_green_province_capital_city
-						using = sul_icon_size_city
-					}
-					icon = {
-						parentanchor = center
-						using = sul_vis_marker_gathering_city
-						using = sul_tex_blue_province_capital_city
-						using = sul_icon_size_city
-					}
-					icon = {
-						parentanchor = center
-						using = sul_vis_marker_woodland_city
-						using = sul_tex_brown_province_capital_city
-						using = sul_icon_size_city
-					}
-					icon = {
-						parentanchor = center
-						using = sul_vis_marker_commercial_city
-						using = sul_tex_purple_province_capital_city
-						using = sul_icon_size_city
-					}
-				}
-				# National Capital
-				widget = {
-					size = { 100% 100% }
-					visible = "[CityMarker.GetLocation.IsCapital]"
-					icon = {
-						parentanchor = center
-						using = sul_vis_marker_mining_city
-						using = sul_tex_red_capital_city
-						using = sul_icon_size_city
-					}
-					icon = {
-						parentanchor = center
-						using = sul_vis_marker_farming_city
-						using = sul_tex_green_capital_city
-						using = sul_icon_size_city
-					}
-					icon = {
-						parentanchor = center
-						using = sul_vis_marker_gathering_city
-						using = sul_tex_blue_capital_city
-						using = sul_icon_size_city
-					}
-					icon = {
-						parentanchor = center
-						using = sul_vis_marker_woodland_city
-						using = sul_tex_brown_capital_city
-						using = sul_icon_size_city
-					}
-					icon = {
-						parentanchor = center
-						using = sul_vis_marker_commercial_city
-						using = sul_tex_purple_capital_city
-						using = sul_icon_size_city
-					}
-				}
-				# Regular
-				widget = {
-					size = { 100% 100% }
-					visible = "[And(Not(CityMarker.GetLocation.IsProvinceCapital), Not(CityMarker.GetLocation.IsCapital))]"
-					icon = {
-						parentanchor = center
-						using = sul_vis_marker_mining_city
-						using = sul_tex_red_city
-						using = sul_icon_size_city
-					}
-					icon = {
-						parentanchor = center
-						using = sul_vis_marker_farming_city
-						using = sul_tex_green_city
-						using = sul_icon_size_city
-					}
-					icon = {
-						parentanchor = center
-						using = sul_vis_marker_gathering_city
-						using = sul_tex_blue_city
-						using = sul_icon_size_city
-					}
-					icon = {
-						parentanchor = center
-						using = sul_vis_marker_woodland_city
-						using = sul_tex_brown_city
-						using = sul_icon_size_city
-					}
-					icon = {
-						parentanchor = center
-						using = sul_vis_marker_commercial_city
-						using = sul_tex_purple_city
-						using = sul_icon_size_city
-					}
-				}
+				using = sul_icon_size_city
+				texture = "[Concatenate('gfx/interface/mapitems/', Concatenate(Select_CString(EqualTo_int32(FixedPointToInt(CityMarker.GetLocation.MakeScope.GetVariable('sul_spec_type').GetValue), '(int32)1'), 'red', Select_CString(EqualTo_int32(FixedPointToInt(CityMarker.GetLocation.MakeScope.GetVariable('sul_spec_type').GetValue), '(int32)2'), 'green', Select_CString(EqualTo_int32(FixedPointToInt(CityMarker.GetLocation.MakeScope.GetVariable('sul_spec_type').GetValue), '(int32)3'), 'blue', Select_CString(EqualTo_int32(FixedPointToInt(CityMarker.GetLocation.MakeScope.GetVariable('sul_spec_type').GetValue), '(int32)4'), 'brown', 'purple')))), Concatenate('_', Concatenate(Select_CString(CityMarker.GetLocation.IsCapital, 'capital_', Select_CString(CityMarker.GetLocation.IsProvinceCapital, 'provincial_capital_', '')), 'city.dds'))))]"
 			}
-			# TOWN BRANCH (values 1-5)
-			widget = {
-				size = { 100% 100% }
+
+			# TOWN BRANCH
+			icon = {
+				parentanchor = center
 				using = sul_vis_citymarker_any_town
-				# Provincial Capital
-				widget = {
-					size = { 100% 100% }
-					visible = "[And(CityMarker.GetLocation.IsProvinceCapital, Not(CityMarker.GetLocation.IsCapital))]"
-					icon = {
-						parentanchor = center
-						using = sul_vis_marker_mining_town
-						using = sul_tex_red_province_capital_town
-						using = sul_icon_size_town
-					}
-					icon = {
-						parentanchor = center
-						using = sul_vis_marker_farming_town
-						using = sul_tex_green_province_capital_town
-						using = sul_icon_size_town
-					}
-					icon = {
-						parentanchor = center
-						using = sul_vis_marker_gathering_town
-						using = sul_tex_blue_province_capital_town
-						using = sul_icon_size_town
-					}
-					icon = {
-						parentanchor = center
-						using = sul_vis_marker_woodland_town
-						using = sul_tex_brown_province_capital_town
-						using = sul_icon_size_town
-					}
-					icon = {
-						parentanchor = center
-						using = sul_vis_marker_commercial_town
-						using = sul_tex_purple_province_capital_town
-						using = sul_icon_size_town
-					}
-				}
-				# National Capital
-				widget = {
-					size = { 100% 100% }
-					visible = "[CityMarker.GetLocation.IsCapital]"
-					icon = {
-						parentanchor = center
-						using = sul_vis_marker_mining_town
-						using = sul_tex_red_capital_town
-						using = sul_icon_size_town
-					}
-					icon = {
-						parentanchor = center
-						using = sul_vis_marker_farming_town
-						using = sul_tex_green_capital_town
-						using = sul_icon_size_town
-					}
-					icon = {
-						parentanchor = center
-						using = sul_vis_marker_gathering_town
-						using = sul_tex_blue_capital_town
-						using = sul_icon_size_town
-					}
-					icon = {
-						parentanchor = center
-						using = sul_vis_marker_woodland_town
-						using = sul_tex_brown_capital_town
-						using = sul_icon_size_town
-					}
-					icon = {
-						parentanchor = center
-						using = sul_vis_marker_commercial_town
-						using = sul_tex_purple_capital_town
-						using = sul_icon_size_town
-					}
-				}
-				# Regular
-				widget = {
-					size = { 100% 100% }
-					visible = "[And(Not(CityMarker.GetLocation.IsProvinceCapital), Not(CityMarker.GetLocation.IsCapital))]"
-					icon = {
-						parentanchor = center
-						using = sul_vis_marker_mining_town
-						using = sul_tex_red_town
-						using = sul_icon_size_town
-					}
-					icon = {
-						parentanchor = center
-						using = sul_vis_marker_farming_town
-						using = sul_tex_green_town
-						using = sul_icon_size_town
-					}
-					icon = {
-						parentanchor = center
-						using = sul_vis_marker_gathering_town
-						using = sul_tex_blue_town
-						using = sul_icon_size_town
-					}
-					icon = {
-						parentanchor = center
-						using = sul_vis_marker_woodland_town
-						using = sul_tex_brown_town
-						using = sul_icon_size_town
-					}
-					icon = {
-						parentanchor = center
-						using = sul_vis_marker_commercial_town
-						using = sul_tex_purple_town
-						using = sul_icon_size_town
-					}
-				}
+				using = sul_icon_size_town
+				texture = "[Concatenate('gfx/interface/mapitems/', Concatenate(Select_CString(EqualTo_int32(FixedPointToInt(CityMarker.GetLocation.MakeScope.GetVariable('sul_spec_type').GetValue), '(int32)1'), 'red', Select_CString(EqualTo_int32(FixedPointToInt(CityMarker.GetLocation.MakeScope.GetVariable('sul_spec_type').GetValue), '(int32)2'), 'green', Select_CString(EqualTo_int32(FixedPointToInt(CityMarker.GetLocation.MakeScope.GetVariable('sul_spec_type').GetValue), '(int32)3'), 'blue', Select_CString(EqualTo_int32(FixedPointToInt(CityMarker.GetLocation.MakeScope.GetVariable('sul_spec_type').GetValue), '(int32)4'), 'brown', 'purple')))), Concatenate('_', Concatenate(Select_CString(CityMarker.GetLocation.IsCapital, 'capital_', Select_CString(CityMarker.GetLocation.IsProvinceCapital, 'provincial_capital_', '')), 'town.dds'))))]"
 			}
-			# RURAL BRANCH (values 21-25)
-			widget = {
-				size = { 100% 100% }
+
+			# RURAL BRANCH
+			icon = {
+				parentanchor = center
 				using = sul_vis_citymarker_any_rural
-				# Provincial Capital
-				widget = {
-					size = { 100% 100% }
-					visible = "[And(CityMarker.GetLocation.IsProvinceCapital, Not(CityMarker.GetLocation.IsCapital))]"
-					icon = {
-						parentanchor = center
-						using = sul_vis_marker_mining_rural
-						using = sul_tex_red_province_capital_rural
-						using = sul_icon_size_rural
-					}
-					icon = {
-						parentanchor = center
-						using = sul_vis_marker_farming_rural
-						using = sul_tex_green_province_capital_rural
-						using = sul_icon_size_rural
-					}
-					icon = {
-						parentanchor = center
-						using = sul_vis_marker_gathering_rural
-						using = sul_tex_blue_province_capital_rural
-						using = sul_icon_size_rural
-					}
-					icon = {
-						parentanchor = center
-						using = sul_vis_marker_woodland_rural
-						using = sul_tex_brown_province_capital_rural
-						using = sul_icon_size_rural
-					}
-					icon = {
-						parentanchor = center
-						using = sul_vis_marker_commercial_rural
-						using = sul_tex_purple_province_capital_rural
-						using = sul_icon_size_rural
-					}
-				}
-				# National Capital
-				widget = {
-					size = { 100% 100% }
-					visible = "[CityMarker.GetLocation.IsCapital]"
-					icon = {
-						parentanchor = center
-						using = sul_vis_marker_mining_rural
-						using = sul_tex_red_capital_rural
-						using = sul_icon_size_rural
-					}
-					icon = {
-						parentanchor = center
-						using = sul_vis_marker_farming_rural
-						using = sul_tex_green_capital_rural
-						using = sul_icon_size_rural
-					}
-					icon = {
-						parentanchor = center
-						using = sul_vis_marker_gathering_rural
-						using = sul_tex_blue_capital_rural
-						using = sul_icon_size_rural
-					}
-					icon = {
-						parentanchor = center
-						using = sul_vis_marker_woodland_rural
-						using = sul_tex_brown_capital_rural
-						using = sul_icon_size_rural
-					}
-					icon = {
-						parentanchor = center
-						using = sul_vis_marker_commercial_rural
-						using = sul_tex_purple_capital_rural
-						using = sul_icon_size_rural
-					}
-				}
-				# Regular
-				widget = {
-					size = { 100% 100% }
-					visible = "[And(Not(CityMarker.GetLocation.IsProvinceCapital), Not(CityMarker.GetLocation.IsCapital))]"
-					icon = {
-						parentanchor = center
-						using = sul_vis_marker_mining_rural
-						using = sul_tex_red_rural
-						using = sul_icon_size_rural
-					}
-					icon = {
-						parentanchor = center
-						using = sul_vis_marker_farming_rural
-						using = sul_tex_green_rural
-						using = sul_icon_size_rural
-					}
-					icon = {
-						parentanchor = center
-						using = sul_vis_marker_gathering_rural
-						using = sul_tex_blue_rural
-						using = sul_icon_size_rural
-					}
-					icon = {
-						parentanchor = center
-						using = sul_vis_marker_woodland_rural
-						using = sul_tex_brown_rural
-						using = sul_icon_size_rural
-					}
-					icon = {
-						parentanchor = center
-						using = sul_vis_marker_commercial_rural
-						using = sul_tex_purple_rural
-						using = sul_icon_size_rural
-					}
-				}
+				using = sul_icon_size_rural
+				texture = "[Concatenate('gfx/interface/mapitems/', Concatenate(Select_CString(EqualTo_int32(FixedPointToInt(CityMarker.GetLocation.MakeScope.GetVariable('sul_spec_type').GetValue), '(int32)1'), 'red', Select_CString(EqualTo_int32(FixedPointToInt(CityMarker.GetLocation.MakeScope.GetVariable('sul_spec_type').GetValue), '(int32)2'), 'green', Select_CString(EqualTo_int32(FixedPointToInt(CityMarker.GetLocation.MakeScope.GetVariable('sul_spec_type').GetValue), '(int32)3'), 'blue', Select_CString(EqualTo_int32(FixedPointToInt(CityMarker.GetLocation.MakeScope.GetVariable('sul_spec_type').GetValue), '(int32)4'), 'brown', 'purple')))), Concatenate('_', Concatenate(Select_CString(CityMarker.GetLocation.IsCapital, 'capital_', Select_CString(CityMarker.GetLocation.IsProvinceCapital, 'provincial_capital_', '')), 'rural.dds'))))]"
 			}
+
 			# FALLBACK - non-specialized locations use vanilla icon
 			icon = {
 				parentanchor = center
@@ -500,12 +131,14 @@ types map_marker_city
 				size = { 20 20 }
 			}
 		}
+
 		# NAME - positioned to the RIGHT of the icon
 		flowcontainer = {
 			parentanchor = vcenter
 			widgetanchor = vcenter|left
 			position = { @city_marker_icon_size 0 }
 			ignoreinvisible = yes
+
 			text_single = {
 				text = "[CityMarker.GetLocation.GetNameWithNoTooltip|U]"
 				snap_to_pixels = no
@@ -537,9 +170,11 @@ widget = {
 		allow_outside = yes
 		visible = "[CityMarker.ShowDetailsOrHasWarFort]"
 		size = { @city_marker_icon_size @city_marker_icon_size }
+
 		widget = {
 			parentanchor = left|vcenter
 			widgetanchor = right|vcenter
+
 			hbox = {
 				margin = { 0 0 }
 				minimumsize = { -1 @city_marker_icon_size }
@@ -552,6 +187,7 @@ widget = {
 		widget = {
 			parentanchor = left|vcenter
 			widgetanchor = left|vcenter
+
 			background = {
 				visible = "[CityMarker.ShowDetails]"
 				using = simple_paper_card_texture
@@ -561,12 +197,14 @@ widget = {
 				mirror = horizontal
 				modify_texture = { using = color_bg_blue_texture }
 			}
+
 			hbox = {
 				minimumsize = { -1 @city_marker_icon_size }
 				set_parent_size_to_minimum = yes
 				ignoreinvisible = yes
 				spacing = 2
 				location_rank_icon = { datacontext = "[CityMarker.GetLocation]" }
+
 				hbox = {
 					tooltipwidget = {
 						ContextualTooltipType = {
@@ -585,6 +223,7 @@ widget = {
 							}
 						}
 					}
+
 					icon = {
 						alwaystransparent = no
 						onmousehierarchyenter = "[PdxGuiWidget.SetHighlightFort(CityMarker.GetLocation)]"
@@ -593,6 +232,7 @@ widget = {
 						size = { @city_marker_fort_icon_size @city_marker_fort_icon_size }
 					}
 				}
+
 				text_single = {
 					visible = "[CityMarker.ShowDetails]"
 					text = "[CityMarker.GetLocation.GetNameWithNoTooltip|U]"
@@ -607,12 +247,5 @@ widget = {
 
 	marker_rank_icon = {
 		visible = "[CityMarker.GetRankVisible]"
-		# blockoverride "marker_rank_icon_size" {
-		# 	size = "[CityMarker.GetRankSize]"
-		# }
-		# blockoverride "marker_rank_icon_position" {
-		# 	align = vcenter
-		# 	position = "[CityMarker.GetRankPosition]"
-		# }
 	}
 }

@@ -24,6 +24,7 @@ sul_update_location_gdp = {
 	}
 	else_if = {
 		limit = { local_control > 0 }
+
 		set_variable = {
 			name = sul_local_gdp
 			value = { value = location_tax_base divide = local_control }
@@ -36,16 +37,20 @@ sul_update_location_gdp = {
 				exists = owner
 				owner = { has_variable = sul_avg_rgo_value_per_output }
 			}
+
 			set_variable = {
 				name = sul_local_gdp
+
 				value = {
 					value = owner.var:sul_avg_rgo_value_per_output
 					multiply = raw_material_output
 					multiply = market_access
 				}
 			}
+
 			change_variable = {
 				name = sul_local_gdp
+
 				add = {
 					value = owner.var:sul_avg_building_value_per_level
 					multiply = total_building_levels
@@ -73,6 +78,7 @@ sul_update_all_location_gdp = {
 				has_variable = sul_avg_rgo_value_per_output
 			}
 		}
+
 		set_variable = { name = sul_avg_rgo_value_per_output value = 0 }
 		set_variable = { name = sul_avg_building_value_per_level value = 0 }
 	}
@@ -109,9 +115,11 @@ sul_update_all_location_gdp = {
 			save_scope_as = cur_loc
 			# Calculate RGO value for averaging
 			set_local_variable = { name = loc_rgo_value value = 0 }
+
 			raw_material ?= {
 				set_local_variable = {
 					name = loc_rgo_value
+
 					value = {
 						value = "price_in_market(scope:cur_loc.market)"
 						multiply = scope:cur_loc.raw_material_output
@@ -119,15 +127,18 @@ sul_update_all_location_gdp = {
 					}
 				}
 			}
+
 			# Calculate building value (GDP minus RGO)
 			set_local_variable = {
 				name = loc_building_value
+
 				value = {
 					value = var:sul_local_gdp
 					subtract = local_var:loc_rgo_value
 					min = 0
 				}
 			}
+
 			# Accumulate for next month's averages
 			owner ?= {
 				change_local_variable = { name = rgo_value_sum add = local_var:loc_rgo_value }
@@ -152,6 +163,7 @@ sul_update_all_location_gdp = {
 	# =========================================================================
 	set_variable = {
 		name = sul_avg_rgo_value_per_output
+
 		value = {
 			if = {
 				limit = { local_var:rgo_output_sum > 0 }
@@ -163,6 +175,7 @@ sul_update_all_location_gdp = {
 	}
 	set_variable = {
 		name = sul_avg_building_value_per_level
+
 		value = {
 			if = {
 				limit = { local_var:building_level_sum > 0 }
@@ -203,44 +216,52 @@ sul_update_all_location_gdp = {
 # =============================================================================
 
 sul_cache_gdp_per_capita = {
+	clear_variable_map = sul_gdp_pc
 	# -------------------------------------------------------------------------
 	# ENFRANCHISEMENT ADJUSTMENT
 	# -------------------------------------------------------------------------
 	# Get enfranchisement (clamped 0.1 to 1.0)
-	set_variable = {
-		name = sul_enfranchisement
+	set_local_variable = {
+		name = enfranchisement
 		value = { value = modifier:local_peasant_enfranchisment min = 0.1 max = 1.0 }
 	}
 
-	# Calculate adjusted shares for wealth transfer (stored for GUI display)
+	# Calculate adjusted shares for wealth transfer (stored as regular vars for GUI)
 	set_variable = {
 		name = sul_adjusted_peasant_share
+
 		value = {
 			value = var:sul_peasants_power_share
-			multiply = var:sul_enfranchisement
+			multiply = local_var:enfranchisement
 		}
 	}
 	set_variable = {
 		name = sul_adjusted_noble_share
+
 		value = {
 			value = var:sul_nobles_power_share
+
 			add = {
 				value = var:sul_peasants_power_share
-				multiply = { value = 1 subtract = var:sul_enfranchisement }
+				multiply = { value = 1 subtract = local_var:enfranchisement }
 			}
 		}
 	}
 
 	# -------------------------------------------------------------------------
-	# GDP PER CAPITA CACHING
+	# GDP PER CAPITA CACHING (using variable map keyed by pop_type)
+	# Formula: ceiling - (ceiling - floor) * k / (gdp * share + k)
 	# -------------------------------------------------------------------------
-	# Nobles: floor=0.8, ceiling=5.0, k=200 (uses adjusted share)
-	set_variable = {
-		name = sul_noble_gdp_pc
+	# Nobles: ceiling=5.0, (c-f)*k=840, k=200
+	set_local_variable = {
+		name = nobles_gdp_pc
+
 		value = {
 			value = 5.0
+
 			subtract = {
 				value = 840
+
 				divide = {
 					value = var:sul_local_gdp
 					multiply = var:sul_adjusted_noble_share
@@ -250,13 +271,22 @@ sul_cache_gdp_per_capita = {
 		}
 	}
 
-	# Clergy: floor=0.8, ceiling=4.0, k=150
-	set_variable = {
-		name = sul_clergy_gdp_pc
+	add_to_variable_map = {
+		name = sul_gdp_pc
+		key = pop_type:nobles
+		value = local_var:nobles_gdp_pc
+	}
+
+	# Clergy: ceiling=4.0, (c-f)*k=480, k=150
+	set_local_variable = {
+		name = clergy_gdp_pc
+
 		value = {
 			value = 4.0
+
 			subtract = {
 				value = 480
+
 				divide = {
 					value = var:sul_local_gdp
 					multiply = var:sul_clergy_power_share
@@ -266,13 +296,22 @@ sul_cache_gdp_per_capita = {
 		}
 	}
 
-	# Burghers: floor=0.8, ceiling=3.5, k=150
-	set_variable = {
-		name = sul_burgher_gdp_pc
+	add_to_variable_map = {
+		name = sul_gdp_pc
+		key = pop_type:clergy
+		value = local_var:clergy_gdp_pc
+	}
+
+	# Burghers: ceiling=3.5, (c-f)*k=405, k=150
+	set_local_variable = {
+		name = burghers_gdp_pc
+
 		value = {
 			value = 3.5
+
 			subtract = {
 				value = 405
+
 				divide = {
 					value = var:sul_local_gdp
 					multiply = var:sul_burghers_power_share
@@ -282,13 +321,22 @@ sul_cache_gdp_per_capita = {
 		}
 	}
 
-	# Soldiers: floor=0.8, ceiling=2.5, k=100 (uses adjusted peasant share)
-	set_variable = {
-		name = sul_soldier_gdp_pc
+	add_to_variable_map = {
+		name = sul_gdp_pc
+		key = pop_type:burghers
+		value = local_var:burghers_gdp_pc
+	}
+
+	# Soldiers: ceiling=2.5, (c-f)*k=170, k=100
+	set_local_variable = {
+		name = soldiers_gdp_pc
+
 		value = {
 			value = 2.5
+
 			subtract = {
 				value = 170
+
 				divide = {
 					value = var:sul_local_gdp
 					multiply = var:sul_adjusted_peasant_share
@@ -298,13 +346,22 @@ sul_cache_gdp_per_capita = {
 		}
 	}
 
-	# Laborers: floor=0.8, ceiling=2.5, k=100 (uses adjusted peasant share)
-	set_variable = {
-		name = sul_laborer_gdp_pc
+	add_to_variable_map = {
+		name = sul_gdp_pc
+		key = pop_type:soldiers
+		value = local_var:soldiers_gdp_pc
+	}
+
+	# Laborers: ceiling=2.5, (c-f)*k=170, k=100
+	set_local_variable = {
+		name = laborers_gdp_pc
+
 		value = {
 			value = 2.5
+
 			subtract = {
 				value = 170
+
 				divide = {
 					value = var:sul_local_gdp
 					multiply = var:sul_adjusted_peasant_share
@@ -314,13 +371,22 @@ sul_cache_gdp_per_capita = {
 		}
 	}
 
-	# Peasants: floor=0.8, ceiling=2.5, k=100 (uses adjusted peasant share)
-	set_variable = {
-		name = sul_peasant_gdp_pc
+	add_to_variable_map = {
+		name = sul_gdp_pc
+		key = pop_type:laborers
+		value = local_var:laborers_gdp_pc
+	}
+
+	# Peasants: ceiling=2.5, (c-f)*k=170, k=100
+	set_local_variable = {
+		name = peasants_gdp_pc
+
 		value = {
 			value = 2.5
+
 			subtract = {
 				value = 170
+
 				divide = {
 					value = var:sul_local_gdp
 					multiply = var:sul_adjusted_peasant_share
@@ -330,13 +396,22 @@ sul_cache_gdp_per_capita = {
 		}
 	}
 
-	# Tribesmen: floor=0.8, ceiling=2.0, k=75
-	set_variable = {
-		name = sul_tribesman_gdp_pc
+	add_to_variable_map = {
+		name = sul_gdp_pc
+		key = pop_type:peasants
+		value = local_var:peasants_gdp_pc
+	}
+
+	# Tribesmen: ceiling=2.0, (c-f)*k=90, k=75
+	set_local_variable = {
+		name = tribesmen_gdp_pc
+
 		value = {
 			value = 2.0
+
 			subtract = {
 				value = 90
+
 				divide = {
 					value = var:sul_local_gdp
 					multiply = var:sul_tribes_power_share
@@ -346,9 +421,16 @@ sul_cache_gdp_per_capita = {
 		}
 	}
 
+	add_to_variable_map = {
+		name = sul_gdp_pc
+		key = pop_type:tribesmen
+		value = local_var:tribesmen_gdp_pc
+	}
+
 	# Slaves: fixed at 0.8 (no GDP scaling)
-	set_variable = {
-		name = sul_slave_gdp_pc
+	add_to_variable_map = {
+		name = sul_gdp_pc
+		key = pop_type:slaves
 		value = 0.8
 	}
 }

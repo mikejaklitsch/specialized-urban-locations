@@ -5,41 +5,9 @@
 
 monthly_country_pulse = {
 	on_actions = {
-		sul_init_unowned_locations
 		sul_clear_market_cache
 		sul_refresh_market_cache
 		sul_player_economy_update
-	}
-}
-
-# One-time initialization of unowned locations (save migration)
-# Runs once globally, independent of per-country init
-
-sul_init_unowned_locations = {
-	trigger = {
-		NOT = {
-			has_global_variable = sul_unowned_locations_initialized
-		}
-	}
-
-	effect = {
-		every_location_in_the_world = {
-			limit = {
-				is_ownable = yes
-				NOT = {
-					exists = owner
-				}
-			}
-			set_variable = { name = sul_noble_gdp_pc value = 1 }
-			set_variable = { name = sul_clergy_gdp_pc value = 1 }
-			set_variable = { name = sul_burgher_gdp_pc value = 1 }
-			set_variable = { name = sul_soldier_gdp_pc value = 1 }
-			set_variable = { name = sul_laborer_gdp_pc value = 1 }
-			set_variable = { name = sul_peasant_gdp_pc value = 1 }
-			set_variable = { name = sul_tribesman_gdp_pc value = 1 }
-			set_variable = { name = sul_slave_gdp_pc value = 1 }
-		}
-		set_global_variable = { name = sul_unowned_locations_initialized value = yes }
 	}
 }
 
@@ -80,11 +48,13 @@ sul_on_location_ownership_changed = {
 					sul_has_commercial_specialization = yes
 				}
 			}
+
 			sul_assign_specialization_by_resources = yes
 			sul_apply_specialization_modifier = yes
 			# Clear any cooldown from previous owner
 			remove_location_modifier = sul_recently_respecialized
 		}
+
 		# Update economy for new owner (estate power -> GDP -> gdp_pc)
 		sul_update_location_economy = yes
 		# Now location definitely has a specialization - update counts
@@ -94,46 +64,14 @@ sul_on_location_ownership_changed = {
 				exists = scope:loser
 				scope:loser = { has_variable = sul_mining_count }
 			}
-			if = {
-				limit = { sul_has_mining_specialization = yes }
-				scope:loser = {
-					change_variable = { name = sul_mining_count subtract = 1 }
-					change_variable = { name = sul_total_weighted subtract = 1 }
-				}
-			}
-			else_if = {
-				limit = { sul_has_farming_specialization = yes }
-				scope:loser = {
-					change_variable = { name = sul_farming_count subtract = 1 }
-					change_variable = { name = sul_total_weighted subtract = 2 }
-				}
-			}
-			else_if = {
-				limit = { sul_has_woodland_specialization = yes }
-				scope:loser = {
-					change_variable = { name = sul_woodland_count subtract = 1 }
-					change_variable = { name = sul_total_weighted subtract = 1 }
-				}
-			}
-			else_if = {
-				limit = { sul_has_gathering_specialization = yes }
-				scope:loser = {
-					change_variable = { name = sul_gathering_count subtract = 1 }
-					change_variable = { name = sul_total_weighted subtract = 1 }
-				}
-			}
-			else_if = {
-				limit = { sul_has_commercial_specialization = yes }
-				scope:loser = {
-					change_variable = { name = sul_commercial_count subtract = 1 }
-					change_variable = { name = sul_total_weighted subtract = 1 }
-				}
-			}
+
+			save_temporary_scope_as = sul_loc
+			scope:loser = { sul_decrement_spec_count = yes }
 		}
+
 		# Increment winner's counts
 		if = {
 			limit = { exists = scope:winner }
-			# Initialize if winner doesn't have tracking yet
 			if = {
 				limit = {
 					scope:winner = {
@@ -142,45 +80,12 @@ sul_on_location_ownership_changed = {
 						}
 					}
 				}
+
 				scope:winner = { sul_initialize_specialization_counts = yes }
 			}
-			# Only increment if variables already existed (initialization already counted this location)
 			else = {
-				if = {
-					limit = { sul_has_mining_specialization = yes }
-					scope:winner = {
-						change_variable = { name = sul_mining_count add = 1 }
-						change_variable = { name = sul_total_weighted add = 1 }
-					}
-				}
-				else_if = {
-					limit = { sul_has_farming_specialization = yes }
-					scope:winner = {
-						change_variable = { name = sul_farming_count add = 1 }
-						change_variable = { name = sul_total_weighted add = 2 }
-					}
-				}
-				else_if = {
-					limit = { sul_has_woodland_specialization = yes }
-					scope:winner = {
-						change_variable = { name = sul_woodland_count add = 1 }
-						change_variable = { name = sul_total_weighted add = 1 }
-					}
-				}
-				else_if = {
-					limit = { sul_has_gathering_specialization = yes }
-					scope:winner = {
-						change_variable = { name = sul_gathering_count add = 1 }
-						change_variable = { name = sul_total_weighted add = 1 }
-					}
-				}
-				else_if = {
-					limit = { sul_has_commercial_specialization = yes }
-					scope:winner = {
-						change_variable = { name = sul_commercial_count add = 1 }
-						change_variable = { name = sul_total_weighted add = 1 }
-					}
-				}
+				save_temporary_scope_as = sul_loc
+				scope:winner = { sul_increment_spec_count = yes }
 			}
 		}
 	}

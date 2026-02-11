@@ -4,54 +4,12 @@
 #
 # Reads pre-cached GDP per capita values from location variables.
 # Caching happens monthly in sul_cache_gdp_per_capita (called from GDP update).
-#
-# This file just dispatches to the correct cached variable by pop type.
 # =============================================================================
-
-# -----------------------------------------------------------------------------
-# MAIN DISPATCHER (pop scope)
-# -----------------------------------------------------------------------------
-# Called from goods_demand. Returns cached GDP per capita for the pop's type.
-# Returns 1 (no scaling) if cache not yet initialized.
 
 sul_gdp_per_capita_scale = {
 	value = 1
 	if = {
-		limit = {
-			# Check if cache initialized
-			exists = location.var:sul_noble_gdp_pc
-		}
-		if = {
-			limit = { pop_type = pop_type:nobles }
-			multiply = location.var:sul_noble_gdp_pc
-		}
-		else_if = {
-			limit = { pop_type = pop_type:clergy }
-			multiply = location.var:sul_clergy_gdp_pc
-		}
-		else_if = {
-			limit = { pop_type = pop_type:burghers }
-			multiply = location.var:sul_burgher_gdp_pc
-		}
-		else_if = {
-			limit = { pop_type = pop_type:laborers }
-			multiply = location.var:sul_laborer_gdp_pc
-		}
-		else_if = {
-			limit = { pop_type = pop_type:soldiers }
-			multiply = location.var:sul_soldier_gdp_pc
-		}
-		else_if = {
-			limit = { pop_type = pop_type:peasants }
-			multiply = location.var:sul_peasant_gdp_pc
-		}
-		else_if = {
-			limit = { pop_type = pop_type:tribesmen }
-			multiply = location.var:sul_tribesman_gdp_pc
-		}
-		else_if = {
-			limit = { pop_type = pop_type:slaves }
-			multiply = location.var:sul_slave_gdp_pc
-		}
+		limit = { exists = location location = { has_variable_map = sul_gdp_pc } }
+		multiply = { value = "location.variable_map(sul_gdp_pc|this.pop_type)" }
 	}
 }

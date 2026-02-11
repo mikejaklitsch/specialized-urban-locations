@@ -28,8 +28,10 @@ sul_clear_market_cache = {
 					global_var:sul_cache_month = current_month
 				}
 			}
+
 			remove_global_variable = sul_market_demand_cached
 		}
+
 		# Track current month
 		set_global_variable = { name = sul_cache_month value = current_month }
 	}
@@ -77,21 +79,13 @@ sul_on_raw_material_changed = {
 
 sul_game_start_setup = {
 	effect = {
+		debug_log = "SUL: game_start_setup BEGIN"
 		# Single pass: calculate eligibility for all valid land, initialize owned locations
 		every_location_in_the_world = {
 			limit = { is_ownable = yes }
 			# Always calculate eligibility (for potential map modes)
 			sul_calculate_specialization_eligibility = yes
-			# Set default gdp_pc for ALL locations (prevents errors from pops in unowned locations)
 			set_variable = { name = sul_local_gdp value = 0 }
-			set_variable = { name = sul_noble_gdp_pc value = 1 }
-			set_variable = { name = sul_clergy_gdp_pc value = 1 }
-			set_variable = { name = sul_burgher_gdp_pc value = 1 }
-			set_variable = { name = sul_soldier_gdp_pc value = 1 }
-			set_variable = { name = sul_laborer_gdp_pc value = 1 }
-			set_variable = { name = sul_peasant_gdp_pc value = 1 }
-			set_variable = { name = sul_tribesman_gdp_pc value = 1 }
-			set_variable = { name = sul_slave_gdp_pc value = 1 }
 			# Only do full initialization for owned locations
 			if = {
 				limit = { exists = owner }
@@ -108,6 +102,7 @@ sul_game_start_setup = {
 							location_rank = location_rank:city
 						}
 					}
+
 					# Save building count before specialization
 					sul_save_building_levels = yes
 					# Assign and destroy
@@ -119,14 +114,32 @@ sul_game_start_setup = {
 				}
 			}
 		}
-		# Mark unowned locations as initialized (prevents redundant sul_init_unowned_locations run)
-		set_global_variable = { name = sul_unowned_locations_initialized value = yes }
+
+		debug_log = "SUL: location loop complete"
 		# Initialize local GDP and cache gdp_pc for all countries
 		# sul_update_all_location_gdp calls sul_update_location_economy for each location
 		# which handles: estate power -> GDP -> gdp_pc cache
 		every_country = {
 			limit = { sul_is_valid_location_owner = yes }
 			sul_update_all_location_gdp = yes
+		}
+
+		debug_log = "SUL: game_start_setup END"
+		# Test variable map access from pop scope (same pattern as sul_gdp_per_capita_scale)
+		c:ENG ?= {
+			capital ?= {
+				debug_log = "SUL: testing map access from England capital"
+				# Check if pops exist first
+				if = {
+					limit = { any_pop = { always = yes } }
+					debug_log = "SUL: pops EXIST in capital (trigger check)"
+				}
+				else = { debug_log = "SUL: NO pops in capital (trigger check)" }
+				random_pop = {
+					debug_log = "SUL: found pop via random_pop"
+					debug_log_scopes = yes
+				}
+			}
 		}
 	}
 }
@@ -144,6 +157,7 @@ sul_on_location_rank_changed = {
 				# Convert to rural values
 				if = {
 					limit = { sul_has_mining_specialization = yes }
+
 					set_variable = {
 						name = sul_specialization_designation
 						value = sul_mining_rural_value
@@ -151,6 +165,7 @@ sul_on_location_rank_changed = {
 				}
 				else_if = {
 					limit = { sul_has_farming_specialization = yes }
+
 					set_variable = {
 						name = sul_specialization_designation
 						value = sul_farming_rural_value
@@ -158,6 +173,7 @@ sul_on_location_rank_changed = {
 				}
 				else_if = {
 					limit = { sul_has_gathering_specialization = yes }
+
 					set_variable = {
 						name = sul_specialization_designation
 						value = sul_gathering_rural_value
@@ -165,6 +181,7 @@ sul_on_location_rank_changed = {
 				}
 				else_if = {
 					limit = { sul_has_woodland_specialization = yes }
+
 					set_variable = {
 						name = sul_specialization_designation
 						value = sul_woodland_rural_value
@@ -172,6 +189,7 @@ sul_on_location_rank_changed = {
 				}
 				else_if = {
 					limit = { sul_has_commercial_specialization = yes }
+
 					set_variable = {
 						name = sul_specialization_designation
 						value = sul_commercial_rural_value
@@ -183,6 +201,7 @@ sul_on_location_rank_changed = {
 				# Convert to town values
 				if = {
 					limit = { sul_has_mining_specialization = yes }
+
 					set_variable = {
 						name = sul_specialization_designation
 						value = sul_mining_town_value
@@ -190,6 +209,7 @@ sul_on_location_rank_changed = {
 				}
 				else_if = {
 					limit = { sul_has_farming_specialization = yes }
+
 					set_variable = {
 						name = sul_specialization_designation
 						value = sul_farming_town_value
@@ -197,6 +217,7 @@ sul_on_location_rank_changed = {
 				}
 				else_if = {
 					limit = { sul_has_gathering_specialization = yes }
+
 					set_variable = {
 						name = sul_specialization_designation
 						value = sul_gathering_town_value
@@ -204,6 +225,7 @@ sul_on_location_rank_changed = {
 				}
 				else_if = {
 					limit = { sul_has_woodland_specialization = yes }
+
 					set_variable = {
 						name = sul_specialization_designation
 						value = sul_woodland_town_value
@@ -211,11 +233,13 @@ sul_on_location_rank_changed = {
 				}
 				else_if = {
 					limit = { sul_has_commercial_specialization = yes }
+
 					set_variable = {
 						name = sul_specialization_designation
 						value = sul_commercial_town_value
 					}
 				}
+
 				# Destroy buildings that don't match specialization
 				sul_destroy_non_matching_buildings = yes
 			}
@@ -224,6 +248,7 @@ sul_on_location_rank_changed = {
 				# Convert to city values
 				if = {
 					limit = { sul_has_mining_specialization = yes }
+
 					set_variable = {
 						name = sul_specialization_designation
 						value = sul_mining_city_value
@@ -231,6 +256,7 @@ sul_on_location_rank_changed = {
 				}
 				else_if = {
 					limit = { sul_has_farming_specialization = yes }
+
 					set_variable = {
 						name = sul_specialization_designation
 						value = sul_farming_city_value
@@ -238,6 +264,7 @@ sul_on_location_rank_changed = {
 				}
 				else_if = {
 					limit = { sul_has_gathering_specialization = yes }
+
 					set_variable = {
 						name = sul_specialization_designation
 						value = sul_gathering_city_value
@@ -245,6 +272,7 @@ sul_on_location_rank_changed = {
 				}
 				else_if = {
 					limit = { sul_has_woodland_specialization = yes }
+
 					set_variable = {
 						name = sul_specialization_designation
 						value = sul_woodland_city_value
@@ -252,15 +280,18 @@ sul_on_location_rank_changed = {
 				}
 				else_if = {
 					limit = { sul_has_commercial_specialization = yes }
+
 					set_variable = {
 						name = sul_specialization_designation
 						value = sul_commercial_city_value
 					}
 				}
 			}
+
 			# Apply the correct modifier tier based on new rank
 			sul_apply_specialization_modifier = yes
 		}
+
 		# New rural/town/city without specialization - assign based on resources
 		# Note: Buildings are NOT granted on rank-up, only on game start
 		else_if = {
@@ -271,6 +302,7 @@ sul_on_location_rank_changed = {
 					location_rank = location_rank:city
 				}
 			}
+
 			sul_assign_specialization_by_resources = yes
 			# Destroy buildings that don't match the assigned specialization
 			if = {
@@ -280,8 +312,10 @@ sul_on_location_rank_changed = {
 						location_rank = location_rank:city
 					}
 				}
+
 				sul_destroy_non_matching_buildings = yes
 			}
+
 			sul_apply_specialization_modifier = yes
 		}
 	}
@@ -289,10 +323,8 @@ sul_on_location_rank_changed = {
 
 # ============================================
 # MARKET DEMAND CACHE SYSTEM
-# Caches supply/demand ratios and high-demand flags on market center locations
-# to avoid recalculating for every AI location evaluation
-# NOTE: Variables stored on market center location because markets don't support variables
-# Uses market.location to access the market center
+# Caches supply/demand ratios and high-demand flags using global variable maps
+# with market as key (eliminates market.location workaround)
 # ============================================
 # Refresh market cache if expired or not initialized
 # Called on game start and monthly - only updates when cache doesn't exist
@@ -305,6 +337,7 @@ sul_refresh_market_cache = {
 					has_global_variable = sul_market_demand_cached
 				}
 			}
+
 			# Single pass through all markets
 			every_market_in_world = {
 				save_temporary_scope_as = current_market
@@ -312,23 +345,34 @@ sul_refresh_market_cache = {
 				sul_update_market_cache = yes
 				# Calculate trade spread for commercial specialization
 				# Formula: sum of |price/base - 1| × base for all goods
-				location = { set_variable = { name = sul_trade_spread value = 0 } }
+				# Use location for accumulation, then store in global map
+				location = { set_variable = { name = sul_trade_spread_temp value = 0 } }
 				# Accumulate price deviation for each good in THIS market
 				every_goods = {
 					save_temporary_scope_as = current_good
+
 					scope:current_market.location = {
 						change_variable = {
-							name = sul_trade_spread
+							name = sul_trade_spread_temp
 							add = "scope:current_good.sul_goods_price_deviation"
 						}
 					}
 				}
+
 				# Normalize to 0-10 range (typical active market has ~50-100 total)
 				location = {
-					change_variable = { name = sul_trade_spread divide = 10 }
-					clamp_variable = { name = sul_trade_spread min = 0 max = 10 }
+					change_variable = { name = sul_trade_spread_temp divide = 10 }
+					clamp_variable = { name = sul_trade_spread_temp min = 0 max = 10 }
+				}
+
+				# Store in global variable map with market as key
+				add_to_global_variable_map = {
+					name = sul_trade_spread
+					key = this
+					value = location.var:sul_trade_spread_temp
 				}
 			}
+
 			set_global_variable = { name = sul_market_demand_cached value = 1 }
 		}
 	}

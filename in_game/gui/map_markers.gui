@@ -4,10 +4,10 @@
 # =====================================================
 # SIZE VARIABLES (must be defined here - @variables are file-scoped)
 # =====================================================
-@city_marker_icon_size = 25
+@city_marker_icon_size = 30
 @city_marker_fort_icon_size = 16
-@town_marker_icon_size = 20
-@rural_marker_icon_size = 15
+@town_marker_icon_size = 28
+@rural_marker_icon_size = 20
 # =====================================================
 # MASTER ICON SET TEMPLATES
 # =====================================================
@@ -4353,20 +4353,39 @@ widget = {
 
 types map_markers
 {
+	# location_rank_icon - ZOOMED IN map view
+	# Used by city_marker detail view (map_markers_city.gui)
+	# Sizes must match marker_rank_icon (ZOOMED OUT) to prevent snap on zoom transition
 	type location_rank_icon = widget {
 		block "icon_size" {
 			size = { @city_marker_icon_size @city_marker_icon_size }
 		}
 
+		# CITY
 		icon = {
 			parentanchor = center
-			visible = "[Location.MakeScope.GetVariable('sul_designation').IsSet]"
+			using = sul_vis_loc_any_city
+			using = sul_icon_size_city
 			using = sul_concept_texture_loc
-
-			block "icon_size" {
-				size = { @city_marker_icon_size @city_marker_icon_size }
-			}
 		}
+
+		# TOWN
+		icon = {
+			parentanchor = center
+			using = sul_vis_loc_any_town
+			using = sul_icon_size_town
+			using = sul_concept_texture_loc
+		}
+
+		# RURAL
+		icon = {
+			parentanchor = center
+			using = sul_vis_loc_any_rural
+			using = sul_icon_size_rural
+			using = sul_concept_texture_loc
+		}
+
+		# FALLBACK - non-specialized
 		icon = {
 			parentanchor = center
 			using = sul_vis_loc_not_specialized

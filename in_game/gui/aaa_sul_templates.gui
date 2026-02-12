@@ -2094,7 +2094,7 @@ template sul_local_gdp_tooltip {
 							}
 							text_single = {
 								min_width = 50
-								raw_text = "[Location.MakeScope.GetVariableFromVariableMap('sul_gdp_pc', GetPopTypeByName('nobles').MakeScope).GetValue|2]x"
+								raw_text = "[Location.MakeScope.GetVariable('sul_gdp_pc_nobles').GetValue|2]x"
 							}
 						}
 					}
@@ -2122,7 +2122,7 @@ template sul_local_gdp_tooltip {
 							}
 							text_single = {
 								min_width = 50
-								raw_text = "[Location.MakeScope.GetVariableFromVariableMap('sul_gdp_pc', GetPopTypeByName('clergy').MakeScope).GetValue|2]x"
+								raw_text = "[Location.MakeScope.GetVariable('sul_gdp_pc_clergy').GetValue|2]x"
 							}
 						}
 					}
@@ -2150,7 +2150,7 @@ template sul_local_gdp_tooltip {
 							}
 							text_single = {
 								min_width = 50
-								raw_text = "[Location.MakeScope.GetVariableFromVariableMap('sul_gdp_pc', GetPopTypeByName('burghers').MakeScope).GetValue|2]x"
+								raw_text = "[Location.MakeScope.GetVariable('sul_gdp_pc_burghers').GetValue|2]x"
 							}
 						}
 					}
@@ -2175,7 +2175,7 @@ template sul_local_gdp_tooltip {
 							text_single = { min_width = 130 raw_text = "-" }
 							text_single = {
 								min_width = 50
-								raw_text = "[Location.MakeScope.GetVariableFromVariableMap('sul_gdp_pc', GetPopTypeByName('soldiers').MakeScope).GetValue|2]x"
+								raw_text = "[Location.MakeScope.GetVariable('sul_gdp_pc_soldiers').GetValue|2]x"
 							}
 						}
 					}
@@ -2200,7 +2200,7 @@ template sul_local_gdp_tooltip {
 							text_single = { min_width = 130 raw_text = "-" }
 							text_single = {
 								min_width = 50
-								raw_text = "[Location.MakeScope.GetVariableFromVariableMap('sul_gdp_pc', GetPopTypeByName('laborers').MakeScope).GetValue|2]x"
+								raw_text = "[Location.MakeScope.GetVariable('sul_gdp_pc_laborers').GetValue|2]x"
 							}
 						}
 					}
@@ -2228,7 +2228,7 @@ template sul_local_gdp_tooltip {
 							}
 							text_single = {
 								min_width = 50
-								raw_text = "[Location.MakeScope.GetVariableFromVariableMap('sul_gdp_pc', GetPopTypeByName('peasants').MakeScope).GetValue|2]x"
+								raw_text = "[Location.MakeScope.GetVariable('sul_gdp_pc_peasants').GetValue|2]x"
 							}
 						}
 					}
@@ -2256,7 +2256,7 @@ template sul_local_gdp_tooltip {
 							}
 							text_single = {
 								min_width = 50
-								raw_text = "[Location.MakeScope.GetVariableFromVariableMap('sul_gdp_pc', GetPopTypeByName('tribesmen').MakeScope).GetValue|2]x"
+								raw_text = "[Location.MakeScope.GetVariable('sul_gdp_pc_tribesmen').GetValue|2]x"
 							}
 						}
 					}
@@ -2281,7 +2281,7 @@ template sul_local_gdp_tooltip {
 							text_single = { min_width = 130 raw_text = "-" }
 							text_single = {
 								min_width = 50
-								raw_text = "[Location.MakeScope.GetVariableFromVariableMap('sul_gdp_pc', GetPopTypeByName('slaves').MakeScope).GetValue|2]x"
+								raw_text = "[Location.MakeScope.GetVariable('sul_gdp_pc_slaves').GetValue|2]x"
 							}
 						}
 					}
@@ -4429,5 +4429,59 @@ template sul_demand_formula_tooltip {
 				}
 			}
 		}
+	}
+}
+
+# =====================================================
+# TYPES (must load before map_markers_city.gui)
+# =====================================================
+
+types sul_shared_types
+{
+	# location_rank_icon - ZOOMED IN map view
+	# Used by city_marker detail view (map_markers_city.gui)
+	# Sizes must match marker_rank_icon (ZOOMED OUT) to prevent snap on zoom transition
+	type location_rank_icon = widget {
+		block "icon_size" {
+			size = { @city_marker_icon_size @city_marker_icon_size }
+		}
+
+		# CITY
+		icon = {
+			parentanchor = center
+			using = sul_vis_loc_any_city
+			using = sul_icon_size_city
+			using = sul_concept_texture_loc
+		}
+
+		# TOWN
+		icon = {
+			parentanchor = center
+			using = sul_vis_loc_any_town
+			using = sul_icon_size_town
+			using = sul_concept_texture_loc
+		}
+
+		# RURAL
+		icon = {
+			parentanchor = center
+			using = sul_vis_loc_any_rural
+			using = sul_icon_size_rural
+			using = sul_concept_texture_loc
+		}
+
+		# FALLBACK - non-specialized
+		icon = {
+			parentanchor = center
+			using = sul_vis_loc_not_specialized
+			texture = "[Location.GetRankIcon]"
+
+			block "icon_size" {
+				size = { @city_marker_icon_size @city_marker_icon_size }
+			}
+		}
+
+		onmousehierarchyenter = "[PdxGuiWidget.SetHighlightProvince(Location.GetProvince)]"
+		tooltipwidget = { using = location_rank_tooltip }
 	}
 }

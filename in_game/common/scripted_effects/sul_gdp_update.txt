@@ -216,7 +216,6 @@ sul_update_all_location_gdp = {
 # =============================================================================
 
 sul_cache_gdp_per_capita = {
-	clear_variable_map = sul_gdp_pc
 	# -------------------------------------------------------------------------
 	# ENFRANCHISEMENT ADJUSTMENT
 	# -------------------------------------------------------------------------
@@ -249,12 +248,12 @@ sul_cache_gdp_per_capita = {
 	}
 
 	# -------------------------------------------------------------------------
-	# GDP PER CAPITA CACHING (using variable map keyed by pop_type)
+	# GDP PER CAPITA CACHING (individual variables per pop type)
 	# Formula: ceiling - (ceiling - floor) * k / (gdp * share + k)
 	# -------------------------------------------------------------------------
 	# Nobles: ceiling=5.0, (c-f)*k=840, k=200
-	set_local_variable = {
-		name = nobles_gdp_pc
+	set_variable = {
+		name = sul_gdp_pc_nobles
 
 		value = {
 			value = 5.0
@@ -271,15 +270,9 @@ sul_cache_gdp_per_capita = {
 		}
 	}
 
-	add_to_variable_map = {
-		name = sul_gdp_pc
-		key = pop_type:nobles
-		value = local_var:nobles_gdp_pc
-	}
-
 	# Clergy: ceiling=4.0, (c-f)*k=480, k=150
-	set_local_variable = {
-		name = clergy_gdp_pc
+	set_variable = {
+		name = sul_gdp_pc_clergy
 
 		value = {
 			value = 4.0
@@ -296,15 +289,9 @@ sul_cache_gdp_per_capita = {
 		}
 	}
 
-	add_to_variable_map = {
-		name = sul_gdp_pc
-		key = pop_type:clergy
-		value = local_var:clergy_gdp_pc
-	}
-
 	# Burghers: ceiling=3.5, (c-f)*k=405, k=150
-	set_local_variable = {
-		name = burghers_gdp_pc
+	set_variable = {
+		name = sul_gdp_pc_burghers
 
 		value = {
 			value = 3.5
@@ -321,15 +308,9 @@ sul_cache_gdp_per_capita = {
 		}
 	}
 
-	add_to_variable_map = {
-		name = sul_gdp_pc
-		key = pop_type:burghers
-		value = local_var:burghers_gdp_pc
-	}
-
 	# Soldiers: ceiling=2.5, (c-f)*k=170, k=100
-	set_local_variable = {
-		name = soldiers_gdp_pc
+	set_variable = {
+		name = sul_gdp_pc_soldiers
 
 		value = {
 			value = 2.5
@@ -344,17 +325,11 @@ sul_cache_gdp_per_capita = {
 				}
 			}
 		}
-	}
-
-	add_to_variable_map = {
-		name = sul_gdp_pc
-		key = pop_type:soldiers
-		value = local_var:soldiers_gdp_pc
 	}
 
 	# Laborers: ceiling=2.5, (c-f)*k=170, k=100
-	set_local_variable = {
-		name = laborers_gdp_pc
+	set_variable = {
+		name = sul_gdp_pc_laborers
 
 		value = {
 			value = 2.5
@@ -369,17 +344,11 @@ sul_cache_gdp_per_capita = {
 				}
 			}
 		}
-	}
-
-	add_to_variable_map = {
-		name = sul_gdp_pc
-		key = pop_type:laborers
-		value = local_var:laborers_gdp_pc
 	}
 
 	# Peasants: ceiling=2.5, (c-f)*k=170, k=100
-	set_local_variable = {
-		name = peasants_gdp_pc
+	set_variable = {
+		name = sul_gdp_pc_peasants
 
 		value = {
 			value = 2.5
@@ -396,15 +365,9 @@ sul_cache_gdp_per_capita = {
 		}
 	}
 
-	add_to_variable_map = {
-		name = sul_gdp_pc
-		key = pop_type:peasants
-		value = local_var:peasants_gdp_pc
-	}
-
 	# Tribesmen: ceiling=2.0, (c-f)*k=90, k=75
-	set_local_variable = {
-		name = tribesmen_gdp_pc
+	set_variable = {
+		name = sul_gdp_pc_tribesmen
 
 		value = {
 			value = 2.0
@@ -421,16 +384,9 @@ sul_cache_gdp_per_capita = {
 		}
 	}
 
-	add_to_variable_map = {
-		name = sul_gdp_pc
-		key = pop_type:tribesmen
-		value = local_var:tribesmen_gdp_pc
-	}
-
 	# Slaves: fixed at 0.8 (no GDP scaling)
-	add_to_variable_map = {
-		name = sul_gdp_pc
-		key = pop_type:slaves
+	set_variable = {
+		name = sul_gdp_pc_slaves
 		value = 0.8
 	}
 }

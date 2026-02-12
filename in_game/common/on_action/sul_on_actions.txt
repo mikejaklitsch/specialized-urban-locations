@@ -9,14 +9,14 @@ sul_game_start_setup = {
 		sul_setup_goods_spec_map = yes
 		# All ownable locations: eligibility + GDP init + specialization
 		every_location_in_the_world = {
-			limit = { is_ownable = yes }
+			limit = { is_ownable = yes exists = raw_material }
 			sul_calculate_specialization_eligibility = yes
 			set_variable = { name = sul_local_gdp value = 0 }
 			sul_assign_specialization_by_resources = yes
 			sul_apply_specialization_modifier = yes
-			# Owned towns/cities: destroy non-matching buildings
+			# Owned locations: destroy non-matching buildings
 			if = {
-				limit = { exists = owner is_town_or_city = yes }
+				limit = { exists = owner }
 				sul_save_building_levels = yes
 				sul_destroy_non_matching_buildings = yes
 				sul_restore_building_levels = yes

@@ -4,6 +4,17 @@
 @sul_woodland_type = 4
 @sul_commercial_type = 5
 # ============================================
+# RANK CHECKS
+# ============================================
+
+is_town_or_city = {
+	OR = {
+		location_rank = location_rank:town
+		location_rank = location_rank:city
+	}
+}
+
+# ============================================
 # RESOURCE TRIGGERS (raw materials only)
 # Used for initialization - assigns specialization based on actual goods
 # ============================================
@@ -67,6 +78,7 @@ sul_has_gathering_resources = {
 		raw_material = goods:amber
 		raw_material = goods:fish
 		raw_material = goods:wool
+		raw_material = goods:ivory
 	}
 }
 
@@ -115,6 +127,8 @@ sul_can_specialize_woodland = {
 
 sul_is_mining_building = {
 	OR = {
+		# Village buildings
+		building_type = building_type:market_village
 		# Enhancement/RGO buildings
 		building_type = building_type:local_smelters
 		building_type = building_type:mercury_patio
@@ -151,6 +165,9 @@ sul_is_mining_building = {
 
 sul_is_farming_building = {
 	OR = {
+		# Village/infrastructure buildings
+		building_type = building_type:farming_village
+		building_type = building_type:irrigation_systems
 		# Enhancement/RGO buildings
 		building_type = building_type:windmill
 		building_type = building_type:fiber_crops_farm
@@ -178,6 +195,8 @@ sul_is_farming_building = {
 
 sul_is_woodland_building = {
 	OR = {
+		# Village buildings
+		building_type = building_type:forest_village
 		# Enhancement/RGO buildings
 		building_type = building_type:sawmill
 		building_type = building_type:lumber_mill
@@ -215,6 +234,8 @@ sul_is_woodland_building = {
 
 sul_is_gathering_building = {
 	OR = {
+		# Village buildings
+		building_type = building_type:fishing_village
 		# RGO buildings
 		building_type = building_type:clay_pit
 		building_type = building_type:sand_pit
@@ -269,6 +290,7 @@ sul_is_commercial_building = {
 		building_type = building_type:cloth_manufactory
 		building_type = building_type:textile_mill
 		building_type = building_type:rural_clothmaker
+		building_type = building_type:market_village
 		# Fine cloth production chain
 		building_type = building_type:fine_cloth_guild
 		building_type = building_type:fine_cloth_workshop
@@ -295,10 +317,6 @@ sul_is_commercial_building = {
 # ============================================
 
 sul_is_destroyable_specialization_building = {
-	# Never destroy village buildings (peasant-worked rural buildings)
-	NOT = {
-		building_category = village_category
-	}
 	OR = {
 		sul_is_mining_building = yes
 		sul_is_farming_building = yes

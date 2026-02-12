@@ -89,7 +89,7 @@ types map_marker_city
 		flowcontainer = {
 			parentanchor = vcenter
 			widgetanchor = vcenter|right
-			visible = "[MapMarkerFlagsVisible]"
+			visible = "[And(MapMarkerFlagsVisible, CityMarker.GetLocation.IsCapital)]"
 			ignoreinvisible = yes
 			datacontext = "[CityMarker.GetLocation.GetOwner]"
 			using = MapMarkerFlags
@@ -180,7 +180,7 @@ widget = {
 				margin = { 0 0 }
 				minimumsize = { -1 @city_marker_icon_size }
 				set_parent_size_to_minimum = yes
-				visible = "[CityMarker.ShouldShowOccupationFlag]"
+				visible = "[And(CityMarker.ShouldShowOccupationFlag, CityMarker.GetLocation.IsCapital)]"
 				datacontext = "[CityMarker.GetLocation.GetController]"
 				country_flag_small = { visible = "[MapMarkerFlagsVisible]" }
 			}
@@ -188,15 +188,17 @@ widget = {
 		widget = {
 			parentanchor = left|vcenter
 			widgetanchor = left|vcenter
+			datacontext = "[CityMarker.GetLocation.GetOwner]"
+			# Hide box+name for non-capital rural settlements at medium zoom
+			visible = "[Not(And3(Not(CityMarker.ShowDetails), CityMarker.ShouldBeShownAsSettlement, Not(Or(CityMarker.GetLocation.IsCapital, CityMarker.GetLocation.IsProvinceCapital))))]"
 
 			background = {
-				visible = "[CityMarker.ShowDetails]"
 				using = simple_paper_card_texture
 				alpha = 0.5
 				margin = { 0 -2 }
 				margin_right = 8
 				mirror = horizontal
-				modify_texture = { using = color_bg_blue_texture }
+				using = marker_country_side_color
 			}
 
 			hbox = {
@@ -235,7 +237,6 @@ widget = {
 				}
 
 				text_single = {
-					visible = "[CityMarker.ShowDetails]"
 					text = "[CityMarker.GetLocation.GetNameWithNoTooltip|U]"
 					snap_to_pixels = yes
 					fontsize = 12

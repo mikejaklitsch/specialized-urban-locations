@@ -95,39 +95,39 @@ types map_marker_city
 			using = MapMarkerFlags
 		}
 
-		# ICON CONTAINER - dynamic texture resolves color from sul_spec_type + capital status + rank
-		# 3 rank branches (for different icon sizes), each with 1 dynamic-texture icon
+		# ICON CONTAINER - datacontext sets Location for template reuse
 		widget = {
+			datacontext = "[CityMarker.GetLocation]"
 			size = { 100% 100% }
 			# CITY BRANCH
 			icon = {
 				parentanchor = center
-				using = sul_vis_citymarker_any_city
+				using = sul_vis_loc_any_city
 				using = sul_icon_size_city
-				texture = "[Concatenate('gfx/interface/mapitems/', Concatenate(Select_CString(EqualTo_int32(FixedPointToInt(CityMarker.GetLocation.MakeScope.GetVariable('sul_spec_type').GetValue), '(int32)1'), 'red', Select_CString(EqualTo_int32(FixedPointToInt(CityMarker.GetLocation.MakeScope.GetVariable('sul_spec_type').GetValue), '(int32)2'), 'green', Select_CString(EqualTo_int32(FixedPointToInt(CityMarker.GetLocation.MakeScope.GetVariable('sul_spec_type').GetValue), '(int32)3'), 'blue', Select_CString(EqualTo_int32(FixedPointToInt(CityMarker.GetLocation.MakeScope.GetVariable('sul_spec_type').GetValue), '(int32)4'), 'brown', 'purple')))), Concatenate('_', Concatenate(Select_CString(CityMarker.GetLocation.IsCapital, 'capital_', Select_CString(CityMarker.GetLocation.IsProvinceCapital, 'provincial_capital_', '')), 'city.dds'))))]"
+				using = sul_spritesheet_city
 			}
 
 			# TOWN BRANCH
 			icon = {
 				parentanchor = center
-				using = sul_vis_citymarker_any_town
+				using = sul_vis_loc_any_town
 				using = sul_icon_size_town
-				texture = "[Concatenate('gfx/interface/mapitems/', Concatenate(Select_CString(EqualTo_int32(FixedPointToInt(CityMarker.GetLocation.MakeScope.GetVariable('sul_spec_type').GetValue), '(int32)1'), 'red', Select_CString(EqualTo_int32(FixedPointToInt(CityMarker.GetLocation.MakeScope.GetVariable('sul_spec_type').GetValue), '(int32)2'), 'green', Select_CString(EqualTo_int32(FixedPointToInt(CityMarker.GetLocation.MakeScope.GetVariable('sul_spec_type').GetValue), '(int32)3'), 'blue', Select_CString(EqualTo_int32(FixedPointToInt(CityMarker.GetLocation.MakeScope.GetVariable('sul_spec_type').GetValue), '(int32)4'), 'brown', 'purple')))), Concatenate('_', Concatenate(Select_CString(CityMarker.GetLocation.IsCapital, 'capital_', Select_CString(CityMarker.GetLocation.IsProvinceCapital, 'provincial_capital_', '')), 'town.dds'))))]"
+				using = sul_spritesheet_town
 			}
 
 			# RURAL BRANCH
 			icon = {
 				parentanchor = center
-				using = sul_vis_citymarker_any_rural
+				using = sul_vis_loc_any_rural
 				using = sul_icon_size_rural
-				texture = "[Concatenate('gfx/interface/mapitems/', Concatenate(Select_CString(EqualTo_int32(FixedPointToInt(CityMarker.GetLocation.MakeScope.GetVariable('sul_spec_type').GetValue), '(int32)1'), 'red', Select_CString(EqualTo_int32(FixedPointToInt(CityMarker.GetLocation.MakeScope.GetVariable('sul_spec_type').GetValue), '(int32)2'), 'green', Select_CString(EqualTo_int32(FixedPointToInt(CityMarker.GetLocation.MakeScope.GetVariable('sul_spec_type').GetValue), '(int32)3'), 'blue', Select_CString(EqualTo_int32(FixedPointToInt(CityMarker.GetLocation.MakeScope.GetVariable('sul_spec_type').GetValue), '(int32)4'), 'brown', 'purple')))), Concatenate('_', Concatenate(Select_CString(CityMarker.GetLocation.IsCapital, 'capital_', Select_CString(CityMarker.GetLocation.IsProvinceCapital, 'provincial_capital_', '')), 'rural.dds'))))]"
+				using = sul_spritesheet_rural
 			}
 
 			# FALLBACK - non-specialized locations use vanilla icon
 			icon = {
 				parentanchor = center
-				using = sul_vis_citymarker_not_specialized
-				texture = "[CityMarker.GetLocation.GetRankIcon]"
+				using = sul_vis_loc_not_specialized
+				texture = "[Location.GetRankIcon]"
 				size = { 20 20 }
 			}
 		}

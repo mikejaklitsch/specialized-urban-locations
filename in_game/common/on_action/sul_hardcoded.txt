@@ -79,72 +79,29 @@ sul_on_raw_material_changed = {
 
 sul_game_start_setup = {
 	effect = {
-		debug_log = "SUL: game_start_setup BEGIN"
-		# Initialize goods-to-specialization-type lookup map
 		sul_setup_goods_spec_map = yes
-		# Migration: convert old sul_specialization_designation to sul_spec_type
-		every_location_in_the_world = {
-			limit = {
-				has_variable = sul_specialization_designation
-				NOT = {
-					has_variable = sul_spec_type
-				}
-			}
-
-			set_variable = {
-				name = sul_spec_type
-				value = { value = var:sul_specialization_designation modulo = 10 }
-			}
-
-			sul_update_designation = yes
-			remove_variable = sul_specialization_designation
-		}
-
-		# Single pass: calculate eligibility for all valid land, initialize owned locations
+		# All ownable locations: eligibility + GDP init + specialization
 		every_location_in_the_world = {
 			limit = { is_ownable = yes }
-			# Always calculate eligibility (for potential map modes)
 			sul_calculate_specialization_eligibility = yes
 			set_variable = { name = sul_local_gdp value = 0 }
-			# Only do full initialization for owned locations
 			if = {
 				limit = { exists = owner }
-				if = {
-					limit = { location_rank = location_rank:rural_settlement }
-					sul_assign_specialization_by_resources = yes
-					sul_destroy_non_matching_buildings = yes
-					sul_apply_specialization_modifier = yes
-				}
-				else_if = {
-					limit = {
-						OR = {
-							location_rank = location_rank:town
-							location_rank = location_rank:city
-						}
-					}
-
-					# Save building count before specialization
-					sul_save_building_levels = yes
-					# Assign and destroy
-					sul_assign_specialization_by_resources = yes
-					sul_destroy_non_matching_buildings = yes
-					# Restore building levels to prior count (includes RGO + guild buildings)
-					sul_restore_building_levels = yes
-					sul_apply_specialization_modifier = yes
-				}
+				# Towns/cities: save building levels before destroy
+				if = { limit = { is_town_or_city = yes } sul_save_building_levels = yes }
+				sul_assign_specialization_by_resources = yes
+				sul_destroy_non_matching_buildings = yes
+				# Towns/cities: restore building levels after destroy
+				if = { limit = { is_town_or_city = yes } sul_restore_building_levels = yes }
+				sul_apply_specialization_modifier = yes
 			}
 		}
 
-		debug_log = "SUL: location loop complete"
-		# Initialize local GDP and cache gdp_pc for all countries
-		# sul_update_all_location_gdp calls sul_update_location_economy for each location
-		# which handles: estate power -> GDP -> gdp_pc cache
+		# GDP per capita cache
 		every_country = {
 			limit = { sul_is_valid_location_owner = yes }
 			sul_update_all_location_gdp = yes
 		}
-
-		debug_log = "SUL: game_start_setup END"
 	}
 }
 

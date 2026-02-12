@@ -16,11 +16,21 @@
 template sul_tooltip_specialization_icons {
 	widget = {
 		size = { 100% 100% }
-		# Dynamic texture: color from sul_spec_type, capital prefix from location status, rank from location_rank
+
 		icon = {
 			size = { 100% 100% }
-			visible = "[Location.MakeScope.GetVariable('sul_spec_type').IsSet]"
-			texture = "[Concatenate('gfx/interface/mapitems/', Concatenate(Select_CString(EqualTo_int32(FixedPointToInt(Location.MakeScope.GetVariable('sul_spec_type').GetValue), '(int32)1'), 'red', Select_CString(EqualTo_int32(FixedPointToInt(Location.MakeScope.GetVariable('sul_spec_type').GetValue), '(int32)2'), 'green', Select_CString(EqualTo_int32(FixedPointToInt(Location.MakeScope.GetVariable('sul_spec_type').GetValue), '(int32)3'), 'blue', Select_CString(EqualTo_int32(FixedPointToInt(Location.MakeScope.GetVariable('sul_spec_type').GetValue), '(int32)4'), 'brown', 'purple')))), Concatenate('_', Concatenate(Select_CString(Location.IsCapital, 'capital_', Select_CString(Location.IsProvinceCapital, 'provincial_capital_', '')), Select_CString(And(GreaterThanOrEqualTo_int32(FixedPointToInt(Location.MakeScope.GetVariable('sul_designation').GetValue), '(int32)11'), LessThanOrEqualTo_int32(FixedPointToInt(Location.MakeScope.GetVariable('sul_designation').GetValue), '(int32)15')), 'city.dds', Select_CString(LessThanOrEqualTo_int32(FixedPointToInt(Location.MakeScope.GetVariable('sul_designation').GetValue), '(int32)5'), 'town.dds', 'rural.dds'))))))]"
+			using = sul_vis_loc_any_town
+			using = sul_spritesheet_town
+		}
+		icon = {
+			size = { 100% 100% }
+			using = sul_vis_loc_any_city
+			using = sul_spritesheet_city
+		}
+		icon = {
+			size = { 100% 100% }
+			using = sul_vis_loc_any_rural
+			using = sul_spritesheet_rural
 		}
 
 		# Fallback
@@ -35,11 +45,20 @@ template sul_tooltip_specialization_icons {
 # Tooltip icon set (no IsSet check)
 
 template sul_tooltip_specialization_icons_noisset {
-	# Dynamic texture: color from sul_spec_type, capital prefix from location status, rank from location_rank
 	icon = {
 		size = { 100% 100% }
-		visible = "[Location.MakeScope.GetVariable('sul_spec_type').IsSet]"
-		texture = "[Concatenate('gfx/interface/mapitems/', Concatenate(Select_CString(EqualTo_int32(FixedPointToInt(Location.MakeScope.GetVariable('sul_spec_type').GetValue), '(int32)1'), 'red', Select_CString(EqualTo_int32(FixedPointToInt(Location.MakeScope.GetVariable('sul_spec_type').GetValue), '(int32)2'), 'green', Select_CString(EqualTo_int32(FixedPointToInt(Location.MakeScope.GetVariable('sul_spec_type').GetValue), '(int32)3'), 'blue', Select_CString(EqualTo_int32(FixedPointToInt(Location.MakeScope.GetVariable('sul_spec_type').GetValue), '(int32)4'), 'brown', 'purple')))), Concatenate('_', Concatenate(Select_CString(Location.IsCapital, 'capital_', Select_CString(Location.IsProvinceCapital, 'provincial_capital_', '')), Select_CString(And(GreaterThanOrEqualTo_int32(FixedPointToInt(Location.MakeScope.GetVariable('sul_designation').GetValue), '(int32)11'), LessThanOrEqualTo_int32(FixedPointToInt(Location.MakeScope.GetVariable('sul_designation').GetValue), '(int32)15')), 'city.dds', Select_CString(LessThanOrEqualTo_int32(FixedPointToInt(Location.MakeScope.GetVariable('sul_designation').GetValue), '(int32)5'), 'town.dds', 'rural.dds'))))))]"
+		using = sul_vis_loc_any_town
+		using = sul_spritesheet_town
+	}
+	icon = {
+		size = { 100% 100% }
+		using = sul_vis_loc_any_city
+		using = sul_spritesheet_city
+	}
+	icon = {
+		size = { 100% 100% }
+		using = sul_vis_loc_any_rural
+		using = sul_spritesheet_rural
 	}
 
 	# Fallback
@@ -53,29 +72,28 @@ template sul_tooltip_specialization_icons_noisset {
 # Small icon set for province tooltip - using high-res textures and size templates
 
 template sul_small_specialization_icons {
-	# Dynamic texture: 3 rank-sized icons (city/town/rural) with hires textures
-	# CITY
-	icon = {
-		parentanchor = center
-		using = sul_icon_size_city
-		visible = "[And(Location.MakeScope.GetVariable('sul_designation').IsSet, And(GreaterThanOrEqualTo_int32(FixedPointToInt(Location.MakeScope.GetVariable('sul_designation').GetValue), '(int32)11'), LessThanOrEqualTo_int32(FixedPointToInt(Location.MakeScope.GetVariable('sul_designation').GetValue), '(int32)15')))]"
-		texture = "[Concatenate('gfx/interface/mapitems/', Concatenate(Select_CString(EqualTo_int32(FixedPointToInt(Location.MakeScope.GetVariable('sul_spec_type').GetValue), '(int32)1'), 'red', Select_CString(EqualTo_int32(FixedPointToInt(Location.MakeScope.GetVariable('sul_spec_type').GetValue), '(int32)2'), 'green', Select_CString(EqualTo_int32(FixedPointToInt(Location.MakeScope.GetVariable('sul_spec_type').GetValue), '(int32)3'), 'blue', Select_CString(EqualTo_int32(FixedPointToInt(Location.MakeScope.GetVariable('sul_spec_type').GetValue), '(int32)4'), 'brown', 'purple')))), Concatenate('_', Concatenate(Select_CString(Location.IsCapital, 'capital_', Select_CString(Location.IsProvinceCapital, 'provincial_capital_', '')), 'city_hires.dds'))))]"
-	}
-
 	# TOWN
 	icon = {
 		parentanchor = center
 		using = sul_icon_size_town
-		visible = "[And(Location.MakeScope.GetVariable('sul_designation').IsSet, And(GreaterThanOrEqualTo_int32(FixedPointToInt(Location.MakeScope.GetVariable('sul_designation').GetValue), '(int32)1'), LessThanOrEqualTo_int32(FixedPointToInt(Location.MakeScope.GetVariable('sul_designation').GetValue), '(int32)5')))]"
-		texture = "[Concatenate('gfx/interface/mapitems/', Concatenate(Select_CString(EqualTo_int32(FixedPointToInt(Location.MakeScope.GetVariable('sul_spec_type').GetValue), '(int32)1'), 'red', Select_CString(EqualTo_int32(FixedPointToInt(Location.MakeScope.GetVariable('sul_spec_type').GetValue), '(int32)2'), 'green', Select_CString(EqualTo_int32(FixedPointToInt(Location.MakeScope.GetVariable('sul_spec_type').GetValue), '(int32)3'), 'blue', Select_CString(EqualTo_int32(FixedPointToInt(Location.MakeScope.GetVariable('sul_spec_type').GetValue), '(int32)4'), 'brown', 'purple')))), Concatenate('_', Concatenate(Select_CString(Location.IsCapital, 'capital_', Select_CString(Location.IsProvinceCapital, 'provincial_capital_', '')), 'town_hires.dds'))))]"
+		using = sul_vis_loc_any_town
+		using = sul_spritesheet_town
+	}
+
+	# CITY
+	icon = {
+		parentanchor = center
+		using = sul_icon_size_city
+		using = sul_vis_loc_any_city
+		using = sul_spritesheet_city
 	}
 
 	# RURAL
 	icon = {
 		parentanchor = center
 		using = sul_icon_size_rural
-		visible = "[And(Location.MakeScope.GetVariable('sul_designation').IsSet, And(GreaterThanOrEqualTo_int32(FixedPointToInt(Location.MakeScope.GetVariable('sul_designation').GetValue), '(int32)21'), LessThanOrEqualTo_int32(FixedPointToInt(Location.MakeScope.GetVariable('sul_designation').GetValue), '(int32)25')))]"
-		texture = "[Concatenate('gfx/interface/mapitems/', Concatenate(Select_CString(EqualTo_int32(FixedPointToInt(Location.MakeScope.GetVariable('sul_spec_type').GetValue), '(int32)1'), 'red', Select_CString(EqualTo_int32(FixedPointToInt(Location.MakeScope.GetVariable('sul_spec_type').GetValue), '(int32)2'), 'green', Select_CString(EqualTo_int32(FixedPointToInt(Location.MakeScope.GetVariable('sul_spec_type').GetValue), '(int32)3'), 'blue', Select_CString(EqualTo_int32(FixedPointToInt(Location.MakeScope.GetVariable('sul_spec_type').GetValue), '(int32)4'), 'brown', 'purple')))), Concatenate('_', Concatenate(Select_CString(Location.IsCapital, 'capital_', Select_CString(Location.IsProvinceCapital, 'provincial_capital_', '')), 'rural_hires.dds'))))]"
+		using = sul_vis_loc_any_rural
+		using = sul_spritesheet_rural
 	}
 
 	# Fallback
@@ -167,14 +185,14 @@ template marker_siege_side_color {
 template marker_bg_circle {
 	background = {
 		texture = "gfx/interface/component_tiles/hud_corners/circle_background.dds"
-		texture_density = 2
+		texture_density = 4
 		alpha = 1
 		margin = { 2 2 }
 		block "marker_bg_circle_extra_modifiers" { modify_texture = { using = color_mid_blue_texture } }
 
 		modify_texture = {
 			texture = "gfx/interface/component_overlay/gold_overlay_circle.dds"
-			texture_density = 2
+			texture_density = 4
 			spriteType = stretched
 			spriteborder = { 250 250 }
 			blend_mode = overlay
@@ -183,13 +201,13 @@ template marker_bg_circle {
 	}
 	background = {
 		texture = "gfx/interface/component_tiles/hud_corners/circle_shadow.dds"
-		texture_density = 2
+		texture_density = 4
 		margin = { 5 5 }
 		alpha = 0.5
 	}
 	background = {
 		texture = "gfx/interface/component_tiles/hud_corners/circle_frame.dds"
-		texture_density = 2
+		texture_density = 4
 		alpha = 1
 		modify_texture = { using = color_gold_texture }
 		using = overlay_gold
@@ -266,7 +284,7 @@ widget = {
 		allow_outside = yes
 		block "button_size" { size = { 55% 55% } }
 		texture = "gfx/interface/icons/flat_icons/parliament.dds"
-		texture_density = 2
+		texture_density = 4
 		tooltipwidget = { using = ParliamentInSession_tooltip }
 
 		action_tooltip = {
@@ -282,7 +300,7 @@ widget = {
 		allow_outside = yes
 		block "button_size" { size = { 55% 55% } }
 		texture = "gfx/interface/icons/flat_icons/parliament.dds"
-		texture_density = 2
+		texture_density = 4
 
 		tooltipwidget = {
 			using = HostileParliamentInSession_tooltip
@@ -330,7 +348,7 @@ widget = {
 			}
 		}
 
-		# ICON CONTAINER - dynamic texture resolves color + capital + rank
+		# ICON CONTAINER - spritesheet resolves color + capital via frame index
 		widget = {
 			size = { 100% 100% }
 			# CITY BRANCH
@@ -338,7 +356,7 @@ widget = {
 				parentanchor = center
 				size = { @city_marker_icon_size @city_marker_icon_size }
 				using = sul_vis_market_any_city
-				texture = "[Concatenate('gfx/interface/mapitems/', Concatenate(Select_CString(EqualTo_int32(FixedPointToInt(MarketMarker.GetLocation.MakeScope.GetVariable('sul_spec_type').GetValue), '(int32)1'), 'red', Select_CString(EqualTo_int32(FixedPointToInt(MarketMarker.GetLocation.MakeScope.GetVariable('sul_spec_type').GetValue), '(int32)2'), 'green', Select_CString(EqualTo_int32(FixedPointToInt(MarketMarker.GetLocation.MakeScope.GetVariable('sul_spec_type').GetValue), '(int32)3'), 'blue', Select_CString(EqualTo_int32(FixedPointToInt(MarketMarker.GetLocation.MakeScope.GetVariable('sul_spec_type').GetValue), '(int32)4'), 'brown', 'purple')))), Concatenate('_', Concatenate(Select_CString(MarketMarker.GetLocation.IsCapital, 'capital_', Select_CString(MarketMarker.GetLocation.IsProvinceCapital, 'provincial_capital_', '')), 'city.dds'))))]"
+				using = sul_spritesheet_city_market
 			}
 
 			# TOWN BRANCH
@@ -346,7 +364,7 @@ widget = {
 				parentanchor = center
 				size = { @town_marker_icon_size @town_marker_icon_size }
 				using = sul_vis_market_any_town
-				texture = "[Concatenate('gfx/interface/mapitems/', Concatenate(Select_CString(EqualTo_int32(FixedPointToInt(MarketMarker.GetLocation.MakeScope.GetVariable('sul_spec_type').GetValue), '(int32)1'), 'red', Select_CString(EqualTo_int32(FixedPointToInt(MarketMarker.GetLocation.MakeScope.GetVariable('sul_spec_type').GetValue), '(int32)2'), 'green', Select_CString(EqualTo_int32(FixedPointToInt(MarketMarker.GetLocation.MakeScope.GetVariable('sul_spec_type').GetValue), '(int32)3'), 'blue', Select_CString(EqualTo_int32(FixedPointToInt(MarketMarker.GetLocation.MakeScope.GetVariable('sul_spec_type').GetValue), '(int32)4'), 'brown', 'purple')))), Concatenate('_', Concatenate(Select_CString(MarketMarker.GetLocation.IsCapital, 'capital_', Select_CString(MarketMarker.GetLocation.IsProvinceCapital, 'provincial_capital_', '')), 'town.dds'))))]"
+				using = sul_spritesheet_town_market
 			}
 
 			# RURAL BRANCH
@@ -354,7 +372,7 @@ widget = {
 				parentanchor = center
 				size = { @rural_marker_icon_size @rural_marker_icon_size }
 				using = sul_vis_market_any_rural
-				texture = "[Concatenate('gfx/interface/mapitems/', Concatenate(Select_CString(EqualTo_int32(FixedPointToInt(MarketMarker.GetLocation.MakeScope.GetVariable('sul_spec_type').GetValue), '(int32)1'), 'red', Select_CString(EqualTo_int32(FixedPointToInt(MarketMarker.GetLocation.MakeScope.GetVariable('sul_spec_type').GetValue), '(int32)2'), 'green', Select_CString(EqualTo_int32(FixedPointToInt(MarketMarker.GetLocation.MakeScope.GetVariable('sul_spec_type').GetValue), '(int32)3'), 'blue', Select_CString(EqualTo_int32(FixedPointToInt(MarketMarker.GetLocation.MakeScope.GetVariable('sul_spec_type').GetValue), '(int32)4'), 'brown', 'purple')))), Concatenate('_', Concatenate(Select_CString(MarketMarker.GetLocation.IsCapital, 'capital_', Select_CString(MarketMarker.GetLocation.IsProvinceCapital, 'provincial_capital_', '')), 'rural.dds'))))]"
+				using = sul_spritesheet_rural_market
 			}
 
 			# FALLBACK
@@ -397,7 +415,7 @@ widget = {
 
 template unit_marker_frame {
 	texture = "gfx/interface/mapitems/unit_frame.dds"
-	texture_density = 2
+	texture_density = 4
 	spriteType = corneredstretched
 
 	spriteBorder = {
@@ -416,7 +434,7 @@ template unit_marker_frame {
 
 template unit_marker_bg {
 	texture = "gfx/interface/mapitems/unit_bg.dds"
-	texture_density = 2
+	texture_density = 4
 	spriteType = corneredstretched
 
 	spriteBorder = {
@@ -479,7 +497,7 @@ template unit_marker_item_unit_strength {
 	# }
 	background = {
 		texture = "gfx/interface/component_tiles/map_markers/map_marker_shadow.dds"
-		texture_density = 2
+		texture_density = 4
 		spriteType = corneredstretched
 		spriteBorder = { 35 35 }
 		margin_bottom = 15
@@ -488,7 +506,7 @@ template unit_marker_item_unit_strength {
 	}
 	background = {
 		texture = "gfx/interface/component_tiles/map_markers/map_marker_shadow.dds"
-		texture_density = 2
+		texture_density = 4
 		spriteType = corneredstretched
 		spriteBorder = { 35 35 }
 		margin = { 5 0 }
@@ -501,7 +519,7 @@ template unit_marker_item_unit_strength {
 		using = marker_unit_side_color
 		visible = "[Unit.IsArmy]"
 		texture = "gfx/interface/component_tiles/bg_army_unit_map.dds"
-		texture_density = 2
+		texture_density = 4
 		spriteType = corneredstretched
 		spriteBorder = { 20 0 }
 		margin_left = -11
@@ -524,7 +542,7 @@ template unit_marker_item_unit_strength {
 		using = marker_unit_side_color
 		visible = "[Not(Unit.IsArmy)]"
 		texture = "gfx/interface/component_tiles/bg_navy_unit_map.dds"
-		texture_density = 2
+		texture_density = 4
 		spriteType = corneredstretched
 		spriteBorder = { 20 0 }
 		margin_left = -3
@@ -885,7 +903,7 @@ template unit_marker_item_unit_strength {
 			frame_grid = { 4 1 }
 			frame = 2
 			spriteType = Corneredstretched
-			texture_density = 2
+			texture_density = 4
 			spriteborder = { 40 0 }
 		}
 		icon = {
@@ -895,7 +913,7 @@ template unit_marker_item_unit_strength {
 			frame_grid = { 4 1 }
 			frame = 2
 			spriteType = Corneredstretched
-			texture_density = 2
+			texture_density = 4
 			spriteborder = { 40 0 }
 		}
 	}
@@ -912,7 +930,7 @@ template unit_marker_item_commander {
 	# }
 	background = {
 		texture = "gfx/interface/component_tiles/bg_navy_unit_map.dds"
-		texture_density = 2
+		texture_density = 4
 		spriteType = corneredstretched
 		spriteBorder = { 20 20 }
 		margin = { 0 -2 }
@@ -956,7 +974,7 @@ template unit_marker_item_transport {
 
 	background = {
 		texture = "gfx/interface/component_tiles/bg_round_corners.dds"
-		texture_density = 2
+		texture_density = 4
 		spriteType = corneredstretched
 		spriteBorder = { 20 20 }
 		using = marker_unit_side_color
@@ -974,7 +992,7 @@ template unit_marker_item_transport {
 	}
 	background = {
 		texture = "gfx/interface/component_tiles/bg_round_corners_frame.dds"
-		texture_density = 2
+		texture_density = 4
 		spriteType = Corneredstretched
 		spriteborder = { 10 10 }
 		modify_texture = { using = color_new_gold_texture alpha = 1.0 }
@@ -991,7 +1009,7 @@ template unit_marker_item_transport {
 	}
 	background = {
 		texture = "gfx/interface/component_decoration/bg_corner_flavor_08.dds"
-		texture_density = 2
+		texture_density = 4
 		spriteType = Corneredstretched
 		spriteborder = { 35 35 }
 		margin = { -1 -1 }
@@ -1029,7 +1047,7 @@ template unit_marker_item_transport {
 template bg_unit_marker_item_modifiers {
 	background = {
 		texture = "gfx/interface/component_tiles/map_markers/map_unit_modifiers.dds"
-		texture_density = 2
+		texture_density = 4
 		modify_texture = { using = color_dark_blue_texture }
 	}
 }
@@ -1075,7 +1093,7 @@ template unit_marker_item_modifiers {
 					parentanchor = center
 					size = { 75% 75% }
 					texture = "gfx/interface/icons/unit_actions/select_transport.dds"
-					texture_density = 2
+					texture_density = 4
 				}
 
 				pieslice_no_highlight = {
@@ -1133,7 +1151,7 @@ template unit_marker_item_modifiers {
 					parentanchor = center
 					size = { 75% 75% }
 					texture = "gfx/interface/icons/flat_icons/siege_occupation/blockade_2.dds"
-					texture_density = 2
+					texture_density = 4
 					alpha = 1
 				}
 
@@ -1184,7 +1202,7 @@ template unit_marker_item_modifiers {
 					parentanchor = center
 					size = { 75% 75% }
 					using = icon_food_deficiency
-					texture_density = 2
+					texture_density = 4
 					alpha = 1
 				}
 				icon = {
@@ -1192,7 +1210,7 @@ template unit_marker_item_modifiers {
 					parentanchor = center
 					size = { 75% 75% }
 					texture = "gfx/interface/mapitems/has_attrition_with_food_supply.dds"
-					texture_density = 2
+					texture_density = 4
 					alpha = 1
 				}
 				icon = {
@@ -1200,7 +1218,7 @@ template unit_marker_item_modifiers {
 					parentanchor = center
 					size = { 75% 75% }
 					texture = "gfx/interface/icons/unit_view/food.dds"
-					texture_density = 2
+					texture_density = 4
 					alpha = 1
 				}
 
@@ -1764,12 +1782,12 @@ template unit_marker_item_unit_banners {
 			icon = {
 				size = { 90% 90% }
 				texture = "gfx/interface/icons/flat_icons/unit_selection_shield.dds"
-				texture_density = 2
+				texture_density = 4
 				visible = "[IsUnitSelected(Unit.Self)]"
 
 				background = {
 					texture = "gfx/interface/icons/flat_icons/unit_selection_shield.dds"
-					texture_density = 2
+					texture_density = 4
 					margin = { 1 1 }
 					alpha = 0.6
 				}
@@ -1784,12 +1802,12 @@ template unit_marker_item_unit_banners {
 			icon = {
 				size = { 90% 90% }
 				texture = "gfx/interface/icons/flat_icons/unit_selection_shield.dds"
-				texture_density = 2
+				texture_density = 4
 				visible = "[Not(IsUnitSelected(Unit.Self))]"
 
 				background = {
 					texture = "gfx/interface/icons/flat_icons/unit_selection_shield.dds"
-					texture_density = 2
+					texture_density = 4
 					margin = { 1 1 }
 					alpha = 0.6
 				}
@@ -1854,7 +1872,7 @@ types unit_marker_types
 
 		background = {
 			texture = "gfx/interface/component_tiles/map_markers/map_marker_shadow.dds"
-			texture_density = 2
+			texture_density = 4
 			spriteType = corneredstretched
 			spriteBorder = { 35 35 }
 			margin_bottom = 15
@@ -1868,7 +1886,7 @@ types unit_marker_types
 
 			background = {
 				texture = "gfx/interface/buttons/bg_button.dds"
-				texture_density = 2
+				texture_density = 4
 				modify_texture = { using = color_bg_brown_texture blend_mode = multiply }
 				modify_texture = {
 					using = overlay_paper_03
@@ -2003,7 +2021,7 @@ types unit_marker_types
 
 			background = {
 				texture = "gfx/interface/component_tiles/map_markers/siege_pole.dds"
-				texture_density = 2
+				texture_density = 4
 				spriteborder = { 35 0 }
 				spriteType = corneredstretched
 			}
@@ -2118,7 +2136,7 @@ types unit_marker_types
 
 		background = {
 			texture = "gfx/interface/icons/flat_icons/battle/base.dds"
-			texture_density = 2
+			texture_density = 4
 
 			modify_texture = {
 				using = color_black_texture
@@ -2272,7 +2290,7 @@ widget = {
 														framesize = { 32 32 }
 														frame = "[UnitMarkerItem.GetLeaderFrame]"
 														texture = "gfx/interface/mapitems/commander_rank.dds"
-														texture_density = 2
+														texture_density = 4
 
 														action_tooltip = {
 															title = "SHOW_CHARACTER"
@@ -2485,7 +2503,7 @@ widget = {
 														framesize = { 32 32 }
 														frame = "[UnitMarkerItem.GetLeaderFrame]"
 														texture = "gfx/interface/mapitems/commander_rank.dds"
-														texture_density = 2
+														texture_density = 4
 
 														action_tooltip = {
 															title = "SHOW_CHARACTER"
@@ -2697,7 +2715,7 @@ template combat_side_marker {
 
 					background = {
 						texture = "gfx/interface/component_tiles/bg_navy_unit_map.dds"
-						texture_density = 2
+						texture_density = 4
 						spriteType = corneredstretched
 						spriteBorder = { 20 20 }
 						modify_texture = { using = color_bg_blue_texture }
@@ -2716,7 +2734,7 @@ template combat_side_marker {
 						framesize = { 32 32 }
 						frame = "[CombatSide.GetLeaderFrame]"
 						texture = "gfx/interface/mapitems/commander_rank.dds"
-						texture_density = 2
+						texture_density = 4
 					}
 				}
 			}
@@ -2735,7 +2753,7 @@ template combat_side_marker {
 					using = marker_unit_side_color
 					visible = "[Unit.IsArmy]"
 					texture = "gfx/interface/component_tiles/bg_army_unit_map.dds"
-					texture_density = 2
+					texture_density = 4
 					spriteType = corneredstretched
 					spriteBorder = { 20 0 }
 					block "combat_side_marker_army_margin" { margin_left = -11 margin_right = -3 }
@@ -2755,7 +2773,7 @@ template combat_side_marker {
 					using = marker_unit_side_color
 					visible = "[Not(Unit.IsArmy)]"
 					texture = "gfx/interface/component_tiles/bg_navy_unit_map.dds"
-					texture_density = 2
+					texture_density = 4
 					spriteType = corneredstretched
 					spriteBorder = { 20 0 }
 					block "combat_side_marker_navy_margin" { margin_left = -4 margin_right = -8 }
@@ -2809,7 +2827,7 @@ template combat_side_marker {
 									block "combat_side_marker_morale_mirror" { mirror = horizontal }
 									noprogresstexture = "gfx/interface/progressbars/progress_bar_red_alt.dds"
 									progresstexture = "gfx/interface/progressbars/progress_bar_green_alt.dds"
-									texture_density = 2
+									texture_density = 4
 									spriteType = Corneredstretched
 									spriteborder = { 12 0 }
 									value = "[CombatSide.GetMoralePercent]"
@@ -2907,7 +2925,7 @@ widget = {
 
 		background = {
 			texture = "gfx/interface/component_tiles/map_markers/map_marker_glow.dds"
-			texture_density = 2
+			texture_density = 4
 			spriteType = corneredstretched
 			spriteBorder = { 65 65 }
 			margin_bottom = 45
@@ -2915,7 +2933,7 @@ widget = {
 		}
 		background = {
 			texture = "gfx/interface/component_tiles/map_markers/map_marker_shadow.dds"
-			texture_density = 2
+			texture_density = 4
 			spriteType = corneredstretched
 			spriteBorder = { 35 35 }
 			margin_bottom = 15
@@ -2943,7 +2961,7 @@ widget = {
 				# }
 				# blockoverride "combatside_banner_icon" {
 				# 	texture = "gfx/interface/icons/flat_icons/power_projection.dds"
-				# 	texture_density = 2
+				# 	texture_density = 4
 				# 	modify_texture = {
 				# 		using = color_white_texture
 				# 		alpha = 0.2
@@ -2972,7 +2990,7 @@ widget = {
 				# }
 				# blockoverride "combatside_banner_icon" {
 				# 	texture = "gfx/interface/icons/flat_icons/military_flat_icon.dds"
-				# 	texture_density = 2
+				# 	texture_density = 4
 				# 	modify_texture = {
 				# 		using = color_white_texture
 				# 		alpha = 0.2
@@ -3461,7 +3479,7 @@ widget = {
 			block "button_size" { size = { 18 18 } }
 			tooltip_enabled = no
 			texture = "gfx/interface/icons/location_icons/garrison.dds"
-			texture_density = 2
+			texture_density = 4
 			onclick = "[SelectLocation(FortFlipRestoreMarker.GetLocation)]"
 			onmousehierarchyenter = "[PdxGuiWidget.SetHighlightLocation(FortFlipRestoreMarker.GetLocation)]"
 		}
@@ -3555,7 +3573,7 @@ widget = {
 						texture = "gfx/interface/progressbars/slider_default_bg.dds"
 						alpha = 0.5
 						enabled = no
-						texture_density = 2
+						texture_density = 4
 						spriteType = Corneredstretched
 						spriteborder = { 0 0 }
 					}
@@ -3564,7 +3582,7 @@ widget = {
 				track_range = { # Avalible progress
 					button = {
 						texture = "gfx/interface/progressbars/slider_default_bg.dds"
-						texture_density = 2
+						texture_density = 4
 						using = color_progress_blue
 						alpha = 0.3
 						spriteType = Corneredstretched
@@ -3576,7 +3594,7 @@ widget = {
 				track_highlight = { # Active Progress
 					button = {
 						texture = "gfx/interface/progressbars/progress_bar_blue_alt.dds"
-						texture_density = 2
+						texture_density = 4
 						spriteType = Corneredstretched
 						spriteborder = { 0 0 }
 						effectname = "NoHighlight"
@@ -3686,7 +3704,7 @@ widget = {
 		size = { 22 22 }
 		align = center|nobaseline
 		texture = "[GetCabinetActionIcon(Cabinet.GetAction)]"
-		texture_density = 2
+		texture_density = 4
 		onmousehierarchyenter = "[PdxGuiWidget.SetHighlightCabinetActionTarget(CabinetActionMarker.GetCabinet)]"
 		tooltipwidget = { using = action_progress_tooltip }
 		tooltip_offset = { 20 20 }
@@ -3763,7 +3781,7 @@ widget = {
 			alpha = 0.5
 		}
 
-		texture_density = 2
+		texture_density = 4
 		onclick = "[SelectLocation(BlockedVisionMarker.GetLocation)]"
 		onmousehierarchyenter = "[PdxGuiWidget.SetHighlightLocation(BlockedVisionMarker.GetLocation)]"
 	}
@@ -3858,7 +3876,7 @@ widget = {
 		block "button_size" { size = { 100% 100% } }
 		tooltip_enabled = no
 		texture = "gfx/interface/icons/outliner/categories/annexation.dds"
-		texture_density = 2
+		texture_density = 4
 		onclick = "[AnnexationMarker.OnClick]"
 		onrightclick = "[AnnexationMarker.OnRightClick]"
 		onmousehierarchyenter = "[PdxGuiWidget.SetHighlightCountry(AnnexationMarker.GetCountry)]"
@@ -3920,7 +3938,7 @@ widget = {
 			alpha = 0.5
 		}
 
-		texture_density = 2
+		texture_density = 4
 		onmousehierarchyenter = "[DesertConnectionMarker.HighlightConnections]"
 		onmousehierarchyleave = "[DesertConnectionMarker.ClearHighlightedConnections]"
 	}
@@ -3980,7 +3998,7 @@ widget = {
 			alpha = 0.5
 		}
 
-		texture_density = 2
+		texture_density = 4
 		onclick = "[ShowProvinceDefinition(ColonyCharterMarker.GetLocation.GetProvinceDefinition)]"
 		onrightclick = "[OpenLateralViewWithParams('expansion', 'low_tab = colonisation')]"
 		onmousehierarchyenter = "[ColonyCharterMarker.HighlightCharter]"
@@ -4355,66 +4373,47 @@ widget = {
 
 types map_markers
 {
-	# location_rank_icon - zoomed-in/detail view (Location context)
 	type location_rank_icon = widget {
 		block "icon_size" {
 			size = { @city_marker_icon_size @city_marker_icon_size }
 		}
 
-		# Specialization icons container - dynamic texture resolves color + capital + rank
-		# CITY
-		icon = {
-			parentanchor = center
-			using = sul_vis_loc_any_city
-			using = sul_icon_size_city
-			onmousehierarchyenter = "[PdxGuiWidget.SetHighlightProvince(Location.GetProvince)]"
-			texture = "[Concatenate('gfx/interface/mapitems/', Concatenate(Select_CString(EqualTo_int32(FixedPointToInt(Location.MakeScope.GetVariable('sul_spec_type').GetValue), '(int32)1'), 'red', Select_CString(EqualTo_int32(FixedPointToInt(Location.MakeScope.GetVariable('sul_spec_type').GetValue), '(int32)2'), 'green', Select_CString(EqualTo_int32(FixedPointToInt(Location.MakeScope.GetVariable('sul_spec_type').GetValue), '(int32)3'), 'blue', Select_CString(EqualTo_int32(FixedPointToInt(Location.MakeScope.GetVariable('sul_spec_type').GetValue), '(int32)4'), 'brown', 'purple')))), Concatenate('_', Concatenate(Select_CString(Location.IsCapital, 'capital_', Select_CString(Location.IsProvinceCapital, 'provincial_capital_', '')), 'city.dds'))))]"
-		}
-
-		# TOWN
 		icon = {
 			parentanchor = center
 			using = sul_vis_loc_any_town
-			using = sul_icon_size_town
-			onmousehierarchyenter = "[PdxGuiWidget.SetHighlightProvince(Location.GetProvince)]"
-			texture = "[Concatenate('gfx/interface/mapitems/', Concatenate(Select_CString(EqualTo_int32(FixedPointToInt(Location.MakeScope.GetVariable('sul_spec_type').GetValue), '(int32)1'), 'red', Select_CString(EqualTo_int32(FixedPointToInt(Location.MakeScope.GetVariable('sul_spec_type').GetValue), '(int32)2'), 'green', Select_CString(EqualTo_int32(FixedPointToInt(Location.MakeScope.GetVariable('sul_spec_type').GetValue), '(int32)3'), 'blue', Select_CString(EqualTo_int32(FixedPointToInt(Location.MakeScope.GetVariable('sul_spec_type').GetValue), '(int32)4'), 'brown', 'purple')))), Concatenate('_', Concatenate(Select_CString(Location.IsCapital, 'capital_', Select_CString(Location.IsProvinceCapital, 'provincial_capital_', '')), 'town.dds'))))]"
-		}
+			using = sul_spritesheet_town
 
-		# RURAL
+			block "icon_size" {
+				size = { @city_marker_icon_size @city_marker_icon_size }
+			}
+		}
+		icon = {
+			parentanchor = center
+			using = sul_vis_loc_any_city
+			using = sul_spritesheet_city
+
+			block "icon_size" {
+				size = { @city_marker_icon_size @city_marker_icon_size }
+			}
+		}
 		icon = {
 			parentanchor = center
 			using = sul_vis_loc_any_rural
-			using = sul_icon_size_rural
-			onmousehierarchyenter = "[PdxGuiWidget.SetHighlightProvince(Location.GetProvince)]"
-			texture = "[Concatenate('gfx/interface/mapitems/', Concatenate(Select_CString(EqualTo_int32(FixedPointToInt(Location.MakeScope.GetVariable('sul_spec_type').GetValue), '(int32)1'), 'red', Select_CString(EqualTo_int32(FixedPointToInt(Location.MakeScope.GetVariable('sul_spec_type').GetValue), '(int32)2'), 'green', Select_CString(EqualTo_int32(FixedPointToInt(Location.MakeScope.GetVariable('sul_spec_type').GetValue), '(int32)3'), 'blue', Select_CString(EqualTo_int32(FixedPointToInt(Location.MakeScope.GetVariable('sul_spec_type').GetValue), '(int32)4'), 'brown', 'purple')))), Concatenate('_', Concatenate(Select_CString(Location.IsCapital, 'capital_', Select_CString(Location.IsProvinceCapital, 'provincial_capital_', '')), 'rural.dds'))))]"
-		}
+			using = sul_spritesheet_rural
 
-		# FALLBACK - vanilla icons for non-specialized locations
-		icon = {
-			parentanchor = center
-			visible = "[And3(Location.GetRank.IsCity, Location.GetRank.IsMaxRank, Not(Location.MakeScope.GetVariable('sul_spec_type').IsSet))]"
-			texture = "[Location.GetRankIcon]"
-			using = sul_icon_size_city
-			onmousehierarchyenter = "[PdxGuiWidget.SetHighlightProvince(Location.GetProvince)]"
+			block "icon_size" {
+				size = { @city_marker_icon_size @city_marker_icon_size }
+			}
 		}
 		icon = {
 			parentanchor = center
-			visible = "[And3(Location.GetRank.IsCity, Not(Location.GetRank.IsMaxRank), Not(Location.MakeScope.GetVariable('sul_spec_type').IsSet))]"
+			using = sul_vis_loc_not_specialized
 			texture = "[Location.GetRankIcon]"
-			using = sul_icon_size_city
-			scale = 0.8
-			onmousehierarchyenter = "[PdxGuiWidget.SetHighlightProvince(Location.GetProvince)]"
-		}
-		icon = {
-			parentanchor = center
-			visible = "[And(Not(Location.GetRank.IsCity), Not(Location.MakeScope.GetVariable('sul_spec_type').IsSet))]"
-			texture = "[Location.GetRankIcon]"
-			using = sul_icon_size_city
-			scale = 0.7
-			onmousehierarchyenter = "[PdxGuiWidget.SetHighlightProvince(Location.GetProvince)]"
-		}
 
-		tooltipwidget = { using = location_rank_tooltip }
+			block "icon_size" {
+				size = { @city_marker_icon_size @city_marker_icon_size }
+			}
+		}
 	}
 }
 
@@ -4514,7 +4513,7 @@ template location_simple_tooltip {
 					icon = {
 						size = { 100% 100% }
 						texture = "[Location.GetSpecificBaseModifier.GetModifier.GetIcon]"
-						texture_density = 2
+						texture_density = 4
 						alpha = 1
 
 						glow = {

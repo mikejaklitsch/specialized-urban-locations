@@ -108,6 +108,103 @@ template sul_tex_purple_rural {
 }
 
 # =====================================================
+# SPRITESHEET FRAME TEMPLATE
+# =====================================================
+# Computes frame index from capital status + spec_type
+# Frame layout: 1-5 regular, 6-10 provincial capital, 11-15 capital
+# Each group: mining(1), farming(2), gathering(3), woodland(4), commercial(5)
+
+template sul_spritesheet_frame {
+	frame = "[Add_int32(Select_int32(Location.IsCapital, '(int32)10', Select_int32(Location.IsProvinceCapital, '(int32)5', '(int32)0')), FixedPointToInt(Location.MakeScope.GetVariable('sul_spec_type').GetValue))]"
+}
+
+# =====================================================
+# SPRITESHEET TEMPLATES - Location Context
+# =====================================================
+# 256x256 spritesheets, 4 columns x 4 rows, 64x64 pixel frames (15 used, 1 empty)
+# framesize 32 + texture_density 2 = 64px actual per frame
+
+template sul_spritesheet_town {
+	texture = "gfx/interface/mapitems/sul_town_spritesheet.dds"
+
+	framesize = {
+		32
+		32
+	}
+
+	texture_density = 2
+	using = sul_spritesheet_frame
+}
+
+template sul_spritesheet_city {
+	texture = "gfx/interface/mapitems/sul_city_spritesheet.dds"
+
+	framesize = {
+		32
+		32
+	}
+
+	texture_density = 2
+	using = sul_spritesheet_frame
+}
+
+template sul_spritesheet_rural {
+	texture = "gfx/interface/mapitems/sul_rural_spritesheet.dds"
+
+	framesize = {
+		32
+		32
+	}
+
+	texture_density = 2
+	using = sul_spritesheet_frame
+}
+
+# =====================================================
+# SPRITESHEET TEMPLATES - MarketMarker Context
+# =====================================================
+
+template sul_spritesheet_frame_market {
+	frame = "[Add_int32(Select_int32(MarketMarker.GetLocation.IsCapital, '(int32)10', Select_int32(MarketMarker.GetLocation.IsProvinceCapital, '(int32)5', '(int32)0')), FixedPointToInt(MarketMarker.GetLocation.MakeScope.GetVariable('sul_spec_type').GetValue))]"
+}
+
+template sul_spritesheet_town_market {
+	texture = "gfx/interface/mapitems/sul_town_spritesheet.dds"
+
+	framesize = {
+		32
+		32
+	}
+
+	texture_density = 2
+	using = sul_spritesheet_frame_market
+}
+
+template sul_spritesheet_city_market {
+	texture = "gfx/interface/mapitems/sul_city_spritesheet.dds"
+
+	framesize = {
+		32
+		32
+	}
+
+	texture_density = 2
+	using = sul_spritesheet_frame_market
+}
+
+template sul_spritesheet_rural_market {
+	texture = "gfx/interface/mapitems/sul_rural_spritesheet.dds"
+
+	framesize = {
+		32
+		32
+	}
+
+	texture_density = 2
+	using = sul_spritesheet_frame_market
+}
+
+# =====================================================
 # ICON SIZE TEMPLATES
 # =====================================================
 

@@ -1,13 +1,121 @@
-﻿# Specialized Urban Locations - On Actions
+﻿# Specialized Urban Locations - Custom On Action Definitions
+# Hooks that append to vanilla on_actions are in sul_hardcoded.txt
 # =============================================================================
-# MONTHLY COUNTRY PULSE
+# GAME START
 # =============================================================================
 
-monthly_country_pulse = {
-	on_actions = {
-		sul_clear_market_cache
-		sul_refresh_market_cache
-		sul_player_economy_update
+sul_game_start_setup = {
+	effect = {
+		sul_setup_goods_spec_map = yes
+		# All ownable locations: eligibility + GDP init + specialization
+		every_location_in_the_world = {
+			limit = { is_ownable = yes }
+			sul_calculate_specialization_eligibility = yes
+			set_variable = { name = sul_local_gdp value = 0 }
+			sul_assign_specialization_by_resources = yes
+			sul_apply_specialization_modifier = yes
+			# Owned towns/cities: destroy non-matching buildings
+			if = {
+				limit = { exists = owner is_town_or_city = yes }
+				sul_save_building_levels = yes
+				sul_destroy_non_matching_buildings = yes
+				sul_restore_building_levels = yes
+			}
+		}
+
+		# GDP per capita cache
+		every_country = {
+			limit = { sul_is_valid_location_owner = yes }
+			sul_update_all_location_gdp = yes
+		}
+	}
+}
+
+# =============================================================================
+# LOCATION RANK CHANGED
+# =============================================================================
+# root = location
+
+sul_on_location_rank_changed = {
+	effect = {
+		# If already has specialization, clear old modifier and apply new one for current rank
+		if = {
+			limit = { sul_has_any_specialization = yes }
+			sul_clear_all_specialization_modifiers = yes
+			sul_update_designation = yes
+			sul_apply_specialization_modifier = yes
+			# Destroy non-matching buildings for towns/cities
+			if = {
+				limit = {
+					OR = {
+						location_rank = location_rank:town
+						location_rank = location_rank:city
+					}
+				}
+
+				sul_destroy_non_matching_buildings = yes
+			}
+		}
+
+		# New rural/town/city without specialization - assign based on resources
+		# Note: Buildings are NOT granted on rank-up, only on game start
+		else_if = {
+			limit = {
+				OR = {
+					location_rank = location_rank:rural_settlement
+					location_rank = location_rank:town
+					location_rank = location_rank:city
+				}
+			}
+
+			sul_assign_specialization_by_resources = yes
+			if = {
+				limit = {
+					OR = {
+						location_rank = location_rank:town
+						location_rank = location_rank:city
+					}
+				}
+
+				sul_destroy_non_matching_buildings = yes
+			}
+
+			sul_apply_specialization_modifier = yes
+		}
+	}
+}
+
+# =============================================================================
+# RAW MATERIAL CHANGED
+# =============================================================================
+# root = location, scope:old_goods = previous trade goods, scope:new_goods = new trade goods
+
+sul_on_raw_material_changed = {
+	effect = {
+		# Only process owned locations
+		if = {
+			limit = { exists = owner }
+			# Recalculate eligibility based on new resources
+			sul_calculate_specialization_eligibility = yes
+			# Validate current specialization - switch to commercial if invalid
+			sul_validate_specialization = yes
+			# Allow re-specialization - raw material change clears cooldown
+			remove_location_modifier = sul_recently_respecialized
+		}
+	}
+}
+
+# =============================================================================
+# ECONOMY UPDATES
+# =============================================================================
+
+sul_ai_economy_update = {
+	trigger = {
+		is_ai = yes
+	}
+
+	effect = {
+		sul_update_all_location_gdp = yes
 	}
 }
 
@@ -21,72 +129,77 @@ sul_player_economy_update = {
 	}
 }
 
-# sul_player_capacity_update removed - effect was not implemented
 # =============================================================================
-# LOCATION OWNERSHIP CHANGE
+# MARKET DEMAND CACHE
 # =============================================================================
-# Hook into hardcoded on_action
 
-on_location_changed_owner = {
-	on_actions = {
-		sul_on_location_ownership_changed
-	}
-}
-
-# root = location, scope:loser = previous owner, scope:winner = new owner
-
-sul_on_location_ownership_changed = {
+sul_clear_market_cache = {
 	effect = {
-		# Assign specialization if location doesn't have one (colonization, etc.)
 		if = {
 			limit = {
-				NOR = {
-					sul_has_mining_specialization = yes
-					sul_has_farming_specialization = yes
-					sul_has_woodland_specialization = yes
-					sul_has_gathering_specialization = yes
-					sul_has_commercial_specialization = yes
+				has_global_variable = sul_market_demand_cached
+				has_global_variable = sul_cache_month
+				NOT = {
+					global_var:sul_cache_month = current_month
 				}
 			}
 
-			sul_assign_specialization_by_resources = yes
-			sul_apply_specialization_modifier = yes
-			# Clear any cooldown from previous owner
-			remove_location_modifier = sul_recently_respecialized
+			remove_global_variable = sul_market_demand_cached
 		}
 
-		# Update economy for new owner (estate power -> GDP -> gdp_pc)
-		sul_update_location_economy = yes
-		# Now location definitely has a specialization - update counts
-		# Decrement loser's counts (if loser exists and has tracking variables)
+		# Track current month
+		set_global_variable = { name = sul_cache_month value = current_month }
+	}
+}
+
+# Refresh market cache if expired or not initialized
+# Called on game start and monthly - only updates when cache doesn't exist
+
+sul_refresh_market_cache = {
+	effect = {
 		if = {
 			limit = {
-				exists = scope:loser
-				scope:loser = { has_variable = sul_mining_count }
+				NOT = {
+					has_global_variable = sul_market_demand_cached
+				}
 			}
 
-			save_temporary_scope_as = sul_loc
-			scope:loser = { sul_decrement_spec_count = yes }
-		}
+			# Single pass through all markets
+			every_market_in_world = {
+				save_temporary_scope_as = current_market
+				# Cache pressure values and price bonuses
+				sul_update_market_cache = yes
+				# Calculate trade spread for commercial specialization
+				# Formula: sum of |price/base - 1| × base for all goods
+				# Use location for accumulation, then store in global map
+				location = { set_variable = { name = sul_trade_spread_temp value = 0 } }
+				# Accumulate price deviation for each good in THIS market
+				every_goods = {
+					save_temporary_scope_as = current_good
 
-		# Increment winner's counts
-		if = {
-			limit = { exists = scope:winner }
-			if = {
-				limit = {
-					scope:winner = {
-						NOT = {
-							has_variable = sul_mining_count
+					scope:current_market.location = {
+						change_variable = {
+							name = sul_trade_spread_temp
+							add = "scope:current_good.sul_goods_price_deviation"
 						}
 					}
 				}
 
-				scope:winner = { sul_initialize_specialization_counts = yes }
+				# Normalize to 0-10 range (typical active market has ~50-100 total)
+				location = {
+					change_variable = { name = sul_trade_spread_temp divide = 10 }
+					clamp_variable = { name = sul_trade_spread_temp min = 0 max = 10 }
+				}
+
+				# Store in global variable map with market as key
+				add_to_global_variable_map = {
+					name = sul_trade_spread
+					key = this
+					value = location.var:sul_trade_spread_temp
+				}
 			}
-			else = {
-				save_temporary_scope_as = sul_loc
-				scope:winner = { sul_increment_spec_count = yes }
-			}
+
+			set_global_variable = { name = sul_market_demand_cached value = 1 }
 		}
 	}
 }

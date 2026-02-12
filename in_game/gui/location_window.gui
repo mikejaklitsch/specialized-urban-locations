@@ -619,7 +619,7 @@ types LocationWindowTypes
 							parentanchor = center
 							using = sul_icon_center_pos
 							using = sul_vis_loc_any_town
-							using = sul_spritesheet_town
+							using = sul_concept_texture_loc
 						}
 
 						# CITY
@@ -628,7 +628,7 @@ types LocationWindowTypes
 							parentanchor = center
 							using = sul_icon_center_pos
 							using = sul_vis_loc_any_city
-							using = sul_spritesheet_city
+							using = sul_concept_texture_loc
 						}
 
 						# RURAL
@@ -637,7 +637,7 @@ types LocationWindowTypes
 							parentanchor = center
 							using = sul_icon_center_pos
 							using = sul_vis_loc_any_rural
-							using = sul_spritesheet_rural
+							using = sul_concept_texture_loc
 						}
 
 						# Fallback
@@ -2103,24 +2103,12 @@ lateralview = {
 						visible = "[And(Not(LocationView.Vars.Exists('edit_name')), LocationView.GetLocation.GetProvince.GetCountry.IsValid)]"
 						size = { 28 28 }
 						datacontext = "[LocationView.GetLocation]"
-						# EUL: Specialization icons (high-res spritesheets for location window)
+						# EUL: Specialization icon (concept texture resolves type+rank+capital)
 						icon = {
 							size = { 90% 90% }
 							parentanchor = center
-							using = sul_vis_loc_any_town
-							using = sul_spritesheet_town
-						}
-						icon = {
-							size = { 90% 90% }
-							parentanchor = center
-							using = sul_vis_loc_any_city
-							using = sul_spritesheet_city
-						}
-						icon = {
-							size = { 90% 90% }
-							parentanchor = center
-							using = sul_vis_loc_any_rural
-							using = sul_spritesheet_rural
+							visible = "[Location.MakeScope.GetVariable('sul_designation').IsSet]"
+							using = sul_concept_texture_loc
 						}
 
 						# Fallback (when variable doesn't exist)
@@ -4237,28 +4225,10 @@ lateralview = {
 								action_name = "sul_designate_mining_specialization"
 							}
 
-							widget = {
+							icon = {
 								parentanchor = center
 								size = { 24 24 }
-
-								icon = {
-									size = { 100% 100% }
-									using = sul_tex_red_rural
-									texture_density = 4
-									visible = "[Not(LocationView.GetLocation.GetRank.IsCity)]"
-								}
-								icon = {
-									size = { 100% 100% }
-									using = sul_tex_red_town
-									texture_density = 4
-									visible = "[And(LocationView.GetLocation.GetRank.IsCity, Not(LocationView.GetLocation.GetRank.IsMaxRank))]"
-								}
-								icon = {
-									size = { 100% 100% }
-									using = sul_tex_red_city
-									texture_density = 4
-									visible = "[LocationView.GetLocation.GetRank.IsMaxRank]"
-								}
+								using = sul_concept_texture_mining_button
 							}
 						}
 
@@ -4282,28 +4252,10 @@ lateralview = {
 								action_name = "sul_designate_farming_specialization"
 							}
 
-							widget = {
+							icon = {
 								parentanchor = center
 								size = { 24 24 }
-
-								icon = {
-									size = { 100% 100% }
-									using = sul_tex_green_rural
-									texture_density = 4
-									visible = "[Not(LocationView.GetLocation.GetRank.IsCity)]"
-								}
-								icon = {
-									size = { 100% 100% }
-									using = sul_tex_green_town
-									texture_density = 4
-									visible = "[And(LocationView.GetLocation.GetRank.IsCity, Not(LocationView.GetLocation.GetRank.IsMaxRank))]"
-								}
-								icon = {
-									size = { 100% 100% }
-									using = sul_tex_green_city
-									texture_density = 4
-									visible = "[LocationView.GetLocation.GetRank.IsMaxRank]"
-								}
+								using = sul_concept_texture_farming_button
 							}
 						}
 
@@ -4327,28 +4279,10 @@ lateralview = {
 								action_name = "sul_designate_woodland_specialization"
 							}
 
-							widget = {
+							icon = {
 								parentanchor = center
 								size = { 24 24 }
-
-								icon = {
-									size = { 100% 100% }
-									using = sul_tex_brown_rural
-									texture_density = 4
-									visible = "[Not(LocationView.GetLocation.GetRank.IsCity)]"
-								}
-								icon = {
-									size = { 100% 100% }
-									using = sul_tex_brown_town
-									texture_density = 4
-									visible = "[And(LocationView.GetLocation.GetRank.IsCity, Not(LocationView.GetLocation.GetRank.IsMaxRank))]"
-								}
-								icon = {
-									size = { 100% 100% }
-									using = sul_tex_brown_city
-									texture_density = 4
-									visible = "[LocationView.GetLocation.GetRank.IsMaxRank]"
-								}
+								using = sul_concept_texture_woodland_button
 							}
 						}
 
@@ -4372,28 +4306,10 @@ lateralview = {
 								action_name = "sul_designate_gathering_specialization"
 							}
 
-							widget = {
+							icon = {
 								parentanchor = center
 								size = { 24 24 }
-
-								icon = {
-									size = { 100% 100% }
-									using = sul_tex_blue_rural
-									texture_density = 4
-									visible = "[Not(LocationView.GetLocation.GetRank.IsCity)]"
-								}
-								icon = {
-									size = { 100% 100% }
-									using = sul_tex_blue_town
-									texture_density = 4
-									visible = "[And(LocationView.GetLocation.GetRank.IsCity, Not(LocationView.GetLocation.GetRank.IsMaxRank))]"
-								}
-								icon = {
-									size = { 100% 100% }
-									using = sul_tex_blue_city
-									texture_density = 4
-									visible = "[LocationView.GetLocation.GetRank.IsMaxRank]"
-								}
+								using = sul_concept_texture_gathering_button
 							}
 						}
 
@@ -4417,28 +4333,10 @@ lateralview = {
 								action_name = "sul_designate_commercial_specialization"
 							}
 
-							widget = {
+							icon = {
 								parentanchor = center
 								size = { 24 24 }
-
-								icon = {
-									size = { 100% 100% }
-									using = sul_tex_purple_rural
-									texture_density = 4
-									visible = "[Not(LocationView.GetLocation.GetRank.IsCity)]"
-								}
-								icon = {
-									size = { 100% 100% }
-									using = sul_tex_purple_town
-									texture_density = 4
-									visible = "[And(LocationView.GetLocation.GetRank.IsCity, Not(LocationView.GetLocation.GetRank.IsMaxRank))]"
-								}
-								icon = {
-									size = { 100% 100% }
-									using = sul_tex_purple_city
-									texture_density = 4
-									visible = "[LocationView.GetLocation.GetRank.IsMaxRank]"
-								}
+								using = sul_concept_texture_commercial_button
 							}
 						}
 					}

@@ -35,173 +35,64 @@ template sul_icon_center_pos {
 }
 
 # =====================================================
-# TEXTURE TEMPLATES (64x64) - used by per-button icons in location_window.gui
 # =====================================================
-# Mining (red)
+# CONCEPT TEXTURE TEMPLATES - Dynamic Icon Resolution
+# =====================================================
+# Resolves the correct map marker icon DDS via GetConceptTexture()
+# Key = sul_icon_{designation + capital_offset}
+#   designation: sul_designation variable (type 1-5 + rank offset 0/10/20)
+#   capital_offset: 0=regular, 100=province capital, 200=country capital
+# See game_concepts/sul_icon_concepts.txt for the full mapping table
+# Location context (map_markers, tooltips)
 
-template sul_tex_red_town {
-	texture = "gfx/interface/mapitems/red_town.dds"
+template sul_concept_texture_loc {
+	texture = "[GetConceptTexture(Concatenate('sul_icon_', ToString_int32(Add_int32(FixedPointToInt(Location.MakeScope.GetVariable('sul_designation').GetValue), Select_int32(Location.IsCapital, '(int32)200', Select_int32(Location.IsProvinceCapital, '(int32)100', '(int32)0'))))))]"
 }
 
-template sul_tex_red_city {
-	texture = "gfx/interface/mapitems/red_city.dds"
+# LocationView context (location_window)
+
+template sul_concept_texture_locview {
+	texture = "[GetConceptTexture(Concatenate('sul_icon_', ToString_int32(Add_int32(FixedPointToInt(LocationView.GetLocation.MakeScope.GetVariable('sul_designation').GetValue), Select_int32(LocationView.GetLocation.IsCapital, '(int32)200', Select_int32(LocationView.GetLocation.IsProvinceCapital, '(int32)100', '(int32)0'))))))]"
 }
 
-template sul_tex_red_rural {
-	texture = "gfx/interface/mapitems/red_rural.dds"
+# MarketMarker context (market map mode)
+
+template sul_concept_texture_market {
+	texture = "[GetConceptTexture(Concatenate('sul_icon_', ToString_int32(Add_int32(FixedPointToInt(MarketMarker.GetLocation.MakeScope.GetVariable('sul_designation').GetValue), Select_int32(MarketMarker.GetLocation.IsCapital, '(int32)200', Select_int32(MarketMarker.GetLocation.IsProvinceCapital, '(int32)100', '(int32)0'))))))]"
 }
 
-# Gathering (blue)
+# CityMarker context (city map markers)
 
-template sul_tex_blue_town {
-	texture = "gfx/interface/mapitems/blue_town.dds"
-}
-
-template sul_tex_blue_city {
-	texture = "gfx/interface/mapitems/blue_city.dds"
-}
-
-template sul_tex_blue_rural {
-	texture = "gfx/interface/mapitems/blue_rural.dds"
-}
-
-# Woodland (brown)
-
-template sul_tex_brown_town {
-	texture = "gfx/interface/mapitems/brown_town.dds"
-}
-
-template sul_tex_brown_city {
-	texture = "gfx/interface/mapitems/brown_city.dds"
-}
-
-template sul_tex_brown_rural {
-	texture = "gfx/interface/mapitems/brown_rural.dds"
-}
-
-# Farming (green)
-
-template sul_tex_green_town {
-	texture = "gfx/interface/mapitems/green_town.dds"
-}
-
-template sul_tex_green_city {
-	texture = "gfx/interface/mapitems/green_city.dds"
-}
-
-template sul_tex_green_rural {
-	texture = "gfx/interface/mapitems/green_rural.dds"
-}
-
-# Commercial (purple)
-
-template sul_tex_purple_town {
-	texture = "gfx/interface/mapitems/purple_town.dds"
-}
-
-template sul_tex_purple_city {
-	texture = "gfx/interface/mapitems/purple_city.dds"
-}
-
-template sul_tex_purple_rural {
-	texture = "gfx/interface/mapitems/purple_rural.dds"
+template sul_concept_texture_citymarker {
+	texture = "[GetConceptTexture(Concatenate('sul_icon_', ToString_int32(Add_int32(FixedPointToInt(CityMarker.GetLocation.MakeScope.GetVariable('sul_designation').GetValue), Select_int32(CityMarker.GetLocation.IsCapital, '(int32)200', Select_int32(CityMarker.GetLocation.IsProvinceCapital, '(int32)100', '(int32)0'))))))]"
 }
 
 # =====================================================
-# SPRITESHEET FRAME TEMPLATE
+# CONCEPT TEXTURE TEMPLATES - Fixed Type (Designation Buttons)
 # =====================================================
-# Computes frame index from capital status + spec_type
-# Frame layout: 1-5 regular, 6-10 provincial capital, 11-15 capital
-# Each group: mining(1), farming(2), gathering(3), woodland(4), commercial(5)
+# For buttons that always show a specific specialization type
+# Key = sul_icon_{fixed_type + rank_offset + capital_offset}
+#   rank_offset: IsMaxRank → 10 (city), IsCity → 0 (town), else → 20 (rural)
+#   capital_offset: 0=regular, 100=province capital, 200=country capital
 
-template sul_spritesheet_frame {
-	frame = "[Add_int32(Select_int32(Location.IsCapital, '(int32)10', Select_int32(Location.IsProvinceCapital, '(int32)5', '(int32)0')), FixedPointToInt(Location.MakeScope.GetVariable('sul_spec_type').GetValue))]"
+template sul_concept_texture_mining_button {
+	texture = "[GetConceptTexture(Concatenate('sul_icon_', ToString_int32(Add_int32(Add_int32('(int32)1', Select_int32(LocationView.GetLocation.GetRank.IsMaxRank, '(int32)10', Select_int32(LocationView.GetLocation.GetRank.IsCity, '(int32)0', '(int32)20'))), Select_int32(LocationView.GetLocation.IsCapital, '(int32)200', Select_int32(LocationView.GetLocation.IsProvinceCapital, '(int32)100', '(int32)0'))))))]"
 }
 
-# =====================================================
-# SPRITESHEET TEMPLATES - Location Context
-# =====================================================
-# 256x256 spritesheets, 4 columns x 4 rows, 64x64 pixel frames (15 used, 1 empty)
-# framesize 32 + texture_density 2 = 64px actual per frame
-
-template sul_spritesheet_town {
-	texture = "gfx/interface/mapitems/sul_town_spritesheet.dds"
-
-	framesize = {
-		32
-		32
-	}
-
-	texture_density = 2
-	using = sul_spritesheet_frame
+template sul_concept_texture_farming_button {
+	texture = "[GetConceptTexture(Concatenate('sul_icon_', ToString_int32(Add_int32(Add_int32('(int32)2', Select_int32(LocationView.GetLocation.GetRank.IsMaxRank, '(int32)10', Select_int32(LocationView.GetLocation.GetRank.IsCity, '(int32)0', '(int32)20'))), Select_int32(LocationView.GetLocation.IsCapital, '(int32)200', Select_int32(LocationView.GetLocation.IsProvinceCapital, '(int32)100', '(int32)0'))))))]"
 }
 
-template sul_spritesheet_city {
-	texture = "gfx/interface/mapitems/sul_city_spritesheet.dds"
-
-	framesize = {
-		32
-		32
-	}
-
-	texture_density = 2
-	using = sul_spritesheet_frame
+template sul_concept_texture_gathering_button {
+	texture = "[GetConceptTexture(Concatenate('sul_icon_', ToString_int32(Add_int32(Add_int32('(int32)3', Select_int32(LocationView.GetLocation.GetRank.IsMaxRank, '(int32)10', Select_int32(LocationView.GetLocation.GetRank.IsCity, '(int32)0', '(int32)20'))), Select_int32(LocationView.GetLocation.IsCapital, '(int32)200', Select_int32(LocationView.GetLocation.IsProvinceCapital, '(int32)100', '(int32)0'))))))]"
 }
 
-template sul_spritesheet_rural {
-	texture = "gfx/interface/mapitems/sul_rural_spritesheet.dds"
-
-	framesize = {
-		32
-		32
-	}
-
-	texture_density = 2
-	using = sul_spritesheet_frame
+template sul_concept_texture_woodland_button {
+	texture = "[GetConceptTexture(Concatenate('sul_icon_', ToString_int32(Add_int32(Add_int32('(int32)4', Select_int32(LocationView.GetLocation.GetRank.IsMaxRank, '(int32)10', Select_int32(LocationView.GetLocation.GetRank.IsCity, '(int32)0', '(int32)20'))), Select_int32(LocationView.GetLocation.IsCapital, '(int32)200', Select_int32(LocationView.GetLocation.IsProvinceCapital, '(int32)100', '(int32)0'))))))]"
 }
 
-# =====================================================
-# SPRITESHEET TEMPLATES - MarketMarker Context
-# =====================================================
-
-template sul_spritesheet_frame_market {
-	frame = "[Add_int32(Select_int32(MarketMarker.GetLocation.IsCapital, '(int32)10', Select_int32(MarketMarker.GetLocation.IsProvinceCapital, '(int32)5', '(int32)0')), FixedPointToInt(MarketMarker.GetLocation.MakeScope.GetVariable('sul_spec_type').GetValue))]"
-}
-
-template sul_spritesheet_town_market {
-	texture = "gfx/interface/mapitems/sul_town_spritesheet.dds"
-
-	framesize = {
-		32
-		32
-	}
-
-	texture_density = 2
-	using = sul_spritesheet_frame_market
-}
-
-template sul_spritesheet_city_market {
-	texture = "gfx/interface/mapitems/sul_city_spritesheet.dds"
-
-	framesize = {
-		32
-		32
-	}
-
-	texture_density = 2
-	using = sul_spritesheet_frame_market
-}
-
-template sul_spritesheet_rural_market {
-	texture = "gfx/interface/mapitems/sul_rural_spritesheet.dds"
-
-	framesize = {
-		32
-		32
-	}
-
-	texture_density = 2
-	using = sul_spritesheet_frame_market
+template sul_concept_texture_commercial_button {
+	texture = "[GetConceptTexture(Concatenate('sul_icon_', ToString_int32(Add_int32(Add_int32('(int32)5', Select_int32(LocationView.GetLocation.GetRank.IsMaxRank, '(int32)10', Select_int32(LocationView.GetLocation.GetRank.IsCity, '(int32)0', '(int32)20'))), Select_int32(LocationView.GetLocation.IsCapital, '(int32)200', Select_int32(LocationView.GetLocation.IsProvinceCapital, '(int32)100', '(int32)0'))))))]"
 }
 
 # =====================================================

@@ -294,9 +294,18 @@ types LocationWindowTypes
 					icon = {
 						parentanchor = bottom|left
 						using = warning_icon_texture
-						size = { 8 8 }
+						size = { 12 12 }
 						position = { 0 -2 }
 						visible = "[LocationBuildingItem.IsLackingInput]"
+						datacontext = "[LocationBuildingItem.GetBuilding]"
+						using = bg_circle
+					}
+					icon = {
+						parentanchor = bottom|left
+						texture = "gfx/interface/icons/alerts_icons/unprofitable.dds"
+						size = { 12 12 }
+						position = { 0 -2 }
+						visible = "[And3(LessThan_CFixedPoint(Building.GetProfit, '(CFixedPoint)0'), Not(Building.IsSubsidized), Not(LocationBuildingItem.IsLackingInput))]"
 						datacontext = "[LocationBuildingItem.GetBuilding]"
 						using = bg_circle
 					}
@@ -311,7 +320,7 @@ types LocationWindowTypes
 							alpha = 0.6
 						}
 
-						size = { 8 8 }
+						size = { 12 12 }
 						position = { 0 -2 }
 						visible = "[Not(Building.IsOpen)]"
 						datacontext = "[LocationBuildingItem.GetBuilding]"
@@ -322,7 +331,7 @@ types LocationWindowTypes
 
 					background = {
 						texture = "gfx/interface/component_tiles/hud_corners/circle_background.dds"
-						texture_density = 4
+						texture_density = 2
 						modify_texture = { using = color_dark_blue_texture blend_mode = multiply }
 						modify_texture = {
 							color = "[LocationBuildingItem.GetBuilding.GetType.GetPopType.GetColor]"
@@ -496,8 +505,7 @@ types LocationWindowTypes
 		parentanchor = center
 		layoutpolicy_horizontal = expanding
 		margin = { 5 5 }
-		# datamodel = "[DataModelSkipFirst(LocationView.GetLocationBuildings(PopType.Self), '(int32)9')]"
-		datamodel = "[LocationView.GetLocationBuildings(PopType.Self)]"
+		block "location_buildings_tooltip_datamodel" { datamodel = "[LocationView.GetLocationBuildings(PopType.Self)]" }
 
 		item = {
 			widget = {
@@ -661,7 +669,7 @@ types LocationWindowTypes
 								blockoverride "navigational_bg" {
 									background = {
 										texture = "gfx/interface/component_tiles/square_tile.dds"
-										texture_density = 4
+										texture_density = 2
 										margin = { 1 1 }
 										modify_texture = { using = color_dark_blue_texture blend_mode = multiply }
 									}
@@ -733,7 +741,7 @@ types LocationWindowTypes
 					hbox = {
 						layoutpolicy_horizontal = expanding
 						using = bg_card_header_01
-						blockoverride "header_pattern_texture_density" { texture_density = 4.4 }
+						blockoverride "header_pattern_texture_density" { texture_density = 2.4 }
 						blockoverride "header_pattern_alpha" { alpha = 0.5 }
 						blockoverride "bg_card_header_01_bg" {
 							background = {
@@ -1006,7 +1014,7 @@ types LocationWindowTypes
 												name = "sad face"
 												visible = "[LessThanOrEqualTo_CFixedPoint(Location.GetAverageSatisfaction,'(CFixedPoint)0.25')]"
 												texture = "gfx/interface/icons/flat_icons/sad.dds"
-												texture_density = 4
+												texture_density = 2
 											}
 											icon = {
 												size = { 61% 61% }
@@ -1014,7 +1022,7 @@ types LocationWindowTypes
 												name = "neutral face"
 												visible = "[BetweenInclusiveOfMax_CFixedPoint(Location.GetAverageSatisfaction,'(CFixedPoint)0.25', '(CFixedPoint)0.5')]"
 												texture = "gfx/interface/icons/flat_icons/neutral.dds"
-												texture_density = 4
+												texture_density = 2
 											}
 											icon = {
 												size = { 61% 61% }
@@ -1022,7 +1030,7 @@ types LocationWindowTypes
 												name = "happy face"
 												visible = "[GreaterThan_CFixedPoint(Location.GetAverageSatisfaction,'(CFixedPoint)0.5')]"
 												texture = "gfx/interface/icons/flat_icons/happy.dds"
-												texture_density = 4
+												texture_density = 2
 											}
 										}
 									}
@@ -1364,7 +1372,7 @@ types LocationWindowTypes
 										blockoverride "pieslice_item" {
 											pieslice_no_highlight = {
 												texture = "gfx/interface/pie_charts/piechart_alpha.dds"
-												texture_density = 4
+												texture_density = 2
 												tooltip_enabled = no
 												value = "[PopTaxItem.GetPercentage]"
 												color = "[PopTaxItem.GetColor]"
@@ -1375,13 +1383,13 @@ types LocationWindowTypes
 										blockoverride "Icon_Size" { size = { 61% 61% } }
 										blockoverride "Icon" {
 											texture = "[GetConceptTexture('wealth')]"
-											texture_density = 4
+											texture_density = 2
 											alwaystransparent = yes
 										}
 
 										background = {
 											texture = "gfx/interface/component_tiles/hud_corners/circle_frame.dds"
-											texture_density = 4
+											texture_density = 2
 											modify_texture = { using = color_gold_texture }
 											using = overlay_gold
 										}
@@ -1433,7 +1441,7 @@ types LocationWindowTypes
 			button = {
 				size = { 20 20 }
 				texture = "gfx/interface/buttons/up_button_alt.dds"
-				texture_density = 4
+				texture_density = 2
 				enabled = "[CanSelectPrevRelevantLocation(Location.Self)]"
 
 				modify_texture = {
@@ -1449,7 +1457,7 @@ types LocationWindowTypes
 
 				background = {
 					texture = "gfx/interface/buttons/bg_button_light.dds"
-					texture_density = 4
+					texture_density = 2
 					modify_texture = { using = color_intense_brown_texture blend_mode = add }
 					modify_texture = {
 						using = color_dark_brown_texture
@@ -1477,7 +1485,7 @@ types LocationWindowTypes
 				size = { 20 20 }
 				texture = "gfx/interface/buttons/up_button_alt.dds"
 				mirror = vertical
-				texture_density = 4
+				texture_density = 2
 				enabled = "[CanSelectNextRelevantLocation(Location.Self)]"
 
 				modify_texture = {
@@ -1493,7 +1501,7 @@ types LocationWindowTypes
 
 				background = {
 					texture = "gfx/interface/buttons/bg_button_light.dds"
-					texture_density = 4
+					texture_density = 2
 					modify_texture = { using = color_intense_brown_texture blend_mode = add }
 					modify_texture = {
 						using = color_dark_brown_texture
@@ -1566,7 +1574,7 @@ types LocationWindowTypes
 
 				blockoverride "corner_flavor_texture" {
 					texture = "gfx/interface/component_decoration/bg_corner_flavor_06.dds"
-					texture_density = 4
+					texture_density = 2
 					spriteType = Corneredstretched
 					spriteborder = { 35 35 }
 					alpha = 0.4
@@ -1598,7 +1606,7 @@ types LocationWindowTypes
 									blockoverride "square_extras" { margin = { 1 1 } }
 									blockoverride "icon_texture" {
 										texture = "[InternationalOrganization.GetIcon]"
-										texture_density = 4
+										texture_density = 2
 									}
 									blockoverride "icon_size" { size = { 80% 80% } }
 									onclick = "[OpenInternationalOrganizationView(InternationalOrganization.Self)]"
@@ -1729,7 +1737,7 @@ template location_fort_status {
 				size = { 62% 62% }
 				parentanchor = center
 				texture = "[GetConceptTexture('fort')]"
-				texture_density = 4
+				texture_density = 2
 			}
 
 			using = bg_circle_piechart
@@ -1883,33 +1891,33 @@ template location_side_color {
 	modify_texture = {
 		visible = "[Location.GetController.IsPlayer]"
 		using = color_market_green_texture
-		texture_density = 4
+		texture_density = 2
 	}
 
 	# ALLIE
 	modify_texture = {
 		visible = "[Location.GetController.IsAllied]"
 		using = color_market_blue_texture
-		texture_density = 4
+		texture_density = 2
 	}
 
 	# ENEMY
 	modify_texture = {
 		visible = "[Player.IsEnemy(Location.GetController.Self)]"
 		using = color_market_red_texture
-		texture_density = 4
+		texture_density = 2
 	}
 
 	# NEUTRAL
 	modify_texture = {
 		visible = "[Location.GetController.IsNeutral]"
 		using = color_market_grey_texture
-		texture_density = 4
+		texture_density = 2
 	}
 	modify_texture = {
 		visible = "[Location.GetController.IsNeutral]"
 		using = color_white_texture
-		texture_density = 4
+		texture_density = 2
 		alpha = 0.1
 	}
 }
@@ -1930,7 +1938,7 @@ template icon_gold_texture_alt {
 	}
 	modify_texture = {
 		texture = "gfx/interface/buttons/buttons_texture.dds"
-		texture_density = 4
+		texture_density = 2
 		blend_mode = overlay
 		alpha = 0
 	}
@@ -1940,7 +1948,7 @@ template card_button_alt_frame {
 	# texture = "gfx/interface/buttons/card_navigational_frame.dds"
 	# spriteType = corneredstretched
 	# spriteborder = { 19 19 }
-	# texture_density = 4
+	# texture_density = 2
 	# frame_grid = {4 1}
 	using = header_button_texture
 	# modify_texture = {
@@ -1961,7 +1969,7 @@ template card_button_alt_frame {
 template location_background {
 	background = {
 		texture = "[GetGraphicalCultureTexture('top_header_bg')]"
-		texture_density = 4
+		texture_density = 2
 		spriteType = corneredtiled
 		spriteborder = { 0 0 }
 		alpha = 0.6
@@ -2006,7 +2014,7 @@ template location_background {
 # template card_button_bg_alt
 # {
 # 	texture = "gfx/interface/buttons/card_navigational_bg.dds"
-# 	texture_density = 4
+# 	texture_density = 2
 # 	frame_grid = {4 1}
 # 	frame = 4
 # }
@@ -2577,7 +2585,7 @@ lateralview = {
 											blockoverride "header_button_text_layout" {  }
 											blockoverride "icon_texture" {
 												texture = "[InternationalOrganization.GetIcon]"
-												texture_density = 4
+												texture_density = 2
 											}
 
 											visible = "[And(InternationalOrganization.CanOwnLocations, InternationalOrganization.IsLocationOwned(LocationView.GetLocation))]"
@@ -2605,7 +2613,7 @@ lateralview = {
 											blockoverride "header_button_text_layout" {  }
 											blockoverride "icon_texture" {
 												texture = "[InternationalOrganization.GetIcon]"
-												texture_density = 4
+												texture_density = 2
 											}
 
 											visible = "[And3(UIAction.IsVisible, InternationalOrganization.CanOwnLocations, Not(InternationalOrganization.IsLocationOwned(LocationView.GetLocation)))]"
@@ -2658,7 +2666,7 @@ lateralview = {
 											blockoverride "icon_overlay" {  }
 											blockoverride "icon_texture" {
 												texture = "[InternationalOrganization.GetIcon]"
-												texture_density = 4
+												texture_density = 2
 											}
 
 											visible = "[And3(UIAction.IsVisible, InternationalOrganization.CanOwnLocations, InternationalOrganization.IsLocationOwned(LocationView.GetLocation))]"
@@ -2712,7 +2720,7 @@ lateralview = {
 								blockoverride "header_button_text_layout" {  }
 								blockoverride "icon_texture" {
 									texture = "gfx/interface/buttons/flats/periphora.dds"
-									texture_density = 4
+									texture_density = 2
 								}
 
 								name = "periphora"
@@ -3981,7 +3989,7 @@ lateralview = {
 										icon = {
 											size = { 26 26 }
 											texture = "gfx/interface/icons/modifiers/locations.dds"
-											texture_density = 4
+											texture_density = 2
 
 											tooltipwidget = {
 												ContextualTooltipType = {
@@ -4076,7 +4084,7 @@ lateralview = {
 										icon = {
 											size = { 26 26 }
 											texture = "gfx/interface/icons/modifiers/province.dds"
-											texture_density = 4
+											texture_density = 2
 
 											tooltipwidget = {
 												ContextualTooltipType = {
@@ -4679,7 +4687,7 @@ lateralview = {
 																blockoverride "pieslice_item" {
 																	pieslice_no_highlight = {
 																		texture = "gfx/interface/pie_charts/piechart_alpha.dds"
-																		texture_density = 4
+																		texture_density = 2
 																		tooltip_enabled = no
 																		value = "[Location.GetEstateTaxBasePercent(Estate.Self)]"
 																		color = "[Estate.GetType.GetMapColor]"
@@ -5285,7 +5293,7 @@ lateralview = {
 													icon = {
 														size = { 30 30 }
 														texture = "gfx/interface/icons/flat_icons/geopolitics/available_colonies.dds"
-														texture_density = 4
+														texture_density = 2
 														alpha = 1
 													}
 
@@ -5345,7 +5353,7 @@ lateralview = {
 													icon = {
 														size = { 30 30 }
 														texture = "gfx/interface/icons/flat_icons/geopolitics/available_colonies.dds"
-														texture_density = 4
+														texture_density = 2
 														alpha = 1
 													}
 												}
@@ -5555,7 +5563,7 @@ lateralview = {
 																	}
 																	blockoverride "extra_list_icon" {
 																		texture = "[GetConceptTexture('buildings')]"
-																		texture_density = 4
+																		texture_density = 2
 																	}
 
 																	tooltipwidget = {
@@ -5574,7 +5582,7 @@ lateralview = {
 																					}
 																					modify_texture = {
 																						texture = "gfx/interface/buttons/buttons_texture.dds"
-																						texture_density = 4
+																						texture_density = 2
 																						blend_mode = overlay
 																						alpha = 0.6
 																					}
@@ -5593,6 +5601,9 @@ lateralview = {
 																						blockoverride "block_scrollarea" { maximumsize = { -1 440 } }
 																						blockoverride "scrollarea_content" {
 																							location_buildings_tooltip = {
+																								blockoverride "location_buildings_tooltip_datamodel" {
+																									datamodel = "[DataModelSkipFirst(LocationView.GetLocationBuildings(PopType.Self), '(int32)9')]"
+																								}
 																								blockoverride "location_buildings_tooltip_items_visible" {
 																									visible = "[And(LocationBuildingItem.IsBuildingForPopType(PopType.Self), Not(LocationBuildingItem.GetBuilding.GetType.IsForeign))]"
 																								}
@@ -5612,7 +5623,7 @@ lateralview = {
 																	}
 																	blockoverride "extra_list_icon" {
 																		texture = "gfx/interface/icons/flat_icons/balance/foreign_buildings.dds"
-																		texture_density = 4
+																		texture_density = 2
 																	}
 
 																	tooltipwidget = {
@@ -5738,7 +5749,7 @@ lateralview = {
 
 										background = {
 											texture = "gfx/interface/component_tiles/hud_corners/circle_background.dds"
-											texture_density = 4
+											texture_density = 2
 											alpha = 1
 											margin = { 2 2 }
 											# block "bg_color_circle" {
@@ -5746,7 +5757,7 @@ lateralview = {
 											# }
 											modify_texture = {
 												texture = "gfx/interface/component_overlay/gold_overlay_circle.dds"
-												texture_density = 4
+												texture_density = 2
 												spriteType = stretched
 												spriteborder = { 250 250 }
 												blend_mode = overlay
@@ -5755,7 +5766,7 @@ lateralview = {
 										}
 										background = {
 											texture = "gfx/interface/component_tiles/hud_corners/circle_shadow.dds"
-											texture_density = 4
+											texture_density = 2
 											margin = { 5 5 }
 											alpha = 0.5
 										}
@@ -5783,7 +5794,7 @@ lateralview = {
 											size = { 22 22 }
 											parentanchor = center
 											texture = "[GetConceptTexture('fort')]"
-											texture_density = 4
+											texture_density = 2
 										}
 									}
 								}
@@ -5960,7 +5971,7 @@ lateralview = {
 														blockoverride "navigational_bg" {
 															background = {
 																texture = "gfx/interface/component_tiles/square_tile.dds"
-																texture_density = 4
+																texture_density = 2
 																margin = { 1 1 }
 																modify_texture = { using = color_dark_blue_texture blend_mode = multiply }
 															}
@@ -6559,7 +6570,7 @@ lateralview = {
 																size = { 75 28 }
 																parentanchor = center
 																texture = "gfx/interface/buttons/army_builder_button.dds"
-																texture_density = 4
+																texture_density = 2
 																spriteType = corneredstretched
 																spriteborder = { 1 11 }
 																frame_grid = { 4 1 }
@@ -6966,7 +6977,7 @@ lateralview = {
 																size = { 75 28 }
 																parentanchor = center
 																texture = "gfx/interface/buttons/army_builder_button.dds"
-																texture_density = 4
+																texture_density = 2
 																spriteType = corneredstretched
 																spriteborder = { 1 11 }
 																frame_grid = { 4 1 }
@@ -7146,7 +7157,7 @@ lateralview = {
 													name = "sad face"
 													visible = "[LessThanOrEqualTo_CFixedPoint(Location.GetAverageSatisfaction,'(CFixedPoint)0.25')]"
 													texture = "gfx/interface/icons/flat_icons/sad.dds"
-													texture_density = 4
+													texture_density = 2
 												}
 												icon = {
 													size = { 61% 61% }
@@ -7154,7 +7165,7 @@ lateralview = {
 													name = "neutral face"
 													visible = "[BetweenInclusiveOfMax_CFixedPoint(Location.GetAverageSatisfaction,'(CFixedPoint)0.25', '(CFixedPoint)0.5')]"
 													texture = "gfx/interface/icons/flat_icons/neutral.dds"
-													texture_density = 4
+													texture_density = 2
 												}
 												icon = {
 													size = { 61% 61% }
@@ -7162,7 +7173,7 @@ lateralview = {
 													name = "happy face"
 													visible = "[GreaterThan_CFixedPoint(Location.GetAverageSatisfaction,'(CFixedPoint)0.5')]"
 													texture = "gfx/interface/icons/flat_icons/happy.dds"
-													texture_density = 4
+													texture_density = 2
 												}
 											}
 										}
@@ -7246,7 +7257,7 @@ lateralview = {
 												icon = {
 													size = { 28 28 }
 													texture = "gfx/interface/icons/location_icons/promotion.dds"
-													texture_density = 4
+													texture_density = 2
 												}
 
 												vbox = {
@@ -7293,14 +7304,14 @@ lateralview = {
 
 													background = {
 														texture = "gfx/interface/buttons/round_button_alt.dds"
-														texture_density = 4
+														texture_density = 2
 														margin = { 2 2 }
 														margin_bottom = 4
 														modify_texture = { using = color_dark_blue_texture blend_mode = multiply }
 													}
 													background = {
 														texture = "gfx/interface/buttons/round_button_alt.dds"
-														texture_density = 4
+														texture_density = 2
 														margin = { 2 2 }
 														modify_texture = { using = color_gold_texture blend_mode = multiply }
 														modify_texture = {
@@ -7311,7 +7322,7 @@ lateralview = {
 													}
 													background = {
 														texture = "gfx/interface/buttons/bg_button.dds"
-														texture_density = 4
+														texture_density = 2
 														margin = { 1 1 }
 														modify_texture = { using = color_bg_blue_texture blend_mode = multiply }
 														modify_texture = { using = overlay_paper_03 }
@@ -7354,7 +7365,7 @@ lateralview = {
 												icon = {
 													size = { 28 28 }
 													texture = "gfx/interface/icons/location_icons/demotion.dds"
-													texture_density = 4
+													texture_density = 2
 												}
 
 												text_single = {
@@ -7463,7 +7474,7 @@ lateralview = {
 												using = bg_circle_piechart
 
 												button = {
-													texture_density = 4
+													texture_density = 2
 													size = { 70% 70% }
 													parentanchor = center
 													datacontext = "[LocationPopItem.GetType]"
@@ -7683,7 +7694,7 @@ lateralview = {
 												using = bg_circle_piechart
 
 												icon = {
-													texture_density = 4
+													texture_density = 2
 													size = { 70% 70% }
 													parentanchor = center
 													block "icon_texture" { texture = "gfx/interface/icons/location_icons/population.dds" }
@@ -7877,7 +7888,7 @@ lateralview = {
 												using = bg_circle_piechart
 
 												icon = {
-													texture_density = 4
+													texture_density = 2
 													size = { 70% 70% }
 													parentanchor = center
 													block "icon_texture" { texture = "gfx/interface/icons/location_icons/population.dds" }

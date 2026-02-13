@@ -1,0 +1,506 @@
+# Food production
+
+REPLACE:fruit_orchard = {
+	is_foreign = no
+	pop_type = laborers
+	max_levels = rural_building_cap
+	employment_size = rural_peasant_produce_employment
+	category = rgo_building_category
+	rural_settlement = yes
+	town = yes
+	city = yes
+
+	location_potential = {
+		OR = {
+			vegetation = grasslands
+			vegetation = farmland
+			vegetation = woods
+			vegetation = jungle
+		}
+
+		sul_has_farming_specialization = yes
+	}
+
+	unique_production_methods = {
+		sul_fruit_orchard_maintenance = {
+			produced = fruit
+			output = 0.3
+			lumber = 0.17
+			category = building_maintenance
+		}
+	}
+
+	build_time = rural_build_time
+	construction_demand = farm_constructions
+
+	modifier = {
+		# Food production
+		local_monthly_food = 1.0
+		local_monthly_food_modifier = 0.05
+		local_raw_material_output = 0.02
+		local_max_rgo_size_modifier = 0.02
+	}
+}
+
+# Raw Extraction
+
+REPLACE:fiber_crops_farm = {
+	is_foreign = no
+	max_levels = rural_building_cap
+	pop_type = laborers
+	employment_size = rural_peasant_produce_employment
+	rural_settlement = yes
+	town = yes
+	city = yes
+
+	location_potential = {
+		NOT = {
+			raw_material = goods:fiber_crops
+		}
+		NOT = {
+			climate = arctic
+		}
+
+		sul_has_farming_specialization = yes
+	}
+
+	category = rgo_building_category
+	build_time = rural_build_time
+
+	unique_production_methods = {
+		sul_fiber_crops_farm_maintenance = {
+			livestock = 0.5
+			lumber = 0.2
+			tools = 0.1
+			category = building_maintenance
+			produced = fiber_crops
+			output = 0.8
+		}
+	}
+
+	construction_demand = farm_constructions
+
+	modifier = {
+		# Raw Extraction
+		local_raw_material_output = 0.02
+		local_max_rgo_size_modifier = 0.02
+	}
+}
+
+REPLACE:horse_breeders = {
+	is_foreign = no
+	pop_type = laborers
+	max_levels = rural_building_cap
+	employment_size = tiny_rural_peasant_produce_employment
+	category = rgo_building_category
+	rural_settlement = yes
+	town = yes
+	city = yes
+
+	location_potential = {
+		market = { is_produced_in_market = goods:horses }
+		sul_has_farming_specialization = yes
+	}
+
+	allow = {
+		OR = {
+			climate = mediterranean
+			climate = continental
+			climate = oceanic
+		}
+	}
+
+	unique_production_methods = {
+		sul_horse_breeders_maintenance = {
+			produced = horses
+			output = 1
+			wheat = 1.5
+			horses = 0.3
+			category = building_maintenance
+		}
+	}
+
+	build_time = rural_build_time
+	construction_demand = horse_breeders_construction
+
+	modifier = {
+		# Raw Extraction
+		local_raw_material_output = 0.02
+		local_max_rgo_size_modifier = 0.02
+	}
+}
+
+REPLACE:sugar_plantation = {
+	is_foreign = no
+	pop_type = slaves
+	max_levels = plantation_cap
+	employment_size = plantation_employment
+	category = colonial_category
+
+	location_potential = {
+		raw_material = goods:sugar
+		OR = {
+			is_overseas_for_owner = yes
+			owner ?= { is_colonial_subject = yes }
+		}
+
+		sul_has_farming_specialization = yes
+	}
+
+	rural_settlement = yes
+	town = yes
+	city = yes
+	price = expand_rgo_farming
+	always_add_demands = yes
+	build_time = plantation_build_time
+
+	unique_production_methods = {
+		sul_sugar_plantation_maintenance = {
+			produced = sugar
+			output = 1
+			slaves_goods = 0.1
+			leather = 0.05
+			tools = 0.05
+			lumber = 0.05
+			category = building_maintenance
+		}
+	}
+
+	modifier = {
+		local_sugar_output_modifier = 0.1
+		local_slave_pop_satisfaction = -0.005
+		# Raw Extraction
+		local_raw_material_output = 0.02
+		local_max_rgo_size_modifier = 0.005
+	}
+
+	construction_demand = plantation_construction
+}
+
+REPLACE:cotton_plantation = {
+	is_foreign = no
+	pop_type = slaves
+	max_levels = plantation_cap
+	employment_size = plantation_employment
+	category = colonial_category
+
+	location_potential = {
+		raw_material = goods:cotton
+		OR = {
+			is_overseas_for_owner = yes
+			owner ?= { is_colonial_subject = yes }
+		}
+
+		sul_has_farming_specialization = yes
+	}
+
+	rural_settlement = yes
+	town = yes
+	city = yes
+	always_add_demands = yes
+	price = expand_rgo_farming
+	build_time = plantation_build_time
+
+	unique_production_methods = {
+		sul_cotton_plantation_maintenance = {
+			produced = cotton
+			output = 1
+			slaves_goods = 0.1
+			leather = 0.05
+			tools = 0.05
+			lumber = 0.05
+			category = building_maintenance
+		}
+	}
+
+	modifier = {
+		local_cotton_output_modifier = 0.1
+		local_slave_pop_satisfaction = -0.005
+		# Raw Extraction
+		local_raw_material_output = 0.02
+		local_max_rgo_size_modifier = 0.02
+	}
+
+	construction_demand = plantation_construction
+}
+
+REPLACE:tobacco_plantation = {
+	is_foreign = no
+	pop_type = slaves
+	max_levels = plantation_cap
+	employment_size = plantation_employment
+	category = colonial_category
+
+	location_potential = {
+		raw_material = goods:tobacco
+		OR = {
+			is_overseas_for_owner = yes
+			owner ?= { is_colonial_subject = yes }
+		}
+
+		sul_has_farming_specialization = yes
+	}
+
+	rural_settlement = yes
+	town = yes
+	city = yes
+	price = expand_rgo_farming
+	always_add_demands = yes
+	build_time = plantation_build_time
+
+	unique_production_methods = {
+		sul_tobacco_plantation_maintenance = {
+			produced = tobacco
+			output = 1
+			slaves_goods = 0.1
+			leather = 0.05
+			tools = 0.05
+			lumber = 0.05
+			category = building_maintenance
+		}
+	}
+
+	modifier = {
+		local_tobacco_output_modifier = 0.1
+		local_slave_pop_satisfaction = -0.005
+		# Raw Extraction
+		local_raw_material_output = 0.02
+		local_max_rgo_size_modifier = 0.02
+	}
+
+	construction_demand = plantation_construction
+}
+
+# Food-adjacent
+
+REPLACE:windmill = {
+	is_foreign = no
+	pop_type = laborers
+	max_levels = rural_building_cap
+	employment_size = rural_peasant_enhance_employment
+	category = rgo_building_category
+	rural_settlement = yes
+	town = yes
+	city = yes
+
+	location_potential = {
+		OR = {
+			raw_material = goods:wheat
+			raw_material = goods:rice
+			raw_material = goods:millet
+		}
+
+		sul_has_farming_specialization = yes
+	}
+
+	unique_production_methods = {
+		sul_windmill_maintenance = {
+			tools = 0.025
+			lumber = 0.05
+			cloth = 0.05
+			category = building_maintenance
+		}
+	}
+
+	modifier = {
+		local_wheat_output_modifier = 0.1
+		local_rice_output_modifier = 0.1
+		local_millet_output_modifier = 0.1
+		# Food-adjacent
+		local_monthly_food_modifier = 0.02
+		local_raw_material_output = 0.02
+		local_max_rgo_size_modifier = 0.02
+	}
+
+	build_time = rural_build_time
+	construction_demand = farm_constructions
+}
+
+# Force Multiplier
+
+REPLACE:irrigation_systems = {
+	is_foreign = no
+	max_levels = irrigant_cap
+	pop_type = peasants
+	category = infrastructure_category
+	employment_size = generic_peasant_building_employment
+	rural_settlement = yes
+	town = yes
+	city = yes
+
+	location_potential = {
+		sul_has_farming_specialization = yes
+	}
+
+	forbidden_for_estates = yes
+	build_time = infrastructure_build_time
+
+	unique_production_methods = {
+		sul_irrigation_maintenance = { tools = 0.1 category = building_maintenance }
+	}
+
+	construction_demand = village_construction
+
+	modifier = {
+		# Force Multiplier
+		local_population_capacity = 1.0
+		local_monthly_food = 0.25
+		local_monthly_food_modifier = 0.1
+		local_raw_material_output = 0.01
+		local_max_rgo_size_modifier = 0.02
+	}
+}
+
+# Farming goods output (high_tier)
+
+INJECT:distillers_guild = {
+	location_potential = {
+		sul_has_farming_specialization = yes
+	}
+
+	modifier = {
+		local_monthly_food_modifier = 0.02
+		# Farming goods output
+		local_wine_output_modifier = 0.01
+		local_beer_output_modifier = 0.01
+		local_liquor_output_modifier = 0.01
+		local_leather_output_modifier = 0.01
+	}
+}
+
+INJECT:distillers_workshop = {
+	location_potential = {
+		sul_has_farming_specialization = yes
+	}
+
+	modifier = {
+		local_monthly_food_modifier = 0.02
+		# Farming goods output
+		local_wine_output_modifier = 0.01
+		local_beer_output_modifier = 0.01
+		local_liquor_output_modifier = 0.01
+		local_leather_output_modifier = 0.01
+	}
+}
+
+INJECT:distiller_manufactory = {
+	location_potential = {
+		sul_has_farming_specialization = yes
+	}
+
+	modifier = {
+		local_monthly_food_modifier = 0.02
+		# Farming goods output
+		local_wine_output_modifier = 0.01
+		local_beer_output_modifier = 0.01
+		local_liquor_output_modifier = 0.01
+		local_leather_output_modifier = 0.01
+	}
+}
+
+INJECT:distiller_mill = {
+	location_potential = {
+		sul_has_farming_specialization = yes
+	}
+
+	modifier = {
+		local_monthly_food_modifier = 0.02
+		# Farming goods output
+		local_wine_output_modifier = 0.01
+		local_beer_output_modifier = 0.01
+		local_liquor_output_modifier = 0.01
+		local_leather_output_modifier = 0.01
+	}
+}
+
+# Farming goods output (mid_tier)
+
+INJECT:brewery = {
+	location_potential = {
+		sul_has_farming_specialization = yes
+	}
+
+	modifier = {
+		local_monthly_food_modifier = 0.02
+		# Farming goods output
+		local_wine_output_modifier = 0.0075
+		local_beer_output_modifier = 0.0075
+		local_liquor_output_modifier = 0.0075
+		local_leather_output_modifier = 0.0075
+	}
+}
+
+INJECT:beer_workshop = {
+	location_potential = {
+		sul_has_farming_specialization = yes
+	}
+
+	modifier = {
+		local_monthly_food_modifier = 0.02
+		# Farming goods output
+		local_wine_output_modifier = 0.0075
+		local_beer_output_modifier = 0.0075
+		local_liquor_output_modifier = 0.0075
+		local_leather_output_modifier = 0.0075
+	}
+}
+
+INJECT:brewery_manufactory = {
+	location_potential = {
+		sul_has_farming_specialization = yes
+	}
+
+	modifier = {
+		local_monthly_food_modifier = 0.02
+		# Farming goods output
+		local_wine_output_modifier = 0.0075
+		local_beer_output_modifier = 0.0075
+		local_liquor_output_modifier = 0.0075
+		local_leather_output_modifier = 0.0075
+	}
+}
+
+INJECT:brewery_mill = {
+	location_potential = {
+		sul_has_farming_specialization = yes
+	}
+
+	modifier = {
+		local_monthly_food_modifier = 0.02
+		# Farming goods output
+		local_wine_output_modifier = 0.0075
+		local_beer_output_modifier = 0.0075
+		local_liquor_output_modifier = 0.0075
+		local_leather_output_modifier = 0.0075
+	}
+}
+
+INJECT:winery = {
+	location_potential = {
+		sul_has_farming_specialization = yes
+	}
+
+	modifier = {
+		local_monthly_food_modifier = 0.02
+		# Farming goods output
+		local_wine_output_modifier = 0.0075
+		local_beer_output_modifier = 0.0075
+		local_liquor_output_modifier = 0.0075
+		local_leather_output_modifier = 0.0075
+	}
+}
+
+INJECT:winery_manufactory = {
+	location_potential = {
+		sul_has_farming_specialization = yes
+	}
+
+	modifier = {
+		local_monthly_food_modifier = 0.02
+		# Farming goods output
+		local_wine_output_modifier = 0.0075
+		local_beer_output_modifier = 0.0075
+		local_liquor_output_modifier = 0.0075
+		local_leather_output_modifier = 0.0075
+	}
+}

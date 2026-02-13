@@ -1,0 +1,392 @@
+{
+  "base_game_path": "/mnt/c/SteamLibrary/steamapps/common/Europa Universalis V/game/in_game",
+
+  "modifier_categories": {
+    "raw_extraction_low": {
+      "comment": "Raw Extraction",
+      "modifiers": {
+        "local_raw_material_output": 0.015,
+        "local_max_rgo_size_modifier": 0.015
+      }
+    },
+    "raw_extraction_high": {
+      "comment": "Raw Extraction",
+      "modifiers": {
+        "local_raw_material_output": 0.015,
+        "local_max_rgo_size_modifier": 0.015
+      },
+      "finished_goods_spread": 0.0025
+    },
+    "food_production": {
+      "comment": "Food production",
+      "modifiers": {
+        "local_monthly_food": 1.0,
+        "local_monthly_food_modifier": 0.03,
+        "local_raw_material_output": 0.015,
+        "local_max_rgo_size_modifier": 0.015
+      }
+    },
+    "food_adjacent": {
+      "comment": "Food-adjacent",
+      "modifiers": {
+        "local_monthly_food_modifier": 0.0,
+        "local_raw_material_output": 0.015,
+        "local_max_rgo_size_modifier": 0.015
+      }
+    },
+    "infrastructure": {
+      "comment": "Force Multiplier",
+      "modifiers": {
+        "local_population_capacity": 1.0,
+        "local_monthly_food": 0.25,
+        "local_monthly_food_modifier": 0.08,
+        "local_raw_material_output": 0.005,
+        "local_max_rgo_size_modifier": 0.015
+      }
+    },
+    "finished_good_production_low": {
+      "comment": "Finished goods output",
+      "modifiers": {},
+      "finished_goods_spread": 0.0025
+    },
+    "finished_good_production_high": {
+      "comment": "Finished goods output",
+      "modifiers": {},
+      "finished_goods_spread": 0.005
+    }
+  },
+
+  "specializations": {
+    "mining": {
+      "trigger": "sul_has_mining_specialization",
+      "finished_goods": ["tools", "weaponry", "cannons", "firearms", "steel", "jewelry"],
+      "comment": "Mining goods output",
+      "output_file": "sul_mining.txt"
+    },
+    "farming": {
+      "trigger": "sul_has_farming_specialization",
+      "finished_goods": ["wine", "beer", "liquor", "leather"],
+      "comment": "Farming goods output",
+      "output_file": "sul_farming.txt",
+      "extra_modifiers": {
+        "local_monthly_food_modifier": 0.0
+      }
+    },
+    "gathering": {
+      "trigger": "sul_has_gathering_specialization",
+      "finished_goods": ["glass", "pottery", "porcelain", "lacquerware"],
+      "comment": "Gathering goods output",
+      "output_file": "sul_gathering.txt"
+    },
+    "woodland": {
+      "trigger": "sul_has_woodland_specialization",
+      "finished_goods": ["paper", "furniture", "leather", "tar"],
+      "comment": "Woodland goods output",
+      "output_file": "sul_woodland.txt"
+    },
+    "commercial": {
+      "trigger": "sul_has_commercial_specialization",
+      "finished_goods": ["cloth", "fine_cloth", "books", "naval_supplies"],
+      "comment": "Commercial goods output",
+      "output_file": "sul_commercial.txt"
+    }
+  },
+
+  "replace_buildings": {
+    "mercury_patio": {
+      "specialization": "mining",
+      "ranks": {"rural_settlement": "no"}
+    },
+    "stone_quarry": {
+      "specialization": "mining",
+      "modifier_category": "raw_extraction_low"
+    },
+    "bog_iron_smelter": {
+      "specialization": "mining",
+      "modifier_category": "raw_extraction_low"
+    },
+    "local_smelters": {
+      "specialization": "mining",
+      "modifier_category": "raw_extraction_high",
+      "max_levels": "rural_building_cap",
+      "ranks": {"rural_settlement": "yes", "town": "yes", "city": "yes"}
+    },
+
+    "fruit_orchard": {
+      "specialization": "farming",
+      "modifier_category": "food_production"
+    },
+    "fiber_crops_farm": {
+      "specialization": "farming",
+      "modifier_category": "raw_extraction_low"
+    },
+    "horse_breeders": {
+      "specialization": "farming",
+      "modifier_category": "raw_extraction_low",
+      "employment_size": "tiny_rural_peasant_produce_employment"
+    },
+    "sugar_plantation": {
+      "specialization": "farming",
+      "modifier_category": "raw_extraction_low",
+      "override_modifiers": {
+        "local_max_rgo_size_modifier": 0.0
+      }
+    },
+    "cotton_plantation": {
+      "specialization": "farming",
+      "modifier_category": "raw_extraction_low"
+    },
+    "tobacco_plantation": {
+      "specialization": "farming",
+      "modifier_category": "raw_extraction_low"
+    },
+    "windmill": {
+      "specialization": "farming",
+      "modifier_category": "food_adjacent",
+      "max_levels": "rural_building_cap",
+      "ranks": {"rural_settlement": "yes", "town": "yes", "city": "yes"}
+    },
+    "irrigation_systems": {
+      "specialization": "farming",
+      "modifier_category": "infrastructure",
+      "replace_location_potential": true
+    },
+
+    "clay_pit": {
+      "specialization": "gathering",
+      "modifier_category": "raw_extraction_low"
+    },
+    "salt_collector": {
+      "specialization": "gathering",
+      "modifier_category": "raw_extraction_low"
+    },
+    "sand_pit": {
+      "specialization": "gathering",
+      "modifier_category": "raw_extraction_low"
+    },
+    "glass_guild": {
+      "specialization": "gathering",
+      "modifier_category": "finished_good_production_high"
+    },
+    "sheep_farms": {
+      "specialization": "gathering",
+      "modifier_category": "food_production",
+      "ranks": {"rural_settlement": "yes", "town": "yes", "city": "yes"}
+    },
+    "saltpeter_guild": {
+      "specialization": "gathering",
+      "modifier_category": "raw_extraction_low"
+    },
+
+    "lumber_mill": {
+      "specialization": "woodland",
+      "modifier_category": "raw_extraction_low"
+    },
+    "tar_kiln": {
+      "specialization": "woodland",
+      "modifier_category": "finished_good_production_low"
+    },
+    "elephant_hunting_grounds": {
+      "specialization": "woodland",
+      "modifier_category": "food_adjacent",
+      "ranks": {"rural_settlement": "yes", "town": "yes", "city": "yes"}
+    },
+    "sawmill": {
+      "specialization": "woodland",
+      "modifier_category": "raw_extraction_low",
+      "max_levels": "rural_building_cap",
+      "ranks": {"rural_settlement": "yes", "town": "yes", "city": "yes"}
+    },
+
+    "entrepot": {"specialization": "commercial", "modifier_category": "finished_good_production_low"},
+    "trading_hub": {"specialization": "commercial", "modifier_category": "finished_good_production_low"},
+    "customs_house": {"specialization": "commercial", "modifier_category": "finished_good_production_low"},
+    "stock_exchange": {"specialization": "commercial", "modifier_category": "finished_good_production_low"},
+    "clearing_house": {"specialization": "commercial", "modifier_category": "finished_good_production_low"},
+    "market_warehouse": {"specialization": "commercial", "modifier_category": "finished_good_production_low"},
+    "port_authority": {"specialization": "commercial", "modifier_category": "finished_good_production_low"}
+  },
+
+  "inject_buildings": {
+    "mining": {
+      "high_tier": {
+        "modifier_value": 0.005,
+        "buildings": [
+          "cannon_maker", "cannon_workshop", "cannon_foundry", "cannons_factory",
+          "hand_cannon_guild", "gun_smith", "guns_workshop",
+          "firearms_manufactory", "firearms_factory",
+          "jewelry_guild"
+        ]
+      },
+      "mid_tier": {
+        "modifier_value": 0.0025,
+        "buildings": [
+          "weapon_guild", "weapon_workshop", "weapon_manufactory", "weapon_factory",
+          "steel_mill"
+        ]
+      },
+      "low_tier": {
+        "modifier_value": 0.0,
+        "extra_modifiers": {
+          "local_max_rgo_size_modifier": 0.005,
+          "local_raw_material_output": 0.005
+        },
+        "buildings": [
+          "tools_guild", "tools_workshop", "iron_foundry", "iron_mill"
+        ]
+      }
+    },
+    "farming": {
+      "high_tier": {
+        "modifier_value": 0.005,
+        "buildings": [
+          "distillers_guild", "distillers_workshop",
+          "distiller_manufactory", "distiller_mill"
+        ]
+      },
+      "mid_tier": {
+        "modifier_value": 0.0025,
+        "buildings": [
+          "brewery", "beer_workshop", "brewery_manufactory", "brewery_mill",
+          "winery", "winery_manufactory"
+        ]
+      }
+    },
+    "gathering": {
+      "high_tier": {
+        "modifier_value": 0.005,
+        "buildings": [
+          "glass_workshop", "glassworks", "glass_mill",
+          "porcelain_guild", "porcelain_manufactory"
+        ]
+      },
+      "mid_tier": {
+        "modifier_value": 0.0025,
+        "buildings": [
+          "pottery_guild", "pottery_workshop", "pottery_manufactory", "pottery_mill",
+          "apothecary"
+        ]
+      },
+      "rgo_tier": {
+        "modifier_value": null,
+        "extra_modifiers": {
+          "local_raw_material_output": 0.015,
+          "local_max_rgo_size_modifier": 0.015
+        },
+        "comment": "Gathering goods output",
+        "buildings": [
+          "saltpeter_workshop", "putrefaction_works", "putrefaction_mill"
+        ]
+      }
+    },
+    "woodland": {
+      "high_tier": {
+        "modifier_value": 0.005,
+        "finished_goods": ["paper", "furniture", "leather"],
+        "buildings": [
+          "furniture_guild", "furniture_workshop",
+          "furniture_manufactory", "furniture_mill",
+          "lacquerware_guild", "lacquerware_manufactory",
+          "paper_guild", "paper_workshop", "paper_manufactory", "paper_mill"
+        ]
+      },
+      "rgo_tier": {
+        "modifier_value": null,
+        "extra_modifiers": {
+          "local_raw_material_output": 0.015,
+          "local_max_rgo_size_modifier": 0.015
+        },
+        "comment": "Woodland goods (spread)",
+        "buildings": [
+          "dyes_guild", "dyes_workshop", "dyesworks", "dyes_mill",
+          "charcoal_maker", "improved_charcoal_maker"
+        ]
+      },
+      "cross_spec": {
+        "buildings": ["tannery", "tanning_workshop", "tannery_manufactory", "tannery_mill"],
+        "location_potential_or": ["sul_has_woodland_specialization", "sul_has_farming_specialization"],
+        "modifier_groups": [
+          {
+            "extra_modifiers": {"local_monthly_food_modifier": 0.0},
+            "specs": ["woodland", "farming"],
+            "modifier_value": 0.0025
+          }
+        ]
+      }
+    },
+    "commercial": {
+      "high_tier": {
+        "modifier_value": 0.005,
+        "buildings": [
+          "scriptorium", "printing_press_shop",
+          "printing_manufactory", "printing_mill",
+          "perfumery"
+        ]
+      },
+      "mid_tier": {
+        "modifier_value": 0.0025,
+        "buildings": [
+          "cloth_guild", "cloth_workshop", "cloth_manufactory", "textile_mill",
+          "fine_cloth_guild", "fine_cloth_workshop", "fine_cloth_manufactory", "fine_cloth_mill",
+          "naval_supplies_guild", "naval_supplies_workshop",
+          "naval_supplies_manufactory", "naval_supplies_mill",
+          "rural_clothmaker"
+        ]
+      },
+      "trade_with_merchant": {
+        "modifier_value": 0.0025,
+        "buildings": [
+          "marketplace", "merchants_quarters", "grand_marketplace", "commerce_center",
+          "funduq"
+        ]
+      },
+      "special": {
+        "modifier_value": null,
+        "buildings": [
+          "university"
+        ]
+      }
+    }
+  },
+
+  "inject_building_overrides": {
+    "marketplace": {
+      "extra_modifiers": {
+        "local_merchant_capacity": 1.0,
+        "local_merchant_power": 2.5
+      }
+    },
+    "merchants_quarters": {
+      "extra_modifiers": {
+        "local_merchant_capacity": 1.75,
+        "local_merchant_power": 5.0
+      }
+    },
+    "grand_marketplace": {
+      "extra_modifiers": {
+        "local_merchant_capacity": 3.0,
+        "local_merchant_power": 7.5
+      }
+    },
+    "commerce_center": {
+      "extra_modifiers": {
+        "local_merchant_capacity": 5.0,
+        "local_merchant_power": 10.0
+      }
+    },
+    "funduq": {
+      "extra_modifiers": {
+        "local_merchant_capacity": 1.0
+      }
+    },
+    "charcoal_maker": {
+      "extra_props": [["town", "yes"], ["city", "yes"]]
+    },
+    "improved_charcoal_maker": {
+      "extra_props": [["town", "yes"], ["city", "yes"]]
+    },
+    "university": {
+      "location_potential_or": ["location_rank = location_rank:city", "sul_has_commercial_specialization = yes"]
+    }
+  }
+}

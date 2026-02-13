@@ -1010,9 +1010,18 @@ sul_grant_specialization_rgo_building = {
 	# Mining RGO buildings
 	if = {
 		limit = { sul_has_mining_specialization = yes }
-		# stone_quarry - mountains only
+		# stone_quarry - mountains, plateau, or hills (not stone raw material)
 		if = {
-			limit = { topography = mountains }
+			limit = {
+				OR = {
+					topography = mountains
+					topography = plateau
+					topography = hills
+				}
+				NOT = {
+					raw_material = goods:stone
+				}
+			}
 
 			change_building_level_in_location = {
 				building = building_type:stone_quarry

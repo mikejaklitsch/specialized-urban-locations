@@ -1,6 +1,6 @@
+﻿# Finished goods output
 
 REPLACE:entrepot = {
-	increase_per_level_cost = 0.0
 	is_foreign = no
 	pop_type = burghers
 	max_levels = 1
@@ -21,8 +21,8 @@ REPLACE:entrepot = {
 	}
 
 	modifier = {
-		local_merchant_capacity = 10
-		# Commercial goods output
+		local_merchant_capacity = 5
+		# Finished goods output
 		local_cloth_output_modifier = 0.0075
 		local_fine_cloth_output_modifier = 0.0075
 		local_books_output_modifier = 0.0075
@@ -41,7 +41,6 @@ REPLACE:entrepot = {
 }
 
 REPLACE:trading_hub = {
-	increase_per_level_cost = 0.0
 	is_foreign = no
 	pop_type = burghers
 	max_levels = 1
@@ -62,8 +61,8 @@ REPLACE:trading_hub = {
 	}
 
 	modifier = {
-		local_merchant_capacity = 10
-		# Commercial goods output
+		local_merchant_capacity = 5
+		# Finished goods output
 		local_cloth_output_modifier = 0.0075
 		local_fine_cloth_output_modifier = 0.0075
 		local_books_output_modifier = 0.0075
@@ -82,7 +81,6 @@ REPLACE:trading_hub = {
 }
 
 REPLACE:customs_house = {
-	increase_per_level_cost = 0.0
 	is_foreign = no
 	pop_type = burghers
 	max_levels = 1
@@ -103,8 +101,8 @@ REPLACE:customs_house = {
 	}
 
 	modifier = {
-		local_merchant_capacity = 10
-		# Commercial goods output
+		local_merchant_capacity = 5
+		# Finished goods output
 		local_cloth_output_modifier = 0.0075
 		local_fine_cloth_output_modifier = 0.0075
 		local_books_output_modifier = 0.0075
@@ -123,7 +121,6 @@ REPLACE:customs_house = {
 }
 
 REPLACE:stock_exchange = {
-	increase_per_level_cost = 0.0
 	is_foreign = no
 	pop_type = burghers
 	max_levels = 1
@@ -144,8 +141,8 @@ REPLACE:stock_exchange = {
 	}
 
 	modifier = {
-		local_merchant_capacity = 10
-		# Commercial goods output
+		local_merchant_capacity = 5
+		# Finished goods output
 		local_cloth_output_modifier = 0.0075
 		local_fine_cloth_output_modifier = 0.0075
 		local_books_output_modifier = 0.0075
@@ -164,7 +161,6 @@ REPLACE:stock_exchange = {
 }
 
 REPLACE:clearing_house = {
-	increase_per_level_cost = 0.0
 	is_foreign = no
 	pop_type = burghers
 	max_levels = 1
@@ -185,8 +181,8 @@ REPLACE:clearing_house = {
 	}
 
 	modifier = {
-		local_merchant_capacity = 10
-		# Commercial goods output
+		local_merchant_capacity = 5
+		# Finished goods output
 		local_cloth_output_modifier = 0.0075
 		local_fine_cloth_output_modifier = 0.0075
 		local_books_output_modifier = 0.0075
@@ -205,7 +201,6 @@ REPLACE:clearing_house = {
 }
 
 REPLACE:market_warehouse = {
-	increase_per_level_cost = 0.0
 	is_foreign = no
 	pop_type = burghers
 	max_levels = market_warehouse_max_level
@@ -226,10 +221,10 @@ REPLACE:market_warehouse = {
 	}
 
 	modifier = {
-		local_merchant_capacity = 1.0
-		local_merchant_power = 1.0
+		local_merchant_capacity = 0.1
+		local_merchant_power = 0.1
 		local_trades_per_burgher = 0.1
-		# Commercial goods output
+		# Finished goods output
 		local_cloth_output_modifier = 0.0075
 		local_fine_cloth_output_modifier = 0.0075
 		local_books_output_modifier = 0.0075
@@ -247,29 +242,47 @@ REPLACE:market_warehouse = {
 	}
 }
 
-INJECT:university = {
-	location_potential = {
-		OR = {
-			location_rank = location_rank:city
-			sul_has_commercial_specialization = yes
-		}
-	}
-}
+REPLACE:port_authority = {
+	is_foreign = no
+	stronger_power_projection = no
+	max_levels = market_max_level
+	pop_type = burghers
+	category = trade_category
+	employment_size = trade_employment
+	rural_settlement = no
+	town = yes
+	city = yes
 
-INJECT:funduq = {
+	allow = {
+		is_port = yes
+	}
+
 	location_potential = {
+		is_coastal = yes
 		sul_has_commercial_specialization = yes
 	}
 
+	possible_production_methods = {
+		port_authority_maintenance
+	}
+
+	construction_demand = town_building_construction
+	build_time = merchant_build_time
+
 	modifier = {
-		local_merchant_capacity = 1.0
-		# Commercial goods output
+		local_merchant_capacity = 0.5
+		local_trade_protection_factor = 0.1
+		local_trades_per_burgher = 0.1
+		local_market_access = 0.005
+		# Finished goods output
 		local_cloth_output_modifier = 0.0075
 		local_fine_cloth_output_modifier = 0.0075
 		local_books_output_modifier = 0.0075
 		local_naval_supplies_output_modifier = 0.0075
 	}
 }
+
+# Commercial goods output (high_tier)
 
 INJECT:scriptorium = {
 	location_potential = {
@@ -326,6 +339,22 @@ INJECT:printing_mill = {
 		local_naval_supplies_output_modifier = 0.01
 	}
 }
+
+INJECT:perfumery = {
+	location_potential = {
+		sul_has_commercial_specialization = yes
+	}
+
+	modifier = {
+		# Commercial goods output
+		local_cloth_output_modifier = 0.01
+		local_fine_cloth_output_modifier = 0.01
+		local_books_output_modifier = 0.01
+		local_naval_supplies_output_modifier = 0.01
+	}
+}
+
+# Commercial goods output (mid_tier)
 
 INJECT:cloth_guild = {
 	location_potential = {
@@ -495,19 +524,21 @@ INJECT:naval_supplies_mill = {
 	}
 }
 
-INJECT:perfumery = {
+INJECT:rural_clothmaker = {
 	location_potential = {
 		sul_has_commercial_specialization = yes
 	}
 
 	modifier = {
 		# Commercial goods output
-		local_cloth_output_modifier = 0.01
-		local_fine_cloth_output_modifier = 0.01
-		local_books_output_modifier = 0.01
-		local_naval_supplies_output_modifier = 0.01
+		local_cloth_output_modifier = 0.0075
+		local_fine_cloth_output_modifier = 0.0075
+		local_books_output_modifier = 0.0075
+		local_naval_supplies_output_modifier = 0.0075
 	}
 }
+
+# Commercial goods output (trade_with_merchant)
 
 INJECT:marketplace = {
 	location_potential = {
@@ -573,37 +604,13 @@ INJECT:commerce_center = {
 	}
 }
 
-REPLACE:port_authority = {
-	is_foreign = no
-	stronger_power_projection = no
-	max_levels = market_max_level
-	pop_type = burghers
-	category = trade_category
-	employment_size = trade_employment
-	town = yes
-	city = yes
-
-	allow = {
-		is_port = yes
-	}
-
+INJECT:funduq = {
 	location_potential = {
-		is_coastal = yes
 		sul_has_commercial_specialization = yes
 	}
 
-	possible_production_methods = {
-		port_authority_maintenance
-	}
-
-	construction_demand = town_building_construction
-	build_time = merchant_build_time
-
 	modifier = {
 		local_merchant_capacity = 1.0
-		local_trade_protection_factor = 0.10
-		local_trades_per_burgher = 0.10
-		local_market_access = 0.005
 		# Commercial goods output
 		local_cloth_output_modifier = 0.0075
 		local_fine_cloth_output_modifier = 0.0075
@@ -612,16 +619,13 @@ REPLACE:port_authority = {
 	}
 }
 
-INJECT:rural_clothmaker = {
-	location_potential = {
-		sul_has_commercial_specialization = yes
-	}
+# Commercial goods output (special)
 
-	modifier = {
-		# Commercial goods output
-		local_cloth_output_modifier = 0.0075
-		local_fine_cloth_output_modifier = 0.0075
-		local_books_output_modifier = 0.0075
-		local_naval_supplies_output_modifier = 0.0075
+INJECT:university = {
+	location_potential = {
+		OR = {
+			location_rank = location_rank:city
+			sul_has_commercial_specialization = yes
+		}
 	}
 }

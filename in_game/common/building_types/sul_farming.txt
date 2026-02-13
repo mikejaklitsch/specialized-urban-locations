@@ -1,9 +1,9 @@
+﻿# Food production
+
 REPLACE:fruit_orchard = {
-	increase_per_level_cost = 0.0
 	is_foreign = no
 	pop_type = laborers
 	max_levels = rural_building_cap
-
 	employment_size = rural_peasant_produce_employment
 	category = rgo_building_category
 	rural_settlement = yes
@@ -17,19 +17,10 @@ REPLACE:fruit_orchard = {
 			vegetation = woods
 			vegetation = jungle
 		}
+
 		sul_has_farming_specialization = yes
 	}
 
-	modifier = {
-		local_monthly_food = 1.0
-		# Farming: +0.05 food, +0.01 raw, +0.005 rgo
-		local_monthly_food_modifier = 0.05
-		local_raw_material_output = 0.02
-		local_max_rgo_size_modifier = 0.02
-	}
-
-	build_time = rural_build_time
-	construction_demand = farm_constructions
 	unique_production_methods = {
 		sul_fruit_orchard_maintenance = {
 			produced = fruit
@@ -38,13 +29,24 @@ REPLACE:fruit_orchard = {
 			category = building_maintenance
 		}
 	}
+
+	build_time = rural_build_time
+	construction_demand = farm_constructions
+
+	modifier = {
+		# Food production
+		local_monthly_food = 1.0
+		local_monthly_food_modifier = 0.05
+		local_raw_material_output = 0.02
+		local_max_rgo_size_modifier = 0.02
+	}
 }
 
+# Raw Extraction
+
 REPLACE:fiber_crops_farm = {
-	increase_per_level_cost = 0.0
 	is_foreign = no
 	max_levels = rural_building_cap
-
 	pop_type = laborers
 	employment_size = rural_peasant_produce_employment
 	rural_settlement = yes
@@ -52,38 +54,43 @@ REPLACE:fiber_crops_farm = {
 	city = yes
 
 	location_potential = {
-		NOT = { raw_material = goods:fiber_crops }
-		NOT = { climate = arctic }
-		sul_has_farming_specialization = yes
-	}
+		NOT = {
+			raw_material = goods:fiber_crops
+		}
+		NOT = {
+			climate = arctic
+		}
 
-	modifier = {
-		# Non-food farming: +0.01 raw, +0.005 rgo (no food bonus)
-		local_raw_material_output = 0.02
-		local_max_rgo_size_modifier = 0.02
+		sul_has_farming_specialization = yes
 	}
 
 	category = rgo_building_category
 	build_time = rural_build_time
-	construction_demand = farm_constructions
+
 	unique_production_methods = {
 		sul_fiber_crops_farm_maintenance = {
 			livestock = 0.5
 			lumber = 0.2
 			tools = 0.1
+			category = building_maintenance
 			produced = fiber_crops
 			output = 0.8
-			category = building_maintenance
 		}
+	}
+
+	construction_demand = farm_constructions
+
+	modifier = {
+		# Raw Extraction
+		local_raw_material_output = 0.02
+		local_max_rgo_size_modifier = 0.02
 	}
 }
 
 REPLACE:horse_breeders = {
-	increase_per_level_cost = 0.0
 	is_foreign = no
 	pop_type = laborers
 	max_levels = rural_building_cap
-
 	employment_size = tiny_rural_peasant_produce_employment
 	category = rgo_building_category
 	rural_settlement = yes
@@ -91,7 +98,7 @@ REPLACE:horse_breeders = {
 	city = yes
 
 	location_potential = {
-		raw_material = goods:horses
+		market = { is_produced_in_market = goods:horses }
 		sul_has_farming_specialization = yes
 	}
 
@@ -103,14 +110,6 @@ REPLACE:horse_breeders = {
 		}
 	}
 
-	modifier = {
-		# Non-food farming: +0.01 raw, +0.005 rgo (no food bonus)
-		local_raw_material_output = 0.02
-		local_max_rgo_size_modifier = 0.02
-	}
-
-	build_time = rural_build_time
-	construction_demand = horse_breeders_construction
 	unique_production_methods = {
 		sul_horse_breeders_maintenance = {
 			produced = horses
@@ -120,70 +119,21 @@ REPLACE:horse_breeders = {
 			category = building_maintenance
 		}
 	}
-}
 
-INJECT:brewery = {
-	location_potential = {
-		sul_has_farming_specialization = yes
-	}
-	modifier = {
-		local_monthly_food_modifier = 0.02
-		# Farming goods output
-		local_wine_output_modifier = 0.0075
-		local_beer_output_modifier = 0.0075
-		local_liquor_output_modifier = 0.0075
-		local_leather_output_modifier = 0.0075
-	}
-}
+	build_time = rural_build_time
+	construction_demand = horse_breeders_construction
 
-INJECT:beer_workshop = {
-	location_potential = {
-		sul_has_farming_specialization = yes
-	}
 	modifier = {
-		local_monthly_food_modifier = 0.02
-		# Farming goods output
-		local_wine_output_modifier = 0.0075
-		local_beer_output_modifier = 0.0075
-		local_liquor_output_modifier = 0.0075
-		local_leather_output_modifier = 0.0075
-	}
-}
-
-INJECT:brewery_manufactory = {
-	location_potential = {
-		sul_has_farming_specialization = yes
-	}
-	modifier = {
-		local_monthly_food_modifier = 0.02
-		# Farming goods output
-		local_wine_output_modifier = 0.0075
-		local_beer_output_modifier = 0.0075
-		local_liquor_output_modifier = 0.0075
-		local_leather_output_modifier = 0.0075
-	}
-}
-
-INJECT:brewery_mill = {
-	location_potential = {
-		sul_has_farming_specialization = yes
-	}
-	modifier = {
-		local_monthly_food_modifier = 0.02
-		# Farming goods output
-		local_wine_output_modifier = 0.0075
-		local_beer_output_modifier = 0.0075
-		local_liquor_output_modifier = 0.0075
-		local_leather_output_modifier = 0.0075
+		# Raw Extraction
+		local_raw_material_output = 0.02
+		local_max_rgo_size_modifier = 0.02
 	}
 }
 
 REPLACE:sugar_plantation = {
-	increase_per_level_cost = 0.0
 	is_foreign = no
 	pop_type = slaves
 	max_levels = plantation_cap
-
 	employment_size = plantation_employment
 	category = colonial_category
 
@@ -193,6 +143,7 @@ REPLACE:sugar_plantation = {
 			is_overseas_for_owner = yes
 			owner ?= { is_colonial_subject = yes }
 		}
+
 		sul_has_farming_specialization = yes
 	}
 
@@ -203,33 +154,33 @@ REPLACE:sugar_plantation = {
 	always_add_demands = yes
 	build_time = plantation_build_time
 
+	unique_production_methods = {
+		sul_sugar_plantation_maintenance = {
+			produced = sugar
+			output = 1
+			slaves_goods = 0.1
+			leather = 0.05
+			tools = 0.05
+			lumber = 0.05
+			category = building_maintenance
+		}
+	}
+
 	modifier = {
 		local_sugar_output_modifier = 0.1
-		# Raw Extraction: +0.02 raw, +0.005 rgo
+		local_slave_pop_satisfaction = -0.005
+		# Raw Extraction
 		local_raw_material_output = 0.02
 		local_max_rgo_size_modifier = 0.005
 	}
 
 	construction_demand = plantation_construction
-	unique_production_methods = {
-		sul_sugar_plantation_maintenance = {
-			produced = sugar
-			output = 1
-			slaves_goods = 0.5
-			leather = 0.12
-			tools = 0.12
-			lumber = 0.12
-			category = building_maintenance
-		}
-	}
 }
 
 REPLACE:cotton_plantation = {
-	increase_per_level_cost = 0.0
 	is_foreign = no
 	pop_type = slaves
 	max_levels = plantation_cap
-
 	employment_size = plantation_employment
 	category = colonial_category
 
@@ -239,6 +190,7 @@ REPLACE:cotton_plantation = {
 			is_overseas_for_owner = yes
 			owner ?= { is_colonial_subject = yes }
 		}
+
 		sul_has_farming_specialization = yes
 	}
 
@@ -249,33 +201,33 @@ REPLACE:cotton_plantation = {
 	price = expand_rgo_farming
 	build_time = plantation_build_time
 
+	unique_production_methods = {
+		sul_cotton_plantation_maintenance = {
+			produced = cotton
+			output = 1
+			slaves_goods = 0.1
+			leather = 0.05
+			tools = 0.05
+			lumber = 0.05
+			category = building_maintenance
+		}
+	}
+
 	modifier = {
 		local_cotton_output_modifier = 0.1
-		# Raw Extraction: +0.02 raw, +0.005 rgo
+		local_slave_pop_satisfaction = -0.005
+		# Raw Extraction
 		local_raw_material_output = 0.02
 		local_max_rgo_size_modifier = 0.02
 	}
 
 	construction_demand = plantation_construction
-	unique_production_methods = {
-		sul_cotton_plantation_maintenance = {
-			produced = cotton
-			output = 1
-			slaves_goods = 0.5
-			leather = 0.12
-			tools = 0.12
-			lumber = 0.12
-			category = building_maintenance
-		}
-	}
 }
 
 REPLACE:tobacco_plantation = {
-	increase_per_level_cost = 0.0
 	is_foreign = no
 	pop_type = slaves
 	max_levels = plantation_cap
-
 	employment_size = plantation_employment
 	category = colonial_category
 
@@ -285,6 +237,7 @@ REPLACE:tobacco_plantation = {
 			is_overseas_for_owner = yes
 			owner ?= { is_colonial_subject = yes }
 		}
+
 		sul_has_farming_specialization = yes
 	}
 
@@ -295,32 +248,35 @@ REPLACE:tobacco_plantation = {
 	always_add_demands = yes
 	build_time = plantation_build_time
 
+	unique_production_methods = {
+		sul_tobacco_plantation_maintenance = {
+			produced = tobacco
+			output = 1
+			slaves_goods = 0.1
+			leather = 0.05
+			tools = 0.05
+			lumber = 0.05
+			category = building_maintenance
+		}
+	}
+
 	modifier = {
-		# Raw Extraction: +0.02 raw, +0.005 rgo
+		local_tobacco_output_modifier = 0.1
+		local_slave_pop_satisfaction = -0.005
+		# Raw Extraction
 		local_raw_material_output = 0.02
 		local_max_rgo_size_modifier = 0.02
 	}
 
 	construction_demand = plantation_construction
-	unique_production_methods = {
-		sul_tobacco_plantation_maintenance = {
-			produced = tobacco
-			output = 1
-			slaves_goods = 0.5
-			leather = 0.12
-			tools = 0.12
-			lumber = 0.12
-			category = building_maintenance
-		}
-	}
 }
 
+# Food-adjacent
+
 REPLACE:windmill = {
-	increase_per_level_cost = 0.0
 	is_foreign = no
 	pop_type = laborers
 	max_levels = rural_building_cap
-
 	employment_size = rural_peasant_enhance_employment
 	category = rgo_building_category
 	rural_settlement = yes
@@ -333,20 +289,10 @@ REPLACE:windmill = {
 			raw_material = goods:rice
 			raw_material = goods:millet
 		}
+
 		sul_has_farming_specialization = yes
 	}
-	modifier = {
-		local_wheat_output_modifier = 0.1
-		local_rice_output_modifier = 0.1
-		local_millet_output_modifier = 0.1
-		# Food/Agricultural: +0.12 food, +0.01 raw, +0.005 rgo
-		local_monthly_food_modifier = 0.02
-		local_raw_material_output = 0.02
-		local_max_rgo_size_modifier = 0.02
-	}
 
-	build_time = rural_build_time
-	construction_demand = farm_constructions
 	unique_production_methods = {
 		sul_windmill_maintenance = {
 			tools = 0.025
@@ -355,12 +301,63 @@ REPLACE:windmill = {
 			category = building_maintenance
 		}
 	}
+
+	modifier = {
+		local_wheat_output_modifier = 0.1
+		local_rice_output_modifier = 0.1
+		local_millet_output_modifier = 0.1
+		# Food-adjacent
+		local_monthly_food_modifier = 0.02
+		local_raw_material_output = 0.02
+		local_max_rgo_size_modifier = 0.02
+	}
+
+	build_time = rural_build_time
+	construction_demand = farm_constructions
 }
+
+# Force Multiplier
+
+REPLACE:irrigation_systems = {
+	is_foreign = no
+	max_levels = irrigant_cap
+	pop_type = peasants
+	category = infrastructure_category
+	employment_size = generic_peasant_building_employment
+	rural_settlement = yes
+	town = yes
+	city = yes
+
+	location_potential = {
+		sul_has_farming_specialization = yes
+	}
+
+	forbidden_for_estates = yes
+	build_time = infrastructure_build_time
+
+	unique_production_methods = {
+		sul_irrigation_maintenance = { tools = 0.1 category = building_maintenance }
+	}
+
+	construction_demand = village_construction
+
+	modifier = {
+		# Force Multiplier
+		local_population_capacity = 1.0
+		local_monthly_food = 0.25
+		local_monthly_food_modifier = 0.1
+		local_raw_material_output = 0.01
+		local_max_rgo_size_modifier = 0.02
+	}
+}
+
+# Farming goods output (high_tier)
 
 INJECT:distillers_guild = {
 	location_potential = {
 		sul_has_farming_specialization = yes
 	}
+
 	modifier = {
 		local_monthly_food_modifier = 0.02
 		# Farming goods output
@@ -375,6 +372,7 @@ INJECT:distillers_workshop = {
 	location_potential = {
 		sul_has_farming_specialization = yes
 	}
+
 	modifier = {
 		local_monthly_food_modifier = 0.02
 		# Farming goods output
@@ -389,6 +387,7 @@ INJECT:distiller_manufactory = {
 	location_potential = {
 		sul_has_farming_specialization = yes
 	}
+
 	modifier = {
 		local_monthly_food_modifier = 0.02
 		# Farming goods output
@@ -403,6 +402,7 @@ INJECT:distiller_mill = {
 	location_potential = {
 		sul_has_farming_specialization = yes
 	}
+
 	modifier = {
 		local_monthly_food_modifier = 0.02
 		# Farming goods output
@@ -413,10 +413,73 @@ INJECT:distiller_mill = {
 	}
 }
 
+# Farming goods output (mid_tier)
+
+INJECT:brewery = {
+	location_potential = {
+		sul_has_farming_specialization = yes
+	}
+
+	modifier = {
+		local_monthly_food_modifier = 0.02
+		# Farming goods output
+		local_wine_output_modifier = 0.0075
+		local_beer_output_modifier = 0.0075
+		local_liquor_output_modifier = 0.0075
+		local_leather_output_modifier = 0.0075
+	}
+}
+
+INJECT:beer_workshop = {
+	location_potential = {
+		sul_has_farming_specialization = yes
+	}
+
+	modifier = {
+		local_monthly_food_modifier = 0.02
+		# Farming goods output
+		local_wine_output_modifier = 0.0075
+		local_beer_output_modifier = 0.0075
+		local_liquor_output_modifier = 0.0075
+		local_leather_output_modifier = 0.0075
+	}
+}
+
+INJECT:brewery_manufactory = {
+	location_potential = {
+		sul_has_farming_specialization = yes
+	}
+
+	modifier = {
+		local_monthly_food_modifier = 0.02
+		# Farming goods output
+		local_wine_output_modifier = 0.0075
+		local_beer_output_modifier = 0.0075
+		local_liquor_output_modifier = 0.0075
+		local_leather_output_modifier = 0.0075
+	}
+}
+
+INJECT:brewery_mill = {
+	location_potential = {
+		sul_has_farming_specialization = yes
+	}
+
+	modifier = {
+		local_monthly_food_modifier = 0.02
+		# Farming goods output
+		local_wine_output_modifier = 0.0075
+		local_beer_output_modifier = 0.0075
+		local_liquor_output_modifier = 0.0075
+		local_leather_output_modifier = 0.0075
+	}
+}
+
 INJECT:winery = {
 	location_potential = {
 		sul_has_farming_specialization = yes
 	}
+
 	modifier = {
 		local_monthly_food_modifier = 0.02
 		# Farming goods output
@@ -431,6 +494,7 @@ INJECT:winery_manufactory = {
 	location_potential = {
 		sul_has_farming_specialization = yes
 	}
+
 	modifier = {
 		local_monthly_food_modifier = 0.02
 		# Farming goods output
@@ -438,42 +502,5 @@ INJECT:winery_manufactory = {
 		local_beer_output_modifier = 0.0075
 		local_liquor_output_modifier = 0.0075
 		local_leather_output_modifier = 0.0075
-	}
-}
-
-REPLACE:irrigation_systems = {
-	increase_per_level_cost = 0.0
-	is_foreign = no
-	max_levels = irrigant_cap
-	pop_type = peasants
-
-	category = infrastructure_category
-	employment_size = generic_peasant_building_employment
-
-	rural_settlement = yes
-	town = yes
-	city = yes
-
-	location_potential = {
-		sul_has_farming_specialization = yes
-	}
-
-	build_time = infrastructure_build_time
-	construction_demand = village_construction
-
-	modifier = {
-		local_population_capacity = 1.0
-		local_monthly_food = 0.25
-		# Force Multiplier: +0.10 food, +0.01 raw, +0.005 rgo
-		local_monthly_food_modifier = 0.10
-		local_raw_material_output = 0.01
-		local_max_rgo_size_modifier = 0.02
-	}
-
-	unique_production_methods = {
-		sul_irrigation_maintenance = {
-			tools = 0.1
-			category = building_maintenance
-		}
 	}
 }

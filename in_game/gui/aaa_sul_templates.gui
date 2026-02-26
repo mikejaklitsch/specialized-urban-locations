@@ -292,6 +292,8 @@ template sul_food_consumption_block {
 			layoutpolicy_horizontal = expanding
 
 			TooltipManualTableField = {
+				visible = "[NotEqualTo_CFixedPoint(LocationView.GetLocation.GetModifierValueFixed('local_pop_food_consumption'), '(CFixedPoint)0')]"
+
 				blockoverride "field_content" {
 					hbox = {
 						spacing = 5
@@ -336,6 +338,8 @@ template sul_food_consumption_block {
 				}
 			}
 			TooltipManualTableField = {
+				visible = "[NotEqualTo_CFixedPoint(LocationView.GetLocation.GetModifierValueFixed('local_nobles_food_consumption'), '(CFixedPoint)0')]"
+
 				blockoverride "field_content" {
 					hbox = {
 						spacing = 5
@@ -380,6 +384,8 @@ template sul_food_consumption_block {
 				}
 			}
 			TooltipManualTableField = {
+				visible = "[NotEqualTo_CFixedPoint(LocationView.GetLocation.GetModifierValueFixed('local_clergy_food_consumption'), '(CFixedPoint)0')]"
+
 				blockoverride "field_content" {
 					hbox = {
 						spacing = 5
@@ -424,6 +430,8 @@ template sul_food_consumption_block {
 				}
 			}
 			TooltipManualTableField = {
+				visible = "[NotEqualTo_CFixedPoint(LocationView.GetLocation.GetModifierValueFixed('local_burghers_food_consumption'), '(CFixedPoint)0')]"
+
 				blockoverride "field_content" {
 					hbox = {
 						spacing = 5
@@ -468,6 +476,8 @@ template sul_food_consumption_block {
 				}
 			}
 			TooltipManualTableField = {
+				visible = "[NotEqualTo_CFixedPoint(LocationView.GetLocation.GetModifierValueFixed('local_soldiers_food_consumption'), '(CFixedPoint)0')]"
+
 				blockoverride "field_content" {
 					hbox = {
 						spacing = 5
@@ -512,6 +522,8 @@ template sul_food_consumption_block {
 				}
 			}
 			TooltipManualTableField = {
+				visible = "[NotEqualTo_CFixedPoint(LocationView.GetLocation.GetModifierValueFixed('local_laborers_food_consumption'), '(CFixedPoint)0')]"
+
 				blockoverride "field_content" {
 					hbox = {
 						spacing = 5
@@ -556,6 +568,8 @@ template sul_food_consumption_block {
 				}
 			}
 			TooltipManualTableField = {
+				visible = "[NotEqualTo_CFixedPoint(LocationView.GetLocation.GetModifierValueFixed('local_peasants_food_consumption'), '(CFixedPoint)0')]"
+
 				blockoverride "field_content" {
 					hbox = {
 						spacing = 5
@@ -600,6 +614,8 @@ template sul_food_consumption_block {
 				}
 			}
 			TooltipManualTableField = {
+				visible = "[NotEqualTo_CFixedPoint(LocationView.GetLocation.GetModifierValueFixed('local_slaves_food_consumption'), '(CFixedPoint)0')]"
+
 				blockoverride "field_content" {
 					hbox = {
 						spacing = 5
@@ -644,6 +660,8 @@ template sul_food_consumption_block {
 				}
 			}
 			TooltipManualTableField = {
+				visible = "[NotEqualTo_CFixedPoint(LocationView.GetLocation.GetModifierValueFixed('local_tribesmen_food_consumption'), '(CFixedPoint)0')]"
+
 				blockoverride "field_content" {
 					hbox = {
 						spacing = 5
@@ -4483,5 +4501,146 @@ types sul_shared_types
 
 		onmousehierarchyenter = "[PdxGuiWidget.SetHighlightProvince(Location.GetProvince)]"
 		tooltipwidget = { using = location_rank_tooltip }
+	}
+}
+
+# Override vanilla LocationBuildingLevels_tooltip to add building_level concept link
+
+template LocationBuildingLevels_tooltip {
+	ContextualTooltipType = {
+		blockoverride "title_icon" {
+			icon = {
+				using = tooltip_title_icon_size
+				texture = "[GetConceptTexture('supported_building_levels')]"
+			}
+		}
+
+		blockoverride "title_text" { datacontext = "[Location]" text = "BUILDING_LEVELS_LABEL" }
+
+		blockoverride "concept_link" { text = "[sul_building_level|E]" }
+
+		blockoverride "tooltip_content" {
+			TooltipStringPairList = {
+				datacontext = "[Location]"
+				textcontext = "LOCATION_CURR_LEVELS"
+
+				tooltipwidget = {
+					SimpleContextualStringPairTooltipType = {
+						blockoverride "title_icon" {
+							icon = {
+								using = tooltip_title_icon_size
+								texture = "gfx/interface/icons/outliner/categories/buildings.dds"
+							}
+						}
+
+						blockoverride "concept_link" { text = "[buildings|e]" }
+
+						lowpriotextcontext = "[Location.GetBuildingLevelInfo]"
+					}
+				}
+			}
+
+			TooltipListBase = {
+				blockoverride "block_title" { text = "SUL_BUILDING_LEVEL_EFFECTS_LABEL" }
+
+				TooltipListRowContent = {
+					TooltipManualTableField = {
+						blockoverride "field_content" {
+							hbox = {
+								spacing = 5
+
+								icon = {
+									size = { 28 28 }
+									texture = "gfx/interface/icons/modifier_types/global_monthly_food_modifier.dds"
+								}
+
+								text_single = { text = "MODIFIER_TYPE_NAME_local_monthly_food_modifier" }
+							}
+
+							expand = {  }
+
+							widget = {
+								size = { 50 20 }
+
+								text_single = {
+									parentanchor = right|vcenter
+									raw_text = "[Multiply_CFixedPoint(LocationView.GetLocation.GetNumBuildingLevelsWithEmployment, '(CFixedPoint)-0.02')|%+2]"
+								}
+							}
+						}
+					}
+
+					TooltipManualTableField = {
+						blockoverride "field_content" {
+							hbox = {
+								spacing = 5
+
+								icon = {
+									size = { 28 28 }
+									texture = "gfx/interface/icons/modifier_types/global_raw_material_output.dds"
+								}
+
+								text_single = { text = "MODIFIER_TYPE_NAME_local_raw_material_output" }
+							}
+
+							expand = {  }
+
+							widget = {
+								size = { 50 20 }
+
+								text_single = {
+									parentanchor = right|vcenter
+									raw_text = "[Multiply_CFixedPoint(LocationView.GetLocation.GetNumBuildingLevelsWithEmployment, '(CFixedPoint)-0.005')|%+2]"
+								}
+							}
+						}
+					}
+
+					TooltipManualTableField = {
+						blockoverride "field_content" {
+							hbox = {
+								spacing = 5
+
+								icon = {
+									size = { 28 28 }
+									texture = "gfx/interface/icons/modifier_types/global_production_efficiency.dds"
+								}
+
+								text_single = { text = "SUL_FINISHED_GOODS_OUTPUT" }
+							}
+
+							expand = {  }
+
+							widget = {
+								size = { 50 20 }
+
+								text_single = {
+									parentanchor = right|vcenter
+									raw_text = "[Multiply_CFixedPoint(LocationView.GetLocation.GetNumBuildingLevelsWithEmployment, '(CFixedPoint)-0.005')|%+2]"
+								}
+							}
+						}
+					}
+				}
+			}
+
+			TooltipStringPairList = {
+				blockoverride "block_title" {
+					datacontext = "[Location]"
+					text = "SUL_SUPPORTED_BUILDING_LEVELS_LABEL"
+				}
+
+				textcontext = "[Location.GetDescriptionFor('free_building_levels')]"
+			}
+
+			TooltipStringPairList = {
+				visible = "[Location.HasTooManyBuildingLevel]"
+				datacontext = "[Location]"
+
+				blockoverride "block_title" { text = "LOCATION_TOO_MANY_BUILD_LEVELS_LABEL" }
+
+				textcontext = "[Location.GetTooManyBuildingInfo]"
+			}
+		}
 	}
 }

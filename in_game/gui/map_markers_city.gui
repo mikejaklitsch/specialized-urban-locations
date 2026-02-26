@@ -192,45 +192,58 @@ widget = {
 			# Hide box+name for non-capital rural settlements at medium zoom (exception for forts during war)
 			visible = "[Not(And3(Not(CityMarker.ShowDetails), CityMarker.ShouldBeShownAsSettlement, Not(Or3(CityMarker.GetLocation.IsCapital, CityMarker.GetLocation.IsProvinceCapital, CityMarker.HasWarFort))))]"
 
-			# Hidden probe: iterate this country's wars, children visible only if player is in the same war
-			fixedgridbox = {
-				name = "sul_shared_wars"
-				size = { 0 0 }
-				alpha = 0
-				datamodel = "[Country.GetDiplomacy.GetCurrentWars]"
-				addcolumn = 0
-				addrow = 0
-				item = { widget = { visible = "[War.IsPlayerInWar]" } }
-			}
-
+			# TODO: Add toggleability between custom and vanilla coloring for performance improvement
+			# Vanilla-style coloring using Country.IsNeutral/IsAllied (same as unit markers)
 			background = {
 				using = simple_paper_card_texture
 				alpha = 0.5
 				margin = { 0 -2 }
 				margin_right = 8
 				mirror = horizontal
-				# War-aware coloring: blue for any country sharing a war with the player (allies or subjects)
-				modify_texture = {
-					using = color_grey_texture
-					alpha = 0.35
-					visible = "[Not(Or3(Player.IsEnemy(Country.Self), Country.IsPlayer, GreaterThan_int32(PdxGuiWidget.AccessParent.FindChild('sul_shared_wars').CountVisibleChildren, '(int32)0')))]"
-				}
-				modify_texture = {
-					using = color_enemy_red_texture
-					alpha = 1
-					visible = "[Player.IsEnemy(Country.Self)]"
-				}
-				modify_texture = {
-					using = color_allied_blue_texture
-					alpha = 1
-					visible = "[And3(Not(Player.IsEnemy(Country.Self)), Not(Country.IsPlayer), GreaterThan_int32(PdxGuiWidget.AccessParent.FindChild('sul_shared_wars').CountVisibleChildren, '(int32)0'))]"
-				}
-				modify_texture = {
-					using = color_light_green_texture
-					alpha = 0.3
-					visible = "[Country.IsPlayer]"
-				}
+				visible = "[Not(And3(GetPlayer.GetDiplomacy.IsAtWar, CityMarker.ShouldBeShownAsSettlement, Not(CityMarker.HasWarFort)))]"
+				using = marker_country_side_color
 			}
+
+			# Custom war-aware coloring: uses sul_shared_wars probe for subject/co-belligerent detection
+			# More accurate (catches subjects/co-belligerents) but expensive per-marker
+			# # Hidden probe: iterate this country's wars, children visible only if player is in the same war
+			# fixedgridbox = {
+			# 	name = "sul_shared_wars"
+			# 	size = { 0 0 }
+			# 	alpha = 0
+			# 	datamodel = "[Country.GetDiplomacy.GetCurrentWars]"
+			# 	addcolumn = 0
+			# 	addrow = 0
+			# 	item = { widget = { visible = "[War.IsPlayerInWar]" } }
+			# }
+			# background = {
+			# 	using = simple_paper_card_texture
+			# 	alpha = 0.5
+			# 	margin = { 0 -2 }
+			# 	margin_right = 8
+			# 	mirror = horizontal
+			# 	visible = "[Not(And3(GetPlayer.GetDiplomacy.IsAtWar, CityMarker.ShouldBeShownAsSettlement, Not(CityMarker.HasWarFort)))]"
+			# 	modify_texture = {
+			# 		using = color_grey_texture
+			# 		alpha = 0.35
+			# 		visible = "[Not(Or3(Player.IsEnemy(Country.Self), Country.IsPlayer, GreaterThan_int32(PdxGuiWidget.AccessParent.FindChild('sul_shared_wars').CountVisibleChildren, '(int32)0')))]"
+			# 	}
+			# 	modify_texture = {
+			# 		using = color_enemy_red_texture
+			# 		alpha = 1
+			# 		visible = "[Player.IsEnemy(Country.Self)]"
+			# 	}
+			# 	modify_texture = {
+			# 		using = color_allied_blue_texture
+			# 		alpha = 1
+			# 		visible = "[And3(Not(Player.IsEnemy(Country.Self)), Not(Country.IsPlayer), GreaterThan_int32(PdxGuiWidget.AccessParent.FindChild('sul_shared_wars').CountVisibleChildren, '(int32)0'))]"
+			# 	}
+			# 	modify_texture = {
+			# 		using = color_light_green_texture
+			# 		alpha = 0.3
+			# 		visible = "[Country.IsPlayer]"
+			# 	}
+			# }
 
 			hbox = {
 				minimumsize = { -1 @city_marker_icon_size }
@@ -273,6 +286,7 @@ widget = {
 					fontsize = 12
 					align = nobaseline
 					default_format = "#map_city_label"
+					visible = "[Not(And3(GetPlayer.GetDiplomacy.IsAtWar, CityMarker.ShouldBeShownAsSettlement, Not(CityMarker.HasWarFort)))]"
 				}
 			}
 		}

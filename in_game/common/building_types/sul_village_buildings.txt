@@ -3,34 +3,47 @@
 # ============================================
 # Makes village buildings effectively free by granting +1 max building level per level
 # Also applies positive externality modifiers to support their industries
-# market_village has no vanilla location_potential, so INJECT works
+# Production methods redistributed to match each village's specialization
 
-INJECT:market_village = {
+REPLACE:market_village = {
+	increase_per_level_cost = 0.0
+	is_foreign = no
+	max_levels = rural_building_cap
+	pop_type = peasants
+	category = village_category
+	employment_size = village_employment_size
+	rural_settlement = yes
 	town = yes
 	city = yes
 
 	location_potential = {
-		OR = {
-			sul_has_commercial_specialization = yes
-			sul_has_mining_specialization = yes
-		}
+		modifier:sul_allows_commerce_buildings = yes
 	}
+
+	build_time = village_build_time
+	construction_demand = village_construction
 
 	modifier = {
 		free_building_levels = 1
 		local_monthly_food = 1.0
+		# Trade capacity (lower tier marketplace)
+		local_merchant_capacity = 0.25
+		local_merchant_power = 0.5
+		local_market_access = 0.0025
 		# Commercial goods output
 		local_cloth_output_modifier = 0.005
 		local_fine_cloth_output_modifier = 0.005
 		local_books_output_modifier = 0.005
 		local_naval_supplies_output_modifier = 0.005
-		# Mining goods output
-		local_tools_output_modifier = 0.005
-		local_weaponry_output_modifier = 0.005
-		local_cannons_output_modifier = 0.005
-		local_firearms_output_modifier = 0.005
-		local_steel_output_modifier = 0.005
-		local_jewelry_output_modifier = 0.005
+	}
+
+	unique_production_methods = {
+		sul_market_village_maintenance = {
+			salt = 0.03
+			cloth = 0.02
+			pottery = 0.02
+			category = building_maintenance
+		}
 	}
 }
 
@@ -47,7 +60,7 @@ REPLACE:fishing_village = {
 	AI_optimization_flag_coastal = yes
 
 	location_potential = {
-		sul_has_gathering_specialization = yes
+		modifier:sul_allows_glass_production = yes
 	}
 
 	build_time = village_build_time
@@ -75,6 +88,20 @@ REPLACE:fishing_village = {
 			tools = 0.02
 			category = building_maintenance
 		}
+
+		sul_rural_glassmaker = {
+			produced = glass
+			output = 0.3
+			sand = 1.0
+			category = guild_input
+		}
+
+		sul_rural_pottery_maker = {
+			produced = pottery
+			output = 0.2
+			clay = 0.33
+			category = guild_input
+		}
 	}
 }
 
@@ -90,7 +117,7 @@ REPLACE:farming_village = {
 	city = yes
 
 	location_potential = {
-		sul_has_farming_specialization = yes
+		modifier:sul_allows_beer_production = yes
 	}
 
 	build_time = village_build_time
@@ -120,6 +147,15 @@ REPLACE:farming_village = {
 			produced = livestock
 			category = building_maintenance
 		}
+
+		sul_rural_millet_brewery = {
+			produced = beer
+			output = 0.5
+			millet = 0.5
+			lumber = 0.1
+			tools = 0.07
+			category = guild_input
+		}
 	}
 }
 
@@ -135,7 +171,7 @@ REPLACE:forest_village = {
 	city = yes
 
 	location_potential = {
-		sul_has_woodland_specialization = yes
+		modifier:sul_allows_furniture_production = yes
 	}
 
 	build_time = village_build_time
@@ -161,6 +197,69 @@ REPLACE:forest_village = {
 			tar = 0.02
 			wild_game = 0.4
 			category = building_maintenance
+		}
+	}
+}
+
+# New mining village building
+
+sul_mining_village = {
+	increase_per_level_cost = 0.0
+	is_foreign = no
+	max_levels = rural_building_cap
+	pop_type = peasants
+	category = village_category
+	employment_size = village_employment_size
+	rural_settlement = yes
+	town = yes
+	city = yes
+
+	location_potential = {
+		modifier:sul_allows_tools_production = yes
+	}
+
+	build_time = village_build_time
+	construction_demand = village_construction
+
+	modifier = {
+		free_building_levels = 1
+		local_monthly_food = 1.0
+		# Mining goods output
+		local_tools_output_modifier = 0.005
+		local_weaponry_output_modifier = 0.005
+		local_cannons_output_modifier = 0.005
+		local_firearms_output_modifier = 0.005
+		local_steel_output_modifier = 0.005
+		local_jewelry_output_modifier = 0.005
+	}
+
+	unique_production_methods = {
+		sul_rural_blacksmith = {
+			produced = tools
+			output = 0.5
+			iron = 0.4
+			category = guild_input
+		}
+
+		sul_rural_stone_tools = {
+			produced = tools
+			output = 0.125
+			stone = 0.35
+			category = guild_input
+		}
+
+		sul_rural_weaponmaker = {
+			produced = weaponry
+			output = 0.2
+			lumber = 0.32
+			category = guild_input
+		}
+
+		sul_rural_jewelry_carver = {
+			produced = jewelry
+			output = 0.1
+			stone = 0.4
+			category = guild_input
 		}
 	}
 }
@@ -205,26 +304,26 @@ INJECT:mason = {
 		# Intermediate: net 0 raw/rgo
 		local_raw_material_output = 0.005
 		local_max_rgo_size_modifier = 0.005
-		# All manufactured goods output
-		local_cloth_output_modifier = 0.0075
-		local_fine_cloth_output_modifier = 0.0075
-		local_books_output_modifier = 0.0075
-		local_naval_supplies_output_modifier = 0.0075
-		local_tools_output_modifier = 0.0075
-		local_weaponry_output_modifier = 0.0075
-		local_cannons_output_modifier = 0.0075
-		local_firearms_output_modifier = 0.0075
-		local_steel_output_modifier = 0.0075
-		local_jewelry_output_modifier = 0.0075
-		local_wine_output_modifier = 0.0075
-		local_beer_output_modifier = 0.0075
-		local_liquor_output_modifier = 0.0075
-		local_leather_output_modifier = 0.0075
-		local_paper_output_modifier = 0.0075
-		local_furniture_output_modifier = 0.0075
-		local_glass_output_modifier = 0.0075
-		local_pottery_output_modifier = 0.0075
-		local_porcelain_output_modifier = 0.0075
-		local_lacquerware_output_modifier = 0.0075
+		# All manufactured goods output (partial offset: -0.0025 net per level)
+		local_cloth_output_modifier = 0.0025
+		local_fine_cloth_output_modifier = 0.0025
+		local_books_output_modifier = 0.0025
+		local_naval_supplies_output_modifier = 0.0025
+		local_tools_output_modifier = 0.0025
+		local_weaponry_output_modifier = 0.0025
+		local_cannons_output_modifier = 0.0025
+		local_firearms_output_modifier = 0.0025
+		local_steel_output_modifier = 0.0025
+		local_jewelry_output_modifier = 0.0025
+		local_wine_output_modifier = 0.0025
+		local_beer_output_modifier = 0.0025
+		local_liquor_output_modifier = 0.0025
+		local_leather_output_modifier = 0.0025
+		local_paper_output_modifier = 0.0025
+		local_furniture_output_modifier = 0.0025
+		local_glass_output_modifier = 0.0025
+		local_pottery_output_modifier = 0.0025
+		local_porcelain_output_modifier = 0.0025
+		local_lacquerware_output_modifier = 0.0025
 	}
 }

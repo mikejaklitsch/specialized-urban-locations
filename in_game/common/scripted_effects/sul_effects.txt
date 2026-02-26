@@ -663,19 +663,38 @@ sul_destroy_non_matching_buildings = {
 # Sets sul_spec_type to type only (1-5); rank derived from location_rank
 
 sul_assign_specialization_by_resources = {
-	# Commercial specialization (priority for market centers, harbors, republic capitals)
+	# Commercial specialization (market centers always; cities require development > 30; towns pass through)
 	if = {
 		limit = {
 			OR = {
 				is_market_center = yes
-				modifier:harbor_suitability > 0.7
+				# Towns/rural qualify without dev check but owner must have more than one location
 				AND = {
-					is_capital = yes
-					location_rank = location_rank:city
-					owner = { government_type = government_type:republic }
+					NOT = {
+						location_rank = location_rank:city
+					}
+					owner = { num_locations > 1 }
+					OR = {
+						modifier:harbor_suitability > 0.7
+						AND = {
+							is_capital = yes
+							owner = { government_type = government_type:republic }
+						}
+					}
 				}
 
-				raw_material = goods:slaves_goods
+				# Cities require development > 30
+				AND = {
+					location_rank = location_rank:city
+					development > 30
+					OR = {
+						modifier:harbor_suitability > 0.7
+						AND = {
+							is_capital = yes
+							owner = { government_type = government_type:republic }
+						}
+					}
+				}
 			}
 		}
 

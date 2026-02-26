@@ -292,6 +292,7 @@ def _append_category_modifiers(
     spec_config: dict,
     override_modifiers: dict | None = None,
     penalties: dict[str, float] | None = None,
+    good_override: str | None = None,
 ) -> None:
     """
     Append modifier category values to the building's modifier block.
@@ -317,7 +318,8 @@ def _append_category_modifiers(
     # Expand finished_goods_spread into per-good output modifiers
     spread = category_config.get("finished_goods_spread")
     if spread is not None:
-        for good in spec_config["finished_goods"]:
+        spread_goods = [good_override] if good_override else spec_config["finished_goods"]
+        for good in spread_goods:
             new_entries.append((f"local_{good}_output_modifier", spread))
 
     # Apply building-level penalty offsets (net → script value)
@@ -326,7 +328,8 @@ def _append_category_modifiers(
 
     all_keys = set(cat_mods.keys())
     if spread is not None:
-        for good in spec_config["finished_goods"]:
+        spread_goods = [good_override] if good_override else spec_config["finished_goods"]
+        for good in spread_goods:
             all_keys.add(f"local_{good}_output_modifier")
 
     # Find existing modifier block, deduplicate, then append
@@ -417,7 +420,8 @@ def generate_replace_building(
         cat = config["modifier_categories"][bld_config["modifier_category"]]
         override_mods = bld_config.get("override_modifiers")
         penalties = config.get("_building_level_penalties")
-        _append_category_modifiers(block, cat, spec, override_mods, penalties)
+        good_override = bld_config.get("good")
+        _append_category_modifiers(block, cat, spec, override_mods, penalties, good_override)
 
     # 6. Rename production methods
     _rename_production_methods(block)
@@ -501,31 +505,42 @@ def make_cross_spec_building(
     name: str,
     cross_config: dict,
     config: dict,
+    trigger: str | None = None,
 ) -> tuple[str, Block]:
     """Generate a cross-specialization INJECT building."""
     block: Block = []
     specs = config["specializations"]
 
-    or_triggers = cross_config.get("location_potential_or", [])
-    if or_triggers:
-        or_block: Block = [(t, "yes") for t in or_triggers]
-        block.append(("location_potential", [("OR", or_block)]))
+    if trigger:
+        block.append(("location_potential", [(trigger, "yes")]))
+    else:
+        or_triggers = cross_config.get("location_potential_or", [])
+        if or_triggers:
+            or_block: Block = [(t, "yes") for t in or_triggers]
+            block.append(("location_potential", [("OR", or_block)]))
 
     mod_block: Block = []
+    good_override = cross_config.get("good")
     for group in cross_config.get("modifier_groups", []):
         extra = group.get("extra_modifiers", {})
         for mk, mv in extra.items():
             mod_block.append((mk, mv))
 
         mod_val = group.get("modifier_value")
-        for spec_name in group.get("specs", []):
-            spec = specs[spec_name]
-            goods = spec["finished_goods"]
-            spec_comment = spec["comment"]
-            if mod_val is not None:
+        if mod_val is not None:
+            if good_override:
+                comment = f"{good_override.replace('_', ' ').title()} output"
                 mod_block.extend(
-                    make_finished_goods_modifiers(goods, mod_val, spec_comment)
+                    make_finished_goods_modifiers([good_override], mod_val, comment)
                 )
+            else:
+                for spec_name in group.get("specs", []):
+                    spec = specs[spec_name]
+                    goods = spec["finished_goods"]
+                    spec_comment = spec["comment"]
+                    mod_block.extend(
+                        make_finished_goods_modifiers(goods, mod_val, spec_comment)
+                    )
 
     if mod_block:
         block.append(("modifier", mod_block))
@@ -597,6 +612,12 @@ def generate_spec_buildings(
     comment = spec["comment"]
     spec_extra_mods = spec.get("extra_modifiers")
 
+    # Build building→chain trigger map
+    chain_trigger_map: dict[str, str] = {}
+    for chain_trigger, chain_buildings in config.get("building_chains", {}).items():
+        for bld in chain_buildings:
+            chain_trigger_map[bld] = chain_trigger
+
     for tier_name, tier_config in inject_config.items():
         if tier_name == "cross_spec" or tier_name.startswith("_"):
             continue
@@ -605,7 +626,11 @@ def generate_spec_buildings(
         tier_extra = tier_config.get("extra_modifiers")
         tier_comment = tier_config.get("comment")
         tier_buildings = tier_config.get("buildings", [])
-        tier_goods = tier_config.get("finished_goods", goods)
+        tier_good = tier_config.get("good")
+        if tier_good:
+            tier_goods = [tier_good]
+        else:
+            tier_goods = tier_config.get("finished_goods", goods)
 
         if not tier_buildings:
             continue
@@ -618,6 +643,9 @@ def generate_spec_buildings(
             loc_or = bld_override.get("location_potential_or")
             extra_props = bld_override.get("extra_props")
 
+            # Use chain-specific trigger if available, else spec trigger
+            bld_trigger = chain_trigger_map.get(building_name, trigger)
+
             merged_extra = {}
             if spec_extra_mods:
                 merged_extra.update(spec_extra_mods)
@@ -628,7 +656,7 @@ def generate_spec_buildings(
 
             key, block = make_inject_building(
                 name=building_name,
-                spec_trigger=trigger,
+                spec_trigger=bld_trigger,
                 finished_goods=tier_goods,
                 modifier_value=mod_value,
                 comment=tier_comment or comment,
@@ -644,7 +672,10 @@ def generate_spec_buildings(
     cross = inject_config.get("cross_spec")
     if cross:
         for building_name in cross.get("buildings", []):
-            key, block = make_cross_spec_building(building_name, cross, config)
+            bld_trigger = chain_trigger_map.get(building_name)
+            key, block = make_cross_spec_building(
+                building_name, cross, config, trigger=bld_trigger
+            )
             _apply_penalties_to_building(block, penalties)
             add_to_section("Cross-specialization", key, block)
 

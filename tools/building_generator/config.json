@@ -49,10 +49,15 @@
       "modifiers": {},
       "finished_goods_spread": 0.0025
     },
+    "finished_good_production_mid": {
+      "comment": "Finished goods output",
+      "modifiers": {},
+      "finished_goods_spread": 0.015
+    },
     "finished_good_production_high": {
       "comment": "Finished goods output",
       "modifiers": {},
-      "finished_goods_spread": 0.005
+      "finished_goods_spread": 0.025
     }
   },
 
@@ -166,7 +171,8 @@
     },
     "glass_guild": {
       "specialization": "gathering",
-      "modifier_category": "finished_good_production_high"
+      "modifier_category": "finished_good_production_high",
+      "good": "glass"
     },
     "sheep_farms": {
       "specialization": "gathering",
@@ -184,7 +190,8 @@
     },
     "tar_kiln": {
       "specialization": "woodland",
-      "modifier_category": "finished_good_production_low"
+      "modifier_category": "finished_good_production_mid",
+      "good": "tar"
     },
     "elephant_hunting_grounds": {
       "specialization": "woodland",
@@ -209,144 +216,199 @@
 
   "inject_buildings": {
     "mining": {
-      "high_tier": {
-        "modifier_value": 0.005,
-        "buildings": [
-          "cannon_maker", "cannon_workshop", "cannon_foundry", "cannons_factory",
-          "hand_cannon_guild", "gun_smith", "guns_workshop",
-          "firearms_manufactory", "firearms_factory",
-          "jewelry_guild"
-        ]
+      "cannons": {
+        "good": "cannons",
+        "modifier_value": 0.025,
+        "buildings": ["cannon_maker", "cannon_workshop", "cannon_foundry", "cannons_factory"]
       },
-      "mid_tier": {
-        "modifier_value": 0.0025,
-        "buildings": [
-          "weapon_guild", "weapon_workshop", "weapon_manufactory", "weapon_factory",
-          "steel_mill"
-        ]
+      "firearms": {
+        "good": "firearms",
+        "modifier_value": 0.025,
+        "buildings": ["hand_cannon_guild", "gun_smith", "guns_workshop", "firearms_manufactory", "firearms_factory"]
       },
-      "low_tier": {
-        "modifier_value": 0.0,
+      "jewelry": {
+        "good": "jewelry",
+        "modifier_value": 0.025,
+        "buildings": ["jewelry_guild"]
+      },
+      "weaponry": {
+        "good": "weaponry",
+        "modifier_value": 0.015,
+        "buildings": ["weapon_guild", "weapon_workshop", "weapon_manufactory", "weapon_factory"]
+      },
+      "steel": {
+        "good": "steel",
+        "modifier_value": 0.015,
+        "buildings": ["steel_mill"]
+      },
+      "tools": {
+        "good": "tools",
+        "modifier_value": 0.01,
         "extra_modifiers": {
           "local_max_rgo_size_modifier": 0.005,
           "local_raw_material_output": 0.005
         },
-        "buildings": [
-          "tools_guild", "tools_workshop", "iron_foundry", "iron_mill"
-        ]
+        "buildings": ["tools_guild", "tools_workshop", "iron_foundry", "iron_mill"]
       }
     },
     "farming": {
-      "high_tier": {
-        "modifier_value": 0.005,
-        "buildings": [
-          "distillers_guild", "distillers_workshop",
-          "distiller_manufactory", "distiller_mill"
-        ]
+      "liquor": {
+        "good": "liquor",
+        "modifier_value": 0.025,
+        "buildings": ["distillers_guild", "distillers_workshop", "distiller_manufactory", "distiller_mill"]
       },
-      "mid_tier": {
-        "modifier_value": 0.0025,
-        "buildings": [
-          "brewery", "beer_workshop", "brewery_manufactory", "brewery_mill",
-          "winery", "winery_manufactory"
-        ]
+      "beer": {
+        "good": "beer",
+        "modifier_value": 0.015,
+        "buildings": ["brewery", "beer_workshop", "brewery_manufactory", "brewery_mill"]
+      },
+      "wine": {
+        "good": "wine",
+        "modifier_value": 0.015,
+        "buildings": ["winery", "winery_manufactory"]
       }
     },
     "gathering": {
-      "high_tier": {
-        "modifier_value": 0.005,
-        "buildings": [
-          "glass_workshop", "glassworks", "glass_mill",
-          "porcelain_guild", "porcelain_manufactory"
-        ]
+      "glass": {
+        "good": "glass",
+        "modifier_value": 0.025,
+        "buildings": ["glass_workshop", "glassworks", "glass_mill"]
       },
-      "mid_tier": {
-        "modifier_value": 0.0025,
-        "buildings": [
-          "pottery_guild", "pottery_workshop", "pottery_manufactory", "pottery_mill",
-          "apothecary"
-        ]
+      "porcelain": {
+        "good": "porcelain",
+        "modifier_value": 0.025,
+        "buildings": ["porcelain_guild", "porcelain_manufactory"]
       },
-      "rgo_tier": {
+      "pottery": {
+        "good": "pottery",
+        "modifier_value": 0.015,
+        "buildings": ["pottery_guild", "pottery_workshop", "pottery_manufactory", "pottery_mill"]
+      },
+      "apothecary": {
+        "modifier_value": null,
+        "buildings": ["apothecary"]
+      },
+      "saltpeter": {
         "modifier_value": null,
         "extra_modifiers": {
           "local_raw_material_output": 0.015,
           "local_max_rgo_size_modifier": 0.015
         },
-        "comment": "Gathering goods output",
-        "buildings": [
-          "saltpeter_workshop", "putrefaction_works", "putrefaction_mill"
-        ]
+        "comment": "Gathering raw materials",
+        "buildings": ["saltpeter_workshop", "putrefaction_works", "putrefaction_mill"]
       }
     },
     "woodland": {
-      "high_tier": {
-        "modifier_value": 0.005,
-        "finished_goods": ["paper", "furniture", "leather"],
-        "buildings": [
-          "furniture_guild", "furniture_workshop",
-          "furniture_manufactory", "furniture_mill",
-          "lacquerware_guild", "lacquerware_manufactory",
-          "paper_guild", "paper_workshop", "paper_manufactory", "paper_mill"
-        ]
+      "furniture": {
+        "good": "furniture",
+        "modifier_value": 0.025,
+        "buildings": ["furniture_guild", "furniture_workshop", "furniture_manufactory", "furniture_mill"]
       },
-      "rgo_tier": {
+      "lacquerware": {
+        "good": "lacquerware",
+        "modifier_value": 0.025,
+        "buildings": ["lacquerware_guild", "lacquerware_manufactory"]
+      },
+      "paper": {
+        "good": "paper",
+        "modifier_value": 0.025,
+        "buildings": ["paper_guild", "paper_workshop", "paper_manufactory", "paper_mill"]
+      },
+      "dyes": {
         "modifier_value": null,
         "extra_modifiers": {
           "local_raw_material_output": 0.015,
           "local_max_rgo_size_modifier": 0.015
         },
-        "comment": "Woodland goods (spread)",
-        "buildings": [
-          "dyes_guild", "dyes_workshop", "dyesworks", "dyes_mill",
-          "charcoal_maker", "improved_charcoal_maker"
-        ]
+        "comment": "Woodland raw materials",
+        "buildings": ["dyes_guild", "dyes_workshop", "dyesworks", "dyes_mill"]
+      },
+      "charcoal": {
+        "modifier_value": null,
+        "extra_modifiers": {
+          "local_raw_material_output": 0.015,
+          "local_max_rgo_size_modifier": 0.015
+        },
+        "comment": "Woodland raw materials",
+        "buildings": ["charcoal_maker", "improved_charcoal_maker"]
       },
       "cross_spec": {
+        "good": "leather",
         "buildings": ["tannery", "tanning_workshop", "tannery_manufactory", "tannery_mill"],
         "location_potential_or": ["sul_has_woodland_specialization", "sul_has_farming_specialization"],
         "modifier_groups": [
           {
             "extra_modifiers": {"local_monthly_food_modifier": 0.0},
             "specs": ["woodland", "farming"],
-            "modifier_value": 0.0025
+            "modifier_value": 0.015
           }
         ]
       }
     },
     "commercial": {
-      "high_tier": {
-        "modifier_value": 0.005,
-        "buildings": [
-          "scriptorium", "printing_press_shop",
-          "printing_manufactory", "printing_mill",
-          "perfumery"
-        ]
+      "books": {
+        "good": "books",
+        "modifier_value": 0.025,
+        "buildings": ["scriptorium", "printing_press_shop", "printing_manufactory", "printing_mill"]
       },
-      "mid_tier": {
-        "modifier_value": 0.0025,
-        "buildings": [
-          "cloth_guild", "cloth_workshop", "cloth_manufactory", "textile_mill",
-          "fine_cloth_guild", "fine_cloth_workshop", "fine_cloth_manufactory", "fine_cloth_mill",
-          "naval_supplies_guild", "naval_supplies_workshop",
-          "naval_supplies_manufactory", "naval_supplies_mill",
-          "rural_clothmaker"
-        ]
+      "cloth": {
+        "good": "cloth",
+        "modifier_value": 0.015,
+        "buildings": ["cloth_guild", "cloth_workshop", "cloth_manufactory", "textile_mill", "rural_clothmaker"]
       },
-      "trade_with_merchant": {
-        "modifier_value": 0.0025,
-        "buildings": [
-          "marketplace", "merchants_quarters", "grand_marketplace", "commerce_center",
-          "funduq"
-        ]
+      "fine_cloth": {
+        "good": "fine_cloth",
+        "modifier_value": 0.015,
+        "buildings": ["fine_cloth_guild", "fine_cloth_workshop", "fine_cloth_manufactory", "fine_cloth_mill"]
       },
-      "special": {
+      "naval_supplies": {
+        "good": "naval_supplies",
+        "modifier_value": 0.015,
+        "buildings": ["naval_supplies_guild", "naval_supplies_workshop", "naval_supplies_manufactory", "naval_supplies_mill"]
+      },
+      "perfumery": {
         "modifier_value": null,
-        "buildings": [
-          "university"
-        ]
+        "buildings": ["perfumery"]
+      },
+      "trade": {
+        "modifier_value": null,
+        "buildings": ["marketplace", "merchants_quarters", "grand_marketplace", "commerce_center", "funduq"]
+      },
+      "university": {
+        "modifier_value": null,
+        "buildings": ["university"]
       }
     }
+  },
+
+  "building_chains": {
+    "modifier:sul_allows_tools_production": ["tools_guild", "tools_workshop", "iron_foundry", "iron_mill"],
+    "modifier:sul_allows_weapons_production": ["weapon_guild", "weapon_workshop", "weapon_manufactory", "weapon_factory"],
+    "modifier:sul_allows_cannon_production": ["cannon_maker", "cannon_workshop", "cannon_foundry", "cannons_factory"],
+    "modifier:sul_allows_firearms_production": ["hand_cannon_guild", "gun_smith", "guns_workshop", "firearms_manufactory", "firearms_factory"],
+    "modifier:sul_allows_jewelry_production": ["jewelry_guild"],
+    "modifier:sul_allows_steel_production": ["steel_mill"],
+    "modifier:sul_allows_beer_production": ["brewery", "beer_workshop", "brewery_manufactory", "brewery_mill"],
+    "modifier:sul_allows_wine_production": ["winery", "winery_manufactory"],
+    "modifier:sul_allows_liquor_production": ["distillers_guild", "distillers_workshop", "distiller_manufactory", "distiller_mill"],
+    "modifier:sul_allows_leather_production": ["tannery", "tanning_workshop", "tannery_manufactory", "tannery_mill"],
+    "modifier:sul_allows_glass_production": ["glass_workshop", "glassworks", "glass_mill"],
+    "modifier:sul_allows_pottery_production": ["pottery_guild", "pottery_workshop", "pottery_manufactory", "pottery_mill"],
+    "modifier:sul_allows_porcelain_production": ["porcelain_guild", "porcelain_manufactory"],
+    "modifier:sul_allows_saltpeter_production": ["saltpeter_workshop", "putrefaction_works", "putrefaction_mill"],
+    "modifier:sul_allows_apothecary_production": ["apothecary"],
+    "modifier:sul_allows_furniture_production": ["furniture_guild", "furniture_workshop", "furniture_manufactory", "furniture_mill"],
+    "modifier:sul_allows_paper_production": ["paper_guild", "paper_workshop", "paper_manufactory", "paper_mill"],
+    "modifier:sul_allows_lacquerware_production": ["lacquerware_guild", "lacquerware_manufactory"],
+    "modifier:sul_allows_dye_production": ["dyes_guild", "dyes_workshop", "dyesworks", "dyes_mill"],
+    "modifier:sul_allows_charcoal_production": ["charcoal_maker", "improved_charcoal_maker"],
+    "modifier:sul_allows_printing_production": ["scriptorium", "printing_press_shop", "printing_manufactory", "printing_mill"],
+    "modifier:sul_allows_cloth_production": ["cloth_guild", "cloth_workshop", "cloth_manufactory", "textile_mill", "rural_clothmaker"],
+    "modifier:sul_allows_fine_cloth_production": ["fine_cloth_guild", "fine_cloth_workshop", "fine_cloth_manufactory", "fine_cloth_mill"],
+    "modifier:sul_allows_naval_supplies_production": ["naval_supplies_guild", "naval_supplies_workshop", "naval_supplies_manufactory", "naval_supplies_mill"],
+    "modifier:sul_allows_commerce_buildings": ["marketplace", "merchants_quarters", "grand_marketplace", "commerce_center", "funduq"],
+    "modifier:sul_allows_incense_production": ["perfumery"],
+    "modifier:sul_allows_university": ["university"]
   },
 
   "inject_building_overrides": {

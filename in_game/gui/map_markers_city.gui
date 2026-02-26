@@ -189,8 +189,19 @@ widget = {
 			parentanchor = left|vcenter
 			widgetanchor = left|vcenter
 			datacontext = "[CityMarker.GetLocation.GetOwner]"
-			# Hide box+name for non-capital rural settlements at medium zoom
-			visible = "[Not(And3(Not(CityMarker.ShowDetails), CityMarker.ShouldBeShownAsSettlement, Not(Or(CityMarker.GetLocation.IsCapital, CityMarker.GetLocation.IsProvinceCapital))))]"
+			# Hide box+name for non-capital rural settlements at medium zoom (exception for forts during war)
+			visible = "[Not(And3(Not(CityMarker.ShowDetails), CityMarker.ShouldBeShownAsSettlement, Not(Or3(CityMarker.GetLocation.IsCapital, CityMarker.GetLocation.IsProvinceCapital, CityMarker.HasWarFort))))]"
+
+			# Hidden probe: iterate this country's wars, children visible only if player is in the same war
+			fixedgridbox = {
+				name = "sul_shared_wars"
+				size = { 0 0 }
+				alpha = 0
+				datamodel = "[Country.GetDiplomacy.GetCurrentWars]"
+				addcolumn = 0
+				addrow = 0
+				item = { widget = { visible = "[War.IsPlayerInWar]" } }
+			}
 
 			background = {
 				using = simple_paper_card_texture
@@ -198,7 +209,27 @@ widget = {
 				margin = { 0 -2 }
 				margin_right = 8
 				mirror = horizontal
-				using = marker_country_side_color
+				# War-aware coloring: blue for any country sharing a war with the player (allies or subjects)
+				modify_texture = {
+					using = color_grey_texture
+					alpha = 0.35
+					visible = "[Not(Or3(Player.IsEnemy(Country.Self), Country.IsPlayer, GreaterThan_int32(PdxGuiWidget.AccessParent.FindChild('sul_shared_wars').CountVisibleChildren, '(int32)0')))]"
+				}
+				modify_texture = {
+					using = color_enemy_red_texture
+					alpha = 1
+					visible = "[Player.IsEnemy(Country.Self)]"
+				}
+				modify_texture = {
+					using = color_allied_blue_texture
+					alpha = 1
+					visible = "[And3(Not(Player.IsEnemy(Country.Self)), Not(Country.IsPlayer), GreaterThan_int32(PdxGuiWidget.AccessParent.FindChild('sul_shared_wars').CountVisibleChildren, '(int32)0'))]"
+				}
+				modify_texture = {
+					using = color_light_green_texture
+					alpha = 0.3
+					visible = "[Country.IsPlayer]"
+				}
 			}
 
 			hbox = {

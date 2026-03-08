@@ -4,6 +4,7 @@
 # Makes village buildings effectively free by granting +1 max building level per level
 # Also applies positive externality modifiers to support their industries
 # Production methods redistributed to match each village's specialization
+# Villages double as alternative cookhouses — provisions PM group at cookhouse scale
 
 REPLACE:market_village = {
 	increase_per_level_cost = 0.0
@@ -25,7 +26,6 @@ REPLACE:market_village = {
 
 	modifier = {
 		free_building_levels = 1
-		local_monthly_food = 1.0
 		# Trade capacity (lower tier marketplace)
 		local_merchant_capacity = 0.25
 		local_merchant_power = 0.5
@@ -68,10 +68,6 @@ REPLACE:fishing_village = {
 
 	modifier = {
 		free_building_levels = 1
-		local_monthly_food = 1.5
-		# Force Multiplier: +0.10 food, +0.01 raw, +0.01 rgo
-		local_monthly_food_modifier = 0.10
-		local_raw_material_output = 0.01
 		local_max_rgo_size_modifier = 0.01
 		# Gathering goods output
 		local_glass_output_modifier = 0.01
@@ -80,27 +76,58 @@ REPLACE:fishing_village = {
 		local_lacquerware_output_modifier = 0.01
 	}
 
+	# Provisions — cookhouse-scale, gathering + common foodstuffs
 	unique_production_methods = {
-		sul_fishing_village_maintenance = {
-			produced = fish
-			output = 0.5
-			salt = 0.08
-			tools = 0.02
+		sul_gathering_no_provisions = { category = building_maintenance }
+
+		# Gathering-specific
+		# Cost: 2.5 + 0.5 = 3.0, Revenue: 3.0, Margin: 0%
+		sul_gathering_salted_fish = {
+			fish = 2.5
+			salt = 0.5
+			produced = provisions
+			output = 1.0
 			category = building_maintenance
 		}
 
-		sul_rural_glassmaker = {
-			produced = glass
-			output = 0.3
-			sand = 1.0
-			category = guild_input
+		# Cost: 2.5 + 0.5 = 3.0, Revenue: 3.0, Margin: 0%
+		sul_gathering_mutton = {
+			wool = 2.0
+			salt = 0.5
+			produced = provisions
+			output = 1.0
+			category = building_maintenance
 		}
 
-		sul_rural_pottery_maker = {
-			produced = pottery
-			output = 0.2
-			clay = 0.33
-			category = guild_input
+		# Common foodstuffs
+		# Cost: 2.0 + 1.2 + 0.1 = 3.3, Revenue: 3.0, Margin: -9%
+		sul_gathering_wheat_pottage = {
+			wheat = 2.0
+			livestock = 0.8
+			salt = 0.1
+			produced = provisions
+			output = 1.0
+			category = building_maintenance
+		}
+
+		# Cost: 1.75 + 1.5 + 0.1 = 3.35, Revenue: 3.0, Margin: -10%
+		sul_gathering_rice_legumes = {
+			rice = 1.75
+			legumes = 1.5
+			salt = 0.1
+			produced = provisions
+			output = 1.0
+			category = building_maintenance
+		}
+
+		# Cost: 2.0 + 1.2 + 0.1 = 3.3, Revenue: 3.0, Margin: -9%
+		sul_gathering_millet_porridge = {
+			millet = 2.0
+			livestock = 0.8
+			salt = 0.1
+			produced = provisions
+			output = 1.0
+			category = building_maintenance
 		}
 	}
 }
@@ -125,9 +152,6 @@ REPLACE:farming_village = {
 
 	modifier = {
 		free_building_levels = 1
-		local_food_capacity = 50
-		local_monthly_food_modifier = 0.075
-		local_raw_material_output = 0.005
 		local_max_rgo_size_modifier = 0.005
 		# Farming goods output
 		local_wine_output_modifier = 0.01
@@ -136,22 +160,67 @@ REPLACE:farming_village = {
 		local_leather_output_modifier = 0.01
 	}
 
+	# Provisions — cookhouse-scale, all farming food goods
 	unique_production_methods = {
-		sul_farming_village_maintenance = {
-			tools = 0.0375
-			clay = 1.5
-			output = 0.75
-			produced = livestock
+		sul_farming_no_provisions = { category = building_maintenance }
+
+		# Cost: 2.0 + 1.2 + 0.1 = 3.3, Revenue: 3.0, Margin: -9%
+		sul_farming_wheat_pottage = {
+			wheat = 2.0
+			livestock = 0.8
+			salt = 0.1
+			produced = provisions
+			output = 1.0
 			category = building_maintenance
 		}
 
-		sul_rural_millet_brewery = {
-			produced = beer
-			output = 0.5
-			millet = 0.5
-			lumber = 0.1
-			tools = 0.07
-			category = guild_input
+		# Cost: 1.75 + 1.5 + 0.1 = 3.35, Revenue: 3.0, Margin: -10%
+		sul_farming_rice_legumes = {
+			rice = 1.75
+			legumes = 1.5
+			salt = 0.1
+			produced = provisions
+			output = 1.0
+			category = building_maintenance
+		}
+
+		# Cost: 1.2 + 1.2 + 0.5 = 2.9, Revenue: 3.0, Margin: +3%
+		sul_farming_maize_stew = {
+			maize = 1.2
+			livestock = 0.8
+			potato = 0.5
+			produced = provisions
+			output = 1.0
+			category = building_maintenance
+		}
+
+		# Cost: 1.5 + 1.0 + 0.5 = 3.0, Revenue: 3.0, Margin: 0%
+		sul_farming_olive_bread = {
+			wheat = 1.5
+			olives = 1.0
+			legumes = 0.5
+			produced = provisions
+			output = 1.0
+			category = building_maintenance
+		}
+
+		# Cost: 2.0 + 1.2 + 0.1 = 3.3, Revenue: 3.0, Margin: -9%
+		sul_farming_millet_porridge = {
+			millet = 2.0
+			livestock = 0.8
+			salt = 0.1
+			produced = provisions
+			output = 1.0
+			category = building_maintenance
+		}
+
+		# Cost: 2.5 + 0.5 = 3.0, Revenue: 3.0, Margin: 0%
+		sul_farming_fruit_preserves = {
+			fruit = 2.5
+			salt = 0.5
+			produced = provisions
+			output = 1.0
+			category = building_maintenance
 		}
 	}
 }
@@ -176,9 +245,6 @@ REPLACE:forest_village = {
 
 	modifier = {
 		free_building_levels = 1
-		local_monthly_food = 1.0
-		# Raw Extraction: +0.02 raw, +0.01 rgo
-		local_raw_material_output = 0.02
 		local_max_rgo_size_modifier = 0.01
 		# Woodland goods output
 		local_paper_output_modifier = 0.01
@@ -186,26 +252,63 @@ REPLACE:forest_village = {
 		local_leather_output_modifier = 0.01
 	}
 
+	# Provisions — cookhouse-scale, woodland + common foodstuffs
 	unique_production_methods = {
-		sul_forest_village_maintenance = {
-			produced = leather
-			output = 0.25
-			sand = 0.1
-			tar = 0.02
-			wild_game = 0.4
+		sul_woodland_no_provisions = { category = building_maintenance }
+
+		# Woodland-specific
+		# Cost: 3.0 + 0.2 = 3.2, Revenue: 3.0, Margin: -6%
+		sul_woodland_cured_game = {
+			wild_game = 3.0
+			salt = 0.2
+			produced = provisions
+			output = 1.0
 			category = building_maintenance
 		}
 
-		sul_hunting_lodges = {
-			produced = wild_game
-			output = 0.20
-			weaponry = 0.05
+		# Cost: 3.0 + 0.2 = 3.2, Revenue: 3.0, Margin: -6%
+		sul_woodland_trappers_rations = {
+			fur = 1.5
+			salt = 0.2
+			produced = provisions
+			output = 1.0
+			category = building_maintenance
+		}
+
+		# Common foodstuffs
+		# Cost: 2.0 + 1.2 + 0.1 = 3.3, Revenue: 3.0, Margin: -9%
+		sul_woodland_wheat_pottage = {
+			wheat = 2.0
+			livestock = 0.8
+			salt = 0.1
+			produced = provisions
+			output = 1.0
+			category = building_maintenance
+		}
+
+		# Cost: 1.75 + 1.5 + 0.1 = 3.35, Revenue: 3.0, Margin: -10%
+		sul_woodland_rice_legumes = {
+			rice = 1.75
+			legumes = 1.5
+			salt = 0.1
+			produced = provisions
+			output = 1.0
+			category = building_maintenance
+		}
+
+		# Cost: 2.0 + 1.2 + 0.1 = 3.3, Revenue: 3.0, Margin: -9%
+		sul_woodland_millet_porridge = {
+			millet = 2.0
+			livestock = 0.8
+			salt = 0.1
+			produced = provisions
+			output = 1.0
 			category = building_maintenance
 		}
 	}
 }
 
-# New mining village building
+# New mining village building — no provisions (miners buy food from market)
 
 sul_mining_village = {
 	increase_per_level_cost = 0.0
@@ -227,7 +330,6 @@ sul_mining_village = {
 
 	modifier = {
 		free_building_levels = 1
-		local_monthly_food = 1.0
 		# Mining goods output
 		local_tools_output_modifier = 0.005
 		local_weaponry_output_modifier = 0.005
@@ -238,77 +340,29 @@ sul_mining_village = {
 	}
 
 	unique_production_methods = {
-		sul_rural_blacksmith = {
-			produced = tools
-			output = 0.5
-			iron = 0.4
-			category = guild_input
-		}
-
-		sul_rural_stone_tools = {
-			produced = tools
-			output = 0.125
-			stone = 0.35
-			category = guild_input
-		}
-
-		sul_rural_weaponmaker = {
-			produced = weaponry
-			output = 0.2
-			lumber = 0.32
-			category = guild_input
-		}
-
-		sul_rural_jewelry_carver = {
-			produced = jewelry
-			output = 0.1
-			stone = 0.4
-			category = guild_input
+		sul_mining_village_maintenance = {
+			tools = 0.05
+			category = building_maintenance
 		}
 	}
 }
 
-INJECT:granary = {
-	modifier = {
-		# PoP increases capacity from 200 to 600 (+400)
-		local_food_capacity = 400
-		local_food_capacity_modifier = 0.10
-		# Net 0: counteract all baseline penalties (infrastructure)
-		local_monthly_food_modifier = 0.02
-		local_raw_material_output = 0.005
-		local_max_rgo_size_modifier = 0.005
-		# All manufactured goods output
-		local_cloth_output_modifier = 0.005
-		local_fine_cloth_output_modifier = 0.005
-		local_books_output_modifier = 0.005
-		local_naval_supplies_output_modifier = 0.005
-		local_tools_output_modifier = 0.005
-		local_weaponry_output_modifier = 0.005
-		local_cannons_output_modifier = 0.005
-		local_firearms_output_modifier = 0.005
-		local_steel_output_modifier = 0.005
-		local_jewelry_output_modifier = 0.005
-		local_wine_output_modifier = 0.005
-		local_beer_output_modifier = 0.005
-		local_liquor_output_modifier = 0.005
-		local_leather_output_modifier = 0.005
-		local_paper_output_modifier = 0.005
-		local_furniture_output_modifier = 0.005
-		local_glass_output_modifier = 0.005
-		local_pottery_output_modifier = 0.005
-		local_porcelain_output_modifier = 0.005
-		local_lacquerware_output_modifier = 0.005
-	}
-}
-
-# Mason building produces masonry (intermediate good)
+# Mason building — intermediate good production + masonry
 
 INJECT:mason = {
+	unique_production_methods = {
+		sul_marble_masonry = {
+			marble = 0.1
+			produced = masonry
+			output = 0.75
+			category = guild_input
+		}
+	}
+
 	modifier = {
-		# Intermediate: net 0 raw/rgo
-		local_raw_material_output = 0.005
 		local_max_rgo_size_modifier = 0.005
-		# All manufactured goods output (partial offset: -0.0025 net per level)
+		local_masonry_output_modifier = 0.02
+		# All manufactured goods output (partial offset)
 		local_cloth_output_modifier = 0.0025
 		local_fine_cloth_output_modifier = 0.0025
 		local_books_output_modifier = 0.0025

@@ -1,33 +1,178 @@
 ﻿# Specialized Urban Locations - Custom On Action Definitions
 # Hooks that append to vanilla on_actions are in sul_hardcoded.txt
 # =============================================================================
-# GAME START
+# INITIALIZATION & VERSION CHECK
 # =============================================================================
+# Bouvet Island (location:bouvet_island): impassable location used as mod state anchor.
+# sul_active modifier applied here — stripped by engine when mod is removed.
+# sul_version variable stored here for version-based rebuild detection.
 
-sul_game_start_setup = {
+# Game start: full rebuild + stamp version
+
+sul_initialize_all = {
 	effect = {
-		sul_setup_goods_spec_map = yes
-		# All ownable locations: eligibility + GDP init + specialization
-		every_location_in_the_world = {
-			limit = { is_ownable = yes exists = raw_material }
-			sul_calculate_specialization_eligibility = yes
-			set_variable = { name = sul_local_gdp value = 0 }
-			sul_assign_specialization_by_resources = yes
-			sul_apply_specialization_modifier = yes
-			# Owned locations: destroy non-matching buildings
-			if = {
-				limit = { exists = owner }
-				sul_save_building_levels = yes
-				sul_destroy_non_matching_buildings = yes
-				sul_restore_building_levels = yes
+		sul_full_rebuild = yes
+		# Stamp version on Bouvet Island
+		location:bouvet_island = {
+			remove_location_modifier = sul_active
+			add_location_modifier = { modifier = sul_active days = -1 }
+			set_variable = { name = sul_version value = @sul_rebuild_version }
+		}
+	}
+}
+
+# Monthly version check: triggers rebuild if marker is missing or outdated
+# Handles first-time init on existing save, version upgrades, and mod remove/re-add
+
+sul_version_check = {
+	trigger = {
+		OR = {
+			# Modifier missing = mod was removed and re-added (or first init on existing save)
+			location:bouvet_island = {
+				NOT = {
+					has_location_modifier = sul_active
+				}
+			}
+
+			# Modifier present but version outdated = mod was updated
+			location:bouvet_island = {
+				has_location_modifier = sul_active
+				has_variable = sul_version
+				var:sul_version < @sul_rebuild_version
 			}
 		}
 
-		# GDP per capita cache
-		every_country = {
-			limit = { sul_is_valid_location_owner = yes }
-			sul_update_all_location_gdp = yes
+		# Guard: don't let multiple countries trigger rebuild in the same tick
+		NOT = {
+			has_global_variable = sul_rebuilding
 		}
+	}
+
+	effect = {
+		set_global_variable = { name = sul_rebuilding value = yes }
+		sul_full_rebuild = yes
+		# Stamp version on Bouvet Island
+		location:bouvet_island = {
+			remove_location_modifier = sul_active
+			add_location_modifier = { modifier = sul_active days = -1 }
+			set_variable = { name = sul_version value = @sul_rebuild_version }
+		}
+
+		remove_global_variable = sul_rebuilding
+	}
+}
+
+# =============================================================================
+# FULL REBUILD
+# =============================================================================
+# Called on game start and when mod version changes (via version check)
+# Minimally invasive: preserves valid player specializations and buildings
+# Only reassigns locations whose current spec violates updated rules
+
+sul_full_rebuild = {
+	sul_setup_goods_spec_map = yes
+
+	# All ownable locations: recalculate eligibility, then branch
+	every_location_in_the_world = {
+		limit = { is_ownable = yes exists = raw_material }
+		sul_calculate_specialization_eligibility = yes
+		sul_rebuild_location = yes
+	}
+
+	# GDP per capita cache
+	every_country = {
+		limit = { sul_is_valid_location_owner = yes }
+		sul_update_all_location_gdp = yes
+	}
+
+	# Market cache
+	sul_refresh_market_cache = yes
+}
+
+# =============================================================================
+# REBUILD SINGLE LOCATION
+# =============================================================================
+# Handles one location during rebuild. Three paths:
+# 1. No specialization → fresh assignment with buildings
+# 2. Valid specialization → refresh modifier only (handles value changes)
+# 3. Invalid specialization → reassign by resources + rebuild buildings
+# root = location (eligibility already calculated)
+
+sul_rebuild_location = {
+	if = {
+		limit = { sul_has_any_specialization = yes }
+
+		if = {
+			# Current spec still valid — just refresh the modifier
+			limit = { sul_current_specialization_is_valid = yes }
+			sul_refresh_specialization_modifier = yes
+		}
+		else = {
+			# Current spec no longer valid — full reassignment
+			sul_reassign_specialization = yes
+		}
+	}
+	else = {
+		# No specialization yet — first-time init
+		sul_init_new_specialization = yes
+	}
+}
+
+# =============================================================================
+# REFRESH SPECIALIZATION MODIFIER
+# =============================================================================
+# Swaps the modifier for the current spec+rank without changing anything else
+# Prevents duplication by clearing before applying
+# root = location (must have sul_spec_type set)
+
+sul_refresh_specialization_modifier = {
+	sul_clear_all_specialization_modifiers = yes
+	sul_update_designation = yes
+	sul_apply_specialization_modifier = yes
+}
+
+# =============================================================================
+# REASSIGN SPECIALIZATION
+# =============================================================================
+# Current spec is no longer valid under updated rules
+# Clears old state, picks best match from resources, rebuilds buildings
+# root = location
+
+sul_reassign_specialization = {
+	sul_clear_all_specialization_modifiers = yes
+	sul_assign_specialization_by_resources = yes
+	sul_apply_specialization_modifier = yes
+
+	# Rebuild buildings for owned locations
+	if = {
+		limit = { exists = owner }
+		sul_save_building_levels = yes
+		sul_destroy_non_matching_buildings = yes
+		sul_restore_building_levels = yes
+	}
+}
+
+# =============================================================================
+# INIT NEW SPECIALIZATION
+# =============================================================================
+# First-time setup for a location that has never been specialized
+# root = location
+
+sul_init_new_specialization = {
+	set_variable = {
+		name = sul_local_gdp
+		value = 0
+	}
+
+	sul_assign_specialization_by_resources = yes
+	sul_apply_specialization_modifier = yes
+
+	# Grant buildings for owned locations
+	if = {
+		limit = { exists = owner }
+		sul_save_building_levels = yes
+		sul_destroy_non_matching_buildings = yes
+		sul_restore_building_levels = yes
 	}
 }
 
@@ -38,12 +183,10 @@ sul_game_start_setup = {
 
 sul_on_location_rank_changed = {
 	effect = {
-		# If already has specialization, clear old modifier and apply new one for current rank
+		# If already has specialization, refresh modifier for new rank
 		if = {
 			limit = { sul_has_any_specialization = yes }
-			sul_clear_all_specialization_modifiers = yes
-			sul_update_designation = yes
-			sul_apply_specialization_modifier = yes
+			sul_refresh_specialization_modifier = yes
 			# Destroy non-matching buildings for towns/cities
 			if = {
 				limit = {
@@ -69,6 +212,7 @@ sul_on_location_rank_changed = {
 			}
 
 			sul_assign_specialization_by_resources = yes
+			sul_apply_specialization_modifier = yes
 			if = {
 				limit = {
 					OR = {
@@ -79,8 +223,6 @@ sul_on_location_rank_changed = {
 
 				sul_destroy_non_matching_buildings = yes
 			}
-
-			sul_apply_specialization_modifier = yes
 		}
 	}
 }

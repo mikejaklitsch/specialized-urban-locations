@@ -1,4 +1,7 @@
-﻿# Food production
+﻿@sul_large_good_bonus = 0.01
+@sul_small_good_bonus = 0.0075
+@sul_neutral_good_bonus = 0.005
+# Uncategorized
 
 REPLACE:fruit_orchard = {
 	is_foreign = no
@@ -34,15 +37,9 @@ REPLACE:fruit_orchard = {
 	construction_demand = farm_constructions
 
 	modifier = {
-		# Food production
-		local_monthly_food = 1.0
-		local_monthly_food_modifier = 0.05
-		local_raw_material_output = 0.02
 		local_max_rgo_size_modifier = 0.02
 	}
 }
-
-# Raw Extraction
 
 REPLACE:fiber_crops_farm = {
 	is_foreign = no
@@ -81,8 +78,6 @@ REPLACE:fiber_crops_farm = {
 	construction_demand = farm_constructions
 
 	modifier = {
-		# Raw Extraction
-		local_raw_material_output = 0.02
 		local_max_rgo_size_modifier = 0.02
 	}
 }
@@ -124,8 +119,6 @@ REPLACE:horse_breeders = {
 	construction_demand = horse_breeders_construction
 
 	modifier = {
-		# Raw Extraction
-		local_raw_material_output = 0.02
 		local_max_rgo_size_modifier = 0.02
 	}
 }
@@ -169,8 +162,6 @@ REPLACE:sugar_plantation = {
 	modifier = {
 		local_sugar_output_modifier = 0.1
 		local_slave_pop_satisfaction = -0.005
-		# Raw Extraction
-		local_raw_material_output = 0.02
 		local_max_rgo_size_modifier = 0.005
 	}
 
@@ -216,8 +207,6 @@ REPLACE:cotton_plantation = {
 	modifier = {
 		local_cotton_output_modifier = 0.1
 		local_slave_pop_satisfaction = -0.005
-		# Raw Extraction
-		local_raw_material_output = 0.02
 		local_max_rgo_size_modifier = 0.02
 	}
 
@@ -263,60 +252,13 @@ REPLACE:tobacco_plantation = {
 	modifier = {
 		local_tobacco_output_modifier = 0.1
 		local_slave_pop_satisfaction = -0.005
-		# Raw Extraction
-		local_raw_material_output = 0.02
 		local_max_rgo_size_modifier = 0.02
 	}
 
 	construction_demand = plantation_construction
 }
 
-# Food-adjacent
-
-REPLACE:windmill = {
-	is_foreign = no
-	pop_type = laborers
-	max_levels = rural_building_cap
-	employment_size = rural_peasant_enhance_employment
-	category = rgo_building_category
-	rural_settlement = yes
-	town = yes
-	city = yes
-
-	location_potential = {
-		OR = {
-			raw_material = goods:wheat
-			raw_material = goods:rice
-			raw_material = goods:millet
-		}
-
-		sul_has_farming_specialization = yes
-	}
-
-	unique_production_methods = {
-		sul_windmill_maintenance = {
-			tools = 0.025
-			lumber = 0.05
-			cloth = 0.05
-			category = building_maintenance
-		}
-	}
-
-	modifier = {
-		local_wheat_output_modifier = 0.1
-		local_rice_output_modifier = 0.1
-		local_millet_output_modifier = 0.1
-		# Food-adjacent
-		local_monthly_food_modifier = 0.02
-		local_raw_material_output = 0.02
-		local_max_rgo_size_modifier = 0.02
-	}
-
-	build_time = rural_build_time
-	construction_demand = farm_constructions
-}
-
-# Force Multiplier
+# Infrastructure
 
 REPLACE:irrigation_systems = {
 	is_foreign = no
@@ -342,12 +284,10 @@ REPLACE:irrigation_systems = {
 	construction_demand = village_construction
 
 	modifier = {
-		# Force Multiplier
+		# Infrastructure
 		local_population_capacity = 1.0
-		local_monthly_food = 0.25
-		local_monthly_food_modifier = 0.1
-		local_raw_material_output = 0.01
 		local_max_rgo_size_modifier = 0.02
+		local_production_efficiency = 0.005
 	}
 }
 
@@ -359,9 +299,8 @@ INJECT:distillers_guild = {
 	}
 
 	modifier = {
-		local_monthly_food_modifier = 0.02
 		# Farming goods output
-		local_liquor_output_modifier = 0.03
+		local_liquor_output_modifier = 0.01
 	}
 }
 
@@ -371,9 +310,8 @@ INJECT:distillers_workshop = {
 	}
 
 	modifier = {
-		local_monthly_food_modifier = 0.02
 		# Farming goods output
-		local_liquor_output_modifier = 0.03
+		local_liquor_output_modifier = 0.01
 	}
 }
 
@@ -383,9 +321,8 @@ INJECT:distiller_manufactory = {
 	}
 
 	modifier = {
-		local_monthly_food_modifier = 0.02
 		# Farming goods output
-		local_liquor_output_modifier = 0.03
+		local_liquor_output_modifier = 0.01
 	}
 }
 
@@ -395,9 +332,8 @@ INJECT:distiller_mill = {
 	}
 
 	modifier = {
-		local_monthly_food_modifier = 0.02
 		# Farming goods output
-		local_liquor_output_modifier = 0.03
+		local_liquor_output_modifier = 0.01
 	}
 }
 
@@ -409,9 +345,8 @@ INJECT:brewery = {
 	}
 
 	modifier = {
-		local_monthly_food_modifier = 0.02
 		# Farming goods output
-		local_beer_output_modifier = 0.02
+		local_beer_output_modifier = 0.01
 	}
 }
 
@@ -421,9 +356,8 @@ INJECT:beer_workshop = {
 	}
 
 	modifier = {
-		local_monthly_food_modifier = 0.02
 		# Farming goods output
-		local_beer_output_modifier = 0.02
+		local_beer_output_modifier = 0.01
 	}
 }
 
@@ -433,9 +367,8 @@ INJECT:brewery_manufactory = {
 	}
 
 	modifier = {
-		local_monthly_food_modifier = 0.02
 		# Farming goods output
-		local_beer_output_modifier = 0.02
+		local_beer_output_modifier = 0.01
 	}
 }
 
@@ -445,9 +378,8 @@ INJECT:brewery_mill = {
 	}
 
 	modifier = {
-		local_monthly_food_modifier = 0.02
 		# Farming goods output
-		local_beer_output_modifier = 0.02
+		local_beer_output_modifier = 0.01
 	}
 }
 
@@ -459,9 +391,9 @@ INJECT:winery = {
 	}
 
 	modifier = {
-		local_monthly_food_modifier = 0.02
+		local_max_rgo_size_modifier = 0.02
 		# Farming goods output
-		local_wine_output_modifier = 0.02
+		local_wine_output_modifier = 0.01
 	}
 }
 
@@ -471,8 +403,538 @@ INJECT:winery_manufactory = {
 	}
 
 	modifier = {
-		local_monthly_food_modifier = 0.02
+		local_max_rgo_size_modifier = 0.02
 		# Farming goods output
-		local_wine_output_modifier = 0.02
+		local_wine_output_modifier = 0.01
+	}
+}
+
+# Custom buildings
+
+sul_rural_brewer = {
+	is_foreign = no
+	pop_type = laborers
+	max_levels = guild_max_level
+	category = consumer_goods_category
+	employment_size = rural_peasant_produce_employment
+	rural_settlement = yes
+	town = no
+	city = no
+
+	location_potential = {
+		sul_has_farming_specialization = yes
+	}
+
+	build_time = rural_build_time
+
+	possible_production_methods = {
+		sul_rural_millet_beer
+		sul_rural_wheat_beer
+		sul_rural_maize_beer
+		sul_rural_rice_beer
+	}
+
+	construction_demand = village_construction
+
+	modifier = {
+		local_beer_output_modifier = @sul_small_good_bonus
+	}
+}
+
+sul_rural_winemaker = {
+	is_foreign = no
+	pop_type = laborers
+	max_levels = guild_max_level
+	category = consumer_goods_category
+	employment_size = rural_peasant_produce_employment
+	rural_settlement = yes
+	town = no
+	city = no
+
+	location_potential = {
+		OR = {
+			is_produced_in_location_market = goods:fruit
+			raw_material = goods:fruit
+		}
+
+		sul_has_farming_specialization = yes
+	}
+
+	build_time = rural_build_time
+
+	possible_production_methods = {
+		sul_rural_fruit_wine
+	}
+
+	construction_demand = village_construction
+
+	modifier = {
+		local_wine_output_modifier = @sul_small_good_bonus
+	}
+}
+
+sul_rural_distiller = {
+	is_foreign = no
+	pop_type = laborers
+	max_levels = guild_max_level
+	category = consumer_goods_category
+	employment_size = rural_peasant_produce_employment
+	rural_settlement = yes
+	town = no
+	city = no
+
+	location_potential = {
+		sul_has_farming_specialization = yes
+	}
+
+	build_time = rural_build_time
+
+	possible_production_methods = {
+		sul_rural_grain_liquor
+		sul_rural_rice_liquor
+		sul_rural_potato_liquor
+	}
+
+	construction_demand = village_construction
+
+	modifier = {
+		local_liquor_output_modifier = @sul_small_good_bonus
+	}
+}
+
+# RGO buildings (farming) — Animal husbandry
+
+sul_cattle_pens = {
+	is_foreign = no
+	pop_type = laborers
+	max_levels = rural_building_cap
+	employment_size = rural_peasant_produce_employment
+	category = rgo_building_category
+	rural_settlement = yes
+
+	location_potential = {
+		OR = {
+			vegetation = grasslands
+			vegetation = farmland
+			vegetation = sparse
+		}
+
+		sul_has_farming_specialization = yes
+	}
+
+	build_time = rural_build_time
+
+	possible_production_methods = {
+		sul_cattle_pen_maintenance
+	}
+
+	construction_demand = farm_constructions
+
+	modifier = {
+		local_max_rgo_size_modifier = 0.015
+	}
+}
+
+# RGO buildings (farming) — Staple grain crops
+
+sul_wheat_fields = {
+	is_foreign = no
+	pop_type = laborers
+	max_levels = rural_building_cap
+	employment_size = rural_peasant_produce_employment
+	category = rgo_building_category
+	rural_settlement = yes
+
+	location_potential = {
+		raw_material = goods:wheat
+		sul_has_farming_specialization = yes
+	}
+
+	build_time = rural_build_time
+
+	possible_production_methods = {
+		sul_wheat_field_maintenance
+	}
+
+	construction_demand = farm_constructions
+
+	modifier = {
+		local_max_rgo_size_modifier = 0.015
+	}
+}
+
+sul_rice_paddies = {
+	is_foreign = no
+	pop_type = laborers
+	max_levels = rural_building_cap
+	employment_size = rural_peasant_produce_employment
+	category = rgo_building_category
+	rural_settlement = yes
+
+	location_potential = {
+		raw_material = goods:rice
+		sul_has_farming_specialization = yes
+	}
+
+	build_time = rural_build_time
+
+	possible_production_methods = {
+		sul_rice_paddy_maintenance
+	}
+
+	construction_demand = farm_constructions
+
+	modifier = {
+		local_max_rgo_size_modifier = 0.015
+	}
+}
+
+sul_millet_fields = {
+	is_foreign = no
+	pop_type = laborers
+	max_levels = rural_building_cap
+	employment_size = rural_peasant_produce_employment
+	category = rgo_building_category
+	rural_settlement = yes
+
+	location_potential = {
+		raw_material = goods:millet
+		sul_has_farming_specialization = yes
+	}
+
+	build_time = rural_build_time
+
+	possible_production_methods = {
+		sul_millet_field_maintenance
+	}
+
+	construction_demand = farm_constructions
+
+	modifier = {
+		local_max_rgo_size_modifier = 0.015
+	}
+}
+
+sul_maize_fields = {
+	is_foreign = no
+	pop_type = laborers
+	max_levels = rural_building_cap
+	employment_size = rural_peasant_produce_employment
+	category = rgo_building_category
+	rural_settlement = yes
+
+	location_potential = {
+		raw_material = goods:maize
+		sul_has_farming_specialization = yes
+	}
+
+	build_time = rural_build_time
+
+	possible_production_methods = {
+		sul_maize_field_maintenance
+	}
+
+	construction_demand = farm_constructions
+
+	modifier = {
+		local_max_rgo_size_modifier = 0.015
+	}
+}
+
+sul_potato_fields = {
+	is_foreign = no
+	pop_type = laborers
+	max_levels = rural_building_cap
+	employment_size = rural_peasant_produce_employment
+	category = rgo_building_category
+	rural_settlement = yes
+
+	location_potential = {
+		raw_material = goods:potato
+		sul_has_farming_specialization = yes
+	}
+
+	build_time = rural_build_time
+
+	possible_production_methods = {
+		sul_potato_field_maintenance
+	}
+
+	construction_demand = farm_constructions
+
+	modifier = {
+		local_max_rgo_size_modifier = 0.015
+	}
+}
+
+# RGO buildings (farming) — Other food crops
+
+sul_olive_groves = {
+	is_foreign = no
+	pop_type = laborers
+	max_levels = rural_building_cap
+	employment_size = rural_peasant_produce_employment
+	category = rgo_building_category
+	rural_settlement = yes
+
+	location_potential = {
+		raw_material = goods:olives
+		sul_has_farming_specialization = yes
+	}
+
+	build_time = rural_build_time
+
+	possible_production_methods = {
+		sul_olive_grove_maintenance
+	}
+
+	construction_demand = farm_constructions
+
+	modifier = {
+		local_max_rgo_size_modifier = 0.015
+	}
+}
+
+sul_legume_fields = {
+	is_foreign = no
+	pop_type = laborers
+	max_levels = rural_building_cap
+	employment_size = rural_peasant_produce_employment
+	category = rgo_building_category
+	rural_settlement = yes
+
+	location_potential = {
+		raw_material = goods:legumes
+		sul_has_farming_specialization = yes
+	}
+
+	build_time = rural_build_time
+
+	possible_production_methods = {
+		sul_legume_field_maintenance
+	}
+
+	construction_demand = farm_constructions
+
+	modifier = {
+		local_max_rgo_size_modifier = 0.015
+	}
+}
+
+# RGO buildings (farming) — Cash crops
+
+sul_tea_gardens = {
+	is_foreign = no
+	pop_type = laborers
+	max_levels = rural_building_cap
+	employment_size = rural_peasant_produce_employment
+	category = rgo_building_category
+	rural_settlement = yes
+	town = yes
+
+	location_potential = {
+		raw_material = goods:tea
+		sul_has_farming_specialization = yes
+	}
+
+	build_time = rural_build_time
+
+	possible_production_methods = {
+		sul_tea_garden_maintenance
+	}
+
+	construction_demand = farm_constructions
+
+	modifier = {
+		local_max_rgo_size_modifier = 0.015
+	}
+}
+
+sul_coffee_estates = {
+	is_foreign = no
+	pop_type = laborers
+	max_levels = rural_building_cap
+	employment_size = rural_peasant_produce_employment
+	category = rgo_building_category
+	rural_settlement = yes
+	town = yes
+
+	location_potential = {
+		raw_material = goods:coffee
+		sul_has_farming_specialization = yes
+	}
+
+	build_time = rural_build_time
+
+	possible_production_methods = {
+		sul_coffee_estate_maintenance
+	}
+
+	construction_demand = farm_constructions
+
+	modifier = {
+		local_max_rgo_size_modifier = 0.015
+	}
+}
+
+sul_cocoa_groves = {
+	is_foreign = no
+	pop_type = laborers
+	max_levels = rural_building_cap
+	employment_size = rural_peasant_produce_employment
+	category = rgo_building_category
+	rural_settlement = yes
+	town = yes
+
+	location_potential = {
+		raw_material = goods:cocoa
+		sul_has_farming_specialization = yes
+	}
+
+	build_time = rural_build_time
+
+	possible_production_methods = {
+		sul_cocoa_grove_maintenance
+	}
+
+	construction_demand = farm_constructions
+
+	modifier = {
+		local_max_rgo_size_modifier = 0.015
+	}
+}
+
+sul_silk_houses = {
+	is_foreign = no
+	pop_type = laborers
+	max_levels = rural_building_cap
+	employment_size = rural_peasant_produce_employment
+	category = rgo_building_category
+	rural_settlement = yes
+	town = yes
+
+	location_potential = {
+		raw_material = goods:silk
+		sul_has_farming_specialization = yes
+	}
+
+	build_time = rural_build_time
+
+	possible_production_methods = {
+		sul_silk_house_maintenance
+	}
+
+	construction_demand = farm_constructions
+
+	modifier = {
+		local_max_rgo_size_modifier = 0.015
+	}
+}
+
+# RGO buildings (farming) — Spice crops
+
+sul_saffron_fields = {
+	is_foreign = no
+	pop_type = laborers
+	max_levels = rural_building_cap
+	employment_size = rural_peasant_produce_employment
+	category = rgo_building_category
+	rural_settlement = yes
+
+	location_potential = {
+		raw_material = goods:saffron
+		sul_has_farming_specialization = yes
+	}
+
+	build_time = rural_build_time
+
+	possible_production_methods = {
+		sul_saffron_field_maintenance
+	}
+
+	construction_demand = farm_constructions
+
+	modifier = {
+		local_max_rgo_size_modifier = 0.015
+	}
+}
+
+sul_pepper_gardens = {
+	is_foreign = no
+	pop_type = laborers
+	max_levels = rural_building_cap
+	employment_size = rural_peasant_produce_employment
+	category = rgo_building_category
+	rural_settlement = yes
+	town = yes
+
+	location_potential = {
+		raw_material = goods:pepper
+		sul_has_farming_specialization = yes
+	}
+
+	build_time = rural_build_time
+
+	possible_production_methods = {
+		sul_pepper_garden_maintenance
+	}
+
+	construction_demand = farm_constructions
+
+	modifier = {
+		local_max_rgo_size_modifier = 0.015
+	}
+}
+
+sul_clove_plantations = {
+	is_foreign = no
+	pop_type = laborers
+	max_levels = rural_building_cap
+	employment_size = rural_peasant_produce_employment
+	category = rgo_building_category
+	rural_settlement = yes
+	town = yes
+
+	location_potential = {
+		raw_material = goods:cloves
+		sul_has_farming_specialization = yes
+	}
+
+	build_time = rural_build_time
+
+	possible_production_methods = {
+		sul_clove_plantation_maintenance
+	}
+
+	construction_demand = farm_constructions
+
+	modifier = {
+		local_max_rgo_size_modifier = 0.015
+	}
+}
+
+sul_chili_fields = {
+	is_foreign = no
+	pop_type = laborers
+	max_levels = rural_building_cap
+	employment_size = rural_peasant_produce_employment
+	category = rgo_building_category
+	rural_settlement = yes
+
+	location_potential = {
+		raw_material = goods:chili
+		sul_has_farming_specialization = yes
+	}
+
+	build_time = rural_build_time
+
+	possible_production_methods = {
+		sul_chili_field_maintenance
+	}
+
+	construction_demand = farm_constructions
+
+	modifier = {
+		local_max_rgo_size_modifier = 0.015
 	}
 }

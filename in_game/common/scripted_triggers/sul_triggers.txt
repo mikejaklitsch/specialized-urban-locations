@@ -197,6 +197,7 @@ sul_is_woodland_building = {
 	OR = {
 		# Village buildings
 		building_type = building_type:forest_village
+		building_type = building_type:sul_rural_apiary
 		# Enhancement/RGO buildings
 		building_type = building_type:sawmill
 		building_type = building_type:lumber_mill
@@ -461,6 +462,36 @@ sul_has_commercial_specialization = {
 
 sul_has_any_specialization = {
 	has_variable = sul_spec_type
+}
+
+# Check if current specialization is still allowed under current eligibility rules
+# root = location (must have sul_spec_type and eligibility variables calculated)
+
+sul_current_specialization_is_valid = {
+	OR = {
+		AND = {
+			sul_has_mining_specialization = yes
+			has_variable = sul_can_mine
+		}
+
+		AND = {
+			sul_has_farming_specialization = yes
+			has_variable = sul_can_farm
+		}
+
+		AND = {
+			sul_has_gathering_specialization = yes
+			has_variable = sul_can_gather
+		}
+
+		AND = {
+			sul_has_woodland_specialization = yes
+			has_variable = sul_can_woodland
+		}
+
+		# Commercial is always valid (fallback specialization)
+		sul_has_commercial_specialization = yes
+	}
 }
 
 # Check if location can respecialize (no cooldown active)

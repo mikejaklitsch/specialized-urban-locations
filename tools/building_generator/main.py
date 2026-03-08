@@ -28,13 +28,16 @@ from generator import (
     load_config,
     load_vanilla_buildings,
     load_building_level_penalties,
+    load_goods_catalog,
     generate_spec_buildings,
 )
 
 TOOL_DIR = Path(__file__).resolve().parent
 OUTPUT_DIR = TOOL_DIR / "output"
+CUSTOM_PM_DIR = TOOL_DIR / "custom_buildings" / "production_methods"
 MOD_DIR = TOOL_DIR.parent.parent
 MOD_BUILDING_DIR = MOD_DIR / "in_game" / "common" / "building_types"
+MOD_PM_DIR = MOD_DIR / "in_game" / "common" / "production_methods"
 
 # Type aliases
 Block = list[tuple[str, object]]
@@ -44,6 +47,7 @@ def generate_spec_file(
     spec_name: str,
     config: dict,
     vanilla_buildings: dict[str, list],
+    goods_catalog: dict[str, str] | None = None,
 ) -> tuple[str, Block]:
     """
     Generate a complete building file for one specialization.
@@ -54,7 +58,7 @@ def generate_spec_file(
         "output_file", f"sul_{spec_name}.txt"
     )
 
-    combined = generate_spec_buildings(spec_name, config, vanilla_buildings)
+    combined = generate_spec_buildings(spec_name, config, vanilla_buildings, goods_catalog)
 
     return output_file, combined
 
@@ -199,10 +203,9 @@ def show_categories(config: dict) -> None:
     print("=" * 65)
     for cat_name, cat in categories.items():
         comment = cat.get("comment", cat_name)
-        spread = cat.get("finished_goods_spread")
         mods = cat.get("modifiers", {})
         print(f"\n  {cat_name}  ({comment})")
-        if not mods and spread is None:
+        if not mods:
             print("    (no modifiers)")
             continue
         for mk, mv in mods.items():
@@ -212,15 +215,6 @@ def show_categories(config: dict) -> None:
                 print(f"    {mk:<42} {_fmt(mv):>8} → {_fmt(script)}")
             else:
                 print(f"    {mk:<42} {_fmt(mv):>8}")
-        if spread is not None:
-            # Show one example good to illustrate the offset
-            script_spread = round(spread - next(
-                (v for k, v in penalties.items() if k.endswith("_output_modifier")), 0
-            ), 6)
-            if script_spread != spread:
-                print(f"    finished_goods_spread                    {_fmt(spread):>8} → {_fmt(script_spread)}")
-            else:
-                print(f"    finished_goods_spread                    {_fmt(spread):>8}")
     print()
 
 
@@ -433,6 +427,11 @@ def main():
     if penalties:
         config["_building_level_penalties"] = penalties
         print(f"  Loaded {len(penalties)} building-level penalties")
+
+    goods_catalog = load_goods_catalog(config)
+    if goods_catalog:
+        raw_count = sum(1 for c in goods_catalog.values() if c == "raw_material")
+        print(f"  Loaded {len(goods_catalog)} goods ({raw_count} raw materials)")
     print()
 
     if args.info:
@@ -462,7 +461,7 @@ def main():
 
     for spec_name in specs:
         output_file, combined_block = generate_spec_file(
-            spec_name, config, vanilla_buildings
+            spec_name, config, vanilla_buildings, goods_catalog
         )
 
         if not combined_block:
@@ -484,10 +483,38 @@ def main():
             print(f"{'='*60}")
             print(write_block(combined_block))
         else:
+            # Count custom buildings
+            custom_count = sum(
+                1 for k, _ in combined_block
+                if not k.startswith(("REPLACE:", "INJECT:", "__"))
+            )
+
+            # Write to output/ (reference copy)
             outpath = OUTPUT_DIR / output_file
             write_file(outpath, combined_block)
             generated_files.append(outpath)
-            print(f"  {spec_name}: {replace_count} REPLACE + {inject_count} INJECT -> {output_file}")
+
+            # Write to in_game/ (live mod)
+            mod_path = MOD_BUILDING_DIR / output_file
+            write_file(mod_path, combined_block)
+            generated_files.append(mod_path)
+
+            parts = f"{replace_count} REPLACE + {inject_count} INJECT"
+            if custom_count:
+                parts += f" + {custom_count} custom"
+            print(f"  {spec_name}: {parts} -> {output_file}")
+
+    # Copy custom production method files to in_game/
+    if not args.dry_run and not args.diff and CUSTOM_PM_DIR.exists():
+        import shutil
+        MOD_PM_DIR.mkdir(parents=True, exist_ok=True)
+        pm_files = sorted(CUSTOM_PM_DIR.glob("*.txt"))
+        if pm_files:
+            for pm_file in pm_files:
+                dest = MOD_PM_DIR / f"sul_{pm_file.name}"
+                shutil.copy2(pm_file, dest)
+                generated_files.append(dest)
+            print(f"\n  Copied {len(pm_files)} production method files")
 
     # Run pdx-format on generated files (default behavior)
     if not args.no_format and generated_files:

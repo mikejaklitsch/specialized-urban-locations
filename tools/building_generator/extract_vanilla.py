@@ -12,9 +12,9 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 from pdx_parser import parse_file, get_value, get_values, get_bare_values, block_keys, get_blocks
 
 import platform
-_base = r"C:\SteamLibrary\steamapps\common\Europa Universalis V\game\in_game"
+_base = r"D:\Program Files (x86)\Steam\steamapps\common\Europa Universalis V\game\in_game"
 if platform.system() != "Windows":
-    _base = "/mnt/c/SteamLibrary/steamapps/common/Europa Universalis V/game/in_game"
+    _base = "/mnt/d/Program Files (x86)/Steam/steamapps/common/Europa Universalis V/game/in_game"
 BASE_GAME = Path(_base)
 BUILDING_DIR = BASE_GAME / "common" / "building_types"
 GOODS_DIR = BASE_GAME / "common" / "goods"

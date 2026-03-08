@@ -1,4 +1,7 @@
-﻿# Raw Extraction
+﻿@sul_large_good_bonus = 0.01
+@sul_small_good_bonus = 0.0075
+@sul_neutral_good_bonus = 0.005
+# Uncategorized
 
 REPLACE:lumber_mill = {
 	is_foreign = no
@@ -38,50 +41,9 @@ REPLACE:lumber_mill = {
 	construction_demand = basic_construction_needs
 
 	modifier = {
-		# Raw Extraction
-		local_raw_material_output = 0.02
 		local_max_rgo_size_modifier = 0.02
 	}
 }
-
-REPLACE:sawmill = {
-	is_foreign = no
-	pop_type = laborers
-	max_levels = rural_building_cap
-	employment_size = rural_peasant_enhance_employment
-	category = rgo_building_category
-	rural_settlement = yes
-	town = yes
-	city = yes
-
-	location_potential = {
-		OR = {
-			vegetation = woods
-			vegetation = forest
-			vegetation = farmland
-			vegetation = jungle
-			raw_material = goods:lumber
-		}
-
-		sul_has_woodland_specialization = yes
-	}
-
-	unique_production_methods = {
-		sul_sawmill_maintenance = { tools = 0.05 category = building_maintenance }
-	}
-
-	modifier = {
-		local_lumber_output_modifier = 0.2
-		# Raw Extraction
-		local_raw_material_output = 0.02
-		local_max_rgo_size_modifier = 0.02
-	}
-
-	build_time = rural_build_time
-	construction_demand = farm_constructions
-}
-
-# Finished goods output
 
 REPLACE:tar_kiln = {
 	is_foreign = no
@@ -117,12 +79,9 @@ REPLACE:tar_kiln = {
 	construction_demand = guild_construction
 
 	modifier = {
-		# Finished goods output
-		local_tar_output_modifier = 0.02
+		local_tar_output_modifier = 0.01
 	}
 }
-
-# Food-adjacent
 
 REPLACE:elephant_hunting_grounds = {
 	is_foreign = no
@@ -169,13 +128,46 @@ REPLACE:elephant_hunting_grounds = {
 
 	modifier = {
 		local_nobles_desired_pop = 0.01
-		# Food-adjacent
-		local_monthly_food_modifier = 0.02
-		local_raw_material_output = 0.02
 		local_max_rgo_size_modifier = 0.02
 	}
 
 	construction_demand = village_construction
+}
+
+REPLACE:sawmill = {
+	is_foreign = no
+	pop_type = laborers
+	max_levels = rural_building_cap
+	employment_size = rural_peasant_enhance_employment
+	rural_settlement = yes
+	town = yes
+	city = yes
+	forbidden_for_estates = yes
+	category = rgo_building_category
+
+	location_potential = {
+		OR = {
+			vegetation = woods
+			vegetation = forest
+			vegetation = farmland
+			vegetation = jungle
+			raw_material = goods:lumber
+		}
+
+		sul_has_woodland_specialization = yes
+	}
+
+	unique_production_methods = {
+		sul_sawmill_maintenance = { tools = 0.05 category = building_maintenance }
+	}
+
+	modifier = {
+		local_lumber_output_modifier = 0.2
+		local_max_rgo_size_modifier = 0.02
+	}
+
+	build_time = rural_build_time
+	construction_demand = farm_constructions
 }
 
 # Woodland goods output (furniture)
@@ -187,7 +179,7 @@ INJECT:furniture_guild = {
 
 	modifier = {
 		# Woodland goods output
-		local_furniture_output_modifier = 0.03
+		local_furniture_output_modifier = 0.01
 	}
 }
 
@@ -198,7 +190,7 @@ INJECT:furniture_workshop = {
 
 	modifier = {
 		# Woodland goods output
-		local_furniture_output_modifier = 0.03
+		local_furniture_output_modifier = 0.01
 	}
 }
 
@@ -209,7 +201,7 @@ INJECT:furniture_manufactory = {
 
 	modifier = {
 		# Woodland goods output
-		local_furniture_output_modifier = 0.03
+		local_furniture_output_modifier = 0.01
 	}
 }
 
@@ -220,7 +212,7 @@ INJECT:furniture_mill = {
 
 	modifier = {
 		# Woodland goods output
-		local_furniture_output_modifier = 0.03
+		local_furniture_output_modifier = 0.01
 	}
 }
 
@@ -233,7 +225,7 @@ INJECT:lacquerware_guild = {
 
 	modifier = {
 		# Woodland goods output
-		local_lacquerware_output_modifier = 0.03
+		local_lacquerware_output_modifier = 0.01
 	}
 }
 
@@ -244,7 +236,7 @@ INJECT:lacquerware_manufactory = {
 
 	modifier = {
 		# Woodland goods output
-		local_lacquerware_output_modifier = 0.03
+		local_lacquerware_output_modifier = 0.01
 	}
 }
 
@@ -257,7 +249,7 @@ INJECT:paper_guild = {
 
 	modifier = {
 		# Woodland goods output
-		local_paper_output_modifier = 0.03
+		local_paper_output_modifier = 0.01
 	}
 }
 
@@ -268,7 +260,7 @@ INJECT:paper_workshop = {
 
 	modifier = {
 		# Woodland goods output
-		local_paper_output_modifier = 0.03
+		local_paper_output_modifier = 0.01
 	}
 }
 
@@ -279,7 +271,7 @@ INJECT:paper_manufactory = {
 
 	modifier = {
 		# Woodland goods output
-		local_paper_output_modifier = 0.03
+		local_paper_output_modifier = 0.01
 	}
 }
 
@@ -290,7 +282,7 @@ INJECT:paper_mill = {
 
 	modifier = {
 		# Woodland goods output
-		local_paper_output_modifier = 0.03
+		local_paper_output_modifier = 0.01
 	}
 }
 
@@ -303,7 +295,6 @@ INJECT:dyes_guild = {
 
 	modifier = {
 		# Woodland raw materials
-		local_raw_material_output = 0.02
 		local_max_rgo_size_modifier = 0.02
 	}
 }
@@ -315,7 +306,6 @@ INJECT:dyes_workshop = {
 
 	modifier = {
 		# Woodland raw materials
-		local_raw_material_output = 0.02
 		local_max_rgo_size_modifier = 0.02
 	}
 }
@@ -327,7 +317,6 @@ INJECT:dyesworks = {
 
 	modifier = {
 		# Woodland raw materials
-		local_raw_material_output = 0.02
 		local_max_rgo_size_modifier = 0.02
 	}
 }
@@ -339,7 +328,6 @@ INJECT:dyes_mill = {
 
 	modifier = {
 		# Woodland raw materials
-		local_raw_material_output = 0.02
 		local_max_rgo_size_modifier = 0.02
 	}
 }
@@ -356,7 +344,6 @@ INJECT:charcoal_maker = {
 
 	modifier = {
 		# Woodland raw materials
-		local_raw_material_output = 0.02
 		local_max_rgo_size_modifier = 0.02
 	}
 }
@@ -371,7 +358,6 @@ INJECT:improved_charcoal_maker = {
 
 	modifier = {
 		# Woodland raw materials
-		local_raw_material_output = 0.02
 		local_max_rgo_size_modifier = 0.02
 	}
 }
@@ -384,9 +370,8 @@ INJECT:tannery = {
 	}
 
 	modifier = {
-		local_monthly_food_modifier = 0.02
 		# Leather output
-		local_leather_output_modifier = 0.02
+		local_leather_output_modifier = 0.01
 	}
 }
 
@@ -396,9 +381,8 @@ INJECT:tanning_workshop = {
 	}
 
 	modifier = {
-		local_monthly_food_modifier = 0.02
 		# Leather output
-		local_leather_output_modifier = 0.02
+		local_leather_output_modifier = 0.01
 	}
 }
 
@@ -408,9 +392,8 @@ INJECT:tannery_manufactory = {
 	}
 
 	modifier = {
-		local_monthly_food_modifier = 0.02
 		# Leather output
-		local_leather_output_modifier = 0.02
+		local_leather_output_modifier = 0.01
 	}
 }
 
@@ -420,8 +403,158 @@ INJECT:tannery_mill = {
 	}
 
 	modifier = {
-		local_monthly_food_modifier = 0.02
 		# Leather output
-		local_leather_output_modifier = 0.02
+		local_leather_output_modifier = 0.01
+	}
+}
+
+# Custom buildings
+
+sul_rural_carpenter = {
+	is_foreign = no
+	pop_type = laborers
+	max_levels = guild_max_level
+	category = consumer_goods_category
+	employment_size = rural_peasant_produce_employment
+	rural_settlement = yes
+	town = no
+	city = no
+
+	location_potential = {
+		is_produced_in_location_market = goods:lumber
+		sul_has_woodland_specialization = yes
+	}
+
+	build_time = rural_build_time
+
+	possible_production_methods = {
+		sul_rural_furniture
+	}
+
+	construction_demand = village_construction
+
+	modifier = {
+		local_furniture_output_modifier = @sul_small_good_bonus
+	}
+}
+
+sul_rural_papermaker = {
+	is_foreign = no
+	pop_type = laborers
+	max_levels = guild_max_level
+	category = consumer_goods_category
+	employment_size = rural_peasant_produce_employment
+	rural_settlement = yes
+	town = no
+	city = no
+
+	location_potential = {
+		is_produced_in_location_market = goods:lumber
+		sul_has_woodland_specialization = yes
+	}
+
+	build_time = rural_build_time
+
+	possible_production_methods = {
+		sul_rural_paper
+	}
+
+	construction_demand = village_construction
+
+	modifier = {
+		local_paper_output_modifier = @sul_small_good_bonus
+	}
+}
+
+sul_rural_apiary = {
+	is_foreign = no
+	pop_type = laborers
+	max_levels = guild_max_level
+	category = consumer_goods_category
+	employment_size = rural_peasant_produce_employment
+	rural_settlement = yes
+	town = no
+	city = no
+
+	location_potential = {
+		sul_has_woodland_specialization = yes
+	}
+
+	build_time = rural_build_time
+
+	possible_production_methods = {
+		sul_rural_beeswax
+	}
+
+	construction_demand = village_construction
+
+	modifier = {
+		local_beeswax_output_modifier = @sul_small_good_bonus
+	}
+}
+
+# Cross-specialization (woodland OR farming)
+
+sul_rural_tanner = {
+	is_foreign = no
+	pop_type = laborers
+	max_levels = guild_max_level
+	category = consumer_goods_category
+	employment_size = rural_peasant_produce_employment
+	rural_settlement = yes
+	town = no
+	city = no
+
+	location_potential = {
+		OR = {
+			sul_has_woodland_specialization = yes
+			sul_has_farming_specialization = yes
+		}
+	}
+
+	build_time = rural_build_time
+
+	possible_production_methods = {
+		sul_rural_game_leather
+		sul_rural_hide_leather
+	}
+
+	construction_demand = village_construction
+
+	modifier = {
+		local_leather_output_modifier = @sul_small_good_bonus
+	}
+}
+
+# RGO buildings (woodland)
+
+sul_trapping_cabins = {
+	is_foreign = no
+	pop_type = laborers
+	max_levels = rural_building_cap
+	employment_size = rural_peasant_produce_employment
+	category = rgo_building_category
+	rural_settlement = yes
+
+	location_potential = {
+		OR = {
+			raw_material = goods:fur
+			vegetation = forest
+			vegetation = woods
+		}
+
+		sul_has_woodland_specialization = yes
+	}
+
+	build_time = rural_build_time
+
+	possible_production_methods = {
+		sul_trapping_cabin_maintenance
+	}
+
+	construction_demand = farm_constructions
+
+	modifier = {
+		local_max_rgo_size_modifier = 0.015
 	}
 }

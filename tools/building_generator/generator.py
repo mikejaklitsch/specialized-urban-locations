@@ -25,6 +25,7 @@ Block = list[tuple[str, Value]]
 
 CONFIG_PATH = Path(__file__).resolve().parent / "config.json"
 OUTPUT_DIR = Path(__file__).resolve().parent / "output"
+CUSTOM_DIR = Path(__file__).resolve().parent / "custom_buildings"
 MOD_DIR = Path(__file__).resolve().parent.parent.parent
 
 
@@ -32,6 +33,31 @@ def load_config() -> dict:
     """Load the generator configuration."""
     with open(CONFIG_PATH, encoding="utf-8") as f:
         return json.load(f)
+
+
+def load_goods_catalog(config: dict) -> dict[str, str]:
+    """
+    Load goods classification from vanilla_buildings.json.
+
+    Returns:
+        {good_name: "raw_material" | "produced" | "other"}
+    """
+    catalog_rel = config.get("goods_catalog_path", "vanilla_buildings.json")
+    catalog_path = Path(__file__).resolve().parent / catalog_rel
+    if not catalog_path.exists():
+        print(f"  WARNING: Goods catalog not found at {catalog_path}")
+        return {}
+    with open(catalog_path, encoding="utf-8") as f:
+        data = json.load(f)
+    return {
+        name: info.get("classification", "other")
+        for name, info in data.get("goods", {}).items()
+    }
+
+
+def is_raw_material(good: str, goods_catalog: dict[str, str]) -> bool:
+    """Check if a good is classified as a raw material."""
+    return goods_catalog.get(good) == "raw_material"
 
 
 def load_vanilla_buildings(base_game_path: str) -> dict[str, Block]:
@@ -87,6 +113,42 @@ def load_building_level_penalties(mod_path: Path | None = None) -> dict[str, flo
                     penalties[mk] = mv
             return penalties
     return {}
+
+
+def resolve_tier(value: str | float | None, config: dict) -> float | None:
+    """Resolve a tier name to its numeric value, or pass through numbers/None."""
+    if value is None:
+        return None
+    if isinstance(value, (int, float)):
+        return value
+    tiers = config.get("good_output_tiers", {})
+    if value in tiers:
+        return tiers[value]
+    raise ValueError(f"Unknown good_output_tier: {value!r}")
+
+
+def make_tier_macros(config: dict) -> Block:
+    """Generate @macro definitions for good output tiers."""
+    tiers = config.get("good_output_tiers", {})
+    if not tiers:
+        return []
+    result: Block = []
+    for name, value in tiers.items():
+        result.append((f"@sul_{name}_good_bonus", value))
+    return result
+
+
+def load_custom_buildings(spec_name: str) -> Block:
+    """
+    Load custom (non-vanilla) building definitions for a specialization.
+
+    Reads from custom_buildings/{spec_name}.txt if it exists.
+    Returns a Block of building definitions (with comments preserved).
+    """
+    filepath = CUSTOM_DIR / f"{spec_name}.txt"
+    if not filepath.exists():
+        return []
+    return parse_file(filepath)
 
 
 def _apply_penalty_offsets(entries: Block, penalties: dict[str, float]) -> Block:
@@ -230,6 +292,24 @@ def _remove_modifier_keys(mod_block: Block, keys: set[str]) -> None:
             i += 1
 
 
+# Modifiers to strip from vanilla building data (replaced by production_efficiency)
+_STRIPPED_VANILLA_MODIFIERS = frozenset({
+    "local_raw_material_output",
+    "local_monthly_food",
+    "local_monthly_food_modifier",
+    "local_food_capacity",
+    "local_food_capacity_modifier",
+})
+
+
+def _strip_obsolete_modifiers(block: Block) -> None:
+    """Remove food and raw_material_output modifiers from a building's modifier block."""
+    for i, (key, val) in enumerate(block):
+        if key == "modifier" and isinstance(val, list):
+            _remove_modifier_keys(val, _STRIPPED_VANILLA_MODIFIERS)
+            return
+
+
 def _apply_modifier_adjustments(
     block: Block,
     multiply_modifiers: dict[str, float] | None = None,
@@ -289,10 +369,8 @@ def _apply_modifier_adjustments(
 def _append_category_modifiers(
     block: Block,
     category_config: dict,
-    spec_config: dict,
     override_modifiers: dict | None = None,
     penalties: dict[str, float] | None = None,
-    good_override: str | None = None,
 ) -> None:
     """
     Append modifier category values to the building's modifier block.
@@ -300,37 +378,27 @@ def _append_category_modifiers(
     Config values represent intended net effects. Building-level penalties are
     added back so the script value counteracts the per-level penalty.
 
-    Handles both flat modifiers and finished_goods_spread (expanded from spec goods).
     Removes any existing vanilla entries that match category keys to avoid
     duplicates, then appends the category values.
     Creates a new modifier block if one doesn't exist.
     """
     cat_mods = dict(category_config.get("modifiers", {}))
-    comment = category_config["comment"]
+    comment = category_config.get("comment", "")
 
     if override_modifiers:
         cat_mods.update(override_modifiers)
 
-    new_entries: Block = [("__comment__", f"# {comment}")]
+    new_entries: Block = []
+    if comment:
+        new_entries.append(("__comment__", f"# {comment}"))
     for mk, mv in cat_mods.items():
         new_entries.append((mk, mv))
-
-    # Expand finished_goods_spread into per-good output modifiers
-    spread = category_config.get("finished_goods_spread")
-    if spread is not None:
-        spread_goods = [good_override] if good_override else spec_config["finished_goods"]
-        for good in spread_goods:
-            new_entries.append((f"local_{good}_output_modifier", spread))
 
     # Apply building-level penalty offsets (net → script value)
     if penalties:
         new_entries = _apply_penalty_offsets(new_entries, penalties)
 
     all_keys = set(cat_mods.keys())
-    if spread is not None:
-        spread_goods = [good_override] if good_override else spec_config["finished_goods"]
-        for good in spread_goods:
-            all_keys.add(f"local_{good}_output_modifier")
 
     # Find existing modifier block, deduplicate, then append
     for i, (key, val) in enumerate(block):
@@ -407,7 +475,10 @@ def generate_replace_building(
     replace_lp = bld_config.get("replace_location_potential", False)
     _merge_spec_trigger_into_lp(block, spec["trigger"], replace_lp)
 
-    # 4. Apply per-building modifier adjustments (multiply, add, set)
+    # 4. Strip obsolete vanilla modifiers (food, raw_material_output)
+    _strip_obsolete_modifiers(block)
+
+    # 5. Apply per-building modifier adjustments (multiply, add, set)
     _apply_modifier_adjustments(
         block,
         multiply_modifiers=bld_config.get("multiply_modifiers"),
@@ -420,8 +491,19 @@ def generate_replace_building(
         cat = config["modifier_categories"][bld_config["modifier_category"]]
         override_mods = bld_config.get("override_modifiers")
         penalties = config.get("_building_level_penalties")
-        good_override = bld_config.get("good")
-        _append_category_modifiers(block, cat, spec, override_mods, penalties, good_override)
+        _append_category_modifiers(block, cat, override_mods, penalties)
+
+    # 5b. Per-good output modifier (e.g. glass_guild → local_glass_output_modifier)
+    good_output_val = resolve_tier(bld_config.get("good_output_modifier"), config)
+    if good_output_val is not None and "good" in bld_config:
+        good = bld_config["good"]
+        mod_key = f"local_{good}_output_modifier"
+        for i, (key, val) in enumerate(block):
+            if key == "modifier" and isinstance(val, list):
+                val.append((mod_key, good_output_val))
+                break
+        else:
+            block.append(("modifier", [(mod_key, good_output_val)]))
 
     # 6. Rename production methods
     _rename_production_methods(block)
@@ -526,7 +608,7 @@ def make_cross_spec_building(
         for mk, mv in extra.items():
             mod_block.append((mk, mv))
 
-        mod_val = group.get("modifier_value")
+        mod_val = resolve_tier(group.get("modifier_value"), config)
         if mod_val is not None:
             if good_override:
                 comment = f"{good_override.replace('_', ' ').title()} output"
@@ -562,6 +644,7 @@ def generate_spec_buildings(
     spec_name: str,
     config: dict,
     vanilla_buildings: dict[str, Block],
+    goods_catalog: dict[str, str] | None = None,
 ) -> Block:
     """
     Generate all buildings (REPLACE + INJECT) for a specialization.
@@ -595,10 +678,8 @@ def generate_spec_buildings(
             bld_name, bld_config, vanilla_buildings[bld_name], config
         )
         cat = bld_config.get("modifier_category", "_uncategorized")
-        if cat == "_uncategorized":
-            header = "Uncategorized"
-        else:
-            header = categories.get(cat, {}).get("comment", cat)
+        cat_comment = categories.get(cat, {}).get("comment", "") if cat != "_uncategorized" else ""
+        header = cat_comment or "Uncategorized"
         add_to_section(header, key, block)
 
     # ── INJECT buildings ─────────────────────────────────────────
@@ -622,7 +703,7 @@ def generate_spec_buildings(
         if tier_name == "cross_spec" or tier_name.startswith("_"):
             continue
 
-        mod_value = tier_config.get("modifier_value")
+        mod_value = resolve_tier(tier_config.get("modifier_value"), config)
         tier_extra = tier_config.get("extra_modifiers")
         tier_comment = tier_config.get("comment")
         tier_buildings = tier_config.get("buildings", [])
@@ -651,6 +732,11 @@ def generate_spec_buildings(
                 merged_extra.update(spec_extra_mods)
             if tier_extra:
                 merged_extra.update(tier_extra)
+
+            # Auto-derive: add local_max_rgo_size_modifier for raw material goods
+            if goods_catalog and tier_good and is_raw_material(tier_good, goods_catalog):
+                if "local_max_rgo_size_modifier" not in merged_extra:
+                    merged_extra["local_max_rgo_size_modifier"] = 0.015
 
             override_extra = bld_override.get("extra_modifiers")
 
@@ -682,8 +768,21 @@ def generate_spec_buildings(
     # ── Assemble output ──────────────────────────────────────────
 
     result: Block = []
+
+    # Prepend @macro definitions for good output tiers
+    macros = make_tier_macros(config)
+    if macros:
+        result.extend(macros)
+
     for header, buildings in sections.items():
         result.append(("__comment__", f"# {header}"))
         result.extend(buildings)
+
+    # ── Custom buildings ────────────────────────────────────────
+
+    custom = load_custom_buildings(spec_name)
+    if custom:
+        result.append(("__comment__", "# Custom buildings"))
+        result.extend(custom)
 
     return result

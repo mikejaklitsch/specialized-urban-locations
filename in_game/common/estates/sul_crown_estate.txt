@@ -1,30 +1,42 @@
-﻿# =============================================================================
-# CROWN ESTATE MODIFICATIONS
-# =============================================================================
+﻿# Building upkeep discount scales linearly with crown power.
+# 0% crown = free buildings (-100%), 100% crown = full upkeep (0%).
+# Tooltip shows one combined value: e.g. "-25% Building Upkeep" at 75% crown.
 #
-# Adds building upkeep reduction scaling with crown power.
-# Linear scaling: -50% at 0% crown power → 0% at 100% crown power
+# BUILDING_UPKEEP_FACTOR (define) sets the baseline cost ratio, vanilla 0.2(20% building maintenance), currently 1.0 (100%).
+# This system is independent of that factor; both multiply. If factor were 0.5,
+# crown power would still give a -50% discount at 50% crown, applied to the 50% baseline.
 #
-# INJECT adds to vanilla values, so we offset:
-# - Vanilla low_power: +2.0, we want -2.0 final → inject -4.0
-# - Vanilla high_power: -1.0, we want +2.0 final → inject +3.0
-# - Vanilla power: none, we want -1.5 → inject -1.5
+# Why three terms?
+# The engine splits crown power effects at a 25% threshold:
+#   low_power:  value × (0.25 - crown)    active below 25% only, zero at 25%
+#   high_power: value × (crown - 0.25)    active above 25% only, zero at 25%
+#   power:      value × crown             active always, zero at 0%
 #
-# Final values after combining with vanilla:
-# At 0%:   (-2 × 0.25) + (-1.5 × 0)   = -50%
-# At 25%:  (-2 × 0)    + (-1.5 × 0.25) = -37.5%
-# At 50%:  (+2 × 0.25) + (-1.5 × 0.5)  = -25%
-# At 100%: (+2 × 0.75) + (-1.5 × 1)    = 0%
-# =============================================================================
+# Both low_power and high_power are ALWAYS zero at exactly 25% crown.
+# Without the "power" term there's no way to produce -75% at that point —
+# you'd get a kink where the discount jumps to 0% at 25% then diverges.
+# Two terms give piecewise-linear with different slopes; three give exact linear.
+#
+# Final values needed: low_power(-4), high_power(+4), power(-3)
+#
+#   Crown | low_power(-4) | high_power(+4) | power(-3) | Total
+#     0%  |     -100%     |       -        |     0%    | -100%
+#    25%  |       0%      |       0%       |   -75%    |  -75%
+#    50%  |       -       |    +100%       |  -150%    |  -50%
+#   100%  |       -       |    +300%       |  -300%    |    0%
+#
+# Vanilla estate has low_power(+2) and high_power(-1), so we inject offsets.
 
 INJECT:crown_estate = {
 	low_power = {
-		building_upkeep_costs = -4.0
+		building_upkeep_costs = -6.0 # + vanilla 2.0 = final -4.0
 	}
+
 	high_power = {
-		building_upkeep_costs = 3.0
+		building_upkeep_costs = 5.0 # + vanilla -1.0 = final +4.0
 	}
+
 	power = {
-		building_upkeep_costs = -1.5
+		building_upkeep_costs = -3.0 # no vanilla value
 	}
 }

@@ -26,15 +26,15 @@ REPLACE:market_village = {
 
 	modifier = {
 		free_building_levels = 1
-		# Trade capacity (lower tier marketplace)
-		local_merchant_capacity = 0.25
-		local_merchant_power = 0.5
-		local_market_access = 0.0025
-		# Commercial goods output
-		local_cloth_output_modifier = 0.005
-		local_fine_cloth_output_modifier = 0.005
-		local_books_output_modifier = 0.005
-		local_naval_supplies_output_modifier = 0.005
+		local_population_capacity = 1
+		# Counter building_levels penalties
+		local_max_rgo_size_modifier = 0.005
+		local_production_efficiency = 0.005
+		# Full trade capacity per level
+		local_merchant_capacity = 1.0
+		local_merchant_power = 1.0
+		local_trades_per_burgher = 0.1
+		local_market_access = 0.005
 	}
 
 	unique_production_methods = {
@@ -58,6 +58,7 @@ REPLACE:fishing_village = {
 	town = yes
 	city = yes
 	AI_optimization_flag_coastal = yes
+	important_for_AI = yes
 
 	location_potential = {
 		modifier:sul_allows_glass_production = yes
@@ -68,18 +69,15 @@ REPLACE:fishing_village = {
 
 	modifier = {
 		free_building_levels = 1
-		local_max_rgo_size_modifier = 0.01
-		# Gathering goods output
-		local_glass_output_modifier = 0.01
-		local_pottery_output_modifier = 0.01
-		local_porcelain_output_modifier = 0.01
-		local_lacquerware_output_modifier = 0.01
+		local_population_capacity = 1
+		# Counter building_levels penalties
+		local_max_rgo_size_modifier = 0.005
+		local_production_efficiency = 0.005
+		local_population_growth = 0.00005
 	}
 
 	# Provisions — cookhouse-scale, gathering + common foodstuffs
 	unique_production_methods = {
-		sul_gathering_no_provisions = { category = building_maintenance }
-
 		# Gathering-specific
 		# Cost: 2.5 + 0.5 = 3.0, Revenue: 3.0, Margin: 0%
 		sul_gathering_salted_fish = {
@@ -94,6 +92,44 @@ REPLACE:fishing_village = {
 		sul_gathering_mutton = {
 			wool = 2.0
 			salt = 0.5
+			produced = provisions
+			output = 1.0
+			category = building_maintenance
+		}
+
+		# Fish combos
+		# Cost: 1.75 + 1.5 + 0.1 = 3.35, Revenue: 3.0, Margin: -10%
+		sul_gathering_rice_and_fish = {
+			rice = 1.75
+			fish = 1.5
+			pepper = 0.02
+			produced = provisions
+			output = 1.0
+			category = building_maintenance
+		}
+
+		# Cost: 1.5 + 1.5 + 0.1 = 3.1, Revenue: 3.0, Margin: -3%
+		sul_gathering_millet_and_fish = {
+			millet = 1.5
+			fish = 1.5
+			salt = 0.1
+			produced = provisions
+			output = 1.0
+			category = building_maintenance
+		}
+
+		# Cost: 1.5 + 1.0 + 0.75 = 3.25, Revenue: 3.0, Margin: -8%
+		sul_gathering_labskaus = {
+			potential = {
+				OR = {
+					has_advance = advance:new_world_crops
+					any_market_present_in_country = { is_produced_in_market = goods:potato }
+				}
+			}
+
+			potato = 1.5
+			fish = 1.0
+			livestock = 0.5
 			produced = provisions
 			output = 1.0
 			category = building_maintenance
@@ -114,7 +150,17 @@ REPLACE:fishing_village = {
 		sul_gathering_rice_legumes = {
 			rice = 1.75
 			legumes = 1.5
-			salt = 0.1
+			pepper = 0.02
+			produced = provisions
+			output = 1.0
+			category = building_maintenance
+		}
+
+		# Cost: 2.0 + 1.2 + 0.1 = 3.3, Revenue: 3.0, Margin: -9%
+		sul_gathering_rice_porridge = {
+			rice = 2.0
+			livestock = 0.8
+			pepper = 0.02
 			produced = provisions
 			output = 1.0
 			category = building_maintenance
@@ -127,6 +173,61 @@ REPLACE:fishing_village = {
 			salt = 0.1
 			produced = provisions
 			output = 1.0
+			category = building_maintenance
+		}
+
+		# Grain-free
+		# Cost: 3.0 + 0.2 = 3.2, Revenue: 3.0, Margin: -6%
+		sul_gathering_salted_meat = {
+			livestock = 2.0
+			salt = 0.2
+			produced = provisions
+			output = 1.0
+			category = building_maintenance
+		}
+	}
+
+	# Beverage supplements — convert drinks into small provisions
+	unique_production_methods = {
+		sul_granary_beer_supplement = {
+			beer = 0.5
+			produced = provisions
+			output = 0.15
+			category = building_maintenance
+		}
+
+		sul_granary_wine_supplement = {
+			wine = 0.5
+			produced = provisions
+			output = 0.15
+			category = building_maintenance
+		}
+
+		sul_granary_liquor_supplement = {
+			liquor = 0.3
+			produced = provisions
+			output = 0.1
+			category = building_maintenance
+		}
+
+		sul_granary_sugar_supplement = {
+			sugar = 0.2
+			produced = provisions
+			output = 0.1
+			category = building_maintenance
+		}
+
+		sul_granary_tea_supplement = {
+			tea = 0.15
+			produced = provisions
+			output = 0.05
+			category = building_maintenance
+		}
+
+		sul_granary_coffee_supplement = {
+			coffee = 0.15
+			produced = provisions
+			output = 0.05
 			category = building_maintenance
 		}
 	}
@@ -142,6 +243,7 @@ REPLACE:farming_village = {
 	rural_settlement = yes
 	town = yes
 	city = yes
+	important_for_AI = yes
 
 	location_potential = {
 		modifier:sul_allows_beer_production = yes
@@ -152,18 +254,15 @@ REPLACE:farming_village = {
 
 	modifier = {
 		free_building_levels = 1
+		local_population_capacity = 1
+		# Counter building_levels penalties
 		local_max_rgo_size_modifier = 0.005
-		# Farming goods output
-		local_wine_output_modifier = 0.01
-		local_beer_output_modifier = 0.01
-		local_liquor_output_modifier = 0.01
-		local_leather_output_modifier = 0.01
+		local_production_efficiency = 0.005
+		local_population_growth = 0.00005
 	}
 
 	# Provisions — cookhouse-scale, all farming food goods
 	unique_production_methods = {
-		sul_farming_no_provisions = { category = building_maintenance }
-
 		# Cost: 2.0 + 1.2 + 0.1 = 3.3, Revenue: 3.0, Margin: -9%
 		sul_farming_wheat_pottage = {
 			wheat = 2.0
@@ -178,7 +277,27 @@ REPLACE:farming_village = {
 		sul_farming_rice_legumes = {
 			rice = 1.75
 			legumes = 1.5
-			salt = 0.1
+			pepper = 0.02
+			produced = provisions
+			output = 1.0
+			category = building_maintenance
+		}
+
+		# Cost: 2.0 + 1.2 + 0.1 = 3.3, Revenue: 3.0, Margin: -9%
+		sul_farming_rice_porridge = {
+			rice = 2.0
+			livestock = 0.8
+			pepper = 0.02
+			produced = provisions
+			output = 1.0
+			category = building_maintenance
+		}
+
+		# Cost: 1.75 + 1.5 + 0.1 = 3.35, Revenue: 3.0, Margin: -10%
+		sul_farming_rice_and_fish = {
+			rice = 1.75
+			fish = 1.5
+			pepper = 0.02
 			produced = provisions
 			output = 1.0
 			category = building_maintenance
@@ -186,6 +305,16 @@ REPLACE:farming_village = {
 
 		# Cost: 1.2 + 1.2 + 0.5 = 2.9, Revenue: 3.0, Margin: +3%
 		sul_farming_maize_stew = {
+			potential = {
+				OR = {
+					has_advance = advance:new_world_crops
+					AND = {
+						any_market_present_in_country = { is_produced_in_market = goods:maize }
+						any_market_present_in_country = { is_produced_in_market = goods:potato }
+					}
+				}
+			}
+
 			maize = 1.2
 			livestock = 0.8
 			potato = 0.5
@@ -214,12 +343,119 @@ REPLACE:farming_village = {
 			category = building_maintenance
 		}
 
-		# Cost: 2.5 + 0.5 = 3.0, Revenue: 3.0, Margin: 0%
+		# Cost: 3.0, Revenue: 3.0, Margin: 0%
 		sul_farming_fruit_preserves = {
-			fruit = 2.5
-			salt = 0.5
+			fruit = 3.0
 			produced = provisions
 			output = 1.0
+			category = building_maintenance
+		}
+
+		# Grain-free options
+		# Cost: 3.0 + 0.2 = 3.2, Revenue: 3.0, Margin: -6%
+		sul_farming_salted_meat = {
+			livestock = 2.0
+			salt = 0.2
+			produced = provisions
+			output = 1.0
+			category = building_maintenance
+		}
+
+		# Flour milling (no seasoning, grain + lumber only)
+		# Cost: 3.0 + 0.3 = 3.3, Revenue: 3.0, Margin: -9%
+		sul_farming_wheat_flour = {
+			wheat = 3.0
+			lumber = 0.3
+			produced = provisions
+			output = 1.0
+			category = building_maintenance
+		}
+
+		# Cost: 3.0 + 0.3 = 3.3, Revenue: 3.0, Margin: -9%
+		sul_farming_rice_flour = {
+			rice = 3.0
+			lumber = 0.3
+			produced = provisions
+			output = 1.0
+			category = building_maintenance
+		}
+
+		# Cost: 3.0 + 0.3 = 3.3, Revenue: 3.0, Margin: -9%
+		sul_farming_millet_flour = {
+			millet = 3.0
+			lumber = 0.3
+			produced = provisions
+			output = 1.0
+			category = building_maintenance
+		}
+
+		# Cost: 2.0 + 1.05 = 3.05, Revenue: 3.0, Margin: -2%
+		sul_farming_potato_stew = {
+			potential = {
+				OR = {
+					has_advance = advance:new_world_crops
+					any_market_present_in_country = { is_produced_in_market = goods:potato }
+				}
+			}
+
+			potato = 2.0
+			livestock = 0.7
+			produced = provisions
+			output = 1.0
+			category = building_maintenance
+		}
+
+		# Cost: 2.0 + 0.8 = 2.8, Revenue: 3.0, Margin: +7%
+		sul_farming_olive_oil_rations = {
+			olives = 2.0
+			legumes = 0.8
+			produced = provisions
+			output = 1.0
+			category = building_maintenance
+		}
+	}
+
+	# Beverage supplements — convert drinks into small provisions
+	unique_production_methods = {
+		sul_granary_beer_supplement = {
+			beer = 0.5
+			produced = provisions
+			output = 0.15
+			category = building_maintenance
+		}
+
+		sul_granary_wine_supplement = {
+			wine = 0.5
+			produced = provisions
+			output = 0.15
+			category = building_maintenance
+		}
+
+		sul_granary_liquor_supplement = {
+			liquor = 0.3
+			produced = provisions
+			output = 0.1
+			category = building_maintenance
+		}
+
+		sul_granary_sugar_supplement = {
+			sugar = 0.2
+			produced = provisions
+			output = 0.1
+			category = building_maintenance
+		}
+
+		sul_granary_tea_supplement = {
+			tea = 0.15
+			produced = provisions
+			output = 0.05
+			category = building_maintenance
+		}
+
+		sul_granary_coffee_supplement = {
+			coffee = 0.15
+			produced = provisions
+			output = 0.05
 			category = building_maintenance
 		}
 	}
@@ -235,6 +471,7 @@ REPLACE:forest_village = {
 	rural_settlement = yes
 	town = yes
 	city = yes
+	important_for_AI = yes
 
 	location_potential = {
 		modifier:sul_allows_furniture_production = yes
@@ -245,17 +482,15 @@ REPLACE:forest_village = {
 
 	modifier = {
 		free_building_levels = 1
-		local_max_rgo_size_modifier = 0.01
-		# Woodland goods output
-		local_paper_output_modifier = 0.01
-		local_furniture_output_modifier = 0.01
-		local_leather_output_modifier = 0.01
+		local_population_capacity = 1
+		# Counter building_levels penalties
+		local_max_rgo_size_modifier = 0.005
+		local_production_efficiency = 0.005
+		local_population_growth = 0.00005
 	}
 
 	# Provisions — cookhouse-scale, woodland + common foodstuffs
 	unique_production_methods = {
-		sul_woodland_no_provisions = { category = building_maintenance }
-
 		# Woodland-specific
 		# Cost: 3.0 + 0.2 = 3.2, Revenue: 3.0, Margin: -6%
 		sul_woodland_cured_game = {
@@ -270,6 +505,16 @@ REPLACE:forest_village = {
 		sul_woodland_trappers_rations = {
 			fur = 1.5
 			salt = 0.2
+			produced = provisions
+			output = 1.0
+			category = building_maintenance
+		}
+
+		# Cost: 2.25 + 0.5 + 0.2 = 2.95, Revenue: 3.0, Margin: +2%
+		sul_woodland_pemmican = {
+			livestock = 1.5
+			wild_game = 0.5
+			fruit = 0.2
 			produced = provisions
 			output = 1.0
 			category = building_maintenance
@@ -290,7 +535,17 @@ REPLACE:forest_village = {
 		sul_woodland_rice_legumes = {
 			rice = 1.75
 			legumes = 1.5
-			salt = 0.1
+			pepper = 0.02
+			produced = provisions
+			output = 1.0
+			category = building_maintenance
+		}
+
+		# Cost: 2.0 + 1.2 + 0.1 = 3.3, Revenue: 3.0, Margin: -9%
+		sul_woodland_rice_porridge = {
+			rice = 2.0
+			livestock = 0.8
+			pepper = 0.02
 			produced = provisions
 			output = 1.0
 			category = building_maintenance
@@ -303,6 +558,61 @@ REPLACE:forest_village = {
 			salt = 0.1
 			produced = provisions
 			output = 1.0
+			category = building_maintenance
+		}
+
+		# Grain-free
+		# Cost: 3.0 + 0.2 = 3.2, Revenue: 3.0, Margin: -6%
+		sul_woodland_salted_meat = {
+			livestock = 2.0
+			salt = 0.2
+			produced = provisions
+			output = 1.0
+			category = building_maintenance
+		}
+	}
+
+	# Beverage supplements — convert drinks into small provisions
+	unique_production_methods = {
+		sul_granary_beer_supplement = {
+			beer = 0.5
+			produced = provisions
+			output = 0.15
+			category = building_maintenance
+		}
+
+		sul_granary_wine_supplement = {
+			wine = 0.5
+			produced = provisions
+			output = 0.15
+			category = building_maintenance
+		}
+
+		sul_granary_liquor_supplement = {
+			liquor = 0.3
+			produced = provisions
+			output = 0.1
+			category = building_maintenance
+		}
+
+		sul_granary_sugar_supplement = {
+			sugar = 0.2
+			produced = provisions
+			output = 0.1
+			category = building_maintenance
+		}
+
+		sul_granary_tea_supplement = {
+			tea = 0.15
+			produced = provisions
+			output = 0.05
+			category = building_maintenance
+		}
+
+		sul_granary_coffee_supplement = {
+			coffee = 0.15
+			produced = provisions
+			output = 0.05
 			category = building_maintenance
 		}
 	}
@@ -330,13 +640,12 @@ sul_mining_village = {
 
 	modifier = {
 		free_building_levels = 1
-		# Mining goods output
-		local_tools_output_modifier = 0.005
-		local_weaponry_output_modifier = 0.005
-		local_cannons_output_modifier = 0.005
-		local_firearms_output_modifier = 0.005
-		local_steel_output_modifier = 0.005
-		local_jewelry_output_modifier = 0.005
+		local_population_capacity = 1
+		# Counter building_levels penalties
+		local_max_rgo_size_modifier = 0.005
+		local_production_efficiency = 0.005
+		# Mining extraction bonus
+		local_raw_material_output = 0.05
 	}
 
 	unique_production_methods = {
@@ -360,28 +669,6 @@ INJECT:mason = {
 	}
 
 	modifier = {
-		local_max_rgo_size_modifier = 0.005
 		local_masonry_output_modifier = 0.02
-		# All manufactured goods output (partial offset)
-		local_cloth_output_modifier = 0.0025
-		local_fine_cloth_output_modifier = 0.0025
-		local_books_output_modifier = 0.0025
-		local_naval_supplies_output_modifier = 0.0025
-		local_tools_output_modifier = 0.0025
-		local_weaponry_output_modifier = 0.0025
-		local_cannons_output_modifier = 0.0025
-		local_firearms_output_modifier = 0.0025
-		local_steel_output_modifier = 0.0025
-		local_jewelry_output_modifier = 0.0025
-		local_wine_output_modifier = 0.0025
-		local_beer_output_modifier = 0.0025
-		local_liquor_output_modifier = 0.0025
-		local_leather_output_modifier = 0.0025
-		local_paper_output_modifier = 0.0025
-		local_furniture_output_modifier = 0.0025
-		local_glass_output_modifier = 0.0025
-		local_pottery_output_modifier = 0.0025
-		local_porcelain_output_modifier = 0.0025
-		local_lacquerware_output_modifier = 0.0025
 	}
 }

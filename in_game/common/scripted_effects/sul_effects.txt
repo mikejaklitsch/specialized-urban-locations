@@ -7,6 +7,120 @@
 @sul_rank_offset_town = 0
 @sul_rank_offset_city = 10
 @sul_rank_offset_rural = 20
+
+# =============================================================================
+# FULL REBUILD
+# =============================================================================
+# Called on game start and when mod version changes (via version check)
+# Minimally invasive: preserves valid player specializations and buildings
+# Only reassigns locations whose current spec violates updated rules
+
+sul_full_rebuild = {
+	sul_setup_goods_spec_map = yes
+
+	# All ownable locations: recalculate eligibility, then branch
+	every_location_in_the_world = {
+		limit = { is_ownable = yes exists = raw_material }
+		sul_calculate_specialization_eligibility = yes
+		sul_rebuild_location = yes
+	}
+
+	# GDP per capita cache
+	every_country = {
+		limit = { sul_is_valid_location_owner = yes }
+		sul_update_all_location_gdp = yes
+	}
+
+	# Market cache
+	sul_refresh_market_cache = yes
+}
+
+# =============================================================================
+# REBUILD SINGLE LOCATION
+# =============================================================================
+# Handles one location during rebuild. Three paths:
+# 1. No specialization -> fresh assignment with buildings
+# 2. Valid specialization -> refresh modifier only (handles value changes)
+# 3. Invalid specialization -> reassign by resources + rebuild buildings
+# root = location (eligibility already calculated)
+
+sul_rebuild_location = {
+	if = {
+		limit = { sul_has_any_specialization = yes }
+
+		if = {
+			# Current spec still valid - just refresh the modifier
+			limit = { sul_current_specialization_is_valid = yes }
+			sul_refresh_specialization_modifier = yes
+		}
+		else = {
+			# Current spec no longer valid - full reassignment
+			sul_reassign_specialization = yes
+		}
+	}
+	else = {
+		# No specialization yet - first-time init
+		sul_init_new_specialization = yes
+	}
+}
+
+# =============================================================================
+# REFRESH SPECIALIZATION MODIFIER
+# =============================================================================
+# Swaps the modifier for the current spec+rank without changing anything else
+# root = location (must have sul_spec_type set)
+
+sul_refresh_specialization_modifier = {
+	sul_clear_all_specialization_modifiers = yes
+	sul_update_designation = yes
+	sul_apply_specialization_modifier = yes
+}
+
+# =============================================================================
+# REASSIGN SPECIALIZATION
+# =============================================================================
+# Current spec is no longer valid under updated rules
+# Clears old state, picks best match from resources, rebuilds buildings
+# root = location
+
+sul_reassign_specialization = {
+	sul_clear_all_specialization_modifiers = yes
+	sul_assign_specialization_by_resources = yes
+	sul_apply_specialization_modifier = yes
+
+	# Rebuild buildings for owned locations
+	if = {
+		limit = { exists = owner }
+		sul_save_building_levels = yes
+		sul_destroy_non_matching_buildings = yes
+		sul_restore_building_levels = yes
+	}
+}
+
+# =============================================================================
+# INIT NEW SPECIALIZATION
+# =============================================================================
+# First-time setup for a location that has never been specialized
+# root = location
+
+sul_init_new_specialization = {
+	set_variable = {
+		name = sul_local_gdp
+		value = 0
+	}
+
+	sul_assign_specialization_by_resources = yes
+	sul_apply_specialization_modifier = yes
+
+	# Grant buildings for owned locations
+	if = {
+		limit = { exists = owner }
+		sul_save_building_levels = yes
+		sul_destroy_non_matching_buildings = yes
+		sul_restore_building_levels = yes
+	}
+}
+
 # ============================================
 # BUILDING LEVEL COUNTING
 # Saves total building levels before specialization
@@ -44,26 +158,52 @@ sul_restore_building_levels = {
 		}
 	}
 
-	# Distribute buildings based on specialization
+	# Distribute buildings based on specialization and rank
 	if = {
-		limit = { sul_has_mining_specialization = yes }
-		sul_distribute_mining_buildings = yes
+		limit = { location_rank = location_rank:rural_settlement }
+
+		if = {
+			limit = { sul_has_mining_specialization = yes }
+			sul_distribute_mining_rural_buildings = yes
+		}
+		else_if = {
+			limit = { sul_has_farming_specialization = yes }
+			sul_distribute_farming_rural_buildings = yes
+		}
+		else_if = {
+			limit = { sul_has_woodland_specialization = yes }
+			sul_distribute_woodland_rural_buildings = yes
+		}
+		else_if = {
+			limit = { sul_has_gathering_specialization = yes }
+			sul_distribute_gathering_rural_buildings = yes
+		}
+		else_if = {
+			limit = { sul_has_commercial_specialization = yes }
+			sul_distribute_commercial_rural_buildings = yes
+		}
 	}
-	else_if = {
-		limit = { sul_has_farming_specialization = yes }
-		sul_distribute_farming_buildings = yes
-	}
-	else_if = {
-		limit = { sul_has_woodland_specialization = yes }
-		sul_distribute_woodland_buildings = yes
-	}
-	else_if = {
-		limit = { sul_has_gathering_specialization = yes }
-		sul_distribute_gathering_buildings = yes
-	}
-	else_if = {
-		limit = { sul_has_commercial_specialization = yes }
-		sul_distribute_commercial_buildings = yes
+	else = {
+		if = {
+			limit = { sul_has_mining_specialization = yes }
+			sul_distribute_mining_buildings = yes
+		}
+		else_if = {
+			limit = { sul_has_farming_specialization = yes }
+			sul_distribute_farming_buildings = yes
+		}
+		else_if = {
+			limit = { sul_has_woodland_specialization = yes }
+			sul_distribute_woodland_buildings = yes
+		}
+		else_if = {
+			limit = { sul_has_gathering_specialization = yes }
+			sul_distribute_gathering_buildings = yes
+		}
+		else_if = {
+			limit = { sul_has_commercial_specialization = yes }
+			sul_distribute_commercial_buildings = yes
+		}
 	}
 
 	# Cleanup
@@ -105,28 +245,25 @@ sul_add_building_levels = {
 # ============================================
 
 sul_distribute_mining_buildings = {
+	# 3 rural (always) + 1 guild always + up to 3 guild conditional = 4-7
 	set_variable = {
 		name = sul_valid_count
-		value = 1
-	}
-	set_variable = {
-		name = sul_b1_valid
-		value = 1
+		value = 4
 	}
 	if = {
 		limit = { owner = { has_advance = metallurgy } }
 		change_variable = { name = sul_valid_count add = 1 }
-		set_variable = { name = sul_b2_valid value = 1 }
+		set_variable = { name = sul_b1_valid value = 1 }
 	}
 	if = {
 		limit = { owner = { has_advance = weapon_guild_advance } }
 		change_variable = { name = sul_valid_count add = 1 }
-		set_variable = { name = sul_b3_valid value = 1 }
+		set_variable = { name = sul_b2_valid value = 1 }
 	}
 	if = {
 		limit = { owner = { has_advance = cannon_maker_advance } }
 		change_variable = { name = sul_valid_count add = 1 }
-		set_variable = { name = sul_b4_valid value = 1 }
+		set_variable = { name = sul_b3_valid value = 1 }
 	}
 	set_variable = {
 		name = sul_base
@@ -141,21 +278,33 @@ sul_distribute_mining_buildings = {
 		name = sul_remainder
 		value = { value = var:sul_levels_to_add modulo = var:sul_valid_count }
 	}
-	if = {
-		limit = { has_variable = sul_b1_valid }
-		sul_add_building_levels = { BUILDING = jewelry_guild }
+
+	# Guild buildings
+	sul_add_building_levels = {
+		BUILDING = jewelry_guild
 	}
 	if = {
-		limit = { has_variable = sul_b2_valid }
+		limit = { has_variable = sul_b1_valid }
 		sul_add_building_levels = { BUILDING = tools_guild }
 	}
 	if = {
-		limit = { has_variable = sul_b3_valid }
+		limit = { has_variable = sul_b2_valid }
 		sul_add_building_levels = { BUILDING = weapon_guild }
 	}
 	if = {
-		limit = { has_variable = sul_b4_valid }
+		limit = { has_variable = sul_b3_valid }
 		sul_add_building_levels = { BUILDING = cannon_maker }
+	}
+
+	# Rural buildings
+	sul_add_building_levels = {
+		BUILDING = sul_rural_blacksmith
+	}
+	sul_add_building_levels = {
+		BUILDING = sul_rural_weaponmaker
+	}
+	sul_add_building_levels = {
+		BUILDING = sul_rural_jeweler
 	}
 
 	remove_variable = sul_valid_count
@@ -164,7 +313,6 @@ sul_distribute_mining_buildings = {
 	remove_variable = sul_b1_valid
 	remove_variable = sul_b2_valid
 	remove_variable = sul_b3_valid
-	remove_variable = sul_b4_valid
 }
 
 # ============================================
@@ -174,9 +322,10 @@ sul_distribute_mining_buildings = {
 # ============================================
 
 sul_distribute_farming_buildings = {
+	# 3 guild always + 4 rural always = 7
 	set_variable = {
 		name = sul_valid_count
-		value = 3
+		value = 7
 	}
 	set_variable = {
 		name = sul_base
@@ -192,6 +341,7 @@ sul_distribute_farming_buildings = {
 		value = { value = var:sul_levels_to_add modulo = var:sul_valid_count }
 	}
 
+	# Guild buildings
 	sul_add_building_levels = {
 		BUILDING = brewery
 	}
@@ -200,6 +350,20 @@ sul_distribute_farming_buildings = {
 	}
 	sul_add_building_levels = {
 		BUILDING = distillers_guild
+	}
+
+	# Rural buildings
+	sul_add_building_levels = {
+		BUILDING = sul_rural_brewer
+	}
+	sul_add_building_levels = {
+		BUILDING = sul_rural_winemaker
+	}
+	sul_add_building_levels = {
+		BUILDING = sul_rural_distiller
+	}
+	sul_add_building_levels = {
+		BUILDING = sul_rural_tanner
 	}
 
 	remove_variable = sul_valid_count
@@ -215,31 +379,20 @@ sul_distribute_farming_buildings = {
 # ============================================
 
 sul_distribute_woodland_buildings = {
+	# 3 guild always + 4 rural always + up to 2 guild conditional = 7-9
 	set_variable = {
 		name = sul_valid_count
-		value = 3
-	}
-	set_variable = {
-		name = sul_b1_valid
-		value = 1
-	}
-	set_variable = {
-		name = sul_b2_valid
-		value = 1
-	}
-	set_variable = {
-		name = sul_b3_valid
-		value = 1
+		value = 7
 	}
 	if = {
 		limit = { owner = { has_advance = paper_guild_advance } }
 		change_variable = { name = sul_valid_count add = 1 }
-		set_variable = { name = sul_b4_valid value = 1 }
+		set_variable = { name = sul_b1_valid value = 1 }
 	}
 	if = {
 		limit = { owner = { has_advance = lacquerware_guild_advance } }
 		change_variable = { name = sul_valid_count add = 1 }
-		set_variable = { name = sul_b5_valid value = 1 }
+		set_variable = { name = sul_b2_valid value = 1 }
 	}
 	set_variable = {
 		name = sul_base
@@ -254,25 +407,38 @@ sul_distribute_woodland_buildings = {
 		name = sul_remainder
 		value = { value = var:sul_levels_to_add modulo = var:sul_valid_count }
 	}
+
+	# Guild buildings
+	sul_add_building_levels = {
+		BUILDING = furniture_guild
+	}
+	sul_add_building_levels = {
+		BUILDING = tannery
+	}
+	sul_add_building_levels = {
+		BUILDING = dyes_guild
+	}
 	if = {
 		limit = { has_variable = sul_b1_valid }
-		sul_add_building_levels = { BUILDING = furniture_guild }
-	}
-	if = {
-		limit = { has_variable = sul_b2_valid }
-		sul_add_building_levels = { BUILDING = tannery }
-	}
-	if = {
-		limit = { has_variable = sul_b3_valid }
-		sul_add_building_levels = { BUILDING = dyes_guild }
-	}
-	if = {
-		limit = { has_variable = sul_b4_valid }
 		sul_add_building_levels = { BUILDING = paper_guild }
 	}
 	if = {
-		limit = { has_variable = sul_b5_valid }
+		limit = { has_variable = sul_b2_valid }
 		sul_add_building_levels = { BUILDING = lacquerware_guild }
+	}
+
+	# Rural buildings
+	sul_add_building_levels = {
+		BUILDING = sul_rural_carpenter
+	}
+	sul_add_building_levels = {
+		BUILDING = sul_rural_papermaker
+	}
+	sul_add_building_levels = {
+		BUILDING = sul_rural_apiary
+	}
+	sul_add_building_levels = {
+		BUILDING = sul_rural_tanner
 	}
 
 	remove_variable = sul_valid_count
@@ -280,9 +446,6 @@ sul_distribute_woodland_buildings = {
 	remove_variable = sul_remainder
 	remove_variable = sul_b1_valid
 	remove_variable = sul_b2_valid
-	remove_variable = sul_b3_valid
-	remove_variable = sul_b4_valid
-	remove_variable = sul_b5_valid
 }
 
 # ============================================
@@ -293,23 +456,20 @@ sul_distribute_woodland_buildings = {
 # ============================================
 
 sul_distribute_gathering_buildings = {
+	# 1 guild always + 3 rural always + up to 3 guild conditional = 4-7
 	set_variable = {
 		name = sul_valid_count
-		value = 1
-	}
-	set_variable = {
-		name = sul_b1_valid
-		value = 1
+		value = 4
 	}
 	if = {
 		limit = { is_produced_in_location_market = goods:sand }
 		change_variable = { name = sul_valid_count add = 1 }
-		set_variable = { name = sul_b2_valid value = 1 }
+		set_variable = { name = sul_b1_valid value = 1 }
 	}
 	if = {
 		limit = { owner = { has_advance = apothecary_advance } }
 		change_variable = { name = sul_valid_count add = 1 }
-		set_variable = { name = sul_b3_valid value = 1 }
+		set_variable = { name = sul_b2_valid value = 1 }
 	}
 	if = {
 		limit = {
@@ -318,7 +478,7 @@ sul_distribute_gathering_buildings = {
 		}
 
 		change_variable = { name = sul_valid_count add = 1 }
-		set_variable = { name = sul_b4_valid value = 1 }
+		set_variable = { name = sul_b3_valid value = 1 }
 	}
 	set_variable = {
 		name = sul_base
@@ -333,21 +493,33 @@ sul_distribute_gathering_buildings = {
 		name = sul_remainder
 		value = { value = var:sul_levels_to_add modulo = var:sul_valid_count }
 	}
-	if = {
-		limit = { has_variable = sul_b1_valid }
-		sul_add_building_levels = { BUILDING = pottery_guild }
+
+	# Guild buildings
+	sul_add_building_levels = {
+		BUILDING = pottery_guild
 	}
 	if = {
-		limit = { has_variable = sul_b2_valid }
+		limit = { has_variable = sul_b1_valid }
 		sul_add_building_levels = { BUILDING = glass_guild }
 	}
 	if = {
-		limit = { has_variable = sul_b3_valid }
+		limit = { has_variable = sul_b2_valid }
 		sul_add_building_levels = { BUILDING = apothecary }
 	}
 	if = {
-		limit = { has_variable = sul_b4_valid }
+		limit = { has_variable = sul_b3_valid }
 		sul_add_building_levels = { BUILDING = saltpeter_guild }
+	}
+
+	# Rural buildings
+	sul_add_building_levels = {
+		BUILDING = sul_rural_glassmaker
+	}
+	sul_add_building_levels = {
+		BUILDING = sul_rural_potter
+	}
+	sul_add_building_levels = {
+		BUILDING = sul_rural_herbalist
 	}
 
 	remove_variable = sul_valid_count
@@ -356,7 +528,6 @@ sul_distribute_gathering_buildings = {
 	remove_variable = sul_b1_valid
 	remove_variable = sul_b2_valid
 	remove_variable = sul_b3_valid
-	remove_variable = sul_b4_valid
 }
 
 # ============================================
@@ -367,30 +538,15 @@ sul_distribute_gathering_buildings = {
 # ============================================
 
 sul_distribute_commercial_buildings = {
+	# 4 guild always + 2 rural always + up to 1 guild conditional = 6-7
 	set_variable = {
 		name = sul_valid_count
-		value = 4
-	}
-	set_variable = {
-		name = sul_b1_valid
-		value = 1
-	}
-	set_variable = {
-		name = sul_b2_valid
-		value = 1
-	}
-	set_variable = {
-		name = sul_b3_valid
-		value = 1
-	}
-	set_variable = {
-		name = sul_b4_valid
-		value = 1
+		value = 6
 	}
 	if = {
 		limit = { owner = { has_advance = scriptorium_advance } }
 		change_variable = { name = sul_valid_count add = 1 }
-		set_variable = { name = sul_b5_valid value = 1 }
+		set_variable = { name = sul_b1_valid value = 1 }
 	}
 	set_variable = {
 		name = sul_base
@@ -405,42 +561,222 @@ sul_distribute_commercial_buildings = {
 		name = sul_remainder
 		value = { value = var:sul_levels_to_add modulo = var:sul_valid_count }
 	}
+
+	# Guild buildings
+	sul_add_building_levels = {
+		BUILDING = marketplace
+	}
+	sul_add_building_levels = {
+		BUILDING = cloth_guild
+	}
+	sul_add_building_levels = {
+		BUILDING = fine_cloth_guild
+	}
+	sul_add_building_levels = {
+		BUILDING = naval_supplies_guild
+	}
 	if = {
 		limit = { has_variable = sul_b1_valid }
-		sul_add_building_levels = { BUILDING = marketplace }
-	}
-	if = {
-		limit = { has_variable = sul_b2_valid }
-		sul_add_building_levels = { BUILDING = cloth_guild }
-	}
-	if = {
-		limit = { has_variable = sul_b3_valid }
-		sul_add_building_levels = { BUILDING = fine_cloth_guild }
-	}
-	if = {
-		limit = { has_variable = sul_b4_valid }
-		sul_add_building_levels = { BUILDING = naval_supplies_guild }
-	}
-	if = {
-		limit = { has_variable = sul_b5_valid }
 		sul_add_building_levels = { BUILDING = scriptorium }
+	}
+
+	# Rural buildings
+	sul_add_building_levels = {
+		BUILDING = rural_clothmaker
+	}
+	sul_add_building_levels = {
+		BUILDING = sul_rural_ropemaker
 	}
 
 	remove_variable = sul_valid_count
 	remove_variable = sul_base
 	remove_variable = sul_remainder
 	remove_variable = sul_b1_valid
-	remove_variable = sul_b2_valid
-	remove_variable = sul_b3_valid
-	remove_variable = sul_b4_valid
-	remove_variable = sul_b5_valid
+}
+
+# ============================================
+# RURAL BUILDING DISTRIBUTION
+# Distributes levels across rural cottage industry buildings
+# root = location with sul_levels_to_add set
+# ============================================
+
+sul_distribute_mining_rural_buildings = {
+	set_variable = {
+		name = sul_valid_count
+		value = 3
+	}
+	set_variable = {
+		name = sul_base
+
+		value = {
+			value = var:sul_levels_to_add
+			divide = var:sul_valid_count
+			floor = yes
+		}
+	}
+	set_variable = {
+		name = sul_remainder
+		value = { value = var:sul_levels_to_add modulo = var:sul_valid_count }
+	}
+
+	sul_add_building_levels = {
+		BUILDING = sul_rural_blacksmith
+	}
+	sul_add_building_levels = {
+		BUILDING = sul_rural_weaponmaker
+	}
+	sul_add_building_levels = {
+		BUILDING = sul_rural_jeweler
+	}
+
+	remove_variable = sul_valid_count
+	remove_variable = sul_base
+	remove_variable = sul_remainder
+}
+
+sul_distribute_farming_rural_buildings = {
+	set_variable = {
+		name = sul_valid_count
+		value = 4
+	}
+	set_variable = {
+		name = sul_base
+
+		value = {
+			value = var:sul_levels_to_add
+			divide = var:sul_valid_count
+			floor = yes
+		}
+	}
+	set_variable = {
+		name = sul_remainder
+		value = { value = var:sul_levels_to_add modulo = var:sul_valid_count }
+	}
+
+	sul_add_building_levels = {
+		BUILDING = sul_rural_brewer
+	}
+	sul_add_building_levels = {
+		BUILDING = sul_rural_winemaker
+	}
+	sul_add_building_levels = {
+		BUILDING = sul_rural_distiller
+	}
+	sul_add_building_levels = {
+		BUILDING = sul_rural_tanner
+	}
+
+	remove_variable = sul_valid_count
+	remove_variable = sul_base
+	remove_variable = sul_remainder
+}
+
+sul_distribute_gathering_rural_buildings = {
+	set_variable = {
+		name = sul_valid_count
+		value = 3
+	}
+	set_variable = {
+		name = sul_base
+
+		value = {
+			value = var:sul_levels_to_add
+			divide = var:sul_valid_count
+			floor = yes
+		}
+	}
+	set_variable = {
+		name = sul_remainder
+		value = { value = var:sul_levels_to_add modulo = var:sul_valid_count }
+	}
+
+	sul_add_building_levels = {
+		BUILDING = sul_rural_glassmaker
+	}
+	sul_add_building_levels = {
+		BUILDING = sul_rural_potter
+	}
+	sul_add_building_levels = {
+		BUILDING = sul_rural_herbalist
+	}
+
+	remove_variable = sul_valid_count
+	remove_variable = sul_base
+	remove_variable = sul_remainder
+}
+
+sul_distribute_woodland_rural_buildings = {
+	set_variable = {
+		name = sul_valid_count
+		value = 4
+	}
+	set_variable = {
+		name = sul_base
+
+		value = {
+			value = var:sul_levels_to_add
+			divide = var:sul_valid_count
+			floor = yes
+		}
+	}
+	set_variable = {
+		name = sul_remainder
+		value = { value = var:sul_levels_to_add modulo = var:sul_valid_count }
+	}
+
+	sul_add_building_levels = {
+		BUILDING = sul_rural_carpenter
+	}
+	sul_add_building_levels = {
+		BUILDING = sul_rural_papermaker
+	}
+	sul_add_building_levels = {
+		BUILDING = sul_rural_apiary
+	}
+	sul_add_building_levels = {
+		BUILDING = sul_rural_tanner
+	}
+
+	remove_variable = sul_valid_count
+	remove_variable = sul_base
+	remove_variable = sul_remainder
+}
+
+sul_distribute_commercial_rural_buildings = {
+	set_variable = {
+		name = sul_valid_count
+		value = 2
+	}
+	set_variable = {
+		name = sul_base
+
+		value = {
+			value = var:sul_levels_to_add
+			divide = var:sul_valid_count
+			floor = yes
+		}
+	}
+	set_variable = {
+		name = sul_remainder
+		value = { value = var:sul_levels_to_add modulo = var:sul_valid_count }
+	}
+
+	sul_add_building_levels = {
+		BUILDING = rural_clothmaker
+	}
+	sul_add_building_levels = {
+		BUILDING = sul_rural_ropemaker
+	}
+
+	remove_variable = sul_valid_count
+	remove_variable = sul_base
+	remove_variable = sul_remainder
 }
 
 # ============================================
 # BUILDING DESTRUCTION EFFECTS
 # Each effect destroys all specialization-relevant buildings EXCEPT those matching the specialization
 # root = location
-# NOTE: Building destruction only applies to towns/cities, NOT rural settlements
 # NOTE: Universities are always preserved in cities regardless of specialization
 #
 # Uses add_to_list pattern to build list first, then destroy via every_in_list

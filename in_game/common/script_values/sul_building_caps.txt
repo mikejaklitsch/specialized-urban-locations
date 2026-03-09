@@ -1,8 +1,31 @@
-﻿sul_efficiency_building_caps = {
+﻿# Granary cap — mirrors PorP's victuals_market_max_level
+# Lower multipliers than guild_max_level to prevent overbuilding
+# ~2 in a small town, ~4-5 in a large city
+
+sul_granary_max_level = {
+	add = {
+		desc = "BUILDING_LEVEL_BASE"
+		value = 1
+	}
+	add = {
+		desc = "BUILDING_LEVEL_DEVELOPMENT"
+		value = development
+		multiply = 0.075
+	}
+	add = {
+		desc = "BUILDING_LEVEL_POPULATION"
+		value = population
+		multiply = 0.015
+	}
 	if = {
-		limit = {
-			location_rank = location_rank:rural_settlement
-		}
+		limit = { location_rank ?= location_rank:city }
+		add = { desc = "BUILDING_LEVEL_IS_CITY" value = 2 }
+	}
+}
+
+sul_efficiency_building_caps = {
+	if = {
+		limit = { location_rank = location_rank:rural_settlement }
 		value = 1
 	}
 	else = {
@@ -11,6 +34,7 @@
 }
 
 # Flat bonus for guild buildings from specialization
+
 REPLACE:guild_max_level = {
 	add = {
 		desc = "BUILDING_LEVEL_BASE"
@@ -27,64 +51,98 @@ REPLACE:guild_max_level = {
 		multiply = 0.05
 	}
 	if = {
-		limit = {
-			location_rank ?= location_rank:city
-		}
-		add = {
-			desc = "BUILDING_LEVEL_IS_CITY"
-			value = 5
-		}
+		limit = { location_rank ?= location_rank:city }
+		add = { desc = "BUILDING_LEVEL_IS_CITY" value = 5 }
 	}
 	if = {
 		limit = {
 			location_rank ?= location_rank:rural_settlement
 			has_variable = extra_levels_clothmaker_variable
 		}
-		add = {
-			desc = "[ShowMissionTaskName('mission_cloth_makers')]"
-			value = 2
-		}
+
+		add = { desc = "[ShowMissionTaskName('mission_cloth_makers')]" value = 2 }
 	}
+
 	# Flat bonus from specialization: +5 towns, +10 cities
 	if = {
 		limit = { sul_is_mining_town = yes }
-		add = { desc = "STATIC_MODIFIER_NAME_sul_mining_town_specialization" value = 5 }
+
+		add = {
+			desc = "STATIC_MODIFIER_NAME_sul_mining_town_specialization"
+			value = 5
+		}
 	}
 	else_if = {
 		limit = { sul_is_farming_town = yes }
-		add = { desc = "STATIC_MODIFIER_NAME_sul_farming_town_specialization" value = 5 }
+
+		add = {
+			desc = "STATIC_MODIFIER_NAME_sul_farming_town_specialization"
+			value = 5
+		}
 	}
 	else_if = {
 		limit = { sul_is_gathering_town = yes }
-		add = { desc = "STATIC_MODIFIER_NAME_sul_gathering_town_specialization" value = 5 }
+
+		add = {
+			desc = "STATIC_MODIFIER_NAME_sul_gathering_town_specialization"
+			value = 5
+		}
 	}
 	else_if = {
 		limit = { sul_is_woodland_town = yes }
-		add = { desc = "STATIC_MODIFIER_NAME_sul_woodland_town_specialization" value = 5 }
+
+		add = {
+			desc = "STATIC_MODIFIER_NAME_sul_woodland_town_specialization"
+			value = 5
+		}
 	}
 	else_if = {
 		limit = { sul_is_commercial_town = yes }
-		add = { desc = "STATIC_MODIFIER_NAME_sul_commercial_town_specialization" value = 5 }
+
+		add = {
+			desc = "STATIC_MODIFIER_NAME_sul_commercial_town_specialization"
+			value = 5
+		}
 	}
 	else_if = {
 		limit = { sul_is_mining_city = yes }
-		add = { desc = "STATIC_MODIFIER_NAME_sul_mining_city_specialization" value = 10 }
+
+		add = {
+			desc = "STATIC_MODIFIER_NAME_sul_mining_city_specialization"
+			value = 10
+		}
 	}
 	else_if = {
 		limit = { sul_is_farming_city = yes }
-		add = { desc = "STATIC_MODIFIER_NAME_sul_farming_city_specialization" value = 10 }
+
+		add = {
+			desc = "STATIC_MODIFIER_NAME_sul_farming_city_specialization"
+			value = 10
+		}
 	}
 	else_if = {
 		limit = { sul_is_gathering_city = yes }
-		add = { desc = "STATIC_MODIFIER_NAME_sul_gathering_city_specialization" value = 10 }
+
+		add = {
+			desc = "STATIC_MODIFIER_NAME_sul_gathering_city_specialization"
+			value = 10
+		}
 	}
 	else_if = {
 		limit = { sul_is_woodland_city = yes }
-		add = { desc = "STATIC_MODIFIER_NAME_sul_woodland_city_specialization" value = 10 }
+
+		add = {
+			desc = "STATIC_MODIFIER_NAME_sul_woodland_city_specialization"
+			value = 10
+		}
 	}
 	else_if = {
 		limit = { sul_is_commercial_city = yes }
-		add = { desc = "STATIC_MODIFIER_NAME_sul_commercial_city_specialization" value = 10 }
+
+		add = {
+			desc = "STATIC_MODIFIER_NAME_sul_commercial_city_specialization"
+			value = 10
+		}
 	}
 }
 
@@ -104,54 +162,90 @@ REPLACE:workshop_max_level = {
 		multiply = 0.05
 	}
 	if = {
-		limit = {
-			location_rank = location_rank:city
-		}
-		add = {
-			desc = "BUILDING_LEVEL_IS_CITY"
-			value = 10
-		}
+		limit = { location_rank = location_rank:city }
+		add = { desc = "BUILDING_LEVEL_IS_CITY" value = 10 }
 	}
+
 	# Flat bonus from specialization: +5 towns, +10 cities
 	if = {
 		limit = { sul_is_mining_town = yes }
-		add = { desc = "STATIC_MODIFIER_NAME_sul_mining_town_specialization" value = 5 }
+
+		add = {
+			desc = "STATIC_MODIFIER_NAME_sul_mining_town_specialization"
+			value = 5
+		}
 	}
 	else_if = {
 		limit = { sul_is_farming_town = yes }
-		add = { desc = "STATIC_MODIFIER_NAME_sul_farming_town_specialization" value = 5 }
+
+		add = {
+			desc = "STATIC_MODIFIER_NAME_sul_farming_town_specialization"
+			value = 5
+		}
 	}
 	else_if = {
 		limit = { sul_is_gathering_town = yes }
-		add = { desc = "STATIC_MODIFIER_NAME_sul_gathering_town_specialization" value = 5 }
+
+		add = {
+			desc = "STATIC_MODIFIER_NAME_sul_gathering_town_specialization"
+			value = 5
+		}
 	}
 	else_if = {
 		limit = { sul_is_woodland_town = yes }
-		add = { desc = "STATIC_MODIFIER_NAME_sul_woodland_town_specialization" value = 5 }
+
+		add = {
+			desc = "STATIC_MODIFIER_NAME_sul_woodland_town_specialization"
+			value = 5
+		}
 	}
 	else_if = {
 		limit = { sul_is_commercial_town = yes }
-		add = { desc = "STATIC_MODIFIER_NAME_sul_commercial_town_specialization" value = 5 }
+
+		add = {
+			desc = "STATIC_MODIFIER_NAME_sul_commercial_town_specialization"
+			value = 5
+		}
 	}
 	else_if = {
 		limit = { sul_is_mining_city = yes }
-		add = { desc = "STATIC_MODIFIER_NAME_sul_mining_city_specialization" value = 10 }
+
+		add = {
+			desc = "STATIC_MODIFIER_NAME_sul_mining_city_specialization"
+			value = 10
+		}
 	}
 	else_if = {
 		limit = { sul_is_farming_city = yes }
-		add = { desc = "STATIC_MODIFIER_NAME_sul_farming_city_specialization" value = 10 }
+
+		add = {
+			desc = "STATIC_MODIFIER_NAME_sul_farming_city_specialization"
+			value = 10
+		}
 	}
 	else_if = {
 		limit = { sul_is_gathering_city = yes }
-		add = { desc = "STATIC_MODIFIER_NAME_sul_gathering_city_specialization" value = 10 }
+
+		add = {
+			desc = "STATIC_MODIFIER_NAME_sul_gathering_city_specialization"
+			value = 10
+		}
 	}
 	else_if = {
 		limit = { sul_is_woodland_city = yes }
-		add = { desc = "STATIC_MODIFIER_NAME_sul_woodland_city_specialization" value = 10 }
+
+		add = {
+			desc = "STATIC_MODIFIER_NAME_sul_woodland_city_specialization"
+			value = 10
+		}
 	}
 	else_if = {
 		limit = { sul_is_commercial_city = yes }
-		add = { desc = "STATIC_MODIFIER_NAME_sul_commercial_city_specialization" value = 10 }
+
+		add = {
+			desc = "STATIC_MODIFIER_NAME_sul_commercial_city_specialization"
+			value = 10
+		}
 	}
 }
 
@@ -171,57 +265,92 @@ REPLACE:manufactory_max_level = {
 		multiply = 0.1
 	}
 	if = {
-		limit = {
-			location_rank = location_rank:city
-		}
-		add = {
-			desc = "BUILDING_LEVEL_IS_CITY"
-			value = 20
-		}
+		limit = { location_rank = location_rank:city }
+		add = { desc = "BUILDING_LEVEL_IS_CITY" value = 20 }
 	}
+
 	# Flat bonus from specialization: +5 towns, +10 cities
 	if = {
 		limit = { sul_is_mining_town = yes }
-		add = { desc = "STATIC_MODIFIER_NAME_sul_mining_town_specialization" value = 5 }
+
+		add = {
+			desc = "STATIC_MODIFIER_NAME_sul_mining_town_specialization"
+			value = 5
+		}
 	}
 	else_if = {
 		limit = { sul_is_farming_town = yes }
-		add = { desc = "STATIC_MODIFIER_NAME_sul_farming_town_specialization" value = 5 }
+
+		add = {
+			desc = "STATIC_MODIFIER_NAME_sul_farming_town_specialization"
+			value = 5
+		}
 	}
 	else_if = {
 		limit = { sul_is_gathering_town = yes }
-		add = { desc = "STATIC_MODIFIER_NAME_sul_gathering_town_specialization" value = 5 }
+
+		add = {
+			desc = "STATIC_MODIFIER_NAME_sul_gathering_town_specialization"
+			value = 5
+		}
 	}
 	else_if = {
 		limit = { sul_is_woodland_town = yes }
-		add = { desc = "STATIC_MODIFIER_NAME_sul_woodland_town_specialization" value = 5 }
+
+		add = {
+			desc = "STATIC_MODIFIER_NAME_sul_woodland_town_specialization"
+			value = 5
+		}
 	}
 	else_if = {
 		limit = { sul_is_commercial_town = yes }
-		add = { desc = "STATIC_MODIFIER_NAME_sul_commercial_town_specialization" value = 5 }
+
+		add = {
+			desc = "STATIC_MODIFIER_NAME_sul_commercial_town_specialization"
+			value = 5
+		}
 	}
 	else_if = {
 		limit = { sul_is_mining_city = yes }
-		add = { desc = "STATIC_MODIFIER_NAME_sul_mining_city_specialization" value = 10 }
+
+		add = {
+			desc = "STATIC_MODIFIER_NAME_sul_mining_city_specialization"
+			value = 10
+		}
 	}
 	else_if = {
 		limit = { sul_is_farming_city = yes }
-		add = { desc = "STATIC_MODIFIER_NAME_sul_farming_city_specialization" value = 10 }
+
+		add = {
+			desc = "STATIC_MODIFIER_NAME_sul_farming_city_specialization"
+			value = 10
+		}
 	}
 	else_if = {
 		limit = { sul_is_gathering_city = yes }
-		add = { desc = "STATIC_MODIFIER_NAME_sul_gathering_city_specialization" value = 10 }
+
+		add = {
+			desc = "STATIC_MODIFIER_NAME_sul_gathering_city_specialization"
+			value = 10
+		}
 	}
 	else_if = {
 		limit = { sul_is_woodland_city = yes }
-		add = { desc = "STATIC_MODIFIER_NAME_sul_woodland_city_specialization" value = 10 }
+
+		add = {
+			desc = "STATIC_MODIFIER_NAME_sul_woodland_city_specialization"
+			value = 10
+		}
 	}
 	else_if = {
 		limit = { sul_is_commercial_city = yes }
-		add = { desc = "STATIC_MODIFIER_NAME_sul_commercial_city_specialization" value = 10 }
+
+		add = {
+			desc = "STATIC_MODIFIER_NAME_sul_commercial_city_specialization"
+			value = 10
+		}
 	}
 }
-
 
 REPLACE:mills_max_level = {
 	add = {
@@ -239,57 +368,92 @@ REPLACE:mills_max_level = {
 		multiply = 0.25
 	}
 	if = {
-		limit = {
-			location_rank = location_rank:city
-		}
-		add = {
-			desc = "BUILDING_LEVEL_IS_CITY"
-			value = 25
-		}
+		limit = { location_rank = location_rank:city }
+		add = { desc = "BUILDING_LEVEL_IS_CITY" value = 25 }
 	}
+
 	# Flat bonus from specialization: +5 towns, +10 cities
 	if = {
 		limit = { sul_is_mining_town = yes }
-		add = { desc = "STATIC_MODIFIER_NAME_sul_mining_town_specialization" value = 5 }
+
+		add = {
+			desc = "STATIC_MODIFIER_NAME_sul_mining_town_specialization"
+			value = 5
+		}
 	}
 	else_if = {
 		limit = { sul_is_farming_town = yes }
-		add = { desc = "STATIC_MODIFIER_NAME_sul_farming_town_specialization" value = 5 }
+
+		add = {
+			desc = "STATIC_MODIFIER_NAME_sul_farming_town_specialization"
+			value = 5
+		}
 	}
 	else_if = {
 		limit = { sul_is_gathering_town = yes }
-		add = { desc = "STATIC_MODIFIER_NAME_sul_gathering_town_specialization" value = 5 }
+
+		add = {
+			desc = "STATIC_MODIFIER_NAME_sul_gathering_town_specialization"
+			value = 5
+		}
 	}
 	else_if = {
 		limit = { sul_is_woodland_town = yes }
-		add = { desc = "STATIC_MODIFIER_NAME_sul_woodland_town_specialization" value = 5 }
+
+		add = {
+			desc = "STATIC_MODIFIER_NAME_sul_woodland_town_specialization"
+			value = 5
+		}
 	}
 	else_if = {
 		limit = { sul_is_commercial_town = yes }
-		add = { desc = "STATIC_MODIFIER_NAME_sul_commercial_town_specialization" value = 5 }
+
+		add = {
+			desc = "STATIC_MODIFIER_NAME_sul_commercial_town_specialization"
+			value = 5
+		}
 	}
 	else_if = {
 		limit = { sul_is_mining_city = yes }
-		add = { desc = "STATIC_MODIFIER_NAME_sul_mining_city_specialization" value = 10 }
+
+		add = {
+			desc = "STATIC_MODIFIER_NAME_sul_mining_city_specialization"
+			value = 10
+		}
 	}
 	else_if = {
 		limit = { sul_is_farming_city = yes }
-		add = { desc = "STATIC_MODIFIER_NAME_sul_farming_city_specialization" value = 10 }
+
+		add = {
+			desc = "STATIC_MODIFIER_NAME_sul_farming_city_specialization"
+			value = 10
+		}
 	}
 	else_if = {
 		limit = { sul_is_gathering_city = yes }
-		add = { desc = "STATIC_MODIFIER_NAME_sul_gathering_city_specialization" value = 10 }
+
+		add = {
+			desc = "STATIC_MODIFIER_NAME_sul_gathering_city_specialization"
+			value = 10
+		}
 	}
 	else_if = {
 		limit = { sul_is_woodland_city = yes }
-		add = { desc = "STATIC_MODIFIER_NAME_sul_woodland_city_specialization" value = 10 }
+
+		add = {
+			desc = "STATIC_MODIFIER_NAME_sul_woodland_city_specialization"
+			value = 10
+		}
 	}
 	else_if = {
 		limit = { sul_is_commercial_city = yes }
-		add = { desc = "STATIC_MODIFIER_NAME_sul_commercial_city_specialization" value = 10 }
+
+		add = {
+			desc = "STATIC_MODIFIER_NAME_sul_commercial_city_specialization"
+			value = 10
+		}
 	}
 }
-
 
 REPLACE:market_max_level = {
 	add = {
@@ -307,78 +471,135 @@ REPLACE:market_max_level = {
 		multiply = 0.05
 	}
 	if = {
-		limit = {
-			location_rank ?= location_rank:city
-		}
-		add = {
-			desc = "BUILDING_LEVEL_IS_CITY"
-			value = 5
-		}
+		limit = { location_rank ?= location_rank:city }
+		add = { desc = "BUILDING_LEVEL_IS_CITY" value = 5 }
 	}
+
 	# Flat bonus from specialization: +2 rural, +5 towns, +10 cities
 	if = {
 		limit = { sul_is_mining_rural = yes }
-		add = { desc = "STATIC_MODIFIER_NAME_sul_mining_rural_specialization" value = 2 }
+
+		add = {
+			desc = "STATIC_MODIFIER_NAME_sul_mining_rural_specialization"
+			value = 2
+		}
 	}
 	else_if = {
 		limit = { sul_is_farming_rural = yes }
-		add = { desc = "STATIC_MODIFIER_NAME_sul_farming_rural_specialization" value = 2 }
+
+		add = {
+			desc = "STATIC_MODIFIER_NAME_sul_farming_rural_specialization"
+			value = 2
+		}
 	}
 	else_if = {
 		limit = { sul_is_gathering_rural = yes }
-		add = { desc = "STATIC_MODIFIER_NAME_sul_gathering_rural_specialization" value = 2 }
+
+		add = {
+			desc = "STATIC_MODIFIER_NAME_sul_gathering_rural_specialization"
+			value = 2
+		}
 	}
 	else_if = {
 		limit = { sul_is_woodland_rural = yes }
-		add = { desc = "STATIC_MODIFIER_NAME_sul_woodland_rural_specialization" value = 2 }
+
+		add = {
+			desc = "STATIC_MODIFIER_NAME_sul_woodland_rural_specialization"
+			value = 2
+		}
 	}
 	else_if = {
 		limit = { sul_is_commercial_rural = yes }
-		add = { desc = "STATIC_MODIFIER_NAME_sul_commercial_rural_specialization" value = 2 }
+
+		add = {
+			desc = "STATIC_MODIFIER_NAME_sul_commercial_rural_specialization"
+			value = 2
+		}
 	}
 	else_if = {
 		limit = { sul_is_mining_town = yes }
-		add = { desc = "STATIC_MODIFIER_NAME_sul_mining_town_specialization" value = 5 }
+
+		add = {
+			desc = "STATIC_MODIFIER_NAME_sul_mining_town_specialization"
+			value = 5
+		}
 	}
 	else_if = {
 		limit = { sul_is_farming_town = yes }
-		add = { desc = "STATIC_MODIFIER_NAME_sul_farming_town_specialization" value = 5 }
+
+		add = {
+			desc = "STATIC_MODIFIER_NAME_sul_farming_town_specialization"
+			value = 5
+		}
 	}
 	else_if = {
 		limit = { sul_is_gathering_town = yes }
-		add = { desc = "STATIC_MODIFIER_NAME_sul_gathering_town_specialization" value = 5 }
+
+		add = {
+			desc = "STATIC_MODIFIER_NAME_sul_gathering_town_specialization"
+			value = 5
+		}
 	}
 	else_if = {
 		limit = { sul_is_woodland_town = yes }
-		add = { desc = "STATIC_MODIFIER_NAME_sul_woodland_town_specialization" value = 5 }
+
+		add = {
+			desc = "STATIC_MODIFIER_NAME_sul_woodland_town_specialization"
+			value = 5
+		}
 	}
 	else_if = {
 		limit = { sul_is_commercial_town = yes }
-		add = { desc = "STATIC_MODIFIER_NAME_sul_commercial_town_specialization" value = 5 }
+
+		add = {
+			desc = "STATIC_MODIFIER_NAME_sul_commercial_town_specialization"
+			value = 5
+		}
 	}
 	else_if = {
 		limit = { sul_is_mining_city = yes }
-		add = { desc = "STATIC_MODIFIER_NAME_sul_mining_city_specialization" value = 10 }
+
+		add = {
+			desc = "STATIC_MODIFIER_NAME_sul_mining_city_specialization"
+			value = 10
+		}
 	}
 	else_if = {
 		limit = { sul_is_farming_city = yes }
-		add = { desc = "STATIC_MODIFIER_NAME_sul_farming_city_specialization" value = 10 }
+
+		add = {
+			desc = "STATIC_MODIFIER_NAME_sul_farming_city_specialization"
+			value = 10
+		}
 	}
 	else_if = {
 		limit = { sul_is_gathering_city = yes }
-		add = { desc = "STATIC_MODIFIER_NAME_sul_gathering_city_specialization" value = 10 }
+
+		add = {
+			desc = "STATIC_MODIFIER_NAME_sul_gathering_city_specialization"
+			value = 10
+		}
 	}
 	else_if = {
 		limit = { sul_is_woodland_city = yes }
-		add = { desc = "STATIC_MODIFIER_NAME_sul_woodland_city_specialization" value = 10 }
+
+		add = {
+			desc = "STATIC_MODIFIER_NAME_sul_woodland_city_specialization"
+			value = 10
+		}
 	}
 	else_if = {
 		limit = { sul_is_commercial_city = yes }
-		add = { desc = "STATIC_MODIFIER_NAME_sul_commercial_city_specialization" value = 10 }
+
+		add = {
+			desc = "STATIC_MODIFIER_NAME_sul_commercial_city_specialization"
+			value = 10
+		}
 	}
 }
 
 # Village building cap - add specialization bonus
+
 REPLACE:rural_building_cap = {
 	add = {
 		desc = "BUILDING_LEVEL_BASE"
@@ -395,78 +616,135 @@ REPLACE:rural_building_cap = {
 		multiply = 0.5
 	}
 	if = {
-		limit = {
-			has_river = yes
-		}
-		add = {
-			desc = "BUILDING_LEVEL_HAS_RIVER"
-			value = 1
-		}
+		limit = { has_river = yes }
+		add = { desc = "BUILDING_LEVEL_HAS_RIVER" value = 1 }
 	}
+
 	# Flat bonus from specialization: +3 rural, +5 towns, +10 cities
 	if = {
 		limit = { sul_is_mining_rural = yes }
-		add = { desc = "STATIC_MODIFIER_NAME_sul_mining_rural_specialization" value = 3 }
+
+		add = {
+			desc = "STATIC_MODIFIER_NAME_sul_mining_rural_specialization"
+			value = 3
+		}
 	}
 	else_if = {
 		limit = { sul_is_farming_rural = yes }
-		add = { desc = "STATIC_MODIFIER_NAME_sul_farming_rural_specialization" value = 3 }
+
+		add = {
+			desc = "STATIC_MODIFIER_NAME_sul_farming_rural_specialization"
+			value = 3
+		}
 	}
 	else_if = {
 		limit = { sul_is_gathering_rural = yes }
-		add = { desc = "STATIC_MODIFIER_NAME_sul_gathering_rural_specialization" value = 3 }
+
+		add = {
+			desc = "STATIC_MODIFIER_NAME_sul_gathering_rural_specialization"
+			value = 3
+		}
 	}
 	else_if = {
 		limit = { sul_is_woodland_rural = yes }
-		add = { desc = "STATIC_MODIFIER_NAME_sul_woodland_rural_specialization" value = 3 }
+
+		add = {
+			desc = "STATIC_MODIFIER_NAME_sul_woodland_rural_specialization"
+			value = 3
+		}
 	}
 	else_if = {
 		limit = { sul_is_commercial_rural = yes }
-		add = { desc = "STATIC_MODIFIER_NAME_sul_commercial_rural_specialization" value = 3 }
+
+		add = {
+			desc = "STATIC_MODIFIER_NAME_sul_commercial_rural_specialization"
+			value = 3
+		}
 	}
 	else_if = {
 		limit = { sul_is_mining_town = yes }
-		add = { desc = "STATIC_MODIFIER_NAME_sul_mining_town_specialization" value = 5 }
+
+		add = {
+			desc = "STATIC_MODIFIER_NAME_sul_mining_town_specialization"
+			value = 5
+		}
 	}
 	else_if = {
 		limit = { sul_is_farming_town = yes }
-		add = { desc = "STATIC_MODIFIER_NAME_sul_farming_town_specialization" value = 5 }
+
+		add = {
+			desc = "STATIC_MODIFIER_NAME_sul_farming_town_specialization"
+			value = 5
+		}
 	}
 	else_if = {
 		limit = { sul_is_gathering_town = yes }
-		add = { desc = "STATIC_MODIFIER_NAME_sul_gathering_town_specialization" value = 5 }
+
+		add = {
+			desc = "STATIC_MODIFIER_NAME_sul_gathering_town_specialization"
+			value = 5
+		}
 	}
 	else_if = {
 		limit = { sul_is_woodland_town = yes }
-		add = { desc = "STATIC_MODIFIER_NAME_sul_woodland_town_specialization" value = 5 }
+
+		add = {
+			desc = "STATIC_MODIFIER_NAME_sul_woodland_town_specialization"
+			value = 5
+		}
 	}
 	else_if = {
 		limit = { sul_is_commercial_town = yes }
-		add = { desc = "STATIC_MODIFIER_NAME_sul_commercial_town_specialization" value = 5 }
+
+		add = {
+			desc = "STATIC_MODIFIER_NAME_sul_commercial_town_specialization"
+			value = 5
+		}
 	}
 	else_if = {
 		limit = { sul_is_mining_city = yes }
-		add = { desc = "STATIC_MODIFIER_NAME_sul_mining_city_specialization" value = 10 }
+
+		add = {
+			desc = "STATIC_MODIFIER_NAME_sul_mining_city_specialization"
+			value = 10
+		}
 	}
 	else_if = {
 		limit = { sul_is_farming_city = yes }
-		add = { desc = "STATIC_MODIFIER_NAME_sul_farming_city_specialization" value = 10 }
+
+		add = {
+			desc = "STATIC_MODIFIER_NAME_sul_farming_city_specialization"
+			value = 10
+		}
 	}
 	else_if = {
 		limit = { sul_is_gathering_city = yes }
-		add = { desc = "STATIC_MODIFIER_NAME_sul_gathering_city_specialization" value = 10 }
+
+		add = {
+			desc = "STATIC_MODIFIER_NAME_sul_gathering_city_specialization"
+			value = 10
+		}
 	}
 	else_if = {
 		limit = { sul_is_woodland_city = yes }
-		add = { desc = "STATIC_MODIFIER_NAME_sul_woodland_city_specialization" value = 10 }
+
+		add = {
+			desc = "STATIC_MODIFIER_NAME_sul_woodland_city_specialization"
+			value = 10
+		}
 	}
 	else_if = {
 		limit = { sul_is_commercial_city = yes }
-		add = { desc = "STATIC_MODIFIER_NAME_sul_commercial_city_specialization" value = 10 }
+
+		add = {
+			desc = "STATIC_MODIFIER_NAME_sul_commercial_city_specialization"
+			value = 10
+		}
 	}
 }
 
 # Irrigation cap - add specialization bonus
+
 REPLACE:irrigant_cap = {
 	add = {
 		desc = "BUILDING_LEVEL_BASE"
@@ -478,77 +756,133 @@ REPLACE:irrigant_cap = {
 		multiply = 0.2
 	}
 	if = {
-		limit = {
-			has_river = yes
-		}
-		add = {
-			desc = "BUILDING_LEVEL_HAS_RIVER"
-			value = 2
-		}
+		limit = { has_river = yes }
+		add = { desc = "BUILDING_LEVEL_HAS_RIVER" value = 2 }
 	}
 	add = {
 		desc = "BUILDING_LEVEL_FROM_OWNER_MODIFIERS"
 		add = owner.modifier:irrigant_cap_level
 	}
+
 	# Flat bonus from specialization: +2 rural, +4 towns, +8 cities
 	if = {
 		limit = { sul_is_mining_rural = yes }
-		add = { desc = "STATIC_MODIFIER_NAME_sul_mining_rural_specialization" value = 2 }
+
+		add = {
+			desc = "STATIC_MODIFIER_NAME_sul_mining_rural_specialization"
+			value = 2
+		}
 	}
 	else_if = {
 		limit = { sul_is_farming_rural = yes }
-		add = { desc = "STATIC_MODIFIER_NAME_sul_farming_rural_specialization" value = 2 }
+
+		add = {
+			desc = "STATIC_MODIFIER_NAME_sul_farming_rural_specialization"
+			value = 2
+		}
 	}
 	else_if = {
 		limit = { sul_is_gathering_rural = yes }
-		add = { desc = "STATIC_MODIFIER_NAME_sul_gathering_rural_specialization" value = 2 }
+
+		add = {
+			desc = "STATIC_MODIFIER_NAME_sul_gathering_rural_specialization"
+			value = 2
+		}
 	}
 	else_if = {
 		limit = { sul_is_woodland_rural = yes }
-		add = { desc = "STATIC_MODIFIER_NAME_sul_woodland_rural_specialization" value = 2 }
+
+		add = {
+			desc = "STATIC_MODIFIER_NAME_sul_woodland_rural_specialization"
+			value = 2
+		}
 	}
 	else_if = {
 		limit = { sul_is_commercial_rural = yes }
-		add = { desc = "STATIC_MODIFIER_NAME_sul_commercial_rural_specialization" value = 2 }
+
+		add = {
+			desc = "STATIC_MODIFIER_NAME_sul_commercial_rural_specialization"
+			value = 2
+		}
 	}
 	else_if = {
 		limit = { sul_is_mining_town = yes }
-		add = { desc = "STATIC_MODIFIER_NAME_sul_mining_town_specialization" value = 4 }
+
+		add = {
+			desc = "STATIC_MODIFIER_NAME_sul_mining_town_specialization"
+			value = 4
+		}
 	}
 	else_if = {
 		limit = { sul_is_farming_town = yes }
-		add = { desc = "STATIC_MODIFIER_NAME_sul_farming_town_specialization" value = 4 }
+
+		add = {
+			desc = "STATIC_MODIFIER_NAME_sul_farming_town_specialization"
+			value = 4
+		}
 	}
 	else_if = {
 		limit = { sul_is_gathering_town = yes }
-		add = { desc = "STATIC_MODIFIER_NAME_sul_gathering_town_specialization" value = 4 }
+
+		add = {
+			desc = "STATIC_MODIFIER_NAME_sul_gathering_town_specialization"
+			value = 4
+		}
 	}
 	else_if = {
 		limit = { sul_is_woodland_town = yes }
-		add = { desc = "STATIC_MODIFIER_NAME_sul_woodland_town_specialization" value = 4 }
+
+		add = {
+			desc = "STATIC_MODIFIER_NAME_sul_woodland_town_specialization"
+			value = 4
+		}
 	}
 	else_if = {
 		limit = { sul_is_commercial_town = yes }
-		add = { desc = "STATIC_MODIFIER_NAME_sul_commercial_town_specialization" value = 4 }
+
+		add = {
+			desc = "STATIC_MODIFIER_NAME_sul_commercial_town_specialization"
+			value = 4
+		}
 	}
 	else_if = {
 		limit = { sul_is_mining_city = yes }
-		add = { desc = "STATIC_MODIFIER_NAME_sul_mining_city_specialization" value = 8 }
+
+		add = {
+			desc = "STATIC_MODIFIER_NAME_sul_mining_city_specialization"
+			value = 8
+		}
 	}
 	else_if = {
 		limit = { sul_is_farming_city = yes }
-		add = { desc = "STATIC_MODIFIER_NAME_sul_farming_city_specialization" value = 8 }
+
+		add = {
+			desc = "STATIC_MODIFIER_NAME_sul_farming_city_specialization"
+			value = 8
+		}
 	}
 	else_if = {
 		limit = { sul_is_gathering_city = yes }
-		add = { desc = "STATIC_MODIFIER_NAME_sul_gathering_city_specialization" value = 8 }
+
+		add = {
+			desc = "STATIC_MODIFIER_NAME_sul_gathering_city_specialization"
+			value = 8
+		}
 	}
 	else_if = {
 		limit = { sul_is_woodland_city = yes }
-		add = { desc = "STATIC_MODIFIER_NAME_sul_woodland_city_specialization" value = 8 }
+
+		add = {
+			desc = "STATIC_MODIFIER_NAME_sul_woodland_city_specialization"
+			value = 8
+		}
 	}
 	else_if = {
 		limit = { sul_is_commercial_city = yes }
-		add = { desc = "STATIC_MODIFIER_NAME_sul_commercial_city_specialization" value = 8 }
+
+		add = {
+			desc = "STATIC_MODIFIER_NAME_sul_commercial_city_specialization"
+			value = 8
+		}
 	}
 }

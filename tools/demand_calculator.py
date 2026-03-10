@@ -3,175 +3,90 @@
 Demand System Calculator for Specialized Urban Locations
 ========================================================
 
-Interconnected system: price + food_consumption drive everything.
-Category target is the primary design lever. Class spread, thresholds,
-and demand magnitude all DERIVE from the same core variables.
+Computes demand_add values for EU5 pop goods using an interconnected system
+where price and food_consumption drive class hierarchy, thresholds, and
+demand magnitude from a small set of global parameters.
 
 FORMULA:
-  spread         = (target / max_target) ^ SPREAD_CURVE
-  class_weight_i = 1 + (food_consumption_i - 1) × spread
-  affordability_i= min(1.0, food_consumption_i × THRESHOLD_SCALE / price)
+  target         = CATEGORY_BASE[cat] × (price / REFERENCE_PRICE) ^ TARGET_PRICE_CURVE
+  spread         = (CATEGORY_BASE[cat] / max_base) ^ SPREAD_CURVE
+  class_weight   = 1 + (food_consumption - 1) * spread
+  affordability  = min(1, fc * THRESHOLD_SCALE / price) ^ AFFORDABILITY_CURVE
   price_factor   = (REFERENCE_PRICE / price) ^ PRICE_CURVE
-  weight_i       = class_weight_i × affordability_i × modifier_i
-  demand_add_i   = output × price_factor × weight_i / target
+  consumer_share = output / (output + building_consumption)
+  refinement     = min(1, price * REFINEMENT_SCALE / fc) ^ REFINEMENT_CURVE
+  weight         = class_weight * affordability * refinement
+  demand_add     = output * price_factor * weight * consumer_share / target
 
-  No assumed pop composition — target = weighted pop units per building.
-  The game determines actual demand from actual pops.
+  All pop types with food_consumption > 0 consume all goods.
+  Category sets the spread (class hierarchy). Price adjusts the target (demand volume).
+  Affordability gates who can afford expensive goods. Refinement dampens rich demand for cheap goods.
 
 USAGE:
   python demand_calculator.py                # Full report
-  python demand_calculator.py --compact      # Summary table only
-  python demand_calculator.py --pdx          # PDX script values
+  python demand_calculator.py --compact      # Summary tables only
+  python demand_calculator.py --pdx          # PDX INJECT blocks to stdout
+  python demand_calculator.py --write        # Write to sul_goods_overrides.txt
   python demand_calculator.py --location 10  # Location with 10 pop units
 """
 
 import sys
 import argparse
-import math
+import os
+import re
 
-# ================================================================
-#  LEVER 1: CATEGORY TARGETS
-#  How many pop units does ONE guild-tier building satisfy?
-#    Lower  = more buildings needed = feels essential
-#    Higher = fewer buildings needed = feels like a luxury
+
+# ═══════════════════════════════════════════════════════════════════════════
+# CONFIGURATION
 #
-#  This is the PRIMARY design lever. Class spread derives from it.
-# ================================================================
+# System parameters that define the demand formula behavior.
+# Category targets are the primary design lever.
+# ═══════════════════════════════════════════════════════════════════════════
 
-CATEGORY_TARGETS = {
-    "necessity": 25,     # Always short, always building more
-    "common":    80,     # Comfortable once established
-    "upper":    250,     # One or two covers you
-    "luxury":   800,     # One building oversupplies
+# Path to vanilla game files. Scanned at startup for prices and demand values.
+VANILLA_BASE = os.path.join(
+    "/mnt/d/Program Files (x86)/Steam/steamapps/common",
+    "Europa Universalis V/game/in_game/common")
+VANILLA_GOODS_DIR = os.path.join(VANILLA_BASE, "goods")
+
+# Mod game files — scanned for production methods alongside vanilla.
+MOD_BASE = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
+                        "in_game", "common")
+
+CATEGORY_BASES = {
+    "necessity": 30,     # Always short, always building more
+    "common":    75,     # Comfortable once established
+    "upper":    150,     # One or two covers you
+    "luxury":   300,     # One building oversupplies
 }
+CAT_ORDER = ["necessity", "common", "upper", "luxury"]
 
-# ================================================================
-#  LEVER 2: SYSTEM PARAMETERS
-#  Three scalars that control how the interconnected systems behave.
-#  All work through price × food_consumption — not independently.
-#
-#  SPREAD_CURVE:   How aggressively category target → class spread.
-#                  Higher = luxury categories diverge more from necessity.
-#                  spread = (target / max_target) ^ SPREAD_CURVE
-#
-#  PRICE_CURVE:    How aggressively price affects demand magnitude.
-#                  0 = price has no effect, 1 = linear, 0.5 = sqrt
-#
-#  THRESHOLD_SCALE: Affordability curve for demanding a good.
-#                   affordability = min(1.0, food_cons × scale / price)
-#                   Higher = more permissive (lower classes can afford more)
-# ================================================================
-
-SPREAD_CURVE = 0.5       # sqrt: necessity→0.18, common→0.32, upper→0.56, luxury→1.0
-PRICE_CURVE = 0.5        # sqrt: price 6 → 0.71× demand vs price 3
-REFERENCE_PRICE = 3.0    # neutral price point (factor = 1.0)
-THRESHOLD_SCALE = 2.0    # food_cons >= price/2 to demand
-
-# ================================================================
-#  LEVER 3: POP FOOD CONSUMPTION (the anchor)
-#  From pop_types — vanilla + SUL overrides.
-#  Defines both the class hierarchy AND the threshold mechanism.
-# ================================================================
+SPREAD_CURVE = 0.5       # How aggressively category -> spread. sqrt gives nice curve.
+PRICE_CURVE = 0.5        # How aggressively price affects demand magnitude. sqrt.
+TARGET_PRICE_CURVE = 1.0 # How aggressively price adjusts target (0=no effect, 1=linear)
+REFERENCE_PRICE = 3.0    # Neutral price point (price_factor=1, target=base)
+THRESHOLD_SCALE = 2.0    # Affordability: fc * scale / price, capped at 1.0
+AFFORDABILITY_CURVE = 2.0  # Power curve on affordability (1=linear, 2=quadratic)
+REFINEMENT_SCALE = 5.0   # Refinement: price * scale / fc, capped at 1.0
+REFINEMENT_CURVE = 0.5   # Power curve on refinement (0.5=sqrt/soft, 1=linear, 2=quadratic)
 
 POP_TYPES = [
     "nobles", "clergy", "burghers", "soldiers",
     "laborers", "peasants", "slaves", "tribesmen",
 ]
 
+# Food consumption defines the class hierarchy and affordability thresholds.
+# These are MOD design values (SUL overrides noted).
 FOOD_CONSUMPTION = {
-    "nobles":    20.0,   # vanilla
+    "nobles":    20.0,
     "clergy":    10.0,   # SUL override (vanilla 5.0)
     "burghers":   8.0,   # SUL override (vanilla 4.0)
-    "soldiers":   5.0,   # vanilla
+    "soldiers":   5.0,
     "laborers":   3.0,   # SUL override (vanilla 1.0)
-    "peasants":   1.0,   # vanilla
-    "slaves":     1.0,   # vanilla
-    "tribesmen":  0.0,   # vanilla (never demands anything)
+    "peasants":   1.0,
+    "slaves":     1.0,
+    "tribesmen":  0.0,   # Never demands anything
 }
-
-# ================================================================
-#  LEVER 4: BUILDING CONSUMPTION (derived, not tuned)
-#  Per-guild-equivalent consumption from production inputs + construction.
-#  Military maintenance excluded — at realistic force ratios (~0.5% of
-#  pop as soldiers), regiment maintenance is <1% of total goods demand.
-#
-#  Production inputs: sum across all building types at guild tier.
-#  Construction costs: weighted average across common building types
-#    (guild=0.5, workshop=1.0, manufactory=2.0, mill=4.0 masonry etc.)
-#
-#  consumer_share = output / (output + building_consumption)
-#  Source: vanilla building_types/, goods_demand/building_construction_costs.txt
-# ================================================================
-
-BUILDING_CONSUMPTION = {
-    # ── Produced goods ──────────────────────────────────────────
-    # cloth: fine_cloth input(0.8) + paper input(0.5) + bldg maint(0.1)
-    #   + construction(opera/theater avg 0.5)
-    "cloth":       1.9,
-    # beer: never consumed as input or construction
-    "beer":        0.0,
-    # tools: production inputs(2.7) + construction(avg 0.5)
-    "tools":       3.2,
-    # pottery: distillers(0.1) + saltpeter(0.2)
-    "pottery":     0.3,
-    # masonry: zero production input BUT massive construction demand:
-    #   guild(0.5) + workshop(1.0) + manufactory(2.0) + mill(4.0) + village(0.25)
-    #   + town_building(0.75) + forts(1-6) + capital(5) + granary(0.5) ≈ avg 1.2
-    "masonry":     1.2,
-    # furniture: admin maint(0.1)
-    "furniture":   0.1,
-    # leather: no significant building production input or construction
-    "leather":     0.0,
-    # glass: distillers(0.1) + bldg maint(0.5) + construction(avg 0.4)
-    "glass":       1.0,
-    # paper: books input(0.3) + bldg maint(1.2) + construction(avg 0.5)
-    "paper":       2.0,
-    # weaponry: hunting input(0.05) + order buildings(0.25)
-    "weaponry":    0.3,
-    # fine_cloth: admin maint(0.4) + construction(capital/important avg 0.5)
-    "fine_cloth":  0.9,
-    # books: construction(school/library/university avg 0.3)
-    "books":       0.3,
-    # liquor: incense production(0.2)
-    "liquor":      0.2,
-    # jewelry, porcelain, lacquerware: negligible
-    "jewelry":     0.0,
-    "porcelain":   0.0,
-    "lacquerware": 0.0,
-
-    # ── Raw materials ───────────────────────────────────────────
-    # salt: fishing(0.05) + caravan construction(0.1)
-    "salt":        0.15,
-    # lumber: production inputs(4.7) + construction(avg 0.8)
-    "lumber":      5.5,
-    # medicaments: no building consumption
-    "medicaments": 0.0,
-    # wine: distillers(0.85)
-    "wine":        0.85,
-    # incense, tea, coffee, cocoa, tobacco, fur, spices: never consumed
-    "incense":     0.0,
-    "tea":         0.0,
-    "coffee":      0.0,
-    "cocoa":       0.0,
-    "sugar":       0.6,   # distillers(0.6)
-    "tobacco":     0.0,
-    "fur":         0.0,
-    "spices":      0.0,
-}
-
-# ================================================================
-#  LEVER 5: BUILDING TIERS
-#  output:     production multiplier relative to guild (1.0x)
-#  employment: pop units employed per building level
-#  pop_type:   which pop type works this building tier
-#
-#  Building a guild creates BURGHERS who then demand upper/luxury goods.
-#  Building a mill creates LABORERS. Villages create PEASANTS.
-#  The producer pop type is itself a demand driver.
-#
-#  Supply-demand ratio: how many producer pops per demand pop unit?
-#    producers_per_demand = price_factor × employment / (target × output)
-# ================================================================
 
 BUILDING_TIERS = {
     "village":      {"output": 0.5,  "employment": 1.0,  "pop_type": "peasants"},
@@ -183,401 +98,883 @@ BUILDING_TIERS = {
     "plantation":   {"output": 1.0,  "employment": 1.0,  "pop_type": "slaves"},
 }
 
-# Legacy accessor for display functions
-TIER_MULTIPLIERS = {k: v["output"] for k, v in BUILDING_TIERS.items()}
-
-# ================================================================
-#  LEVER 6: GOODS DEFINITIONS
-#
-#  category  : which target tier (necessity/common/upper/luxury)
-#  source    : "produced" (guilds/workshops) or "raw" (RGOs)
-#  output    : base production at guild tier (produced) or RGO base (raw)
-#  price     : default_market_price from vanilla
-#  consumers : which pop types demand this good.
-#              Listed types OVERRIDE the price threshold — if you
-#              explicitly list peasants, they demand it even if
-#              the price would normally exclude them.
-#  modifiers : (optional) per-class multiplier on top of weight.
-#
-#  consumer_share is DERIVED from BUILDING_CONSUMPTION, not set here.
-#  consumer_share = output / (output + building_consumption)
-#
-#  Threshold (auto-derived): food_consumption >= price / THRESHOLD_SCALE
-#  Any pop meeting the threshold demands the good UNLESS excluded
-#  by not being in consumers (consumers acts as the maximum set).
-# ================================================================
-
-GOODS = [
-    # ─── NECESSITIES ─────────────────────────────────────────────
-    # Everyone needs these. You're always building more.
-
-    # Clothing, canvas, uniforms — broad personal demand. Some cloth goes to fine_cloth production.
-    {"name": "cloth",       "category": "necessity", "source": "produced", "output": 1.0, "price": 3,
-
-     "consumers": ["nobles", "clergy", "burghers", "soldiers", "laborers", "peasants", "slaves"]},
-
-    # Cheap alcohol — almost entirely personal consumption
-    {"name": "beer",        "category": "necessity", "source": "produced", "output": 1.0, "price": 2,
-
-     "consumers": ["nobles", "clergy", "burghers", "soldiers", "laborers", "peasants"]},
-
-    # Working implements — mostly consumed by buildings (farms, mines, workshops all need tools)
-    {"name": "tools",       "category": "necessity", "source": "produced", "output": 1.0, "price": 3,
-
-     "consumers": ["burghers", "soldiers", "laborers", "peasants"]},
-
-    # Cheap ceramics — mostly personal household use
-    {"name": "pottery",     "category": "necessity", "source": "produced", "output": 1.0, "price": 2,
-
-     "consumers": ["nobles", "clergy", "burghers", "soldiers", "laborers", "peasants"]},
-
-    # Bricks, construction materials — almost entirely consumed by buildings/construction
-    {"name": "masonry",     "category": "necessity", "source": "produced", "output": 1.0, "price": 2,
-
-     "consumers": ["nobles", "clergy", "burghers", "soldiers", "laborers", "peasants"]},
-
-    # ─── COMMON ──────────────────────────────────────────────────
-    # Broadly useful. A few buildings satisfy a location.
-
-    # Universal preservative — personal food use. Some used in production (leather tanning, etc.)
-    {"name": "salt",        "category": "common",    "source": "raw",      "output": 0.3, "price": 2,
-
-     "consumers": ["nobles", "clergy", "burghers", "soldiers", "laborers", "peasants"]},
-
-    # Construction timber — mostly consumed by buildings (construction, shipbuilding, furniture)
-    {"name": "lumber",      "category": "common",    "source": "raw",      "output": 1.0, "price": 1.5,
-
-     "consumers": ["nobles", "clergy", "burghers", "soldiers", "laborers", "peasants"]},
-
-    # Household furnishings — mostly personal consumption
-    {"name": "furniture",   "category": "common",    "source": "produced", "output": 1.0, "price": 3,
-
-     "consumers": ["nobles", "clergy", "burghers", "laborers", "peasants"]},
-
-    # Boots, belts, armor components — personal + military. Some used in production.
-    {"name": "leather",     "category": "common",    "source": "produced", "output": 1.0, "price": 3,
-
-     "consumers": ["nobles", "clergy", "burghers", "soldiers", "laborers", "peasants"],
-     "modifiers": {"soldiers": 3}},
-
-    # Windows, bottles, lenses — personal + construction/industrial use
-    {"name": "glass",       "category": "common",    "source": "produced", "output": 0.75, "price": 2,
-
-     "consumers": ["nobles", "clergy", "burghers", "laborers"]},
-
-    # Writing material — personal + institutional. Used in books production.
-    {"name": "paper",       "category": "common",    "source": "produced", "output": 1.0, "price": 2,
-
-     "consumers": ["nobles", "clergy", "burghers"]},
-
-    # Herbal remedies, medicines — almost entirely personal consumption
-    {"name": "medicaments", "category": "common",    "source": "raw",      "output": 0.5, "price": 1,
-
-     "consumers": ["nobles", "clergy", "burghers", "soldiers", "laborers", "peasants", "slaves"]},
-
-    # Swords, spears, bows — military procurement is institutional, personal demand lower
-    {"name": "weaponry",    "category": "common",    "source": "produced", "output": 1.0, "price": 3,
-
-     "consumers": ["nobles", "soldiers", "laborers", "peasants"],
-     "modifiers": {"soldiers": 3, "nobles": 2}},
-
-    # ─── UPPER ───────────────────────────────────────────────────
-    # Wealthy classes primarily. A couple buildings suffices.
-
-    # Silks, embroidery, luxury clothing — personal consumption
-    {"name": "fine_cloth",  "category": "upper",     "source": "produced", "output": 0.6, "price": 6,
-
-     "consumers": ["nobles", "clergy", "burghers"]},
-
-    # Books, pamphlets — personal + institutional
-    {"name": "books",       "category": "upper",     "source": "produced", "output": 1.0, "price": 5,
-
-     "consumers": ["nobles", "clergy", "burghers"],
-     "modifiers": {"clergy": 2}},
-
-    # Grape wine — personal consumption
-    {"name": "wine",        "category": "upper",     "source": "raw",      "output": 1.0, "price": 2,
-
-     "consumers": ["nobles", "clergy", "burghers", "soldiers", "laborers"]},
-
-    # Distilled spirits — personal consumption. Some used in medicaments/production.
-    {"name": "liquor",      "category": "upper",     "source": "produced", "output": 1.0, "price": 2.5,
-
-     "consumers": ["nobles", "clergy", "burghers", "soldiers", "laborers", "peasants"]},
-
-    # Frankincense, myrrh — religious/personal consumption
-    {"name": "incense",     "category": "upper",     "source": "raw",      "output": 1.0, "price": 2.5,
-
-     "consumers": ["nobles", "clergy", "burghers"],
-     "modifiers": {"clergy": 5}},
-
-    # Luxury beverages — personal consumption
-    {"name": "tea",         "category": "upper",     "source": "raw",      "output": 1.0, "price": 3,
-
-     "consumers": ["nobles", "clergy", "burghers"]},
-
-    {"name": "coffee",      "category": "upper",     "source": "raw",      "output": 1.0, "price": 3,
-
-     "consumers": ["nobles", "clergy", "burghers", "soldiers"]},
-
-    {"name": "cocoa",       "category": "upper",     "source": "raw",      "output": 1.0, "price": 4,
-
-     "consumers": ["nobles", "clergy", "burghers"]},
-
-    # Colonial trade goods — personal consumption. Sugar also used in production (liquor, etc.)
-    {"name": "sugar",       "category": "upper",     "source": "raw",      "output": 1.0, "price": 3,
-
-     "consumers": ["nobles", "clergy", "burghers"]},
-
-    {"name": "tobacco",     "category": "upper",     "source": "raw",      "output": 1.0, "price": 3,
-
-     "consumers": ["nobles", "clergy", "burghers"]},
-
-    # ─── LUXURIES ────────────────────────────────────────────────
-    # Elites only. One building oversupplies.
-
-    {"name": "jewelry",     "category": "luxury",    "source": "produced", "output": 1.0, "price": 5,
-
-     "consumers": ["nobles", "clergy", "burghers"]},
-
-    {"name": "porcelain",   "category": "luxury",    "source": "produced", "output": 1.0, "price": 3,
-
-     "consumers": ["nobles", "clergy", "burghers"]},
-
-    {"name": "lacquerware", "category": "luxury",    "source": "produced", "output": 1.0, "price": 5,
-
-     "consumers": ["nobles", "clergy", "burghers"]},
-
-    # Fur clothing/trim — drove colonial expansion (Hudson's Bay, Russian fur trade).
-    # Vanilla price 2 is trade cost; actual demand status is high luxury. Price 5.
-    {"name": "fur",         "category": "luxury",    "source": "raw",      "output": 1.0, "price": 5,
-
-     "consumers": ["nobles", "clergy", "burghers"],
-     "modifiers": {"nobles": 2}},
-
-    # Spices — grouped as representative (saffron/pepper/cloves/chili all price 5)
-    {"name": "spices",      "category": "luxury",    "source": "raw",      "output": 1.0, "price": 5,
-
-     "consumers": ["nobles", "clergy", "burghers"]},
-]
-
-# ================================================================
-#  LEVER 7: SAMPLE LOCATION
-# ================================================================
-
 LOCATION_POP_UNITS = 5.0
 LOCATION_BUILDING_SLOTS = 30
 
+# ═══════════════════════════════════════════════════════════════════════════
+# BUILDING → GOOD MAPPING PER SPECIALIZATION
+#
+# Used to derive production weights from demand data. Each entry maps a
+# building name to the good it produces. Split into rural and guild tiers.
+# Only includes buildings that produce consumer goods tracked by the demand
+# system. RGO/infrastructure buildings are handled separately.
+# ═══════════════════════════════════════════════════════════════════════════
 
-# ================================================================
-#  CURRENT VANILLA/SUL VALUES (for comparison)
-# ================================================================
-
-CURRENT_VALUES = {
-    # EFFECTIVE demand per pop type: demand_add × demand_multiply (stacked)
-    # Source: vanilla goods files + SUL INJECT overrides
-
-    "cloth":       {"clergy": 0.02, "burghers": 0.01, "soldiers": 0.001, "laborers": 0.0005, "peasants": 0.0005, "slaves": 0.0002},
-    "beer":        {"nobles": 0.016, "clergy": 0.008, "burghers": 0.008, "soldiers": 0.0066, "laborers": 0.0056, "peasants": 0.0066},
-    "tools":       {"laborers": 0.001},
-    "pottery":     {"nobles": 0.006, "clergy": 0.006, "burghers": 0.0072, "soldiers": 0.006, "laborers": 0.0066, "peasants": 0.006},
-    "masonry":     {"nobles": 0.000015, "clergy": 0.000015, "burghers": 0.000018, "soldiers": 0.000015, "laborers": 0.0000165, "peasants": 0.000015},
-    "salt":        {"nobles": 0.05, "burghers": 0.02, "clergy": 0.02},
-    "lumber":      {"nobles": 0.00125, "clergy": 0.00125, "burghers": 0.00125, "soldiers": 0.00025, "laborers": 0.00025, "peasants": 0.00025},
-    "furniture":   {"nobles": 0.02, "clergy": 0.01, "burghers": 0.01, "soldiers": 0.001, "laborers": 0.001, "peasants": 0.001},
-    "leather":     {},
-    "glass":       {},
-    "paper":       {"nobles": 0.01, "burghers": 0.02, "clergy": 0.04},
-    "medicaments": {"nobles": 0.006, "clergy": 0.003, "burghers": 0.0018, "soldiers": 0.0012, "laborers": 0.0012, "peasants": 0.0012},
-    "weaponry":    {"nobles": 0.1, "soldiers": 0.0025, "laborers": 0.0005, "peasants": 0.0005},
-    "fine_cloth":  {"nobles": 0.2, "burghers": 0.025, "clergy": 0.025},
-    "books":       {"nobles": 0.01, "burghers": 0.02, "clergy": 0.04},
-    "wine":        {"nobles": 0.018, "clergy": 0.012, "burghers": 0.012, "soldiers": 0.0012, "laborers": 0.0012},
-    "liquor":      {"nobles": 0.008, "clergy": 0.004, "burghers": 0.004, "soldiers": 0.0033, "laborers": 0.0028, "peasants": 0.0033},
-    "incense":     {"clergy": 0.01},
-    "tea":         {"nobles": 0.2, "burghers": 0.01, "clergy": 0.01},
-    "coffee":      {"nobles": 0.01, "burghers": 0.001, "clergy": 0.0005, "soldiers": 0.001},
-    "cocoa":       {"nobles": 0.1, "burghers": 0.01, "clergy": 0.01},
-    "sugar":       {"nobles": 0.05, "burghers": 0.005, "clergy": 0.005},
-    "tobacco":     {"nobles": 0.05, "burghers": 0.005, "clergy": 0.005},
-    "jewelry":     {"nobles": 0.1, "burghers": 0.005},
-    "porcelain":   {"nobles": 0.01, "clergy": 0.0005, "burghers": 0.0005},
-    "lacquerware": {"nobles": 0.05, "burghers": 0.02},
-    "fur":         {"nobles": 0.5, "clergy": 0.05, "burghers": 0.05},
-    "spices":      {"nobles": 0.05, "burghers": 0.0025, "clergy": 0.005},
+SPEC_BUILDINGS = {
+    "mining": {
+        "rural": {
+            "sul_rural_blacksmith": "tools",
+            "sul_rural_weaponmaker": "weaponry",
+            "sul_rural_jeweler": "jewelry",
+        },
+        "guild": {
+            "jewelry_guild": "jewelry",
+            "tools_guild": "tools",
+            "weapon_guild": "weaponry",
+            "cannon_maker": "cannons",
+        },
+    },
+    "farming": {
+        "rural": {
+            "sul_rural_brewer": "beer",
+            "sul_rural_winemaker": "wine",
+            "sul_rural_distiller": "liquor",
+            "sul_rural_tanner": "leather",
+        },
+        "guild": {
+            "brewery": "beer",
+            "winery": "wine",
+            "distillers_guild": "liquor",
+        },
+    },
+    "gathering": {
+        "rural": {
+            "sul_rural_glassmaker": "glass",
+            "sul_rural_potter": "pottery",
+            "sul_rural_herbalist": "medicaments",
+        },
+        "guild": {
+            "pottery_guild": "pottery",
+            "glass_guild": "glass",
+            "apothecary": "medicaments",
+            "saltpeter_guild": "saltpeter",
+        },
+    },
+    "woodland": {
+        "rural": {
+            "sul_rural_carpenter": "furniture",
+            "sul_rural_papermaker": "paper",
+            "sul_rural_apiary": "beeswax",
+            "sul_rural_tanner": "leather",
+        },
+        "guild": {
+            "furniture_guild": "furniture",
+            "tannery": "leather",
+            "dyes_guild": "dyes",
+            "paper_guild": "paper",
+            "lacquerware_guild": "lacquerware",
+        },
+    },
+    "commercial": {
+        "rural": {
+            "rural_clothmaker": "cloth",
+            "sul_rural_ropemaker": "naval_supplies",
+        },
+        "guild": {
+            "marketplace": "cloth",          # trade building; proxy to cloth
+            "cloth_guild": "cloth",
+            "fine_cloth_guild": "fine_cloth",
+            "naval_supplies_guild": "naval_supplies",
+            "scriptorium": "books",
+        },
+    },
 }
 
+# ═══════════════════════════════════════════════════════════════════════════
+# PRODUCTION-ONLY GOODS
+#
+# Goods not consumed by pops but demanded by buildings. Computed at startup
+# by scanning production methods from vanilla + mod files. Feed ONLY into
+# building distribution weights, not PDX demand_add output.
+#
+# Populated by scan_production_demand() during startup.
+# ═══════════════════════════════════════════════════════════════════════════
 
-# ================================================================
-#  COMPUTATION
-# ================================================================
+PRODUCTION_DEMAND = {}  # filled at runtime by scan_production_demand()
 
-def get_max_target():
-    return max(CATEGORY_TARGETS.values())
+# Which goods to track for production demand.
+# Only goods produced by spec buildings but not in the pop demand system.
+PRODUCTION_GOODS = {
+    "tools", "masonry", "cannons", "saltpeter",
+    "naval_supplies", "dyes", "beeswax", "tar",
+}
 
-
-def get_spread(target):
-    """Derive class spread from category target.
-    Higher target (luxury) → spread closer to 1.0 (full hierarchy).
-    Lower target (necessity) → spread closer to 0 (flat demand)."""
-    max_t = get_max_target()
-    if max_t <= 0:
-        return 1.0
-    return (target / max_t) ** SPREAD_CURVE
+# Scale factor for production demand. The scanner sums consumption across ALL
+# production methods globally, but a location only has ~5-10 buildings. This
+# factor converts global PM sums to per-location scale comparable to pop demand.
+# Set so the highest production good (tools) is roughly mid-range pop good level.
+PRODUCTION_DEMAND_SCALE = 0.01
 
 
-def get_weight(food_cons, spread):
-    """Compute class weight from food_consumption + spread.
-    spread=0 → everyone weighs 1 (flat).
-    spread=1 → weight = food_consumption (full hierarchy)."""
-    return 1.0 + (food_cons - 1.0) * spread
+# ═══════════════════════════════════════════════════════════════════════════
+# GOODS
+#
+# Each record defines our MOD's design intent for one good.
+# Price and vanilla reference data are scanned from base game files at
+# startup and merged into these entries automatically.
+#
+# Fields (design — set here):
+#   name                : game identifier
+#   category            : necessity / common / upper / luxury
+#   source              : "produced" (guilds/workshops) or "raw" (RGOs)
+#   output              : base production per building at guild/RGO tier
+#   building_consumption: non-pop demand per building (inputs + construction)
+#   vanilla_key         : (optional) vanilla good name if different from name
+#
+# All pop types consume all goods. Price + spread + affordability curve
+# determine who demands how much — no per-good consumer lists or modifiers.
+#
+# Fields (scanned — added at startup by merge_vanilla):
+#   price               : default_market_price from vanilla
+#   vanilla             : {demand_add, demand_multiply, development_threshold}
+# ═══════════════════════════════════════════════════════════════════════════
+
+GOODS = [
+    # ─── NECESSITIES ─────────────────────────────────────────────────────
+    # Everyone needs these. You're always building more.
+
+    # Clothing — broad personal demand, some goes to fine_cloth production
+    {"name": "cloth", "category": "necessity", "source": "produced",
+     "output": 1.0,
+     "building_consumption": 1.9},  # fine_cloth(0.8)+paper(0.5)+maint(0.1)+construction(0.5)
+
+    # Cheap alcohol — almost entirely personal consumption
+    {"name": "beer", "category": "necessity", "source": "produced",
+     "output": 1.0,
+     "building_consumption": 0.0},
+
+    # Cheap ceramics — household use
+    {"name": "pottery", "category": "necessity", "source": "produced",
+     "output": 1.0,
+     "building_consumption": 0.3},  # distillers(0.1)+saltpeter(0.2)
+
+    # ─── COMMON ──────────────────────────────────────────────────────────
+    # Broadly useful. A few buildings satisfy a location.
+
+    # Universal preservative — personal food use
+    {"name": "salt", "category": "common", "source": "raw",
+     "output": 0.3,
+     "building_consumption": 0.15},  # fishing(0.05)+caravan construction(0.1)
+
+    # Household furnishings
+    {"name": "furniture", "category": "common", "source": "produced",
+     "output": 1.0,
+     "building_consumption": 0.1},  # admin maint(0.1)
+
+    # Boots, belts, armor — personal + military
+    {"name": "leather", "category": "common", "source": "produced",
+     "output": 1.0,
+     "building_consumption": 0.0},
+
+    # Windows, bottles, lenses
+    {"name": "glass", "category": "common", "source": "produced",
+     "output": 0.75,
+     "building_consumption": 1.0},  # distillers(0.1)+maint(0.5)+construction(0.4)
+
+    # Writing material — personal + institutional
+    {"name": "paper", "category": "common", "source": "produced",
+     "output": 1.0,
+     "building_consumption": 2.0},  # books input(0.3)+maint(1.2)+construction(0.5)
+
+    # Herbal remedies, medicines
+    {"name": "medicaments", "category": "common", "source": "raw",
+     "output": 0.5,
+     "building_consumption": 0.0},
+
+    # Swords, spears, bows — military procurement
+    {"name": "weaponry", "category": "common", "source": "produced",
+     "output": 1.0,
+     "building_consumption": 0.3},  # hunting input(0.05)+order buildings(0.25)
+
+    # Heating and cooking fuel
+    {"name": "coal", "category": "common", "source": "raw",
+     "output": 1.0,
+     "building_consumption": 0.5},  # ironworks/steel fuel input
+
+    # ─── UPPER ───────────────────────────────────────────────────────────
+    # Wealthy classes primarily. A couple buildings suffices.
+
+    # Silks, embroidery, luxury clothing
+    {"name": "fine_cloth", "category": "upper", "source": "produced",
+     "output": 0.6,
+     "building_consumption": 0.9},  # admin maint(0.4)+construction(0.5)
+
+    # Silk fabric — garments, furnishings, vestments
+    {"name": "silk", "category": "upper", "source": "raw",
+     "output": 1.0,
+     "building_consumption": 0.5},  # fine_cloth production input
+
+    # Books, pamphlets — personal + institutional
+    {"name": "books", "category": "upper", "source": "produced",
+     "output": 1.0,
+     "building_consumption": 0.3},  # construction(school/library/university avg)
+
+    # Grape wine
+    {"name": "wine", "category": "upper", "source": "raw",
+     "output": 1.0,
+     "building_consumption": 0.85},  # distillers(0.85)
+
+    # Distilled spirits
+    {"name": "liquor", "category": "upper", "source": "produced",
+     "output": 1.0,
+     "building_consumption": 0.2},  # incense production(0.2)
+
+    # Frankincense, myrrh — religious/personal
+    {"name": "incense", "category": "upper", "source": "raw",
+     "output": 1.0,
+     "building_consumption": 0.0},
+
+    # Luxury beverages
+    {"name": "tea", "category": "upper", "source": "raw",
+     "output": 1.0,
+     "building_consumption": 0.0},
+
+    {"name": "coffee", "category": "upper", "source": "raw",
+     "output": 1.0,
+     "building_consumption": 0.0},
+
+    {"name": "cocoa", "category": "upper", "source": "raw",
+     "output": 1.0,
+     "building_consumption": 0.0},
+
+    # Colonial trade goods
+    {"name": "sugar", "category": "upper", "source": "raw",
+     "output": 1.0,
+     "building_consumption": 0.6},  # distillers(0.6)
+
+    {"name": "tobacco", "category": "upper", "source": "raw",
+     "output": 1.0,
+     "building_consumption": 0.0},
+
+    # Fur — high-volume trade good (Hudson's Bay, Russian fur trade)
+    {"name": "fur", "category": "upper", "source": "raw",
+     "output": 1.0,
+     "building_consumption": 0.0},
+
+    # ─── LUXURIES ────────────────────────────────────────────────────────
+    # Elites only. One building oversupplies.
+
+    {"name": "jewelry", "category": "luxury", "source": "produced",
+     "output": 1.0,
+     "building_consumption": 0.0},
+
+    {"name": "porcelain", "category": "luxury", "source": "produced",
+     "output": 1.0,
+     "building_consumption": 0.0},
+
+    {"name": "lacquerware", "category": "luxury", "source": "produced",
+     "output": 1.0,
+     "building_consumption": 0.0},
+
+    # Spices — representative good (saffron/pepper/cloves/chili all price 5)
+    {"name": "spices", "category": "luxury", "source": "raw",
+     "output": 1.0,
+     "building_consumption": 0.0,
+     "vanilla_key": "pepper"},
+]
+
+# ─── EXCLUDED: MATERIAL / INDUSTRIAL GOODS ──────────────────────────────
+# These are building inputs, not personal consumption goods. Their demand
+# is driven by production chains, not pop class preferences.
+#   Raw materials:  clay, sand, stone, iron, copper, tin, lead, lumber,
+#                   saltpeter, alum, coal (partial), mercury, fiber_crops
+#   Produced:       masonry, tools, tar, naval_supplies, steel, cannons
+#   Textile inputs: dyes, cotton (demand captured via cloth/fine_cloth)
+# ────────────────────────────────────────────────────────────────────────
+
+# Fallback food removal list — used only if vanilla scan fails.
+FOOD_REMOVAL_FALLBACK = [
+    "wheat", "rice", "maize", "millet", "potato", "legumes",
+    "livestock", "fish", "olives", "fruit", "wild_game",
+    "wool", "fur", "beeswax",
+]
+
+
+# ═══════════════════════════════════════════════════════════════════════════
+# VANILLA SCANNER
+#
+# Reads base game goods files to extract prices, demand values, and
+# thresholds. This ensures the calculator always uses current vanilla
+# data, regardless of game patches.
+# ═══════════════════════════════════════════════════════════════════════════
+
+def _tokenize(text):
+    """Tokenize PDX script: strips comments, yields words and punctuation."""
+    tokens = []
+    i = 0
+    while i < len(text):
+        c = text[i]
+        if c == '#':
+            while i < len(text) and text[i] != '\n':
+                i += 1
+        elif c in '{}=':
+            tokens.append(c)
+            i += 1
+        elif c in ' \t\n\r':
+            i += 1
+        else:
+            j = i
+            while j < len(text) and text[j] not in ' \t\n\r{}=#':
+                j += 1
+            tokens.append(text[i:j])
+            i = j
+    return tokens
+
+
+def _parse_block(tokens, pos):
+    """Parse tokens inside { } into a dict. Returns (dict, next_pos)."""
+    result = {}
+    while pos < len(tokens) and tokens[pos] != '}':
+        key = tokens[pos]
+        pos += 1
+        if pos < len(tokens) and tokens[pos] == '=':
+            pos += 1
+            if pos < len(tokens) and tokens[pos] == '{':
+                pos += 1
+                sub, pos = _parse_block(tokens, pos)
+                result[key] = sub
+            elif pos < len(tokens):
+                val = tokens[pos]
+                try:
+                    val = float(val)
+                except ValueError:
+                    pass
+                result[key] = val
+                pos += 1
+        # else: bare value in a list (custom_tags etc.), skip
+    if pos < len(tokens) and tokens[pos] == '}':
+        pos += 1
+    return result, pos
+
+
+def _to_float_dict(d):
+    """Convert a dict's values to float, dropping non-numeric entries."""
+    result = {}
+    if not isinstance(d, dict):
+        return result
+    for k, v in d.items():
+        try:
+            result[k] = float(v)
+        except (ValueError, TypeError):
+            pass
+    return result
+
+
+def scan_vanilla(vanilla_dir=None):
+    """Scan vanilla goods files. Returns {good_name: {price, demand_add, ...}}.
+
+    Returns empty dict if the directory doesn't exist.
+    """
+    vanilla_dir = vanilla_dir or VANILLA_GOODS_DIR
+    if not os.path.isdir(vanilla_dir):
+        return {}
+
+    goods = {}
+    for filename in sorted(os.listdir(vanilla_dir)):
+        if not filename.endswith(".txt"):
+            continue
+        filepath = os.path.join(vanilla_dir, filename)
+        with open(filepath, encoding="utf-8-sig") as f:
+            text = f.read()
+
+        tokens = _tokenize(text)
+        pos = 0
+        while pos < len(tokens):
+            if (pos + 2 < len(tokens)
+                    and tokens[pos + 1] == '='
+                    and tokens[pos + 2] == '{'):
+                name = tokens[pos]
+                pos += 3
+                block, pos = _parse_block(tokens, pos)
+
+                info = {}
+                if "default_market_price" in block:
+                    info["price"] = float(block["default_market_price"])
+                da = _to_float_dict(block.get("demand_add"))
+                if da:
+                    info["demand_add"] = da
+                dm = _to_float_dict(block.get("demand_multiply"))
+                if dm:
+                    info["demand_multiply"] = dm
+                if "development_threshold" in block:
+                    info["development_threshold"] = int(float(
+                        block["development_threshold"]))
+                if "food" in block:
+                    info["food"] = float(block["food"])
+
+                goods[name] = info
+            else:
+                pos += 1
+
+    return goods
+
+
+def merge_vanilla(goods, vanilla_data):
+    """Merge scanned vanilla data into goods entries.
+
+    Updates each good's price and vanilla reference from the scan.
+    Uses vanilla_key field to map mod good names to vanilla good names
+    (e.g., "spices" -> "pepper").
+    """
+    for g in goods:
+        vkey = g.get("vanilla_key", g["name"])
+        vd = vanilla_data.get(vkey)
+        if not vd:
+            continue
+
+        g["price"] = vd.get("price", g.get("price"))
+
+        vanilla = {}
+        if "demand_add" in vd:
+            vanilla["demand_add"] = vd["demand_add"]
+        if "demand_multiply" in vd:
+            vanilla["demand_multiply"] = vd["demand_multiply"]
+        if "development_threshold" in vd:
+            vanilla["development_threshold"] = vd["development_threshold"]
+        if vanilla:
+            g["vanilla"] = vanilla
+
+
+def get_food_goods(vanilla_data):
+    """Get sorted list of goods with food > 0 in vanilla."""
+    return sorted(name for name, info in vanilla_data.items()
+                  if info.get("food", 0) > 0)
+
+
+def scan_production_demand():
+    """Scan production method files to compute consumption of production-only goods.
+
+    Reads all production methods from:
+      - Vanilla: production_methods/ and building_types/ (unique_production_methods)
+      - Mod: production_methods/ and building_types/ (unique_production_methods)
+
+    Returns {good_name: total_consumption} for goods in PRODUCTION_GOODS.
+    """
+    # Non-goods keys that appear in PM blocks
+    PM_SKIP_KEYS = {
+        "produced", "output", "category", "no_upkeep", "employment",
+        "potential", "trigger", "limit", "modifier", "icon",
+    }
+
+    def _extract_consumption(block, totals):
+        """Add goods consumption from a PM block to totals."""
+        for key, val in block.items():
+            if key in PM_SKIP_KEYS:
+                continue
+            if key not in PRODUCTION_GOODS:
+                continue
+            try:
+                totals[key] = totals.get(key, 0) + float(val)
+            except (ValueError, TypeError):
+                pass
+
+    def _scan_pm_file(filepath, totals):
+        """Parse a production_methods file: each top-level block is a PM."""
+        with open(filepath, encoding="utf-8-sig") as f:
+            text = f.read()
+        tokens = _tokenize(text)
+        pos = 0
+        while pos < len(tokens):
+            if (pos + 2 < len(tokens)
+                    and tokens[pos + 1] == '='
+                    and tokens[pos + 2] == '{'):
+                pos += 3
+                block, pos = _parse_block(tokens, pos)
+                _extract_consumption(block, totals)
+            else:
+                pos += 1
+
+    def _scan_building_file(filepath, totals):
+        """Parse a building_types file, extracting unique_production_methods blocks."""
+        with open(filepath, encoding="utf-8-sig") as f:
+            text = f.read()
+        tokens = _tokenize(text)
+        pos = 0
+        while pos < len(tokens):
+            if (pos + 2 < len(tokens)
+                    and tokens[pos + 1] == '='
+                    and tokens[pos + 2] == '{'):
+                name = tokens[pos]
+                pos += 3
+                block, pos = _parse_block(tokens, pos)
+                # Look for unique_production_methods inside building blocks
+                upm = block.get("unique_production_methods")
+                if isinstance(upm, dict):
+                    for pm_name, pm_block in upm.items():
+                        if isinstance(pm_block, dict):
+                            _extract_consumption(pm_block, totals)
+            else:
+                pos += 1
+
+    totals = {}
+
+    # Scan vanilla production_methods
+    pm_dirs = [
+        os.path.join(VANILLA_BASE, "production_methods"),
+        os.path.join(MOD_BASE, "production_methods"),
+    ]
+    for d in pm_dirs:
+        if not os.path.isdir(d):
+            continue
+        for fn in sorted(os.listdir(d)):
+            if fn.endswith(".txt"):
+                _scan_pm_file(os.path.join(d, fn), totals)
+
+    # Scan building_types for inline unique_production_methods
+    bt_dirs = [
+        os.path.join(VANILLA_BASE, "building_types"),
+        os.path.join(MOD_BASE, "building_types"),
+    ]
+    for d in bt_dirs:
+        if not os.path.isdir(d):
+            continue
+        for fn in sorted(os.listdir(d)):
+            if fn.endswith(".txt"):
+                _scan_building_file(os.path.join(d, fn), totals)
+
+    return {k: v * PRODUCTION_DEMAND_SCALE
+            for k, v in totals.items() if k in PRODUCTION_GOODS}
+
+
+# ═══════════════════════════════════════════════════════════════════════════
+# COMPUTATION
+# ═══════════════════════════════════════════════════════════════════════════
+
+def get_spread(category):
+    """Derive class spread from category base.
+    Higher base (luxury) -> spread closer to 1.0 (full hierarchy).
+    Lower base (necessity) -> spread closer to 0 (flat demand)."""
+    base = CATEGORY_BASES[category]
+    max_b = max(CATEGORY_BASES.values())
+    return (base / max_b) ** SPREAD_CURVE if max_b > 0 else 1.0
+
+
+def get_target(category, price):
+    """Per-good target: category base adjusted by price.
+    At REFERENCE_PRICE, target = category base.
+    Cheaper goods -> lower target (more demand).
+    Expensive goods -> higher target (less demand)."""
+    base = CATEGORY_BASES[category]
+    return base * (price / REFERENCE_PRICE) ** TARGET_PRICE_CURVE
+
+
+def get_weight(food_cons, s):
+    """Class weight: spread=0 -> flat, spread=1 -> full hierarchy."""
+    return 1.0 + (food_cons - 1.0) * s
 
 
 def price_factor(price):
-    """Demand magnitude scaling from price.
-    Cheap goods → higher demand, expensive → lower.
-    Returns 1.0 at REFERENCE_PRICE."""
+    """Demand magnitude from price. Returns 1.0 at REFERENCE_PRICE."""
     if PRICE_CURVE == 0 or price <= 0:
         return 1.0
-    raw = REFERENCE_PRICE / price
-    if PRICE_CURVE == 1.0:
-        return raw
-    return raw ** PRICE_CURVE
+    return (REFERENCE_PRICE / price) ** PRICE_CURVE
 
 
 def affordability(food_cons, price):
-    """Continuous affordability curve: how much of full demand this pop gets.
-    Returns 1.0 when food_cons is high relative to price, tapers toward 0.
-    Same variables as the old hard threshold, just continuous.
-    affordability = min(1.0, food_cons × THRESHOLD_SCALE / price)"""
+    """Continuous affordability curve with power scaling.
+    Raw ratio capped at 1.0, then raised to AFFORDABILITY_CURVE power.
+    Higher curve = steeper penalty for pops that can barely afford it."""
     if THRESHOLD_SCALE <= 0 or price <= 0:
         return 1.0
-    return min(1.0, food_cons * THRESHOLD_SCALE / price)
+    raw = food_cons * THRESHOLD_SCALE / price
+    if raw >= 1.0:
+        return 1.0
+    return raw ** AFFORDABILITY_CURVE
+
+
+def refinement(food_cons, price):
+    """Rich pops demand less of cheap goods (inverse of affordability).
+    Raw ratio capped at 1.0, then raised to REFINEMENT_CURVE power.
+    Higher food_cons + lower price = more dampening."""
+    if REFINEMENT_SCALE <= 0 or food_cons <= 0:
+        return 1.0
+    raw = price * REFINEMENT_SCALE / food_cons
+    if raw >= 1.0:
+        return 1.0
+    return raw ** REFINEMENT_CURVE
+
+
+def expand_group_keys(d):
+    """Expand all/upper shorthand to per-type values.
+    Handles both vanilla keys (all, upper) and legacy prefixed keys (_all, _upper)."""
+    expanded = {}
+    for k, v in d.items():
+        if k in ("all", "_all"):
+            for t in POP_TYPES:
+                expanded[t] = expanded.get(t, 0) + v
+        elif k in ("upper", "_upper"):
+            for t in ("nobles", "clergy", "burghers"):
+                expanded[t] = expanded.get(t, 0) + v
+        else:
+            expanded[k] = expanded.get(k, 0) + v
+    return expanded
+
+
+def vanilla_effective(good):
+    """Compute vanilla effective demand (demand_add * demand_multiply).
+    Used for comparison display."""
+    vanilla = good.get("vanilla", {})
+    da = expand_group_keys(vanilla.get("demand_add", {}))
+    dm = vanilla.get("demand_multiply", {})
+    upper = {"nobles", "clergy", "burghers"}
+    result = {}
+    for pop, base in da.items():
+        mult = 1.0
+        if pop in upper and "upper" in dm:
+            mult *= dm["upper"]
+        if pop in dm:
+            mult *= dm[pop]
+        result[pop] = base * mult
+    return result
 
 
 def compute():
+    """Compute demand values for all goods. Returns list of result dicts."""
     results = []
     for g in GOODS:
+        if "price" not in g:
+            print(f"  WARNING: {g['name']} has no price (vanilla scan missing?), skipping",
+                  file=sys.stderr)
+            continue
+
         cat = g["category"]
-        target = CATEGORY_TARGETS[cat]
         output = g["output"]
-        price = g.get("price", REFERENCE_PRICE)
-        source = g.get("source", "produced")
-        consumer_list = set(g.get("consumers", []))
-        modifiers = g.get("modifiers", {})
+        price = g["price"]
+        bldg_cons = g.get("building_consumption", 0)
 
-        bldg_cons = BUILDING_CONSUMPTION.get(g["name"], 0)
-        cs = output / (output + bldg_cons) if (output + bldg_cons) > 0 else 1.0
-        spread = get_spread(target)
+        target = get_target(cat, price)
+        s = get_spread(cat)
         pf = price_factor(price)
+        cs = output / (output + bldg_cons) if bldg_cons else 1.0
 
-        # Determine eligible consumers:
-        # - Must be in consumer_list (the maximum set)
-        # - Must have food_consumption > 0
-        # - Affordability scales demand continuously (no hard cutoff)
-        consumers = set()
-        excluded = set()
-        for p in POP_TYPES:
-            if p not in consumer_list:
-                continue
-            fc = FOOD_CONSUMPTION[p]
-            if fc <= 0:
-                excluded.add(p)
-            else:
-                consumers.add(p)
-
-        # Compute weights: class_weight × affordability × modifier
         weights = {}
         afford = {}
-        for p in consumers:
+        refine = {}
+        for p in POP_TYPES:
             fc = FOOD_CONSUMPTION[p]
+            if fc <= 0:
+                continue
             aff = affordability(fc, price)
+            ref = refinement(fc, price)
             afford[p] = aff
-            w = get_weight(fc, spread) * aff
-            weights[p] = w * modifiers.get(p, 1.0)
+            refine[p] = ref
+            weights[p] = get_weight(fc, s) * aff * ref
 
-        # demand_add = output × pf × weight × consumer_share / target
-        # consumer_share scales down pop demand for goods where buildings
-        # are the primary consumers (tools, lumber, masonry)
         effective = {}
         for p in POP_TYPES:
-            if p in consumers:
-                effective[p] = output * pf * weights[p] * cs / target
-            else:
-                effective[p] = 0.0
+            effective[p] = output * pf * weights[p] * cs / target if p in weights else 0.0
 
-        demand_add = {p: effective[p] for p in POP_TYPES if effective[p] > 0}
+        demand_add = {p: v for p, v in effective.items() if v > 0}
 
         results.append({
             "name": g["name"],
-            "category": cat,
-            "source": source,
-            "target": target,
+            "category": g["category"],
+            "source": g["source"],
             "output": output,
             "price": price,
+            "target": target,
+            "spread": s,
             "price_factor": pf,
-            "spread": spread,
             "consumer_share": cs,
+            "building_consumption": bldg_cons,
             "weights": weights,
             "afford": afford,
+            "refine": refine,
             "effective": effective,
             "demand_add": demand_add,
-            "consumers": consumers,
-            "excluded": excluded,
-            "modifiers": modifiers,
+            "vanilla": g.get("vanilla", {}),
         })
 
     return results
 
 
-# ================================================================
-#  DISPLAY
-# ================================================================
+# ═══════════════════════════════════════════════════════════════════════════
+# PDX OUTPUT
+# ═══════════════════════════════════════════════════════════════════════════
 
-COL_TYPES = ["nobles", "clergy", "burghers", "soldiers", "laborers", "peasants"]
-COL_LABELS = ["noble", "clergy", "burghr", "soldr", "labor", "peasnt"]
-COL_FOOD = [FOOD_CONSUMPTION[p] for p in COL_TYPES]
-CAT_ORDER = ["necessity", "common", "upper", "luxury"]
+def _fmt(v):
+    """Format a value for PDX output, rounded to nearest thousandth."""
+    if v == 0:
+        return "0"
+    r = round(v, 3)
+    if r == 0:
+        return "0"
+    return f"{r:.3f}".rstrip("0").rstrip(".")
 
 
-def section(title):
+def generate_pdx(results, food_goods):
+    """Generate PDX INJECT blocks as a string.
+
+    Computes three kinds of overrides per good:
+      1. demand_add deltas (our_value - vanilla_base)
+      2. demand_multiply cancellation (inject negative to reach 1.0)
+      3. development_threshold removal (set to 0)
+    Also merges food=0 for goods in food_goods list.
+    """
+    lines = [
+        "# Generated by demand_calculator.py",
+        "# INJECT deltas: computed_value - vanilla_base",
+        "# demand_multiply cancelled to 1.0, development_threshold removed",
+        "",
+    ]
+
+    food_set = set(food_goods)
+    demand_names = {r["name"] for r in results}
+    for r in results:
+        name = r["name"]
+        da = r["demand_add"]
+        vanilla = r["vanilla"]
+        van_da = expand_group_keys(vanilla.get("demand_add", {}))
+        van_dm = vanilla.get("demand_multiply", {})
+        van_dt = vanilla.get("development_threshold")
+
+        # demand_add deltas: INJECT adds to vanilla, so delta = ours - vanilla
+        deltas = {}
+        for p in POP_TYPES:
+            delta = da.get(p, 0) - van_da.get(p, 0)
+            if abs(delta) > 1e-9:
+                deltas[p] = delta
+
+        # demand_multiply cancellation using ORIGINAL keys (upper, nobles, etc.)
+        # Skip entries where vanilla value is 0 — those mean "no demand for this pop",
+        # and since our demand_add delta already handles zeroing, cancellation is noise.
+        dm_cancel = {}
+        for k, v in van_dm.items():
+            if abs(v) < 1e-9:
+                continue
+            cancel = -(v - 1.0)
+            if abs(cancel) > 1e-9:
+                dm_cancel[k] = cancel
+
+        has_food = name in food_set
+        if not deltas and not dm_cancel and not van_dt and not has_food:
+            continue
+
+        lines.append(
+            f"# {name} [{r['category']}/{r['source']}] "
+            f"target={r['target']:.0f} spread={r['spread']:.2f} "
+            f"price={r['price']:.1f} (\u00d7{r['price_factor']:.2f})")
+
+        lines.append(f"INJECT:{name} = {{")
+
+        if deltas:
+            lines.append("\tdemand_add = {")
+            for p in POP_TYPES:
+                if p in deltas:
+                    lines.append(f"\t\t{p} = {_fmt(deltas[p])}")
+            lines.append("\t}")
+
+        if dm_cancel:
+            lines.append("\tdemand_multiply = {")
+            for k, v in dm_cancel.items():
+                lines.append(f"\t\t{k} = {_fmt(v)}")
+            lines.append("\t}")
+
+        if van_dt:
+            lines.append("\tdevelopment_threshold = 0")
+
+        if has_food:
+            lines.append("\tfood = 0")
+
+        lines.append("}")
+        lines.append("")
+
+    # Food removal for goods not in our demand system
+    remaining_food = [g for g in food_goods if g not in demand_names]
+    if remaining_food:
+        lines.append("# " + "\u2500" * 73)
+        lines.append("# Food removal \u2014 raw goods no longer provide food as a side-effect.")
+        lines.append("# All food now comes from provisions (produced good).")
+        lines.append("# " + "\u2500" * 73)
+        lines.append("")
+        for g in remaining_food:
+            lines.append(f"INJECT:{g} = {{")
+            lines.append("\tfood = 0")
+            lines.append("}")
+            lines.append("")
+
+    return "\n".join(lines)
+
+
+def write_pdx(results, food_goods):
+    """Write PDX output to sul_goods_overrides.txt."""
+    content = generate_pdx(results, food_goods)
+    script_dir = os.path.dirname(os.path.abspath(__file__))
+    mod_dir = os.path.dirname(script_dir)
+    out_path = os.path.join(mod_dir, "in_game", "common", "goods", "sul_goods_overrides.txt")
+    os.makedirs(os.path.dirname(out_path), exist_ok=True)
+    with open(out_path, "w", encoding="utf-8") as f:
+        f.write(content)
+    print(f"Wrote {out_path}")
+
+
+# ═══════════════════════════════════════════════════════════════════════════
+# DISPLAY
+# ═══════════════════════════════════════════════════════════════════════════
+
+DISPLAY_TYPES = ["nobles", "clergy", "burghers", "soldiers", "laborers", "peasants"]
+DISPLAY_LABELS = ["noble", "clergy", "burghr", "soldr", "labor", "peasnt"]
+DISPLAY_FOOD = [FOOD_CONSUMPTION[p] for p in DISPLAY_TYPES]
+
+
+def _section(title):
     w = 76
-    print(f"\n{'━' * w}")
+    print(f"\n{'\u2501' * w}")
     print(f"  {title}")
-    print(f"{'━' * w}")
+    print(f"{'\u2501' * w}")
 
 
 def print_config():
-    section("CONFIGURATION")
-    max_t = get_max_target()
+    _section("CONFIGURATION")
 
-    print("\n  Category targets + derived spread:")
-    print(f"  {'Category':<12s} {'Target':>8s} {'Spread':>8s} {'Nob:Pea ratio'}")
-    print(f"  {'─' * 12} {'─' * 8} {'─' * 8} {'─' * 16}")
+    print("\n  Category bases + derived spread:")
+    print(f"  {'Category':<12s} {'Base':>8s} {'Spread':>8s} {'Nob:Pea ratio'}")
+    print(f"  {'\u2500' * 12} {'\u2500' * 8} {'\u2500' * 8} {'\u2500' * 16}")
     for cat in CAT_ORDER:
-        t = CATEGORY_TARGETS[cat]
-        s = get_spread(t)
+        b = CATEGORY_BASES[cat]
+        s = get_spread(cat)
         w_noble = get_weight(FOOD_CONSUMPTION["nobles"], s)
         w_peasant = get_weight(FOOD_CONSUMPTION["peasants"], s)
         ratio = w_noble / w_peasant if w_peasant > 0 else float('inf')
-        print(f"  {cat:<12s} {t:>8.0f} {s:>8.2f} {ratio:>6.1f} : 1")
+        print(f"  {cat:<12s} {b:>8.0f} {s:>8.2f} {ratio:>6.1f} : 1")
+
+    print(f"\n  Per-good target = base \u00d7 (price / {REFERENCE_PRICE:.0f}) ^ {TARGET_PRICE_CURVE:.1f}")
+    print(f"  Example targets at each price:")
+    print(f"  {'Category':<12s}", end="")
+    for p in [1, 2, 3, 5, 8]:
+        print(f" {'p='+str(p):>6s}", end="")
+    print()
+    print(f"  {'\u2500' * 12}", end="")
+    for _ in [1, 2, 3, 5, 8]:
+        print(f" {'\u2500' * 6}", end="")
+    print()
+    for cat in CAT_ORDER:
+        print(f"  {cat:<12s}", end="")
+        for p in [1, 2, 3, 5, 8]:
+            t = get_target(cat, p)
+            print(f" {t:>6.0f}", end="")
+        print()
 
     print(f"\n  System parameters:")
-    print(f"    SPREAD_CURVE    = {SPREAD_CURVE:.2f}  (target→spread aggressiveness)")
-    print(f"    PRICE_CURVE     = {PRICE_CURVE:.2f}  (price→demand magnitude)")
-    print(f"    REFERENCE_PRICE = {REFERENCE_PRICE:.1f}  (neutral price)")
-    print(f"    THRESHOLD_SCALE = {THRESHOLD_SCALE:.1f}  (food_cons >= price/scale)")
+    print(f"    SPREAD_CURVE        = {SPREAD_CURVE:.2f}  (category\u2192spread aggressiveness)")
+    print(f"    PRICE_CURVE         = {PRICE_CURVE:.2f}  (price\u2192demand magnitude)")
+    print(f"    TARGET_PRICE_CURVE  = {TARGET_PRICE_CURVE:.2f}  (price\u2192target adjustment)")
+    print(f"    REFERENCE_PRICE     = {REFERENCE_PRICE:.1f}  (neutral price)")
+    print(f"    THRESHOLD_SCALE     = {THRESHOLD_SCALE:.1f}  (affordability: fc*scale/price)")
+    print(f"    AFFORDABILITY_CURVE = {AFFORDABILITY_CURVE:.1f}  (poor can't afford expensive)")
+    print(f"    REFINEMENT_SCALE    = {REFINEMENT_SCALE:.2f}  (refinement: price*scale/fc)")
+    print(f"    REFINEMENT_CURVE    = {REFINEMENT_CURVE:.1f}  (rich don't want cheap)")
 
-    print(f"\n  Affordability by price (fc × {THRESHOLD_SCALE:.0f} / price, capped at 1.0):")
+    print(f"\n  Affordability by price (fc \u00d7 {THRESHOLD_SCALE:.0f} / price, capped at 1.0, ^{AFFORDABILITY_CURVE:.0f}):")
     aff_types = ["nobles", "clergy", "burghers", "soldiers", "laborers", "peasants", "slaves"]
     aff_labels = ["noble", "clergy", "burghr", "soldr", "labor", "peasnt", "slave"]
     print(f"    {'price':>6s}", end="")
     for label in aff_labels:
         print(f" {label:>7s}", end="")
     print()
-    print(f"    {'─' * 6}", end="")
+    print(f"    {'\u2500' * 6}", end="")
     for _ in aff_labels:
-        print(f" {'─' * 7}", end="")
+        print(f" {'\u2500' * 7}", end="")
     print()
     for pr in [1, 2, 3, 4, 5, 6, 8, 10]:
         print(f"    {pr:>6d}", end="")
@@ -587,6 +984,25 @@ def print_config():
                 print(f"    1.0", end="")
             else:
                 print(f"   {aff:>.2f}", end="")
+        print()
+
+    print(f"\n  Refinement by price (price \u00d7 {REFINEMENT_SCALE:.2f} / fc, capped at 1.0, ^{REFINEMENT_CURVE:.0f}):")
+    print(f"    {'price':>6s}", end="")
+    for label in aff_labels:
+        print(f" {label:>7s}", end="")
+    print()
+    print(f"    {'\u2500' * 6}", end="")
+    for _ in aff_labels:
+        print(f" {'\u2500' * 7}", end="")
+    print()
+    for pr in [1, 2, 3, 4, 5, 6, 8, 10]:
+        print(f"    {pr:>6d}", end="")
+        for p in aff_types:
+            ref = refinement(FOOD_CONSUMPTION[p], pr)
+            if ref >= 1.0:
+                print(f"    1.0", end="")
+            else:
+                print(f"   {ref:>.2f}", end="")
         print()
 
     print(f"\n  Food consumption anchor:")
@@ -600,48 +1016,36 @@ def print_config():
 
 
 def print_demands(results):
-    section("COMPUTED DEMAND VALUES")
+    _section("COMPUTED DEMAND VALUES")
 
     for cat in CAT_ORDER:
         goods = [r for r in results if r["category"] == cat]
         if not goods:
             continue
-        spread = get_spread(CATEGORY_TARGETS[cat])
-        print(f"\n  [{cat.upper()}]  target={CATEGORY_TARGETS[cat]:.0f}  spread={spread:.2f}")
-        print(f"  {'Good':<14s} {'Src':>4s} {'Price':>6s} {'Prc.F':>6s} {'CShr':>5s} {'Consumers'}")
-        print(f"  {'─' * 14} {'─' * 4} {'─' * 6} {'─' * 6} {'─' * 5} {'─' * 28}")
+        sp = get_spread(cat)
+        print(f"\n  [{cat.upper()}]  base={CATEGORY_BASES[cat]:.0f}  spread={sp:.2f}")
+        print(f"  {'Good':<14s} {'Src':>4s} {'Price':>6s} {'Trgt':>6s} {'Prc.F':>6s} {'CShr':>5s}")
+        print(f"  {'\u2500' * 14} {'\u2500' * 4} {'\u2500' * 6} {'\u2500' * 6} {'\u2500' * 6} {'\u2500' * 5}")
         for r in goods:
-            nc = len(r["consumers"])
-            excl = r["excluded"]
-            mods = r["modifiers"]
             src = "raw" if r["source"] == "raw" else "prod"
-            parts = []
-            if excl:
-                parts.append(f"{nc}/{nc + len(excl)}")
-                parts.append(f"-{','.join(sorted(p[:3] for p in excl))}")
-            else:
-                parts.append(f"({nc})")
-            if mods:
-                parts.append("+" + ",".join(f"{k[:3]}×{v}" for k, v in mods.items()))
-            cons_str = " ".join(parts)
-            print(f"  {r['name']:<14s} {src:>4s} {r['price']:>6.1f} {r['price_factor']:>6.2f} "
-                  f"{r['consumer_share']:>5.0%} {cons_str}")
+            print(f"  {r['name']:<14s} {src:>4s} {r['price']:>6.1f} {r['target']:>6.0f} {r['price_factor']:>6.2f} "
+                  f"{r['consumer_share']:>5.0%}")
 
 
 def print_effective(results):
-    section("EFFECTIVE DEMAND PER POP UNIT")
-    print(f"  weight = spread_weight × affordability × modifier")
+    _section("EFFECTIVE DEMAND PER POP UNIT")
+    print(f"  weight = spread_weight \u00d7 affordability \u00d7 refinement")
     print(f"\n  {'Good':<14s} {'sprd':>5s}", end="")
-    for label in COL_LABELS:
+    for label in DISPLAY_LABELS:
         print(f" {label:>8s}", end="")
     print()
     print(f"  {'(food_cons)':<14s} {'':>5s}", end="")
-    for f in COL_FOOD:
-        print(f" {f:>7.0f}×", end="")
+    for f in DISPLAY_FOOD:
+        print(f" {f:>7.0f}\u00d7", end="")
     print()
-    print(f"  {'─' * 14} {'─' * 5}", end="")
-    for _ in COL_LABELS:
-        print(f" {'─' * 8}", end="")
+    print(f"  {'\u2500' * 14} {'\u2500' * 5}", end="")
+    for _ in DISPLAY_LABELS:
+        print(f" {'\u2500' * 8}", end="")
     print()
 
     last_cat = None
@@ -651,47 +1055,46 @@ def print_effective(results):
                 print()
             last_cat = r["category"]
         print(f"  {r['name']:<14s} {r['spread']:>5.2f}", end="")
-        for c in COL_TYPES:
+        for c in DISPLAY_TYPES:
             v = r["effective"].get(c, 0)
             aff = r["afford"].get(c, 1.0)
-            if v > 0 and aff < 1.0:
-                # Show reduced demand with affordability marker
+            ref = r["refine"].get(c, 1.0)
+            if v > 0 and (aff < 1.0 or ref < 1.0):
                 print(f" {v:>7.4f}~", end="")
             elif v > 0:
                 print(f" {v:>8.4f}", end="")
             else:
-                print(f" {'·':>8s}", end="")
+                print(f" {'\u00b7':>8s}", end="")
         print()
 
 
 def print_weights(results):
-    section("CLASS WEIGHTS  (how spread compresses the hierarchy)")
+    _section("CLASS WEIGHTS  (how spread compresses the hierarchy)")
     print(f"\n  {'Category':<12s} {'Spread':>6s}", end="")
-    for label in COL_LABELS:
+    for label in DISPLAY_LABELS:
         print(f" {label:>8s}", end="")
     print()
-    print(f"  {'─' * 12} {'─' * 6}", end="")
-    for _ in COL_LABELS:
-        print(f" {'─' * 8}", end="")
+    print(f"  {'\u2500' * 12} {'\u2500' * 6}", end="")
+    for _ in DISPLAY_LABELS:
+        print(f" {'\u2500' * 8}", end="")
     print()
 
     for cat in CAT_ORDER:
-        t = CATEGORY_TARGETS[cat]
-        s = get_spread(t)
+        s = get_spread(cat)
         print(f"  {cat:<12s} {s:>6.2f}", end="")
-        for c in COL_TYPES:
+        for c in DISPLAY_TYPES:
             w = get_weight(FOOD_CONSUMPTION[c], s)
             print(f" {w:>8.2f}", end="")
         print()
 
     print(f"\n  {'(full fc)':<12s} {'1.00':>6s}", end="")
-    for c in COL_TYPES:
+    for c in DISPLAY_TYPES:
         print(f" {FOOD_CONSUMPTION[c]:>8.1f}", end="")
     print()
 
 
 def print_satisfaction(results):
-    section("POPS SATISFIED PER BUILDING  (by tier, produced goods only)")
+    _section("POPS SATISFIED PER BUILDING  (by tier, produced goods only)")
     tiers = [("guild", 1.0), ("workshop", 1.1), ("manuf.", 2.0), ("mill", 4.0)]
 
     produced = [r for r in results if r["source"] == "produced"]
@@ -703,9 +1106,9 @@ def print_satisfaction(results):
     for name, _ in tiers:
         print(f" {name:>10s}", end="")
     print()
-    print(f"  {'─' * 14}", end="")
+    print(f"  {'\u2500' * 14}", end="")
     for _ in tiers:
-        print(f" {'─' * 10}", end="")
+        print(f" {'\u2500' * 10}", end="")
     print()
 
     last_cat = None
@@ -730,7 +1133,7 @@ def print_location(results, pop_units=None, slots=None):
     if not produced:
         return
 
-    section(f"LOCATION VIEW: {pop_units:.0f} POP UNITS, {slots} SLOTS  (produced only)")
+    _section(f"LOCATION VIEW: {pop_units:.0f} POP UNITS, {slots} SLOTS  (produced only)")
 
     tiers_show = [("guild", 1.0), ("wkshop", 1.1), ("manuf.", 2.0), ("mill", 4.0)]
 
@@ -738,9 +1141,9 @@ def print_location(results, pop_units=None, slots=None):
     for name, _ in tiers_show:
         print(f" {name:>8s}", end="")
     print()
-    print(f"  {'─' * 14} {'─' * 10}", end="")
+    print(f"  {'\u2500' * 14} {'\u2500' * 10}", end="")
     for _ in tiers_show:
-        print(f" {'─' * 8}", end="")
+        print(f" {'\u2500' * 8}", end="")
     print()
 
     cat_totals = {}
@@ -769,9 +1172,9 @@ def print_location(results, pop_units=None, slots=None):
             print(f" {vals[name]:>8.1f}", end="")
         print()
 
-    print(f"\n  {'─' * 14} {'─' * 10}", end="")
+    print(f"\n  {'\u2500' * 14} {'\u2500' * 10}", end="")
     for _ in tiers_show:
-        print(f" {'─' * 8}", end="")
+        print(f" {'\u2500' * 8}", end="")
     print()
 
     for cat in CAT_ORDER:
@@ -787,7 +1190,6 @@ def print_location(results, pop_units=None, slots=None):
         print(f" {grand[name]:>8.1f}", end="")
     print()
 
-    # Slot budget at guild tier
     used = grand["guild"]
     free = slots - used
     print(f"\n  Slot budget (guild tier):")
@@ -796,28 +1198,19 @@ def print_location(results, pop_units=None, slots=None):
             continue
         g = cat_totals[cat]["guild"]
         pct = g / slots * 100
-        bar = "█" * int(pct / 2)
+        bar = "\u2588" * int(pct / 2)
         print(f"    {cat:<12s} {g:>5.1f} ({pct:>4.0f}%)  {bar}")
     pct = max(0, free / slots * 100)
-    bar = "░" * int(pct / 2)
+    bar = "\u2591" * int(pct / 2)
     print(f"    {'remaining':<12s} {free:>5.1f} ({pct:>4.0f}%)  {bar}")
 
 
 def print_supply_demand(results):
-    """Show producer pops needed per demand pop unit, broken down by tier.
-
-    Key insight: building tier determines WHICH pop type works there.
-    Guild/workshop/manufactory → burghers. Mill/RGO → laborers.
-    Village → peasants. Plantation → slaves.
-
-    Building a cloth guild doesn't just produce cloth — it creates burghers
-    who then demand fine_cloth, books, jewelry at the burgher consumption rate.
-    """
-    section("SUPPLY-DEMAND BALANCE")
-    print(f"  Producers per demand pop unit = pf × employment / (target × output)")
+    """Supply-demand balance: producer pops needed per demand pop unit."""
+    _section("SUPPLY-DEMAND BALANCE")
+    print(f"  Producers per demand pop unit = pf \u00d7 employment / (target \u00d7 output)")
     print(f"  Each tier shows: [ratio] as [pop_type]")
 
-    # Tier groups for display
     raw_tier_keys = ["village", "rural", "plantation"]
     prod_tier_keys = ["guild", "workshop", "manufactory", "mill"]
     raw_tier_labels = ["village", "rural", "plantn"]
@@ -830,7 +1223,6 @@ def print_supply_demand(results):
     def pop_label(tier_key):
         return BUILDING_TIERS[tier_key]["pop_type"][:3]
 
-    # --- RAW MATERIALS ---
     raw_goods = [r for r in results if r["source"] == "raw"]
     if raw_goods:
         print(f"\n  RAW MATERIALS:")
@@ -839,9 +1231,9 @@ def print_supply_demand(results):
             pt = pop_label(raw_tier_keys[i])
             print(f" {label + '(' + pt + ')':>14s}", end="")
         print()
-        print(f"  {'─' * 14} {'─' * 10}", end="")
+        print(f"  {'\u2500' * 14} {'\u2500' * 10}", end="")
         for _ in raw_tier_labels:
-            print(f" {'─' * 14}", end="")
+            print(f" {'\u2500' * 14}", end="")
         print()
 
         for r in raw_goods:
@@ -851,7 +1243,6 @@ def print_supply_demand(results):
                 print(f" {ratio:>14.4f}", end="")
             print()
 
-    # --- PRODUCED GOODS ---
     produced = [r for r in results if r["source"] == "produced"]
     if produced:
         print(f"\n  PRODUCED GOODS:")
@@ -860,9 +1251,9 @@ def print_supply_demand(results):
             pt = pop_label(prod_tier_keys[i])
             print(f" {label + '(' + pt + ')':>14s}", end="")
         print()
-        print(f"  {'─' * 14} {'─' * 10}", end="")
+        print(f"  {'\u2500' * 14} {'\u2500' * 10}", end="")
         for _ in prod_tier_labels:
-            print(f" {'─' * 14}", end="")
+            print(f" {'\u2500' * 14}", end="")
         print()
 
         last_cat = None
@@ -877,20 +1268,13 @@ def print_supply_demand(results):
                 print(f" {ratio:>14.4f}", end="")
             print()
 
-    # --- POP TYPE BUDGET ---
-    # For a reference market: how many of each pop type are needed as producers?
     print(f"\n  POP TYPE BUDGET (all goods, base tier per source):")
     print(f"  How many pop units of each type must be producers?")
 
-    # Accumulate by pop type
     pop_budget = {}
     for r in results:
-        if r["source"] == "raw":
-            # Use rural as reference tier for raw materials
-            tier = BUILDING_TIERS["rural"]
-        else:
-            # Use guild as reference tier for produced goods
-            tier = BUILDING_TIERS["guild"]
+        tk = "rural" if r["source"] == "raw" else "guild"
+        tier = BUILDING_TIERS[tk]
         pt = tier["pop_type"]
         ratio = r["price_factor"] * tier["employment"] / (r["target"] * tier["output"])
         pop_budget.setdefault(pt, {"total": 0.0, "goods": []})
@@ -902,17 +1286,14 @@ def print_supply_demand(results):
         if pt not in pop_budget:
             continue
         info = pop_budget[pt]
-        goods_str = ", ".join(f"{n}" for n, _ in info["goods"])
         print(f"    {pt:<12s} {info['total']:>8.4f}  ({info['total'] * 100:>5.1f}%)  "
-              f"← {len(info['goods'])} goods")
+              f"\u2190 {len(info['goods'])} goods")
 
     print(f"    {'TOTAL':<12s} {grand_total:>8.4f}  ({grand_total * 100:>5.1f}%)")
 
-    # --- DEMAND FEEDBACK ---
-    # Each producer pop also demands goods. Show the demand their pop type generates.
     print(f"\n  DEMAND FEEDBACK (each producer also consumes):")
-    print(f"  Building guilds creates burghers → more demand for upper/luxury goods")
-    print(f"  Building mills creates laborers → more demand for common goods")
+    print(f"  Building guilds creates burghers \u2192 more demand for upper/luxury goods")
+    print(f"  Building mills creates laborers \u2192 more demand for common goods")
 
     for pt in ["burghers", "laborers", "peasants"]:
         fc = FOOD_CONSUMPTION[pt]
@@ -928,81 +1309,195 @@ def print_supply_demand(results):
             print(f"    {pt:<12s} fc={fc:>4.0f}  top demand: {top_str}")
 
 
+def compute_building_weights(results):
+    """Compute production weights per specialization tier based on demand.
+
+    For each spec's rural and guild tier, looks up the TOTAL demand for each
+    building's produced good (pop demand + production chain demand) and
+    normalizes into integer weights (per-mille).
+
+    Total demand = pop_demand / consumer_share, where consumer_share < 1
+    means production chains consume part of the output. This ensures goods
+    like cloth (cs=0.34, most output feeds fine_cloth/paper) get proportionally
+    more building levels than their pop demand alone would suggest.
+
+    Returns dict: {spec: {tier: {building_name: weight_permille, ...}, ...}, ...}
+    """
+    # Build demand lookup: good_name -> total demand (pop + production chain)
+    demand_by_good = {}
+    for r in results:
+        pop_demand = sum(r["demand_add"].values())
+        cs = r.get("consumer_share", 1.0)
+        # Total demand: pop demand accounts for consumer_share in the formula,
+        # so dividing by cs recovers the full production need
+        total = pop_demand / cs if cs > 0 else pop_demand
+        demand_by_good[r["name"]] = total
+
+    # Add production-only goods (not in pop demand system)
+    for good, demand in PRODUCTION_DEMAND.items():
+        if good not in demand_by_good:
+            demand_by_good[good] = demand
+
+    weights = {}
+    for spec, tiers in SPEC_BUILDINGS.items():
+        weights[spec] = {}
+        for tier, buildings in tiers.items():
+            # Get raw demand weight per building
+            raw = {}
+            for bldg, good in buildings.items():
+                raw[bldg] = demand_by_good.get(good, 0.01)  # fallback for unmapped
+
+            total = sum(raw.values())
+            if total <= 0:
+                # Equal distribution fallback
+                n = len(raw)
+                weights[spec][tier] = {b: 1000 // n for b in raw}
+                continue
+
+            # Normalize to per-mille (1000 total) for integer math in PDX
+            normed = {}
+            for bldg, w in raw.items():
+                normed[bldg] = int(round(w / total * 1000))
+
+            # Fix rounding to sum to exactly 1000
+            diff = 1000 - sum(normed.values())
+            if diff != 0:
+                # Add remainder to highest-weight building
+                top = max(normed, key=normed.get)
+                normed[top] += diff
+
+            weights[spec][tier] = normed
+
+    return weights
+
+
+def generate_weight_macros(weights):
+    """Generate @macro definitions for building distribution weights."""
+    lines = [
+        "# Building distribution weights (per-mille, sum to 1000 per tier)",
+        "# Generated by demand_calculator.py from demand data",
+        "# Higher weight = more building levels allocated",
+        "",
+    ]
+    for spec in ["mining", "farming", "gathering", "woodland", "commercial"]:
+        if spec not in weights:
+            continue
+        lines.append(f"# {spec.upper()}")
+        for tier in ["rural", "guild"]:
+            if tier not in weights[spec]:
+                continue
+            for bldg, w in weights[spec][tier].items():
+                macro_name = f"@sul_w_{bldg}"
+                lines.append(f"{macro_name} = {w}")
+        lines.append("")
+    return "\n".join(lines)
+
+
+def print_building_weights(results):
+    """Display building distribution weights."""
+    weights = compute_building_weights(results)
+
+    _section("BUILDING DISTRIBUTION WEIGHTS (demand-derived)")
+    print(f"\n  Weights include production chain demand (pop_demand / consumer_share).")
+    print(f"  Per-mille: sum to 1000 per tier. Higher = more building levels.\n")
+
+    # Build lookups for display
+    total_demand_by_good = {}
+    cs_by_good = {}
+    source_by_good = {}
+    for r in results:
+        pop_d = sum(r["demand_add"].values())
+        cs = r.get("consumer_share", 1.0)
+        total_demand_by_good[r["name"]] = pop_d / cs if cs > 0 else pop_d
+        cs_by_good[r["name"]] = cs
+        source_by_good[r["name"]] = "pop"
+    for good, demand in PRODUCTION_DEMAND.items():
+        if good not in total_demand_by_good:
+            total_demand_by_good[good] = demand
+            cs_by_good[good] = 0.0
+            source_by_good[good] = "prod"
+
+    for spec in ["mining", "farming", "gathering", "woodland", "commercial"]:
+        if spec not in weights:
+            continue
+        print(f"  [{spec.upper()}]")
+        for tier in ["rural", "guild"]:
+            if tier not in weights[spec]:
+                continue
+            print(f"    {tier}:")
+            for bldg, w in weights[spec][tier].items():
+                good = SPEC_BUILDINGS[spec][tier][bldg]
+                src = source_by_good.get(good, "?")
+                cs = cs_by_good.get(good, 1.0)
+                pct = w / 10
+                bar = "\u2588" * int(pct / 2)
+                tag = ""
+                if src == "prod":
+                    tag = " [prod]"
+                elif cs < 1.0:
+                    tag = f" cs={cs:.0%}"
+                print(f"      {bldg:<28s} \u2192 {good:<14s}  {w:>4d}  ({pct:>5.1f}%){tag}  {bar}")
+        print()
+
+
 def print_comparison(results):
-    section("VS CURRENT VALUES  (proposed / current ratio)")
+    _section("VS VANILLA  (proposed / vanilla_effective ratio)")
     print(f"\n  {'Good':<14s}", end="")
-    for label in COL_LABELS:
+    for label in DISPLAY_LABELS:
         print(f" {label:>8s}", end="")
     print()
-    print(f"  {'─' * 14}", end="")
-    for _ in COL_LABELS:
-        print(f" {'─' * 8}", end="")
+    print(f"  {'\u2500' * 14}", end="")
+    for _ in DISPLAY_LABELS:
+        print(f" {'\u2500' * 8}", end="")
     print()
 
     for r in results:
-        name = r["name"]
-        cur = CURRENT_VALUES.get(name, {})
-        if not cur:
+        van = vanilla_effective(r)
+        if not van:
             continue
-        print(f"  {name:<14s}", end="")
-        for c in COL_TYPES:
+        print(f"  {r['name']:<14s}", end="")
+        for c in DISPLAY_TYPES:
             proposed = r["effective"].get(c, 0)
-            current = cur.get(c, cur.get("all", 0))
+            current = van.get(c, 0)
             if proposed > 0 and current > 0:
                 ratio = proposed / current
                 if ratio >= 100:
-                    print(f" {ratio:>7.0f}×", end="")
+                    print(f" {ratio:>7.0f}\u00d7", end="")
                 elif ratio >= 10:
-                    print(f" {ratio:>7.1f}×", end="")
+                    print(f" {ratio:>7.1f}\u00d7", end="")
                 else:
-                    print(f" {ratio:>7.2f}×", end="")
+                    print(f" {ratio:>7.2f}\u00d7", end="")
             elif proposed > 0 and current == 0:
                 print(f" {'NEW':>8s}", end="")
             else:
-                print(f" {'·':>8s}", end="")
+                print(f" {'\u00b7':>8s}", end="")
         print()
 
 
-def print_pdx(results):
-    section("PDX SCRIPT OUTPUT")
-    print()
-    print("# Generated by demand_calculator.py")
-    print("# Interconnected system: spread derived from target, threshold from food_cons/price")
-    print("# demand_add per type (pre-multiplied, no demand_multiply needed)")
-    print()
-
-    for r in results:
-        name = r["name"]
-        da = r["demand_add"]
-
-        print(f"# {name} [{r['category']}/{r['source']}] target={r['target']:.0f} "
-              f"spread={r['spread']:.2f} price={r['price']:.1f} (×{r['price_factor']:.2f})")
-        print(f"INJECT:{name} = {{")
-        print(f"\tdemand_add = {{")
-        for p in POP_TYPES:
-            if p in da:
-                print(f"\t\t{p} = {da[p]:.6f}")
-        print(f"\t}}")
-        print(f"}}")
-        print()
-
-
-# ================================================================
-#  MAIN
-# ================================================================
+# ═══════════════════════════════════════════════════════════════════════════
+# CLI
+# ═══════════════════════════════════════════════════════════════════════════
 
 def main():
     parser = argparse.ArgumentParser(
-        description="Demand System Calculator — interconnected price/food_consumption design"
+        description="Demand System Calculator \u2014 interconnected price/food_consumption design"
     )
     parser.add_argument("--compact", action="store_true",
                         help="Summary tables only")
     parser.add_argument("--pdx", action="store_true",
-                        help="Output PDX script format")
+                        help="Output PDX INJECT blocks to stdout")
+    parser.add_argument("--write", action="store_true",
+                        help="Write PDX output to sul_goods_overrides.txt")
     parser.add_argument("--location", type=float, metavar="N",
                         help="Override location pop units")
     parser.add_argument("--slots", type=int, metavar="N",
                         help="Override location building slots")
+    parser.add_argument("--weights", action="store_true",
+                        help="Show building distribution weights")
+    parser.add_argument("--write-weights", action="store_true",
+                        help="Write weight macros to sul_bootstrap_weights.txt")
+    parser.add_argument("--vanilla-dir", metavar="DIR",
+                        help="Override vanilla goods directory path")
     args = parser.parse_args()
 
     if args.location:
@@ -1012,10 +1507,52 @@ def main():
         global LOCATION_BUILDING_SLOTS
         LOCATION_BUILDING_SLOTS = args.slots
 
+    # Scan vanilla game files
+    vdir = args.vanilla_dir or VANILLA_GOODS_DIR
+    vanilla_data = scan_vanilla(vdir)
+    if vanilla_data:
+        merge_vanilla(GOODS, vanilla_data)
+        food_goods = get_food_goods(vanilla_data)
+        print(f"  Scanned {len(vanilla_data)} goods from {vdir}", file=sys.stderr)
+    else:
+        print(f"  WARNING: Vanilla dir not found: {vdir}", file=sys.stderr)
+        print(f"  Using fallback food list; prices/vanilla data may be missing",
+              file=sys.stderr)
+        food_goods = FOOD_REMOVAL_FALLBACK
+
+    # Scan production methods for non-pop goods demand
+    global PRODUCTION_DEMAND
+    PRODUCTION_DEMAND = scan_production_demand()
+    if PRODUCTION_DEMAND:
+        parts = [f"{k}={v:.2f}" for k, v in sorted(PRODUCTION_DEMAND.items(),
+                                                     key=lambda x: -x[1])]
+        print(f"  Production demand: {', '.join(parts)}", file=sys.stderr)
+
     results = compute()
 
+    if args.write:
+        write_pdx(results, food_goods)
+        return
+
+    if args.write_weights:
+        bw = compute_building_weights(results)
+        content = generate_weight_macros(bw)
+        script_dir = os.path.dirname(os.path.abspath(__file__))
+        mod_dir = os.path.dirname(script_dir)
+        out_path = os.path.join(mod_dir, "in_game", "common", "scripted_effects",
+                                "sul_bootstrap_weights.txt")
+        os.makedirs(os.path.dirname(out_path), exist_ok=True)
+        with open(out_path, "w", encoding="utf-8") as f:
+            f.write(content)
+        print(f"Wrote {out_path}")
+        return
+
     if args.pdx:
-        print_pdx(results)
+        print(generate_pdx(results, food_goods))
+        return
+
+    if args.weights:
+        print_building_weights(results)
         return
 
     print_config()
@@ -1028,6 +1565,7 @@ def main():
         print_supply_demand(results)
         print_location(results)
         print_comparison(results)
+        print_building_weights(results)
 
 
 if __name__ == "__main__":

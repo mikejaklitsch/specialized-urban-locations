@@ -1,0 +1,78 @@
+﻿# =============================================================================
+# DYNAMIC DEVELOPMENT SYSTEM - Scripted Components
+# =============================================================================
+# Only wealth and upper class need scripting (no engine scaler exists).
+# All other development drivers use engine-scaled static modifiers:
+#   building_levels  → local_monthly_development (growth from infrastructure)
+#   total_population → local_monthly_development (decay from pop pressure)
+#   inverse_control  → local_monthly_development (decay from lawlessness)
+#   prosperity       → local_monthly_development (food surplus, vanilla +0.004)
+#   overpopulation   → local_monthly_development (binary brake)
+#   province_starving→ local_monthly_development (binary brake)
+#   geography        → flat injections in vegetation/topography/climate
+#   war              → flat injections in siege/looted/blockade modifiers
+# =============================================================================
+
+# --- MACROS ---
+@sul_dev_wealth_ceiling = 0.05       # max monthly dev from wealth
+@sul_dev_wealth_k = 50              # GDP/capita at half-max growth
+@sul_dev_upper_class_scale = 0.1     # multiplied by upper class pop ratio
+@sul_dev_upper_class_cap = 0.03      # max monthly dev from upper class
+
+# =============================================================================
+# WEALTH GROWTH: S-curve based on GDP per capita
+# sul_gdp_per_capita cached in sul_update_location_gdp
+# Formula: ceiling × gdp_pc / (gdp_pc + k)
+# At GDP/cap=50: +0.025. At GDP/cap=200: +0.04.
+# Returns 0 to +0.05
+# =============================================================================
+
+sul_dev_wealth_growth = {
+	value = 0
+	if = {
+		limit = { has_variable = sul_gdp_per_capita var:sul_gdp_per_capita > 0 }
+
+		add = {
+			value = var:sul_gdp_per_capita
+			divide = { value = var:sul_gdp_per_capita add = @sul_dev_wealth_k }
+			multiply = @sul_dev_wealth_ceiling
+		}
+	}
+
+	min = 0
+	max = @sul_dev_wealth_ceiling
+}
+
+# =============================================================================
+# UPPER CLASS GROWTH: linear from actual upper class population %
+# sul_upper_class_ratio cached in sul_update_location_gdp
+# (nobles + clergy + burghers) / total_population
+# Typical range 5-30%. At 30% → +0.03 (cap).
+# Returns 0 to +0.03
+# =============================================================================
+
+sul_dev_upper_class_growth = {
+	value = 0
+	if = {
+		limit = { has_variable = sul_upper_class_ratio var:sul_upper_class_ratio > 0 }
+
+		add = {
+			value = var:sul_upper_class_ratio
+			multiply = @sul_dev_upper_class_scale
+		}
+	}
+
+	min = 0
+	max = @sul_dev_upper_class_cap
+}
+
+# =============================================================================
+# COMBINED DELTA (location scope)
+# =============================================================================
+# Only the two scripted components. Everything else is engine-driven.
+# =============================================================================
+
+sul_development_delta = {
+	add = sul_dev_wealth_growth
+	add = sul_dev_upper_class_growth
+}

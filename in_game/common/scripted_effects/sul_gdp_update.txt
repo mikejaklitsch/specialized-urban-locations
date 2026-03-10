@@ -10,6 +10,7 @@ sul_update_location_economy = {
 	sul_update_location_estate_power = yes
 	sul_update_location_gdp = yes
 	sul_cache_gdp_per_capita = yes
+	sul_update_location_development = yes
 }
 
 # -----------------------------------------------------------------------------
@@ -61,6 +62,36 @@ sul_update_location_gdp = {
 		else = {
 			# No averages yet - use 0 as fallback
 			set_variable = { name = sul_local_gdp value = 0 }
+		}
+	}
+
+	# Cache GDP per capita for development system
+	set_variable = {
+		name = sul_gdp_per_capita
+
+		value = {
+			if = {
+				limit = { population > 0 }
+				value = var:sul_local_gdp
+				divide = population
+			}
+			else = { value = 0 }
+		}
+	}
+
+	# Cache upper class ratio (actual population %, not tax-weighted power share)
+	set_variable = {
+		name = sul_upper_class_ratio
+
+		value = {
+			if = {
+				limit = { population > 0 }
+				value = num_pop_type:nobles
+				add = num_pop_type:clergy
+				add = num_pop_type:burghers
+				divide = population
+			}
+			else = { value = 0 }
 		}
 	}
 }

@@ -1,8 +1,4 @@
 ﻿# Specialized Urban Locations - Defines
-# Rural settlements are now less efficient (-50% raw material output)
-# Towns/cities with specializations vastly outperform rural
-# Farming specialization handles food production (+100%/+250%)
-# Food storage is primary driver of population growth
 
 ##################################
 # GUI
@@ -35,6 +31,10 @@ NPop = {
 ##################################
 
 NEconomy = {
+	# Vanilla: 0.5 (50%) - tax base contributes 50% to economical base
+	# Mod: 0.25 (25%) - lowers scaling costs without touching income
+	ECONOMICAL_BASE_FROM_TAX_BASE = 0.25
+
 	# Vanilla: 0.2 (20%) - countries only pay 20% of building upkeep
 	# Mod: 1.0 (100%) - full upkeep, crown power can meaningfully reduce it
 	BUILDING_UPKEEP_FACTOR = 1.0
@@ -55,11 +55,12 @@ NAI = {
 	# ---------------------------------
 	# Building & Urbanization
 	# ---------------------------------
+	AI_PROFITABILITY_THRESHOLD_FOR_MISSING_GOODS_UTIL = 1.05  # vanilla 1.15 (15%) - build if 5% profitable
+	BUILDING_THRESHOLD_FACTOR = 1.05              # vanilla 1.2 - AI less cautious about building
 	AI_UPGRADE_BUILDING_UTILITY = 0.002           # 2x vanilla (0.001) - mild upgrade priority
 	AI_MAXIMUM_EXPECT_TOWN_RATIO = 1.0            # Allow full urbanization
 	AI_UPGRADE_CITY_POPULATION_UTILITY = 25       # Faster upgrade decisions per pop
 	AI_ONGOING_CITY_UPGRADE_MULT = 0.8            # Less penalty per ongoing upgrade (vanilla 0.5)
-	AI_UTILITY_PER_CAPITA_BASE_EMPLOYMENT = 0.75  # AI will attempt to employ this much of the population
 
 	# Food storage utility - prioritize granaries over cathedrals (Tier 2)
 	AI_PROVINCE_FOOD_STOCKPILE_UTILITY = 0.25     # vanilla 0.1 - value food storage buildings more
@@ -78,8 +79,8 @@ NAI = {
 	# ---------------------------------
 	# Budget Allocation
 	# ---------------------------------
-	AI_ALLOWED_FORT_BUDGET = 0.05                 # 5% for forts (vanilla 0.1)
-	AI_MAINTENANCE_BUDGET_RATIO_AGE_INCREASE = 0.05  # +5% per age (vanilla 0.025)
+	AI_ALLOWED_FORT_BUDGET = 0.03                 # 3% for forts (vanilla 0.1)
+	AI_ALLOWED_BUILDING_MAINTENANCE = 0.32        # 32% for buildings (vanilla 0.25, +7% from fort savings)
 	AI_MAXIMUM_ARMY_VS_NAVY_BUDGET_ALLOCATION = 0.65 # Max 65% to land (vanilla 0.75)
 
 	# Budget thresholds - reduce gold hoarding (Tier 1)

@@ -1,0 +1,345 @@
+﻿# Decluttered War UI — Settings Panel (CMF Integration)
+
+types dwui_settings_types
+{
+	# ---- Settings checkbox row ----
+	type dwui_setting_row = hbox {
+		layoutpolicy_horizontal = expanding
+		spacing = 10
+		margin = { 5 0 }
+
+		text_single = { layoutpolicy_horizontal = expanding block "setting_text" {  } }
+
+		checkbutton = { using = button_checkbox_template_alt block "setting_action" {  } }
+	}
+
+	# ---- Section divider ----
+	type dwui_divider = widget {
+		layoutpolicy_horizontal = expanding
+		size = { -1 2 }
+		background = { using = color_gold_texture alpha = 0.3 }
+	}
+}
+
+widget = {
+	name = "dwui_settings_listener"
+	layer = topbar
+
+	size = {
+		100%
+		100%
+	}
+
+	datacontext = "[GetPlayer]"
+	visible = "[Country.IsValid]"
+	alwaystransparent = yes
+
+	window = {
+		name = "dwui_settings_panel"
+		size = { 380 520 }
+		parentanchor = center
+		visible = "[GetPlayer.MakeScope.GetVariable('dwui_show_panel').IsSet]"
+		movable = yes
+		using = bg_window_default_alt
+		allow_outside = yes
+
+		vbox = {
+			using = window_margin_alt
+
+			window_header_alt = { blockoverride "header_text" { text = "DWUI_PANEL_TITLE" } }
+
+			vbox = {
+				using = layoutpolicy_expanding
+				using = bg_main_inner_alt
+
+				scrollarea = {
+					using = layoutpolicy_expanding
+					scrollbarpolicy_horizontal = always_off
+					scrollbar_vertical = { using = Scrollbar_Vertical }
+
+					scrollwidget = {
+						vbox = {
+							using = layoutpolicy_expanding
+							margin = { 15 10 }
+							spacing = 5
+
+							# ==== ALLY-AWARE COLORING ====
+
+							dwui_setting_row = {
+								blockoverride "setting_text" {
+									text = "DWUI_SECTION_COLORING"
+									using = Font_Type_Headers
+									default_format = "#T"
+								}
+								blockoverride "setting_action" {
+									checked = "[Country.MakeScope.GetVariable('dwui_cl').IsSet]"
+									onclick = "[GetScriptedGui('dwui_toggle_cl').Execute(GuiScope.SetRoot(GetPlayer.MakeScope).End)]"
+									tooltip = "DWUI_TOOLTIP_COLORING"
+								}
+							}
+
+							# ==== COLOR FILTERS ====
+
+							dwui_divider = {  }
+
+							text_single = {
+								layoutpolicy_horizontal = expanding
+								text = "DWUI_SECTION_FILTERS"
+								using = Font_Type_Headers
+								default_format = "#T"
+								align = nobaseline
+							}
+
+							# ---- Administrative tier (not mutually exclusive) ----
+
+							dwui_setting_row = {
+								blockoverride "setting_text" { text = "DWUI_CHECKBOX_CAPITALS" }
+								blockoverride "setting_action" {
+									checked = "[Country.MakeScope.GetVariable('dwui_cap').IsSet]"
+									onclick = "[GetScriptedGui('dwui_toggle_cap').Execute(GuiScope.SetRoot(GetPlayer.MakeScope).End)]"
+									tooltip = "DWUI_TOOLTIP_CAPITALS"
+									enabled = "[Country.MakeScope.GetVariable('dwui_cl').IsSet]"
+								}
+							}
+
+							dwui_setting_row = {
+								blockoverride "setting_text" { text = "DWUI_CHECKBOX_PROV_CAPITALS" }
+								blockoverride "setting_action" {
+									checked = "[Country.MakeScope.GetVariable('dwui_pcap').IsSet]"
+									onclick = "[GetScriptedGui('dwui_toggle_pcap').Execute(GuiScope.SetRoot(GetPlayer.MakeScope).End)]"
+									tooltip = "DWUI_TOOLTIP_PROV_CAPITALS"
+									enabled = "[Country.MakeScope.GetVariable('dwui_cl').IsSet]"
+								}
+							}
+
+							dwui_divider = {  }
+
+							# ---- Settlement rank (not mutually exclusive) ----
+
+							dwui_setting_row = {
+								blockoverride "setting_text" { text = "DWUI_CHECKBOX_CITIES" }
+								blockoverride "setting_action" {
+									checked = "[Country.MakeScope.GetVariable('dwui_city').IsSet]"
+									onclick = "[GetScriptedGui('dwui_toggle_city').Execute(GuiScope.SetRoot(GetPlayer.MakeScope).End)]"
+									tooltip = "DWUI_TOOLTIP_CITIES"
+									enabled = "[Country.MakeScope.GetVariable('dwui_cl').IsSet]"
+								}
+							}
+
+							dwui_setting_row = {
+								blockoverride "setting_text" { text = "DWUI_CHECKBOX_TOWNS" }
+								blockoverride "setting_action" {
+									checked = "[Country.MakeScope.GetVariable('dwui_town').IsSet]"
+									onclick = "[GetScriptedGui('dwui_toggle_town').Execute(GuiScope.SetRoot(GetPlayer.MakeScope).End)]"
+									tooltip = "DWUI_TOOLTIP_TOWNS"
+									enabled = "[Country.MakeScope.GetVariable('dwui_cl').IsSet]"
+								}
+							}
+
+							dwui_setting_row = {
+								blockoverride "setting_text" { text = "DWUI_CHECKBOX_RURAL" }
+								blockoverride "setting_action" {
+									checked = "[Country.MakeScope.GetVariable('dwui_rural').IsSet]"
+									onclick = "[GetScriptedGui('dwui_toggle_rural').Execute(GuiScope.SetRoot(GetPlayer.MakeScope).End)]"
+									tooltip = "DWUI_TOOLTIP_RURAL"
+									enabled = "[Country.MakeScope.GetVariable('dwui_cl').IsSet]"
+								}
+							}
+
+							dwui_divider = {  }
+
+							# ---- Fortified locations ----
+
+							dwui_setting_row = {
+								blockoverride "setting_text" { text = "DWUI_CHECKBOX_FORTIFIED" }
+								blockoverride "setting_action" {
+									checked = "[Country.MakeScope.GetVariable('dwui_fort').IsSet]"
+									onclick = "[GetScriptedGui('dwui_toggle_fort').Execute(GuiScope.SetRoot(GetPlayer.MakeScope).End)]"
+									tooltip = "DWUI_TOOLTIP_FORTIFIED"
+									enabled = "[Country.MakeScope.GetVariable('dwui_cl').IsSet]"
+								}
+							}
+
+							# ==== LOCATION NAMES ====
+
+							dwui_divider = {  }
+
+							text_single = {
+								layoutpolicy_horizontal = expanding
+								text = "DWUI_SECTION_NAMES"
+								using = Font_Type_Headers
+								default_format = "#T"
+								align = nobaseline
+							}
+
+							# ---- Administrative tier ----
+
+							dwui_setting_row = {
+								blockoverride "setting_text" { text = "DWUI_CHECKBOX_CAPITALS" }
+								blockoverride "setting_action" {
+									checked = "[Country.MakeScope.GetVariable('dwui_nm_cap').IsSet]"
+									onclick = "[GetScriptedGui('dwui_toggle_nm_cap').Execute(GuiScope.SetRoot(GetPlayer.MakeScope).End)]"
+									tooltip = "DWUI_TOOLTIP_NM_CAPITALS"
+								}
+							}
+
+							dwui_setting_row = {
+								blockoverride "setting_text" { text = "DWUI_CHECKBOX_PROV_CAPITALS" }
+								blockoverride "setting_action" {
+									checked = "[Country.MakeScope.GetVariable('dwui_nm_pcap').IsSet]"
+									onclick = "[GetScriptedGui('dwui_toggle_nm_pcap').Execute(GuiScope.SetRoot(GetPlayer.MakeScope).End)]"
+									tooltip = "DWUI_TOOLTIP_NM_PROV_CAPITALS"
+								}
+							}
+
+							dwui_divider = {  }
+
+							# ---- Settlement rank ----
+
+							dwui_setting_row = {
+								blockoverride "setting_text" { text = "DWUI_CHECKBOX_CITIES" }
+								blockoverride "setting_action" {
+									checked = "[Country.MakeScope.GetVariable('dwui_nm_city').IsSet]"
+									onclick = "[GetScriptedGui('dwui_toggle_nm_city').Execute(GuiScope.SetRoot(GetPlayer.MakeScope).End)]"
+									tooltip = "DWUI_TOOLTIP_NM_CITIES"
+								}
+							}
+
+							dwui_setting_row = {
+								blockoverride "setting_text" { text = "DWUI_CHECKBOX_TOWNS" }
+								blockoverride "setting_action" {
+									checked = "[Country.MakeScope.GetVariable('dwui_nm_town').IsSet]"
+									onclick = "[GetScriptedGui('dwui_toggle_nm_town').Execute(GuiScope.SetRoot(GetPlayer.MakeScope).End)]"
+									tooltip = "DWUI_TOOLTIP_NM_TOWNS"
+								}
+							}
+
+							dwui_setting_row = {
+								blockoverride "setting_text" { text = "DWUI_CHECKBOX_RURAL" }
+								blockoverride "setting_action" {
+									checked = "[Country.MakeScope.GetVariable('dwui_nm_rural').IsSet]"
+									onclick = "[GetScriptedGui('dwui_toggle_nm_rural').Execute(GuiScope.SetRoot(GetPlayer.MakeScope).End)]"
+									tooltip = "DWUI_TOOLTIP_NM_RURAL"
+								}
+							}
+
+							dwui_divider = {  }
+
+							# ---- Fortified locations ----
+
+							dwui_setting_row = {
+								blockoverride "setting_text" { text = "DWUI_CHECKBOX_FORTIFIED" }
+								blockoverride "setting_action" {
+									checked = "[Country.MakeScope.GetVariable('dwui_nm_fort').IsSet]"
+									onclick = "[GetScriptedGui('dwui_toggle_nm_fort').Execute(GuiScope.SetRoot(GetPlayer.MakeScope).End)]"
+									tooltip = "DWUI_TOOLTIP_NM_FORTIFIED"
+								}
+							}
+
+							# ==== RANK ICONS ====
+
+							dwui_divider = {  }
+
+							text_single = {
+								layoutpolicy_horizontal = expanding
+								text = "DWUI_SECTION_RANK_ICONS"
+								using = Font_Type_Headers
+								default_format = "#T"
+								align = nobaseline
+							}
+
+							dwui_setting_row = {
+								blockoverride "setting_text" { text = "DWUI_CHECKBOX_CITIES" }
+								blockoverride "setting_action" {
+									checked = "[Country.MakeScope.GetVariable('dwui_ri_city').IsSet]"
+									onclick = "[GetScriptedGui('dwui_toggle_ri_city').Execute(GuiScope.SetRoot(GetPlayer.MakeScope).End)]"
+									tooltip = "DWUI_TOOLTIP_RI_CITIES"
+								}
+							}
+
+							dwui_setting_row = {
+								blockoverride "setting_text" { text = "DWUI_CHECKBOX_TOWNS" }
+								blockoverride "setting_action" {
+									checked = "[Country.MakeScope.GetVariable('dwui_ri_town').IsSet]"
+									onclick = "[GetScriptedGui('dwui_toggle_ri_town').Execute(GuiScope.SetRoot(GetPlayer.MakeScope).End)]"
+									tooltip = "DWUI_TOOLTIP_RI_TOWNS"
+								}
+							}
+
+							dwui_setting_row = {
+								blockoverride "setting_text" { text = "DWUI_CHECKBOX_RURAL" }
+								blockoverride "setting_action" {
+									checked = "[Country.MakeScope.GetVariable('dwui_ri_rural').IsSet]"
+									onclick = "[GetScriptedGui('dwui_toggle_ri_rural').Execute(GuiScope.SetRoot(GetPlayer.MakeScope).End)]"
+									tooltip = "DWUI_TOOLTIP_RI_RURAL"
+								}
+							}
+
+							dwui_divider = {  }
+
+							dwui_setting_row = {
+								blockoverride "setting_text" { text = "DWUI_CHECKBOX_CAPITALS" }
+								blockoverride "setting_action" {
+									checked = "[Country.MakeScope.GetVariable('dwui_ri_cap').IsSet]"
+									onclick = "[GetScriptedGui('dwui_toggle_ri_cap').Execute(GuiScope.SetRoot(GetPlayer.MakeScope).End)]"
+									tooltip = "DWUI_TOOLTIP_RI_CAPITALS"
+								}
+							}
+
+							dwui_setting_row = {
+								blockoverride "setting_text" { text = "DWUI_CHECKBOX_PROV_CAPITALS" }
+								blockoverride "setting_action" {
+									checked = "[Country.MakeScope.GetVariable('dwui_ri_pcap').IsSet]"
+									onclick = "[GetScriptedGui('dwui_toggle_ri_pcap').Execute(GuiScope.SetRoot(GetPlayer.MakeScope).End)]"
+									tooltip = "DWUI_TOOLTIP_RI_PROV_CAPITALS"
+								}
+							}
+
+							dwui_setting_row = {
+								blockoverride "setting_text" { text = "DWUI_CHECKBOX_RI_ALL" }
+								blockoverride "setting_action" {
+									checked = "[Country.MakeScope.GetVariable('dwui_ri_all').IsSet]"
+									onclick = "[GetScriptedGui('dwui_toggle_ri_all').Execute(GuiScope.SetRoot(GetPlayer.MakeScope).End)]"
+									tooltip = "DWUI_TOOLTIP_RI_ALL"
+								}
+							}
+
+							# ==== DISPLAY ====
+
+							dwui_divider = {  }
+
+							text_single = {
+								layoutpolicy_horizontal = expanding
+								text = "DWUI_SECTION_DISPLAY"
+								using = Font_Type_Headers
+								default_format = "#T"
+								align = nobaseline
+							}
+
+							dwui_setting_row = {
+								blockoverride "setting_text" { text = "DWUI_CHECKBOX_VANILLA_FORT" }
+								blockoverride "setting_action" {
+									checked = "[Country.MakeScope.GetVariable('dwui_vfort').IsSet]"
+									onclick = "[GetScriptedGui('dwui_toggle_vfort').Execute(GuiScope.SetRoot(GetPlayer.MakeScope).End)]"
+									tooltip = "DWUI_TOOLTIP_VANILLA_FORT"
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+
+		widget = {
+			parentanchor = right
+			position = { -5 5 }
+			size = { 40 40 }
+
+			button_close_alt = {
+				blockoverride "close_onclick" {
+					onclick = "[GetScriptedGui('dwui_settings_config').Execute(GuiScope.SetRoot(GetPlayer.MakeScope).End)]"
+				}
+			}
+		}
+	}
+}

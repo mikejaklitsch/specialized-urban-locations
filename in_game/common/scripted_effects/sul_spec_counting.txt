@@ -1,0 +1,156 @@
+﻿# Specialized Urban Locations - Specialization Diversity Tracking
+# Counts specializations per country for diversity pressure calculations
+# root = country
+
+@sul_mining_type = 1
+@sul_farming_type = 2
+@sul_gathering_type = 3
+@sul_woodland_type = 4
+@sul_commercial_type = 5
+@sul_farming_weight = 2
+
+# ============================================
+# INITIALIZE COUNTS
+# Counts all existing specializations and populates cache variables
+# Called when variables don't exist (first run after mod update or existing saves)
+# ============================================
+
+sul_initialize_specialization_counts = {
+	set_variable = {
+		name = sul_mining_count
+		value = 0
+	}
+	set_variable = {
+		name = sul_farming_count
+		value = 0
+	}
+	set_variable = {
+		name = sul_woodland_count
+		value = 0
+	}
+	set_variable = {
+		name = sul_gathering_count
+		value = 0
+	}
+	set_variable = {
+		name = sul_commercial_count
+		value = 0
+	}
+	set_variable = {
+		name = sul_total_weighted
+		value = 0
+	}
+
+	every_owned_location = {
+		limit = { has_variable = sul_spec_type }
+
+		if = {
+			limit = { var:sul_spec_type = @sul_mining_type }
+
+			owner = {
+				change_variable = { name = sul_mining_count add = 1 }
+				change_variable = { name = sul_total_weighted add = 1 }
+			}
+		}
+		else_if = {
+			limit = { var:sul_spec_type = @sul_farming_type }
+
+			owner = {
+				change_variable = { name = sul_farming_count add = 1 }
+				change_variable = { name = sul_total_weighted add = @sul_farming_weight }
+			}
+		}
+		else_if = {
+			limit = { var:sul_spec_type = @sul_woodland_type }
+
+			owner = {
+				change_variable = { name = sul_woodland_count add = 1 }
+				change_variable = { name = sul_total_weighted add = 1 }
+			}
+		}
+		else_if = {
+			limit = { var:sul_spec_type = @sul_gathering_type }
+
+			owner = {
+				change_variable = { name = sul_gathering_count add = 1 }
+				change_variable = { name = sul_total_weighted add = 1 }
+			}
+		}
+		else_if = {
+			limit = { var:sul_spec_type = @sul_commercial_type }
+
+			owner = {
+				change_variable = { name = sul_commercial_count add = 1 }
+				change_variable = { name = sul_total_weighted add = 1 }
+			}
+		}
+	}
+}
+
+# ============================================
+# DECREMENT SPEC COUNT
+# Country scope. Decrements count for location saved as scope:sul_loc.
+# Call from country scope after: save_temporary_scope_as = sul_loc (from location scope)
+# ============================================
+
+sul_decrement_spec_count = {
+	if = {
+		limit = { scope:sul_loc = { var:sul_spec_type = @sul_mining_type } }
+		change_variable = { name = sul_mining_count subtract = 1 }
+		change_variable = { name = sul_total_weighted subtract = 1 }
+	}
+	else_if = {
+		limit = { scope:sul_loc = { var:sul_spec_type = @sul_farming_type } }
+		change_variable = { name = sul_farming_count subtract = 1 }
+		change_variable = { name = sul_total_weighted subtract = @sul_farming_weight }
+	}
+	else_if = {
+		limit = { scope:sul_loc = { var:sul_spec_type = @sul_woodland_type } }
+		change_variable = { name = sul_woodland_count subtract = 1 }
+		change_variable = { name = sul_total_weighted subtract = 1 }
+	}
+	else_if = {
+		limit = { scope:sul_loc = { var:sul_spec_type = @sul_gathering_type } }
+		change_variable = { name = sul_gathering_count subtract = 1 }
+		change_variable = { name = sul_total_weighted subtract = 1 }
+	}
+	else_if = {
+		limit = { scope:sul_loc = { var:sul_spec_type = @sul_commercial_type } }
+		change_variable = { name = sul_commercial_count subtract = 1 }
+		change_variable = { name = sul_total_weighted subtract = 1 }
+	}
+}
+
+# ============================================
+# INCREMENT SPEC COUNT
+# Country scope. Increments count for location saved as scope:sul_loc.
+# Call from country scope after: save_temporary_scope_as = sul_loc (from location scope)
+# ============================================
+
+sul_increment_spec_count = {
+	if = {
+		limit = { scope:sul_loc = { var:sul_spec_type = @sul_mining_type } }
+		change_variable = { name = sul_mining_count add = 1 }
+		change_variable = { name = sul_total_weighted add = 1 }
+	}
+	else_if = {
+		limit = { scope:sul_loc = { var:sul_spec_type = @sul_farming_type } }
+		change_variable = { name = sul_farming_count add = 1 }
+		change_variable = { name = sul_total_weighted add = @sul_farming_weight }
+	}
+	else_if = {
+		limit = { scope:sul_loc = { var:sul_spec_type = @sul_woodland_type } }
+		change_variable = { name = sul_woodland_count add = 1 }
+		change_variable = { name = sul_total_weighted add = 1 }
+	}
+	else_if = {
+		limit = { scope:sul_loc = { var:sul_spec_type = @sul_gathering_type } }
+		change_variable = { name = sul_gathering_count add = 1 }
+		change_variable = { name = sul_total_weighted add = 1 }
+	}
+	else_if = {
+		limit = { scope:sul_loc = { var:sul_spec_type = @sul_commercial_type } }
+		change_variable = { name = sul_commercial_count add = 1 }
+		change_variable = { name = sul_total_weighted add = 1 }
+	}
+}

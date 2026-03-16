@@ -1,6 +1,9 @@
-﻿@sul_large_good_bonus = 0.01
-@sul_small_good_bonus = 0.0075
-@sul_neutral_good_bonus = 0.005
+﻿@sul_rgo_good_bonus = 0.02
+@sul_rgo_size = 0.01
+@sul_rgo_raw_material = 0.01
+@sul_rural_good_bonus = 0.01
+@sul_rural_raw_material = 0.01
+@sul_guild_good_bonus = 0.015
 # Uncategorized
 
 REPLACE:clay_pit = {
@@ -40,7 +43,9 @@ REPLACE:clay_pit = {
 	construction_demand = basic_construction_needs
 
 	modifier = {
-		local_max_rgo_size_modifier = 0.02
+		local_raw_material_output = @sul_rgo_raw_material
+		local_max_rgo_size_modifier = @sul_rgo_size
+		local_clay_output_modifier = @sul_rgo_good_bonus
 	}
 }
 
@@ -67,13 +72,16 @@ REPLACE:salt_collector = {
 		sul_salt_collector_maintenance = {
 			produced = salt
 			output = 0.3
-			clay = 2.0
+			clay = 1.2
+			lumber = 0.24
 			category = building_maintenance
 		}
 	}
 
 	modifier = {
-		local_max_rgo_size_modifier = 0.02
+		local_raw_material_output = @sul_rgo_raw_material
+		local_max_rgo_size_modifier = @sul_rgo_size
+		local_salt_output_modifier = @sul_rgo_good_bonus
 	}
 
 	build_time = rural_build_time
@@ -113,7 +121,9 @@ REPLACE:sand_pit = {
 	construction_demand = basic_construction_needs
 
 	modifier = {
-		local_max_rgo_size_modifier = 0.02
+		local_raw_material_output = @sul_rgo_raw_material
+		local_max_rgo_size_modifier = @sul_rgo_size
+		local_sand_output_modifier = @sul_rgo_good_bonus
 	}
 }
 
@@ -145,13 +155,12 @@ REPLACE:glass_guild = {
 
 		sul_metal_glass_guild_maintenance = {
 			lumber = 0.15
-			sand = 1.0
+			sand = 1.27
 			tools = 0.2
 			alum = 0.02
 			lead = 0.04
 			produced = glass
 			output = 1
-			# ok, with better, as it requires more.
 			category = guild_input
 		}
 	}
@@ -159,7 +168,7 @@ REPLACE:glass_guild = {
 	construction_demand = guild_construction
 
 	modifier = {
-		local_glass_output_modifier = 0.01
+		local_glass_output_modifier = @sul_guild_good_bonus
 	}
 
 	custom_tags = {
@@ -187,18 +196,49 @@ REPLACE:sheep_farms = {
 		sul_has_gathering_specialization = yes
 	}
 
+	# Wool@1.25 × 0.5 = 0.625 revenue; cost 0.535; ~17% margin
 	unique_production_methods = {
-		sul_sheep_farm_maintenance = {
+		sul_sheep_wheat_breeding = {
 			produced = wool
 			output = 0.5
-			lumber = 0.2
-			tools = 0.08
+			wheat = 0.2
+			lumber = 0.14
+			wool = 0.1
+			category = building_maintenance
+		}
+
+		sul_sheep_millet_breeding = {
+			produced = wool
+			output = 0.5
+			millet = 0.2
+			lumber = 0.14
+			wool = 0.1
+			category = building_maintenance
+		}
+
+		sul_sheep_maize_breeding = {
+			produced = wool
+			output = 0.5
+			maize = 0.2
+			lumber = 0.14
+			wool = 0.1
+			category = building_maintenance
+		}
+
+		sul_sheep_legumes_breeding = {
+			produced = wool
+			output = 0.5
+			legumes = 0.2
+			lumber = 0.14
+			wool = 0.1
 			category = building_maintenance
 		}
 	}
 
 	modifier = {
-		local_max_rgo_size_modifier = 0.02
+		local_raw_material_output = @sul_rgo_raw_material
+		local_max_rgo_size_modifier = @sul_rgo_size
+		local_wool_output_modifier = @sul_rgo_good_bonus
 	}
 
 	build_time = rural_build_time
@@ -241,7 +281,7 @@ REPLACE:saltpeter_guild = {
 	construction_demand = guild_construction
 
 	modifier = {
-		local_max_rgo_size_modifier = 0.02
+		local_saltpeter_output_modifier = @sul_guild_good_bonus
 	}
 }
 
@@ -249,34 +289,43 @@ REPLACE:saltpeter_guild = {
 
 INJECT:glass_workshop = {
 	location_potential = {
-		modifier:sul_allows_glass_production = yes
+		OR = {
+			modifier:sul_allows_glass_production = yes
+			has_variable = sul_allows_glass_production
+		}
 	}
 
 	modifier = {
 		# Gathering goods output
-		local_glass_output_modifier = 0.01
+		local_glass_output_modifier = @sul_guild_good_bonus
 	}
 }
 
 INJECT:glassworks = {
 	location_potential = {
-		modifier:sul_allows_glass_production = yes
+		OR = {
+			modifier:sul_allows_glass_production = yes
+			has_variable = sul_allows_glass_production
+		}
 	}
 
 	modifier = {
 		# Gathering goods output
-		local_glass_output_modifier = 0.01
+		local_glass_output_modifier = @sul_guild_good_bonus
 	}
 }
 
 INJECT:glass_mill = {
 	location_potential = {
-		modifier:sul_allows_glass_production = yes
+		OR = {
+			modifier:sul_allows_glass_production = yes
+			has_variable = sul_allows_glass_production
+		}
 	}
 
 	modifier = {
 		# Gathering goods output
-		local_glass_output_modifier = 0.01
+		local_glass_output_modifier = @sul_guild_good_bonus
 	}
 }
 
@@ -284,23 +333,29 @@ INJECT:glass_mill = {
 
 INJECT:porcelain_guild = {
 	location_potential = {
-		modifier:sul_allows_porcelain_production = yes
+		OR = {
+			modifier:sul_allows_porcelain_production = yes
+			has_variable = sul_allows_porcelain_production
+		}
 	}
 
 	modifier = {
 		# Gathering goods output
-		local_porcelain_output_modifier = 0.01
+		local_porcelain_output_modifier = @sul_guild_good_bonus
 	}
 }
 
 INJECT:porcelain_manufactory = {
 	location_potential = {
-		modifier:sul_allows_porcelain_production = yes
+		OR = {
+			modifier:sul_allows_porcelain_production = yes
+			has_variable = sul_allows_porcelain_production
+		}
 	}
 
 	modifier = {
 		# Gathering goods output
-		local_porcelain_output_modifier = 0.01
+		local_porcelain_output_modifier = @sul_guild_good_bonus
 	}
 }
 
@@ -308,45 +363,57 @@ INJECT:porcelain_manufactory = {
 
 INJECT:pottery_guild = {
 	location_potential = {
-		modifier:sul_allows_pottery_production = yes
+		OR = {
+			modifier:sul_allows_pottery_production = yes
+			has_variable = sul_allows_pottery_production
+		}
 	}
 
 	modifier = {
 		# Gathering goods output
-		local_pottery_output_modifier = 0.01
+		local_pottery_output_modifier = @sul_guild_good_bonus
 	}
 }
 
 INJECT:pottery_workshop = {
 	location_potential = {
-		modifier:sul_allows_pottery_production = yes
+		OR = {
+			modifier:sul_allows_pottery_production = yes
+			has_variable = sul_allows_pottery_production
+		}
 	}
 
 	modifier = {
 		# Gathering goods output
-		local_pottery_output_modifier = 0.01
+		local_pottery_output_modifier = @sul_guild_good_bonus
 	}
 }
 
 INJECT:pottery_manufactory = {
 	location_potential = {
-		modifier:sul_allows_pottery_production = yes
+		OR = {
+			modifier:sul_allows_pottery_production = yes
+			has_variable = sul_allows_pottery_production
+		}
 	}
 
 	modifier = {
 		# Gathering goods output
-		local_pottery_output_modifier = 0.01
+		local_pottery_output_modifier = @sul_guild_good_bonus
 	}
 }
 
 INJECT:pottery_mill = {
 	location_potential = {
-		modifier:sul_allows_pottery_production = yes
+		OR = {
+			modifier:sul_allows_pottery_production = yes
+			has_variable = sul_allows_pottery_production
+		}
 	}
 
 	modifier = {
 		# Gathering goods output
-		local_pottery_output_modifier = 0.01
+		local_pottery_output_modifier = @sul_guild_good_bonus
 	}
 }
 
@@ -354,13 +421,15 @@ INJECT:pottery_mill = {
 
 INJECT:apothecary = {
 	location_potential = {
-		modifier:sul_allows_apothecary_production = yes
+		OR = {
+			modifier:sul_allows_apothecary_production = yes
+			has_variable = sul_allows_apothecary_production
+		}
 	}
 
 	modifier = {
-		local_max_rgo_size_modifier = 0.02
 		# Gathering goods output
-		local_medicaments_output_modifier = 0.01
+		local_medicaments_output_modifier = @sul_guild_good_bonus
 	}
 }
 
@@ -368,34 +437,40 @@ INJECT:apothecary = {
 
 INJECT:saltpeter_workshop = {
 	location_potential = {
-		modifier:sul_allows_saltpeter_production = yes
+		OR = {
+			modifier:sul_allows_saltpeter_production = yes
+			has_variable = sul_allows_saltpeter_production
+		}
 	}
 
 	modifier = {
-		# Gathering raw materials
-		local_max_rgo_size_modifier = 0.02
+		local_saltpeter_output_modifier = @sul_guild_good_bonus
 	}
 }
 
 INJECT:putrefaction_works = {
 	location_potential = {
-		modifier:sul_allows_saltpeter_production = yes
+		OR = {
+			modifier:sul_allows_saltpeter_production = yes
+			has_variable = sul_allows_saltpeter_production
+		}
 	}
 
 	modifier = {
-		# Gathering raw materials
-		local_max_rgo_size_modifier = 0.02
+		local_saltpeter_output_modifier = @sul_guild_good_bonus
 	}
 }
 
 INJECT:putrefaction_mill = {
 	location_potential = {
-		modifier:sul_allows_saltpeter_production = yes
+		OR = {
+			modifier:sul_allows_saltpeter_production = yes
+			has_variable = sul_allows_saltpeter_production
+		}
 	}
 
 	modifier = {
-		# Gathering raw materials
-		local_max_rgo_size_modifier = 0.02
+		local_saltpeter_output_modifier = @sul_guild_good_bonus
 	}
 }
 
@@ -406,7 +481,7 @@ sul_rural_glassmaker = {
 	pop_type = laborers
 	max_levels = guild_max_level
 	category = consumer_goods_category
-	employment_size = rural_peasant_produce_employment
+	employment_size = 0.4
 	rural_settlement = yes
 	town = yes
 	city = yes
@@ -425,7 +500,8 @@ sul_rural_glassmaker = {
 	construction_demand = village_construction
 
 	modifier = {
-		local_glass_output_modifier = @sul_small_good_bonus
+		local_raw_material_output = @sul_rural_raw_material
+		local_glass_output_modifier = @sul_rural_good_bonus
 	}
 }
 
@@ -434,7 +510,7 @@ sul_rural_potter = {
 	pop_type = laborers
 	max_levels = guild_max_level
 	category = consumer_goods_category
-	employment_size = rural_peasant_produce_employment
+	employment_size = 0.4
 	rural_settlement = yes
 	town = yes
 	city = yes
@@ -453,7 +529,8 @@ sul_rural_potter = {
 	construction_demand = village_construction
 
 	modifier = {
-		local_pottery_output_modifier = @sul_small_good_bonus
+		local_raw_material_output = @sul_rural_raw_material
+		local_pottery_output_modifier = @sul_rural_good_bonus
 	}
 }
 
@@ -462,7 +539,7 @@ sul_rural_herbalist = {
 	pop_type = laborers
 	max_levels = guild_max_level
 	category = consumer_goods_category
-	employment_size = rural_peasant_produce_employment
+	employment_size = 0.4
 	rural_settlement = yes
 	town = yes
 	city = yes
@@ -480,7 +557,8 @@ sul_rural_herbalist = {
 	construction_demand = village_construction
 
 	modifier = {
-		local_medicaments_output_modifier = @sul_small_good_bonus
+		local_raw_material_output = @sul_rural_raw_material
+		local_medicaments_output_modifier = @sul_rural_good_bonus
 	}
 }
 
@@ -509,7 +587,9 @@ sul_pearl_divers = {
 	construction_demand = farm_constructions
 
 	modifier = {
-		local_max_rgo_size_modifier = 0.015
+		local_raw_material_output = @sul_rgo_raw_material
+		local_max_rgo_size_modifier = @sul_rgo_size
+		local_pearls_output_modifier = @sul_rgo_good_bonus
 	}
 }
 
@@ -535,6 +615,8 @@ sul_amber_collectors = {
 	construction_demand = farm_constructions
 
 	modifier = {
-		local_max_rgo_size_modifier = 0.015
+		local_raw_material_output = @sul_rgo_raw_material
+		local_max_rgo_size_modifier = @sul_rgo_size
+		local_amber_output_modifier = @sul_rgo_good_bonus
 	}
 }

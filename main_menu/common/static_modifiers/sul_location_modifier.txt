@@ -88,6 +88,7 @@ sul_woodland_rural_specialization = {
 	sul_allows_dye_production = yes
 	sul_allows_charcoal_production = yes
 	sul_allows_leather_production = yes
+	sul_allows_incense_production = yes
 }
 
 sul_commercial_rural_specialization = {
@@ -106,7 +107,6 @@ sul_commercial_rural_specialization = {
 	sul_allows_fine_cloth_production = yes
 	sul_allows_naval_supplies_production = yes
 	sul_allows_commerce_buildings = yes
-	sul_allows_incense_production = yes
 	sul_allows_university = yes
 }
 
@@ -189,6 +189,7 @@ sul_woodland_town_specialization = {
 	sul_allows_dye_production = yes
 	sul_allows_charcoal_production = yes
 	sul_allows_leather_production = yes
+	sul_allows_incense_production = yes
 }
 
 sul_commercial_town_specialization = {
@@ -209,7 +210,6 @@ sul_commercial_town_specialization = {
 	sul_allows_fine_cloth_production = yes
 	sul_allows_naval_supplies_production = yes
 	sul_allows_commerce_buildings = yes
-	sul_allows_incense_production = yes
 	sul_allows_university = yes
 }
 
@@ -292,6 +292,7 @@ sul_woodland_city_specialization = {
 	sul_allows_dye_production = yes
 	sul_allows_charcoal_production = yes
 	sul_allows_leather_production = yes
+	sul_allows_incense_production = yes
 }
 
 sul_commercial_city_specialization = {
@@ -312,8 +313,21 @@ sul_commercial_city_specialization = {
 	sul_allows_fine_cloth_production = yes
 	sul_allows_naval_supplies_production = yes
 	sul_allows_commerce_buildings = yes
-	sul_allows_incense_production = yes
 	sul_allows_university = yes
+}
+
+# ============================================
+# INITIALIZATION MODIFIER
+# ============================================
+# Applied to all countries on game start for 45 days.
+# Massively accelerates pop promotion to populate starting buildings.
+
+sul_init_pop_rush = {
+	game_data = {
+		category = country
+	}
+
+	global_pop_promotion_speed_modifier = 10000
 }
 
 # ============================================
@@ -344,10 +358,20 @@ TRY_REPLACE:positive_province_food_growth = {
 		category = province
 	}
 
-	local_population_growth = 0.002
+	local_population_growth = 0.004              # 2x vanilla (0.002) - food surplus drives growth
 	local_devastation_recovery = 0.003
 	local_migration_attraction = 0.03
 	local_pop_promotion_speed_modifier = 0.05
+}
+
+# ============================================
+# BASELINE BUILDING LEVELS
+# ============================================
+# Every location gets a minimum floor of building capacity so that
+# devastated locations (dev=0) can still support basic recovery buildings.
+
+TRY_INJECT:location_base_values = {
+	free_building_levels = 10
 }
 
 # ============================================
@@ -361,20 +385,18 @@ REPLACE:building_levels = {
 		category = location
 	}
 
-	# PoP values
 	local_population_capacity = 0.1              # NEW: +0.1 flat per level
 	local_population_capacity_modifier = 0.001   # Vanilla
 	local_trade_center_power = 0.0004            # Vanilla
-	local_food_capacity = 10                     # PoP: +10 per level
-	local_food_capacity_modifier = 0.005         # PoP: +0.5% per level
 	# Building externality baseline - individual buildings add positive offsets
 	local_max_rgo_size_modifier = -0.005         # Less rural land
-	local_pop_food_consumption = 0.001
 	local_population_growth = -0.00005           # Urbanization reduces base growth
 	# Production efficiency penalty (pressure to specialize)
 	local_production_efficiency = -0.005
-	# Development: infrastructure drives growth (10 levels = +0.004, 50 = +0.02)
-	local_monthly_development = 0.0004
+	# Offset efficiency loss for provisions so food buildings stay viable
+	local_provisions_output_modifier = 0.005
+	# Development: infrastructure drives growth (10 levels = +0.012, 50 = +0.06)
+	local_monthly_development = 0.0012
 }
 
 REPLACE:total_population = {
@@ -386,29 +408,47 @@ REPLACE:total_population = {
 	supply_limit = 0.02
 	blockade_force_required = 0.02
 	local_max_rgo_size = 0.025
-	free_building_levels = 0.05
+	free_building_levels = 0.1
 	# PoP values
 	local_food_capacity = 2                      # +2 per pop
 	local_population_capacity_modifier = 0.0004   # +0.04% per pop
 	local_population_growth = -0.00002              # +0.002% per pop
 	local_migration_attraction = -0.002
 	local_integration_speed_modifier = -0.001
-	# Development: population pressure (50 pop = -0.02, 200 = -0.08)
-	local_monthly_development = -0.0004
+	# Development: population pressure (50 pop = -0.01, 200 = -0.04)
+	local_monthly_development = -0.0002
+	local_institution_growth_modifier = -0.01    # -1% per pop
 }
 
 # ============================================
 # ADDITIONAL PoP SCALING MODIFIERS
 # ============================================
 
-TRY_INJECT:development = {
-	local_monthly_food_modifier = -0.01          # nullify vanilla +0.01 per dev
-	local_food_capacity = 2                      # +2 per dev
-	local_food_capacity_modifier = 0.02          # +2% per dev
-	local_wheat_output_modifier = 0.0025
-	local_rice_output_modifier = 0.0025
-	local_livestock_output_modifier = 0.002
-	local_fish_output_modifier = 0.002
+TRY_REPLACE:development = {
+	game_data = {
+		category = location
+	}
+
+	local_population_capacity_modifier = 0.025
+	local_distance_from_capital_speed_propagation = 0.005
+	local_supply_limit_modifier = 0.02
+	blockade_force_required = 0.01
+	local_migration_attraction = 0.0025
+	local_trade_center_power = 0.001
+	local_institution_growth_modifier = 0.01     # vanilla 0.002; 100 dev = +100%
+	local_construction_speed = 0.01
+	# vanilla local_monthly_food_modifier = 0.01 removed
+	free_building_levels = 1
+	local_max_rgo_size = 0.1
+	local_life_expectancy = 0.1
+	# vanilla occupation_time = 0.01 removed
+	# vanilla local_build_buildings_cost = -0.001 removed
+	maximum_stockpile_capacity = 5
+	# Development decay: higher dev = more decay pressure, creating equilibrium
+	# At 50 dev: -0.05/mo (1×), at 100 dev: -0.10/mo (2×), 250 dev: 5× cap
+	local_monthly_development = -0.001
+	# Pop growth malus: developed areas grow slower (at dev 100: -1%)
+	local_population_growth = -0.0001
 }
 
 TRY_INJECT:rgo_level = {
@@ -430,6 +470,8 @@ TRY_INJECT:coastal = {
 	local_monthly_food = 2.5
 	local_fish_output_modifier = 0.05
 	local_salt_output_modifier = 0.02
+	local_monthly_development_modifier = -0.10   # cancel vanilla +0.10
+	local_monthly_development = 0.01             # flat: maritime access
 }
 
 TRY_INJECT:river_flowing_through = {
@@ -439,6 +481,8 @@ TRY_INJECT:river_flowing_through = {
 	local_fish_output_modifier = 0.025
 	local_legumes_output_modifier = 0.01
 	local_livestock_output_modifier = 0.01
+	local_monthly_development_modifier = -0.05   # cancel vanilla +0.05
+	local_monthly_development = 0.01             # flat: river commerce (0.2×)
 }
 
 TRY_INJECT:volcanic_soil = {
@@ -572,16 +616,12 @@ TRY_INJECT:introduction_of_self_sharpening_plows = {
 
 TRY_INJECT:raised_levies = {
 	local_monthly_food_modifier = 0.2            # nullify vanilla -0.2
-	local_wheat_output_modifier = -0.10
-	local_rice_output_modifier = -0.10
-	local_millet_output_modifier = -0.10
-	local_livestock_output_modifier = -0.05
-	local_monthly_development = -0.02            # draining manpower hurts development
+	local_raw_material_output = -0.3             # vanilla -0.2 + this = -0.5 total
 }
 
 TRY_INJECT:hostile_troops = {
 	local_monthly_food_modifier = 0.05           # nullify vanilla -0.05
-	local_monthly_development = -0.04            # enemy armies damage infrastructure
+	local_monthly_development = -0.05            # enemy armies damage infrastructure (1×)
 }
 
 TRY_INJECT:recovering_from_raids = {
@@ -617,28 +657,48 @@ TRY_REPLACE:province_starving = {
 		category = province
 	}
 
-	local_population_growth = -0.03              # Vanilla: -0.025
+	local_population_growth = -0.025              # Vanilla: -0.025 (reduced: demote before dying)
 	local_supply_limit_modifier = -0.25
 	local_migration_attraction = -5.0            # Vanilla: -1.0 (5x harsher)
-	local_pop_demotion_speed_modifier = 1.0      # Vanilla: 0.5 (doubled)
-	local_upper_class_capacity_modifier = -0.75  # Vanilla: -0.5
+	local_pop_demotion_speed_modifier = 3.0      # Vanilla: 0.5 (6x: aggressively demote to peasants)
+	local_upper_class_capacity_modifier = -0.90  # Vanilla: -0.5 (force upper pops down)
 	local_life_expectancy = -10
 	local_migration_speed = 0.02
 	local_tribesmen_migration_allowed = yes
 	local_laborers_migration_allowed = yes
 	local_peasants_migration_allowed = yes
+	local_monthly_development = -0.10            # starving pops can't develop
+	local_pop_join_rebel_threshold = 0.5         # Pops join rebels at higher satisfaction
 }
 
-# Occupation destroys food storage - occupiers can't maintain local supply
+# Occupation destroys food storage and disrupts production
 
 TRY_INJECT:is_occupied = {
 	local_food_capacity_modifier = -0.8          # -80% food storage
+	hostile_food_multiplier = 0.5                # nullify vanilla -0.50
+	local_wheat_output_modifier = -0.25
+	local_rice_output_modifier = -0.25
+	local_millet_output_modifier = -0.25
+	local_maize_output_modifier = -0.25
+	local_livestock_output_modifier = -0.20
+	local_fish_output_modifier = -0.15
+	local_legumes_output_modifier = -0.20
+	local_fruit_output_modifier = -0.20
+	local_potato_output_modifier = -0.20
+	local_monthly_development = -0.05            # foreign control degrades infra (1×)
 }
 
-# Looting damages food storage - raiding parties take supplies
+# Looting damages food storage and reduces output
 
 TRY_INJECT:looted = {
 	local_food_capacity_modifier = -0.4          # -40% food storage
+	hostile_food_multiplier = 0.10               # nullify vanilla -0.10
+	local_wheat_output_modifier = -0.05
+	local_rice_output_modifier = -0.05
+	local_livestock_output_modifier = -0.05
+	local_fish_output_modifier = -0.03
+	local_monthly_development_modifier = 0.25    # cancel vanilla -0.25
+	local_monthly_development = -0.25            # flat: pillage damage
 }
 
 # ============================================
@@ -686,7 +746,7 @@ TRY_REPLACE:expensive_food_in_location = {
 		category = location
 	}
 
-	local_population_growth = -0.02
+	local_population_growth = -0.005
 	local_monthly_development = -0.01
 }
 
@@ -697,7 +757,7 @@ TRY_REPLACE:cheap_food_in_location = {
 		category = location
 	}
 
-	local_population_growth = 0.0015
+	local_population_growth = 0.005
 	local_monthly_development = 0.005
 }
 
@@ -711,6 +771,7 @@ TRY_REPLACE:overpopulation = {
 	local_migration_attraction = -25.0
 	local_population_growth = -0.01
 	local_migration_speed = 0.1 # Pops migrate faster the more overpopulated the area is
+	local_monthly_development = -0.05            # strain on infrastructure (1×)
 }
 
 # ============================================
@@ -779,7 +840,7 @@ TRY_INJECT:has_road = {
 
 TRY_INJECT:has_road_connected_to_capital = {
 	local_monthly_development_modifier = -0.2    # cancel vanilla +0.20
-	local_monthly_development = 0.02             # flat: major connectivity
+	local_monthly_development = 0.025            # flat: major connectivity (0.5×)
 }
 
 TRY_INJECT:location_imports = {
@@ -795,23 +856,30 @@ TRY_INJECT:location_exports = {
 # --- War/disruption: cancel _modifier, add flat decay ---
 
 TRY_INJECT:is_blockaded_by_enemies = {
+	hostile_food_multiplier = 0.75               # nullify vanilla -0.75
+	local_wheat_output_modifier = -0.20
+	local_rice_output_modifier = -0.20
+	local_fish_output_modifier = -0.30
+	local_livestock_output_modifier = -0.10
 	local_monthly_development_modifier = 0.20    # cancel vanilla -0.20
-	local_monthly_development = -0.04            # flat: trade disruption
+	local_monthly_development = -0.05            # flat: trade disruption (1×)
 }
 
 TRY_INJECT:is_blockaded_by_ice = {
 	local_monthly_development_modifier = 0.20    # cancel vanilla -0.20
-	local_monthly_development = -0.02            # flat: natural disruption
+	local_monthly_development = -0.025           # flat: natural disruption (0.5×)
 }
 
 TRY_INJECT:under_siege = {
+	hostile_food_multiplier = 1.0                # nullify vanilla -1.0
+	local_wheat_output_modifier = -0.40
+	local_rice_output_modifier = -0.40
+	local_fish_output_modifier = -0.30
+	local_livestock_output_modifier = -0.30
+	local_fruit_output_modifier = -0.30
+	local_legumes_output_modifier = -0.30
 	local_monthly_development_modifier = 0.20    # cancel vanilla -0.20
 	local_monthly_development = -0.25            # flat: active destruction
-}
-
-TRY_INJECT:looted = {
-	local_monthly_development_modifier = 0.25    # cancel vanilla -0.25
-	local_monthly_development = -0.25            # flat: pillage damage
 }
 
 # --- Control: engine-scaled by (control - 0.5) ---
@@ -823,22 +891,211 @@ TRY_INJECT:control_50 = {
 	local_monthly_development = 0.1
 }
 
-# --- New development penalties (no vanilla equivalent) ---
+# --- Event/country modifiers: cancel _modifier, add flat ---
 
-TRY_INJECT:province_starving = {
-	local_monthly_development = -0.10            # starving pops can't develop
+# China
+
+TRY_INJECT:chi_grand_canal = {
+	local_monthly_development_modifier = -0.05   # cancel vanilla +0.05
+	local_monthly_development = 0.005            # flat: canal infrastructure
 }
 
-TRY_INJECT:is_occupied = {
-	local_monthly_development = -0.06            # foreign control degrades infra
+# Milan
+
+TRY_INJECT:maintained_waterways_modifier = {
+	local_monthly_development_modifier = -0.10   # cancel vanilla +0.10
+	local_monthly_development = 0.01             # flat: waterway infrastructure
 }
 
-TRY_INJECT:overpopulation = {
-	local_monthly_development = -0.04            # strain on infrastructure
+# Mining events (Austria/Saxony)
+
+TRY_INJECT:schladming_bergordnung = {
+	local_monthly_development_modifier = -0.05   # cancel vanilla +0.05
+	local_monthly_development = 0.005            # flat: mining regulation
 }
 
-# --- Existing modifiers: add development impact where missing ---
+TRY_INJECT:freiberger_berggeschrey = {
+	local_monthly_development_modifier = -0.05   # cancel vanilla +0.05
+	local_monthly_development = 0.005            # flat: mining boom
+}
 
-# Prosperity-fueled modifiers already use flat (0.004) - keep as-is
-# Devastation already uses flat (-0.004) - keep as-is
-# Cheap/expensive food already use flat - keep as-is
+# France events
+
+TRY_INJECT:fra_venus_tard_brigands = {
+	local_monthly_development_modifier = 0.50    # cancel vanilla -0.50
+	local_monthly_development = -0.10            # flat: brigand destruction (decaying)
+}
+
+TRY_INJECT:fra_english_ports_raided = {
+	local_monthly_food_modifier = 0.33           # nullify vanilla -0.33
+	local_fish_output_modifier = -0.20
+	local_wheat_output_modifier = -0.10
+	local_monthly_development_modifier = 0.50    # cancel vanilla -0.50
+	local_monthly_development = -0.10            # flat: port raid damage (decaying)
+}
+
+TRY_INJECT:fra_pont_neuf_constructed = {
+	local_monthly_development_modifier = -0.25   # cancel vanilla +0.25
+	local_monthly_development = 0.025            # flat: monumental bridge
+}
+
+TRY_INJECT:fra_pont_neuf_constructed_scaled_back = {
+	local_monthly_development_modifier = -0.10   # cancel vanilla +0.10
+	local_monthly_development = 0.01             # flat: modest bridge
+}
+
+# Portugal
+
+TRY_INJECT:por_estudo_geral = {
+	local_monthly_development_modifier = -0.10   # cancel vanilla +0.10
+	local_monthly_development = 0.01             # flat: university
+}
+
+# Japan
+
+TRY_INJECT:nanban_port = {
+	local_monthly_development_modifier = -0.10   # cancel vanilla +0.10
+	local_monthly_development = 0.01             # flat: foreign trade hub
+}
+
+# Papacy
+
+TRY_INJECT:pap_drained_marshes = {
+	local_monthly_food_modifier = -0.1           # nullify vanilla +0.10
+	local_wheat_output_modifier = 0.05
+	local_livestock_output_modifier = 0.03
+	local_legumes_output_modifier = 0.02
+	local_monthly_development_modifier = -0.30   # cancel vanilla +0.30
+	local_monthly_development = 0.025            # flat: land reclamation (0.5×)
+}
+
+# Pueblo
+
+TRY_INJECT:pue_mesa_verde_reclaimed = {
+	local_monthly_development_modifier = -0.05   # cancel vanilla +0.05
+	local_monthly_development = 0.005            # flat: ancestral site
+}
+
+# Generic event modifiers
+
+TRY_INJECT:center_of_urbanization_modifier = {
+	local_monthly_development_modifier = -0.25   # cancel vanilla +0.25
+	local_monthly_development = 0.025            # flat: urbanization hub
+}
+
+TRY_INJECT:birth_of_a_new_city_adm = {
+	local_monthly_development_modifier = -0.25   # cancel vanilla +0.25
+	local_monthly_development = 0.025            # flat: new city founding
+}
+
+TRY_INJECT:urban_growing_pains = {
+	local_monthly_development_modifier = -0.33   # cancel vanilla +0.33
+	local_monthly_development = 0.025            # flat: rapid urban expansion (0.5×)
+}
+
+TRY_INJECT:rural_development_modifier = {
+	local_monthly_development_modifier = -0.10   # cancel vanilla +0.10
+	local_monthly_development = 0.01             # flat: rural growth
+}
+
+# --- Misc static modifiers ---
+
+TRY_INJECT:merino_wool = {
+	local_monthly_food_modifier = 0.2            # nullify vanilla -0.2
+	local_livestock_output_modifier = -0.10
+	local_wheat_output_modifier = -0.10
+}
+
+TRY_INJECT:minority_prospers = {
+	local_monthly_food_modifier = -0.25          # nullify vanilla +0.25
+	local_wheat_output_modifier = 0.10
+	local_rice_output_modifier = 0.05
+	local_livestock_output_modifier = 0.05
+	local_legumes_output_modifier = 0.05
+}
+
+TRY_INJECT:local_abuses_modifier = {
+	local_monthly_food_modifier = 0.5            # nullify vanilla -0.5
+	local_wheat_output_modifier = -0.20
+	local_rice_output_modifier = -0.15
+	local_livestock_output_modifier = -0.10
+	local_fish_output_modifier = -0.05
+}
+
+TRY_INJECT:harsh_winters_modifier = {
+	local_monthly_food_modifier = 0.25           # nullify vanilla -0.25
+	local_wheat_output_modifier = -0.10
+	local_rice_output_modifier = -0.10
+	local_livestock_output_modifier = -0.05
+	local_fruit_output_modifier = -0.10
+}
+
+# --- Country-specific event modifiers (food nullification) ---
+
+TRY_INJECT:lit_grain_supply_of_europe = {
+	local_monthly_food_modifier = -0.5           # nullify vanilla +0.50
+	local_wheat_output_modifier = 0.25
+	local_rice_output_modifier = 0.10
+	local_legumes_output_modifier = 0.10
+	local_livestock_output_modifier = 0.05
+}
+
+TRY_INJECT:mam_granary_of_the_mediterranean = {
+	local_monthly_food_modifier = -0.5           # nullify vanilla +0.50
+	local_wheat_output_modifier = 0.20
+	local_legumes_output_modifier = 0.15
+	local_rice_output_modifier = 0.10
+	local_livestock_output_modifier = 0.05
+}
+
+TRY_INJECT:spa_efficient_market_system = {
+	local_monthly_food_modifier = -0.5           # nullify vanilla +0.50
+	local_wheat_output_modifier = 0.15
+	local_olives_output_modifier = 0.15
+	local_fruit_output_modifier = 0.10
+	local_livestock_output_modifier = 0.10
+}
+
+TRY_INJECT:iro_three_sisters_harvest = {
+	local_monthly_food_modifier = -0.33          # nullify vanilla +0.33
+	local_maize_output_modifier = 0.15
+	local_legumes_output_modifier = 0.10
+	local_fruit_output_modifier = 0.08
+}
+
+TRY_INJECT:chk_food_conditions_horrific = {
+	local_monthly_food_modifier = 0.25           # nullify vanilla -0.25
+	local_maize_output_modifier = -0.15
+	local_wild_game_output_modifier = -0.10
+}
+
+TRY_INJECT:chk_nixtamalized_maize_practice_reintroduced = {
+	local_monthly_food_modifier = 0.10           # nullify vanilla -0.10
+}
+
+TRY_INJECT:pue_improve_capital_irrigation = {
+	local_monthly_food_modifier = -0.15          # nullify vanilla +0.15
+	local_maize_output_modifier = 0.10
+	local_legumes_output_modifier = 0.05
+}
+
+TRY_INJECT:pue_mesa_verde_capital = {
+	local_monthly_food_modifier = -0.5           # nullify vanilla +0.50
+	local_maize_output_modifier = 0.20
+	local_legumes_output_modifier = 0.15
+	local_wild_game_output_modifier = 0.10
+	local_fruit_output_modifier = 0.05
+}
+
+TRY_INJECT:jap_osaka_castle = {
+	local_monthly_food_modifier = -0.1           # nullify vanilla +0.10
+	local_rice_output_modifier = 0.05
+	local_fish_output_modifier = 0.05
+}
+
+# --- Other _modifier sources handled in separate files ---
+# Buildings: sul_building_overrides.txt (eng_royal_forest, polders, seljuk_mint, supreme_court)
+# Avatars: sul_avatar_overrides.txt (matsya_avatar)
+# Laws: sul_law_adjustments.txt (HRE perpetual_diet, langar_community, military_settlements)
+# Reforms: sul_reform_adjustments.txt (harbor_administration, hun_power_to_magnates, jianzhou_jurchen)
+# Estate privileges: sul_estate_privilege_adjustments.txt

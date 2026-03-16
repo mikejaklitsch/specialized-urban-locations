@@ -228,16 +228,16 @@ sul_update_all_location_gdp = {
 #          Equivalent to: ceiling - (ceiling - floor) × k / (X + k)
 #          Where X = gdp × power_share
 #
-# All pop types have floor=0.8 (below vanilla baseline). Ceiling determines max scaling.
+# All pop types have floor=1.0 (baseline demand at multiplier=1.0). Ceiling determines max scaling.
 #
 #   Pop Type    | Floor | Ceiling | k   | (c-f)*k
 #   ------------|-------|---------|-----|--------
-#   Nobles      | 0.8   | 5.0     | 200 | 840
-#   Clergy      | 0.8   | 4.0     | 150 | 480
-#   Burghers    | 0.8   | 3.5     | 150 | 405
-#   Commoners   | 0.8   | 2.5     | 100 | 170
-#   Tribesmen   | 0.8   | 2.0     | 75  | 90
-#   Slaves      | 0.8   | 0.8     | -   | 0 (fixed at 0.8)
+#   Nobles      | 1.0   | 5.0     | 200 | 800
+#   Clergy      | 1.0   | 4.0     | 150 | 450
+#   Burghers    | 1.0   | 3.5     | 150 | 375
+#   Commoners   | 1.0   | 2.5     | 100 | 150
+#   Tribesmen   | 1.0   | 2.0     | 75  | 75
+#   Slaves      | 1.0   | 1.0     | -   | 0 (fixed at 1.0)
 #
 # ENFRANCHISEMENT: Adjusts peasant/noble shares based on wealth transfer.
 #   - Peasant effective share = peasant_share × enfranchisement
@@ -282,7 +282,7 @@ sul_cache_gdp_per_capita = {
 	# GDP PER CAPITA CACHING (individual variables per pop type)
 	# Formula: ceiling - (ceiling - floor) * k / (gdp * share + k)
 	# -------------------------------------------------------------------------
-	# Nobles: ceiling=5.0, (c-f)*k=840, k=200
+	# Nobles: ceiling=5.0, (c-f)*k=800, k=200
 	set_variable = {
 		name = sul_gdp_pc_nobles
 
@@ -290,7 +290,7 @@ sul_cache_gdp_per_capita = {
 			value = 5.0
 
 			subtract = {
-				value = 840
+				value = 800
 
 				divide = {
 					value = var:sul_local_gdp
@@ -301,7 +301,7 @@ sul_cache_gdp_per_capita = {
 		}
 	}
 
-	# Clergy: ceiling=4.0, (c-f)*k=480, k=150
+	# Clergy: ceiling=4.0, (c-f)*k=450, k=150
 	set_variable = {
 		name = sul_gdp_pc_clergy
 
@@ -309,7 +309,7 @@ sul_cache_gdp_per_capita = {
 			value = 4.0
 
 			subtract = {
-				value = 480
+				value = 450
 
 				divide = {
 					value = var:sul_local_gdp
@@ -320,7 +320,7 @@ sul_cache_gdp_per_capita = {
 		}
 	}
 
-	# Burghers: ceiling=3.5, (c-f)*k=405, k=150
+	# Burghers: ceiling=3.5, (c-f)*k=375, k=150
 	set_variable = {
 		name = sul_gdp_pc_burghers
 
@@ -328,7 +328,7 @@ sul_cache_gdp_per_capita = {
 			value = 3.5
 
 			subtract = {
-				value = 405
+				value = 375
 
 				divide = {
 					value = var:sul_local_gdp
@@ -339,7 +339,7 @@ sul_cache_gdp_per_capita = {
 		}
 	}
 
-	# Soldiers: ceiling=2.5, (c-f)*k=170, k=100
+	# Soldiers: ceiling=2.5, (c-f)*k=150, k=100
 	set_variable = {
 		name = sul_gdp_pc_soldiers
 
@@ -347,7 +347,7 @@ sul_cache_gdp_per_capita = {
 			value = 2.5
 
 			subtract = {
-				value = 170
+				value = 150
 
 				divide = {
 					value = var:sul_local_gdp
@@ -358,7 +358,7 @@ sul_cache_gdp_per_capita = {
 		}
 	}
 
-	# Laborers: ceiling=2.5, (c-f)*k=170, k=100
+	# Laborers: ceiling=2.5, (c-f)*k=150, k=100
 	set_variable = {
 		name = sul_gdp_pc_laborers
 
@@ -366,7 +366,7 @@ sul_cache_gdp_per_capita = {
 			value = 2.5
 
 			subtract = {
-				value = 170
+				value = 150
 
 				divide = {
 					value = var:sul_local_gdp
@@ -377,7 +377,7 @@ sul_cache_gdp_per_capita = {
 		}
 	}
 
-	# Peasants: ceiling=2.5, (c-f)*k=170, k=100
+	# Peasants: ceiling=2.5, (c-f)*k=150, k=100
 	set_variable = {
 		name = sul_gdp_pc_peasants
 
@@ -385,7 +385,7 @@ sul_cache_gdp_per_capita = {
 			value = 2.5
 
 			subtract = {
-				value = 170
+				value = 150
 
 				divide = {
 					value = var:sul_local_gdp
@@ -396,7 +396,7 @@ sul_cache_gdp_per_capita = {
 		}
 	}
 
-	# Tribesmen: ceiling=2.0, (c-f)*k=90, k=75
+	# Tribesmen: ceiling=2.0, (c-f)*k=75, k=75
 	set_variable = {
 		name = sul_gdp_pc_tribesmen
 
@@ -404,7 +404,7 @@ sul_cache_gdp_per_capita = {
 			value = 2.0
 
 			subtract = {
-				value = 90
+				value = 75
 
 				divide = {
 					value = var:sul_local_gdp
@@ -415,9 +415,9 @@ sul_cache_gdp_per_capita = {
 		}
 	}
 
-	# Slaves: fixed at 0.8 (no GDP scaling)
+	# Slaves: fixed at 1.0 (no GDP scaling)
 	set_variable = {
 		name = sul_gdp_pc_slaves
-		value = 0.8
+		value = 1.0
 	}
 }

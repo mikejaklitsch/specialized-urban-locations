@@ -1,0 +1,27 @@
+﻿# Decluttered War UI — CMF Registration & Settings Init
+
+on_game_start = {
+	on_actions = {
+		dwui_on_game_start
+	}
+}
+
+dwui_on_game_start = {
+	effect = {
+		# Register settings button in CMF action bar
+		cmf_add_action_bar_element = { element = dwui_settings_config }
+
+		# Initialize settings for all countries
+		every_country = {
+			if = {
+				limit = {
+					NOT = {
+						has_variable = dwui_initialized
+					}
+				}
+
+				dwui_init_settings = yes
+			}
+		}
+	}
+}

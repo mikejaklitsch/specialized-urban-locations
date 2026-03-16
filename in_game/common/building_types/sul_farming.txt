@@ -1,6 +1,9 @@
-﻿@sul_large_good_bonus = 0.01
-@sul_small_good_bonus = 0.0075
-@sul_neutral_good_bonus = 0.005
+﻿@sul_rgo_good_bonus = 0.02
+@sul_rgo_size = 0.01
+@sul_rgo_raw_material = 0.01
+@sul_rural_good_bonus = 0.01
+@sul_rural_raw_material = 0.01
+@sul_guild_good_bonus = 0.015
 # Uncategorized
 
 REPLACE:fruit_orchard = {
@@ -37,7 +40,9 @@ REPLACE:fruit_orchard = {
 	construction_demand = farm_constructions
 
 	modifier = {
-		local_max_rgo_size_modifier = 0.02
+		local_raw_material_output = @sul_rgo_raw_material
+		local_max_rgo_size_modifier = @sul_rgo_size
+		local_fruit_output_modifier = @sul_rgo_good_bonus
 	}
 }
 
@@ -78,11 +83,13 @@ REPLACE:fiber_crops_farm = {
 	construction_demand = farm_constructions
 
 	modifier = {
-		local_max_rgo_size_modifier = 0.02
+		local_raw_material_output = @sul_rgo_raw_material
+		local_max_rgo_size_modifier = @sul_rgo_size
+		local_fiber_crops_output_modifier = @sul_rgo_good_bonus
 	}
 }
 
-REPLACE:horse_breeders = {
+REPLACE_OR_CREATE:horse_breeders = {
 	is_foreign = no
 	pop_type = laborers
 	max_levels = rural_building_cap
@@ -105,11 +112,36 @@ REPLACE:horse_breeders = {
 		}
 	}
 
+	# Horses@3 × 1 = 3.0 revenue; feed@1 × 1.5 + horses@3 × 0.3 = 2.4 cost; ~20% margin
 	unique_production_methods = {
-		sul_horse_breeders_maintenance = {
+		sul_horse_wheat_breeding = {
 			produced = horses
 			output = 1
 			wheat = 1.5
+			horses = 0.3
+			category = building_maintenance
+		}
+
+		sul_horse_millet_breeding = {
+			produced = horses
+			output = 1
+			millet = 1.5
+			horses = 0.3
+			category = building_maintenance
+		}
+
+		sul_horse_maize_breeding = {
+			produced = horses
+			output = 1
+			maize = 1.5
+			horses = 0.3
+			category = building_maintenance
+		}
+
+		sul_horse_legumes_breeding = {
+			produced = horses
+			output = 1
+			legumes = 1.5
 			horses = 0.3
 			category = building_maintenance
 		}
@@ -119,7 +151,9 @@ REPLACE:horse_breeders = {
 	construction_demand = horse_breeders_construction
 
 	modifier = {
-		local_max_rgo_size_modifier = 0.02
+		local_raw_material_output = @sul_rgo_raw_material
+		local_max_rgo_size_modifier = @sul_rgo_size
+		local_horses_output_modifier = @sul_rgo_good_bonus
 	}
 }
 
@@ -155,6 +189,7 @@ REPLACE:sugar_plantation = {
 			leather = 0.05
 			tools = 0.05
 			lumber = 0.05
+			debug_max_profit = -1
 			category = building_maintenance
 		}
 	}
@@ -200,6 +235,7 @@ REPLACE:cotton_plantation = {
 			leather = 0.05
 			tools = 0.05
 			lumber = 0.05
+			debug_max_profit = -1
 			category = building_maintenance
 		}
 	}
@@ -245,6 +281,7 @@ REPLACE:tobacco_plantation = {
 			leather = 0.05
 			tools = 0.05
 			lumber = 0.05
+			debug_max_profit = -1
 			category = building_maintenance
 		}
 	}
@@ -295,45 +332,57 @@ REPLACE:irrigation_systems = {
 
 INJECT:distillers_guild = {
 	location_potential = {
-		modifier:sul_allows_liquor_production = yes
+		OR = {
+			modifier:sul_allows_liquor_production = yes
+			has_variable = sul_allows_liquor_production
+		}
 	}
 
 	modifier = {
 		# Farming goods output
-		local_liquor_output_modifier = 0.01
+		local_liquor_output_modifier = @sul_guild_good_bonus
 	}
 }
 
 INJECT:distillers_workshop = {
 	location_potential = {
-		modifier:sul_allows_liquor_production = yes
+		OR = {
+			modifier:sul_allows_liquor_production = yes
+			has_variable = sul_allows_liquor_production
+		}
 	}
 
 	modifier = {
 		# Farming goods output
-		local_liquor_output_modifier = 0.01
+		local_liquor_output_modifier = @sul_guild_good_bonus
 	}
 }
 
 INJECT:distiller_manufactory = {
 	location_potential = {
-		modifier:sul_allows_liquor_production = yes
+		OR = {
+			modifier:sul_allows_liquor_production = yes
+			has_variable = sul_allows_liquor_production
+		}
 	}
 
 	modifier = {
 		# Farming goods output
-		local_liquor_output_modifier = 0.01
+		local_liquor_output_modifier = @sul_guild_good_bonus
 	}
 }
 
 INJECT:distiller_mill = {
 	location_potential = {
-		modifier:sul_allows_liquor_production = yes
+		OR = {
+			modifier:sul_allows_liquor_production = yes
+			has_variable = sul_allows_liquor_production
+		}
 	}
 
 	modifier = {
 		# Farming goods output
-		local_liquor_output_modifier = 0.01
+		local_liquor_output_modifier = @sul_guild_good_bonus
 	}
 }
 
@@ -341,45 +390,57 @@ INJECT:distiller_mill = {
 
 INJECT:brewery = {
 	location_potential = {
-		modifier:sul_allows_beer_production = yes
+		OR = {
+			modifier:sul_allows_beer_production = yes
+			has_variable = sul_allows_beer_production
+		}
 	}
 
 	modifier = {
 		# Farming goods output
-		local_beer_output_modifier = 0.01
+		local_beer_output_modifier = @sul_guild_good_bonus
 	}
 }
 
 INJECT:beer_workshop = {
 	location_potential = {
-		modifier:sul_allows_beer_production = yes
+		OR = {
+			modifier:sul_allows_beer_production = yes
+			has_variable = sul_allows_beer_production
+		}
 	}
 
 	modifier = {
 		# Farming goods output
-		local_beer_output_modifier = 0.01
+		local_beer_output_modifier = @sul_guild_good_bonus
 	}
 }
 
 INJECT:brewery_manufactory = {
 	location_potential = {
-		modifier:sul_allows_beer_production = yes
+		OR = {
+			modifier:sul_allows_beer_production = yes
+			has_variable = sul_allows_beer_production
+		}
 	}
 
 	modifier = {
 		# Farming goods output
-		local_beer_output_modifier = 0.01
+		local_beer_output_modifier = @sul_guild_good_bonus
 	}
 }
 
 INJECT:brewery_mill = {
 	location_potential = {
-		modifier:sul_allows_beer_production = yes
+		OR = {
+			modifier:sul_allows_beer_production = yes
+			has_variable = sul_allows_beer_production
+		}
 	}
 
 	modifier = {
 		# Farming goods output
-		local_beer_output_modifier = 0.01
+		local_beer_output_modifier = @sul_guild_good_bonus
 	}
 }
 
@@ -387,25 +448,29 @@ INJECT:brewery_mill = {
 
 INJECT:winery = {
 	location_potential = {
-		modifier:sul_allows_wine_production = yes
+		OR = {
+			modifier:sul_allows_wine_production = yes
+			has_variable = sul_allows_wine_production
+		}
 	}
 
 	modifier = {
-		local_max_rgo_size_modifier = 0.02
 		# Farming goods output
-		local_wine_output_modifier = 0.01
+		local_wine_output_modifier = @sul_guild_good_bonus
 	}
 }
 
 INJECT:winery_manufactory = {
 	location_potential = {
-		modifier:sul_allows_wine_production = yes
+		OR = {
+			modifier:sul_allows_wine_production = yes
+			has_variable = sul_allows_wine_production
+		}
 	}
 
 	modifier = {
-		local_max_rgo_size_modifier = 0.02
 		# Farming goods output
-		local_wine_output_modifier = 0.01
+		local_wine_output_modifier = @sul_guild_good_bonus
 	}
 }
 
@@ -416,7 +481,7 @@ sul_rural_brewer = {
 	pop_type = laborers
 	max_levels = guild_max_level
 	category = consumer_goods_category
-	employment_size = rural_peasant_produce_employment
+	employment_size = 0.4
 	rural_settlement = yes
 	town = yes
 	city = yes
@@ -437,7 +502,8 @@ sul_rural_brewer = {
 	construction_demand = village_construction
 
 	modifier = {
-		local_beer_output_modifier = @sul_small_good_bonus
+		local_raw_material_output = @sul_rural_raw_material
+		local_beer_output_modifier = @sul_rural_good_bonus
 	}
 }
 
@@ -446,7 +512,7 @@ sul_rural_winemaker = {
 	pop_type = laborers
 	max_levels = guild_max_level
 	category = consumer_goods_category
-	employment_size = rural_peasant_produce_employment
+	employment_size = 0.4
 	rural_settlement = yes
 	town = yes
 	city = yes
@@ -469,7 +535,8 @@ sul_rural_winemaker = {
 	construction_demand = village_construction
 
 	modifier = {
-		local_wine_output_modifier = @sul_small_good_bonus
+		local_raw_material_output = @sul_rural_raw_material
+		local_wine_output_modifier = @sul_rural_good_bonus
 	}
 }
 
@@ -478,7 +545,7 @@ sul_rural_distiller = {
 	pop_type = laborers
 	max_levels = guild_max_level
 	category = consumer_goods_category
-	employment_size = rural_peasant_produce_employment
+	employment_size = 0.4
 	rural_settlement = yes
 	town = yes
 	city = yes
@@ -498,7 +565,8 @@ sul_rural_distiller = {
 	construction_demand = village_construction
 
 	modifier = {
-		local_liquor_output_modifier = @sul_small_good_bonus
+		local_raw_material_output = @sul_rural_raw_material
+		local_liquor_output_modifier = @sul_rural_good_bonus
 	}
 }
 
@@ -524,14 +592,51 @@ sul_cattle_pens = {
 
 	build_time = rural_build_time
 
-	possible_production_methods = {
-		sul_cattle_pen_maintenance
+	# Livestock@1.5 × 0.5 = 0.75 revenue; feed@1 × 0.25 + lumber@1 × 0.15 + livestock@1.5 × 0.1 = 0.55 cost; ~27% margin
+	unique_production_methods = {
+		sul_cattle_wheat_breeding = {
+			produced = livestock
+			output = 0.5
+			wheat = 0.25
+			lumber = 0.15
+			livestock = 0.1
+			category = building_maintenance
+		}
+
+		sul_cattle_millet_breeding = {
+			produced = livestock
+			output = 0.5
+			millet = 0.25
+			lumber = 0.15
+			livestock = 0.1
+			category = building_maintenance
+		}
+
+		sul_cattle_maize_breeding = {
+			produced = livestock
+			output = 0.5
+			maize = 0.25
+			lumber = 0.15
+			livestock = 0.1
+			category = building_maintenance
+		}
+
+		sul_cattle_legumes_breeding = {
+			produced = livestock
+			output = 0.5
+			legumes = 0.25
+			lumber = 0.15
+			livestock = 0.1
+			category = building_maintenance
+		}
 	}
 
 	construction_demand = farm_constructions
 
 	modifier = {
-		local_max_rgo_size_modifier = 0.015
+		local_raw_material_output = @sul_rgo_raw_material
+		local_max_rgo_size_modifier = @sul_rgo_size
+		local_livestock_output_modifier = @sul_rgo_good_bonus
 	}
 }
 
@@ -566,7 +671,9 @@ sul_wheat_fields = {
 	construction_demand = farm_constructions
 
 	modifier = {
-		local_max_rgo_size_modifier = 0.015
+		local_raw_material_output = @sul_rgo_raw_material
+		local_max_rgo_size_modifier = @sul_rgo_size
+		local_wheat_output_modifier = @sul_rgo_good_bonus
 	}
 }
 
@@ -599,7 +706,9 @@ sul_rice_paddies = {
 	construction_demand = farm_constructions
 
 	modifier = {
-		local_max_rgo_size_modifier = 0.015
+		local_raw_material_output = @sul_rgo_raw_material
+		local_max_rgo_size_modifier = @sul_rgo_size
+		local_rice_output_modifier = @sul_rgo_good_bonus
 	}
 }
 
@@ -632,7 +741,9 @@ sul_millet_fields = {
 	construction_demand = farm_constructions
 
 	modifier = {
-		local_max_rgo_size_modifier = 0.015
+		local_raw_material_output = @sul_rgo_raw_material
+		local_max_rgo_size_modifier = @sul_rgo_size
+		local_millet_output_modifier = @sul_rgo_good_bonus
 	}
 }
 
@@ -665,7 +776,9 @@ sul_maize_fields = {
 	construction_demand = farm_constructions
 
 	modifier = {
-		local_max_rgo_size_modifier = 0.015
+		local_raw_material_output = @sul_rgo_raw_material
+		local_max_rgo_size_modifier = @sul_rgo_size
+		local_maize_output_modifier = @sul_rgo_good_bonus
 	}
 }
 
@@ -698,7 +811,9 @@ sul_potato_fields = {
 	construction_demand = farm_constructions
 
 	modifier = {
-		local_max_rgo_size_modifier = 0.015
+		local_raw_material_output = @sul_rgo_raw_material
+		local_max_rgo_size_modifier = @sul_rgo_size
+		local_potato_output_modifier = @sul_rgo_good_bonus
 	}
 }
 
@@ -733,7 +848,9 @@ sul_olive_groves = {
 	construction_demand = farm_constructions
 
 	modifier = {
-		local_max_rgo_size_modifier = 0.015
+		local_raw_material_output = @sul_rgo_raw_material
+		local_max_rgo_size_modifier = @sul_rgo_size
+		local_olives_output_modifier = @sul_rgo_good_bonus
 	}
 }
 
@@ -766,7 +883,9 @@ sul_legume_fields = {
 	construction_demand = farm_constructions
 
 	modifier = {
-		local_max_rgo_size_modifier = 0.015
+		local_raw_material_output = @sul_rgo_raw_material
+		local_max_rgo_size_modifier = @sul_rgo_size
+		local_legumes_output_modifier = @sul_rgo_good_bonus
 	}
 }
 
@@ -795,7 +914,9 @@ sul_tea_gardens = {
 	construction_demand = farm_constructions
 
 	modifier = {
-		local_max_rgo_size_modifier = 0.015
+		local_raw_material_output = @sul_rgo_raw_material
+		local_max_rgo_size_modifier = @sul_rgo_size
+		local_tea_output_modifier = @sul_rgo_good_bonus
 	}
 }
 
@@ -822,7 +943,9 @@ sul_coffee_estates = {
 	construction_demand = farm_constructions
 
 	modifier = {
-		local_max_rgo_size_modifier = 0.015
+		local_raw_material_output = @sul_rgo_raw_material
+		local_max_rgo_size_modifier = @sul_rgo_size
+		local_coffee_output_modifier = @sul_rgo_good_bonus
 	}
 }
 
@@ -849,7 +972,9 @@ sul_cocoa_groves = {
 	construction_demand = farm_constructions
 
 	modifier = {
-		local_max_rgo_size_modifier = 0.015
+		local_raw_material_output = @sul_rgo_raw_material
+		local_max_rgo_size_modifier = @sul_rgo_size
+		local_cocoa_output_modifier = @sul_rgo_good_bonus
 	}
 }
 
@@ -876,7 +1001,9 @@ sul_silk_houses = {
 	construction_demand = farm_constructions
 
 	modifier = {
-		local_max_rgo_size_modifier = 0.015
+		local_raw_material_output = @sul_rgo_raw_material
+		local_max_rgo_size_modifier = @sul_rgo_size
+		local_silk_output_modifier = @sul_rgo_good_bonus
 	}
 }
 
@@ -904,7 +1031,9 @@ sul_saffron_fields = {
 	construction_demand = farm_constructions
 
 	modifier = {
-		local_max_rgo_size_modifier = 0.015
+		local_raw_material_output = @sul_rgo_raw_material
+		local_max_rgo_size_modifier = @sul_rgo_size
+		local_saffron_output_modifier = @sul_rgo_good_bonus
 	}
 }
 
@@ -931,7 +1060,9 @@ sul_pepper_gardens = {
 	construction_demand = farm_constructions
 
 	modifier = {
-		local_max_rgo_size_modifier = 0.015
+		local_raw_material_output = @sul_rgo_raw_material
+		local_max_rgo_size_modifier = @sul_rgo_size
+		local_pepper_output_modifier = @sul_rgo_good_bonus
 	}
 }
 
@@ -958,7 +1089,9 @@ sul_clove_plantations = {
 	construction_demand = farm_constructions
 
 	modifier = {
-		local_max_rgo_size_modifier = 0.015
+		local_raw_material_output = @sul_rgo_raw_material
+		local_max_rgo_size_modifier = @sul_rgo_size
+		local_cloves_output_modifier = @sul_rgo_good_bonus
 	}
 }
 
@@ -984,6 +1117,8 @@ sul_chili_fields = {
 	construction_demand = farm_constructions
 
 	modifier = {
-		local_max_rgo_size_modifier = 0.015
+		local_raw_material_output = @sul_rgo_raw_material
+		local_max_rgo_size_modifier = @sul_rgo_size
+		local_chili_output_modifier = @sul_rgo_good_bonus
 	}
 }

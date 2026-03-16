@@ -8,127 +8,250 @@
 #   4. Granary consumes provisions, provides local_monthly_food (town/city)
 #   5. Storehouse does the same at smaller scale (rural)
 #
-# Cookhouse is deliberately unprofitable — food processing is a cost of
-# civilization, not a business. Margins target ~-5% to -10%.
-
-# # ============================================
-# # COOKHOUSE — Food processing building
-# # ============================================
-# # Converts raw food goods into provisions via regional recipes.
-# # Primary provisions producer. Available at all settlement types.
-#
-# sul_cookhouse = {
-# 	is_foreign = no
-# 	max_levels = guild_max_level
-# 	pop_type = peasants
-# 	employment_size = 1
-# 	category = consumer_goods_category
-# 	rural_settlement = yes
-# 	town = yes
-# 	city = yes
-# 	ai_forbid_shutdown = no
-# 	important_for_AI = yes
-# 	can_close = yes
-#
-# 	build_time = workshop_build_time
-#
-# 	# Base recipe — pick one
-# 	unique_production_methods = {
-# 		# Wheat + livestock: European staple
-# 		# Cost: 2.0 + 1.2 + 0.1 = 3.3, Revenue: 3.0, Margin: -9%
-# 		sul_wheat_pottage = {
-# 			wheat = 2.0
-# 			livestock = 0.8
-# 			salt = 0.1
-# 			produced = provisions
-# 			output = 1.0
-# 			category = building_maintenance
-# 		}
-#
-# 		# Rice + legumes: South/Southeast Asian staple
-# 		# Cost: 1.75 + 1.5 + 0.1 = 3.35, Revenue: 3.0, Margin: -10%
-# 		sul_rice_and_legumes = {
-# 			rice = 1.75
-# 			legumes = 1.5
-# 			salt = 0.1
-# 			produced = provisions
-# 			output = 1.0
-# 			category = building_maintenance
-# 		}
-#
-# 		# Fish + millet: Coastal/African
-# 		# Cost: 2.0 + 1.0 + 0.2 = 3.2, Revenue: 3.0, Margin: -6%
-# 		sul_salted_fish_stew = {
-# 			fish = 2.0
-# 			millet = 1.0
-# 			salt = 0.2
-# 			produced = provisions
-# 			output = 1.0
-# 			category = building_maintenance
-# 		}
-#
-# 		# Maize + livestock + potato: American staple
-# 		# Cost: 1.2 + 1.2 + 0.5 = 2.9, Revenue: 3.0, Margin: +3%
-# 		sul_maize_stew = {
-# 			maize = 1.2
-# 			livestock = 0.8
-# 			potato = 0.5
-# 			produced = provisions
-# 			output = 1.0
-# 			category = building_maintenance
-# 		}
-#
-# 		# Pemmican: Frontier/pastoral
-# 		# Cost: 2.25 + 0.5 + 0.2 = 2.95, Revenue: 3.0, Margin: +2%
-# 		sul_pemmican = {
-# 			livestock = 1.5
-# 			wild_game = 0.5
-# 			fruit = 0.2
-# 			produced = provisions
-# 			output = 1.0
-# 			category = building_maintenance
-# 		}
-#
-# 		# Olive bread: Mediterranean
-# 		# Cost: 1.5 + 1.0 + 0.5 = 3.0, Revenue: 3.0, Margin: 0%
-# 		sul_olive_bread = {
-# 			wheat = 1.5
-# 			olives = 1.0
-# 			legumes = 0.5
-# 			produced = provisions
-# 			output = 1.0
-# 			category = building_maintenance
-# 		}
-# 	}
-#
-# 	construction_demand = workshop_construction
-#
-# 	modifier = {
-# 		local_provisions_output_modifier = 0.00
-# 	}
-# }
+# Cookhouse is the laborer-scale provisions producer.
+# Villages (peasant) produce 1.0 provisions; cookhouse (laborer) produces 4.0.
+# Mirrors the rural_granary (peasant, 15 food) → granary (laborer, 60 food) relationship.
 
 # ============================================
-# STOREHOUSE — Rural food distribution
+# COOKHOUSE — Large-scale food processing
 # ============================================
-# Weaker rural counterpart to the granary.
-# Lower capacity, lower throughput, but keeps rural settlements fed.
+# Converts raw food goods into provisions at 4× village scale.
+# All PMs target ~25% margin (cost ≈ 7.20, revenue = 4.0 × 2.4 = 9.6)
 
-sul_storehouse = {
+sul_cookhouse = {
 	is_foreign = no
-	max_levels = 2
+	max_levels = guild_max_level
+	pop_type = laborers
+	employment_size = 0.4
+	category = consumer_goods_category
+	rural_settlement = yes
+	town = yes
+	city = yes
+	important_for_AI = yes
+	can_close = yes
+
+	build_time = workshop_build_time
+
+	# Regional recipes — engine picks most profitable available PM
+	unique_production_methods = {
+		# European staple
+		# Cost: 4.154 + 2.493 + 0.552 = 7.20, Revenue: 9.6, Margin: ~25%
+		sul_cookhouse_wheat_pottage = {
+			wheat = 4.154
+			livestock = 1.662
+			salt = 0.138
+			produced = provisions
+			output = 4.0
+			category = building_maintenance
+		}
+
+		# South/Southeast Asian
+		# Cost: 3.6 + 3.323 + 0.275 = 7.20, Revenue: 9.6, Margin: ~25%
+		sul_cookhouse_rice_legumes = {
+			rice = 3.6
+			legumes = 3.323
+			pepper = 0.055
+			produced = provisions
+			output = 4.0
+			category = building_maintenance
+		}
+
+		# East/Southeast Asian
+		# Cost: 3.6 + 3.323 + 0.275 = 7.20, Revenue: 9.6, Margin: ~25%
+		sul_cookhouse_rice_fish = {
+			rice = 3.6
+			fish = 3.323
+			pepper = 0.055
+			produced = provisions
+			output = 4.0
+			category = building_maintenance
+		}
+
+		# East Asian porridge
+		# Cost: 4.431 + 2.493 + 0.275 = 7.20, Revenue: 9.6, Margin: ~25%
+		sul_cookhouse_rice_porridge = {
+			rice = 4.431
+			livestock = 1.662
+			pepper = 0.055
+			produced = provisions
+			output = 4.0
+			category = building_maintenance
+		}
+
+		# African
+		# Cost: 4.154 + 2.493 + 0.552 = 7.20, Revenue: 9.6, Margin: ~25%
+		sul_cookhouse_millet_porridge = {
+			millet = 4.154
+			livestock = 1.662
+			salt = 0.138
+			produced = provisions
+			output = 4.0
+			category = building_maintenance
+		}
+
+		# Coastal
+		# Cost: 6.092 + 1.108 = 7.20, Revenue: 9.6, Margin: ~25%
+		sul_cookhouse_salted_fish = {
+			fish = 6.092
+			salt = 0.277
+			produced = provisions
+			output = 4.0
+			category = building_maintenance
+		}
+
+		# Mediterranean
+		# Cost: 3.462 + 2.492 + 1.246 = 7.20, Revenue: 9.6, Margin: ~25%
+		sul_cookhouse_olive_bread = {
+			wheat = 3.462
+			olives = 2.492
+			legumes = 1.246
+			produced = provisions
+			output = 4.0
+			category = building_maintenance
+		}
+
+		# Woodland/frontier
+		# Cost: 6.092 + 1.108 = 7.20, Revenue: 9.6, Margin: ~25%
+		sul_cookhouse_cured_game = {
+			wild_game = 6.092
+			salt = 0.277
+			produced = provisions
+			output = 4.0
+			category = building_maintenance
+		}
+
+		# Frontier pemmican
+		# Cost: 5.506 + 1.271 + 0.424 = 7.20, Revenue: 9.6, Margin: ~25%
+		sul_cookhouse_pemmican = {
+			livestock = 3.671
+			wild_game = 1.271
+			fruit = 0.424
+			produced = provisions
+			output = 4.0
+			category = building_maintenance
+		}
+
+		# American staple
+		# Cost: 2.908 + 2.907 + 1.385 = 7.20, Revenue: 9.6, Margin: ~25%
+		sul_cookhouse_maize_stew = {
+			potential = {
+				OR = {
+					has_advance = new_world_crops
+					AND = {
+						any_market_present_in_country = { is_produced_in_market = goods:maize }
+						any_market_present_in_country = { is_produced_in_market = goods:potato }
+					}
+				}
+			}
+
+			maize = 2.908
+			livestock = 1.938
+			potato = 1.385
+			produced = provisions
+			output = 4.0
+			category = building_maintenance
+		}
+
+		# Universal fallback — salted meat
+		# Cost: 6.081 + 1.12 = 7.20, Revenue: 9.6, Margin: ~25%
+		sul_cookhouse_salted_meat = {
+			livestock = 4.054
+			salt = 0.28
+			produced = provisions
+			output = 4.0
+			category = building_maintenance
+		}
+
+		# Universal fallback — dried meat
+		# Cost: 7.20, Revenue: 9.6, Margin: ~25%
+		sul_cookhouse_dried_meat = {
+			livestock = 4.8
+			produced = provisions
+			output = 4.0
+			category = building_maintenance
+		}
+
+		# Coastal fallback — dried fish
+		# Cost: 7.20, Revenue: 9.6, Margin: ~25%
+		sul_cookhouse_dried_fish = {
+			fish = 7.2
+			produced = provisions
+			output = 4.0
+			category = building_maintenance
+		}
+	}
+
+	# Beverage supplements — 4× village scale
+	unique_production_methods = {
+		sul_cookhouse_beer_supplement = {
+			beer = 0.45
+			produced = provisions
+			output = 0.6
+			category = building_maintenance
+		}
+
+		sul_cookhouse_wine_supplement = {
+			wine = 0.45
+			produced = provisions
+			output = 0.6
+			category = building_maintenance
+		}
+
+		sul_cookhouse_liquor_supplement = {
+			liquor = 0.288
+			produced = provisions
+			output = 0.4
+			category = building_maintenance
+		}
+
+		sul_cookhouse_sugar_supplement = {
+			sugar = 0.24
+			produced = provisions
+			output = 0.4
+			category = building_maintenance
+		}
+
+		sul_cookhouse_tea_supplement = {
+			tea = 0.12
+			produced = provisions
+			output = 0.2
+			category = building_maintenance
+		}
+
+		sul_cookhouse_coffee_supplement = {
+			coffee = 0.12
+			produced = provisions
+			output = 0.2
+			category = building_maintenance
+		}
+	}
+
+	construction_demand = workshop_construction
+}
+
+# ============================================
+# RURAL GRANARY — Rural food storage and distribution
+# ============================================
+# Scales with population. Each level feeds ~1k pop.
+# Town/city granary provides 60 food; this provides 10.
+
+sul_rural_granary = {
+	is_foreign = no
+	max_levels = rural_building_cap
 	pop_type = peasants
-	employment_size = 0.5
+	employment_size = 0.01
 	category = infrastructure_category
 	rural_settlement = yes
+	town = yes
+	city = yes
 	important_for_AI = yes
+	ai_forbid_shutdown = yes
 
 	build_time = rural_build_time
 
 	unique_production_methods = {
-		sul_storehouse_maintenance = {
-			lumber = 0.1
-			provisions = 0.5
+		sul_rural_granary_maintenance = {
+			provisions = 0.25
 			category = building_maintenance
 		}
 	}
@@ -136,11 +259,9 @@ sul_storehouse = {
 	construction_demand = village_construction
 
 	modifier = {
-		local_food_capacity = 200
-		local_monthly_food = 30
+		local_food_capacity = 150
+		local_monthly_food = 15
 	}
-
-	ai_forbid_shutdown = yes
 }
 
 # ============================================
@@ -155,35 +276,27 @@ REPLACE:granary = {
 	pop_type = laborers
 	employment_size = granary_employment
 	category = infrastructure_category
-	rural_settlement = no
+	rural_settlement = yes
 	town = yes
 	city = yes
 	important_for_AI = yes
-	ai_forbid_shutdown = yes
 	can_close = yes
 
 	build_time = government_build_time
 
 	# Maintenance: masonry for structure + provisions for food distribution
 	unique_production_methods = {
-		sul_granary_maintenance = {
-			masonry = 0.2
-			provisions = 1.0
-			category = building_maintenance
-		}
+		sul_granary_maintenance = { provisions = 1.0 category = building_maintenance }
 	}
 
 	construction_demand = granary_construction
 
 	modifier = {
 		local_food_capacity = 600
-		local_food_capacity_modifier = 0.10
 		local_monthly_food = 60
 		local_max_rgo_size_modifier = 0.005
 		local_production_efficiency = 0.005
 	}
-
-	ai_forbid_shutdown = yes
 }
 
 # ============================================
@@ -193,7 +306,7 @@ REPLACE:granary = {
 REPLACE:windmill = {
 	is_foreign = no
 	pop_type = laborers
-	max_levels = 1
+	max_levels = rural_building_cap
 	employment_size = rural_peasant_enhance_employment
 	category = rgo_building_category
 	rural_settlement = yes
@@ -205,6 +318,8 @@ REPLACE:windmill = {
 			raw_material = goods:wheat
 			raw_material = goods:rice
 			raw_material = goods:millet
+			raw_material = goods:maize
+			raw_material = goods:potato
 		}
 
 		sul_has_farming_specialization = yes
@@ -212,7 +327,7 @@ REPLACE:windmill = {
 
 	# Vanilla grain boost PM
 	unique_production_methods = {
-		windmill_maintenance = {
+		sul_windmill_maintenance = {
 			tools = 0.025
 			lumber = 0.05
 			cloth = 0.05
@@ -220,27 +335,44 @@ REPLACE:windmill = {
 		}
 	}
 
-	# Provisions milling PM — convert grain into provisions
+	# Provisions milling PM — convert grain/tuber into provisions
+	# Cost: 0.828 + 0.072 = 0.90, Revenue: 1.2, Margin: 25%
 	unique_production_methods = {
 		sul_wheat_flour = {
-			wheat = 1.5
-			lumber = 0.15
+			wheat = 0.828
+			lumber = 0.072
 			produced = provisions
 			output = 0.5
 			category = building_maintenance
 		}
 
 		sul_rice_flour = {
-			rice = 1.5
-			lumber = 0.15
+			rice = 0.828
+			lumber = 0.072
 			produced = provisions
 			output = 0.5
 			category = building_maintenance
 		}
 
 		sul_millet_flour = {
-			millet = 1.5
-			lumber = 0.15
+			millet = 0.828
+			lumber = 0.072
+			produced = provisions
+			output = 0.5
+			category = building_maintenance
+		}
+
+		sul_maize_flour = {
+			maize = 0.828
+			lumber = 0.072
+			produced = provisions
+			output = 0.5
+			category = building_maintenance
+		}
+
+		sul_potato_flour = {
+			potato = 0.828
+			lumber = 0.072
 			produced = provisions
 			output = 0.5
 			category = building_maintenance
@@ -251,6 +383,8 @@ REPLACE:windmill = {
 		local_wheat_output_modifier = 0.1
 		local_rice_output_modifier = 0.1
 		local_millet_output_modifier = 0.1
+		local_maize_output_modifier = 0.1
+		local_potato_output_modifier = 0.1
 	}
 
 	build_time = rural_build_time

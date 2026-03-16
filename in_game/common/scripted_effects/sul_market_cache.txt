@@ -1,0 +1,51 @@
+﻿# Refresh market cache if expired or not initialized
+# Called on game start (via sul_full_rebuild) and monthly (via on_action)
+
+sul_do_refresh_market_cache = {
+	if = {
+		limit = {
+			NOT = {
+				has_global_variable = sul_market_demand_cached
+			}
+		}
+
+		# Single pass through all markets
+		every_market_in_world = {
+			save_temporary_scope_as = current_market
+			# Cache pressure values and price bonuses
+			sul_update_market_cache = yes
+			# Calculate trade spread for commercial specialization
+			# Formula: sum of |price/base - 1| × base for all goods
+			# Use location for accumulation, then store in global map
+			location = { set_variable = { name = sul_trade_spread_temp value = 0 } }
+			# Accumulate price deviation for each good in THIS market
+			every_goods = {
+				save_temporary_scope_as = current_good
+
+				scope:current_market.location = {
+					change_variable = {
+						name = sul_trade_spread_temp
+						add = "scope:current_good.sul_goods_price_deviation"
+					}
+				}
+			}
+
+			# Normalize to 0-10 range (typical active market has ~50-100 total)
+			location = {
+				change_variable = { name = sul_trade_spread_temp divide = 10 }
+				clamp_variable = { name = sul_trade_spread_temp min = 0 max = 10 }
+			}
+
+			# Store in global variable map with market as key
+			add_to_global_variable_map = {
+				name = sul_trade_spread
+				key = this
+				value = location.var:sul_trade_spread_temp
+			}
+
+			location = { remove_variable = sul_trade_spread_temp }
+		}
+
+		set_global_variable = { name = sul_market_demand_cached value = 1 }
+	}
+}

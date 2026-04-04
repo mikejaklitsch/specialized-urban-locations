@@ -1,0 +1,84 @@
+﻿# Unified hooks into vanilla hardcoded on_actions.
+# Only on_actions sub-blocks here — actual logic lives in respective files.
+# Specialization System: sul_on_actions.txt
+# Provisions System: wpdo_on_actions.txt, wpdo_swap_buildings.txt
+
+# =============================================================================
+# GAME START
+# =============================================================================
+# Order: WPDO RGO map first (locations need rgo_building_type before spec init),
+# then SUL specialization rebuild, then WPDO demand system + economy.
+
+on_game_start = {
+	on_actions = {
+		wpdo_rgo_init
+		wpdo_rgo_removal_start
+		sul_initialize_all
+		wpdo_initialize_all
+	}
+}
+
+# =============================================================================
+# LOCATION RANK CHANGED (root = location)
+# =============================================================================
+# Order: SUL spec logic first (may destroy/rebuild buildings),
+# then WPDO trim (adjusts RGO to new rank cap).
+
+on_location_changed_rank = {
+	on_actions = { sul_wpdo_on_rank_changed }
+}
+
+# =============================================================================
+# RAW MATERIAL CHANGED (root = location)
+# =============================================================================
+# Order: WPDO cache update first (just a variable set),
+# then SUL validation (may change spec based on new material).
+
+on_raw_material_changed = {
+	on_actions = { sul_wpdo_on_raw_material_changed }
+}
+
+# =============================================================================
+# MONTHLY COUNTRY PULSE (root = country)
+# =============================================================================
+
+monthly_country_pulse = {
+	on_actions = {
+		# Specialization system
+		sul_version_check
+		sul_clear_market_cache
+		sul_refresh_market_cache
+		# Provisions system
+		wpdo_swap_buildings
+		wpdo_player_wage_update
+		wpdo_ai_monthly_wage_payment
+	}
+}
+
+# =============================================================================
+# YEARLY COUNTRY PULSE (root = country)
+# =============================================================================
+
+yearly_country_pulse = {
+	on_actions = {
+		wpdo_ai_yearly_wage_accumulate
+		wpdo_cleanup_dead_units
+		wpdo_yearly_rgo_trim
+	}
+}
+
+# =============================================================================
+# WEATHER MONTHLY PULSE (scopeless, ~every 4-5 game days)
+# =============================================================================
+
+weather_monthly_pulse = {
+	on_actions = { wpdo_batch_location_update }
+}
+
+# =============================================================================
+# FOUR YEARLY COUNTRY PULSE (root = country)
+# =============================================================================
+
+four_yearly_country_pulse = {
+	random_events = { 10 = wpdo.1 }
+}

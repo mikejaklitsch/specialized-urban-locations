@@ -1,0 +1,492 @@
+﻿# ============================================
+# PROVISIONS BUILDINGS
+# ============================================
+# Provisions system flow:
+#   1. Farmer's Market converts raw food goods → provisions (trade good)
+#   2. Windmill supplements with grain-milling provisions
+#   3. Provisions trades on the market like any good
+#   4. Granary consumes provisions → local_monthly_food (1.0 provisions = 30 food)
+#   5. Rural granary does the same at smaller scale (0.08 provisions = 2.5 food)
+#
+# ============================================
+# FARMER'S MARKET RECIPES
+# ============================================
+# All recipes normalized to 1.80 gold input cost → 33% profit margin at 2.4 provisions price.
+# Differentiation comes from RGO output scaling, not farmer's market margins.
+
+# ============================================
+# FARMER'S MARKET — Large-scale food processing
+# ============================================
+# Standard output: 4.0 provisions per level.
+# Each recipe: output = sum(input × food_value_rate) = 4.0
+
+wpdo_farmers_market = {
+	is_foreign = no
+	max_levels = guild_max_level
+	pop_type = laborers
+	employment_size = 0.4
+	category = basic_industry_category
+	rural_settlement = yes
+	town = yes
+	city = yes
+	important_for_AI = yes
+	can_close = yes
+
+	build_time = workshop_build_time
+
+	# Regional recipes — engine picks most profitable available PM
+	unique_production_methods = {
+		# European — wheat 2.5×0.8=2.0 + livestock 2.5×0.8=2.0 = 4.0
+		wpdo_farmers_market_bread_and_stew = {
+			wheat = 0.9
+			livestock = 0.6
+			produced = provisions
+			output = 1.0
+			debug_max_profit = -1
+			category = building_maintenance
+		}
+
+		# East/SE Asian — rice 2.0×1.0=2.0 + fish 4.0×0.5=2.0 = 4.0
+		wpdo_farmers_market_rice_and_fish = {
+			rice = 0.9
+			fish = 0.9
+			produced = provisions
+			output = 1.0
+			debug_max_profit = -1
+			category = building_maintenance
+		}
+
+		# South Asian — rice 2.0×1.0=2.0 + livestock 2.5×0.8=2.0 = 4.0
+		wpdo_farmers_market_rice_and_meat = {
+			rice = 0.9
+			livestock = 0.6
+			produced = provisions
+			output = 1.0
+			debug_max_profit = -1
+			category = building_maintenance
+		}
+
+		# African — millet 4.0×0.5=2.0 + legumes 4.0×0.5=2.0 = 4.0
+		wpdo_farmers_market_millet_and_legumes = {
+			millet = 0.9
+			legumes = 0.9
+			produced = provisions
+			output = 1.0
+			debug_max_profit = -1
+			category = building_maintenance
+		}
+
+		# American — maize 2.5×0.8=2.0 + potato 2.5×0.8=2.0 = 4.0
+		wpdo_farmers_market_maize_and_potato = {
+			maize = 0.9
+			potato = 0.9
+			produced = provisions
+			output = 1.0
+			debug_max_profit = -1
+			category = building_maintenance
+		}
+
+		# Mediterranean — wheat 2.5×0.8=2.0 + olives 5.0×0.4=2.0 = 4.0
+		wpdo_farmers_market_mediterranean = {
+			wheat = 0.9
+			olives = 0.9
+			produced = provisions
+			output = 1.0
+			debug_max_profit = -1
+			category = building_maintenance
+		}
+
+		# Northern — wheat 2.5×0.8=2.0 + fish 4.0×0.5=2.0 = 4.0
+		wpdo_farmers_market_wheat_and_fish = {
+			wheat = 0.9
+			fish = 0.9
+			produced = provisions
+			output = 1.0
+			debug_max_profit = -1
+			category = building_maintenance
+		}
+
+		# African/steppe — millet 4.0×0.5=2.0 + livestock 2.5×0.8=2.0 = 4.0
+		wpdo_farmers_market_millet_and_meat = {
+			millet = 0.9
+			livestock = 0.6
+			produced = provisions
+			output = 1.0
+			debug_max_profit = -1
+			category = building_maintenance
+		}
+
+		# Frontier
+		wpdo_farmers_market_game_and_fruit = {
+			wild_game = 0.9
+			fruit = 0.9
+			produced = provisions
+			output = 1.0
+			debug_max_profit = -1
+			category = building_maintenance
+		}
+
+		# Fallback — rice 4.0×1.0=4.0
+		wpdo_farmers_market_rice_staple = {
+			rice = 1.8
+			produced = provisions
+			output = 1.0
+			debug_max_profit = -1
+			category = building_maintenance
+		}
+
+		# Fallback — livestock 5.0×0.8=4.0
+		wpdo_farmers_market_dried_meat = {
+			livestock = 1.2
+			produced = provisions
+			output = 1.0
+			debug_max_profit = -1
+			category = building_maintenance
+		}
+
+		# Fallback — fish 8.0×0.5=4.0
+		wpdo_farmers_market_salted_fish = {
+			fish = 1.8
+			produced = provisions
+			output = 1.0
+			debug_max_profit = -1
+			category = building_maintenance
+		}
+	}
+
+	# Beverage supplements
+	unique_production_methods = {
+		wpdo_farmers_market_beer_supplement = {
+			beer = 0.14
+			produced = provisions
+			output = 0.15
+			debug_max_profit = -1
+			category = building_maintenance
+		}
+
+		wpdo_farmers_market_wine_supplement = {
+			wine = 0.14
+			produced = provisions
+			output = 0.15
+			debug_max_profit = -1
+			category = building_maintenance
+		}
+
+		wpdo_farmers_market_liquor_supplement = {
+			liquor = 0.07
+			produced = provisions
+			output = 0.1
+			debug_max_profit = -1
+			category = building_maintenance
+		}
+
+		wpdo_farmers_market_sugar_supplement = {
+			sugar = 0.06
+			produced = provisions
+			output = 0.1
+			debug_max_profit = -1
+			category = building_maintenance
+		}
+
+		wpdo_farmers_market_tea_supplement = {
+			tea = 0.03
+			produced = provisions
+			output = 0.05
+			debug_max_profit = -1
+			category = building_maintenance
+		}
+
+		wpdo_farmers_market_coffee_supplement = {
+			coffee = 0.03
+			produced = provisions
+			output = 0.05
+			debug_max_profit = -1
+			category = building_maintenance
+		}
+	}
+
+	construction_demand = workshop_construction
+}
+
+# ============================================
+# RURAL GRANARY — Rural food storage and distribution
+# ============================================
+# Scaled from main granary: 1.0 provisions → 30 food, 600 capacity.
+# Rural: 0.08 provisions → 2.5 food, 50 capacity.
+
+wpdo_rural_granary = {
+	icon = granary
+	is_foreign = no
+	max_levels = wpdo_rural_granary_max_level
+	pop_type = peasants
+	employment_size = 0.05
+	category = infrastructure_category
+	rural_settlement = yes
+	town = no
+	city = no
+	ai_forbid_shutdown = yes
+
+	build_time = rural_build_time
+
+	price = wpdo_rural_granary_price
+
+	unique_production_methods = {
+		wpdo_rural_granary_maintenance = {
+			provisions = 0.08
+			category = building_maintenance
+		}
+	}
+
+	construction_demand = village_construction
+
+	modifier = { local_food_capacity = 100 local_monthly_food = 5 }
+}
+
+# ============================================
+# GRANARY — Food storage and distribution
+# ============================================
+# 1.0 provisions → 30 food, 600 capacity.
+
+REPLACE:granary = {
+	is_foreign = no
+	max_levels = wpdo_granary_max_level
+	pop_type = laborers
+	employment_size = granary_employment
+	category = infrastructure_category
+	rural_settlement = no
+	town = yes
+	city = yes
+	can_close = yes
+	ai_forbid_shutdown = yes
+
+	build_time = government_build_time
+
+	unique_production_methods = {
+		wpdo_granary_maintenance = {
+			provisions = 1.0
+			category = building_maintenance
+		}
+	}
+
+	construction_demand = granary_construction
+
+	modifier = {
+		local_food_capacity = 1200
+		local_monthly_food = 60
+		local_max_rgo_size_modifier = 0.01
+	}
+}
+
+# ============================================
+# WINDMILL — Grain milling (supplementary provisions)
+# ============================================
+# Standard output: 0.5 provisions. Input = 0.5 / food_value_rate.
+
+REPLACE:windmill = {
+	is_foreign = no
+	pop_type = laborers
+	max_levels = rural_building_cap
+	employment_size = rural_peasant_enhance_employment
+	category = rgo_building_category
+	rural_settlement = yes
+	ai_forbid_shutdown = yes
+	town = yes
+	city = yes
+
+	location_potential = {
+		OR = {
+			raw_material = goods:wheat
+			raw_material = goods:rice
+			raw_material = goods:millet
+			raw_material = goods:maize
+			raw_material = goods:potato
+		}
+	}
+
+	# Vanilla grain boost PM
+	unique_production_methods = {
+		wpdo_windmill_maintenance = {
+			tools = 0.03
+			lumber = 0.05
+			cloth = 0.05
+			category = building_maintenance
+		}
+	}
+
+	# Provisions milling — input = 0.5 / rate
+	unique_production_methods = {
+		wpdo_rice_flour = {
+			rice = 0.9
+			produced = provisions
+			output = 0.5
+			debug_max_profit = -1
+			category = building_maintenance
+		}
+
+		wpdo_wheat_flour = {
+			wheat = 0.9
+			produced = provisions
+			output = 0.5
+			debug_max_profit = -1
+			category = building_maintenance
+		}
+
+		wpdo_millet_flour = {
+			millet = 0.9
+			produced = provisions
+			output = 0.5
+			debug_max_profit = -1
+			category = building_maintenance
+		}
+
+		wpdo_maize_flour = {
+			maize = 0.9
+			produced = provisions
+			output = 0.5
+			debug_max_profit = -1
+			category = building_maintenance
+		}
+
+		wpdo_potato_flour = {
+			potato = 0.9
+			produced = provisions
+			output = 0.5
+			debug_max_profit = -1
+			category = building_maintenance
+		}
+	}
+
+	modifier = {
+		local_wheat_output_modifier = 0.1
+		local_rice_output_modifier = 0.1
+		local_millet_output_modifier = 0.1
+		local_maize_output_modifier = 0.1
+		local_potato_output_modifier = 0.1
+	}
+
+	build_time = rural_build_time
+	construction_demand = farm_constructions
+}
+
+# ============================================
+# IRRIGATION — boosts water-dependent crops 5% per level
+# ============================================
+
+REPLACE:irrigation_systems = {
+	is_foreign = no
+	max_levels = irrigant_cap
+	pop_type = peasants
+	category = infrastructure_category
+	employment_size = generic_peasant_building_employment
+	rural_settlement = yes
+	town = yes
+	city = yes
+	forbidden_for_estates = yes
+
+	location_potential = {
+		OR = {
+			has_river = yes
+			is_adjacent_to_lake = yes
+		}
+	}
+
+	build_time = infrastructure_build_time
+
+	unique_production_methods = {
+		wpdo_irrigation_maintenance = { tools = 0.1 category = building_maintenance }
+	}
+
+	construction_demand = village_construction
+
+	modifier = {
+		local_population_capacity = 1.0
+		local_rice_output_modifier = 0.05
+		local_wheat_output_modifier = 0.05
+		local_maize_output_modifier = 0.05
+		local_millet_output_modifier = 0.05
+		local_potato_output_modifier = 0.05
+		local_legumes_output_modifier = 0.05
+		local_olives_output_modifier = 0.05
+		local_fruit_output_modifier = 0.05
+		local_sugar_output_modifier = 0.05
+		local_cotton_output_modifier = 0.05
+		local_tea_output_modifier = 0.05
+		local_coffee_output_modifier = 0.05
+	}
+}
+
+# ============================================
+# LOCAL SMELTERS — max_levels raised to rural_building_cap
+# ============================================
+
+REPLACE:local_smelters = {
+	is_foreign = no
+	pop_type = laborers
+	max_levels = rural_building_cap
+	employment_size = rural_peasant_enhance_employment
+	category = rgo_building_category
+	rural_settlement = yes
+	ai_forbid_shutdown = yes
+
+	location_potential = {
+		OR = {
+			raw_material = goods:iron
+			raw_material = goods:copper
+			raw_material = goods:tin
+			raw_material = goods:lead
+		}
+	}
+
+	unique_production_methods = {
+		wpdo_local_smelters_maintenance = {
+			tools = 0.03
+			lumber = 0.05
+			coal = 0.05
+			category = building_maintenance
+		}
+	}
+
+	modifier = {
+		local_iron_output_modifier = 0.1
+		local_copper_output_modifier = 0.1
+		local_tin_output_modifier = 0.1
+		local_lead_output_modifier = 0.1
+	}
+
+	build_time = rural_build_time
+	construction_demand = farm_constructions
+}
+
+# ============================================
+# SAWMILL — max_levels raised to rural_building_cap
+# ============================================
+
+REPLACE:sawmill = {
+	is_foreign = no
+	pop_type = laborers
+	max_levels = rural_building_cap
+	employment_size = rural_peasant_enhance_employment
+	forbidden_for_estates = yes
+	category = rgo_building_category
+	ai_forbid_shutdown = yes
+	rural_settlement = yes
+
+	location_potential = {
+		OR = {
+			vegetation = woods
+			vegetation = forest
+			vegetation = farmland
+			vegetation = jungle
+			raw_material = goods:lumber
+		}
+	}
+
+	unique_production_methods = {
+		wpdo_sawmill_maintenance = { tools = 0.05 category = building_maintenance }
+	}
+
+	modifier = { local_lumber_output_modifier = 0.2 }
+
+	build_time = rural_build_time
+	construction_demand = farm_constructions
+}

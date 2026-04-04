@@ -1,0 +1,770 @@
+﻿# ============================================
+# SPECIALIZATION CONSTANTS - SCRIPT VALUES
+# ============================================
+# sul_spec_type stores type only (1-5). Rank comes from location_rank.
+# Type mapping: 1=mining, 2=farming, 3=gathering, 4=woodland, 5=commercial
+# ============================================
+# ============================================
+# PRICE THRESHOLDS (computed from base prices)
+# High demand: >1.5x base price
+# Surplus (commercial): <0.75x base price
+# ============================================
+# Mining high demand thresholds (1.5x base)
+
+sul_iron_high = {
+	value = "default_price(goods:iron)"
+	multiply = 1.5
+}
+
+sul_stone_high = {
+	value = "default_price(goods:stone)"
+	multiply = 1.5
+}
+
+sul_tools_high = {
+	value = "default_price(goods:tools)"
+	multiply = 1.5
+}
+
+sul_weaponry_high = {
+	value = "default_price(goods:weaponry)"
+	multiply = 1.5
+}
+
+sul_steel_high = {
+	value = "default_price(goods:steel)"
+	multiply = 1.5
+}
+
+# Farming high demand thresholds (1.5x base)
+
+sul_wool_high = {
+	value = "default_price(goods:wool)"
+	multiply = 1.5
+}
+
+sul_fiber_crops_high = {
+	value = "default_price(goods:fiber_crops)"
+	multiply = 1.5
+}
+
+sul_fruit_high = {
+	value = "default_price(goods:fruit)"
+	multiply = 1.5
+}
+
+sul_wine_high = {
+	value = "default_price(goods:wine)"
+	multiply = 1.5
+}
+
+sul_beer_high = {
+	value = "default_price(goods:beer)"
+	multiply = 1.5
+}
+
+sul_liquor_high = {
+	value = "default_price(goods:liquor)"
+	multiply = 1.5
+}
+
+sul_leather_high = {
+	value = "default_price(goods:leather)"
+	multiply = 1.5
+}
+
+# Gathering high demand thresholds (1.5x base)
+
+sul_salt_high = {
+	value = "default_price(goods:salt)"
+	multiply = 1.5
+}
+
+sul_fish_high = {
+	value = "default_price(goods:fish)"
+	multiply = 1.5
+}
+
+sul_clay_high = {
+	value = "default_price(goods:clay)"
+	multiply = 1.5
+}
+
+sul_porcelain_high = {
+	value = "default_price(goods:porcelain)"
+	multiply = 1.5
+}
+
+sul_pottery_high = {
+	value = "default_price(goods:pottery)"
+	multiply = 1.5
+}
+
+# Woodland high demand thresholds (1.5x base)
+
+sul_lumber_high = {
+	value = "default_price(goods:lumber)"
+	multiply = 1.5
+}
+
+sul_tar_high = {
+	value = "default_price(goods:tar)"
+	multiply = 1.5
+}
+
+sul_coal_high = {
+	value = "default_price(goods:coal)"
+	multiply = 1.5
+}
+
+sul_furniture_high = {
+	value = "default_price(goods:furniture)"
+	multiply = 1.5
+}
+
+sul_naval_supplies_high = {
+	value = "default_price(goods:naval_supplies)"
+	multiply = 1.5
+}
+
+# Commercial surplus thresholds (0.75x base - low prices)
+
+sul_wheat_low = {
+	value = "default_price(goods:wheat)"
+	multiply = 0.75
+}
+
+sul_iron_low = {
+	value = "default_price(goods:iron)"
+	multiply = 0.75
+}
+
+sul_lumber_low = {
+	value = "default_price(goods:lumber)"
+	multiply = 0.75
+}
+
+sul_cloth_low = {
+	value = "default_price(goods:cloth)"
+	multiply = 0.75
+}
+
+sul_wine_low = {
+	value = "default_price(goods:wine)"
+	multiply = 0.75
+}
+
+sul_silk_low = {
+	value = "default_price(goods:silk)"
+	multiply = 0.75
+}
+
+sul_pepper_low = {
+	value = "default_price(goods:pepper)"
+	multiply = 0.75
+}
+
+sul_gems_low = {
+	value = "default_price(goods:gems)"
+	multiply = 0.75
+}
+
+sul_dyes_low = {
+	value = "default_price(goods:dyes)"
+	multiply = 0.75
+}
+
+# ============================================
+# SPECIALIZATION TYPE CONSTANTS
+# ============================================
+@sul_mining_type = 1
+@sul_farming_type = 2
+@sul_gathering_type = 3
+@sul_woodland_type = 4
+@sul_commercial_type = 5
+# Rank offsets for sul_designation (type + offset = designation)
+# Town: 1-5, City: 11-15, Rural: 21-25
+@sul_rank_offset_town = 0
+@sul_rank_offset_city = 10
+@sul_rank_offset_rural = 20
+# ============================================
+# DIVERSITY PRESSURE (percentage-based, cached)
+# ============================================
+# Uses cached country variables updated only when specializations change
+# Variables: var:sul_mining_count, var:sul_farming_count, etc.
+# var:sul_total_weighted = farming×2 + others×1
+# Result is positive if under-represented, negative if over-represented
+# Returns 0 if variables not yet initialized (first action by this country)
+# Mining diversity pressure: (expected - actual) / expected × 5
+
+sul_mining_diversity = {
+	if = {
+		limit = {
+			NOT = {
+				has_variable = sul_total_weighted
+			}
+		}
+
+		value = 0
+	}
+	else = {
+		value = var:sul_total_weighted
+		divide = 6
+		subtract = var:sul_mining_count
+		multiply = 6
+		divide = { value = var:sul_total_weighted min = 1 }
+		multiply = 5
+	}
+}
+
+# Farming diversity pressure: expected = total_weighted / 3
+
+sul_farming_diversity = {
+	if = {
+		limit = {
+			NOT = {
+				has_variable = sul_total_weighted
+			}
+		}
+
+		value = 0
+	}
+	else = {
+		value = var:sul_total_weighted
+		divide = 3
+		subtract = var:sul_farming_count
+		multiply = 3
+		divide = { value = var:sul_total_weighted min = 1 }
+		multiply = 5
+	}
+}
+
+# Woodland diversity pressure
+
+sul_woodland_diversity = {
+	if = {
+		limit = {
+			NOT = {
+				has_variable = sul_total_weighted
+			}
+		}
+
+		value = 0
+	}
+	else = {
+		value = var:sul_total_weighted
+		divide = 6
+		subtract = var:sul_woodland_count
+		multiply = 6
+		divide = { value = var:sul_total_weighted min = 1 }
+		multiply = 5
+	}
+}
+
+# Gathering diversity pressure
+
+sul_gathering_diversity = {
+	if = {
+		limit = {
+			NOT = {
+				has_variable = sul_total_weighted
+			}
+		}
+
+		value = 0
+	}
+	else = {
+		value = var:sul_total_weighted
+		divide = 6
+		subtract = var:sul_gathering_count
+		multiply = 6
+		divide = { value = var:sul_total_weighted min = 1 }
+		multiply = 5
+	}
+}
+
+# Commercial diversity pressure
+
+sul_commercial_diversity = {
+	if = {
+		limit = {
+			NOT = {
+				has_variable = sul_total_weighted
+			}
+		}
+
+		value = 0
+	}
+	else = {
+		value = var:sul_total_weighted
+		divide = 6
+		subtract = var:sul_commercial_count
+		multiply = 6
+		divide = { value = var:sul_total_weighted min = 1 }
+		multiply = 5
+	}
+}
+
+# ============================================
+# MARKET SUPPLY/DEMAND PRESSURE (for AI weights)
+# ============================================
+# These calculate (demand/supply - 1) × scale
+# Positive = shortage (demand > supply), encourages production
+# Negative = surplus (supply > demand), discourages production
+# Uses min = 0.1 on supply to avoid divide-by-zero
+# Clamped to ±1 before scaling to prevent extreme swings
+# Scale factor of 5 gives max ±5 AI weight impact
+# Mining: Iron market pressure (called from market scope)
+
+sul_iron_market_pressure = {
+	value = "goods_demand_in_market(goods:iron)"
+
+	divide = { value = "goods_supply_in_market(goods:iron)" min = 0.1 }
+
+	subtract = 1
+	max = 1
+	min = -1
+	multiply = 5
+}
+
+# Gathering: Wool market pressure
+
+sul_wool_market_pressure = {
+	value = "goods_demand_in_market(goods:wool)"
+
+	divide = { value = "goods_supply_in_market(goods:wool)" min = 0.1 }
+
+	subtract = 1
+	max = 1
+	min = -1
+	multiply = 5
+}
+
+# Farming: Wheat market pressure (food staple)
+
+sul_wheat_market_pressure = {
+	value = "goods_demand_in_market(goods:wheat)"
+
+	divide = { value = "goods_supply_in_market(goods:wheat)" min = 0.1 }
+
+	subtract = 1
+	max = 1
+	min = -1
+	multiply = 5
+}
+
+# Woodland: Lumber market pressure
+
+sul_lumber_market_pressure = {
+	value = "goods_demand_in_market(goods:lumber)"
+
+	divide = { value = "goods_supply_in_market(goods:lumber)" min = 0.1 }
+
+	subtract = 1
+	max = 1
+	min = -1
+	multiply = 5
+}
+
+# Gathering: Salt market pressure
+
+sul_salt_market_pressure = {
+	value = "goods_demand_in_market(goods:salt)"
+
+	divide = { value = "goods_supply_in_market(goods:salt)" min = 0.1 }
+
+	subtract = 1
+	max = 1
+	min = -1
+	multiply = 5
+}
+
+# Gathering: Clay market pressure
+
+sul_clay_market_pressure = {
+	value = "goods_demand_in_market(goods:clay)"
+
+	divide = { value = "goods_supply_in_market(goods:clay)" min = 0.1 }
+
+	subtract = 1
+	max = 1
+	min = -1
+	multiply = 5
+}
+
+# ============================================
+# PRICE BONUS SCRIPT VALUES (market scope)
+# Formula: (price / base_price - 1) × 8, capped at -8 to +16
+# Positive = shortage (high prices), negative = surplus (low prices)
+# ============================================
+# Mining raw: iron price bonus
+
+sul_mining_raw_price_bonus = {
+	value = "market_price(goods:iron)"
+	divide = "default_price(goods:iron)"
+	subtract = 1
+	multiply = 8
+	min = -8
+	max = 16
+}
+
+# Mining finished: tools price bonus
+
+sul_mining_finished_price_bonus = {
+	value = "market_price(goods:tools)"
+	divide = "default_price(goods:tools)"
+	subtract = 1
+	multiply = 8
+	min = -8
+	max = 16
+}
+
+# Farming raw: cotton price bonus
+
+sul_farming_raw_price_bonus = {
+	value = "market_price(goods:cotton)"
+	divide = "default_price(goods:cotton)"
+	subtract = 1
+	multiply = 8
+	min = -8
+	max = 16
+}
+
+# Gathering raw: wool price bonus
+
+sul_gathering_raw_price_bonus = {
+	value = "market_price(goods:wool)"
+	divide = "default_price(goods:wool)"
+	subtract = 1
+	multiply = 8
+	min = -8
+	max = 16
+}
+
+# Farming finished: leather price bonus
+
+sul_farming_finished_price_bonus = {
+	value = "market_price(goods:leather)"
+	divide = "default_price(goods:leather)"
+	subtract = 1
+	multiply = 8
+	min = -8
+	max = 16
+}
+
+# Woodland raw: lumber price bonus
+
+sul_woodland_raw_price_bonus = {
+	value = "market_price(goods:lumber)"
+	divide = "default_price(goods:lumber)"
+	subtract = 1
+	multiply = 8
+	min = -8
+	max = 16
+}
+
+# Woodland finished: furniture price bonus
+
+sul_woodland_finished_price_bonus = {
+	value = "market_price(goods:furniture)"
+	divide = "default_price(goods:furniture)"
+	subtract = 1
+	multiply = 8
+	min = -8
+	max = 16
+}
+
+# Gathering raw: salt price bonus
+
+sul_gathering_raw_price_bonus = {
+	value = "market_price(goods:salt)"
+	divide = "default_price(goods:salt)"
+	subtract = 1
+	multiply = 8
+	min = -8
+	max = 16
+}
+
+# Gathering finished: pottery price bonus
+
+sul_gathering_finished_price_bonus = {
+	value = "market_price(goods:pottery)"
+	divide = "default_price(goods:pottery)"
+	subtract = 1
+	multiply = 8
+	min = -8
+	max = 16
+}
+
+# ============================================
+# FOOD PRICE BONUSES (market scope)
+# ============================================
+# Uses explicit food_price from market scope
+# Scale: 0.01 = minimum, 0.02 = baseline, higher = shortage
+# Farming gets stronger food price pressure (main food producer)
+# Gathering gets weaker food price pressure (supplementary food)
+# Farming food price bonus: (food_price - 0.02) × 400 (strong)
+# At 0.01 (minimum): -4 penalty
+# At 0.02 (baseline): 0 bonus
+# At 0.04 (shortage): +8 bonus
+# At 0.045+: +10 bonus (capped)
+
+sul_farming_food_price_bonus = {
+	value = food_price
+	subtract = 0.02
+	multiply = 400
+	min = -4
+	max = 10
+}
+
+# Gathering food price bonus: (food_price - 0.02) × 200 (weak)
+# At 0.01 (minimum): -2 penalty
+# At 0.02 (baseline): 0 bonus
+# At 0.04 (shortage): +4 bonus
+# At 0.05+: +6 bonus (capped)
+
+sul_gathering_food_price_bonus = {
+	value = food_price
+	subtract = 0.02
+	multiply = 200
+	min = -2
+	max = 6
+}
+
+# ============================================
+# FINISHED GOODS COMPOSITE DEMAND (market scope)
+# ============================================
+# Average demand pressure across all finished goods for each specialization
+# Formula per good: (demand/supply - 1), then average all, scale ×5, cap ±5
+# Positive = shortage, negative = surplus
+# Mining finished (6): tools, weaponry, firearms, cannons, steel, jewelry
+
+sul_mining_finished_composite = {
+	value = 0
+	# tools
+	add = {
+		value = "goods_demand_in_market(goods:tools)"
+		divide = { value = "goods_supply_in_market(goods:tools)" min = 0.1 }
+		subtract = 1
+	}
+
+	# weaponry
+	add = {
+		value = "goods_demand_in_market(goods:weaponry)"
+		divide = { value = "goods_supply_in_market(goods:weaponry)" min = 0.1 }
+		subtract = 1
+	}
+
+	# firearms
+	add = {
+		value = "goods_demand_in_market(goods:firearms)"
+		divide = { value = "goods_supply_in_market(goods:firearms)" min = 0.1 }
+		subtract = 1
+	}
+
+	# cannons
+	add = {
+		value = "goods_demand_in_market(goods:cannons)"
+		divide = { value = "goods_supply_in_market(goods:cannons)" min = 0.1 }
+		subtract = 1
+	}
+
+	# steel
+	add = {
+		value = "goods_demand_in_market(goods:steel)"
+		divide = { value = "goods_supply_in_market(goods:steel)" min = 0.1 }
+		subtract = 1
+	}
+
+	# jewelry
+	add = {
+		value = "goods_demand_in_market(goods:jewelry)"
+		divide = { value = "goods_supply_in_market(goods:jewelry)" min = 0.1 }
+		subtract = 1
+	}
+
+	divide = 6
+	max = 1
+	min = -1
+	multiply = 5
+}
+
+# Farming finished (4): beer, liquor, leather, wine
+
+sul_farming_finished_composite = {
+	value = 0
+	# beer
+	add = {
+		value = "goods_demand_in_market(goods:beer)"
+		divide = { value = "goods_supply_in_market(goods:beer)" min = 0.1 }
+		subtract = 1
+	}
+
+	# liquor
+	add = {
+		value = "goods_demand_in_market(goods:liquor)"
+		divide = { value = "goods_supply_in_market(goods:liquor)" min = 0.1 }
+		subtract = 1
+	}
+
+	# leather
+	add = {
+		value = "goods_demand_in_market(goods:leather)"
+		divide = { value = "goods_supply_in_market(goods:leather)" min = 0.1 }
+		subtract = 1
+	}
+
+	# wine
+	add = {
+		value = "goods_demand_in_market(goods:wine)"
+		divide = { value = "goods_supply_in_market(goods:wine)" min = 0.1 }
+		subtract = 1
+	}
+
+	divide = 4
+	max = 1
+	min = -1
+	multiply = 5
+}
+
+# Woodland finished (7): furniture, paper, tar, leather, incense, dye, lacquerware
+
+sul_woodland_finished_composite = {
+	value = 0
+	# furniture
+	add = {
+		value = "goods_demand_in_market(goods:furniture)"
+		divide = { value = "goods_supply_in_market(goods:furniture)" min = 0.1 }
+		subtract = 1
+	}
+
+	# paper
+	add = {
+		value = "goods_demand_in_market(goods:paper)"
+		divide = { value = "goods_supply_in_market(goods:paper)" min = 0.1 }
+		subtract = 1
+	}
+
+	# tar
+	add = {
+		value = "goods_demand_in_market(goods:tar)"
+		divide = { value = "goods_supply_in_market(goods:tar)" min = 0.1 }
+		subtract = 1
+	}
+
+	# leather
+	add = {
+		value = "goods_demand_in_market(goods:leather)"
+		divide = { value = "goods_supply_in_market(goods:leather)" min = 0.1 }
+		subtract = 1
+	}
+
+	# incense
+	add = {
+		value = "goods_demand_in_market(goods:incense)"
+		divide = { value = "goods_supply_in_market(goods:incense)" min = 0.1 }
+		subtract = 1
+	}
+
+	# dyes
+	add = {
+		value = "goods_demand_in_market(goods:dyes)"
+		divide = { value = "goods_supply_in_market(goods:dyes)" min = 0.1 }
+		subtract = 1
+	}
+
+	# lacquerware
+	add = {
+		value = "goods_demand_in_market(goods:lacquerware)"
+		divide = { value = "goods_supply_in_market(goods:lacquerware)" min = 0.1 }
+		subtract = 1
+	}
+
+	divide = 7
+	max = 1
+	min = -1
+	multiply = 5
+}
+
+# Gathering finished (5): pottery, glass, medicaments, porcelain, saltpeter
+
+sul_gathering_finished_composite = {
+	value = 0
+	# pottery
+	add = {
+		value = "goods_demand_in_market(goods:pottery)"
+		divide = { value = "goods_supply_in_market(goods:pottery)" min = 0.1 }
+		subtract = 1
+	}
+
+	# glass
+	add = {
+		value = "goods_demand_in_market(goods:glass)"
+		divide = { value = "goods_supply_in_market(goods:glass)" min = 0.1 }
+		subtract = 1
+	}
+
+	# medicaments
+	add = {
+		value = "goods_demand_in_market(goods:medicaments)"
+		divide = { value = "goods_supply_in_market(goods:medicaments)" min = 0.1 }
+		subtract = 1
+	}
+
+	# porcelain
+	add = {
+		value = "goods_demand_in_market(goods:porcelain)"
+		divide = { value = "goods_supply_in_market(goods:porcelain)" min = 0.1 }
+		subtract = 1
+	}
+
+	# saltpeter
+	add = {
+		value = "goods_demand_in_market(goods:saltpeter)"
+		divide = { value = "goods_supply_in_market(goods:saltpeter)" min = 0.1 }
+		subtract = 1
+	}
+
+	divide = 5
+	max = 1
+	min = -1
+	multiply = 5
+}
+
+# Commercial finished (4): books, fine_cloth, cloth, naval_supplies
+
+sul_commercial_finished_composite = {
+	value = 0
+	# books
+	add = {
+		value = "goods_demand_in_market(goods:books)"
+		divide = { value = "goods_supply_in_market(goods:books)" min = 0.1 }
+		subtract = 1
+	}
+
+	# fine_cloth
+	add = {
+		value = "goods_demand_in_market(goods:fine_cloth)"
+		divide = { value = "goods_supply_in_market(goods:fine_cloth)" min = 0.1 }
+		subtract = 1
+	}
+
+	# cloth
+	add = {
+		value = "goods_demand_in_market(goods:cloth)"
+		divide = { value = "goods_supply_in_market(goods:cloth)" min = 0.1 }
+		subtract = 1
+	}
+
+	# naval_supplies
+	add = {
+		value = "goods_demand_in_market(goods:naval_supplies)"
+		divide = { value = "goods_supply_in_market(goods:naval_supplies)" min = 0.1 }
+		subtract = 1
+	}
+
+	divide = 4
+	max = 1
+	min = -1
+	multiply = 5
+}

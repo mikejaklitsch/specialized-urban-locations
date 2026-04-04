@@ -1,0 +1,42 @@
+﻿# =============================================================================
+# WAGE RATES AND ESTATE PAYMENTS
+# =============================================================================
+# Wage rates determine how much each pop adds to local GDP beyond tax base.
+# Estate payments transfer accumulated wages to estates as gold.
+
+# --- Wage rates per pop ---
+@wpdo_wage_nobles = 5.0
+@wpdo_wage_clergy = 2.0
+@wpdo_wage_burghers = 1.0
+@wpdo_wage_soldiers = 0.5
+@wpdo_wage_laborers = 0.25
+@wpdo_wage_peasants = 0.05
+
+# -----------------------------------------------------------------------------
+# ESTATE WAGE PAYMENTS (country scope)
+# -----------------------------------------------------------------------------
+# Engine bug: add_gold_to_estate negates the value, so we negate first.
+
+wpdo_pay_single_estate_wage = {
+	if = {
+		limit = {
+			has_variable = wpdo_monthly_wages_$estate$
+			var:wpdo_monthly_wages_$estate$ > 0
+		}
+
+		add_gold_to_estate = {
+			estate_type = estate_type:$estate$_estate
+			value = { value = var:wpdo_monthly_wages_$estate$ multiply = -1 }
+		}
+	}
+}
+
+wpdo_pay_estate_wages = {
+	wpdo_pay_single_estate_wage = { estate = nobles }
+	wpdo_pay_single_estate_wage = { estate = clergy }
+	wpdo_pay_single_estate_wage = { estate = burghers }
+	wpdo_pay_single_estate_wage = { estate = peasants }
+	wpdo_pay_single_estate_wage = { estate = dhimmi }
+	wpdo_pay_single_estate_wage = { estate = cossacks }
+	wpdo_pay_single_estate_wage = { estate = tribes }
+}

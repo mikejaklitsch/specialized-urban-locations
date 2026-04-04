@@ -1,0 +1,54 @@
+﻿# WPDO — Mission override
+# Replaces dock/dry_dock checks with wpdo_ clones in trade mission pack
+
+REPLACE:mission_establish_docks = {
+	icon = ship_building_advance
+
+	requires = { mission_establish_wharfs }
+
+	enabled = {
+		OR = {
+			total_effective_building_levels:dock >= var:total_dock_levels_variable
+			total_effective_building_levels:dry_dock >= var:total_dock_levels_variable
+			total_effective_building_levels:wpdo_dock >= var:total_dock_levels_variable
+			total_effective_building_levels:wpdo_dry_dock >= var:total_dock_levels_variable
+		}
+	}
+
+	duration = 0
+
+	bypass = { has_ports = no }
+
+	on_completion = {
+		if = {
+			limit = {
+				OR = {
+					total_effective_building_levels:dock > 0
+					total_effective_building_levels:dry_dock > 0
+					total_effective_building_levels:wpdo_dock > 0
+					total_effective_building_levels:wpdo_dry_dock > 0
+				}
+			}
+
+			ordered_owned_non_rural_location = {
+				limit = {
+					OR = {
+						has_building_with_at_least_one_level = dock
+						has_building_with_at_least_one_level = dry_dock
+						has_building_with_at_least_one_level = wpdo_dock
+						has_building_with_at_least_one_level = wpdo_dry_dock
+					}
+				}
+
+				order_by = {
+					value = development
+					multiply = { value = market_access add = local_control }
+				}
+
+				max = 1
+				change_development = development_severe_bonus
+			}
+		}
+		else = { custom_tooltip = one_dock_or_drydock_location_dev_severe_tt }
+	}
+}

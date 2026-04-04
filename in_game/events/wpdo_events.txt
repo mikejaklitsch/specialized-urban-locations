@@ -1,0 +1,218 @@
+﻿
+namespace = wpdo
+
+# Capital Relocation Event
+#
+# Finds the most geographically central economic hub and moves
+# the capital there if the current capital loses the contest.
+# Scoring: proximity ranking + location quality bonuses.
+
+wpdo.1 = {
+	type = country_event
+	title = wpdo.1.title
+	desc = wpdo.1.desc
+	hidden = yes
+
+	trigger = {
+		is_ai = yes
+		wpdo_control_deficit > 0.8
+		NOT = {
+			has_variable = wpdo_capital_cooldown
+		}
+
+		modifier:cannot_move_capital = no
+		num_locations > 10
+		any_core_location = { owner ?= root is_capital = no }
+	}
+
+	immediate = {
+		set_variable = { name = wpdo_capital_cooldown months = 120 }
+
+		# Step 1: Force current capital into the pool
+		capital ?= {
+			save_scope_as = wpdo_current_capital
+			save_scope_as = wpdo_add_loc
+			set_variable = { name = wpdo_capital_score value = 0 }
+		}
+
+		add_to_variable_list = {
+			name = wpdo_candidate_list
+			target = scope:wpdo_add_loc
+		}
+
+		# Step 2: Add top 10 economic centers
+		ordered_core_location = {
+			limit = { owner ?= root is_capital = no }
+
+			order_by = {
+				value = population
+				add = development
+				add = total_building_levels
+
+				multiply = {
+					value = 1
+					if = {
+						limit = { owner = { has_primary_or_accepted_culture = prev.dominant_culture } }
+						add = 0.5
+					}
+					if = { limit = { local_religious_unity > 0.5 } add = 0.25 }
+				}
+			}
+
+			max = 10
+			check_range_bounds = no
+			save_scope_as = wpdo_add_loc
+			set_variable = { name = wpdo_capital_score value = 0 }
+
+			root = {
+				add_to_variable_list = {
+					name = wpdo_candidate_list
+					target = scope:wpdo_add_loc
+				}
+			}
+		}
+
+		# Step 3: For each candidate (anchor), rank others by proximity.
+		# Closest gets 10 pts, next 9, etc. Accumulated on location.
+		every_in_list = {
+			variable = wpdo_candidate_list
+			save_scope_as = current_anchor
+
+			root = {
+				set_variable = { name = wpdo_rank value = 10 }
+
+				ordered_in_list = {
+					variable = wpdo_candidate_list
+
+					limit = {
+						NOT = {
+							this = scope:current_anchor
+						}
+					}
+
+					order_by = { value = "this.distance_to(scope:current_anchor)" multiply = -1 }
+					max = 9
+					check_range_bounds = no
+
+					change_variable = { name = wpdo_capital_score add = root.var:wpdo_rank }
+					root = { change_variable = { name = wpdo_rank add = -1 } }
+				}
+			}
+		}
+
+		# Step 3.5: Add location quality bonuses
+		every_in_list = {
+			variable = wpdo_candidate_list
+
+			# Settlement tier
+			if = {
+				limit = { is_city = yes }
+				change_variable = { name = wpdo_capital_score add = 30 }
+			}
+			else_if = {
+				limit = { is_town = yes }
+				change_variable = { name = wpdo_capital_score add = 15 }
+			}
+
+			# Port value
+			change_variable = {
+				name = wpdo_capital_score
+				add = { value = harbor_capacity multiply = 30 }
+			}
+
+			# River
+			if = {
+				limit = { has_river = yes }
+				change_variable = { name = wpdo_capital_score add = 15 }
+			}
+
+			# Current capital
+			if = {
+				limit = { is_capital = yes }
+				change_variable = { name = wpdo_capital_score add = 20 }
+			}
+
+			# Historical capital
+			if = {
+				limit = { has_or_had_capital = location }
+				change_variable = { name = wpdo_capital_score add = 30 }
+			}
+
+			# Lake
+			if = {
+				limit = { is_adjacent_to_lake = yes }
+				change_variable = { name = wpdo_capital_score add = 15 }
+			}
+
+			# Topography
+			if = {
+				limit = { topography = flatland }
+				change_variable = { name = wpdo_capital_score add = 10 }
+			}
+			else_if = {
+				limit = { topography = plateau }
+				change_variable = { name = wpdo_capital_score add = 5 }
+			}
+			else_if = {
+				limit = { topography = mountains }
+				change_variable = { name = wpdo_capital_score add = -10 }
+			}
+
+			# Vegetation
+			if = {
+				limit = { vegetation = farmland }
+				change_variable = { name = wpdo_capital_score add = 10 }
+			}
+			else_if = {
+				limit = { vegetation = grassland }
+				change_variable = { name = wpdo_capital_score add = 5 }
+			}
+			else_if = {
+				limit = { vegetation = sparse }
+				change_variable = { name = wpdo_capital_score add = 2.5 }
+			}
+
+			# Economic weight
+			change_variable = {
+				name = wpdo_capital_score
+
+				add = {
+					value = location_tax_base
+					divide = { value = local_control min = 0.1 }
+				}
+			}
+
+			# Population
+			change_variable = { name = wpdo_capital_score add = population }
+		}
+
+		# Step 4: Find the winner
+		ordered_in_list = {
+			variable = wpdo_candidate_list
+			order_by = var:wpdo_capital_score
+			max = 1
+			save_scope_as = wpdo_capital_winner
+		}
+
+		# Clean up
+		every_in_list = {
+			variable = wpdo_candidate_list
+			remove_variable = wpdo_capital_score
+		}
+
+		clear_variable_list = wpdo_candidate_list
+		remove_variable = wpdo_rank
+
+		# Step 5: Move if winner is not current capital
+		if = {
+			limit = {
+				exists = scope:wpdo_capital_winner
+				NOT = {
+					scope:wpdo_capital_winner = scope:wpdo_current_capital
+				}
+			}
+
+			set_capital = scope:wpdo_capital_winner
+		}
+	}
+}

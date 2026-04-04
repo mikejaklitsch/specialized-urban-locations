@@ -1,0 +1,368 @@
+﻿# Specialization System - Core Effects
+# Init, rebuild, eligibility, validation, and cache management
+@sul_commercial_type = 5
+
+# =============================================================================
+# FULL REBUILD
+# =============================================================================
+# Called on game start and when mod version changes (via version check)
+# Minimally invasive: preserves valid player specializations and buildings
+# Only reassigns locations whose current spec violates updated rules
+
+sul_full_rebuild = {
+	sul_setup_goods_spec_map = yes
+
+	# All ownable locations: recalculate eligibility, then branch
+	every_location_in_the_world = {
+		limit = { is_ownable = yes exists = raw_material }
+		sul_calculate_specialization_eligibility = yes
+		sul_rebuild_location = yes
+		sul_set_init_production_variables = yes
+	}
+
+	# Market cache
+	sul_do_refresh_market_cache = yes
+}
+
+# =============================================================================
+# REBUILD SINGLE LOCATION
+# =============================================================================
+# Handles one location during rebuild. Three paths:
+# 1. No specialization -> fresh assignment with buildings
+# 2. Valid specialization -> refresh modifier only (handles value changes)
+# 3. Invalid specialization -> reassign by resources + rebuild buildings
+# root = location (eligibility already calculated)
+
+sul_rebuild_location = {
+	if = {
+		limit = { sul_has_any_specialization = yes }
+		if = {
+			# Current spec still valid - just refresh the modifier
+			limit = { sul_current_specialization_is_valid = yes }
+			sul_refresh_specialization_modifier = yes
+		}
+		else = {
+			# Current spec no longer valid - full reassignment
+			sul_reassign_specialization = yes
+		}
+	}
+	else = {
+		# No specialization yet - first-time init
+		sul_init_new_specialization = yes
+	}
+}
+
+# =============================================================================
+# REFRESH SPECIALIZATION MODIFIER
+# =============================================================================
+# Swaps the modifier for the current spec+rank without changing anything else
+# root = location (must have sul_spec_type set)
+
+sul_refresh_specialization_modifier = {
+	sul_clear_all_specialization_modifiers = yes
+	sul_update_designation = yes
+	sul_apply_specialization_modifier = yes
+}
+
+# =============================================================================
+# REASSIGN SPECIALIZATION
+# =============================================================================
+# Current spec is no longer valid under updated rules
+# Clears old state, picks best match from resources, rebuilds buildings
+# root = location
+
+sul_reassign_specialization = {
+	sul_clear_all_specialization_modifiers = yes
+	sul_assign_specialization_by_resources = yes
+	sul_apply_specialization_modifier = yes
+
+	# Remove incompatible buildings and regrant RGO for owned locations
+	if = {
+		limit = { exists = owner }
+		sul_destroy_non_matching_buildings = yes
+		sul_grant_specialization_rgo_building = yes
+	}
+}
+
+# =============================================================================
+# INIT NEW SPECIALIZATION
+# =============================================================================
+# First-time setup for a location that has never been specialized
+# root = location
+
+sul_init_new_specialization = {
+	sul_assign_specialization_by_resources = yes
+	sul_apply_specialization_modifier = yes
+
+	# Remove incompatible buildings and regrant RGO for owned locations
+	if = {
+		limit = { exists = owner }
+		sul_destroy_non_matching_buildings = yes
+		sul_grant_specialization_rgo_building = yes
+	}
+}
+
+# =============================================================================
+# BUILDING LEVEL COUNTING
+# Saves total building levels before specialization
+# root = location — sets sul_prior_building_levels variable
+# =============================================================================
+
+sul_save_building_levels = {
+	set_variable = {
+		name = sul_prior_building_levels
+		value = total_building_levels
+	}
+}
+
+# =============================================================================
+# SPECIALIZATION ELIGIBILITY CACHING
+# Calculates and stores which specializations a location can have
+# root = location
+# Called on: game start, colonization, raw material change
+# =============================================================================
+
+sul_calculate_specialization_eligibility = {
+	# Mining: mining resources OR mountains OR wetlands OR lake adjacency
+	if = {
+		limit = {
+			OR = {
+				sul_has_mining_resources = yes
+				topography = mountains
+				topography = wetlands
+				is_adjacent_to_lake = yes
+			}
+		}
+
+		set_variable = { name = sul_can_mine value = 1 }
+	}
+	else = { remove_variable = sul_can_mine }
+
+	# Farming: farming resources OR farmland OR flatland with river/grasslands
+	if = {
+		limit = {
+			OR = {
+				sul_has_farming_resources = yes
+				vegetation = farmland
+				AND = {
+					topography = flatland
+					has_river = yes
+				}
+				AND = {
+					topography = flatland
+					vegetation = grasslands
+				}
+			}
+		}
+
+		set_variable = { name = sul_can_farm value = 1 }
+	}
+	else = { remove_variable = sul_can_farm }
+
+	# Gathering: gathering resources OR coastal OR river OR lake adjacency
+	if = {
+		limit = {
+			OR = {
+				sul_has_gathering_resources = yes
+				is_coastal = yes
+				has_river = yes
+				is_adjacent_to_lake = yes
+			}
+		}
+
+		set_variable = { name = sul_can_gather value = 1 }
+	}
+	else = { remove_variable = sul_can_gather }
+
+	# Woodland: woodland resources OR forest/woods/jungle
+	if = {
+		limit = {
+			OR = {
+				sul_has_woodland_resources = yes
+				vegetation = forest
+				vegetation = woods
+				vegetation = jungle
+			}
+		}
+
+		set_variable = { name = sul_can_woodland value = 1 }
+	}
+	else = { remove_variable = sul_can_woodland }
+}
+
+# =============================================================================
+# SPECIALIZATION VALIDATION
+# Checks if current specialization is still valid after raw material change
+# If invalid, switches to commercial
+# root = location
+# =============================================================================
+
+sul_validate_specialization = {
+	if = {
+		limit = { sul_has_any_specialization = yes }
+		if = {
+			limit = {
+				sul_has_mining_specialization = yes
+				NOT = {
+					has_variable = sul_can_mine
+				}
+			}
+
+			sul_switch_to_commercial = yes
+		}
+		else_if = {
+			limit = {
+				sul_has_farming_specialization = yes
+				NOT = {
+					has_variable = sul_can_farm
+				}
+			}
+
+			sul_switch_to_commercial = yes
+		}
+		else_if = {
+			limit = {
+				sul_has_gathering_specialization = yes
+				NOT = {
+					has_variable = sul_can_gather
+				}
+			}
+
+			sul_switch_to_commercial = yes
+		}
+		else_if = {
+			limit = {
+				sul_has_woodland_specialization = yes
+				NOT = {
+					has_variable = sul_can_woodland
+				}
+			}
+
+			sul_switch_to_commercial = yes
+		}
+	}
+}
+
+# =============================================================================
+# SWITCH TO COMMERCIAL
+# Forces a location to commercial specialization
+# root = location
+# =============================================================================
+
+sul_switch_to_commercial = {
+	sul_clear_all_specialization_modifiers = yes
+
+	set_variable = { name = sul_spec_type value = @sul_commercial_type }
+
+	sul_apply_specialization_modifier = yes
+	if = {
+		limit = {
+			OR = {
+				location_rank = location_rank:town
+				location_rank = location_rank:city
+			}
+		}
+
+		sul_destroy_non_matching_buildings = yes
+	}
+}
+
+# =============================================================================
+# MARKET DEMAND CACHE UPDATE
+# Calculates and stores supply/demand ratios and high-demand flags
+# root = market
+# =============================================================================
+
+sul_update_market_cache = {
+	add_to_global_variable_map = {
+		name = sul_iron_pressure
+		key = this
+		value = sul_iron_market_pressure
+	}
+	add_to_global_variable_map = {
+		name = sul_mining_finished_composite
+		key = this
+		value = sul_mining_finished_composite
+	}
+	add_to_global_variable_map = {
+		name = sul_farming_finished_composite
+		key = this
+		value = sul_farming_finished_composite
+	}
+	add_to_global_variable_map = {
+		name = sul_woodland_finished_composite
+		key = this
+		value = sul_woodland_finished_composite
+	}
+	add_to_global_variable_map = {
+		name = sul_gathering_finished_composite
+		key = this
+		value = sul_gathering_finished_composite
+	}
+	add_to_global_variable_map = {
+		name = sul_commercial_finished_composite
+		key = this
+		value = sul_commercial_finished_composite
+	}
+}
+
+# =============================================================================
+# INIT PRODUCTION VARIABLES
+# Sets per-good variables with 1-day expiry for building validation during init
+# Variables mirror the sul_allows_* flags from static modifiers
+# Needed because modifier: checks aren't available during initialize_from_bookmark
+# root = location (must have sul_spec_type set)
+# =============================================================================
+
+sul_set_init_production_variables = {
+	if = {
+		limit = { sul_has_mining_specialization = yes }
+		set_variable = { name = sul_allows_tools_production value = 1 days = 1 }
+		set_variable = { name = sul_allows_weapons_production value = 1 days = 1 }
+		set_variable = { name = sul_allows_cannon_production value = 1 days = 1 }
+		set_variable = { name = sul_allows_firearms_production value = 1 days = 1 }
+		set_variable = { name = sul_allows_jewelry_production value = 1 days = 1 }
+		set_variable = { name = sul_allows_steel_production value = 1 days = 1 }
+	}
+	else_if = {
+		limit = { sul_has_farming_specialization = yes }
+		set_variable = { name = sul_allows_beer_production value = 1 days = 1 }
+		set_variable = { name = sul_allows_wine_production value = 1 days = 1 }
+		set_variable = { name = sul_allows_liquor_production value = 1 days = 1 }
+		set_variable = { name = sul_allows_leather_production value = 1 days = 1 }
+	}
+	else_if = {
+		limit = { sul_has_gathering_specialization = yes }
+		set_variable = { name = sul_allows_glass_production value = 1 days = 1 }
+		set_variable = { name = sul_allows_pottery_production value = 1 days = 1 }
+		set_variable = { name = sul_allows_porcelain_production value = 1 days = 1 }
+		set_variable = { name = sul_allows_saltpeter_production value = 1 days = 1 }
+		set_variable = { name = sul_allows_apothecary_production value = 1 days = 1 }
+	}
+	else_if = {
+		limit = { sul_has_woodland_specialization = yes }
+		set_variable = { name = sul_allows_furniture_production value = 1 days = 1 }
+		set_variable = { name = sul_allows_paper_production value = 1 days = 1 }
+		set_variable = {
+			name = sul_allows_lacquerware_production
+			value = 1
+			days = 1
+		}
+		set_variable = { name = sul_allows_dye_production value = 1 days = 1 }
+		set_variable = { name = sul_allows_charcoal_production value = 1 days = 1 }
+		set_variable = { name = sul_allows_leather_production value = 1 days = 1 }
+		set_variable = { name = sul_allows_incense_production value = 1 days = 1 }
+	}
+	else_if = {
+		limit = { sul_has_commercial_specialization = yes }
+		set_variable = { name = sul_allows_printing_production value = 1 days = 1 }
+		set_variable = { name = sul_allows_cloth_production value = 1 days = 1 }
+		set_variable = { name = sul_allows_fine_cloth_production value = 1 days = 1 }
+		set_variable = {
+			name = sul_allows_naval_supplies_production
+			value = 1
+			days = 1
+		}
+		set_variable = { name = sul_allows_commerce_buildings value = 1 days = 1 }
+	}
+}

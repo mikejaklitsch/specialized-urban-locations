@@ -1,0 +1,69 @@
+﻿# AI Builds Navies — Portugal flavor event override
+# Replaces dock construction with wpdo_dock
+
+REPLACE:flavor_por.60 = {
+	type = country_event
+	title = flavor_por.60.title
+	desc = flavor_por.60.desc
+	historical_info = flavor_por.60.historical_info
+
+	dynamic_historical_event = {
+		tag = POR
+		from = 1445.1.1
+		to = 1821.1.1
+		monthly_chance = 10
+	}
+
+	fire_only_once = yes
+
+	illustration_tags = { 10 = exterior 10 = regular }
+
+	trigger = { location:angra.owner ?= root }
+
+	immediate = {
+		event_illustration_estate_effect = {
+			foreground = estate_type:burghers_estate
+			background = estate_type:burghers_estate
+		}
+
+		location:angra = { save_scope_as = target_location }
+	}
+
+	option = {
+		name = flavor_por.60.a
+		historical_option = yes
+
+		scope:target_location = {
+			change_location_rank_effect = {
+				location_rank = location_rank:city
+			}
+
+			construct_building = {
+				building_type = building_type:wpdo_dock
+				cost_multiplier = 0.5
+				cost_multiplier_reason = burghers_cheap_sponsorship
+			}
+		}
+
+		add_migration = {
+			amount = 0.2
+			from = root.capital.province_definition
+			owner = root
+			to = scope:target_location.province_definition
+			months = 120
+		}
+
+		change_gold_effect = {
+			scale = -1
+		}
+	}
+
+	option = {
+		name = flavor_por.60.b
+
+		add_estate_satisfaction = {
+			type = estate_type:burghers_estate
+			value = estate_satisfaction_weak_penalty
+		}
+	}
+}

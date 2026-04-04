@@ -1,0 +1,332 @@
+﻿# Building Swap — replaces vanilla army/navy buildings with wpdo_ clones.
+# Runs once per country via monthly_country_pulse.
+# Also cleans up dead AI armies yearly.
+
+wpdo_swap_buildings = {
+	effect = {
+		if = {
+			limit = {
+				NOT = {
+					has_variable = wpdo_swap_done
+				}
+			}
+
+			set_variable = wpdo_swap_done
+
+			every_owned_location = {
+				# --- Army buildings ---
+				if = {
+					limit = {
+						location_building_level = { building_type = building_type:armory value > 0 }
+					}
+
+					change_building_level_in_location = {
+						building = building_type:wpdo_armory
+						value = "location_building_level(building_type:armory)"
+					}
+					change_building_level_in_location = {
+						building = building_type:armory
+
+						value = {
+							add = "location_building_level(building_type:armory)"
+							multiply = -1
+						}
+					}
+				}
+				if = {
+					limit = {
+						location_building_level = {
+							building_type = building_type:training_fields
+							value > 0
+						}
+					}
+
+					change_building_level_in_location = {
+						building = building_type:wpdo_training_fields
+						value = "location_building_level(building_type:training_fields)"
+					}
+					change_building_level_in_location = {
+						building = building_type:training_fields
+
+						value = {
+							add = "location_building_level(building_type:training_fields)"
+							multiply = -1
+						}
+					}
+				}
+				if = {
+					limit = {
+						location_building_level = { building_type = building_type:barracks value > 0 }
+					}
+
+					change_building_level_in_location = {
+						building = building_type:wpdo_barracks
+						value = "location_building_level(building_type:barracks)"
+					}
+					change_building_level_in_location = {
+						building = building_type:barracks
+
+						value = {
+							add = "location_building_level(building_type:barracks)"
+							multiply = -1
+						}
+					}
+				}
+				if = {
+					limit = {
+						location_building_level = {
+							building_type = building_type:regimental_camp
+							value > 0
+						}
+					}
+
+					change_building_level_in_location = {
+						building = building_type:wpdo_regimental_camp
+						value = "location_building_level(building_type:regimental_camp)"
+					}
+					change_building_level_in_location = {
+						building = building_type:regimental_camp
+
+						value = {
+							add = "location_building_level(building_type:regimental_camp)"
+							multiply = -1
+						}
+					}
+				}
+				if = {
+					limit = {
+						location_building_level = {
+							building_type = building_type:conscription_center
+							value > 0
+						}
+					}
+
+					change_building_level_in_location = {
+						building = building_type:wpdo_conscription_center
+						value = "location_building_level(building_type:conscription_center)"
+					}
+					change_building_level_in_location = {
+						building = building_type:conscription_center
+
+						value = {
+							add = "location_building_level(building_type:conscription_center)"
+							multiply = -1
+						}
+					}
+				}
+
+				# --- Port buildings ---
+				if = {
+					limit = {
+						location_building_level = { building_type = building_type:dock value > 0 }
+					}
+
+					change_building_level_in_location = {
+						building = building_type:wpdo_dock
+						value = "location_building_level(building_type:dock)"
+					}
+					change_building_level_in_location = {
+						building = building_type:dock
+						value = { add = "location_building_level(building_type:dock)" multiply = -1 }
+					}
+				}
+				if = {
+					limit = {
+						location_building_level = { building_type = building_type:dry_dock value > 0 }
+					}
+
+					change_building_level_in_location = {
+						building = building_type:wpdo_dry_dock
+						value = "location_building_level(building_type:dry_dock)"
+					}
+					change_building_level_in_location = {
+						building = building_type:dry_dock
+
+						value = {
+							add = "location_building_level(building_type:dry_dock)"
+							multiply = -1
+						}
+					}
+				}
+				if = {
+					limit = {
+						location_building_level = { building_type = building_type:shipyard value > 0 }
+					}
+
+					change_building_level_in_location = {
+						building = building_type:wpdo_shipyard
+						value = "location_building_level(building_type:shipyard)"
+					}
+					change_building_level_in_location = {
+						building = building_type:shipyard
+
+						value = {
+							add = "location_building_level(building_type:shipyard)"
+							multiply = -1
+						}
+					}
+				}
+				if = {
+					limit = {
+						location_building_level = {
+							building_type = building_type:grand_shipyard
+							value > 0
+						}
+					}
+
+					change_building_level_in_location = {
+						building = building_type:wpdo_grand_shipyard
+						value = "location_building_level(building_type:grand_shipyard)"
+					}
+					change_building_level_in_location = {
+						building = building_type:grand_shipyard
+
+						value = {
+							add = "location_building_level(building_type:grand_shipyard)"
+							multiply = -1
+						}
+					}
+				}
+				if = {
+					limit = {
+						location_building_level = {
+							building_type = building_type:naval_base
+							value > 0
+						}
+					}
+
+					change_building_level_in_location = {
+						building = building_type:wpdo_naval_base
+						value = "location_building_level(building_type:naval_base)"
+					}
+					change_building_level_in_location = {
+						building = building_type:naval_base
+
+						value = {
+							add = "location_building_level(building_type:naval_base)"
+							multiply = -1
+						}
+					}
+				}
+				if = {
+					limit = {
+						location_building_level = {
+							building_type = building_type:protected_harbor
+							value > 0
+						}
+					}
+
+					change_building_level_in_location = {
+						building = building_type:wpdo_protected_harbor
+						value = "location_building_level(building_type:protected_harbor)"
+					}
+					change_building_level_in_location = {
+						building = building_type:protected_harbor
+
+						value = {
+							add = "location_building_level(building_type:protected_harbor)"
+							multiply = -1
+						}
+					}
+				}
+
+				# --- Naval supplies ---
+				if = {
+					limit = {
+						location_building_level = {
+							building_type = building_type:naval_supplies_guild
+							value > 0
+						}
+					}
+
+					change_building_level_in_location = {
+						building = building_type:wpdo_naval_supplies_guild
+						value = "location_building_level(building_type:naval_supplies_guild)"
+					}
+					change_building_level_in_location = {
+						building = building_type:naval_supplies_guild
+
+						value = {
+							add = "location_building_level(building_type:naval_supplies_guild)"
+							multiply = -1
+						}
+					}
+				}
+				if = {
+					limit = {
+						location_building_level = {
+							building_type = building_type:naval_supplies_workshop
+							value > 0
+						}
+					}
+
+					change_building_level_in_location = {
+						building = building_type:wpdo_naval_supplies_workshop
+						value = "location_building_level(building_type:naval_supplies_workshop)"
+					}
+					change_building_level_in_location = {
+						building = building_type:naval_supplies_workshop
+
+						value = {
+							add = "location_building_level(building_type:naval_supplies_workshop)"
+							multiply = -1
+						}
+					}
+				}
+				if = {
+					limit = {
+						location_building_level = {
+							building_type = building_type:naval_supplies_manufactory
+							value > 0
+						}
+					}
+
+					change_building_level_in_location = {
+						building = building_type:wpdo_naval_supplies_manufactory
+						value = "location_building_level(building_type:naval_supplies_manufactory)"
+					}
+					change_building_level_in_location = {
+						building = building_type:naval_supplies_manufactory
+
+						value = {
+							add = "location_building_level(building_type:naval_supplies_manufactory)"
+							multiply = -1
+						}
+					}
+				}
+				if = {
+					limit = {
+						location_building_level = {
+							building_type = building_type:naval_supplies_mill
+							value > 0
+						}
+					}
+
+					change_building_level_in_location = {
+						building = building_type:wpdo_naval_supplies_mill
+						value = "location_building_level(building_type:naval_supplies_mill)"
+					}
+					change_building_level_in_location = {
+						building = building_type:naval_supplies_mill
+
+						value = {
+							add = "location_building_level(building_type:naval_supplies_mill)"
+							multiply = -1
+						}
+					}
+				}
+			}
+		}
+	}
+}
+
+# Dead Unit Cleanup — destroys AI armies with 0 strength.
+
+wpdo_cleanup_dead_units = {
+	effect = {
+		if = {
+			limit = { is_ai = yes }
+			every_army = { limit = { strength_percentage <= 0 } destroy_unit = yes }
+		}
+	}
+}

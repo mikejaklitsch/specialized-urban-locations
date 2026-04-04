@@ -1,0 +1,75 @@
+﻿
+employment_size_RGO = 1
+
+build_time_RGO = 365
+
+# Current RGO building level at this location.
+# Reads var:wpdo_rgo_building_type (set during game start init on each location).
+
+wpdo_rgo_output_per_level = {
+	value = raw_material_output
+
+	divide = { value = wpdo_location_rgo_building_level min = 1 }
+}
+
+wpdo_location_rgo_building_level = {
+	value = "location_building_level(var:wpdo_rgo_building_type)"
+}
+
+# RGO building levels under construction.
+
+wpdo_rgo_levels_under_construction = {
+	value = var:wpdo_rgo_constructing
+}
+
+# Max RGO building level. All goods use the same formula.
+
+wpdo_location_max_rgo_building_level = {
+	value = wpdo_rgo_max_level_base
+	min = 1
+}
+
+wpdo_location_max_rgo_building_level_rounded = {
+	value = wpdo_rgo_max_level_base
+	floor = yes
+	min = 1
+}
+
+# Starting level: 1 minimum + 1 per 50 pops at the location.
+
+rgo_building_level = {
+	value = 1
+
+	add = { value = population divide = 50 }
+
+	floor = yes
+}
+
+# ===================
+# RGO MAX LEVEL FORMULA
+# ===================
+# Explicit script value with desc lines for tooltip display.
+# Mirrors the wpdo_rgo_size static modifier contributions.
+
+wpdo_rgo_max_level_base = {
+	add = { desc = "WPDO_RGO_LEVEL_BASE" value = 2 }
+	add = {
+		desc = "WPDO_RGO_LEVEL_DEVELOPMENT"
+		value = development
+		multiply = 0.1
+	}
+	add = {
+		desc = "WPDO_RGO_LEVEL_POPULATION"
+		value = population
+		multiply = 0.025
+	}
+
+	multiply = {
+		value = 1
+		add = modifier:local_max_rgo_size_modifier
+		if = {
+			limit = { has_owner = yes }
+			add = owner.modifier:global_max_rgo_size_modifier
+		}
+	}
+}

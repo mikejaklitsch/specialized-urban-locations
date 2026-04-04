@@ -1,0 +1,37 @@
+﻿# ===================
+# RGO REMOVAL — Static Modifiers
+# ===================
+
+force_promote_vacancies = {
+	game_data = { category = country }
+
+	global_pop_promotion_speed_modifier = 99999
+}
+
+# Zero out vanilla RGO size scaling from blocks not touched by wpdo_food_modifiers.txt.
+# These are load-bearing: without them, vanilla RGO workers would still spawn from
+# population and rural development scaling.
+
+INJECT:total_population = {
+	local_max_rgo_size = -0.025				# nullify vanilla +0.025 — DO NOT CHANGE without verifying vanilla value
+	local_pop_food_consumption = 0.0025		# each pop increases local food consumption
+	wpdo_rgo_size = 0.025					# +0.025 per pop
+}
+
+INJECT:rural_development_modifier = {
+	local_max_rgo_size = -1			# nullify vanilla +1 — DO NOT CHANGE without verifying vanilla value
+}
+
+# ===================
+# wpdo_rgo_size — drives RGO building max levels
+# ===================
+# Mirrors vanilla local_max_rgo_size sources but as a custom modifier
+# read by per-good max level script values. Engine-cached, not script-evaluated.
+
+INJECT:location_base_values = {
+	wpdo_rgo_size = 2				# vanilla base is 2
+}
+
+INJECT:development = {
+	wpdo_rgo_size = 0.1				# +0.1 per development point
+}

@@ -1,0 +1,107 @@
+﻿# =============================================================================
+# WPP READER + TIER GATES (location scope, called from pop scope via location.)
+# =============================================================================
+# wpdo_read_wpp: raw WPP lookup from variable map
+# wpdo_read_tier_*: max(0, WPP - threshold) per tier, used by pop_demands.txt
+#
+# Thresholds must match TIER_THRESHOLD in demand_calculator.py
+# =============================================================================
+
+@wpdo_tier_threshold_necessity = 0
+@wpdo_tier_threshold_basic = 0.05
+@wpdo_tier_threshold_common = 0.12
+@wpdo_tier_threshold_upper = 0.25
+@wpdo_tier_threshold_luxury = 0.5
+@wpdo_tier_threshold_exotic = 1.5
+
+wpdo_read_wpp = {
+	value = 0
+	if = {
+		limit = {
+			has_variable_map = wpdo_wealth_per_pop
+			is_key_in_variable_map = { name = wpdo_wealth_per_pop target = prev.pop_type }
+		}
+
+		add = "variable_map(wpdo_wealth_per_pop|prev.pop_type)"
+	}
+}
+
+wpdo_read_tier_necessity = {
+	value = wpdo_read_wpp
+	subtract = @wpdo_tier_threshold_necessity
+	min = 0
+}
+
+wpdo_read_tier_basic = {
+	value = wpdo_read_wpp
+	subtract = @wpdo_tier_threshold_basic
+	min = 0
+}
+
+wpdo_read_tier_common = {
+	value = wpdo_read_wpp
+	subtract = @wpdo_tier_threshold_common
+	min = 0
+}
+
+wpdo_read_tier_upper = {
+	value = wpdo_read_wpp
+	subtract = @wpdo_tier_threshold_upper
+	min = 0
+}
+
+wpdo_read_tier_luxury = {
+	value = wpdo_read_wpp
+	subtract = @wpdo_tier_threshold_luxury
+	min = 0
+}
+
+wpdo_read_tier_exotic = {
+	value = wpdo_read_wpp
+	subtract = @wpdo_tier_threshold_exotic
+	min = 0
+}
+
+# Budget pressure: per-estate spending intensity from accumulated gold.
+# Pop scope — maps pop_type to estate, reads owner country variable.
+
+wpdo_budget_pressure = {
+	value = 1
+	if = {
+		limit = {
+			pop_type = pop_type:nobles
+			owner = { has_variable = wpdo_budget_pressure_nobles }
+		}
+
+		value = owner.var:wpdo_budget_pressure_nobles
+	}
+	if = {
+		limit = {
+			pop_type = pop_type:clergy
+			owner = { has_variable = wpdo_budget_pressure_clergy }
+		}
+
+		value = owner.var:wpdo_budget_pressure_clergy
+	}
+	if = {
+		limit = {
+			pop_type = pop_type:burghers
+			owner = { has_variable = wpdo_budget_pressure_burghers }
+		}
+
+		value = owner.var:wpdo_budget_pressure_burghers
+	}
+	if = {
+		limit = {
+			OR = {
+				pop_type = pop_type:peasants
+				pop_type = pop_type:laborers
+				pop_type = pop_type:soldiers
+			}
+
+			owner = { has_variable = wpdo_budget_pressure_peasants }
+		}
+
+		value = owner.var:wpdo_budget_pressure_peasants
+	}
+}

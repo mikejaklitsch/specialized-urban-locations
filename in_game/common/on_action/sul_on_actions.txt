@@ -1,0 +1,179 @@
+﻿# Specialization System - Custom On Action Definitions
+# Hooks that append to vanilla on_actions are in sul_hardcoded.txt
+# =============================================================================
+# INITIALIZATION & VERSION CHECK
+# =============================================================================
+# Rebuild version: major * 100 + minor (patch changes don't trigger rebuild)
+# Bump this when save-breaking changes require re-initialization
+@sul_rebuild_version = 10 # 0.1.x
+# Bouvet Island (location:bouvet_island): impassable location used as mod state anchor.
+# sul_active modifier applied here — stripped by engine when mod is removed.
+# sul_version variable stored here for version-based rebuild detection.
+
+# Game start: full rebuild + stamp version
+
+sul_initialize_all = {
+	effect = {
+		sul_full_rebuild = yes
+
+		# Initialization: accelerate pop promotion to populate starting buildings
+		every_country = {
+			add_country_modifier = { modifier = sul_init_pop_rush days = 45 }
+		}
+
+		# Stamp version on Bouvet Island
+		location:bouvet_island = {
+			remove_location_modifier = sul_active
+			add_location_modifier = { modifier = sul_active days = -1 }
+			set_variable = { name = sul_version value = @sul_rebuild_version }
+		}
+	}
+}
+
+# Monthly version check: triggers rebuild if marker is missing or outdated
+# Handles first-time init on existing save, version upgrades, and mod remove/re-add
+
+sul_version_check = {
+	trigger = {
+		OR = {
+			# Modifier missing = mod was removed and re-added (or first init on existing save)
+			location:bouvet_island = {
+				NOT = {
+					has_location_modifier = sul_active
+				}
+			}
+
+			# Modifier present but version outdated = mod was updated
+			location:bouvet_island = {
+				has_location_modifier = sul_active
+				has_variable = sul_version
+				var:sul_version < @sul_rebuild_version
+			}
+		}
+
+		# Guard: don't let multiple countries trigger rebuild in the same tick
+		NOT = {
+			has_global_variable = sul_rebuilding
+		}
+	}
+
+	effect = {
+		set_global_variable = { name = sul_rebuilding value = yes }
+		sul_full_rebuild = yes
+		# Stamp version on Bouvet Island
+		location:bouvet_island = {
+			remove_location_modifier = sul_active
+			add_location_modifier = { modifier = sul_active days = -1 }
+			set_variable = { name = sul_version value = @sul_rebuild_version }
+		}
+
+		remove_global_variable = sul_rebuilding
+	}
+}
+
+# sul_on_location_rank_changed and sul_on_raw_material_changed are now in
+# the combined handlers below (sul_wpdo_on_rank_changed, sul_wpdo_on_raw_material_changed)
+
+# =============================================================================
+# MARKET DEMAND CACHE
+# =============================================================================
+
+sul_clear_market_cache = {
+	effect = {
+		if = {
+			limit = {
+				has_global_variable = sul_market_demand_cached
+				has_global_variable = sul_cache_month
+				NOT = {
+					global_var:sul_cache_month = current_month
+				}
+			}
+
+			remove_global_variable = sul_market_demand_cached
+		}
+
+		# Track current month
+		set_global_variable = { name = sul_cache_month value = current_month }
+	}
+}
+
+# Refresh market cache if expired or not initialized
+
+sul_refresh_market_cache = {
+	effect = {
+		sul_do_refresh_market_cache = yes
+	}
+}
+
+# =============================================================================
+# COMBINED HANDLERS — Cross-system dispatch for shared hooks
+# =============================================================================
+
+# Location rank changed: SUL spec logic first, then WPDO RGO trim
+# root = location
+
+sul_wpdo_on_rank_changed = {
+	effect = {
+		# Specialization: refresh modifier or assign new spec, destroy mismatched buildings
+		if = {
+			limit = { sul_has_any_specialization = yes }
+			sul_refresh_specialization_modifier = yes
+			if = {
+				limit = {
+					OR = {
+						location_rank = location_rank:town
+						location_rank = location_rank:city
+					}
+				}
+
+				sul_destroy_non_matching_buildings = yes
+			}
+		}
+		else_if = {
+			limit = {
+				OR = {
+					location_rank = location_rank:rural_settlement
+					location_rank = location_rank:town
+					location_rank = location_rank:city
+				}
+			}
+
+			sul_assign_specialization_by_resources = yes
+			sul_apply_specialization_modifier = yes
+			if = {
+				limit = {
+					OR = {
+						location_rank = location_rank:town
+						location_rank = location_rank:city
+					}
+				}
+
+				sul_destroy_non_matching_buildings = yes
+			}
+		}
+
+		# Provisions: trim RGO to new rank cap
+		wpdo_trim_rgo_levels = yes
+	}
+}
+
+# Raw material changed: WPDO cache update first, then SUL validation
+# root = location, scope:old_goods, scope:new_goods
+
+sul_wpdo_on_raw_material_changed = {
+	effect = {
+		# Provisions: update RGO building type cache from new raw material
+		set_variable = {
+			name = wpdo_rgo_building_type
+			value = "global_variable_map(wpdo_rgo_map|raw_material)"
+		}
+
+		# Specialization: recalculate eligibility, validate current spec
+		if = {
+			limit = { exists = owner }
+			sul_calculate_specialization_eligibility = yes
+			sul_validate_specialization = yes
+			remove_location_modifier = sul_recently_respecialized # new resource = free respec
+		}
+	}
+}

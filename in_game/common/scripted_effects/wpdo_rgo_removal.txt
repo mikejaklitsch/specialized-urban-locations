@@ -1,0 +1,114 @@
+﻿
+remove_RGOs = {
+	every_owned_location = { replace_rgos_with_buildings = yes }
+
+	every_owned_location = { change_max_raw_material_workers = -100 }
+
+	add_country_modifier = {
+		modifier = force_promote_vacancies
+		months = 2
+		mode = add
+		desc = force_promote_vacancies_desc
+	}
+}
+
+# Converts vanilla RGO into corresponding building using the wpdo_rgo_map.
+# Location scope. Map must be initialized before calling.
+
+replace_rgos_with_buildings = {
+	# Cache building_type on location for script value lookups
+	set_variable = {
+		name = wpdo_rgo_building_type
+		value = "global_variable_map(wpdo_rgo_map|raw_material)"
+	}
+
+	change_building_level_in_location = {
+		building = "global_variable_map(wpdo_rgo_map|raw_material)"
+		value = rgo_building_level
+	}
+
+	# Seed the market stockpile: 6 of the good + 1.8 tools (3 years of demand) per RGO level
+	save_temporary_scope_value_as = {
+		name = wpdo_rgo_seed_goods_amount
+		value = { value = rgo_building_level multiply = 6 }
+	}
+	save_temporary_scope_value_as = {
+		name = wpdo_rgo_seed_tools_amount
+		value = { value = rgo_building_level multiply = 1.8 }
+	}
+
+	market = {
+		add_goods_supply = {
+			goods = prev.raw_material
+			amount = scope:wpdo_rgo_seed_goods_amount
+		}
+		add_goods_supply = {
+			goods = goods:tools
+			amount = scope:wpdo_rgo_seed_tools_amount
+		}
+	}
+}
+
+# Overrides vanilla new-town setup to spawn RGO building instead of vanilla RGO.
+
+REPLACE:cc_setup_new_town = {
+	change_building_level_in_location = {
+		building = building_type:mason
+		value = 1
+	}
+
+	change_max_raw_material_workers = 1
+
+	# Cache building_type and spawn RGO building via map lookup
+	set_variable = {
+		name = wpdo_rgo_building_type
+		value = "global_variable_map(wpdo_rgo_map|raw_material)"
+	}
+
+	change_building_level_in_location = {
+		building = "global_variable_map(wpdo_rgo_map|raw_material)"
+		value = 1
+	}
+
+	if = {
+		limit = { market_access <= 0 }
+
+		create_market = {
+			builder = root
+			location = scope:new_town
+			price = price:create_market
+			instant = yes
+			price_modifier = 0
+		}
+	}
+}
+
+# Constructs one level of the location's RGO building. Location scope.
+# Used by the scripted GUI button.
+
+wpdo_construct_rgo_building = {
+	construct_building = {
+		building_type = "global_variable_map(wpdo_rgo_map|raw_material)"
+	}
+}
+
+# Trim RGO building levels down to max if over cap. Location scope.
+# Minimum 1 level always preserved for script safety.
+
+wpdo_trim_rgo_levels = {
+	if = {
+		limit = {
+			has_variable = wpdo_rgo_building_type
+			wpdo_location_rgo_building_level > wpdo_location_max_rgo_building_level_rounded
+		}
+
+		change_building_level_in_location = {
+			building = var:wpdo_rgo_building_type
+
+			value = {
+				value = wpdo_location_max_rgo_building_level_rounded
+				subtract = wpdo_location_rgo_building_level
+			}
+		}
+	}
+}

@@ -1,0 +1,252 @@
+﻿# Specialized Urban Locations - Modifier Management Effects
+@sul_mining_type = 1
+@sul_farming_type = 2
+@sul_gathering_type = 3
+@sul_woodland_type = 4
+@sul_commercial_type = 5
+@sul_rank_offset_town = 0
+@sul_rank_offset_city = 10
+@sul_rank_offset_rural = 20
+
+# ============================================
+# CLEAR ALL SPECIALIZATION MODIFIERS
+# Checks type from variable and removes ALL rank variants that exist
+# root = location
+# ============================================
+
+sul_clear_all_specialization_modifiers = {
+	if = {
+		limit = { sul_has_mining_specialization = yes }
+		if = {
+			limit = { has_location_modifier = sul_mining_rural_specialization }
+			remove_location_modifier = sul_mining_rural_specialization
+		}
+		if = {
+			limit = { has_location_modifier = sul_mining_town_specialization }
+			remove_location_modifier = sul_mining_town_specialization
+		}
+		if = {
+			limit = { has_location_modifier = sul_mining_city_specialization }
+			remove_location_modifier = sul_mining_city_specialization
+		}
+	}
+	else_if = {
+		limit = { sul_has_farming_specialization = yes }
+		if = {
+			limit = { has_location_modifier = sul_farming_rural_specialization }
+			remove_location_modifier = sul_farming_rural_specialization
+		}
+		if = {
+			limit = { has_location_modifier = sul_farming_town_specialization }
+			remove_location_modifier = sul_farming_town_specialization
+		}
+		if = {
+			limit = { has_location_modifier = sul_farming_city_specialization }
+			remove_location_modifier = sul_farming_city_specialization
+		}
+	}
+	else_if = {
+		limit = { sul_has_gathering_specialization = yes }
+		if = {
+			limit = { has_location_modifier = sul_gathering_rural_specialization }
+			remove_location_modifier = sul_gathering_rural_specialization
+		}
+		if = {
+			limit = { has_location_modifier = sul_gathering_town_specialization }
+			remove_location_modifier = sul_gathering_town_specialization
+		}
+		if = {
+			limit = { has_location_modifier = sul_gathering_city_specialization }
+			remove_location_modifier = sul_gathering_city_specialization
+		}
+	}
+	else_if = {
+		limit = { sul_has_woodland_specialization = yes }
+		if = {
+			limit = { has_location_modifier = sul_woodland_rural_specialization }
+			remove_location_modifier = sul_woodland_rural_specialization
+		}
+		if = {
+			limit = { has_location_modifier = sul_woodland_town_specialization }
+			remove_location_modifier = sul_woodland_town_specialization
+		}
+		if = {
+			limit = { has_location_modifier = sul_woodland_city_specialization }
+			remove_location_modifier = sul_woodland_city_specialization
+		}
+	}
+	else_if = {
+		limit = { sul_has_commercial_specialization = yes }
+		if = {
+			limit = { has_location_modifier = sul_commercial_rural_specialization }
+			remove_location_modifier = sul_commercial_rural_specialization
+		}
+		if = {
+			limit = { has_location_modifier = sul_commercial_town_specialization }
+			remove_location_modifier = sul_commercial_town_specialization
+		}
+		if = {
+			limit = { has_location_modifier = sul_commercial_city_specialization }
+			remove_location_modifier = sul_commercial_city_specialization
+		}
+	}
+}
+
+# ============================================
+# ASSIGN SPECIALIZATION BY RESOURCES
+# Priority: Commercial (special conditions) > Farming > Mining > Gathering > Woodland
+# root = location (rural, town, or city)
+# Sets sul_spec_type to type only (1-5); rank derived from location_rank
+# ============================================
+
+sul_assign_specialization_by_resources = {
+	# Commercial specialization (market centers always; cities require development > 30; towns pass through)
+	if = {
+		limit = {
+			OR = {
+				is_market_center = yes
+				AND = {
+					NOT = {
+						location_rank = location_rank:city
+					}
+					owner ?= { num_locations > 1 }
+					OR = {
+						modifier:harbor_suitability > 0.7
+						AND = {
+							is_capital = yes
+							owner ?= { government_type = government_type:republic }
+						}
+					}
+				}
+				AND = {
+					location_rank = location_rank:city
+					development > 30
+					OR = {
+						modifier:harbor_suitability > 0.7
+						AND = {
+							is_capital = yes
+							owner ?= { government_type = government_type:republic }
+						}
+					}
+				}
+			}
+		}
+
+		set_variable = { name = sul_spec_type value = @sul_commercial_type }
+	}
+	else_if = {
+		limit = { sul_has_farming_resources = yes }
+		set_variable = { name = sul_spec_type value = @sul_farming_type }
+	}
+	else_if = {
+		limit = { sul_has_mining_resources = yes }
+		set_variable = { name = sul_spec_type value = @sul_mining_type }
+	}
+	else_if = {
+		limit = { sul_has_gathering_resources = yes }
+		set_variable = { name = sul_spec_type value = @sul_gathering_type }
+	}
+	else_if = {
+		limit = { sul_has_woodland_resources = yes }
+		set_variable = { name = sul_spec_type value = @sul_woodland_type }
+	}
+
+	# Update combined designation for GUI
+	if = { limit = { has_variable = sul_spec_type } sul_update_designation = yes }
+}
+
+# ============================================
+# UPDATE DESIGNATION
+# Encodes type+rank into one value for GUI (avoids rank lookups in GUI context)
+# Town: 1-5, City: 11-15, Rural: 21-25
+# root = location (must have sul_spec_type set)
+# ============================================
+
+sul_update_designation = {
+	set_variable = { name = sul_designation value = var:sul_spec_type }
+	if = {
+		limit = { location_rank = location_rank:city }
+		change_variable = { name = sul_designation add = @sul_rank_offset_city }
+	}
+	else_if = {
+		limit = { location_rank = location_rank:rural_settlement }
+		change_variable = { name = sul_designation add = @sul_rank_offset_rural }
+	}
+}
+
+# ============================================
+# APPLY SPECIALIZATION MODIFIER
+# Applies correct modifier based on specialization type and current rank
+# root = location (must have sul_spec_type variable set)
+# ============================================
+
+sul_apply_specialization_modifier = {
+	if = {
+		limit = { var:sul_spec_type = @sul_mining_type }
+		if = {
+			limit = { location_rank = location_rank:rural_settlement }
+			add_location_modifier = { modifier = sul_mining_rural_specialization }
+		}
+		else_if = {
+			limit = { location_rank = location_rank:town }
+			add_location_modifier = { modifier = sul_mining_town_specialization }
+		}
+		else = { add_location_modifier = { modifier = sul_mining_city_specialization } }
+	}
+	else_if = {
+		limit = { var:sul_spec_type = @sul_farming_type }
+		if = {
+			limit = { location_rank = location_rank:rural_settlement }
+			add_location_modifier = { modifier = sul_farming_rural_specialization }
+		}
+		else_if = {
+			limit = { location_rank = location_rank:town }
+			add_location_modifier = { modifier = sul_farming_town_specialization }
+		}
+		else = {
+			add_location_modifier = { modifier = sul_farming_city_specialization }
+		}
+	}
+	else_if = {
+		limit = { var:sul_spec_type = @sul_woodland_type }
+		if = {
+			limit = { location_rank = location_rank:rural_settlement }
+			add_location_modifier = { modifier = sul_woodland_rural_specialization }
+		}
+		else_if = {
+			limit = { location_rank = location_rank:town }
+			add_location_modifier = { modifier = sul_woodland_town_specialization }
+		}
+		else = {
+			add_location_modifier = { modifier = sul_woodland_city_specialization }
+		}
+	}
+	else_if = {
+		limit = { var:sul_spec_type = @sul_gathering_type }
+		if = {
+			limit = { location_rank = location_rank:rural_settlement }
+			add_location_modifier = { modifier = sul_gathering_rural_specialization }
+		}
+		else_if = {
+			limit = { location_rank = location_rank:town }
+			add_location_modifier = { modifier = sul_gathering_town_specialization }
+		}
+		else = {
+			add_location_modifier = { modifier = sul_gathering_city_specialization }
+		}
+	}
+	else_if = {
+		limit = { var:sul_spec_type = @sul_commercial_type }
+		if = {
+			limit = { location_rank = location_rank:rural_settlement }
+			add_location_modifier = { modifier = sul_commercial_rural_specialization }
+		}
+		else_if = {
+			limit = { location_rank = location_rank:town }
+			add_location_modifier = { modifier = sul_commercial_town_specialization }
+		}
+		else = {
+			add_location_modifier = { modifier = sul_commercial_city_specialization }
+		}
+	}
+}

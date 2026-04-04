@@ -1,4 +1,6 @@
 ﻿# Decluttered War UI — CMF Registration & Settings Init
+# on_game_start: initial setup (fires once)
+# monthly_weather_pulse: re-register CMF + init new countries (observer-safe, no country scope)
 
 on_game_start = {
 	on_actions = {
@@ -8,10 +10,36 @@ on_game_start = {
 
 dwui_on_game_start = {
 	effect = {
-		# Register settings button in CMF action bar
 		cmf_add_action_bar_element = { element = dwui_settings_config }
 
-		# Initialize settings for all countries
+		every_country = {
+			if = {
+				limit = {
+					NOT = {
+						has_variable = dwui_initialized
+					}
+				}
+
+				dwui_init_settings = yes
+			}
+		}
+	}
+}
+
+# monthly_weather_pulse has no country scope — safe for observers
+
+monthly_weather_pulse = {
+	on_actions = {
+		dwui_monthly_cmf_check
+	}
+}
+
+dwui_monthly_cmf_check = {
+	effect = {
+		# Re-register CMF element (idempotent — engine deduplicates)
+		cmf_add_action_bar_element = { element = dwui_settings_config }
+
+		# Initialize settings for any country that hasn't been set up yet
 		every_country = {
 			if = {
 				limit = {

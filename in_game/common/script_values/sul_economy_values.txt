@@ -610,24 +610,48 @@ rgo_building_level = {
 # Mirrors the sul_rgo_size static modifier contributions.
 
 sul_rgo_max_level_base = {
-	add = { desc = "WPDO_RGO_LEVEL_BASE" value = 2 }
-	add = {
-		desc = "WPDO_RGO_LEVEL_DEVELOPMENT"
-		value = development
-		multiply = 0.1
-	}
-	add = {
-		desc = "WPDO_RGO_LEVEL_POPULATION"
-		value = population
-		multiply = 0.025
+	# Local flat: base(2) + dev(0.1) + pop(0.04) + farmland(0.5) + rural(4) + granary(0.05/lvl)
+	add = { desc = "SUL_RGO_LEVEL_FLAT" value = modifier:sul_rgo_size }
+
+	# Country flat: advances, laws, privileges, religion, societal values
+	if = {
+		limit = { has_owner = yes }
+
+		add = {
+			desc = "SUL_RGO_LEVEL_COUNTRY"
+			value = owner.modifier:global_sul_rgo_size
+		}
+
+		if = {
+			limit = { location_rank = location_rank:rural_settlement }
+
+			add = {
+				desc = "SUL_RGO_LEVEL_RURAL"
+				value = owner.modifier:global_sul_rgo_size_in_rural
+			}
+		}
+
+		if = {
+			limit = { is_town_or_city = yes }
+
+			add = {
+				desc = "SUL_RGO_LEVEL_URBAN"
+				value = owner.modifier:global_sul_rgo_size_in_non_rural
+			}
+		}
 	}
 
-	multiply = {
-		value = 1
-		add = modifier:local_max_rgo_size_modifier
+	# Specialization tier bonus
+	if = {
+		limit = { sul_has_any_specialization = yes }
 		if = {
-			limit = { has_owner = yes }
-			add = owner.modifier:global_max_rgo_size_modifier
+			limit = { location_rank = location_rank:city }
+			add = { desc = "SUL_RGO_LEVEL_SPEC_CITY" value = 10 }
 		}
+		else_if = {
+			limit = { is_town_or_city = yes }
+			add = { desc = "SUL_RGO_LEVEL_SPEC_TOWN" value = 5 }
+		}
+		else = { add = { desc = "SUL_RGO_LEVEL_SPEC_RURAL" value = 3 } }
 	}
 }

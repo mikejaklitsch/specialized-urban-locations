@@ -87,8 +87,6 @@ TRY_INJECT:perpetual_diet_law = {
 				}
 			}
 
-			# vanilla local_monthly_development_modifier = 0.1 removed
-			local_monthly_development = 0.01             # flat: imperial diet
 			local_monthly_prosperity = 0.01
 		}
 
@@ -216,44 +214,7 @@ TRY_INJECT:tax_base_system = {
 	}
 }
 
-# Jurchen Confederation: shared crops policy gives +0.1 food
-
-TRY_INJECT:economic_framework = {
-	shared_crops_policy = {
-		wants_this_policy_bias = {
-			add = { desc = "POLICY_BIAS_GOOD_IDEA" value = 20 }
-		}
-
-		on_activate = {
-			leader_country = {
-				set_variable = {
-					name = economic_framework_cooldown_variable
-					value = yes
-					years = 5
-				}
-
-				add_tribal_cohesion = tribal_cohesion_weak_penalty
-				if = {
-					limit = { ruler_or_regent ?= { has_variable = difficult_sinicization_variable } }
-					add_tribal_cohesion = tribal_cohesion_mild_penalty
-					add_stability = stability_mild_penalty
-				}
-			}
-		}
-
-		years = 5
-
-		country_modifier = {
-			monthly_towards_traditional_economy = societal_value_monthly_move
-			# vanilla global_monthly_food_modifier = 0.1 removed
-			global_rice_output_modifier = 0.05
-			global_wheat_output_modifier = 0.025
-			global_livestock_output_modifier = 0.025
-			monthly_towards_unsinicized = societal_value_monthly_move
-			monthly_tribal_cohesion = 0.03
-		}
-	}
-}
+# Jurchen economic_framework moved to sul_rgo_adjustments.txt (TRY_REPLACE)
 
 # Sikh: Langar Community — vanilla +10% food
 

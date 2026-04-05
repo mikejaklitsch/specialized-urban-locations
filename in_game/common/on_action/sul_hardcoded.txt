@@ -1,7 +1,7 @@
 ﻿# Unified hooks into vanilla hardcoded on_actions.
 # Only on_actions sub-blocks here — actual logic lives in respective files.
 # Specialization System: sul_on_actions.txt
-# Provisions System: wpdo_on_actions.txt, wpdo_swap_buildings.txt
+# Provisions System: sul_on_actions.txt, sul_swap_buildings.txt
 
 # =============================================================================
 # GAME START
@@ -11,10 +11,10 @@
 
 on_game_start = {
 	on_actions = {
-		wpdo_rgo_init
-		wpdo_rgo_removal_start
+		sul_rgo_init
+		sul_rgo_removal_start
 		sul_initialize_all
-		wpdo_initialize_all
+		sul_initialize_economy
 	}
 }
 
@@ -25,7 +25,7 @@ on_game_start = {
 # then WPDO trim (adjusts RGO to new rank cap).
 
 on_location_changed_rank = {
-	on_actions = { sul_wpdo_on_rank_changed }
+	on_actions = { sul_on_rank_changed }
 }
 
 # =============================================================================
@@ -35,7 +35,7 @@ on_location_changed_rank = {
 # then SUL validation (may change spec based on new material).
 
 on_raw_material_changed = {
-	on_actions = { sul_wpdo_on_raw_material_changed }
+	on_actions = { sul_on_raw_material_changed }
 }
 
 # =============================================================================
@@ -49,9 +49,9 @@ monthly_country_pulse = {
 		sul_clear_market_cache
 		sul_refresh_market_cache
 		# Provisions system
-		wpdo_swap_buildings
-		wpdo_player_wage_update
-		wpdo_ai_monthly_wage_payment
+		sul_swap_buildings
+		sul_player_wage_update
+		sul_ai_monthly_wage_payment
 	}
 }
 
@@ -61,9 +61,9 @@ monthly_country_pulse = {
 
 yearly_country_pulse = {
 	on_actions = {
-		wpdo_ai_yearly_wage_accumulate
-		wpdo_cleanup_dead_units
-		wpdo_yearly_rgo_trim
+		sul_ai_yearly_wage_accumulate
+		sul_cleanup_dead_units
+		sul_yearly_rgo_trim
 	}
 }
 
@@ -72,7 +72,7 @@ yearly_country_pulse = {
 # =============================================================================
 
 weather_monthly_pulse = {
-	on_actions = { wpdo_batch_location_update }
+	on_actions = { sul_batch_location_update }
 }
 
 # =============================================================================
@@ -80,5 +80,5 @@ weather_monthly_pulse = {
 # =============================================================================
 
 four_yearly_country_pulse = {
-	random_events = { 10 = wpdo.1 }
+	random_events = { 10 = sul.1 }
 }

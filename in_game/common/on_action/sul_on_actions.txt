@@ -72,7 +72,7 @@ sul_version_check = {
 }
 
 # sul_on_location_rank_changed and sul_on_raw_material_changed are now in
-# the combined handlers below (sul_wpdo_on_rank_changed, sul_wpdo_on_raw_material_changed)
+# the combined handlers below (sul_on_rank_changed, sul_on_raw_material_changed)
 
 # =============================================================================
 # MARKET DEMAND CACHE
@@ -112,7 +112,7 @@ sul_refresh_market_cache = {
 # Location rank changed: SUL spec logic first, then WPDO RGO trim
 # root = location
 
-sul_wpdo_on_rank_changed = {
+sul_on_rank_changed = {
 	effect = {
 		# Specialization: refresh modifier or assign new spec, destroy mismatched buildings
 		if = {
@@ -153,19 +153,19 @@ sul_wpdo_on_rank_changed = {
 		}
 
 		# Provisions: trim RGO to new rank cap
-		wpdo_trim_rgo_levels = yes
+		sul_trim_rgo_levels = yes
 	}
 }
 
 # Raw material changed: WPDO cache update first, then SUL validation
 # root = location, scope:old_goods, scope:new_goods
 
-sul_wpdo_on_raw_material_changed = {
+sul_on_raw_material_changed = {
 	effect = {
 		# Provisions: update RGO building type cache from new raw material
 		set_variable = {
-			name = wpdo_rgo_building_type
-			value = "global_variable_map(wpdo_rgo_map|raw_material)"
+			name = sul_rgo_building_type
+			value = "global_variable_map(sul_rgo_map|raw_material)"
 		}
 
 		# Specialization: recalculate eligibility, validate current spec
@@ -174,6 +174,463 @@ sul_wpdo_on_raw_material_changed = {
 			sul_calculate_specialization_eligibility = yes
 			sul_validate_specialization = yes
 			remove_location_modifier = sul_recently_respecialized # new resource = free respec
+		}
+	}
+}
+
+# Provisions on_actions — called from sul_hardcoded.txt unified dispatcher.
+# Rank change and raw material change are in combined handlers (sul_on_actions.txt).
+
+sul_rgo_init = {
+	effect = {
+		sul_init_rgo_map = yes
+
+		every_location_in_the_world = {
+			limit = { is_ownable = yes }
+			set_variable = { name = sul_rgo_constructing value = 0 }
+
+			set_variable = {
+				name = sul_rgo_building_type
+				value = "global_variable_map(sul_rgo_map|raw_material)"
+			}
+		}
+	}
+}
+
+sul_rgo_removal_start = {
+	effect = {
+		every_country = { trigger_event_silently = { id = rgo_removal.01 } }
+	}
+}
+
+# =============================================================================
+# DEMAND SYSTEM INITIALIZATION
+# =============================================================================
+
+sul_initialize_economy = {
+	effect = {
+		sul_init_demand_maps = yes
+
+		every_country = {
+			limit = { is_real_country = yes sul_is_valid_location_owner = yes }
+
+			# Seed budget pressure defaults (1 = neutral) before economy update
+			set_variable = { name = sul_budget_pressure_nobles value = 1 }
+			set_variable = { name = sul_budget_pressure_clergy value = 1 }
+			set_variable = { name = sul_budget_pressure_burghers value = 1 }
+			set_variable = { name = sul_budget_pressure_peasants value = 1 }
+
+			every_owned_location = { sul_init_zero_wpp = yes }
+
+			sul_update_country_economy = yes
+		}
+	}
+}
+
+# =============================================================================
+# WPP BATCH UPDATE
+# =============================================================================
+
+@sul_ai_batch_size = 333
+
+sul_batch_location_update = {
+	effect = {
+		ordered_sul_stale_ai_location = {
+			max = @sul_ai_batch_size
+
+			order_by = {
+				value = 0
+				if = {
+					limit = { has_variable = sul_last_update }
+					subtract = var:sul_last_update
+				}
+			}
+
+			sul_update_location_wpp = yes
+			set_variable = { name = sul_last_update value = current_year }
+		}
+	}
+}
+
+# =============================================================================
+# WAGE SYSTEM
+# =============================================================================
+
+sul_player_wage_update = {
+	trigger = { is_ai = no is_real_country = yes }
+
+	effect = {
+		sul_accumulate_wages = yes
+		sul_pay_estate_wages = yes
+	}
+}
+
+# Yearly RGO level trim — ensures no location exceeds max cap
+
+sul_yearly_rgo_trim = {
+	trigger = { is_real_country = yes }
+
+	effect = {
+		every_owned_location = {
+			limit = {
+				has_variable = sul_rgo_building_type
+				sul_location_rgo_building_level > sul_location_max_rgo_building_level_rounded
+			}
+
+			sul_trim_rgo_levels = yes
+		}
+	}
+}
+
+sul_ai_yearly_wage_accumulate = {
+	trigger = { is_ai = yes is_real_country = yes }
+
+	effect = {
+		sul_accumulate_wages = yes
+	}
+}
+
+sul_ai_monthly_wage_payment = {
+	trigger = {
+		is_ai = yes
+		is_real_country = yes
+		has_variable = sul_monthly_wages_nobles
+	}
+
+	effect = {
+		sul_pay_estate_wages = yes
+	}
+}
+
+# Building Swap — replaces vanilla army/navy buildings with sul_ clones.
+# Runs once per country via monthly_country_pulse.
+# Also cleans up dead AI armies yearly.
+
+sul_swap_buildings = {
+	effect = {
+		if = {
+			limit = {
+				NOT = {
+					has_variable = sul_swap_done
+				}
+			}
+
+			set_variable = sul_swap_done
+
+			every_owned_location = {
+				# --- Army buildings ---
+				if = {
+					limit = {
+						location_building_level = { building_type = building_type:armory value > 0 }
+					}
+
+					change_building_level_in_location = {
+						building = building_type:sul_armory
+						value = "location_building_level(building_type:armory)"
+					}
+					change_building_level_in_location = {
+						building = building_type:armory
+
+						value = {
+							add = "location_building_level(building_type:armory)"
+							multiply = -1
+						}
+					}
+				}
+				if = {
+					limit = {
+						location_building_level = {
+							building_type = building_type:training_fields
+							value > 0
+						}
+					}
+
+					change_building_level_in_location = {
+						building = building_type:sul_training_fields
+						value = "location_building_level(building_type:training_fields)"
+					}
+					change_building_level_in_location = {
+						building = building_type:training_fields
+
+						value = {
+							add = "location_building_level(building_type:training_fields)"
+							multiply = -1
+						}
+					}
+				}
+				if = {
+					limit = {
+						location_building_level = { building_type = building_type:barracks value > 0 }
+					}
+
+					change_building_level_in_location = {
+						building = building_type:sul_barracks
+						value = "location_building_level(building_type:barracks)"
+					}
+					change_building_level_in_location = {
+						building = building_type:barracks
+
+						value = {
+							add = "location_building_level(building_type:barracks)"
+							multiply = -1
+						}
+					}
+				}
+				if = {
+					limit = {
+						location_building_level = {
+							building_type = building_type:regimental_camp
+							value > 0
+						}
+					}
+
+					change_building_level_in_location = {
+						building = building_type:sul_regimental_camp
+						value = "location_building_level(building_type:regimental_camp)"
+					}
+					change_building_level_in_location = {
+						building = building_type:regimental_camp
+
+						value = {
+							add = "location_building_level(building_type:regimental_camp)"
+							multiply = -1
+						}
+					}
+				}
+				if = {
+					limit = {
+						location_building_level = {
+							building_type = building_type:conscription_center
+							value > 0
+						}
+					}
+
+					change_building_level_in_location = {
+						building = building_type:sul_conscription_center
+						value = "location_building_level(building_type:conscription_center)"
+					}
+					change_building_level_in_location = {
+						building = building_type:conscription_center
+
+						value = {
+							add = "location_building_level(building_type:conscription_center)"
+							multiply = -1
+						}
+					}
+				}
+
+				# --- Port buildings ---
+				if = {
+					limit = {
+						location_building_level = { building_type = building_type:dock value > 0 }
+					}
+
+					change_building_level_in_location = {
+						building = building_type:sul_dock
+						value = "location_building_level(building_type:dock)"
+					}
+					change_building_level_in_location = {
+						building = building_type:dock
+						value = { add = "location_building_level(building_type:dock)" multiply = -1 }
+					}
+				}
+				if = {
+					limit = {
+						location_building_level = { building_type = building_type:dry_dock value > 0 }
+					}
+
+					change_building_level_in_location = {
+						building = building_type:sul_dry_dock
+						value = "location_building_level(building_type:dry_dock)"
+					}
+					change_building_level_in_location = {
+						building = building_type:dry_dock
+
+						value = {
+							add = "location_building_level(building_type:dry_dock)"
+							multiply = -1
+						}
+					}
+				}
+				if = {
+					limit = {
+						location_building_level = { building_type = building_type:shipyard value > 0 }
+					}
+
+					change_building_level_in_location = {
+						building = building_type:sul_shipyard
+						value = "location_building_level(building_type:shipyard)"
+					}
+					change_building_level_in_location = {
+						building = building_type:shipyard
+
+						value = {
+							add = "location_building_level(building_type:shipyard)"
+							multiply = -1
+						}
+					}
+				}
+				if = {
+					limit = {
+						location_building_level = {
+							building_type = building_type:grand_shipyard
+							value > 0
+						}
+					}
+
+					change_building_level_in_location = {
+						building = building_type:sul_grand_shipyard
+						value = "location_building_level(building_type:grand_shipyard)"
+					}
+					change_building_level_in_location = {
+						building = building_type:grand_shipyard
+
+						value = {
+							add = "location_building_level(building_type:grand_shipyard)"
+							multiply = -1
+						}
+					}
+				}
+				if = {
+					limit = {
+						location_building_level = {
+							building_type = building_type:naval_base
+							value > 0
+						}
+					}
+
+					change_building_level_in_location = {
+						building = building_type:sul_naval_base
+						value = "location_building_level(building_type:naval_base)"
+					}
+					change_building_level_in_location = {
+						building = building_type:naval_base
+
+						value = {
+							add = "location_building_level(building_type:naval_base)"
+							multiply = -1
+						}
+					}
+				}
+				if = {
+					limit = {
+						location_building_level = {
+							building_type = building_type:protected_harbor
+							value > 0
+						}
+					}
+
+					change_building_level_in_location = {
+						building = building_type:sul_protected_harbor
+						value = "location_building_level(building_type:protected_harbor)"
+					}
+					change_building_level_in_location = {
+						building = building_type:protected_harbor
+
+						value = {
+							add = "location_building_level(building_type:protected_harbor)"
+							multiply = -1
+						}
+					}
+				}
+
+				# --- Naval supplies ---
+				if = {
+					limit = {
+						location_building_level = {
+							building_type = building_type:naval_supplies_guild
+							value > 0
+						}
+					}
+
+					change_building_level_in_location = {
+						building = building_type:sul_naval_supplies_guild
+						value = "location_building_level(building_type:naval_supplies_guild)"
+					}
+					change_building_level_in_location = {
+						building = building_type:naval_supplies_guild
+
+						value = {
+							add = "location_building_level(building_type:naval_supplies_guild)"
+							multiply = -1
+						}
+					}
+				}
+				if = {
+					limit = {
+						location_building_level = {
+							building_type = building_type:naval_supplies_workshop
+							value > 0
+						}
+					}
+
+					change_building_level_in_location = {
+						building = building_type:sul_naval_supplies_workshop
+						value = "location_building_level(building_type:naval_supplies_workshop)"
+					}
+					change_building_level_in_location = {
+						building = building_type:naval_supplies_workshop
+
+						value = {
+							add = "location_building_level(building_type:naval_supplies_workshop)"
+							multiply = -1
+						}
+					}
+				}
+				if = {
+					limit = {
+						location_building_level = {
+							building_type = building_type:naval_supplies_manufactory
+							value > 0
+						}
+					}
+
+					change_building_level_in_location = {
+						building = building_type:sul_naval_supplies_manufactory
+						value = "location_building_level(building_type:naval_supplies_manufactory)"
+					}
+					change_building_level_in_location = {
+						building = building_type:naval_supplies_manufactory
+
+						value = {
+							add = "location_building_level(building_type:naval_supplies_manufactory)"
+							multiply = -1
+						}
+					}
+				}
+				if = {
+					limit = {
+						location_building_level = {
+							building_type = building_type:naval_supplies_mill
+							value > 0
+						}
+					}
+
+					change_building_level_in_location = {
+						building = building_type:sul_naval_supplies_mill
+						value = "location_building_level(building_type:naval_supplies_mill)"
+					}
+					change_building_level_in_location = {
+						building = building_type:naval_supplies_mill
+
+						value = {
+							add = "location_building_level(building_type:naval_supplies_mill)"
+							multiply = -1
+						}
+					}
+				}
+			}
+		}
+	}
+}
+
+# Dead Unit Cleanup — destroys AI armies with 0 strength.
+
+sul_cleanup_dead_units = {
+	effect = {
+		if = {
+			limit = { is_ai = yes }
+			every_army = { limit = { strength_percentage <= 0 } destroy_unit = yes }
 		}
 	}
 }

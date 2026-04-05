@@ -1,0 +1,633 @@
+﻿# =============================================================================
+# WPP READER + TIER GATES (location scope, called from pop scope via location.)
+# =============================================================================
+# sul_read_wpp: raw WPP lookup from variable map
+# sul_read_tier_*: max(0, WPP - threshold) per tier, used by pop_demands.txt
+#
+# Thresholds must match TIER_THRESHOLD in demand_calculator.py
+# =============================================================================
+
+@sul_tier_threshold_necessity = 0
+@sul_tier_threshold_basic = 0.05
+@sul_tier_threshold_common = 0.12
+@sul_tier_threshold_upper = 0.25
+@sul_tier_threshold_luxury = 0.5
+@sul_tier_threshold_exotic = 1.5
+
+sul_read_wpp = {
+	value = 0
+	if = {
+		limit = {
+			has_variable_map = sul_wealth_per_pop
+			is_key_in_variable_map = { name = sul_wealth_per_pop target = prev.pop_type }
+		}
+
+		add = "variable_map(sul_wealth_per_pop|prev.pop_type)"
+	}
+}
+
+sul_read_tier_necessity = {
+	value = sul_read_wpp
+	subtract = @sul_tier_threshold_necessity
+	min = 0
+}
+
+sul_read_tier_basic = {
+	value = sul_read_wpp
+	subtract = @sul_tier_threshold_basic
+	min = 0
+}
+
+sul_read_tier_common = {
+	value = sul_read_wpp
+	subtract = @sul_tier_threshold_common
+	min = 0
+}
+
+sul_read_tier_upper = {
+	value = sul_read_wpp
+	subtract = @sul_tier_threshold_upper
+	min = 0
+}
+
+sul_read_tier_luxury = {
+	value = sul_read_wpp
+	subtract = @sul_tier_threshold_luxury
+	min = 0
+}
+
+sul_read_tier_exotic = {
+	value = sul_read_wpp
+	subtract = @sul_tier_threshold_exotic
+	min = 0
+}
+
+# Combined tier gate × budget pressure (single multiply in pop_demands)
+
+sul_demand_necessity = {
+	value = sul_read_wpp
+	subtract = @sul_tier_threshold_necessity
+	min = 0
+	multiply = sul_budget_pressure
+}
+
+sul_demand_basic = {
+	value = sul_read_wpp
+	subtract = @sul_tier_threshold_basic
+	min = 0
+	multiply = sul_budget_pressure
+}
+
+sul_demand_common = {
+	value = sul_read_wpp
+	subtract = @sul_tier_threshold_common
+	min = 0
+	multiply = sul_budget_pressure
+}
+
+sul_demand_upper = {
+	value = sul_read_wpp
+	subtract = @sul_tier_threshold_upper
+	min = 0
+	multiply = sul_budget_pressure
+}
+
+sul_demand_luxury = {
+	value = sul_read_wpp
+	subtract = @sul_tier_threshold_luxury
+	min = 0
+	multiply = sul_budget_pressure
+}
+
+sul_demand_exotic = {
+	value = sul_read_wpp
+	subtract = @sul_tier_threshold_exotic
+	min = 0
+	multiply = sul_budget_pressure
+}
+
+# Budget pressure: per-estate spending intensity from accumulated gold.
+# Location scope (called via location.sul_demand_*) — uses prev to reach pop scope.
+
+sul_budget_pressure = {
+	value = 1
+	if = {
+		limit = {
+			prev.pop_type = pop_type:nobles
+			owner = { has_variable = sul_budget_pressure_nobles }
+		}
+
+		value = owner.var:sul_budget_pressure_nobles
+	}
+	if = {
+		limit = {
+			prev.pop_type = pop_type:clergy
+			owner = { has_variable = sul_budget_pressure_clergy }
+		}
+
+		value = owner.var:sul_budget_pressure_clergy
+	}
+	if = {
+		limit = {
+			prev.pop_type = pop_type:burghers
+			owner = { has_variable = sul_budget_pressure_burghers }
+		}
+
+		value = owner.var:sul_budget_pressure_burghers
+	}
+	if = {
+		limit = {
+			OR = {
+				prev.pop_type = pop_type:peasants
+				prev.pop_type = pop_type:laborers
+				prev.pop_type = pop_type:soldiers
+			}
+
+			owner = { has_variable = sul_budget_pressure_peasants }
+		}
+
+		value = owner.var:sul_budget_pressure_peasants
+	}
+}
+
+# =============================================================================
+# BUDGET BREAKDOWN SCRIPT VALUES (location scope)
+# =============================================================================
+# Per pop-type per tier: returns max(0, wpp - threshold) × num_pops.
+# GUI multiplies by demand_add (from sul_da_* map) to get per-good quantity.
+# Evaluated on tooltip hover only.
+# =============================================================================
+
+# --- NOBLES ---
+
+sul_nobles_necessity = {
+	value = {
+		value = "variable_map(sul_wealth_per_pop|pop_type:nobles)"
+		subtract = @sul_tier_threshold_necessity
+		min = 0
+	}
+
+	multiply = num_pop_type:nobles
+}
+
+sul_nobles_basic = {
+	value = {
+		value = "variable_map(sul_wealth_per_pop|pop_type:nobles)"
+		subtract = @sul_tier_threshold_basic
+		min = 0
+	}
+
+	multiply = num_pop_type:nobles
+}
+
+sul_nobles_common = {
+	value = {
+		value = "variable_map(sul_wealth_per_pop|pop_type:nobles)"
+		subtract = @sul_tier_threshold_common
+		min = 0
+	}
+
+	multiply = num_pop_type:nobles
+}
+
+sul_nobles_upper = {
+	value = {
+		value = "variable_map(sul_wealth_per_pop|pop_type:nobles)"
+		subtract = @sul_tier_threshold_upper
+		min = 0
+	}
+
+	multiply = num_pop_type:nobles
+}
+
+sul_nobles_luxury = {
+	value = {
+		value = "variable_map(sul_wealth_per_pop|pop_type:nobles)"
+		subtract = @sul_tier_threshold_luxury
+		min = 0
+	}
+
+	multiply = num_pop_type:nobles
+}
+
+sul_nobles_exotic = {
+	value = {
+		value = "variable_map(sul_wealth_per_pop|pop_type:nobles)"
+		subtract = @sul_tier_threshold_exotic
+		min = 0
+	}
+
+	multiply = num_pop_type:nobles
+}
+
+# --- CLERGY ---
+
+sul_clergy_necessity = {
+	value = {
+		value = "variable_map(sul_wealth_per_pop|pop_type:clergy)"
+		subtract = @sul_tier_threshold_necessity
+		min = 0
+	}
+
+	multiply = num_pop_type:clergy
+}
+
+sul_clergy_basic = {
+	value = {
+		value = "variable_map(sul_wealth_per_pop|pop_type:clergy)"
+		subtract = @sul_tier_threshold_basic
+		min = 0
+	}
+
+	multiply = num_pop_type:clergy
+}
+
+sul_clergy_common = {
+	value = {
+		value = "variable_map(sul_wealth_per_pop|pop_type:clergy)"
+		subtract = @sul_tier_threshold_common
+		min = 0
+	}
+
+	multiply = num_pop_type:clergy
+}
+
+sul_clergy_upper = {
+	value = {
+		value = "variable_map(sul_wealth_per_pop|pop_type:clergy)"
+		subtract = @sul_tier_threshold_upper
+		min = 0
+	}
+
+	multiply = num_pop_type:clergy
+}
+
+sul_clergy_luxury = {
+	value = {
+		value = "variable_map(sul_wealth_per_pop|pop_type:clergy)"
+		subtract = @sul_tier_threshold_luxury
+		min = 0
+	}
+
+	multiply = num_pop_type:clergy
+}
+
+sul_clergy_exotic = {
+	value = {
+		value = "variable_map(sul_wealth_per_pop|pop_type:clergy)"
+		subtract = @sul_tier_threshold_exotic
+		min = 0
+	}
+
+	multiply = num_pop_type:clergy
+}
+
+# --- BURGHERS ---
+
+sul_burghers_necessity = {
+	value = {
+		value = "variable_map(sul_wealth_per_pop|pop_type:burghers)"
+		subtract = @sul_tier_threshold_necessity
+		min = 0
+	}
+
+	multiply = num_pop_type:burghers
+}
+
+sul_burghers_basic = {
+	value = {
+		value = "variable_map(sul_wealth_per_pop|pop_type:burghers)"
+		subtract = @sul_tier_threshold_basic
+		min = 0
+	}
+
+	multiply = num_pop_type:burghers
+}
+
+sul_burghers_common = {
+	value = {
+		value = "variable_map(sul_wealth_per_pop|pop_type:burghers)"
+		subtract = @sul_tier_threshold_common
+		min = 0
+	}
+
+	multiply = num_pop_type:burghers
+}
+
+sul_burghers_upper = {
+	value = {
+		value = "variable_map(sul_wealth_per_pop|pop_type:burghers)"
+		subtract = @sul_tier_threshold_upper
+		min = 0
+	}
+
+	multiply = num_pop_type:burghers
+}
+
+sul_burghers_luxury = {
+	value = {
+		value = "variable_map(sul_wealth_per_pop|pop_type:burghers)"
+		subtract = @sul_tier_threshold_luxury
+		min = 0
+	}
+
+	multiply = num_pop_type:burghers
+}
+
+sul_burghers_exotic = {
+	value = {
+		value = "variable_map(sul_wealth_per_pop|pop_type:burghers)"
+		subtract = @sul_tier_threshold_exotic
+		min = 0
+	}
+
+	multiply = num_pop_type:burghers
+}
+
+# --- SOLDIERS (share wpp_commoners with laborers & peasants) ---
+
+sul_soldiers_necessity = {
+	value = {
+		value = "variable_map(sul_wealth_per_pop|pop_type:soldiers)"
+		subtract = @sul_tier_threshold_necessity
+		min = 0
+	}
+
+	multiply = num_pop_type:soldiers
+}
+
+sul_soldiers_basic = {
+	value = {
+		value = "variable_map(sul_wealth_per_pop|pop_type:soldiers)"
+		subtract = @sul_tier_threshold_basic
+		min = 0
+	}
+
+	multiply = num_pop_type:soldiers
+}
+
+sul_soldiers_common = {
+	value = {
+		value = "variable_map(sul_wealth_per_pop|pop_type:soldiers)"
+		subtract = @sul_tier_threshold_common
+		min = 0
+	}
+
+	multiply = num_pop_type:soldiers
+}
+
+sul_soldiers_upper = {
+	value = {
+		value = "variable_map(sul_wealth_per_pop|pop_type:soldiers)"
+		subtract = @sul_tier_threshold_upper
+		min = 0
+	}
+
+	multiply = num_pop_type:soldiers
+}
+
+sul_soldiers_luxury = {
+	value = {
+		value = "variable_map(sul_wealth_per_pop|pop_type:soldiers)"
+		subtract = @sul_tier_threshold_luxury
+		min = 0
+	}
+
+	multiply = num_pop_type:soldiers
+}
+
+sul_soldiers_exotic = {
+	value = {
+		value = "variable_map(sul_wealth_per_pop|pop_type:soldiers)"
+		subtract = @sul_tier_threshold_exotic
+		min = 0
+	}
+
+	multiply = num_pop_type:soldiers
+}
+
+# --- LABORERS (share wpp_commoners with soldiers & peasants) ---
+
+sul_laborers_necessity = {
+	value = {
+		value = "variable_map(sul_wealth_per_pop|pop_type:laborers)"
+		subtract = @sul_tier_threshold_necessity
+		min = 0
+	}
+
+	multiply = num_pop_type:laborers
+}
+
+sul_laborers_basic = {
+	value = {
+		value = "variable_map(sul_wealth_per_pop|pop_type:laborers)"
+		subtract = @sul_tier_threshold_basic
+		min = 0
+	}
+
+	multiply = num_pop_type:laborers
+}
+
+sul_laborers_common = {
+	value = {
+		value = "variable_map(sul_wealth_per_pop|pop_type:laborers)"
+		subtract = @sul_tier_threshold_common
+		min = 0
+	}
+
+	multiply = num_pop_type:laborers
+}
+
+sul_laborers_upper = {
+	value = {
+		value = "variable_map(sul_wealth_per_pop|pop_type:laborers)"
+		subtract = @sul_tier_threshold_upper
+		min = 0
+	}
+
+	multiply = num_pop_type:laborers
+}
+
+sul_laborers_luxury = {
+	value = {
+		value = "variable_map(sul_wealth_per_pop|pop_type:laborers)"
+		subtract = @sul_tier_threshold_luxury
+		min = 0
+	}
+
+	multiply = num_pop_type:laborers
+}
+
+sul_laborers_exotic = {
+	value = {
+		value = "variable_map(sul_wealth_per_pop|pop_type:laborers)"
+		subtract = @sul_tier_threshold_exotic
+		min = 0
+	}
+
+	multiply = num_pop_type:laborers
+}
+
+# --- PEASANTS (share wpp_commoners with soldiers & laborers) ---
+
+sul_peasants_necessity = {
+	value = {
+		value = "variable_map(sul_wealth_per_pop|pop_type:peasants)"
+		subtract = @sul_tier_threshold_necessity
+		min = 0
+	}
+
+	multiply = num_pop_type:peasants
+}
+
+sul_peasants_basic = {
+	value = {
+		value = "variable_map(sul_wealth_per_pop|pop_type:peasants)"
+		subtract = @sul_tier_threshold_basic
+		min = 0
+	}
+
+	multiply = num_pop_type:peasants
+}
+
+sul_peasants_common = {
+	value = {
+		value = "variable_map(sul_wealth_per_pop|pop_type:peasants)"
+		subtract = @sul_tier_threshold_common
+		min = 0
+	}
+
+	multiply = num_pop_type:peasants
+}
+
+sul_peasants_upper = {
+	value = {
+		value = "variable_map(sul_wealth_per_pop|pop_type:peasants)"
+		subtract = @sul_tier_threshold_upper
+		min = 0
+	}
+
+	multiply = num_pop_type:peasants
+}
+
+sul_peasants_luxury = {
+	value = {
+		value = "variable_map(sul_wealth_per_pop|pop_type:peasants)"
+		subtract = @sul_tier_threshold_luxury
+		min = 0
+	}
+
+	multiply = num_pop_type:peasants
+}
+
+sul_peasants_exotic = {
+	value = {
+		value = "variable_map(sul_wealth_per_pop|pop_type:peasants)"
+		subtract = @sul_tier_threshold_exotic
+		min = 0
+	}
+
+	multiply = num_pop_type:peasants
+}
+
+# Granary cap — scales with development and population
+# ~3-4 in a small town, ~8-10 in a large city
+
+sul_granary_max_level = {
+	add = { desc = "BUILDING_LEVEL_BASE" value = 1 }
+	add = {
+		desc = "BUILDING_LEVEL_DEVELOPMENT"
+		value = development
+		multiply = 0.05
+	}
+	add = {
+		desc = "BUILDING_LEVEL_POPULATION"
+		value = population
+		multiply = 0.01
+	}
+	if = {
+		limit = { location_rank ?= location_rank:city }
+		add = { desc = "BUILDING_LEVEL_IS_CITY" value = 2 }
+	}
+}
+
+sul_rural_granary_max_level = {
+	add = 1
+
+	add = { value = development multiply = 0.05 }
+}
+
+employment_size_RGO = 1
+
+build_time_RGO = 365
+
+# Current RGO building level at this location.
+# Reads var:sul_rgo_building_type (set during game start init on each location).
+
+sul_rgo_output_per_level = {
+	value = raw_material_output
+
+	divide = { value = sul_location_rgo_building_level min = 1 }
+}
+
+sul_location_rgo_building_level = {
+	value = "location_building_level(var:sul_rgo_building_type)"
+}
+
+# RGO building levels under construction.
+
+sul_rgo_levels_under_construction = {
+	value = var:sul_rgo_constructing
+}
+
+# Max RGO building level. All goods use the same formula.
+
+sul_location_max_rgo_building_level = {
+	value = sul_rgo_max_level_base
+	min = 1
+}
+
+sul_location_max_rgo_building_level_rounded = {
+	value = sul_rgo_max_level_base
+	floor = yes
+	min = 1
+}
+
+# Starting level: 1 minimum + 1 per 50 pops at the location.
+
+rgo_building_level = {
+	value = 1
+
+	add = { value = population divide = 50 }
+
+	floor = yes
+}
+
+# ===================
+# RGO MAX LEVEL FORMULA
+# ===================
+# Explicit script value with desc lines for tooltip display.
+# Mirrors the sul_rgo_size static modifier contributions.
+
+sul_rgo_max_level_base = {
+	add = { desc = "WPDO_RGO_LEVEL_BASE" value = 2 }
+	add = {
+		desc = "WPDO_RGO_LEVEL_DEVELOPMENT"
+		value = development
+		multiply = 0.1
+	}
+	add = {
+		desc = "WPDO_RGO_LEVEL_POPULATION"
+		value = population
+		multiply = 0.025
+	}
+
+	multiply = {
+		value = 1
+		add = modifier:local_max_rgo_size_modifier
+		if = {
+			limit = { has_owner = yes }
+			add = owner.modifier:global_max_rgo_size_modifier
+		}
+	}
+}

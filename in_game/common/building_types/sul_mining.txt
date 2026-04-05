@@ -1,462 +1,4 @@
-﻿@sul_rgo_good_bonus = 0.02
-@sul_rgo_size = 0.01
-@sul_rgo_raw_material = 0.01
-@sul_rural_good_bonus = 0.01
-@sul_rural_raw_material = 0.01
-@sul_guild_good_bonus = 0.015
-# Uncategorized
-
-REPLACE:mercury_patio = {
-	is_foreign = no
-	max_levels = mercury_patio_max_level
-	pop_type = laborers
-	category = rgo_building_category
-	employment_size = advanced_peasant_building_employment
-	rural_settlement = no
-	town = yes
-	city = yes
-
-	location_potential = {
-		OR = {
-			raw_material = goods:silver
-			raw_material = goods:goods_gold
-		}
-
-		sul_has_mining_specialization = yes
-	}
-
-	build_time = guild_build_time
-
-	unique_production_methods = {
-		sul_mercury_patio_maintenance = {
-			mercury = 1.0
-			category = building_maintenance
-		}
-	}
-
-	construction_demand = mercury_patio_construction
-
-	modifier = {
-		local_goods_gold_output_modifier = 1.0
-		local_silver_output_modifier = 1.0
-	}
-}
-
-REPLACE:stone_quarry = {
-	is_foreign = no
-	max_levels = rural_building_cap
-	pop_type = laborers
-	employment_size = rural_peasant_produce_employment
-	rural_settlement = yes
-	town = yes
-	city = yes
-
-	location_potential = {
-		OR = {
-			topography = mountains
-			topography = plateau
-			topography = hills
-		}
-		NOT = {
-			raw_material = goods:stone
-		}
-
-		sul_has_mining_specialization = yes
-	}
-
-	category = rgo_building_category
-
-	unique_production_methods = {
-		sul_stone_quarry_maintenance = {
-			tools = 0.1
-			lumber = 0.12
-			leather = 0.1
-			produced = stone
-			output = 1
-			category = building_maintenance
-		}
-
-		sul_crude_quarry_maintenance = {
-			lumber = 0.28
-			produced = stone
-			output = 0.5
-			category = building_maintenance
-		}
-	}
-
-	build_time = rural_build_time
-	construction_demand = basic_construction_needs
-
-	modifier = {
-		local_raw_material_output = @sul_rgo_raw_material
-		local_stone_output_modifier = @sul_rgo_good_bonus
-		local_max_rgo_size_modifier = @sul_rgo_size
-	}
-}
-
-REPLACE:bog_iron_smelter = {
-	is_foreign = no
-	max_levels = rural_building_cap
-	pop_type = laborers
-	employment_size = rural_peasant_produce_employment
-	rural_settlement = yes
-	town = yes
-	city = yes
-
-	location_potential = {
-		OR = {
-			is_adjacent_to_lake = yes
-			topography = wetlands
-		}
-		NOT = {
-			raw_material = goods:iron
-		}
-
-		sul_has_mining_specialization = yes
-	}
-
-	category = rgo_building_category
-
-	unique_production_methods = {
-		sul_bog_iron_maintenance = {
-			produced = iron
-			output = 0.3
-			coal = 0.39
-			category = building_maintenance
-		}
-	}
-
-	build_time = rural_build_time
-	construction_demand = basic_construction_needs
-
-	modifier = {
-		local_raw_material_output = @sul_rgo_raw_material
-		local_iron_output_modifier = @sul_rgo_good_bonus
-		local_max_rgo_size_modifier = @sul_rgo_size
-	}
-}
-
-REPLACE:local_smelters = {
-	is_foreign = no
-	pop_type = laborers
-	max_levels = rural_building_cap
-	employment_size = rural_peasant_enhance_employment
-	category = rgo_building_category
-	rural_settlement = yes
-	town = yes
-	city = yes
-
-	location_potential = {
-		OR = {
-			raw_material = goods:iron
-			raw_material = goods:copper
-			raw_material = goods:tin
-			raw_material = goods:lead
-		}
-
-		sul_has_mining_specialization = yes
-	}
-
-	unique_production_methods = {
-		sul_local_smelters_maintenance = {
-			tools = 0.025
-			lumber = 0.05
-			coal = 0.05
-			category = building_maintenance
-		}
-	}
-
-	modifier = {
-		local_iron_output_modifier = 0.1
-		local_copper_output_modifier = 0.1
-		local_tin_output_modifier = 0.1
-		local_lead_output_modifier = 0.1
-		local_max_rgo_size_modifier = 0.02
-	}
-
-	build_time = rural_build_time
-	construction_demand = farm_constructions
-}
-
-# Mining goods output (cannons)
-
-INJECT:cannon_maker = {
-	location_potential = {
-		OR = {
-			modifier:sul_allows_cannon_production = yes
-			has_variable = sul_allows_cannon_production
-		}
-	}
-
-	modifier = {
-		# Mining goods output
-		local_cannons_output_modifier = @sul_guild_good_bonus
-	}
-}
-
-INJECT:cannon_workshop = {
-	location_potential = {
-		OR = {
-			modifier:sul_allows_cannon_production = yes
-			has_variable = sul_allows_cannon_production
-		}
-	}
-
-	modifier = {
-		# Mining goods output
-		local_cannons_output_modifier = @sul_guild_good_bonus
-	}
-}
-
-INJECT:cannon_foundry = {
-	location_potential = {
-		OR = {
-			modifier:sul_allows_cannon_production = yes
-			has_variable = sul_allows_cannon_production
-		}
-	}
-
-	modifier = {
-		# Mining goods output
-		local_cannons_output_modifier = @sul_guild_good_bonus
-	}
-}
-
-INJECT:cannons_factory = {
-	location_potential = {
-		OR = {
-			modifier:sul_allows_cannon_production = yes
-			has_variable = sul_allows_cannon_production
-		}
-	}
-
-	modifier = {
-		# Mining goods output
-		local_cannons_output_modifier = @sul_guild_good_bonus
-	}
-}
-
-# Mining goods output (firearms)
-
-INJECT:hand_cannon_guild = {
-	location_potential = {
-		OR = {
-			modifier:sul_allows_firearms_production = yes
-			has_variable = sul_allows_firearms_production
-		}
-	}
-
-	modifier = {
-		# Mining goods output
-		local_firearms_output_modifier = @sul_guild_good_bonus
-	}
-}
-
-INJECT:gun_smith = {
-	location_potential = {
-		OR = {
-			modifier:sul_allows_firearms_production = yes
-			has_variable = sul_allows_firearms_production
-		}
-	}
-
-	modifier = {
-		# Mining goods output
-		local_firearms_output_modifier = @sul_guild_good_bonus
-	}
-}
-
-INJECT:guns_workshop = {
-	location_potential = {
-		OR = {
-			modifier:sul_allows_firearms_production = yes
-			has_variable = sul_allows_firearms_production
-		}
-	}
-
-	modifier = {
-		# Mining goods output
-		local_firearms_output_modifier = @sul_guild_good_bonus
-	}
-}
-
-INJECT:firearms_manufactory = {
-	location_potential = {
-		OR = {
-			modifier:sul_allows_firearms_production = yes
-			has_variable = sul_allows_firearms_production
-		}
-	}
-
-	modifier = {
-		# Mining goods output
-		local_firearms_output_modifier = @sul_guild_good_bonus
-	}
-}
-
-INJECT:firearms_factory = {
-	location_potential = {
-		OR = {
-			modifier:sul_allows_firearms_production = yes
-			has_variable = sul_allows_firearms_production
-		}
-	}
-
-	modifier = {
-		# Mining goods output
-		local_firearms_output_modifier = @sul_guild_good_bonus
-	}
-}
-
-# Mining goods output (jewelry)
-
-INJECT:jewelry_guild = {
-	location_potential = {
-		OR = {
-			modifier:sul_allows_jewelry_production = yes
-			has_variable = sul_allows_jewelry_production
-		}
-	}
-
-	modifier = {
-		# Mining goods output
-		local_jewelry_output_modifier = @sul_guild_good_bonus
-	}
-}
-
-# Mining goods output (weaponry)
-
-INJECT:weapon_guild = {
-	location_potential = {
-		OR = {
-			modifier:sul_allows_weapons_production = yes
-			has_variable = sul_allows_weapons_production
-		}
-	}
-
-	modifier = {
-		# Mining goods output
-		local_weaponry_output_modifier = @sul_guild_good_bonus
-	}
-}
-
-INJECT:weapon_workshop = {
-	location_potential = {
-		OR = {
-			modifier:sul_allows_weapons_production = yes
-			has_variable = sul_allows_weapons_production
-		}
-	}
-
-	modifier = {
-		# Mining goods output
-		local_weaponry_output_modifier = @sul_guild_good_bonus
-	}
-}
-
-INJECT:weapon_manufactory = {
-	location_potential = {
-		OR = {
-			modifier:sul_allows_weapons_production = yes
-			has_variable = sul_allows_weapons_production
-		}
-	}
-
-	modifier = {
-		# Mining goods output
-		local_weaponry_output_modifier = @sul_guild_good_bonus
-	}
-}
-
-INJECT:weapon_factory = {
-	location_potential = {
-		OR = {
-			modifier:sul_allows_weapons_production = yes
-			has_variable = sul_allows_weapons_production
-		}
-	}
-
-	modifier = {
-		# Mining goods output
-		local_weaponry_output_modifier = @sul_guild_good_bonus
-	}
-}
-
-# Mining goods output (steel)
-
-INJECT:steel_mill = {
-	location_potential = {
-		OR = {
-			modifier:sul_allows_steel_production = yes
-			has_variable = sul_allows_steel_production
-		}
-	}
-
-	modifier = {
-		# Mining goods output
-		local_steel_output_modifier = @sul_guild_good_bonus
-	}
-}
-
-# Mining goods output (tools)
-
-INJECT:tools_guild = {
-	location_potential = {
-		OR = {
-			modifier:sul_allows_tools_production = yes
-			has_variable = sul_allows_tools_production
-		}
-	}
-
-	modifier = {
-		# Mining goods output
-		local_tools_output_modifier = @sul_guild_good_bonus
-	}
-}
-
-INJECT:tools_workshop = {
-	location_potential = {
-		OR = {
-			modifier:sul_allows_tools_production = yes
-			has_variable = sul_allows_tools_production
-		}
-	}
-
-	modifier = {
-		# Mining goods output
-		local_tools_output_modifier = @sul_guild_good_bonus
-	}
-}
-
-INJECT:iron_foundry = {
-	location_potential = {
-		OR = {
-			modifier:sul_allows_tools_production = yes
-			has_variable = sul_allows_tools_production
-		}
-	}
-
-	modifier = {
-		# Mining goods output
-		local_tools_output_modifier = @sul_guild_good_bonus
-	}
-}
-
-INJECT:iron_mill = {
-	location_potential = {
-		OR = {
-			modifier:sul_allows_tools_production = yes
-			has_variable = sul_allows_tools_production
-		}
-	}
-
-	modifier = {
-		# Mining goods output
-		local_tools_output_modifier = @sul_guild_good_bonus
-	}
-}
-
-# Custom buildings
+﻿# Mining specialization — custom buildings
 
 sul_iron_mine = {
 	is_foreign = no
@@ -488,12 +30,6 @@ sul_iron_mine = {
 
 	build_time = rural_build_time
 	construction_demand = basic_construction_needs
-
-	modifier = {
-		local_raw_material_output = @sul_rgo_raw_material
-		local_iron_output_modifier = @sul_rgo_good_bonus
-		local_max_rgo_size_modifier = @sul_rgo_size
-	}
 }
 
 sul_marble_quarry = {
@@ -523,15 +59,242 @@ sul_marble_quarry = {
 
 	build_time = rural_build_time
 	construction_demand = basic_construction_needs
+}
 
-	modifier = {
-		local_raw_material_output = @sul_rgo_raw_material
-		local_marble_output_modifier = @sul_rgo_good_bonus
-		local_max_rgo_size_modifier = @sul_rgo_size
+# Mining specialization gates
+
+INJECT:mercury_patio = {
+	location_potential = {
+		sul_has_mining_specialization = yes
 	}
 }
 
-# Rural cottage industry (mining)
+INJECT:stone_quarry = {
+	location_potential = {
+		sul_has_mining_specialization = yes
+	}
+}
+
+INJECT:bog_iron_smelter = {
+	location_potential = {
+		sul_has_mining_specialization = yes
+	}
+}
+
+REPLACE:local_smelters = {
+	is_foreign = no
+	pop_type = laborers
+	max_levels = rural_building_cap
+	employment_size = rural_peasant_enhance_employment
+	category = rgo_building_category
+	rural_settlement = yes
+	ai_forbid_shutdown = yes
+
+	location_potential = {
+		OR = {
+			raw_material = goods:iron
+			raw_material = goods:copper
+			raw_material = goods:tin
+			raw_material = goods:lead
+		}
+
+		sul_has_mining_specialization = yes
+	}
+
+	unique_production_methods = {
+		sul_local_smelters_maintenance = {
+			tools = 0.03
+			lumber = 0.05
+			coal = 0.05
+			category = building_maintenance
+		}
+	}
+
+	modifier = {
+		local_iron_output_modifier = 0.1
+		local_copper_output_modifier = 0.1
+		local_tin_output_modifier = 0.1
+		local_lead_output_modifier = 0.1
+	}
+
+	build_time = rural_build_time
+	construction_demand = farm_constructions
+}
+
+# Downstream goods — specialization limits
+
+INJECT:cannon_maker = {
+	location_potential = {
+		OR = {
+			modifier:sul_allows_cannon_production = yes
+			has_variable = sul_allows_cannon_production
+		}
+	}
+}
+
+INJECT:cannon_workshop = {
+	location_potential = {
+		OR = {
+			modifier:sul_allows_cannon_production = yes
+			has_variable = sul_allows_cannon_production
+		}
+	}
+}
+
+INJECT:cannon_foundry = {
+	location_potential = {
+		OR = {
+			modifier:sul_allows_cannon_production = yes
+			has_variable = sul_allows_cannon_production
+		}
+	}
+}
+
+INJECT:cannons_factory = {
+	location_potential = {
+		OR = {
+			modifier:sul_allows_cannon_production = yes
+			has_variable = sul_allows_cannon_production
+		}
+	}
+}
+
+INJECT:hand_cannon_guild = {
+	location_potential = {
+		OR = {
+			modifier:sul_allows_firearms_production = yes
+			has_variable = sul_allows_firearms_production
+		}
+	}
+}
+
+INJECT:gun_smith = {
+	location_potential = {
+		OR = {
+			modifier:sul_allows_firearms_production = yes
+			has_variable = sul_allows_firearms_production
+		}
+	}
+}
+
+INJECT:guns_workshop = {
+	location_potential = {
+		OR = {
+			modifier:sul_allows_firearms_production = yes
+			has_variable = sul_allows_firearms_production
+		}
+	}
+}
+
+INJECT:firearms_manufactory = {
+	location_potential = {
+		OR = {
+			modifier:sul_allows_firearms_production = yes
+			has_variable = sul_allows_firearms_production
+		}
+	}
+}
+
+INJECT:firearms_factory = {
+	location_potential = {
+		OR = {
+			modifier:sul_allows_firearms_production = yes
+			has_variable = sul_allows_firearms_production
+		}
+	}
+}
+
+INJECT:jewelry_guild = {
+	location_potential = {
+		OR = {
+			modifier:sul_allows_jewelry_production = yes
+			has_variable = sul_allows_jewelry_production
+		}
+	}
+}
+
+INJECT:weapon_guild = {
+	location_potential = {
+		OR = {
+			modifier:sul_allows_weapons_production = yes
+			has_variable = sul_allows_weapons_production
+		}
+	}
+}
+
+INJECT:weapon_workshop = {
+	location_potential = {
+		OR = {
+			modifier:sul_allows_weapons_production = yes
+			has_variable = sul_allows_weapons_production
+		}
+	}
+}
+
+INJECT:weapon_manufactory = {
+	location_potential = {
+		OR = {
+			modifier:sul_allows_weapons_production = yes
+			has_variable = sul_allows_weapons_production
+		}
+	}
+}
+
+INJECT:weapon_factory = {
+	location_potential = {
+		OR = {
+			modifier:sul_allows_weapons_production = yes
+			has_variable = sul_allows_weapons_production
+		}
+	}
+}
+
+INJECT:steel_mill = {
+	location_potential = {
+		OR = {
+			modifier:sul_allows_steel_production = yes
+			has_variable = sul_allows_steel_production
+		}
+	}
+}
+
+INJECT:tools_guild = {
+	location_potential = {
+		OR = {
+			modifier:sul_allows_tools_production = yes
+			has_variable = sul_allows_tools_production
+		}
+	}
+}
+
+INJECT:tools_workshop = {
+	location_potential = {
+		OR = {
+			modifier:sul_allows_tools_production = yes
+			has_variable = sul_allows_tools_production
+		}
+	}
+}
+
+INJECT:iron_foundry = {
+	location_potential = {
+		OR = {
+			modifier:sul_allows_tools_production = yes
+			has_variable = sul_allows_tools_production
+		}
+	}
+}
+
+INJECT:iron_mill = {
+	location_potential = {
+		OR = {
+			modifier:sul_allows_tools_production = yes
+			has_variable = sul_allows_tools_production
+		}
+	}
+}
+
+# Custom cottage industry buildings
 
 sul_rural_blacksmith = {
 	is_foreign = no
@@ -560,11 +323,6 @@ sul_rural_blacksmith = {
 	}
 
 	construction_demand = village_construction
-
-	modifier = {
-		local_raw_material_output = @sul_rural_raw_material
-		local_tools_output_modifier = @sul_rural_good_bonus
-	}
 }
 
 sul_rural_weaponmaker = {
@@ -598,11 +356,6 @@ sul_rural_weaponmaker = {
 	}
 
 	construction_demand = village_construction
-
-	modifier = {
-		local_raw_material_output = @sul_rural_raw_material
-		local_weaponry_output_modifier = @sul_rural_good_bonus
-	}
 }
 
 sul_rural_jeweler = {
@@ -634,9 +387,60 @@ sul_rural_jeweler = {
 	}
 
 	construction_demand = village_construction
+}
 
-	modifier = {
-		local_raw_material_output = @sul_rural_raw_material
-		local_jewelry_output_modifier = @sul_rural_good_bonus
+# Rural blacksmith — tools production for mining settlements
+
+sul_rural_blacksmith = {
+	icon = tools_guild
+	is_foreign = no
+	pop_type = laborers
+	max_levels = guild_max_level
+	category = basic_industry_category
+	employment_size = rural_peasant_produce_employment
+	rural_settlement = yes
+	town = no
+	city = no
+	build_time = rural_build_time
+
+	location_potential = {
+		sul_has_mining_specialization = yes
 	}
+
+	unique_production_methods = {
+		sul_rural_metalwork_maintenance = {
+			iron = 0.5
+			produced = tools
+			output = 0.5
+			debug_max_profit = -1
+			category = guild_input
+		}
+
+		sul_rural_stone_tools_maintenance = {
+			stone = 1.0
+			produced = tools
+			output = 0.5
+			debug_max_profit = 1
+			category = guild_input
+		}
+
+		sul_rural_bronze_tools_maintenance = {
+			copper = 0.5
+			tin = 0.04
+			produced = tools
+			output = 0.55
+			debug_max_profit = -1
+			category = guild_input
+		}
+
+		sul_rural_copper_tools_maintenance = {
+			copper = 0.55
+			produced = tools
+			output = 0.55
+			debug_max_profit = -1
+			category = guild_input
+		}
+	}
+
+	construction_demand = village_construction
 }

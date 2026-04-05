@@ -1,56 +1,86 @@
-﻿# Specialized Urban Locations - RGO Building Grants
-# Round-robin: while budget remains, each qualifying RGO gets 1 level per round.
-# Per-building counters prevent exceeding rural_building_cap.
-# root = location with sul_rgo_levels set
+﻿# Specialized Urban Locations - Building Distribution
+# Round-robin: distributes destroyed building levels across matching buildings.
+# Each qualifying building gets 1 level per round until budget is spent.
+# Per-building counters prevent exceeding caps.
+#
+# root = location (call AFTER sul_save_building_levels + sul_destroy_non_matching_buildings)
+#
+# To add a building: add a new if-block in the relevant specialization effect.
+# Conditions should mirror the building's location_potential (minus the spec gate).
+# RGO buildings use sul_dist_cap (rural_building_cap).
+# Guild buildings use sul_guild_cap (guild_max_level), gated by is_town_or_city.
 
 # ============================================
 # ROUTER
 # ============================================
 
-sul_grant_specialization_rgo_building = {
-	if = {
-		limit = { sul_has_mining_specialization = yes }
-		sul_grant_mining_rgo = yes
-	}
-	else_if = {
-		limit = { sul_has_farming_specialization = yes }
-		sul_grant_farming_rgo = yes
-	}
-	else_if = {
-		limit = { sul_has_gathering_specialization = yes }
-		sul_grant_gathering_rgo = yes
-	}
-	else_if = {
-		limit = { sul_has_woodland_specialization = yes }
-		sul_grant_woodland_rgo = yes
+sul_distribute_specialization_buildings = {
+	# Budget = how many levels were destroyed
+	set_variable = {
+		name = sul_dist_budget
+
+		value = {
+			value = var:sul_prior_building_levels
+			subtract = total_building_levels
+			min = 0
+		}
 	}
 
-	# Commercial — no RGO buildings, marketplace comes from guild grant
+	if = {
+		limit = { var:sul_dist_budget > 0 }
+
+		if = {
+			limit = { sul_has_mining_specialization = yes }
+			sul_distribute_mining_buildings = yes
+		}
+		else_if = {
+			limit = { sul_has_farming_specialization = yes }
+			sul_distribute_farming_buildings = yes
+		}
+		else_if = {
+			limit = { sul_has_woodland_specialization = yes }
+			sul_distribute_woodland_buildings = yes
+		}
+		else_if = {
+			limit = { sul_has_gathering_specialization = yes }
+			sul_distribute_gathering_buildings = yes
+		}
+		else_if = {
+			limit = { sul_has_commercial_specialization = yes }
+			sul_distribute_commercial_buildings = yes
+		}
+	}
+
+	sul_dist_cleanup = yes
 }
 
 # ============================================
-# CLEANUP helper — removes cap/counter variables
+# CLEANUP — removes temporary variables
 # ============================================
 
-sul_rgo_grant_cleanup = {
-	remove_variable = sul_rgo_cap
+sul_dist_cleanup = {
+	remove_variable = sul_dist_budget
+	remove_variable = sul_dist_cap
+	remove_variable = sul_guild_cap
 	remove_variable = sul_c0
 	remove_variable = sul_c1
 	remove_variable = sul_c2
 	remove_variable = sul_c3
-	remove_variable = sul_c4
+	remove_variable = sul_g0
+	remove_variable = sul_g1
+	remove_variable = sul_g2
+	remove_variable = sul_g3
 }
 
 # ============================================
-# MINING RGO
-# Terrain-based independent checks (multiple can fire per iteration)
-# c0=local_smelters c1=sul_iron_mine c2=sul_marble_quarry
-# c3=stone_quarry c4=bog_iron_smelter
+# MINING
+# RGO: c0=stone_quarry c1=bog_iron_smelter c2=local_smelters c3=sul_iron_mine c4=sul_marble_quarry
+# Guild: g0=tools_guild g1=weapon_guild g2=jewelry_guild
 # ============================================
 
-sul_grant_mining_rgo = {
+sul_distribute_mining_buildings = {
 	set_variable = {
-		name = sul_rgo_cap
+		name = sul_dist_cap
 		value = { value = rural_building_cap floor = yes }
 	}
 	set_variable = { name = sul_c0 value = 0 }
@@ -60,71 +90,14 @@ sul_grant_mining_rgo = {
 	set_variable = { name = sul_c4 value = 0 }
 
 	while = {
-		limit = { var:sul_rgo_levels > 0 }
-		count = 20
+		limit = { var:sul_dist_budget > 0 }
+		count = 50
+
+		# Stone quarry — mountains, plateau, or hills (not raw stone)
 		if = {
 			limit = {
-				var:sul_c0 < var:sul_rgo_cap
-				OR = {
-					raw_material = goods:iron
-					raw_material = goods:copper
-					raw_material = goods:tin
-					raw_material = goods:lead
-				}
-				owner = { has_advance = local_smelters_advance }
-			}
-
-			change_building_level_in_location = {
-				building = building_type:local_smelters
-				value = 1
-			}
-
-			change_variable = { name = sul_rgo_levels subtract = 1 }
-			change_variable = { name = sul_c0 add = 1 }
-		}
-		if = {
-			limit = {
-				var:sul_rgo_levels > 0
-				var:sul_c1 < var:sul_rgo_cap
-				OR = {
-					topography = mountains
-					topography = hills
-				}
-				NOT = {
-					raw_material = goods:iron
-				}
-			}
-
-			change_building_level_in_location = {
-				building = building_type:sul_iron_mine
-				value = 1
-			}
-
-			change_variable = { name = sul_rgo_levels subtract = 1 }
-			change_variable = { name = sul_c1 add = 1 }
-		}
-		if = {
-			limit = {
-				var:sul_rgo_levels > 0
-				var:sul_c2 < var:sul_rgo_cap
-				topography = plateau
-				NOT = {
-					raw_material = goods:marble
-				}
-			}
-
-			change_building_level_in_location = {
-				building = building_type:sul_marble_quarry
-				value = 1
-			}
-
-			change_variable = { name = sul_rgo_levels subtract = 1 }
-			change_variable = { name = sul_c2 add = 1 }
-		}
-		if = {
-			limit = {
-				var:sul_rgo_levels > 0
-				var:sul_c3 < var:sul_rgo_cap
+				var:sul_dist_budget > 0
+				var:sul_c0 < var:sul_dist_cap
 				OR = {
 					topography = mountains
 					topography = plateau
@@ -140,13 +113,15 @@ sul_grant_mining_rgo = {
 				value = 1
 			}
 
-			change_variable = { name = sul_rgo_levels subtract = 1 }
-			change_variable = { name = sul_c3 add = 1 }
+			change_variable = { name = sul_dist_budget subtract = 1 }
+			change_variable = { name = sul_c0 add = 1 }
 		}
+
+		# Bog iron smelter — wetlands or lake (not raw iron)
 		if = {
 			limit = {
-				var:sul_rgo_levels > 0
-				var:sul_c4 < var:sul_rgo_cap
+				var:sul_dist_budget > 0
+				var:sul_c1 < var:sul_dist_cap
 				OR = {
 					is_adjacent_to_lake = yes
 					topography = wetlands
@@ -154,7 +129,6 @@ sul_grant_mining_rgo = {
 				NOT = {
 					raw_material = goods:iron
 				}
-				owner = { has_advance = iron_working }
 			}
 
 			change_building_level_in_location = {
@@ -162,245 +136,157 @@ sul_grant_mining_rgo = {
 				value = 1
 			}
 
-			change_variable = { name = sul_rgo_levels subtract = 1 }
+			change_variable = { name = sul_dist_budget subtract = 1 }
+			change_variable = { name = sul_c1 add = 1 }
+		}
+
+		# Local smelters — ore-producing locations
+		if = {
+			limit = {
+				var:sul_dist_budget > 0
+				var:sul_c2 < var:sul_dist_cap
+				OR = {
+					raw_material = goods:iron
+					raw_material = goods:copper
+					raw_material = goods:tin
+					raw_material = goods:lead
+				}
+			}
+
+			change_building_level_in_location = {
+				building = building_type:local_smelters
+				value = 1
+			}
+
+			change_variable = { name = sul_dist_budget subtract = 1 }
+			change_variable = { name = sul_c2 add = 1 }
+		}
+
+		# Iron mine — mountains or hills (not raw iron)
+		if = {
+			limit = {
+				var:sul_dist_budget > 0
+				var:sul_c3 < var:sul_dist_cap
+				OR = {
+					topography = mountains
+					topography = hills
+				}
+				NOT = {
+					raw_material = goods:iron
+				}
+			}
+
+			change_building_level_in_location = {
+				building = building_type:sul_iron_mine
+				value = 1
+			}
+
+			change_variable = { name = sul_dist_budget subtract = 1 }
+			change_variable = { name = sul_c3 add = 1 }
+		}
+
+		# Marble quarry — plateau (not raw marble)
+		if = {
+			limit = {
+				var:sul_dist_budget > 0
+				var:sul_c4 < var:sul_dist_cap
+				topography = plateau
+				NOT = {
+					raw_material = goods:marble
+				}
+			}
+
+			change_building_level_in_location = {
+				building = building_type:sul_marble_quarry
+				value = 1
+			}
+
+			change_variable = { name = sul_dist_budget subtract = 1 }
 			change_variable = { name = sul_c4 add = 1 }
 		}
 	}
 
-	sul_rgo_grant_cleanup = yes
+	# Guild buildings — towns and cities only
+	if = {
+		limit = { is_town_or_city = yes var:sul_dist_budget > 0 }
+
+		set_variable = {
+			name = sul_guild_cap
+			value = { value = guild_max_level floor = yes }
+		}
+		set_variable = { name = sul_g0 value = 0 }
+		set_variable = { name = sul_g1 value = 0 }
+		set_variable = { name = sul_g2 value = 0 }
+
+		while = {
+			limit = { var:sul_dist_budget > 0 }
+			count = 30
+
+			# Tools guild
+			if = {
+				limit = { var:sul_dist_budget > 0 var:sul_g0 < var:sul_guild_cap }
+
+				change_building_level_in_location = {
+					building = building_type:tools_guild
+					value = 1
+				}
+
+				change_variable = { name = sul_dist_budget subtract = 1 }
+				change_variable = { name = sul_g0 add = 1 }
+			}
+
+			# Weapon guild
+			if = {
+				limit = { var:sul_dist_budget > 0 var:sul_g1 < var:sul_guild_cap }
+
+				change_building_level_in_location = {
+					building = building_type:weapon_guild
+					value = 1
+				}
+
+				change_variable = { name = sul_dist_budget subtract = 1 }
+				change_variable = { name = sul_g1 add = 1 }
+			}
+
+			# Jewelry guild
+			if = {
+				limit = { var:sul_dist_budget > 0 var:sul_g2 < var:sul_guild_cap }
+
+				change_building_level_in_location = {
+					building = building_type:jewelry_guild
+					value = 1
+				}
+
+				change_variable = { name = sul_dist_budget subtract = 1 }
+				change_variable = { name = sul_g2 add = 1 }
+			}
+		}
+	}
 }
 
 # ============================================
-# FARMING RGO
-# Primary crop: if/else_if chain (one raw_material per location)
-# Secondary: terrain/market-based (independent, need budget check)
-# c0=primary_crop c1=sul_cattle_pens c2=fruit_orchard c3=fiber_crops_farm
+# FARMING
+# RGO: c0=fruit_orchard c1=fiber_crops_farm
+# Guild: g0=brewery g1=winery g2=distillers_guild g3=tannery
 # ============================================
 
-sul_grant_farming_rgo = {
+sul_distribute_farming_buildings = {
 	set_variable = {
-		name = sul_rgo_cap
+		name = sul_dist_cap
 		value = { value = rural_building_cap floor = yes }
 	}
 	set_variable = { name = sul_c0 value = 0 }
 	set_variable = { name = sul_c1 value = 0 }
-	set_variable = { name = sul_c2 value = 0 }
-	set_variable = { name = sul_c3 value = 0 }
 
 	while = {
-		limit = { var:sul_rgo_levels > 0 }
-		count = 20
-		# Primary crop — mutually exclusive (one raw_material per location)
-		if = {
-			limit = { var:sul_c0 < var:sul_rgo_cap raw_material = goods:wheat }
+		limit = { var:sul_dist_budget > 0 }
+		count = 50
 
-			change_building_level_in_location = {
-				building = building_type:sul_wheat_fields
-				value = 1
-			}
-
-			change_variable = { name = sul_rgo_levels subtract = 1 }
-			change_variable = { name = sul_c0 add = 1 }
-		}
-		else_if = {
-			limit = { var:sul_c0 < var:sul_rgo_cap raw_material = goods:rice }
-
-			change_building_level_in_location = {
-				building = building_type:sul_rice_paddies
-				value = 1
-			}
-
-			change_variable = { name = sul_rgo_levels subtract = 1 }
-			change_variable = { name = sul_c0 add = 1 }
-		}
-		else_if = {
-			limit = { var:sul_c0 < var:sul_rgo_cap raw_material = goods:millet }
-
-			change_building_level_in_location = {
-				building = building_type:sul_millet_fields
-				value = 1
-			}
-
-			change_variable = { name = sul_rgo_levels subtract = 1 }
-			change_variable = { name = sul_c0 add = 1 }
-		}
-		else_if = {
-			limit = { var:sul_c0 < var:sul_rgo_cap raw_material = goods:maize }
-
-			change_building_level_in_location = {
-				building = building_type:sul_maize_fields
-				value = 1
-			}
-
-			change_variable = { name = sul_rgo_levels subtract = 1 }
-			change_variable = { name = sul_c0 add = 1 }
-		}
-		else_if = {
-			limit = { var:sul_c0 < var:sul_rgo_cap raw_material = goods:potato }
-
-			change_building_level_in_location = {
-				building = building_type:sul_potato_fields
-				value = 1
-			}
-
-			change_variable = { name = sul_rgo_levels subtract = 1 }
-			change_variable = { name = sul_c0 add = 1 }
-		}
-		else_if = {
-			limit = { var:sul_c0 < var:sul_rgo_cap raw_material = goods:olives }
-
-			change_building_level_in_location = {
-				building = building_type:sul_olive_groves
-				value = 1
-			}
-
-			change_variable = { name = sul_rgo_levels subtract = 1 }
-			change_variable = { name = sul_c0 add = 1 }
-		}
-		else_if = {
-			limit = { var:sul_c0 < var:sul_rgo_cap raw_material = goods:legumes }
-
-			change_building_level_in_location = {
-				building = building_type:sul_legume_fields
-				value = 1
-			}
-
-			change_variable = { name = sul_rgo_levels subtract = 1 }
-			change_variable = { name = sul_c0 add = 1 }
-		}
-		else_if = {
-			limit = { var:sul_c0 < var:sul_rgo_cap raw_material = goods:tea }
-
-			change_building_level_in_location = {
-				building = building_type:sul_tea_gardens
-				value = 1
-			}
-
-			change_variable = { name = sul_rgo_levels subtract = 1 }
-			change_variable = { name = sul_c0 add = 1 }
-		}
-		else_if = {
-			limit = { var:sul_c0 < var:sul_rgo_cap raw_material = goods:coffee }
-
-			change_building_level_in_location = {
-				building = building_type:sul_coffee_estates
-				value = 1
-			}
-
-			change_variable = { name = sul_rgo_levels subtract = 1 }
-			change_variable = { name = sul_c0 add = 1 }
-		}
-		else_if = {
-			limit = { var:sul_c0 < var:sul_rgo_cap raw_material = goods:cocoa }
-
-			change_building_level_in_location = {
-				building = building_type:sul_cocoa_groves
-				value = 1
-			}
-
-			change_variable = { name = sul_rgo_levels subtract = 1 }
-			change_variable = { name = sul_c0 add = 1 }
-		}
-		else_if = {
-			limit = { var:sul_c0 < var:sul_rgo_cap raw_material = goods:silk }
-
-			change_building_level_in_location = {
-				building = building_type:sul_silk_houses
-				value = 1
-			}
-
-			change_variable = { name = sul_rgo_levels subtract = 1 }
-			change_variable = { name = sul_c0 add = 1 }
-		}
-		else_if = {
-			limit = { var:sul_c0 < var:sul_rgo_cap raw_material = goods:saffron }
-
-			change_building_level_in_location = {
-				building = building_type:sul_saffron_fields
-				value = 1
-			}
-
-			change_variable = { name = sul_rgo_levels subtract = 1 }
-			change_variable = { name = sul_c0 add = 1 }
-		}
-		else_if = {
-			limit = { var:sul_c0 < var:sul_rgo_cap raw_material = goods:pepper }
-
-			change_building_level_in_location = {
-				building = building_type:sul_pepper_gardens
-				value = 1
-			}
-
-			change_variable = { name = sul_rgo_levels subtract = 1 }
-			change_variable = { name = sul_c0 add = 1 }
-		}
-		else_if = {
-			limit = { var:sul_c0 < var:sul_rgo_cap raw_material = goods:cloves }
-
-			change_building_level_in_location = {
-				building = building_type:sul_clove_plantations
-				value = 1
-			}
-
-			change_variable = { name = sul_rgo_levels subtract = 1 }
-			change_variable = { name = sul_c0 add = 1 }
-		}
-		else_if = {
-			limit = { var:sul_c0 < var:sul_rgo_cap raw_material = goods:chili }
-
-			change_building_level_in_location = {
-				building = building_type:sul_chili_fields
-				value = 1
-			}
-
-			change_variable = { name = sul_rgo_levels subtract = 1 }
-			change_variable = { name = sul_c0 add = 1 }
-		}
-		else_if = {
-			limit = {
-				var:sul_c0 < var:sul_rgo_cap
-				raw_material = goods:horses
-				OR = {
-					climate = mediterranean
-					climate = continental
-					climate = oceanic
-				}
-			}
-
-			change_building_level_in_location = {
-				building = building_type:horse_breeders
-				value = 1
-			}
-
-			change_variable = { name = sul_rgo_levels subtract = 1 }
-			change_variable = { name = sul_c0 add = 1 }
-		}
-
-		# Secondary: terrain/market-based (coexist with primary, need budget check)
+		# Fruit orchard — vegetated terrain
 		if = {
 			limit = {
-				var:sul_rgo_levels > 0
-				var:sul_c1 < var:sul_rgo_cap
-				OR = {
-					topography = flatland
-					vegetation = grasslands
-				}
-
-				is_produced_in_location_market = goods:livestock
-			}
-
-			change_building_level_in_location = {
-				building = building_type:sul_cattle_pens
-				value = 1
-			}
-
-			change_variable = { name = sul_rgo_levels subtract = 1 }
-			change_variable = { name = sul_c1 add = 1 }
-		}
-		if = {
-			limit = {
-				var:sul_rgo_levels > 0
-				var:sul_c2 < var:sul_rgo_cap
+				var:sul_dist_budget > 0
+				var:sul_c0 < var:sul_dist_cap
 				OR = {
 					vegetation = grasslands
 					vegetation = farmland
@@ -414,13 +300,15 @@ sul_grant_farming_rgo = {
 				value = 1
 			}
 
-			change_variable = { name = sul_rgo_levels subtract = 1 }
-			change_variable = { name = sul_c2 add = 1 }
+			change_variable = { name = sul_dist_budget subtract = 1 }
+			change_variable = { name = sul_c0 add = 1 }
 		}
+
+		# Fiber crops farm — non-arctic, no raw fiber_crops
 		if = {
 			limit = {
-				var:sul_rgo_levels > 0
-				var:sul_c3 < var:sul_rgo_cap
+				var:sul_dist_budget > 0
+				var:sul_c1 < var:sul_dist_cap
 				NOT = {
 					raw_material = goods:fiber_crops
 				}
@@ -434,155 +322,92 @@ sul_grant_farming_rgo = {
 				value = 1
 			}
 
-			change_variable = { name = sul_rgo_levels subtract = 1 }
-			change_variable = { name = sul_c3 add = 1 }
-		}
-	}
-
-	sul_rgo_grant_cleanup = yes
-}
-
-# ============================================
-# GATHERING RGO
-# Raw material: if/else_if chain (mutually exclusive)
-# Terrain: independent checks (need budget check)
-# c0=raw_material c1=sheep_farms c2=clay_pit c3=salt_collector c4=sand_pit
-# ============================================
-
-sul_grant_gathering_rgo = {
-	set_variable = {
-		name = sul_rgo_cap
-		value = { value = rural_building_cap floor = yes }
-	}
-	set_variable = { name = sul_c0 value = 0 }
-	set_variable = { name = sul_c1 value = 0 }
-	set_variable = { name = sul_c2 value = 0 }
-	set_variable = { name = sul_c3 value = 0 }
-	set_variable = { name = sul_c4 value = 0 }
-
-	while = {
-		limit = { var:sul_rgo_levels > 0 }
-		count = 20
-		# Raw material buildings (mutually exclusive where applicable)
-		if = {
-			limit = {
-				var:sul_c0 < var:sul_rgo_cap
-				raw_material = goods:pearls
-				is_coastal = yes
-			}
-
-			change_building_level_in_location = {
-				building = building_type:sul_pearl_divers
-				value = 1
-			}
-
-			change_variable = { name = sul_rgo_levels subtract = 1 }
-			change_variable = { name = sul_c0 add = 1 }
-		}
-		else_if = {
-			limit = { var:sul_c0 < var:sul_rgo_cap raw_material = goods:amber }
-
-			change_building_level_in_location = {
-				building = building_type:sul_amber_collectors
-				value = 1
-			}
-
-			change_variable = { name = sul_rgo_levels subtract = 1 }
-			change_variable = { name = sul_c0 add = 1 }
-		}
-
-		# Terrain-based (independent, need budget check)
-		if = {
-			limit = {
-				var:sul_rgo_levels > 0
-				var:sul_c1 < var:sul_rgo_cap
-				OR = {
-					vegetation = sparse
-					vegetation = farmland
-					vegetation = grasslands
-				}
-			}
-
-			change_building_level_in_location = {
-				building = building_type:sheep_farms
-				value = 1
-			}
-
-			change_variable = { name = sul_rgo_levels subtract = 1 }
+			change_variable = { name = sul_dist_budget subtract = 1 }
 			change_variable = { name = sul_c1 add = 1 }
 		}
-		if = {
-			limit = {
-				var:sul_rgo_levels > 0
-				var:sul_c2 < var:sul_rgo_cap
-				OR = {
-					is_coastal = yes
-					has_river = yes
-					is_adjacent_to_lake = yes
-				}
-				NOT = {
-					raw_material = goods:clay
-				}
-			}
-
-			change_building_level_in_location = {
-				building = building_type:clay_pit
-				value = 1
-			}
-
-			change_variable = { name = sul_rgo_levels subtract = 1 }
-			change_variable = { name = sul_c2 add = 1 }
-		}
-		if = {
-			limit = {
-				var:sul_rgo_levels > 0
-				var:sul_c3 < var:sul_rgo_cap
-				OR = {
-					vegetation = desert
-					is_coastal = yes
-				}
-			}
-
-			change_building_level_in_location = {
-				building = building_type:salt_collector
-				value = 1
-			}
-
-			change_variable = { name = sul_rgo_levels subtract = 1 }
-			change_variable = { name = sul_c3 add = 1 }
-		}
-		if = {
-			limit = {
-				var:sul_rgo_levels > 0
-				var:sul_c4 < var:sul_rgo_cap
-				NOT = {
-					raw_material = goods:sand
-				}
-			}
-
-			change_building_level_in_location = {
-				building = building_type:sand_pit
-				value = 1
-			}
-
-			change_variable = { name = sul_rgo_levels subtract = 1 }
-			change_variable = { name = sul_c4 add = 1 }
-		}
 	}
 
-	sul_rgo_grant_cleanup = yes
+	# Guild buildings — towns and cities only
+	if = {
+		limit = { is_town_or_city = yes var:sul_dist_budget > 0 }
+
+		set_variable = {
+			name = sul_guild_cap
+			value = { value = guild_max_level floor = yes }
+		}
+		set_variable = { name = sul_g0 value = 0 }
+		set_variable = { name = sul_g1 value = 0 }
+		set_variable = { name = sul_g2 value = 0 }
+		set_variable = { name = sul_g3 value = 0 }
+
+		while = {
+			limit = { var:sul_dist_budget > 0 }
+			count = 30
+
+			# Brewery
+			if = {
+				limit = { var:sul_dist_budget > 0 var:sul_g0 < var:sul_guild_cap }
+
+				change_building_level_in_location = {
+					building = building_type:brewery
+					value = 1
+				}
+
+				change_variable = { name = sul_dist_budget subtract = 1 }
+				change_variable = { name = sul_g0 add = 1 }
+			}
+
+			# Winery
+			if = {
+				limit = { var:sul_dist_budget > 0 var:sul_g1 < var:sul_guild_cap }
+
+				change_building_level_in_location = {
+					building = building_type:winery
+					value = 1
+				}
+
+				change_variable = { name = sul_dist_budget subtract = 1 }
+				change_variable = { name = sul_g1 add = 1 }
+			}
+
+			# Distillers guild
+			if = {
+				limit = { var:sul_dist_budget > 0 var:sul_g2 < var:sul_guild_cap }
+
+				change_building_level_in_location = {
+					building = building_type:distillers_guild
+					value = 1
+				}
+
+				change_variable = { name = sul_dist_budget subtract = 1 }
+				change_variable = { name = sul_g2 add = 1 }
+			}
+
+			# Tannery
+			if = {
+				limit = { var:sul_dist_budget > 0 var:sul_g3 < var:sul_guild_cap }
+
+				change_building_level_in_location = {
+					building = building_type:tannery
+					value = 1
+				}
+
+				change_variable = { name = sul_dist_budget subtract = 1 }
+				change_variable = { name = sul_g3 add = 1 }
+			}
+		}
+	}
 }
 
 # ============================================
-# WOODLAND RGO
-# Raw material: if/else_if chain (mutually exclusive)
-# Terrain: independent checks (need budget check)
-# c0=raw_material c1=tar_kiln c2=lumber_mill c3=charcoal_maker
+# WOODLAND
+# RGO: c0=lumber_mill c1=tar_kiln c2=sawmill c3=elephant_hunting_grounds
+# Guild: g0=furniture_guild g1=tannery g2=paper_guild g3=dyes_guild
 # ============================================
 
-sul_grant_woodland_rgo = {
+sul_distribute_woodland_buildings = {
 	set_variable = {
-		name = sul_rgo_cap
+		name = sul_dist_cap
 		value = { value = rural_building_cap floor = yes }
 	}
 	set_variable = { name = sul_c0 value = 0 }
@@ -591,57 +416,14 @@ sul_grant_woodland_rgo = {
 	set_variable = { name = sul_c3 value = 0 }
 
 	while = {
-		limit = { var:sul_rgo_levels > 0 }
-		count = 20
-		# Raw material buildings (mutually exclusive)
-		if = {
-			limit = { var:sul_c0 < var:sul_rgo_cap raw_material = goods:elephants }
+		limit = { var:sul_dist_budget > 0 }
+		count = 50
 
-			change_building_level_in_location = {
-				building = building_type:elephant_hunting_grounds
-				value = 1
-			}
-
-			change_variable = { name = sul_rgo_levels subtract = 1 }
-			change_variable = { name = sul_c0 add = 1 }
-		}
-		else_if = {
-			limit = { var:sul_c0 < var:sul_rgo_cap raw_material = goods:fur }
-
-			change_building_level_in_location = {
-				building = building_type:sul_trapping_cabins
-				value = 1
-			}
-
-			change_variable = { name = sul_rgo_levels subtract = 1 }
-			change_variable = { name = sul_c0 add = 1 }
-		}
-
-		# Terrain-based (independent, need budget check)
+		# Lumber mill — forested terrain (not raw lumber)
 		if = {
 			limit = {
-				var:sul_rgo_levels > 0
-				var:sul_c1 < var:sul_rgo_cap
-				OR = {
-					vegetation = woods
-					vegetation = forest
-					vegetation = jungle
-					raw_material = goods:lumber
-				}
-			}
-
-			change_building_level_in_location = {
-				building = building_type:tar_kiln
-				value = 1
-			}
-
-			change_variable = { name = sul_rgo_levels subtract = 1 }
-			change_variable = { name = sul_c1 add = 1 }
-		}
-		if = {
-			limit = {
-				var:sul_rgo_levels > 0
-				var:sul_c2 < var:sul_rgo_cap
+				var:sul_dist_budget > 0
+				var:sul_c0 < var:sul_dist_cap
 				OR = {
 					vegetation = woods
 					vegetation = forest
@@ -658,29 +440,379 @@ sul_grant_woodland_rgo = {
 				value = 1
 			}
 
-			change_variable = { name = sul_rgo_levels subtract = 1 }
-			change_variable = { name = sul_c2 add = 1 }
+			change_variable = { name = sul_dist_budget subtract = 1 }
+			change_variable = { name = sul_c0 add = 1 }
 		}
+
+		# Tar kiln — forested terrain or raw lumber
 		if = {
 			limit = {
-				var:sul_rgo_levels > 0
-				var:sul_c3 < var:sul_rgo_cap
+				var:sul_dist_budget > 0
+				var:sul_c1 < var:sul_dist_cap
 				OR = {
 					vegetation = woods
 					vegetation = forest
 					vegetation = jungle
+					raw_material = goods:lumber
 				}
 			}
 
 			change_building_level_in_location = {
-				building = building_type:charcoal_maker
+				building = building_type:tar_kiln
 				value = 1
 			}
 
-			change_variable = { name = sul_rgo_levels subtract = 1 }
+			change_variable = { name = sul_dist_budget subtract = 1 }
+			change_variable = { name = sul_c1 add = 1 }
+		}
+
+		# Sawmill — forested terrain or raw lumber
+		if = {
+			limit = {
+				var:sul_dist_budget > 0
+				var:sul_c2 < var:sul_dist_cap
+				OR = {
+					vegetation = woods
+					vegetation = forest
+					vegetation = farmland
+					vegetation = jungle
+					raw_material = goods:lumber
+				}
+			}
+
+			change_building_level_in_location = {
+				building = building_type:sawmill
+				value = 1
+			}
+
+			change_variable = { name = sul_dist_budget subtract = 1 }
+			change_variable = { name = sul_c2 add = 1 }
+		}
+
+		# Elephant hunting grounds — elephants only
+		if = {
+			limit = {
+				var:sul_dist_budget > 0
+				var:sul_c3 < var:sul_dist_cap
+				raw_material = goods:elephants
+			}
+
+			change_building_level_in_location = {
+				building = building_type:elephant_hunting_grounds
+				value = 1
+			}
+
+			change_variable = { name = sul_dist_budget subtract = 1 }
 			change_variable = { name = sul_c3 add = 1 }
 		}
 	}
 
-	sul_rgo_grant_cleanup = yes
+	# Guild buildings — towns and cities only
+	if = {
+		limit = { is_town_or_city = yes var:sul_dist_budget > 0 }
+
+		set_variable = {
+			name = sul_guild_cap
+			value = { value = guild_max_level floor = yes }
+		}
+		set_variable = { name = sul_g0 value = 0 }
+		set_variable = { name = sul_g1 value = 0 }
+		set_variable = { name = sul_g2 value = 0 }
+		set_variable = { name = sul_g3 value = 0 }
+
+		while = {
+			limit = { var:sul_dist_budget > 0 }
+			count = 30
+
+			# Furniture guild
+			if = {
+				limit = { var:sul_dist_budget > 0 var:sul_g0 < var:sul_guild_cap }
+
+				change_building_level_in_location = {
+					building = building_type:furniture_guild
+					value = 1
+				}
+
+				change_variable = { name = sul_dist_budget subtract = 1 }
+				change_variable = { name = sul_g0 add = 1 }
+			}
+
+			# Tannery
+			if = {
+				limit = { var:sul_dist_budget > 0 var:sul_g1 < var:sul_guild_cap }
+
+				change_building_level_in_location = {
+					building = building_type:tannery
+					value = 1
+				}
+
+				change_variable = { name = sul_dist_budget subtract = 1 }
+				change_variable = { name = sul_g1 add = 1 }
+			}
+
+			# Paper guild
+			if = {
+				limit = { var:sul_dist_budget > 0 var:sul_g2 < var:sul_guild_cap }
+
+				change_building_level_in_location = {
+					building = building_type:paper_guild
+					value = 1
+				}
+
+				change_variable = { name = sul_dist_budget subtract = 1 }
+				change_variable = { name = sul_g2 add = 1 }
+			}
+
+			# Dyes guild
+			if = {
+				limit = { var:sul_dist_budget > 0 var:sul_g3 < var:sul_guild_cap }
+
+				change_building_level_in_location = {
+					building = building_type:dyes_guild
+					value = 1
+				}
+
+				change_variable = { name = sul_dist_budget subtract = 1 }
+				change_variable = { name = sul_g3 add = 1 }
+			}
+		}
+	}
+}
+
+# ============================================
+# GATHERING
+# RGO: c0=clay_pit c1=salt_collector c2=sand_pit c3=sheep_farms
+# Guild: g0=pottery_guild g1=glass_guild g2=saltpeter_guild g3=apothecary
+# ============================================
+
+sul_distribute_gathering_buildings = {
+	set_variable = {
+		name = sul_dist_cap
+		value = { value = rural_building_cap floor = yes }
+	}
+	set_variable = { name = sul_c0 value = 0 }
+	set_variable = { name = sul_c1 value = 0 }
+	set_variable = { name = sul_c2 value = 0 }
+	set_variable = { name = sul_c3 value = 0 }
+
+	while = {
+		limit = { var:sul_dist_budget > 0 }
+		count = 50
+
+		# Clay pit — coastal, river, or lake (not raw clay)
+		if = {
+			limit = {
+				var:sul_dist_budget > 0
+				var:sul_c0 < var:sul_dist_cap
+				OR = {
+					is_coastal = yes
+					has_river = yes
+					is_adjacent_to_lake = yes
+				}
+				NOT = {
+					raw_material = goods:clay
+				}
+			}
+
+			change_building_level_in_location = {
+				building = building_type:clay_pit
+				value = 1
+			}
+
+			change_variable = { name = sul_dist_budget subtract = 1 }
+			change_variable = { name = sul_c0 add = 1 }
+		}
+
+		# Salt collector — desert or coastal
+		if = {
+			limit = {
+				var:sul_dist_budget > 0
+				var:sul_c1 < var:sul_dist_cap
+				OR = {
+					vegetation = desert
+					is_coastal = yes
+				}
+			}
+
+			change_building_level_in_location = {
+				building = building_type:salt_collector
+				value = 1
+			}
+
+			change_variable = { name = sul_dist_budget subtract = 1 }
+			change_variable = { name = sul_c1 add = 1 }
+		}
+
+		# Sand pit — anywhere (not raw sand)
+		if = {
+			limit = {
+				var:sul_dist_budget > 0
+				var:sul_c2 < var:sul_dist_cap
+				NOT = {
+					raw_material = goods:sand
+				}
+			}
+
+			change_building_level_in_location = {
+				building = building_type:sand_pit
+				value = 1
+			}
+
+			change_variable = { name = sul_dist_budget subtract = 1 }
+			change_variable = { name = sul_c2 add = 1 }
+		}
+
+		# Sheep farms — open terrain
+		if = {
+			limit = {
+				var:sul_dist_budget > 0
+				var:sul_c3 < var:sul_dist_cap
+				OR = {
+					vegetation = sparse
+					vegetation = farmland
+					vegetation = grasslands
+				}
+			}
+
+			change_building_level_in_location = {
+				building = building_type:sheep_farms
+				value = 1
+			}
+
+			change_variable = { name = sul_dist_budget subtract = 1 }
+			change_variable = { name = sul_c3 add = 1 }
+		}
+	}
+
+	# Guild buildings — towns and cities only
+	if = {
+		limit = { is_town_or_city = yes var:sul_dist_budget > 0 }
+
+		set_variable = {
+			name = sul_guild_cap
+			value = { value = guild_max_level floor = yes }
+		}
+		set_variable = { name = sul_g0 value = 0 }
+		set_variable = { name = sul_g1 value = 0 }
+		set_variable = { name = sul_g2 value = 0 }
+		set_variable = { name = sul_g3 value = 0 }
+
+		while = {
+			limit = { var:sul_dist_budget > 0 }
+			count = 30
+
+			# Pottery guild
+			if = {
+				limit = { var:sul_dist_budget > 0 var:sul_g0 < var:sul_guild_cap }
+
+				change_building_level_in_location = {
+					building = building_type:pottery_guild
+					value = 1
+				}
+
+				change_variable = { name = sul_dist_budget subtract = 1 }
+				change_variable = { name = sul_g0 add = 1 }
+			}
+
+			# Glass guild — needs sand in market
+			if = {
+				limit = {
+					var:sul_dist_budget > 0
+					var:sul_g1 < var:sul_guild_cap
+					is_produced_in_location_market = goods:sand
+				}
+
+				change_building_level_in_location = {
+					building = building_type:glass_guild
+					value = 1
+				}
+
+				change_variable = { name = sul_dist_budget subtract = 1 }
+				change_variable = { name = sul_g1 add = 1 }
+			}
+
+			# Saltpeter guild — needs livestock and clay in market
+			if = {
+				limit = {
+					var:sul_dist_budget > 0
+					var:sul_g2 < var:sul_guild_cap
+
+					market ?= {
+						is_produced_in_market = goods:livestock
+						is_produced_in_market = goods:clay
+					}
+				}
+
+				change_building_level_in_location = {
+					building = building_type:saltpeter_guild
+					value = 1
+				}
+
+				change_variable = { name = sul_dist_budget subtract = 1 }
+				change_variable = { name = sul_g2 add = 1 }
+			}
+
+			# Apothecary
+			if = {
+				limit = { var:sul_dist_budget > 0 var:sul_g3 < var:sul_guild_cap }
+
+				change_building_level_in_location = {
+					building = building_type:apothecary
+					value = 1
+				}
+
+				change_variable = { name = sul_dist_budget subtract = 1 }
+				change_variable = { name = sul_g3 add = 1 }
+			}
+		}
+	}
+}
+
+# ============================================
+# COMMERCIAL
+# Guild: g0=marketplace g1=cloth_guild
+# ============================================
+
+sul_distribute_commercial_buildings = {
+	if = {
+		limit = { is_town_or_city = yes var:sul_dist_budget > 0 }
+
+		set_variable = {
+			name = sul_guild_cap
+			value = { value = guild_max_level floor = yes }
+		}
+		set_variable = { name = sul_g0 value = 0 }
+		set_variable = { name = sul_g1 value = 0 }
+
+		while = {
+			limit = { var:sul_dist_budget > 0 }
+			count = 30
+
+			# Marketplace
+			if = {
+				limit = { var:sul_dist_budget > 0 var:sul_g0 < var:sul_guild_cap }
+
+				change_building_level_in_location = {
+					building = building_type:marketplace
+					value = 1
+				}
+
+				change_variable = { name = sul_dist_budget subtract = 1 }
+				change_variable = { name = sul_g0 add = 1 }
+			}
+
+			# Cloth guild
+			if = {
+				limit = { var:sul_dist_budget > 0 var:sul_g1 < var:sul_guild_cap }
+
+				change_building_level_in_location = {
+					building = building_type:cloth_guild
+					value = 1
+				}
+
+				change_variable = { name = sul_dist_budget subtract = 1 }
+				change_variable = { name = sul_g1 add = 1 }
+			}
+		}
+	}
 }

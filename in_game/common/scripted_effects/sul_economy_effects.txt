@@ -1,0 +1,157 @@
+﻿
+remove_RGOs = {
+	every_owned_location = { replace_rgos_with_buildings = yes }
+
+	every_owned_location = { change_max_raw_material_workers = -100 }
+
+	add_country_modifier = {
+		modifier = force_promote_vacancies
+		months = 2
+		mode = add
+		desc = force_promote_vacancies_desc
+	}
+}
+
+# Converts vanilla RGO into corresponding building using the sul_rgo_map.
+# Location scope. Map must be initialized before calling.
+
+replace_rgos_with_buildings = {
+	# Cache building_type on location for script value lookups
+	set_variable = {
+		name = sul_rgo_building_type
+		value = "global_variable_map(sul_rgo_map|raw_material)"
+	}
+
+	change_building_level_in_location = {
+		building = "global_variable_map(sul_rgo_map|raw_material)"
+		value = rgo_building_level
+	}
+
+	# Seed the market stockpile: 6 of the good + 1.8 tools (3 years of demand) per RGO level
+	save_temporary_scope_value_as = {
+		name = sul_rgo_seed_goods_amount
+		value = { value = rgo_building_level multiply = 6 }
+	}
+	save_temporary_scope_value_as = {
+		name = sul_rgo_seed_tools_amount
+		value = { value = rgo_building_level multiply = 1.8 }
+	}
+
+	market = {
+		add_goods_supply = {
+			goods = prev.raw_material
+			amount = scope:sul_rgo_seed_goods_amount
+		}
+		add_goods_supply = {
+			goods = goods:tools
+			amount = scope:sul_rgo_seed_tools_amount
+		}
+	}
+}
+
+# Overrides vanilla new-town setup to spawn RGO building instead of vanilla RGO.
+
+REPLACE:cc_setup_new_town = {
+	change_building_level_in_location = {
+		building = building_type:mason
+		value = 1
+	}
+
+	change_max_raw_material_workers = 1
+
+	# Cache building_type and spawn RGO building via map lookup
+	set_variable = {
+		name = sul_rgo_building_type
+		value = "global_variable_map(sul_rgo_map|raw_material)"
+	}
+
+	change_building_level_in_location = {
+		building = "global_variable_map(sul_rgo_map|raw_material)"
+		value = 1
+	}
+
+	if = {
+		limit = { market_access <= 0 }
+
+		create_market = {
+			builder = root
+			location = scope:new_town
+			price = price:create_market
+			instant = yes
+			price_modifier = 0
+		}
+	}
+}
+
+# Constructs one level of the location's RGO building. Location scope.
+# Used by the scripted GUI button.
+
+sul_construct_rgo_building = {
+	construct_building = {
+		building_type = "global_variable_map(sul_rgo_map|raw_material)"
+	}
+}
+
+# Trim RGO building levels down to max if over cap. Location scope.
+# Minimum 1 level always preserved for script safety.
+
+sul_trim_rgo_levels = {
+	if = {
+		limit = {
+			has_variable = sul_rgo_building_type
+			sul_location_rgo_building_level > sul_location_max_rgo_building_level_rounded
+		}
+
+		change_building_level_in_location = {
+			building = var:sul_rgo_building_type
+
+			value = {
+				value = sul_location_max_rgo_building_level_rounded
+				subtract = sul_location_rgo_building_level
+			}
+		}
+	}
+}
+
+# =============================================================================
+# WAGE RATES AND ESTATE PAYMENTS
+# =============================================================================
+# Wage rates determine how much each pop adds to local GDP beyond tax base.
+# Estate payments transfer accumulated wages to estates as gold.
+
+# --- Wage rates per pop ---
+@sul_wage_nobles = 5.0
+@sul_wage_clergy = 2.0
+@sul_wage_burghers = 1.0
+@sul_wage_soldiers = 0.5
+@sul_wage_laborers = 0.25
+@sul_wage_peasants = 0.05
+
+# -----------------------------------------------------------------------------
+# ESTATE WAGE PAYMENTS (country scope)
+# -----------------------------------------------------------------------------
+# Engine bug: add_gold_to_estate negates the value, so we negate first.
+
+sul_pay_single_estate_wage = {
+	if = {
+		limit = {
+			has_variable = sul_monthly_wages_$estate$
+			var:sul_monthly_wages_$estate$ > 0
+		}
+
+		add_gold_to_estate = {
+			estate_type = estate_type:$estate$_estate
+			value = { value = var:sul_monthly_wages_$estate$ multiply = -1 }
+		}
+	}
+}
+
+sul_pay_estate_wages = {
+	sul_pay_single_estate_wage = { estate = nobles }
+	sul_pay_single_estate_wage = { estate = clergy }
+	sul_pay_single_estate_wage = { estate = burghers }
+	sul_pay_single_estate_wage = { estate = peasants }
+	sul_pay_single_estate_wage = { estate = dhimmi }
+	sul_pay_single_estate_wage = { estate = cossacks }
+	sul_pay_single_estate_wage = { estate = tribes }
+}

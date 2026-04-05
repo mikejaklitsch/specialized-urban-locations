@@ -1,142 +1,21 @@
-﻿@sul_rgo_good_bonus = 0.02
-@sul_rgo_size = 0.01
-@sul_rgo_raw_material = 0.01
-@sul_rural_good_bonus = 0.01
-@sul_rural_raw_material = 0.01
-@sul_guild_good_bonus = 0.015
-# Uncategorized
+﻿# Woodland specialization gates
 
-REPLACE:lumber_mill = {
-	is_foreign = no
-	max_levels = rural_building_cap
-	pop_type = laborers
-	employment_size = rural_peasant_produce_employment
-	rural_settlement = yes
-	town = yes
-	city = yes
-
+INJECT:lumber_mill = {
 	location_potential = {
-		OR = {
-			vegetation = woods
-			vegetation = forest
-			vegetation = farmland
-			vegetation = jungle
-		}
-		NOT = {
-			raw_material = goods:lumber
-		}
-
 		sul_has_woodland_specialization = yes
-	}
-
-	category = rgo_building_category
-	build_time = rural_build_time
-
-	unique_production_methods = {
-		sul_lumber_mill_maintenance = {
-			produced = lumber
-			output = 1
-			tools = 0.4
-			category = building_maintenance
-		}
-	}
-
-	construction_demand = basic_construction_needs
-
-	modifier = {
-		local_raw_material_output = @sul_rgo_raw_material
-		local_lumber_output_modifier = @sul_rgo_good_bonus
-		local_max_rgo_size_modifier = @sul_rgo_size
 	}
 }
 
-REPLACE:tar_kiln = {
-	is_foreign = no
-	pop_type = laborers
-	max_levels = rural_building_cap
-	employment_size = tiny_rural_peasant_produce_employment
-	category = basic_industry_category
-	rural_settlement = yes
-	town = yes
-	city = yes
-
+INJECT:tar_kiln = {
 	location_potential = {
-		OR = {
-			vegetation = woods
-			vegetation = forest
-			vegetation = jungle
-			raw_material = goods:lumber
-		}
-
 		sul_has_woodland_specialization = yes
 	}
-
-	unique_production_methods = {
-		sul_tar_kiln_maintenance = {
-			produced = tar
-			output = 1.0
-			lumber = 1.07
-			category = guild_input
-		}
-	}
-
-	build_time = rural_build_time
-	construction_demand = guild_construction
-
-	modifier = { local_tar_output_modifier = @sul_guild_good_bonus }
 }
 
-REPLACE:elephant_hunting_grounds = {
-	is_foreign = no
-
-	max_levels = {
-		value = rural_building_cap
-		if = {
-			limit = {
-				owner ?= { has_variable = ori_double_elephant_hunting_ground_level_flag }
-			}
-
-			add = { desc = INCREASED_MAX_LEVEL_ELEPHANT_HUNTING_GROUND value = 2 }
-		}
-	}
-
-	pop_type = peasants
-	category = rgo_building_category
-	employment_size = elephant_hunting_grounds_employment
-	rural_settlement = yes
-	town = yes
-	city = yes
-
-	country_potential = {
-		produced_in_country:elephants > 0
-	}
-
+INJECT:elephant_hunting_grounds = {
 	location_potential = {
-		raw_material = goods:elephants
 		sul_has_woodland_specialization = yes
 	}
-
-	build_time = rural_build_time
-
-	unique_production_methods = {
-		sul_elephant_hunting_grounds_maintenance = {
-			produced = ivory
-			output = 1
-			tools = 0.2
-			weaponry = 0.2
-			elephants = 0.2
-			category = guild_input
-		}
-	}
-
-	modifier = {
-		local_raw_material_output = @sul_rgo_raw_material
-		local_ivory_output_modifier = @sul_rgo_good_bonus
-		local_nobles_desired_pop = 0.01
-		local_max_rgo_size_modifier = @sul_rgo_size
-	}
-
-	construction_demand = village_construction
 }
 
 REPLACE:sawmill = {
@@ -144,11 +23,10 @@ REPLACE:sawmill = {
 	pop_type = laborers
 	max_levels = rural_building_cap
 	employment_size = rural_peasant_enhance_employment
-	rural_settlement = yes
-	town = yes
-	city = yes
 	forbidden_for_estates = yes
 	category = rgo_building_category
+	ai_forbid_shutdown = yes
+	rural_settlement = yes
 
 	location_potential = {
 		OR = {
@@ -166,16 +44,13 @@ REPLACE:sawmill = {
 		sul_sawmill_maintenance = { tools = 0.05 category = building_maintenance }
 	}
 
-	modifier = {
-		local_lumber_output_modifier = 0.2
-		local_max_rgo_size_modifier = 0.02
-	}
+	modifier = { local_lumber_output_modifier = 0.2 }
 
 	build_time = rural_build_time
 	construction_demand = farm_constructions
 }
 
-# Woodland goods output (furniture)
+# Downstream goods — specialization limits
 
 INJECT:furniture_guild = {
 	location_potential = {
@@ -183,11 +58,6 @@ INJECT:furniture_guild = {
 			modifier:sul_allows_furniture_production = yes
 			has_variable = sul_allows_furniture_production
 		}
-	}
-
-	modifier = {
-		# Woodland goods output
-		local_furniture_output_modifier = @sul_guild_good_bonus
 	}
 }
 
@@ -198,11 +68,6 @@ INJECT:furniture_workshop = {
 			has_variable = sul_allows_furniture_production
 		}
 	}
-
-	modifier = {
-		# Woodland goods output
-		local_furniture_output_modifier = @sul_guild_good_bonus
-	}
 }
 
 INJECT:furniture_manufactory = {
@@ -211,11 +76,6 @@ INJECT:furniture_manufactory = {
 			modifier:sul_allows_furniture_production = yes
 			has_variable = sul_allows_furniture_production
 		}
-	}
-
-	modifier = {
-		# Woodland goods output
-		local_furniture_output_modifier = @sul_guild_good_bonus
 	}
 }
 
@@ -226,14 +86,7 @@ INJECT:furniture_mill = {
 			has_variable = sul_allows_furniture_production
 		}
 	}
-
-	modifier = {
-		# Woodland goods output
-		local_furniture_output_modifier = @sul_guild_good_bonus
-	}
 }
-
-# Woodland goods output (lacquerware)
 
 INJECT:lacquerware_guild = {
 	location_potential = {
@@ -241,11 +94,6 @@ INJECT:lacquerware_guild = {
 			modifier:sul_allows_lacquerware_production = yes
 			has_variable = sul_allows_lacquerware_production
 		}
-	}
-
-	modifier = {
-		# Woodland goods output
-		local_lacquerware_output_modifier = @sul_guild_good_bonus
 	}
 }
 
@@ -256,14 +104,7 @@ INJECT:lacquerware_manufactory = {
 			has_variable = sul_allows_lacquerware_production
 		}
 	}
-
-	modifier = {
-		# Woodland goods output
-		local_lacquerware_output_modifier = @sul_guild_good_bonus
-	}
 }
-
-# Woodland goods output (paper)
 
 INJECT:paper_guild = {
 	location_potential = {
@@ -271,11 +112,6 @@ INJECT:paper_guild = {
 			modifier:sul_allows_paper_production = yes
 			has_variable = sul_allows_paper_production
 		}
-	}
-
-	modifier = {
-		# Woodland goods output
-		local_paper_output_modifier = @sul_guild_good_bonus
 	}
 }
 
@@ -286,11 +122,6 @@ INJECT:paper_workshop = {
 			has_variable = sul_allows_paper_production
 		}
 	}
-
-	modifier = {
-		# Woodland goods output
-		local_paper_output_modifier = @sul_guild_good_bonus
-	}
 }
 
 INJECT:paper_manufactory = {
@@ -299,11 +130,6 @@ INJECT:paper_manufactory = {
 			modifier:sul_allows_paper_production = yes
 			has_variable = sul_allows_paper_production
 		}
-	}
-
-	modifier = {
-		# Woodland goods output
-		local_paper_output_modifier = @sul_guild_good_bonus
 	}
 }
 
@@ -314,14 +140,7 @@ INJECT:paper_mill = {
 			has_variable = sul_allows_paper_production
 		}
 	}
-
-	modifier = {
-		# Woodland goods output
-		local_paper_output_modifier = @sul_guild_good_bonus
-	}
 }
-
-# Woodland goods output (incense)
 
 INJECT:perfumery = {
 	location_potential = {
@@ -330,11 +149,7 @@ INJECT:perfumery = {
 			has_variable = sul_allows_incense_production
 		}
 	}
-
-	modifier = { local_incense_output_modifier = @sul_guild_good_bonus }
 }
-
-# Woodland raw materials (dyes)
 
 INJECT:dyes_guild = {
 	location_potential = {
@@ -342,11 +157,6 @@ INJECT:dyes_guild = {
 			modifier:sul_allows_dye_production = yes
 			has_variable = sul_allows_dye_production
 		}
-	}
-
-	modifier = {
-		# Woodland raw materials
-		local_dyes_output_modifier = @sul_guild_good_bonus
 	}
 }
 
@@ -357,11 +167,6 @@ INJECT:dyes_workshop = {
 			has_variable = sul_allows_dye_production
 		}
 	}
-
-	modifier = {
-		# Woodland raw materials
-		local_dyes_output_modifier = @sul_guild_good_bonus
-	}
 }
 
 INJECT:dyesworks = {
@@ -370,11 +175,6 @@ INJECT:dyesworks = {
 			modifier:sul_allows_dye_production = yes
 			has_variable = sul_allows_dye_production
 		}
-	}
-
-	modifier = {
-		# Woodland raw materials
-		local_dyes_output_modifier = @sul_guild_good_bonus
 	}
 }
 
@@ -385,14 +185,7 @@ INJECT:dyes_mill = {
 			has_variable = sul_allows_dye_production
 		}
 	}
-
-	modifier = {
-		# Woodland raw materials
-		local_dyes_output_modifier = @sul_guild_good_bonus
-	}
 }
-
-# Woodland raw materials (charcoal)
 
 INJECT:charcoal_maker = {
 	town = yes
@@ -403,11 +196,6 @@ INJECT:charcoal_maker = {
 			modifier:sul_allows_charcoal_production = yes
 			has_variable = sul_allows_charcoal_production
 		}
-	}
-
-	modifier = {
-		# Woodland raw materials
-		local_coal_output_modifier = @sul_guild_good_bonus
 	}
 }
 
@@ -421,14 +209,9 @@ INJECT:improved_charcoal_maker = {
 			has_variable = sul_allows_charcoal_production
 		}
 	}
-
-	modifier = {
-		# Woodland raw materials
-		local_coal_output_modifier = @sul_guild_good_bonus
-	}
 }
 
-# Cross-specialization
+# Cross-specialization leather gates
 
 INJECT:tannery = {
 	location_potential = {
@@ -436,11 +219,6 @@ INJECT:tannery = {
 			modifier:sul_allows_leather_production = yes
 			has_variable = sul_allows_leather_production
 		}
-	}
-
-	modifier = {
-		# Leather output
-		local_leather_output_modifier = @sul_guild_good_bonus
 	}
 }
 
@@ -451,11 +229,6 @@ INJECT:tanning_workshop = {
 			has_variable = sul_allows_leather_production
 		}
 	}
-
-	modifier = {
-		# Leather output
-		local_leather_output_modifier = @sul_guild_good_bonus
-	}
 }
 
 INJECT:tannery_manufactory = {
@@ -464,11 +237,6 @@ INJECT:tannery_manufactory = {
 			modifier:sul_allows_leather_production = yes
 			has_variable = sul_allows_leather_production
 		}
-	}
-
-	modifier = {
-		# Leather output
-		local_leather_output_modifier = @sul_guild_good_bonus
 	}
 }
 
@@ -479,14 +247,9 @@ INJECT:tannery_mill = {
 			has_variable = sul_allows_leather_production
 		}
 	}
-
-	modifier = {
-		# Leather output
-		local_leather_output_modifier = @sul_guild_good_bonus
-	}
 }
 
-# Custom buildings
+# Custom cottage industry buildings
 
 sul_rural_carpenter = {
 	is_foreign = no
@@ -508,11 +271,6 @@ sul_rural_carpenter = {
 	possible_production_methods = { sul_rural_furniture }
 
 	construction_demand = village_construction
-
-	modifier = {
-		local_raw_material_output = @sul_rural_raw_material
-		local_furniture_output_modifier = @sul_rural_good_bonus
-	}
 }
 
 sul_rural_papermaker = {
@@ -539,11 +297,6 @@ sul_rural_papermaker = {
 	possible_production_methods = { sul_rural_paper }
 
 	construction_demand = village_construction
-
-	modifier = {
-		local_raw_material_output = @sul_rural_raw_material
-		local_paper_output_modifier = @sul_rural_good_bonus
-	}
 }
 
 sul_rural_apiary = {
@@ -565,11 +318,6 @@ sul_rural_apiary = {
 	possible_production_methods = { sul_rural_beeswax }
 
 	construction_demand = village_construction
-
-	modifier = {
-		local_raw_material_output = @sul_rural_raw_material
-		local_beeswax_output_modifier = @sul_rural_good_bonus
-	}
 }
 
 # Cross-specialization (woodland OR farming)
@@ -599,42 +347,4 @@ sul_rural_tanner = {
 	}
 
 	construction_demand = village_construction
-
-	modifier = {
-		local_raw_material_output = @sul_rural_raw_material
-		local_leather_output_modifier = @sul_rural_good_bonus
-	}
-}
-
-# RGO buildings (woodland)
-
-sul_trapping_cabins = {
-	is_foreign = no
-	pop_type = laborers
-	max_levels = rural_building_cap
-	employment_size = rural_peasant_produce_employment
-	category = rgo_building_category
-	rural_settlement = yes
-
-	location_potential = {
-		OR = {
-			raw_material = goods:fur
-			vegetation = forest
-			vegetation = woods
-		}
-
-		sul_has_woodland_specialization = yes
-	}
-
-	build_time = rural_build_time
-
-	possible_production_methods = { sul_trapping_cabin_maintenance }
-
-	construction_demand = farm_constructions
-
-	modifier = {
-		local_raw_material_output = @sul_rgo_raw_material
-		local_fur_output_modifier = @sul_rgo_good_bonus
-		local_max_rgo_size_modifier = @sul_rgo_size
-	}
 }

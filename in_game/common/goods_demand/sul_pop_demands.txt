@@ -1,0 +1,1171 @@
+﻿# =============================================================================
+# POP DEMANDS WITH GDP PER CAPITA SCALING
+# =============================================================================
+#
+# This file REPLACEs vanilla pop_demands.txt to add GDP-based demand scaling.
+# Each goods entry uses a category-specific GDP scale with elasticity dampening:
+# Elasticity (demand growth rate past affordability threshold):
+#   necessity = 0.25 (slow growth — always needed)
+#   common    = 0.75 (moderate growth)
+#   upper     = 1.0  (standard growth)
+#   luxury    = 1.5  (fast growth — wealth-driven)
+#   exotic    = 2.0  (fastest growth — pure luxury)
+#
+# Demand gate: max(0, (demand_power - price) / price) × elasticity
+# Requires: sul_demand_power variable map on locations
+#
+# =============================================================================
+
+##############################################################
+# This is a special demands, as it has a hardcoded tag
+#
+# code also checks for scriptvalue from the pop scope
+#
+# This scales with the demands in the goods scripted per pop_type
+#
+############################################################
+
+REPLACE:pop_demand = {
+	#########################
+	# Alcohol
+	#########################
+
+	wine = {
+		value = 1
+		if = {
+			limit = {
+				religion = {
+					OR = {
+						this = religion:jain
+						this = religion:sikhism
+						group = religion_group:muslim
+					}
+				}
+			}
+
+			multiply = { value = 0 desc = "POP_DEMAND_RELIGION_FORBIDS" }
+		}
+
+		# Some Cultures have preferences
+		if = {
+			limit = {
+				# Andeans favor "Chicha" that is a beer
+				culture = { has_culture_group = culture_group:andean_group }
+			}
+
+			multiply = { desc = "POP_DEMAND_CULTURAL_PREFERENCES" value = 0.75 }
+		}
+
+		if = {
+			limit = {
+				# Japanese favor "Sake" that is a liquor
+				culture = { has_culture_group = culture_group:japanese_group }
+			}
+
+			multiply = { desc = "POP_DEMAND_CULTURAL_PREFERENCES" value = 0.75 }
+		}
+
+		if = {
+			limit = {
+				location.region = {
+					OR = {
+						this = region:iberia_region
+						this = region:italy_region
+						this = region:balkan_region
+					}
+				}
+			}
+
+			multiply = { value = 1.5 desc = "POP_DEMAND_MEDITERRANEAN" }
+		}
+
+		if = {
+			limit = { location.sub_continent = sub_continent:south_asia }
+			multiply = { value = 0.8 desc = "POP_DEMAND_INDIA" }
+		}
+
+		# Ritual wine: clergy of Christian/Jewish/Shinto faiths
+		if = {
+			limit = {
+				pop_type = pop_type:clergy
+
+				religion = {
+					OR = {
+						this = religion:shinto
+
+						group = {
+							OR = {
+								this = religion_group:christian
+								this = religion_group:israelite_group
+							}
+						}
+					}
+				}
+			}
+
+			multiply = { value = 3 desc = "POP_DEMAND_RITUAL_WINE" }
+		}
+
+		if = {
+			limit = { culture = { has_culture_group = culture_group:baltic_group } }
+			multiply = { value = 1.1 desc = "POP_DEMAND_BALTIC" }
+		}
+
+		multiply = { value = location.sul_demand_common }
+	}
+
+	liquor = {
+		value = 1
+		if = {
+			limit = {
+				religion = {
+					OR = {
+						this = religion:jain
+						this = religion:sikhism
+						group = religion_group:muslim
+					}
+				}
+			}
+
+			multiply = { value = 0 desc = "POP_DEMAND_RELIGION_FORBIDS" }
+		}
+
+		# Some Cultures have preferences
+		if = {
+			limit = {
+				# Andeans favor "Chicha" that is a beer
+				culture = { has_culture_group = culture_group:andean_group }
+			}
+
+			multiply = { desc = "POP_DEMAND_CULTURAL_PREFERENCES" value = 0.75 }
+		}
+
+		if = {
+			limit = {
+				# Japanese favor "Sake" that is a liquor
+				culture = { has_culture_group = culture_group:japanese_group }
+			}
+
+			multiply = { desc = "POP_DEMAND_CULTURAL_PREFERENCES" value = 1.5 }
+		}
+
+		if = {
+			limit = {
+				location.region = {
+					OR = {
+						this = region:iberia_region
+						this = region:italy_region
+						this = region:balkan_region
+					}
+				}
+			}
+
+			multiply = { value = 0.75 desc = "POP_DEMAND_MEDITERRANEAN" }
+		}
+
+		if = {
+			limit = {
+				location.region = {
+					OR = {
+						this = region:scandinavian_region
+						this = region:ural_region
+						this = region:russian_region
+					}
+				}
+			}
+
+			multiply = { value = 1.5 desc = "POP_DEMAND_NORDIC" }
+		}
+
+		if = {
+			limit = { culture = { has_culture_group = culture_group:baltic_group } }
+			multiply = { value = 0.9 desc = "POP_DEMAND_BALTIC" }
+		}
+
+		multiply = { value = location.sul_demand_common }
+	}
+
+	beer = {
+		value = 1
+		if = {
+			limit = {
+				religion = {
+					OR = {
+						this = religion:jain
+						this = religion:sikhism
+						group = religion_group:muslim
+					}
+				}
+			}
+
+			multiply = { value = 0 desc = "POP_DEMAND_RELIGION_FORBIDS" }
+		}
+
+		# Some Cultures have preferences
+		if = {
+			limit = {
+				# Andeans favor "Chicha" that is a beer
+				culture = { has_culture_group = culture_group:andean_group }
+			}
+
+			multiply = { desc = "POP_DEMAND_CULTURAL_PREFERENCES" value = 1.5 }
+		}
+		if = {
+			limit = {
+				# Japanese favor "Sake" that is a liquor
+				culture = { has_culture_group = culture_group:japanese_group }
+			}
+
+			multiply = { desc = "POP_DEMAND_CULTURAL_PREFERENCES" value = 0 }
+		}
+
+		if = {
+			limit = {
+				location.region = {
+					OR = {
+						this = region:iberia_region
+						this = region:italy_region
+						this = region:balkan_region
+					}
+				}
+			}
+
+			multiply = { value = 0.75 desc = "POP_DEMAND_MEDITERRANEAN" }
+		}
+
+		if = {
+			limit = { culture = { has_culture_group = culture_group:baltic_group } }
+			multiply = { value = 0.9 desc = "POP_DEMAND_BALTIC" }
+		}
+
+		multiply = { value = location.sul_demand_basic }
+	}
+
+	############################
+	# Raw Materials
+	############################
+
+	fur = {
+		value = 1
+
+		location = {
+			if = {
+				limit = { location_max_winter_level = none }
+				multiply = { value = 0 desc = "POP_DEMAND_CLIMATE_MAX_WINTER_LEVEL" }
+			}
+			else_if = {
+				limit = { location_max_winter_level = mild }
+				multiply = { value = 0.75 desc = "POP_DEMAND_CLIMATE_MAX_WINTER_LEVEL" }
+			}
+			else_if = {
+				limit = { location_max_winter_level = normal }
+				multiply = { value = 1.0 desc = "POP_DEMAND_CLIMATE_MAX_WINTER_LEVEL" }
+			}
+			else_if = {
+				limit = { location_max_winter_level = severe }
+				multiply = { value = 1.5 desc = "POP_DEMAND_CLIMATE_MAX_WINTER_LEVEL" }
+			}
+		}
+
+		# Climate-based demand
+		if = {
+			limit = { location = { climate = arctic } }
+			multiply = { value = 1.5 desc = "POP_DEMAND_CLIMATE" }
+		}
+		else_if = {
+			limit = { location = { climate = cold_arid } }
+			multiply = { value = 1.25 desc = "POP_DEMAND_CLIMATE" }
+		}
+		else_if = {
+			limit = { location = { climate = continental } }
+			multiply = { value = 1.0 desc = "POP_DEMAND_CLIMATE" }
+		}
+		else_if = {
+			limit = { location = { climate = oceanic } }
+			multiply = { value = 0.75 desc = "POP_DEMAND_CLIMATE" }
+		}
+		else = {
+			# mediterranean, subtropical, arid, tropical
+			multiply = { value = 0 desc = "POP_DEMAND_CLIMATE" }
+		}
+
+		if = {	# non-violent
+			limit = { religion = religion:jain }
+			multiply = { value = 0 desc = "POP_DEMAND_JAIN" }
+		}
+
+		if = {
+			limit = { location = { topography = mountains } }
+			multiply = { value = 1.05 desc = "POP_DEMAND_TOPOGRAPHY_MOUNTAINS" }
+		}
+
+		multiply = { value = location.sul_demand_common }
+	}
+
+	beeswax = {
+		value = 1
+
+		location = {
+			if = {
+				limit = {
+					OR = {
+						location_max_winter_level = none
+						location_max_winter_level = mild
+					}
+				}
+
+				multiply = { value = 0.75 desc = "POP_DEMAND_CLIMATE_MAX_WINTER_LEVEL" }
+			}
+			else_if = {
+				limit = { location_max_winter_level = normal }
+				multiply = { value = 1.1 desc = "POP_DEMAND_CLIMATE_MAX_WINTER_LEVEL" }
+			}
+			else_if = {
+				limit = { location_max_winter_level = severe }
+				multiply = { value = 1.5 desc = "POP_DEMAND_CLIMATE_MAX_WINTER_LEVEL" }
+			}
+		}
+
+		multiply = { value = location.sul_demand_basic }
+	}
+
+	lumber = {
+		value = 0
+
+		location = {
+			if = {
+				limit = { location_max_winter_level = none }
+				multiply = { value = 0 desc = "POP_DEMAND_CLIMATE_MAX_WINTER_LEVEL" }
+			}
+			else_if = {
+				limit = { location_max_winter_level = mild }
+				multiply = { value = 0.75 desc = "POP_DEMAND_CLIMATE_MAX_WINTER_LEVEL" }
+			}
+			else_if = {
+				limit = { location_max_winter_level = normal }
+				multiply = { value = 1.0 desc = "POP_DEMAND_CLIMATE_MAX_WINTER_LEVEL" }
+			}
+			else_if = {
+				limit = { location_max_winter_level = severe }
+				multiply = { value = 1.5 desc = "POP_DEMAND_CLIMATE_MAX_WINTER_LEVEL" }
+			}
+		}
+
+		if = {
+			limit = { location = { topography = mountains } }
+			multiply = { value = 1.1 desc = "POP_DEMAND_TOPOGRAPHY_MOUNTAINS" }
+		}
+
+		multiply = { value = location.sul_demand_necessity }
+	}
+
+	coal = {
+		value = 1
+
+		location = {
+			if = {
+				limit = { location_max_winter_level = none }
+				multiply = { value = 0 desc = "POP_DEMAND_CLIMATE_MAX_WINTER_LEVEL" }
+			}
+			else_if = {
+				limit = { location_max_winter_level = mild }
+				multiply = { value = 0.75 desc = "POP_DEMAND_CLIMATE_MAX_WINTER_LEVEL" }
+			}
+			else_if = {
+				limit = { location_max_winter_level = normal }
+				multiply = { value = 1.0 desc = "POP_DEMAND_CLIMATE_MAX_WINTER_LEVEL" }
+			}
+			else_if = {
+				limit = { location_max_winter_level = severe }
+				multiply = { value = 1.5 desc = "POP_DEMAND_CLIMATE_MAX_WINTER_LEVEL" }
+			}
+		}
+
+		if = {
+			limit = { location = { topography = mountains } }
+			multiply = { value = 1.1 desc = "POP_DEMAND_TOPOGRAPHY_MOUNTAINS" }
+		}
+
+		multiply = { value = location.sul_demand_basic }
+	}
+
+	pearls = {
+		value = 1
+		# some cultures have preferences
+		if = {
+			limit = { location.sub_continent = sub_continent:south_asia }
+			multiply = { value = 1.5 desc = "POP_DEMAND_CULTURAL_PREFERENCES" }
+		}
+
+		multiply = { value = location.sul_demand_luxury }
+	}
+
+	amber = {
+		value = 1
+
+		if = {
+			limit = { location.market ?= { produced_in_market:amber <= 0 } }
+
+			multiply = { value = 0.75 desc = "POP_DEMAND_CULTURAL_PREFERENCES" }
+		}
+		if = {
+			limit = {
+				location.region = {
+					OR = {
+						this = region:scandinavian_region
+						this = region:north_german_region
+						this = region:baltic_region
+					}
+				}
+			}
+
+			multiply = { value = 1.25 desc = "POP_DEMAND_CULTURAL_PREFERENCES" }
+		}
+
+		multiply = { value = location.sul_demand_upper }
+	}
+
+	silver = {
+		value = 1
+		if = {
+			limit = { exists = owner }
+			multiply = { value = 1 add = owner.modifier:global_pop_silver_demand }
+		}
+
+		multiply = { value = location.sul_demand_luxury }
+	}
+
+	goods_gold = {
+		value = 1
+
+		# Some Cultures have preferences
+		if = {
+			limit = { culture = { has_culture_group = culture_group:andean_group } }
+			multiply = { desc = "POP_DEMAND_CULTURAL_PREFERENCES" value = 1.5 }
+		}
+
+		multiply = { value = location.sul_demand_luxury }
+	}
+
+	ivory = {
+		value = 1
+
+		# Indian nobles prize ivory
+		if = {
+			limit = {
+				pop_type = pop_type:nobles
+				location.sub_continent = sub_continent:south_asia
+			}
+
+			multiply = { value = 1.1 desc = "POP_DEMAND_NOBLES_INDIAN" }
+		}
+
+		if = {
+			limit = { religion = religion:jain }
+			multiply = { value = 0 desc = "POP_DEMAND_JAIN" }
+		}
+
+		multiply = { value = location.sul_demand_luxury }
+	}
+
+	incense = {
+		value = 1
+
+		# Christian clergy use incense in liturgy
+		if = {
+			limit = {
+				pop_type = pop_type:clergy
+				OR = {
+					religion = religion:miaphysite
+					religion = religion:orthodox
+					religion = religion:catholic
+				}
+			}
+
+			multiply = { value = 1.5 desc = "POP_DEMAND_CLERGY" }
+		}
+
+		# Regional tier: common in Arabia/Horn of Africa, exotic elsewhere
+		if = {
+			limit = {
+				OR = {
+					location.region = region:arabia_region
+					location.sub_continent = sub_continent:east_africa
+					location.sub_continent = sub_continent:south_asia
+				}
+			}
+
+			multiply = { value = location.sul_demand_common }
+		}
+		else = { multiply = { value = location.sul_demand_upper } }
+	}
+
+	gems = { value = 1 multiply = { value = location.sul_demand_luxury } }
+
+	marble = { value = 1 multiply = { value = location.sul_demand_luxury } }
+
+	horses = { value = 1 multiply = { value = location.sul_demand_common } }
+
+	elephants = {
+		value = 1
+		if = {
+			limit = {
+				location.sub_continent != sub_continent:south_asia
+				location.region != region:indochina_region
+			}
+
+			multiply = { value = 0 desc = "POP_DEMAND_NOBLES_NOT_HERE" }
+		}
+
+		multiply = { value = location.sul_demand_luxury }
+	}
+
+	medicaments = {
+		value = 1
+
+		if = {# Coca leaf usage in all society
+			limit = { culture = { has_culture_group = culture_group:andean_group } }
+
+			multiply = { value = 2.5 desc = "POP_DEMAND_ANDEAN_COCA_LEAF" }
+		}
+
+		# Clergy use coca leaf as religious sacrifice
+		if = {
+			limit = {
+				religion.group = religion_group:folk_peruvian_group
+				pop_type = pop_type:clergy
+			}
+
+			multiply = { desc = "POP_DEMAND_ANDEAN_COCA_LEAF_CLERGY" value = 1.5 }
+		}
+
+		if = {
+			limit = { location = { has_any_disease_present = yes } }
+			multiply = { desc = "POP_DEMAND_DISEASE" value = 1.5 }
+		}
+
+		multiply = { value = location.sul_demand_necessity }
+	}
+
+	masonry = { value = 0 multiply = { value = location.sul_demand_common } }
+
+	mercury = { value = 1 multiply = { value = location.sul_demand_common } }
+
+	############################
+	# Produced Gods.
+	############################
+
+	tools = { value = 1 multiply = { value = location.sul_demand_basic } }
+
+	pottery = { value = 1 multiply = { value = location.sul_demand_necessity } }
+
+	furniture = { value = 1 multiply = { value = location.sul_demand_common } }
+
+	porcelain = {
+		value = 1
+
+		# Regional tier: common in East Asia, luxury elsewhere
+		if = {
+			limit = {
+				OR = {
+					location.sub_continent = sub_continent:east_asia
+					location.region = region:japan_region
+					location.region = region:korea_region
+				}
+			}
+
+			multiply = { value = location.sul_demand_common }
+		}
+		else = { multiply = { value = location.sul_demand_upper } }
+	}
+
+	lacquerware = {
+		value = 1
+
+		# Regional tier: common in East/SE Asia, exotic elsewhere
+		if = {
+			limit = {
+				OR = {
+					location.sub_continent = sub_continent:east_asia
+					location.region = region:japan_region
+					location.region = region:korea_region
+					location.region = region:indochina_region
+				}
+			}
+
+			multiply = { value = location.sul_demand_common }
+		}
+		else = { multiply = { value = location.sul_demand_exotic } }
+	}
+
+	jewelry = { value = 1 multiply = { value = location.sul_demand_luxury } }
+
+	fine_cloth = {
+		value = 1
+
+		# Anglican vestments policy increases clergy demand
+		if = {
+			limit = {
+				pop_type = pop_type:clergy
+				religion = religion:anglican
+				location.owner ?= { has_variable = anglican_vestments }
+			}
+
+			multiply = { value = 1.5 desc = "POP_DEMAND_CLERGY" }
+		}
+
+		multiply = { value = location.sul_demand_upper }
+	}
+
+	silk = {
+		value = 1
+
+		# Regional tier: common in East Asia, upper elsewhere
+		if = {
+			limit = {
+				OR = {
+					location.sub_continent = sub_continent:east_asia
+					location.region = region:japan_region
+					location.region = region:korea_region
+					location.region = region:indochina_region
+				}
+			}
+
+			multiply = { value = location.sul_demand_common }
+		}
+		else = { multiply = { value = location.sul_demand_upper } }
+	}
+
+	cloth = {
+		value = 1
+
+		location = {
+			if = {
+				limit = { location_max_winter_level = none }
+				multiply = { value = 0.75 desc = "POP_DEMAND_CLIMATE_MAX_WINTER_LEVEL" }
+			}
+			else_if = {
+				limit = { location_max_winter_level = mild }
+				multiply = { value = 1.0 desc = "POP_DEMAND_CLIMATE_MAX_WINTER_LEVEL" }
+			}
+			else_if = {
+				limit = { location_max_winter_level = normal }
+				multiply = { value = 1.25 desc = "POP_DEMAND_CLIMATE_MAX_WINTER_LEVEL" }
+			}
+			else_if = {
+				limit = { location_max_winter_level = severe }
+				multiply = { value = 1.5 desc = "POP_DEMAND_CLIMATE_MAX_WINTER_LEVEL" }
+			}
+		}
+
+		multiply = { value = location.sul_demand_necessity }
+	}
+
+	paper = {
+		value = 1
+
+		if = {
+			limit = {
+				location.owner ?= {
+					has_variable = por_printing_ordinances
+					has_reform = government_reform:por_ordinances
+				}
+			}
+
+			multiply = 1.5
+		}
+
+		multiply = {
+			value = pop_literacy
+			divide = 100 # value goes from 0 to 100
+			desc = "POP_DEMAND_LITERACY"
+		}
+
+		multiply = { value = location.sul_demand_common }
+	}
+
+	books = {
+		value = 1
+		if = {
+			limit = {
+				location.owner ?= { has_embraced_institution = institution:printing_press }
+			}
+
+			multiply = { value = 1.1 desc = "POP_DEMAND_PRINTING_PRESS" }
+		}
+		multiply = {
+			value = pop_literacy
+			divide = 100 # value goes from 0 to 100
+			desc = "POP_DEMAND_LITERACY"
+		}
+
+		multiply = { value = location.sul_demand_upper }
+	}
+
+	weaponry = {
+		value = 1
+
+		# Policy gate: peasants/laborers can't buy weapons unless privilege allows it
+		if = {
+			limit = {
+				OR = {
+					pop_type = pop_type:peasants
+					pop_type = pop_type:laborers
+				}
+				AND = {
+					exists = owner
+					owner.modifier:peasants_allowed_weapons = no
+				}
+			}
+
+			multiply = { value = 0 desc = "POP_DEMAND_PEASANTSNO_WEAPONS" }
+		}
+
+		if = {	# non-violent
+			limit = { religion = religion:jain }
+			multiply = { value = 0 desc = "POP_DEMAND_JAIN" }
+		}
+
+		multiply = { value = location.sul_demand_common }
+	}
+
+	salt = {
+		value = 1
+
+		location = {
+			if = {
+				limit = { location_max_winter_level = none }
+				multiply = { value = 0.88 desc = "POP_DEMAND_CLIMATE_MAX_WINTER_LEVEL" }
+			}
+			else_if = {
+				limit = { location_max_winter_level = mild }
+				multiply = { value = 1 desc = "POP_DEMAND_CLIMATE_MAX_WINTER_LEVEL" }
+			}
+			else_if = {
+				limit = { location_max_winter_level = normal }
+				multiply = { value = 1.1 desc = "POP_DEMAND_CLIMATE_MAX_WINTER_LEVEL" }
+			}
+			else_if = {
+				limit = { location_max_winter_level = severe }
+				multiply = { value = 1.5 desc = "POP_DEMAND_CLIMATE_MAX_WINTER_LEVEL" }
+			}
+		}
+
+		multiply = { value = location.sul_demand_basic }
+	}
+
+	###########################
+	# Luxury Foods & Spice
+	###########################
+
+	sugar = { value = 1 multiply = { value = location.sul_demand_upper } }
+
+	tobacco = {
+		value = 1
+
+		# Some Cultures have preferences
+		if = {
+			limit = {
+				# Coca leaf usage in all society
+				culture = { has_culture_group = culture_group:andean_group }
+			}
+
+			multiply = { desc = "POP_DEMAND_CULTURAL_PREFERENCES" value = 0.55 }
+		}
+
+		# Regional tier: common in Americas, upper elsewhere
+		if = {
+			limit = { location.continent = continent:america }
+			multiply = { value = location.sul_demand_common }
+		}
+		else = { multiply = { value = location.sul_demand_upper } }
+	}
+
+	tea = {
+		value = 1
+
+		if = {
+			limit = { # Turks use tea extensively
+				OR = {
+					culture = culture:turkish_culture
+					culture = culture:turkoman_culture
+				}
+			}
+
+			multiply = { value = 1.5 desc = "POP_DEMAND_TURKISH" }
+		}
+		if = {
+			limit = { # Egyptians use tea a lot
+				OR = {
+					culture = culture:lower_egyptian_culture
+					culture = culture:upper_egyptian_culture
+				}
+			}
+
+			multiply = { value = 1.25 desc = "POP_DEMAND_EGYPT" }
+		}
+		if = {
+			limit = { culture = { has_culture_group = culture_group:maghrebi_group } }
+			multiply = { value = 1.5 desc = "POP_DEMAND_MAGHREBI" }
+		}
+
+		# Regional tier: necessity in East/SE Asia, common in Middle East/South Asia, upper elsewhere
+		if = {
+			limit = {
+				OR = {
+					location.sub_continent = sub_continent:east_asia
+					location.region = region:indochina_region
+					location.region = region:japan_region
+					location.region = region:korea_region
+				}
+			}
+
+			multiply = { value = location.sul_demand_necessity }
+		}
+		else_if = {
+			limit = {
+				OR = {
+					location.sub_continent = sub_continent:south_asia
+					location.region = region:arabia_region
+					location.region = region:persia_region
+					location.region = region:anatolia_region
+				}
+			}
+
+			multiply = { value = location.sul_demand_common }
+		}
+		else = { multiply = { value = location.sul_demand_upper } }
+	}
+
+	cocoa = {
+		value = 1
+
+		# Regional tier: common in Americas, upper elsewhere
+		if = {
+			limit = { location.continent = continent:america }
+			multiply = { value = location.sul_demand_common }
+		}
+		else = { multiply = { value = location.sul_demand_upper } }
+	}
+
+	coffee = {
+		value = 1
+
+		# Regional tier: common in Arabia/East Africa, upper elsewhere
+		if = {
+			limit = {
+				OR = {
+					location.region = region:arabia_region
+					location.sub_continent = sub_continent:east_africa
+				}
+			}
+
+			multiply = { value = location.sul_demand_common }
+		}
+		else = { multiply = { value = location.sul_demand_upper } }
+	}
+
+	saffron = {
+		value = 1
+		if = {
+			limit = { # Turks use it extensively
+				OR = {
+					culture = culture:turkish_culture
+					culture = culture:turkoman_culture
+				}
+			}
+
+			multiply = { value = 1.25 desc = "POP_DEMAND_TURKISH" }
+		}
+		else_if = {
+			limit = { # Leine croich Gaelic saffron shirts
+				culture = {
+					OR = {
+						has_culture_group = culture_group:hibernian_group
+						language = language:gaelic_language
+					}
+				}
+
+				owner = {
+					NOT = {
+						modifier:country_bans_saffron_shirts = yes
+					}
+				}
+			}
+
+			multiply = { value = 2.5 desc = "POP_DEMAND_GAELIC_SAFFRON" }
+		}
+		else_if = {
+			limit = { # Egyptians use saffron
+				OR = {
+					culture = culture:lower_egyptian_culture
+					culture = culture:upper_egyptian_culture
+				}
+			}
+
+			multiply = { value = 1.1 desc = "POP_DEMAND_EGYPT" }
+		}
+		else_if = {
+			limit = { culture = { has_culture_group = culture_group:maghrebi_group } }
+			multiply = { value = 1.1 desc = "POP_DEMAND_MAGHREBI" }
+		}
+
+		# Regional tier: common in Persia/Arabia/Mediterranean, exotic elsewhere
+		if = {
+			limit = {
+				OR = {
+					location.region = region:arabia_region
+					location.region = region:persia_region
+					location.region = region:iberia_region
+					location.region = region:italy_region
+				}
+			}
+
+			multiply = { value = location.sul_demand_common }
+		}
+		else = { multiply = { value = location.sul_demand_exotic } }
+	}
+
+	pepper = {
+		value = 1
+
+		# some cultures have preferences
+		if = {
+			limit = { location.sub_continent = sub_continent:south_asia }
+			multiply = { value = 1.25 desc = "POP_DEMAND_INDIA" }
+		}
+
+		# Regional tier: common in South/SE Asia, exotic elsewhere
+		if = {
+			limit = {
+				OR = {
+					location.sub_continent = sub_continent:south_asia
+					location.region = region:indochina_region
+				}
+			}
+
+			multiply = { value = location.sul_demand_common }
+		}
+		else = { multiply = { value = location.sul_demand_exotic } }
+	}
+
+	cloves = {
+		value = 1
+
+		# Regional tier: common in SE Asia, exotic elsewhere
+		if = {
+			limit = {
+				OR = {
+					location.region = region:indochina_region
+					location.sub_continent = sub_continent:south_asia
+				}
+			}
+
+			multiply = { value = location.sul_demand_common }
+		}
+		else = { multiply = { value = location.sul_demand_exotic } }
+	}
+
+	chili = {
+		value = 1
+
+		# Regional tier: common in Americas, exotic elsewhere
+		if = {
+			limit = { location.continent = continent:america }
+			multiply = { value = location.sul_demand_common }
+		}
+		else = { multiply = { value = location.sul_demand_exotic } }
+	}
+
+	###########################
+	# Food
+	###########################
+
+	potato = {
+		value = 1
+		if = {
+			limit = { culture = { has_culture_group = culture_group:andean_group } }
+			multiply = { value = 2.5 desc = "POP_DEMAND_ANDES" }
+		}
+		if = {
+			limit = { religion = religion:jain }
+			multiply = { value = 0 desc = "POP_DEMAND_JAIN" }
+		}
+
+		multiply = { value = location.sul_demand_necessity }
+	}
+
+	maize = {
+		value = 1
+		if = {
+			limit = { location.continent != continent:america }
+			multiply = { value = 0 desc = "POP_DEMAND_NOT_AMERICA" }
+		}
+		if = {
+			limit = { culture = { has_culture_group = culture_group:andean_group } }
+			multiply = { desc = "POP_DEMAND_CULTURAL_PREFERENCES" value = 0.62 }
+		}
+
+		multiply = { value = location.sul_demand_necessity }
+	}
+
+	millet = {
+		value = 1
+		if = {
+			limit = { location.sub_continent = sub_continent:south_asia }
+			multiply = { value = 1.5 desc = "POP_DEMAND_INDIA" }
+		}
+		if = {
+			limit = {
+				NOT = {
+					location.market ?= { is_produced_in_market = goods:millet }
+				}
+			}
+
+			multiply = { value = 0 desc = "POP_DEMAND_LOCAL_CUISINE" }
+		}
+
+		multiply = { value = location.sul_demand_necessity }
+	}
+
+	wild_game = {
+		value = 1
+		if = {
+			limit = { location.market ?= { produced_in_market:wild_game <= 0 } }
+			multiply = { value = 0 desc = "POP_DEMAND_LOCAL_CUISINE" }
+		}
+		if = {
+			limit = { religion = religion:jain }
+			multiply = { value = 0 desc = "POP_DEMAND_JAIN" }
+		}
+		if = {
+			limit = {
+				NOT = {
+					location.market ?= { is_produced_in_market = goods:wild_game }
+				}
+			}
+
+			multiply = { value = 0 desc = "POP_DEMAND_LOCAL_CUISINE" }
+		}
+
+		multiply = { value = location.sul_demand_necessity }
+	}
+
+	fish = {
+		value = 1
+		if = {
+			limit = { religion = religion:catholic }
+			multiply = { value = 1.12 desc = "POP_DEMAND_CATHOLIC" }
+		}
+		if = {
+			limit = { religion = religion:jain }
+			multiply = { value = 0 desc = "POP_DEMAND_JAIN" }
+		}
+
+		multiply = { value = location.sul_demand_necessity }
+	}
+
+	legumes = {
+		value = 1
+		if = {
+			limit = { location.market ?= { produced_in_market:legumes <= 0 } }
+			multiply = { value = 0 desc = "POP_DEMAND_LOCAL_CUISINE" }
+		}
+
+		multiply = { value = location.sul_demand_necessity }
+	}
+
+	olives = {
+		value = 1
+		if = {
+			limit = { location.market ?= { produced_in_market:olives <= 0 } }
+			multiply = { value = 0 desc = "POP_DEMAND_LOCAL_CUISINE" }
+		}
+
+		multiply = { value = location.sul_demand_necessity }
+	}
+
+	wheat = {
+		value = 1
+		if = {
+			limit = { location.continent = continent:europe }
+			multiply = { value = 1.5 desc = "POP_DEMAND_EUROPE" }
+		}
+		if = {
+			limit = {
+				location.continent = continent:asia
+				OR = {
+					location = { climate = subtropical }
+					location = { climate = tropical }
+				}
+			}
+
+			multiply = { value = 0.75 desc = "POP_DEMAND_ASIA" }
+		}
+
+		multiply = { value = location.sul_demand_necessity }
+	}
+
+	fruit = {
+		value = 1
+		if = {
+			limit = { location = { climate = arctic } }
+			multiply = { value = 0 desc = "POP_DEMAND_ARCTIC" }
+		}
+		else_if = {
+			limit = { location = { climate = cold_arid } }
+			multiply = { value = 0.75 desc = "POP_DEMAND_COLD_ARID" }
+		}
+
+		multiply = { value = location.sul_demand_necessity }
+	}
+
+	livestock = {
+		value = 1
+		if = {
+			limit = { religion = religion:hindu }
+			multiply = { value = 0.62 desc = "POP_DEMAND_INDIA" }
+		}
+		if = {
+			limit = { religion = religion:jain }
+			multiply = { value = 0 desc = "POP_DEMAND_JAIN" }
+		}
+		if = {
+			limit = {
+				location.owner ?= { has_religious_aspect = religious_aspect:pescatarianism }
+			}
+
+			multiply = { value = 0 desc = "POP_DEMAND_PESCATARIANISM" }
+		}
+
+		multiply = { value = location.sul_demand_necessity }
+	}
+
+	rice = {
+		value = 1
+		if = {
+			limit = {
+				location.continent = continent:asia
+				OR = {
+					location = { climate = subtropical }
+					location = { climate = tropical }
+				}
+			}
+
+			multiply = { value = 1.5 desc = "POP_DEMAND_ASIA" }
+		}
+		if = {
+			limit = {
+				NOT = {
+					location.market ?= { is_produced_in_market = goods:rice }
+				}
+			}
+
+			multiply = { value = 0 desc = "POP_DEMAND_LOCAL_CUISINE" }
+		}
+
+		multiply = { value = location.sul_demand_necessity }
+	}
+
+	category = pop_needs
+}

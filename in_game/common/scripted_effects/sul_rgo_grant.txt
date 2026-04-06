@@ -282,16 +282,29 @@ sul_distribute_farming_buildings = {
 		limit = { var:sul_dist_budget > 0 }
 		count = 50
 
-		# Fruit orchard — vegetated terrain
+		# Fruit orchard — warm climate + vegetated terrain
 		if = {
 			limit = {
 				var:sul_dist_budget > 0
 				var:sul_c0 < var:sul_dist_cap
 				OR = {
-					vegetation = grasslands
 					vegetation = farmland
-					vegetation = woods
-					vegetation = jungle
+					AND = {
+						OR = {
+							vegetation = grasslands
+							vegetation = woods
+							vegetation = jungle
+						}
+						OR = {
+							has_river = yes
+							is_adjacent_to_lake = yes
+						}
+					}
+				}
+				OR = {
+					climate = mediterranean
+					climate = subtropical
+					climate = tropical
 				}
 			}
 

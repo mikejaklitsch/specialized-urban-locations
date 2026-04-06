@@ -1,10 +1,11 @@
 ﻿# ============================================
-# VILLAGE BUILDING MODIFICATIONS
+# VILLAGE BUILDINGS
 # ============================================
-# Adds specialization gates, town/city access, free building levels,
-# and population capacity. Vanilla production methods restored.
+# Infrastructure buildings: provisions production (farmer's market lite),
+# +1% production efficiency per level (offsets building drag),
+# free building levels, population capacity, spec-specific bonuses.
 
-REPLACE:market_village = {
+REPLACE:farming_village = {
 	is_foreign = no
 	max_levels = rural_building_cap
 	pop_type = peasants
@@ -13,56 +14,50 @@ REPLACE:market_village = {
 	rural_settlement = yes
 	town = yes
 	city = yes
+	important_for_AI = yes
+	ai_forbid_shutdown = yes
 
 	location_potential = {
-		sul_has_commercial_specialization = yes
+		sul_has_farming_specialization = yes
 	}
 
 	build_time = village_build_time
 	construction_demand = village_construction
 
 	unique_production_methods = {
-		sul_market_blacksmith = {
-			produced = tools
+		sul_farming_village_grain_meat = {
+			wheat = 0.4
+			livestock = 0.3
+			produced = provisions
 			output = 0.5
-			iron = 0.4
+			debug_max_profit = -1
 			category = guild_input
 		}
 
-		sul_market_glassmaker = {
-			produced = glass
-			output = 0.3
-			sand = 1.0
-			category = guild_input
-		}
-
-		sul_market_brewery = {
-			millet = 0.5
-			lumber = 0.1
-			tools = 0.07
-			produced = beer
+		sul_farming_village_rice_fish = {
+			rice = 0.4
+			fish = 0.4
+			produced = provisions
 			output = 0.5
+			debug_max_profit = -1
 			category = guild_input
 		}
 
-		sul_market_weaponmaker = {
-			produced = weaponry
-			output = 0.2
-			lumber = 0.32
+		sul_farming_village_millet_legumes = {
+			millet = 0.3
+			legumes = 0.3
+			produced = provisions
+			output = 0.5
+			debug_max_profit = -1
 			category = guild_input
 		}
 
-		sul_market_jewelry = {
-			produced = jewelry
-			output = 0.1
-			stone = 0.4
-			category = guild_input
-		}
-
-		sul_market_pottery = {
-			produced = pottery
-			output = 0.2
-			clay = 0.33
+		sul_farming_village_maize_potato = {
+			maize = 0.3
+			potato = 0.3
+			produced = provisions
+			output = 0.5
+			debug_max_profit = -1
 			category = guild_input
 		}
 	}
@@ -70,13 +65,23 @@ REPLACE:market_village = {
 	modifier = {
 		free_building_levels = 1
 		local_population_capacity = 1
-		local_merchant_capacity = 1.0
-		local_merchant_power = 1.0
-		local_trades_per_burgher = 0.1
-		local_market_access = 0.005
-		local_burghers_desired_pop = 0.01
-		local_laborers_desired_pop = 0.1
+		local_production_efficiency = 0.01
+		local_manpower = 0.001
 		local_soldiers_desired_pop = 0.05
+		local_laborers_desired_pop = 0.1
+		# Crop output bonuses (half of irrigation_systems)
+		local_wheat_output_modifier = 0.025
+		local_rice_output_modifier = 0.025
+		local_maize_output_modifier = 0.025
+		local_millet_output_modifier = 0.025
+		local_potato_output_modifier = 0.025
+		local_legumes_output_modifier = 0.025
+		local_olives_output_modifier = 0.025
+		local_fruit_output_modifier = 0.025
+		local_sugar_output_modifier = 0.025
+		local_cotton_output_modifier = 0.025
+		local_tea_output_modifier = 0.025
+		local_coffee_output_modifier = 0.025
 	}
 }
 
@@ -89,6 +94,8 @@ REPLACE:fishing_village = {
 	rural_settlement = yes
 	town = yes
 	city = yes
+	important_for_AI = yes
+	ai_forbid_shutdown = yes
 
 	location_potential = {
 		sul_has_gathering_specialization = yes
@@ -98,34 +105,53 @@ REPLACE:fishing_village = {
 	construction_demand = village_construction
 
 	unique_production_methods = {
-		sul_fishing_maintenance = {
-			produced = fish
+		sul_gathering_village_grain_meat = {
+			wheat = 0.4
+			livestock = 0.3
+			produced = provisions
 			output = 0.5
-			salt = 0.06
-			tools = 0.01
-			debug_max_profit = 1.0
-			category = building_maintenance
+			debug_max_profit = -1
+			category = guild_input
 		}
 
-		sul_arctic_fishing_maintenance = {
-			produced = fish
+		sul_gathering_village_rice_fish = {
+			rice = 0.4
+			fish = 0.4
+			produced = provisions
 			output = 0.5
-			salt = 0.045
-			ivory = 0.02
-			debug_max_profit = 1.0
-			category = building_maintenance
+			debug_max_profit = -1
+			category = guild_input
+		}
+
+		sul_gathering_village_millet_legumes = {
+			millet = 0.3
+			legumes = 0.3
+			produced = provisions
+			output = 0.5
+			debug_max_profit = -1
+			category = guild_input
+		}
+
+		sul_gathering_village_maize_potato = {
+			maize = 0.3
+			potato = 0.3
+			produced = provisions
+			output = 0.5
+			debug_max_profit = -1
+			category = guild_input
 		}
 	}
 
 	modifier = {
 		free_building_levels = 1
 		local_population_capacity = 1
+		local_production_efficiency = 0.01
+		local_sailors = 0.002
 		local_laborers_desired_pop = 0.1
-		local_soldiers_desired_pop = 0.05
 	}
 }
 
-REPLACE:farming_village = {
+sul_mining_village = {
 	is_foreign = no
 	max_levels = rural_building_cap
 	pop_type = peasants
@@ -134,30 +160,61 @@ REPLACE:farming_village = {
 	rural_settlement = yes
 	town = yes
 	city = yes
+	important_for_AI = yes
+	ai_forbid_shutdown = yes
 
 	location_potential = {
-		sul_has_farming_specialization = yes
+		sul_has_mining_specialization = yes
 	}
 
 	build_time = village_build_time
 	construction_demand = village_construction
 
 	unique_production_methods = {
-		sul_farming_village_maintenance = {
-			tools = 0.025
-			clay = 1.0
-			output = 0.5
-			produced = livestock
-			debug_max_profit = 0.6
-			category = building_maintenance
+		sul_mining_village_grain_meat = {
+			wheat = 0.25
+			livestock = 0.15
+			produced = provisions
+			output = 0.3
+			debug_max_profit = -1
+			category = guild_input
+		}
+
+		sul_mining_village_rice_fish = {
+			rice = 0.25
+			fish = 0.25
+			produced = provisions
+			output = 0.3
+			debug_max_profit = -1
+			category = guild_input
+		}
+
+		sul_mining_village_millet_legumes = {
+			millet = 0.2
+			legumes = 0.2
+			produced = provisions
+			output = 0.3
+			debug_max_profit = -1
+			category = guild_input
+		}
+
+		sul_mining_village_maize_potato = {
+			maize = 0.2
+			potato = 0.2
+			produced = provisions
+			output = 0.3
+			debug_max_profit = -1
+			category = guild_input
 		}
 	}
 
 	modifier = {
 		free_building_levels = 1
 		local_population_capacity = 1
+		local_production_efficiency = 0.01
+		local_manpower = 0.002
+		local_soldiers_desired_pop = 0.1
 		local_laborers_desired_pop = 0.1
-		local_soldiers_desired_pop = 0.05
 	}
 }
 
@@ -170,6 +227,8 @@ REPLACE:forest_village = {
 	rural_settlement = yes
 	town = yes
 	city = yes
+	important_for_AI = yes
+	ai_forbid_shutdown = yes
 
 	location_potential = {
 		sul_has_woodland_specialization = yes
@@ -179,35 +238,52 @@ REPLACE:forest_village = {
 	construction_demand = village_construction
 
 	unique_production_methods = {
-		sul_forest_tannery = {
-			produced = leather
-			output = 0.2
-			sand = 0.1
-			tar = 0.02
-			wild_game = 0.4
-			category = building_maintenance
+		sul_woodland_village_grain_meat = {
+			wheat = 0.25
+			livestock = 0.15
+			produced = provisions
+			output = 0.3
+			debug_max_profit = -1
+			category = guild_input
 		}
 
-		sul_hunting_lodges = {
-			produced = wild_game
-			output = 0.20
-			weaponry = 0.05
-			debug_max_profit = 0.4
-			category = building_maintenance
+		sul_woodland_village_rice_fish = {
+			rice = 0.25
+			fish = 0.25
+			produced = provisions
+			output = 0.3
+			debug_max_profit = -1
+			category = guild_input
+		}
+
+		sul_woodland_village_millet_legumes = {
+			millet = 0.2
+			legumes = 0.2
+			produced = provisions
+			output = 0.3
+			debug_max_profit = -1
+			category = guild_input
+		}
+
+		sul_woodland_village_maize_potato = {
+			maize = 0.2
+			potato = 0.2
+			produced = provisions
+			output = 0.3
+			debug_max_profit = -1
+			category = guild_input
 		}
 	}
 
 	modifier = {
 		free_building_levels = 1
 		local_population_capacity = 1
+		local_production_efficiency = 0.01
 		local_laborers_desired_pop = 0.1
-		local_soldiers_desired_pop = 0.05
 	}
 }
 
-# Mining village — no vanilla equivalent
-
-sul_mining_village = {
+REPLACE:market_village = {
 	is_foreign = no
 	max_levels = rural_building_cap
 	pop_type = peasants
@@ -216,26 +292,62 @@ sul_mining_village = {
 	rural_settlement = yes
 	town = yes
 	city = yes
+	important_for_AI = yes
+	ai_forbid_shutdown = yes
 
 	location_potential = {
-		sul_has_mining_specialization = yes
+		sul_has_commercial_specialization = yes
 	}
 
 	build_time = village_build_time
 	construction_demand = village_construction
 
 	unique_production_methods = {
-		sul_mining_village_maintenance = {
-			tools = 0.05
-			category = building_maintenance
+		sul_commercial_village_grain_meat = {
+			wheat = 0.25
+			livestock = 0.15
+			produced = provisions
+			output = 0.3
+			debug_max_profit = -1
+			category = guild_input
+		}
+
+		sul_commercial_village_rice_fish = {
+			rice = 0.25
+			fish = 0.25
+			produced = provisions
+			output = 0.3
+			debug_max_profit = -1
+			category = guild_input
+		}
+
+		sul_commercial_village_millet_legumes = {
+			millet = 0.2
+			legumes = 0.2
+			produced = provisions
+			output = 0.3
+			debug_max_profit = -1
+			category = guild_input
+		}
+
+		sul_commercial_village_maize_potato = {
+			maize = 0.2
+			potato = 0.2
+			produced = provisions
+			output = 0.3
+			debug_max_profit = -1
+			category = guild_input
 		}
 	}
 
 	modifier = {
 		free_building_levels = 1
 		local_population_capacity = 1
-		local_laborers_desired_pop = 0.1
-		local_soldiers_desired_pop = 0.05
+		local_production_efficiency = 0.01
+		local_market_access = 0.005
+		local_merchant_capacity = 1.0
+		local_merchant_power = 1.0
+		local_burghers_desired_pop = 0.01
 	}
 }
 
@@ -243,7 +355,7 @@ sul_mining_village = {
 
 REPLACE:mason = {
 	is_foreign = no
-	max_levels = guild_max_level
+	max_levels = sul_production_max_level
 	pop_type = laborers
 	category = basic_industry_category
 	employment_size = advanced_peasant_building_employment
@@ -277,4 +389,6 @@ REPLACE:mason = {
 	}
 
 	construction_demand = basic_construction_needs
+
+	modifier = { sul_production_size = 0.25 sul_extraction_size = -0.25 }
 }

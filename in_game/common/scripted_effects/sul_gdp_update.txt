@@ -47,6 +47,22 @@
 # -----------------------------------------------------------------------------
 
 sul_update_location_wpp = {
+	# Ensure spending rates exist on owner (first call may precede monthly pulse)
+	owner ?= {
+		if = {
+			limit = {
+				NOT = {
+					has_variable = sul_spending_nobles
+				}
+			}
+
+			set_variable = { name = sul_spending_nobles value = 1 }
+			set_variable = { name = sul_spending_clergy value = 1 }
+			set_variable = { name = sul_spending_burghers value = 1 }
+			set_variable = { name = sul_spending_commoners value = 1 }
+		}
+	}
+
 	# 1. Wages (population-driven demand base)
 	set_variable = {
 		name = sul_local_wages
@@ -74,25 +90,13 @@ sul_update_location_wpp = {
 			add = num_pop_type:peasants
 			add = num_pop_type:laborers
 			add = num_pop_type:soldiers
+			add = num_pop_type:slaves
 			add = { value = num_pop_type:tribesmen multiply = 0.01 }
 			min = 0.001
 		}
 	}
 
-	# 3. GDP (tax base + wages + enrichment supplement; zero-control fallback)
-	# Enrichment supplement from previous month's estate reinvestment
-	set_local_variable = {
-		name = sul_enrichment_supplement
-
-		value = {
-			value = 0
-			if = {
-				limit = { owner = { has_variable = sul_enrichment_per_pop } }
-				add = { value = owner.var:sul_enrichment_per_pop multiply = population }
-			}
-		}
-	}
-
+	# 3. GDP (tax base + wages; zero-control fallback)
 	save_scope_as = cur_loc
 
 	if = {
@@ -105,36 +109,12 @@ sul_update_location_wpp = {
 				value = scope:cur_loc.location_tax_base
 				divide = local_control
 				add = var:sul_local_wages
-				add = local_var:sul_enrichment_supplement
 			}
 		}
 	}
 	else = {
-		# Zero control — estimate from RGO + buildings
-		set_local_variable = { name = sul_rgo_estimated_value value = 0 }
-
-		raw_material ?= {
-			set_local_variable = {
-				name = sul_rgo_estimated_value
-
-				value = {
-					value = "price_in_market(scope:cur_loc.market)"
-					multiply = scope:cur_loc.raw_material_output
-				}
-			}
-		}
-
-		set_variable = {
-			name = sul_local_gdp
-
-			value = {
-				value = total_building_levels
-				add = local_var:sul_rgo_estimated_value
-				multiply = market_access
-				add = var:sul_local_wages
-				add = local_var:sul_enrichment_supplement
-			}
-		}
+		# Zero control — no economic activity, zero GDP
+		set_variable = { name = sul_local_gdp value = 0 }
 	}
 
 	# 4. Enfranchisement (stored for wage accumulation in owner scope)
@@ -155,13 +135,14 @@ sul_update_location_wpp = {
 		value = { value = var:sul_local_gdp divide = var:sul_total_weighted }
 	}
 
-	# 6. Pre-compute WPP per estate type
+	# 6. Pre-compute WPP per estate type (wealth × spending rate from owner)
 	set_local_variable = {
 		name = sul_commoner_wealth
 
 		value = {
 			value = local_var:sul_wealth_base
 			multiply = var:sul_enfranchisement
+			multiply = owner.var:sul_spending_commoners
 		}
 	}
 	set_local_variable = {
@@ -171,10 +152,22 @@ sul_update_location_wpp = {
 			value = local_var:sul_wealth_base
 			multiply = @sul_power_weight_nobles
 
+			# Unenfranchised commoner wealth redistributed to nobles:
+			# (1 - enfranchisement) × commoner_pops / num_nobles
 			add = {
 				value = local_var:sul_wealth_base
 				multiply = { value = 1 subtract = var:sul_enfranchisement }
+				multiply = {
+					value = num_pop_type:peasants
+					add = num_pop_type:laborers
+					add = num_pop_type:soldiers
+					add = num_pop_type:slaves
+				}
+
+				divide = { value = num_pop_type:nobles min = 0.001 }
 			}
+
+			multiply = owner.var:sul_spending_nobles
 		}
 	}
 	set_local_variable = {
@@ -183,6 +176,7 @@ sul_update_location_wpp = {
 		value = {
 			value = local_var:sul_wealth_base
 			multiply = @sul_power_weight_clergy
+			multiply = owner.var:sul_spending_clergy
 		}
 	}
 	set_local_variable = {
@@ -191,6 +185,7 @@ sul_update_location_wpp = {
 		value = {
 			value = local_var:sul_wealth_base
 			multiply = @sul_power_weight_burghers
+			multiply = owner.var:sul_spending_burghers
 		}
 	}
 
@@ -427,121 +422,37 @@ sul_update_country_economy = {
 	# Budget pressure per estate (reads estate_gold and estate_taxable_income)
 	sul_compute_budget_pressure = yes
 
-	# Enrichment + payment
-	# effective_enrichment = estate_enrichment (country modifier) + per-estate static offset
-	# payment = wages × (1 - effective_enrichment)
-	# enrichment sink = wages × effective_enrichment
-	set_local_variable = { name = sul_enrichment_accumulated value = 0 }
-
-	# --- Nobles (offset 0.30) ---
-	set_local_variable = {
-		name = sul_effective_enrichment
-
-		value = {
-			value = modifier:estate_enrichment
-			add = @sul_enrichment_offset_nobles
-		}
-	}
-
+	# Payment: wages × (1 - enrichment) per estate
 	set_variable = {
 		name = sul_monthly_wages_nobles
 
 		value = {
 			value = local_var:sul_noble_wages
-			multiply = { value = 1 subtract = local_var:sul_effective_enrichment }
+			multiply = var:sul_spending_nobles
 		}
 	}
-
-	change_local_variable = {
-		name = sul_enrichment_accumulated
-
-		add = {
-			value = local_var:sul_noble_wages
-			multiply = local_var:sul_effective_enrichment
-		}
-	}
-
-	# --- Clergy (offset 0.25) ---
-	set_local_variable = {
-		name = sul_effective_enrichment
-
-		value = {
-			value = modifier:estate_enrichment
-			add = @sul_enrichment_offset_clergy
-		}
-	}
-
 	set_variable = {
 		name = sul_monthly_wages_clergy
 
 		value = {
 			value = local_var:sul_clergy_wages
-			multiply = { value = 1 subtract = local_var:sul_effective_enrichment }
+			multiply = var:sul_spending_clergy
 		}
 	}
-
-	change_local_variable = {
-		name = sul_enrichment_accumulated
-
-		add = {
-			value = local_var:sul_clergy_wages
-			multiply = local_var:sul_effective_enrichment
-		}
-	}
-
-	# --- Burghers (offset 0.20) ---
-	set_local_variable = {
-		name = sul_effective_enrichment
-
-		value = {
-			value = modifier:estate_enrichment
-			add = @sul_enrichment_offset_burghers
-		}
-	}
-
 	set_variable = {
 		name = sul_monthly_wages_burghers
 
 		value = {
 			value = local_var:sul_burgher_wages
-			multiply = { value = 1 subtract = local_var:sul_effective_enrichment }
+			multiply = var:sul_spending_burghers
 		}
 	}
-
-	change_local_variable = {
-		name = sul_enrichment_accumulated
-
-		add = {
-			value = local_var:sul_burgher_wages
-			multiply = local_var:sul_effective_enrichment
-		}
-	}
-
-	# --- Peasants (offset 0.10) ---
-	set_local_variable = {
-		name = sul_effective_enrichment
-
-		value = {
-			value = modifier:estate_enrichment
-			add = @sul_enrichment_offset_commoners
-		}
-	}
-
 	set_variable = {
 		name = sul_monthly_wages_peasants
 
 		value = {
 			value = local_var:sul_commoner_wages
-			multiply = { value = 1 subtract = local_var:sul_effective_enrichment }
-		}
-	}
-
-	change_local_variable = {
-		name = sul_enrichment_accumulated
-
-		add = {
-			value = local_var:sul_commoner_wages
-			multiply = local_var:sul_effective_enrichment
+			multiply = var:sul_spending_commoners
 		}
 	}
 
@@ -549,16 +460,6 @@ sul_update_country_economy = {
 	set_variable = { name = sul_monthly_wages_dhimmi value = 0 }
 	set_variable = { name = sul_monthly_wages_cossacks value = 0 }
 	set_variable = { name = sul_monthly_wages_tribes value = 0 }
-
-	# Enrichment → GDP supplement for next month
-	set_variable = {
-		name = sul_enrichment_per_pop
-
-		value = {
-			value = local_var:sul_enrichment_accumulated
-			divide = { value = total_population min = 1 }
-		}
-	}
 
 	# Pay estates
 	sul_pay_estate_wages = yes
@@ -656,127 +557,41 @@ sul_accumulate_wages = {
 	# Budget pressure
 	sul_compute_budget_pressure = yes
 
-	# Enrichment + store monthly wage variables
-	set_local_variable = { name = sul_enrichment_accumulated value = 0 }
-
-	set_local_variable = {
-		name = sul_effective_enrichment
-
-		value = {
-			value = modifier:estate_enrichment
-			add = @sul_enrichment_offset_nobles
-		}
-	}
-
+	# Payment: wages × (1 - enrichment) per estate
 	set_variable = {
 		name = sul_monthly_wages_nobles
 
 		value = {
 			value = local_var:sul_noble_wages
-			multiply = { value = 1 subtract = local_var:sul_effective_enrichment }
+			multiply = var:sul_spending_nobles
 		}
 	}
-
-	change_local_variable = {
-		name = sul_enrichment_accumulated
-
-		add = {
-			value = local_var:sul_noble_wages
-			multiply = local_var:sul_effective_enrichment
-		}
-	}
-
-	set_local_variable = {
-		name = sul_effective_enrichment
-
-		value = {
-			value = modifier:estate_enrichment
-			add = @sul_enrichment_offset_clergy
-		}
-	}
-
 	set_variable = {
 		name = sul_monthly_wages_clergy
 
 		value = {
 			value = local_var:sul_clergy_wages
-			multiply = { value = 1 subtract = local_var:sul_effective_enrichment }
+			multiply = var:sul_spending_clergy
 		}
 	}
-
-	change_local_variable = {
-		name = sul_enrichment_accumulated
-
-		add = {
-			value = local_var:sul_clergy_wages
-			multiply = local_var:sul_effective_enrichment
-		}
-	}
-
-	set_local_variable = {
-		name = sul_effective_enrichment
-
-		value = {
-			value = modifier:estate_enrichment
-			add = @sul_enrichment_offset_burghers
-		}
-	}
-
 	set_variable = {
 		name = sul_monthly_wages_burghers
 
 		value = {
 			value = local_var:sul_burgher_wages
-			multiply = { value = 1 subtract = local_var:sul_effective_enrichment }
+			multiply = var:sul_spending_burghers
 		}
 	}
-
-	change_local_variable = {
-		name = sul_enrichment_accumulated
-
-		add = {
-			value = local_var:sul_burgher_wages
-			multiply = local_var:sul_effective_enrichment
-		}
-	}
-
-	set_local_variable = {
-		name = sul_effective_enrichment
-
-		value = {
-			value = modifier:estate_enrichment
-			add = @sul_enrichment_offset_commoners
-		}
-	}
-
 	set_variable = {
 		name = sul_monthly_wages_peasants
 
 		value = {
 			value = local_var:sul_commoner_wages
-			multiply = { value = 1 subtract = local_var:sul_effective_enrichment }
-		}
-	}
-
-	change_local_variable = {
-		name = sul_enrichment_accumulated
-
-		add = {
-			value = local_var:sul_commoner_wages
-			multiply = local_var:sul_effective_enrichment
+			multiply = var:sul_spending_commoners
 		}
 	}
 
 	set_variable = { name = sul_monthly_wages_dhimmi value = 0 }
 	set_variable = { name = sul_monthly_wages_cossacks value = 0 }
 	set_variable = { name = sul_monthly_wages_tribes value = 0 }
-
-	set_variable = {
-		name = sul_enrichment_per_pop
-
-		value = {
-			value = local_var:sul_enrichment_accumulated
-			divide = { value = total_population min = 1 }
-		}
-	}
 }

@@ -1,5 +1,11 @@
 ﻿# Specialization System - Custom On Action Definitions
 # Hooks that append to vanilla on_actions are in sul_hardcoded.txt
+
+# Enrichment offsets (duplicated from sul_gdp_update.txt — @macros are file-scoped)
+@sul_enrichment_offset_nobles = 0.30
+@sul_enrichment_offset_clergy = 0.25
+@sul_enrichment_offset_burghers = 0.20
+@sul_enrichment_offset_commoners = 0.10
 # =============================================================================
 # INITIALIZATION & VERSION CHECK
 # =============================================================================
@@ -220,6 +226,52 @@ sul_initialize_economy = {
 			set_variable = { name = sul_budget_pressure_burghers value = 1 }
 			set_variable = { name = sul_budget_pressure_peasants value = 1 }
 
+			# Seed spending rates before economy update
+			set_variable = {
+				name = sul_spending_nobles
+
+				value = {
+					value = 1
+					subtract = modifier:estate_enrichment
+					subtract = @sul_enrichment_offset_nobles
+					min = 0
+					max = 1
+				}
+			}
+			set_variable = {
+				name = sul_spending_clergy
+
+				value = {
+					value = 1
+					subtract = modifier:estate_enrichment
+					subtract = @sul_enrichment_offset_clergy
+					min = 0
+					max = 1
+				}
+			}
+			set_variable = {
+				name = sul_spending_burghers
+
+				value = {
+					value = 1
+					subtract = modifier:estate_enrichment
+					subtract = @sul_enrichment_offset_burghers
+					min = 0
+					max = 1
+				}
+			}
+			set_variable = {
+				name = sul_spending_commoners
+
+				value = {
+					value = 1
+					subtract = modifier:estate_enrichment
+					subtract = @sul_enrichment_offset_commoners
+					min = 0
+					max = 1
+				}
+			}
+
 			every_owned_location = { sul_init_zero_wpp = yes }
 
 			sul_update_country_economy = yes
@@ -248,6 +300,63 @@ sul_batch_location_update = {
 
 			sul_update_location_wpp = yes
 			set_variable = { name = sul_last_update value = current_year }
+		}
+	}
+}
+
+# =============================================================================
+# SPENDING RATES (monthly, country scope)
+# =============================================================================
+# Enrichment reduces estate spending: rate = 1 - (engine enrichment + sul offset)
+# Stored once per country, read by WPP update (location scope) and wage payment.
+
+sul_update_spending_rates = {
+	trigger = { is_real_country = yes }
+
+	effect = {
+		set_variable = {
+			name = sul_spending_nobles
+
+			value = {
+				value = 1
+				subtract = modifier:estate_enrichment
+				subtract = @sul_enrichment_offset_nobles
+				min = 0
+				max = 1
+			}
+		}
+		set_variable = {
+			name = sul_spending_clergy
+
+			value = {
+				value = 1
+				subtract = modifier:estate_enrichment
+				subtract = @sul_enrichment_offset_clergy
+				min = 0
+				max = 1
+			}
+		}
+		set_variable = {
+			name = sul_spending_burghers
+
+			value = {
+				value = 1
+				subtract = modifier:estate_enrichment
+				subtract = @sul_enrichment_offset_burghers
+				min = 0
+				max = 1
+			}
+		}
+		set_variable = {
+			name = sul_spending_commoners
+
+			value = {
+				value = 1
+				subtract = modifier:estate_enrichment
+				subtract = @sul_enrichment_offset_commoners
+				min = 0
+				max = 1
+			}
 		}
 	}
 }

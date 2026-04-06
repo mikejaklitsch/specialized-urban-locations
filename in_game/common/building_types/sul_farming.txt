@@ -4,34 +4,249 @@
 
 # Specialization gates
 
-INJECT:fiber_crops_farm = {
+REPLACE:fiber_crops_farm = {
+	is_foreign = no
+	max_levels = sul_extraction_max_level
+	pop_type = peasants
+
+	employment_size = rural_peasant_produce_employment
+
+	rural_settlement = yes
+	town = yes
+	city = yes
+
 	location_potential = {
+		NOT = {
+			raw_material = goods:fiber_crops
+		}
+		NOT = {
+			climate = arctic
+		}
+
 		sul_has_farming_specialization = yes
 	}
+
+	category = rgo_building_category
+
+	build_time = rural_build_time
+
+	unique_production_methods = {
+		sul_fiber_crops_farm_maintenance = {
+			livestock = 0.5
+			lumber = 0.2
+			tools = 0.1
+			category = building_maintenance
+
+			produced = fiber_crops
+			output = 0.8
+		}
+	}
+
+	construction_demand = farm_constructions
+
+	modifier = { sul_extraction_size = 0.25 sul_production_size = -0.25 }
 }
 
-TRY_INJECT:horse_breeders = {
+REPLACE:horse_breeders = {
+	is_foreign = no
+	pop_type = peasants
+	max_levels = sul_extraction_max_level
+
+	employment_size = rural_peasant_produce_employment
+
+	category = rgo_building_category
+
+	rural_settlement = yes
+	town = yes
+	city = yes
+
 	location_potential = {
+		market = { is_produced_in_market = goods:horses }
 		sul_has_farming_specialization = yes
 	}
+
+	allow = {
+		OR = {
+			climate = mediterranean
+			climate = continental
+			climate = oceanic
+		}
+	}
+
+	unique_production_methods = {
+		sul_horse_breeders_maintenance = {
+			produced = horses
+			output = 1
+			wheat = 1.5
+			horses = 0.3
+			category = building_maintenance
+		}
+	}
+
+	build_time = rural_build_time
+
+	construction_demand = horse_breeders_construction
+
+	modifier = { sul_extraction_size = 0.25 sul_production_size = -0.25 }
 }
 
-INJECT:sugar_plantation = {
+REPLACE:sugar_plantation = {
+	is_foreign = no
+	pop_type = slaves
+	max_levels = sul_extraction_max_level
+
+	employment_size = plantation_employment
+
+	category = colonial_category
+
 	location_potential = {
+		raw_material = goods:sugar
+		OR = {
+			is_overseas_for_owner = yes
+			owner ?= { is_colonial_subject = yes }
+		}
+
 		sul_has_farming_specialization = yes
 	}
+
+	rural_settlement = yes
+	town = yes
+	city = yes
+
+	price = expand_rgo_farming
+
+	always_add_demands = yes
+
+	build_time = plantation_build_time
+
+	unique_production_methods = {
+		sul_sugar_plantation_maintenance = {
+			produced = sugar
+			output = 1
+
+			slaves_goods = 0.1
+			leather = 0.05
+			tools = 0.05
+			lumber = 0.05
+			debug_max_profit = -1
+			category = building_maintenance
+		}
+	}
+
+	modifier = {
+		local_sugar_output_modifier = 0.1
+		local_slave_pop_satisfaction = -0.005
+		sul_extraction_size = 0.25
+		sul_production_size = -0.25
+	}
+
+	construction_demand = plantation_construction
 }
 
-INJECT:cotton_plantation = {
+REPLACE:cotton_plantation = {
+	is_foreign = no
+	pop_type = slaves
+	max_levels = sul_extraction_max_level
+
+	employment_size = plantation_employment
+
+	category = colonial_category
+
 	location_potential = {
+		raw_material = goods:cotton
+		OR = {
+			is_overseas_for_owner = yes
+			owner ?= { is_colonial_subject = yes }
+		}
+
 		sul_has_farming_specialization = yes
 	}
+
+	rural_settlement = yes
+	town = yes
+	city = yes
+
+	always_add_demands = yes
+
+	price = expand_rgo_farming
+
+	build_time = plantation_build_time
+
+	unique_production_methods = {
+		sul_cotton_plantation_maintenance = {
+			produced = cotton
+			output = 1
+
+			slaves_goods = 0.1
+			leather = 0.05
+			tools = 0.05
+			lumber = 0.05
+			debug_max_profit = -1
+			category = building_maintenance
+		}
+	}
+
+	modifier = {
+		local_cotton_output_modifier = 0.1
+		local_slave_pop_satisfaction = -0.005
+		sul_extraction_size = 0.25
+		sul_production_size = -0.25
+	}
+
+	construction_demand = plantation_construction
 }
 
-INJECT:tobacco_plantation = {
+REPLACE:tobacco_plantation = {
+	is_foreign = no
+	pop_type = slaves
+	max_levels = sul_extraction_max_level
+
+	employment_size = plantation_employment
+
+	category = colonial_category
+
 	location_potential = {
+		raw_material = goods:tobacco
+		OR = {
+			is_overseas_for_owner = yes
+			owner ?= { is_colonial_subject = yes }
+		}
+
 		sul_has_farming_specialization = yes
 	}
+
+	rural_settlement = yes
+	town = yes
+	city = yes
+
+	price = expand_rgo_farming
+
+	always_add_demands = yes
+
+	build_time = plantation_build_time
+
+	unique_production_methods = {
+		sul_tobacco_plantation_maintenance = {
+			produced = tobacco
+			output = 1
+
+			slaves_goods = 0.1
+			leather = 0.05
+			tools = 0.05
+			lumber = 0.05
+			debug_max_profit = -1
+			category = building_maintenance
+		}
+	}
+
+	modifier = {
+		local_tobacco_output_modifier = 0.1
+		local_slave_pop_satisfaction = -0.005
+		sul_extraction_size = 0.25
+		sul_production_size = -0.25
+	}
+
+	construction_demand = plantation_construction
 }
 
 # Downstream goods — specialization limits
@@ -43,6 +258,10 @@ INJECT:distillers_guild = {
 			has_variable = sul_allows_liquor_production
 		}
 	}
+
+	max_levels = sul_production_max_level
+
+	modifier = { sul_production_size = 0.25 sul_extraction_size = -0.25 }
 }
 
 INJECT:distillers_workshop = {
@@ -52,6 +271,10 @@ INJECT:distillers_workshop = {
 			has_variable = sul_allows_liquor_production
 		}
 	}
+
+	max_levels = sul_production_max_level
+
+	modifier = { sul_production_size = 0.25 sul_extraction_size = -0.25 }
 }
 
 INJECT:distiller_manufactory = {
@@ -61,6 +284,10 @@ INJECT:distiller_manufactory = {
 			has_variable = sul_allows_liquor_production
 		}
 	}
+
+	max_levels = sul_production_max_level
+
+	modifier = { sul_production_size = 0.25 sul_extraction_size = -0.25 }
 }
 
 INJECT:distiller_mill = {
@@ -70,6 +297,10 @@ INJECT:distiller_mill = {
 			has_variable = sul_allows_liquor_production
 		}
 	}
+
+	max_levels = sul_production_max_level
+
+	modifier = { sul_production_size = 0.25 sul_extraction_size = -0.25 }
 }
 
 INJECT:brewery = {
@@ -79,6 +310,10 @@ INJECT:brewery = {
 			has_variable = sul_allows_beer_production
 		}
 	}
+
+	max_levels = sul_production_max_level
+
+	modifier = { sul_production_size = 0.25 sul_extraction_size = -0.25 }
 }
 
 INJECT:beer_workshop = {
@@ -88,6 +323,10 @@ INJECT:beer_workshop = {
 			has_variable = sul_allows_beer_production
 		}
 	}
+
+	max_levels = sul_production_max_level
+
+	modifier = { sul_production_size = 0.25 sul_extraction_size = -0.25 }
 }
 
 INJECT:brewery_manufactory = {
@@ -97,6 +336,10 @@ INJECT:brewery_manufactory = {
 			has_variable = sul_allows_beer_production
 		}
 	}
+
+	max_levels = sul_production_max_level
+
+	modifier = { sul_production_size = 0.25 sul_extraction_size = -0.25 }
 }
 
 INJECT:brewery_mill = {
@@ -106,6 +349,10 @@ INJECT:brewery_mill = {
 			has_variable = sul_allows_beer_production
 		}
 	}
+
+	max_levels = sul_production_max_level
+
+	modifier = { sul_production_size = 0.25 sul_extraction_size = -0.25 }
 }
 
 INJECT:winery = {
@@ -115,6 +362,10 @@ INJECT:winery = {
 			has_variable = sul_allows_wine_production
 		}
 	}
+
+	max_levels = sul_extraction_max_level
+
+	modifier = { sul_extraction_size = 0.25 sul_production_size = -0.25 }
 }
 
 INJECT:winery_manufactory = {
@@ -124,6 +375,10 @@ INJECT:winery_manufactory = {
 			has_variable = sul_allows_wine_production
 		}
 	}
+
+	max_levels = sul_extraction_max_level
+
+	modifier = { sul_extraction_size = 0.25 sul_production_size = -0.25 }
 }
 
 # ============================================
@@ -138,7 +393,7 @@ INJECT:winery_manufactory = {
 
 sul_farmers_market = {
 	is_foreign = no
-	max_levels = guild_max_level
+	max_levels = sul_production_max_level
 	pop_type = laborers
 	employment_size = 0.4
 	category = basic_industry_category
@@ -314,6 +569,8 @@ sul_farmers_market = {
 	}
 
 	construction_demand = workshop_construction
+
+	modifier = { sul_production_size = 0.25 sul_extraction_size = -0.25 }
 }
 
 # ============================================
@@ -594,7 +851,7 @@ TRY_INJECT:elephant_hunting_grounds = {
 sul_rural_brewer = {
 	is_foreign = no
 	pop_type = laborers
-	max_levels = guild_max_level
+	max_levels = sul_production_max_level
 	category = consumer_goods_category
 	employment_size = 0.4
 	rural_settlement = yes
@@ -615,12 +872,15 @@ sul_rural_brewer = {
 	}
 
 	construction_demand = village_construction
+
+	modifier = { sul_production_size = 0.25 sul_extraction_size = -0.25 }
 }
 
 sul_rural_winemaker = {
+	# Produces wine (raw material)
 	is_foreign = no
 	pop_type = laborers
-	max_levels = guild_max_level
+	max_levels = sul_extraction_max_level
 	category = consumer_goods_category
 	employment_size = 0.4
 	rural_settlement = yes
@@ -641,12 +901,14 @@ sul_rural_winemaker = {
 	possible_production_methods = { sul_rural_fruit_wine }
 
 	construction_demand = village_construction
+
+	modifier = { sul_extraction_size = 0.25 sul_production_size = -0.25 }
 }
 
 sul_rural_distiller = {
 	is_foreign = no
 	pop_type = laborers
-	max_levels = guild_max_level
+	max_levels = sul_production_max_level
 	category = consumer_goods_category
 	employment_size = 0.4
 	rural_settlement = yes
@@ -666,4 +928,6 @@ sul_rural_distiller = {
 	}
 
 	construction_demand = village_construction
+
+	modifier = { sul_production_size = 0.25 sul_extraction_size = -0.25 }
 }

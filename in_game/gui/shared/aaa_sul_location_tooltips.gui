@@ -101,7 +101,7 @@ template location_tax_base_details {
 	### VANILLA ESTATES TABLE (restored exactly)
 
 	TooltipListBase = {
-		visible = "[GreaterThan_CFixedPoint(Location.GetTotalPossibleTaxBase, '(CFixedPoint)0')]"
+		visible = "[GreaterThan_CFixedPoint(Location.GetTotalPossibleTaxBase, '(CFixedPoint)0.0001')]"
 		blockoverride "block_title" { text = "TAX_BASE_TT_ESTATES_LIST_TITLE" }
 
 		TooltipListColumnContent = {
@@ -260,97 +260,39 @@ template location_tax_base_details {
 		textcontext = "TAX_BASE_TT_TEXT"
 	}
 
-	### WPP Summary
-
-	TooltipListBase = {
-		visible = "[Location.MakeScope.GetVariable('sul_local_gdp').IsSet]"
-
-		TooltipListRowContent = {
-			TooltipManualTableField = {
-				blockoverride "field_content" {
-					text_single = { layoutpolicy_horizontal = expanding raw_text = "#T Estate#!" }
-					text_single = { min_width = 50 align = right raw_text = "#T Share#!" }
-					text_single = { min_width = 60 align = right raw_text = "#T WPP#!" }
-				}
-			}
-			TooltipManualTableField = {
-				blockoverride "field_content" {
-					text_single = { layoutpolicy_horizontal = expanding raw_text = "Nobles" }
-					text_single = {
-						min_width = 50
-						align = right
-						raw_text = "[Location.MakeScope.ScriptValue('sul_noble_share_pct')|0]%"
-					}
-					text_single = {
-						min_width = 60
-						align = right
-						raw_text = "[Location.MakeScope.ScriptValue('sul_noble_per_capita')|2]"
-					}
-				}
-			}
-			TooltipManualTableField = {
-				blockoverride "field_content" {
-					text_single = { layoutpolicy_horizontal = expanding raw_text = "Clergy" }
-					text_single = {
-						min_width = 50
-						align = right
-						raw_text = "[Location.MakeScope.ScriptValue('sul_clergy_share_pct')|0]%"
-					}
-					text_single = {
-						min_width = 60
-						align = right
-						raw_text = "[Location.MakeScope.ScriptValue('sul_clergy_per_capita')|2]"
-					}
-				}
-			}
-			TooltipManualTableField = {
-				blockoverride "field_content" {
-					text_single = { layoutpolicy_horizontal = expanding raw_text = "Burghers" }
-					text_single = {
-						min_width = 50
-						align = right
-						raw_text = "[Location.MakeScope.ScriptValue('sul_burgher_share_pct')|0]%"
-					}
-					text_single = {
-						min_width = 60
-						align = right
-						raw_text = "[Location.MakeScope.ScriptValue('sul_burgher_per_capita')|2]"
-					}
-				}
-			}
-			TooltipManualTableField = {
-				blockoverride "field_content" {
-					text_single = { layoutpolicy_horizontal = expanding raw_text = "Commoners" }
-					text_single = {
-						min_width = 50
-						align = right
-						raw_text = "[Location.MakeScope.ScriptValue('sul_peasant_share_pct')|0]%"
-					}
-					text_single = {
-						min_width = 60
-						align = right
-						raw_text = "[Location.MakeScope.ScriptValue('sul_commoner_per_capita')|2]"
-					}
-				}
-			}
-			TooltipManualTableField = {
-				blockoverride "field_content" {
-					text_single = {
-						layoutpolicy_horizontal = expanding
-						raw_text = "GDP: [Location.MakeScope.GetVariable('sul_local_gdp').GetValue|2]@gold! | Wages: [Location.MakeScope.GetVariable('sul_local_wages').GetValue|2]@gold! | Enfr: [Location.MakeScope.GetVariable('sul_enfranchisement').GetValue|0%]"
-					}
-				}
-			}
-		}
-	}
-
 	### WPDO: POP DEMAND BUDGET
 
 	TooltipListBase = {
 		visible = "[Location.MakeScope.GetVariable('sul_local_gdp').IsSet]"
 		max_update_rate = 30
 
-		TooltipTableHeader = { blockoverride "tableheader_text" { raw_text = "#T Pop Demand Budget#!" } }
+		TooltipTableHeader = {
+			blockoverride "tableheader_text" { raw_text = "#T Pop Demand Budget#!" }
+
+			tooltipwidget = {
+				ContextualTooltipType = {
+					blockoverride "tooltip_title" {
+						ContextualTooltipHeader = {
+							blockoverride "title_icon" {
+								icon = {
+									using = tooltip_title_icon_size
+									texture = "gfx/interface/icons/resources/gold.dds"
+								}
+							}
+							blockoverride "title_text" { raw_text = "Pop Demand Budget" }
+							blockoverride "concept_link" { text = "[wealth|e]" }
+						}
+					}
+					blockoverride "tooltip_content" {
+						text_multi = {
+							layoutpolicy_horizontal = expanding
+							max_width = 350
+							raw_text = "Each pop type receives a share of this location's economic output based on their [estate|e]'s political influence. This budget determines what goods each pop demands and in what quantities.\\n\\nValues update on a rolling monthly cycle and may appear stale for locations not recently processed. The economy recalculates during the #T weather monthly pulse#!, cycling through all owned locations."
+						}
+					}
+				}
+			}
+		}
 
 		TooltipListRowContent = {
 			# Header row
@@ -486,7 +428,7 @@ template location_tax_base_details {
 
 			# Nobles
 			TooltipManualTableField = {
-				visible = "[GreaterThan_CFixedPoint(Location.MakeScope.ScriptValue('sul_noble_share_pct'), '(CFixedPoint)0')]"
+				visible = "[GreaterThan_CFixedPoint(Location.MakeScope.ScriptValue('sul_noble_share_pct'), '(CFixedPoint)0.0001')]"
 
 				blockoverride "field_content" {
 					icon = {
@@ -545,7 +487,7 @@ template location_tax_base_details {
 													set_parent_dimension_to_minimum = height
 
 													TooltipManualTableField = {
-														visible = "[GreaterThan_CFixedPoint(Location.MakeScope.ScriptValue('sul_nobles_necessity'), '(CFixedPoint)0')]"
+														visible = "[GreaterThan_CFixedPoint(Location.MakeScope.ScriptValue('sul_nobles_necessity'), '(CFixedPoint)0.0001')]"
 
 														blockoverride "field_content" {
 															text_single = {
@@ -556,7 +498,7 @@ template location_tax_base_details {
 													}
 
 													TooltipListRowContent = {
-														visible = "[GreaterThan_CFixedPoint(Location.MakeScope.ScriptValue('sul_nobles_necessity'), '(CFixedPoint)0')]"
+														visible = "[GreaterThan_CFixedPoint(Location.MakeScope.ScriptValue('sul_nobles_necessity'), '(CFixedPoint)0.0001')]"
 														max_update_rate = 30
 														datamodel = "[GetGlobalMapKeys('sul_da_necessity')]"
 
@@ -578,7 +520,7 @@ template location_tax_base_details {
 																	text_single = {
 																		min_width = 60
 																		align = right
-																		raw_text = "[Multiply_CFixedPoint(GetVariableFromGlobalVariableMap('sul_da_necessity', Goods.MakeScope).GetValue, Location.MakeScope.ScriptValue('sul_nobles_necessity'))|2]"
+																		raw_text = "[Multiply_CFixedPoint(GetVariableFromGlobalVariableMap('sul_da_necessity', Goods.MakeScope).GetValue, Location.MakeScope.ScriptValue('sul_nobles_necessity'))|4]"
 																	}
 																}
 															}
@@ -586,7 +528,7 @@ template location_tax_base_details {
 													}
 
 													TooltipManualTableField = {
-														visible = "[GreaterThan_CFixedPoint(Location.MakeScope.ScriptValue('sul_nobles_basic'), '(CFixedPoint)0')]"
+														visible = "[GreaterThan_CFixedPoint(Location.MakeScope.ScriptValue('sul_nobles_basic'), '(CFixedPoint)0.0001')]"
 
 														blockoverride "field_content" {
 															text_single = { layoutpolicy_horizontal = expanding raw_text = "#T Basic#!" }
@@ -594,7 +536,7 @@ template location_tax_base_details {
 													}
 
 													TooltipListRowContent = {
-														visible = "[GreaterThan_CFixedPoint(Location.MakeScope.ScriptValue('sul_nobles_basic'), '(CFixedPoint)0')]"
+														visible = "[GreaterThan_CFixedPoint(Location.MakeScope.ScriptValue('sul_nobles_basic'), '(CFixedPoint)0.0001')]"
 														max_update_rate = 30
 														datamodel = "[GetGlobalMapKeys('sul_da_basic')]"
 
@@ -616,7 +558,7 @@ template location_tax_base_details {
 																	text_single = {
 																		min_width = 60
 																		align = right
-																		raw_text = "[Multiply_CFixedPoint(GetVariableFromGlobalVariableMap('sul_da_basic', Goods.MakeScope).GetValue, Location.MakeScope.ScriptValue('sul_nobles_basic'))|2]"
+																		raw_text = "[Multiply_CFixedPoint(GetVariableFromGlobalVariableMap('sul_da_basic', Goods.MakeScope).GetValue, Location.MakeScope.ScriptValue('sul_nobles_basic'))|4]"
 																	}
 																}
 															}
@@ -624,7 +566,7 @@ template location_tax_base_details {
 													}
 
 													TooltipManualTableField = {
-														visible = "[GreaterThan_CFixedPoint(Location.MakeScope.ScriptValue('sul_nobles_common'), '(CFixedPoint)0')]"
+														visible = "[GreaterThan_CFixedPoint(Location.MakeScope.ScriptValue('sul_nobles_common'), '(CFixedPoint)0.0001')]"
 
 														blockoverride "field_content" {
 															text_single = { layoutpolicy_horizontal = expanding raw_text = "#T Common#!" }
@@ -632,7 +574,7 @@ template location_tax_base_details {
 													}
 
 													TooltipListRowContent = {
-														visible = "[GreaterThan_CFixedPoint(Location.MakeScope.ScriptValue('sul_nobles_common'), '(CFixedPoint)0')]"
+														visible = "[GreaterThan_CFixedPoint(Location.MakeScope.ScriptValue('sul_nobles_common'), '(CFixedPoint)0.0001')]"
 														max_update_rate = 30
 														datamodel = "[GetGlobalMapKeys('sul_da_common')]"
 
@@ -654,7 +596,7 @@ template location_tax_base_details {
 																	text_single = {
 																		min_width = 60
 																		align = right
-																		raw_text = "[Multiply_CFixedPoint(GetVariableFromGlobalVariableMap('sul_da_common', Goods.MakeScope).GetValue, Location.MakeScope.ScriptValue('sul_nobles_common'))|2]"
+																		raw_text = "[Multiply_CFixedPoint(GetVariableFromGlobalVariableMap('sul_da_common', Goods.MakeScope).GetValue, Location.MakeScope.ScriptValue('sul_nobles_common'))|4]"
 																	}
 																}
 															}
@@ -662,7 +604,7 @@ template location_tax_base_details {
 													}
 
 													TooltipManualTableField = {
-														visible = "[GreaterThan_CFixedPoint(Location.MakeScope.ScriptValue('sul_nobles_upper'), '(CFixedPoint)0')]"
+														visible = "[GreaterThan_CFixedPoint(Location.MakeScope.ScriptValue('sul_nobles_upper'), '(CFixedPoint)0.0001')]"
 
 														blockoverride "field_content" {
 															text_single = { layoutpolicy_horizontal = expanding raw_text = "#T Upper#!" }
@@ -670,7 +612,7 @@ template location_tax_base_details {
 													}
 
 													TooltipListRowContent = {
-														visible = "[GreaterThan_CFixedPoint(Location.MakeScope.ScriptValue('sul_nobles_upper'), '(CFixedPoint)0')]"
+														visible = "[GreaterThan_CFixedPoint(Location.MakeScope.ScriptValue('sul_nobles_upper'), '(CFixedPoint)0.0001')]"
 														max_update_rate = 30
 														datamodel = "[GetGlobalMapKeys('sul_da_upper')]"
 
@@ -692,7 +634,7 @@ template location_tax_base_details {
 																	text_single = {
 																		min_width = 60
 																		align = right
-																		raw_text = "[Multiply_CFixedPoint(GetVariableFromGlobalVariableMap('sul_da_upper', Goods.MakeScope).GetValue, Location.MakeScope.ScriptValue('sul_nobles_upper'))|2]"
+																		raw_text = "[Multiply_CFixedPoint(GetVariableFromGlobalVariableMap('sul_da_upper', Goods.MakeScope).GetValue, Location.MakeScope.ScriptValue('sul_nobles_upper'))|4]"
 																	}
 																}
 															}
@@ -700,7 +642,7 @@ template location_tax_base_details {
 													}
 
 													TooltipManualTableField = {
-														visible = "[GreaterThan_CFixedPoint(Location.MakeScope.ScriptValue('sul_nobles_luxury'), '(CFixedPoint)0')]"
+														visible = "[GreaterThan_CFixedPoint(Location.MakeScope.ScriptValue('sul_nobles_luxury'), '(CFixedPoint)0.0001')]"
 
 														blockoverride "field_content" {
 															text_single = { layoutpolicy_horizontal = expanding raw_text = "#T Luxury#!" }
@@ -708,7 +650,7 @@ template location_tax_base_details {
 													}
 
 													TooltipListRowContent = {
-														visible = "[GreaterThan_CFixedPoint(Location.MakeScope.ScriptValue('sul_nobles_luxury'), '(CFixedPoint)0')]"
+														visible = "[GreaterThan_CFixedPoint(Location.MakeScope.ScriptValue('sul_nobles_luxury'), '(CFixedPoint)0.0001')]"
 														max_update_rate = 30
 														datamodel = "[GetGlobalMapKeys('sul_da_luxury')]"
 
@@ -730,7 +672,7 @@ template location_tax_base_details {
 																	text_single = {
 																		min_width = 60
 																		align = right
-																		raw_text = "[Multiply_CFixedPoint(GetVariableFromGlobalVariableMap('sul_da_luxury', Goods.MakeScope).GetValue, Location.MakeScope.ScriptValue('sul_nobles_luxury'))|2]"
+																		raw_text = "[Multiply_CFixedPoint(GetVariableFromGlobalVariableMap('sul_da_luxury', Goods.MakeScope).GetValue, Location.MakeScope.ScriptValue('sul_nobles_luxury'))|4]"
 																	}
 																}
 															}
@@ -738,7 +680,7 @@ template location_tax_base_details {
 													}
 
 													TooltipManualTableField = {
-														visible = "[GreaterThan_CFixedPoint(Location.MakeScope.ScriptValue('sul_nobles_exotic'), '(CFixedPoint)0')]"
+														visible = "[GreaterThan_CFixedPoint(Location.MakeScope.ScriptValue('sul_nobles_exotic'), '(CFixedPoint)0.0001')]"
 
 														blockoverride "field_content" {
 															text_single = { layoutpolicy_horizontal = expanding raw_text = "#T Exotic#!" }
@@ -746,7 +688,7 @@ template location_tax_base_details {
 													}
 
 													TooltipListRowContent = {
-														visible = "[GreaterThan_CFixedPoint(Location.MakeScope.ScriptValue('sul_nobles_exotic'), '(CFixedPoint)0')]"
+														visible = "[GreaterThan_CFixedPoint(Location.MakeScope.ScriptValue('sul_nobles_exotic'), '(CFixedPoint)0.0001')]"
 														max_update_rate = 30
 														datamodel = "[GetGlobalMapKeys('sul_da_exotic')]"
 
@@ -768,7 +710,7 @@ template location_tax_base_details {
 																	text_single = {
 																		min_width = 60
 																		align = right
-																		raw_text = "[Multiply_CFixedPoint(GetVariableFromGlobalVariableMap('sul_da_exotic', Goods.MakeScope).GetValue, Location.MakeScope.ScriptValue('sul_nobles_exotic'))|2]"
+																		raw_text = "[Multiply_CFixedPoint(GetVariableFromGlobalVariableMap('sul_da_exotic', Goods.MakeScope).GetValue, Location.MakeScope.ScriptValue('sul_nobles_exotic'))|4]"
 																	}
 																}
 															}
@@ -787,7 +729,7 @@ template location_tax_base_details {
 
 			# Clergy
 			TooltipManualTableField = {
-				visible = "[GreaterThan_CFixedPoint(Location.MakeScope.ScriptValue('sul_clergy_share_pct'), '(CFixedPoint)0')]"
+				visible = "[GreaterThan_CFixedPoint(Location.MakeScope.ScriptValue('sul_clergy_share_pct'), '(CFixedPoint)0.0001')]"
 
 				blockoverride "field_content" {
 					icon = {
@@ -846,7 +788,7 @@ template location_tax_base_details {
 													set_parent_dimension_to_minimum = height
 
 													TooltipManualTableField = {
-														visible = "[GreaterThan_CFixedPoint(Location.MakeScope.ScriptValue('sul_clergy_necessity'), '(CFixedPoint)0')]"
+														visible = "[GreaterThan_CFixedPoint(Location.MakeScope.ScriptValue('sul_clergy_necessity'), '(CFixedPoint)0.0001')]"
 
 														blockoverride "field_content" {
 															text_single = {
@@ -857,7 +799,7 @@ template location_tax_base_details {
 													}
 
 													TooltipListRowContent = {
-														visible = "[GreaterThan_CFixedPoint(Location.MakeScope.ScriptValue('sul_clergy_necessity'), '(CFixedPoint)0')]"
+														visible = "[GreaterThan_CFixedPoint(Location.MakeScope.ScriptValue('sul_clergy_necessity'), '(CFixedPoint)0.0001')]"
 														max_update_rate = 30
 														datamodel = "[GetGlobalMapKeys('sul_da_necessity')]"
 
@@ -879,7 +821,7 @@ template location_tax_base_details {
 																	text_single = {
 																		min_width = 60
 																		align = right
-																		raw_text = "[Multiply_CFixedPoint(GetVariableFromGlobalVariableMap('sul_da_necessity', Goods.MakeScope).GetValue, Location.MakeScope.ScriptValue('sul_clergy_necessity'))|2]"
+																		raw_text = "[Multiply_CFixedPoint(GetVariableFromGlobalVariableMap('sul_da_necessity', Goods.MakeScope).GetValue, Location.MakeScope.ScriptValue('sul_clergy_necessity'))|4]"
 																	}
 																}
 															}
@@ -887,7 +829,7 @@ template location_tax_base_details {
 													}
 
 													TooltipManualTableField = {
-														visible = "[GreaterThan_CFixedPoint(Location.MakeScope.ScriptValue('sul_clergy_basic'), '(CFixedPoint)0')]"
+														visible = "[GreaterThan_CFixedPoint(Location.MakeScope.ScriptValue('sul_clergy_basic'), '(CFixedPoint)0.0001')]"
 
 														blockoverride "field_content" {
 															text_single = { layoutpolicy_horizontal = expanding raw_text = "#T Basic#!" }
@@ -895,7 +837,7 @@ template location_tax_base_details {
 													}
 
 													TooltipListRowContent = {
-														visible = "[GreaterThan_CFixedPoint(Location.MakeScope.ScriptValue('sul_clergy_basic'), '(CFixedPoint)0')]"
+														visible = "[GreaterThan_CFixedPoint(Location.MakeScope.ScriptValue('sul_clergy_basic'), '(CFixedPoint)0.0001')]"
 														max_update_rate = 30
 														datamodel = "[GetGlobalMapKeys('sul_da_basic')]"
 
@@ -917,7 +859,7 @@ template location_tax_base_details {
 																	text_single = {
 																		min_width = 60
 																		align = right
-																		raw_text = "[Multiply_CFixedPoint(GetVariableFromGlobalVariableMap('sul_da_basic', Goods.MakeScope).GetValue, Location.MakeScope.ScriptValue('sul_clergy_basic'))|2]"
+																		raw_text = "[Multiply_CFixedPoint(GetVariableFromGlobalVariableMap('sul_da_basic', Goods.MakeScope).GetValue, Location.MakeScope.ScriptValue('sul_clergy_basic'))|4]"
 																	}
 																}
 															}
@@ -925,7 +867,7 @@ template location_tax_base_details {
 													}
 
 													TooltipManualTableField = {
-														visible = "[GreaterThan_CFixedPoint(Location.MakeScope.ScriptValue('sul_clergy_common'), '(CFixedPoint)0')]"
+														visible = "[GreaterThan_CFixedPoint(Location.MakeScope.ScriptValue('sul_clergy_common'), '(CFixedPoint)0.0001')]"
 
 														blockoverride "field_content" {
 															text_single = { layoutpolicy_horizontal = expanding raw_text = "#T Common#!" }
@@ -933,7 +875,7 @@ template location_tax_base_details {
 													}
 
 													TooltipListRowContent = {
-														visible = "[GreaterThan_CFixedPoint(Location.MakeScope.ScriptValue('sul_clergy_common'), '(CFixedPoint)0')]"
+														visible = "[GreaterThan_CFixedPoint(Location.MakeScope.ScriptValue('sul_clergy_common'), '(CFixedPoint)0.0001')]"
 														max_update_rate = 30
 														datamodel = "[GetGlobalMapKeys('sul_da_common')]"
 
@@ -955,7 +897,7 @@ template location_tax_base_details {
 																	text_single = {
 																		min_width = 60
 																		align = right
-																		raw_text = "[Multiply_CFixedPoint(GetVariableFromGlobalVariableMap('sul_da_common', Goods.MakeScope).GetValue, Location.MakeScope.ScriptValue('sul_clergy_common'))|2]"
+																		raw_text = "[Multiply_CFixedPoint(GetVariableFromGlobalVariableMap('sul_da_common', Goods.MakeScope).GetValue, Location.MakeScope.ScriptValue('sul_clergy_common'))|4]"
 																	}
 																}
 															}
@@ -963,7 +905,7 @@ template location_tax_base_details {
 													}
 
 													TooltipManualTableField = {
-														visible = "[GreaterThan_CFixedPoint(Location.MakeScope.ScriptValue('sul_clergy_upper'), '(CFixedPoint)0')]"
+														visible = "[GreaterThan_CFixedPoint(Location.MakeScope.ScriptValue('sul_clergy_upper'), '(CFixedPoint)0.0001')]"
 
 														blockoverride "field_content" {
 															text_single = { layoutpolicy_horizontal = expanding raw_text = "#T Upper#!" }
@@ -971,7 +913,7 @@ template location_tax_base_details {
 													}
 
 													TooltipListRowContent = {
-														visible = "[GreaterThan_CFixedPoint(Location.MakeScope.ScriptValue('sul_clergy_upper'), '(CFixedPoint)0')]"
+														visible = "[GreaterThan_CFixedPoint(Location.MakeScope.ScriptValue('sul_clergy_upper'), '(CFixedPoint)0.0001')]"
 														max_update_rate = 30
 														datamodel = "[GetGlobalMapKeys('sul_da_upper')]"
 
@@ -993,7 +935,7 @@ template location_tax_base_details {
 																	text_single = {
 																		min_width = 60
 																		align = right
-																		raw_text = "[Multiply_CFixedPoint(GetVariableFromGlobalVariableMap('sul_da_upper', Goods.MakeScope).GetValue, Location.MakeScope.ScriptValue('sul_clergy_upper'))|2]"
+																		raw_text = "[Multiply_CFixedPoint(GetVariableFromGlobalVariableMap('sul_da_upper', Goods.MakeScope).GetValue, Location.MakeScope.ScriptValue('sul_clergy_upper'))|4]"
 																	}
 																}
 															}
@@ -1001,7 +943,7 @@ template location_tax_base_details {
 													}
 
 													TooltipManualTableField = {
-														visible = "[GreaterThan_CFixedPoint(Location.MakeScope.ScriptValue('sul_clergy_luxury'), '(CFixedPoint)0')]"
+														visible = "[GreaterThan_CFixedPoint(Location.MakeScope.ScriptValue('sul_clergy_luxury'), '(CFixedPoint)0.0001')]"
 
 														blockoverride "field_content" {
 															text_single = { layoutpolicy_horizontal = expanding raw_text = "#T Luxury#!" }
@@ -1009,7 +951,7 @@ template location_tax_base_details {
 													}
 
 													TooltipListRowContent = {
-														visible = "[GreaterThan_CFixedPoint(Location.MakeScope.ScriptValue('sul_clergy_luxury'), '(CFixedPoint)0')]"
+														visible = "[GreaterThan_CFixedPoint(Location.MakeScope.ScriptValue('sul_clergy_luxury'), '(CFixedPoint)0.0001')]"
 														max_update_rate = 30
 														datamodel = "[GetGlobalMapKeys('sul_da_luxury')]"
 
@@ -1031,7 +973,7 @@ template location_tax_base_details {
 																	text_single = {
 																		min_width = 60
 																		align = right
-																		raw_text = "[Multiply_CFixedPoint(GetVariableFromGlobalVariableMap('sul_da_luxury', Goods.MakeScope).GetValue, Location.MakeScope.ScriptValue('sul_clergy_luxury'))|2]"
+																		raw_text = "[Multiply_CFixedPoint(GetVariableFromGlobalVariableMap('sul_da_luxury', Goods.MakeScope).GetValue, Location.MakeScope.ScriptValue('sul_clergy_luxury'))|4]"
 																	}
 																}
 															}
@@ -1039,7 +981,7 @@ template location_tax_base_details {
 													}
 
 													TooltipManualTableField = {
-														visible = "[GreaterThan_CFixedPoint(Location.MakeScope.ScriptValue('sul_clergy_exotic'), '(CFixedPoint)0')]"
+														visible = "[GreaterThan_CFixedPoint(Location.MakeScope.ScriptValue('sul_clergy_exotic'), '(CFixedPoint)0.0001')]"
 
 														blockoverride "field_content" {
 															text_single = { layoutpolicy_horizontal = expanding raw_text = "#T Exotic#!" }
@@ -1047,7 +989,7 @@ template location_tax_base_details {
 													}
 
 													TooltipListRowContent = {
-														visible = "[GreaterThan_CFixedPoint(Location.MakeScope.ScriptValue('sul_clergy_exotic'), '(CFixedPoint)0')]"
+														visible = "[GreaterThan_CFixedPoint(Location.MakeScope.ScriptValue('sul_clergy_exotic'), '(CFixedPoint)0.0001')]"
 														max_update_rate = 30
 														datamodel = "[GetGlobalMapKeys('sul_da_exotic')]"
 
@@ -1069,7 +1011,7 @@ template location_tax_base_details {
 																	text_single = {
 																		min_width = 60
 																		align = right
-																		raw_text = "[Multiply_CFixedPoint(GetVariableFromGlobalVariableMap('sul_da_exotic', Goods.MakeScope).GetValue, Location.MakeScope.ScriptValue('sul_clergy_exotic'))|2]"
+																		raw_text = "[Multiply_CFixedPoint(GetVariableFromGlobalVariableMap('sul_da_exotic', Goods.MakeScope).GetValue, Location.MakeScope.ScriptValue('sul_clergy_exotic'))|4]"
 																	}
 																}
 															}
@@ -1088,7 +1030,7 @@ template location_tax_base_details {
 
 			# Burghers
 			TooltipManualTableField = {
-				visible = "[GreaterThan_CFixedPoint(Location.MakeScope.ScriptValue('sul_burgher_share_pct'), '(CFixedPoint)0')]"
+				visible = "[GreaterThan_CFixedPoint(Location.MakeScope.ScriptValue('sul_burgher_share_pct'), '(CFixedPoint)0.0001')]"
 
 				blockoverride "field_content" {
 					icon = {
@@ -1147,7 +1089,7 @@ template location_tax_base_details {
 													set_parent_dimension_to_minimum = height
 
 													TooltipManualTableField = {
-														visible = "[GreaterThan_CFixedPoint(Location.MakeScope.ScriptValue('sul_burghers_necessity'), '(CFixedPoint)0')]"
+														visible = "[GreaterThan_CFixedPoint(Location.MakeScope.ScriptValue('sul_burghers_necessity'), '(CFixedPoint)0.0001')]"
 
 														blockoverride "field_content" {
 															text_single = {
@@ -1158,7 +1100,7 @@ template location_tax_base_details {
 													}
 
 													TooltipListRowContent = {
-														visible = "[GreaterThan_CFixedPoint(Location.MakeScope.ScriptValue('sul_burghers_necessity'), '(CFixedPoint)0')]"
+														visible = "[GreaterThan_CFixedPoint(Location.MakeScope.ScriptValue('sul_burghers_necessity'), '(CFixedPoint)0.0001')]"
 														max_update_rate = 30
 														datamodel = "[GetGlobalMapKeys('sul_da_necessity')]"
 
@@ -1180,7 +1122,7 @@ template location_tax_base_details {
 																	text_single = {
 																		min_width = 60
 																		align = right
-																		raw_text = "[Multiply_CFixedPoint(GetVariableFromGlobalVariableMap('sul_da_necessity', Goods.MakeScope).GetValue, Location.MakeScope.ScriptValue('sul_burghers_necessity'))|2]"
+																		raw_text = "[Multiply_CFixedPoint(GetVariableFromGlobalVariableMap('sul_da_necessity', Goods.MakeScope).GetValue, Location.MakeScope.ScriptValue('sul_burghers_necessity'))|4]"
 																	}
 																}
 															}
@@ -1188,7 +1130,7 @@ template location_tax_base_details {
 													}
 
 													TooltipManualTableField = {
-														visible = "[GreaterThan_CFixedPoint(Location.MakeScope.ScriptValue('sul_burghers_basic'), '(CFixedPoint)0')]"
+														visible = "[GreaterThan_CFixedPoint(Location.MakeScope.ScriptValue('sul_burghers_basic'), '(CFixedPoint)0.0001')]"
 
 														blockoverride "field_content" {
 															text_single = { layoutpolicy_horizontal = expanding raw_text = "#T Basic#!" }
@@ -1196,7 +1138,7 @@ template location_tax_base_details {
 													}
 
 													TooltipListRowContent = {
-														visible = "[GreaterThan_CFixedPoint(Location.MakeScope.ScriptValue('sul_burghers_basic'), '(CFixedPoint)0')]"
+														visible = "[GreaterThan_CFixedPoint(Location.MakeScope.ScriptValue('sul_burghers_basic'), '(CFixedPoint)0.0001')]"
 														max_update_rate = 30
 														datamodel = "[GetGlobalMapKeys('sul_da_basic')]"
 
@@ -1218,7 +1160,7 @@ template location_tax_base_details {
 																	text_single = {
 																		min_width = 60
 																		align = right
-																		raw_text = "[Multiply_CFixedPoint(GetVariableFromGlobalVariableMap('sul_da_basic', Goods.MakeScope).GetValue, Location.MakeScope.ScriptValue('sul_burghers_basic'))|2]"
+																		raw_text = "[Multiply_CFixedPoint(GetVariableFromGlobalVariableMap('sul_da_basic', Goods.MakeScope).GetValue, Location.MakeScope.ScriptValue('sul_burghers_basic'))|4]"
 																	}
 																}
 															}
@@ -1226,7 +1168,7 @@ template location_tax_base_details {
 													}
 
 													TooltipManualTableField = {
-														visible = "[GreaterThan_CFixedPoint(Location.MakeScope.ScriptValue('sul_burghers_common'), '(CFixedPoint)0')]"
+														visible = "[GreaterThan_CFixedPoint(Location.MakeScope.ScriptValue('sul_burghers_common'), '(CFixedPoint)0.0001')]"
 
 														blockoverride "field_content" {
 															text_single = { layoutpolicy_horizontal = expanding raw_text = "#T Common#!" }
@@ -1234,7 +1176,7 @@ template location_tax_base_details {
 													}
 
 													TooltipListRowContent = {
-														visible = "[GreaterThan_CFixedPoint(Location.MakeScope.ScriptValue('sul_burghers_common'), '(CFixedPoint)0')]"
+														visible = "[GreaterThan_CFixedPoint(Location.MakeScope.ScriptValue('sul_burghers_common'), '(CFixedPoint)0.0001')]"
 														max_update_rate = 30
 														datamodel = "[GetGlobalMapKeys('sul_da_common')]"
 
@@ -1256,7 +1198,7 @@ template location_tax_base_details {
 																	text_single = {
 																		min_width = 60
 																		align = right
-																		raw_text = "[Multiply_CFixedPoint(GetVariableFromGlobalVariableMap('sul_da_common', Goods.MakeScope).GetValue, Location.MakeScope.ScriptValue('sul_burghers_common'))|2]"
+																		raw_text = "[Multiply_CFixedPoint(GetVariableFromGlobalVariableMap('sul_da_common', Goods.MakeScope).GetValue, Location.MakeScope.ScriptValue('sul_burghers_common'))|4]"
 																	}
 																}
 															}
@@ -1264,7 +1206,7 @@ template location_tax_base_details {
 													}
 
 													TooltipManualTableField = {
-														visible = "[GreaterThan_CFixedPoint(Location.MakeScope.ScriptValue('sul_burghers_upper'), '(CFixedPoint)0')]"
+														visible = "[GreaterThan_CFixedPoint(Location.MakeScope.ScriptValue('sul_burghers_upper'), '(CFixedPoint)0.0001')]"
 
 														blockoverride "field_content" {
 															text_single = { layoutpolicy_horizontal = expanding raw_text = "#T Upper#!" }
@@ -1272,7 +1214,7 @@ template location_tax_base_details {
 													}
 
 													TooltipListRowContent = {
-														visible = "[GreaterThan_CFixedPoint(Location.MakeScope.ScriptValue('sul_burghers_upper'), '(CFixedPoint)0')]"
+														visible = "[GreaterThan_CFixedPoint(Location.MakeScope.ScriptValue('sul_burghers_upper'), '(CFixedPoint)0.0001')]"
 														max_update_rate = 30
 														datamodel = "[GetGlobalMapKeys('sul_da_upper')]"
 
@@ -1294,7 +1236,7 @@ template location_tax_base_details {
 																	text_single = {
 																		min_width = 60
 																		align = right
-																		raw_text = "[Multiply_CFixedPoint(GetVariableFromGlobalVariableMap('sul_da_upper', Goods.MakeScope).GetValue, Location.MakeScope.ScriptValue('sul_burghers_upper'))|2]"
+																		raw_text = "[Multiply_CFixedPoint(GetVariableFromGlobalVariableMap('sul_da_upper', Goods.MakeScope).GetValue, Location.MakeScope.ScriptValue('sul_burghers_upper'))|4]"
 																	}
 																}
 															}
@@ -1302,7 +1244,7 @@ template location_tax_base_details {
 													}
 
 													TooltipManualTableField = {
-														visible = "[GreaterThan_CFixedPoint(Location.MakeScope.ScriptValue('sul_burghers_luxury'), '(CFixedPoint)0')]"
+														visible = "[GreaterThan_CFixedPoint(Location.MakeScope.ScriptValue('sul_burghers_luxury'), '(CFixedPoint)0.0001')]"
 
 														blockoverride "field_content" {
 															text_single = { layoutpolicy_horizontal = expanding raw_text = "#T Luxury#!" }
@@ -1310,7 +1252,7 @@ template location_tax_base_details {
 													}
 
 													TooltipListRowContent = {
-														visible = "[GreaterThan_CFixedPoint(Location.MakeScope.ScriptValue('sul_burghers_luxury'), '(CFixedPoint)0')]"
+														visible = "[GreaterThan_CFixedPoint(Location.MakeScope.ScriptValue('sul_burghers_luxury'), '(CFixedPoint)0.0001')]"
 														max_update_rate = 30
 														datamodel = "[GetGlobalMapKeys('sul_da_luxury')]"
 
@@ -1332,7 +1274,7 @@ template location_tax_base_details {
 																	text_single = {
 																		min_width = 60
 																		align = right
-																		raw_text = "[Multiply_CFixedPoint(GetVariableFromGlobalVariableMap('sul_da_luxury', Goods.MakeScope).GetValue, Location.MakeScope.ScriptValue('sul_burghers_luxury'))|2]"
+																		raw_text = "[Multiply_CFixedPoint(GetVariableFromGlobalVariableMap('sul_da_luxury', Goods.MakeScope).GetValue, Location.MakeScope.ScriptValue('sul_burghers_luxury'))|4]"
 																	}
 																}
 															}
@@ -1340,7 +1282,7 @@ template location_tax_base_details {
 													}
 
 													TooltipManualTableField = {
-														visible = "[GreaterThan_CFixedPoint(Location.MakeScope.ScriptValue('sul_burghers_exotic'), '(CFixedPoint)0')]"
+														visible = "[GreaterThan_CFixedPoint(Location.MakeScope.ScriptValue('sul_burghers_exotic'), '(CFixedPoint)0.0001')]"
 
 														blockoverride "field_content" {
 															text_single = { layoutpolicy_horizontal = expanding raw_text = "#T Exotic#!" }
@@ -1348,7 +1290,7 @@ template location_tax_base_details {
 													}
 
 													TooltipListRowContent = {
-														visible = "[GreaterThan_CFixedPoint(Location.MakeScope.ScriptValue('sul_burghers_exotic'), '(CFixedPoint)0')]"
+														visible = "[GreaterThan_CFixedPoint(Location.MakeScope.ScriptValue('sul_burghers_exotic'), '(CFixedPoint)0.0001')]"
 														max_update_rate = 30
 														datamodel = "[GetGlobalMapKeys('sul_da_exotic')]"
 
@@ -1370,7 +1312,7 @@ template location_tax_base_details {
 																	text_single = {
 																		min_width = 60
 																		align = right
-																		raw_text = "[Multiply_CFixedPoint(GetVariableFromGlobalVariableMap('sul_da_exotic', Goods.MakeScope).GetValue, Location.MakeScope.ScriptValue('sul_burghers_exotic'))|2]"
+																		raw_text = "[Multiply_CFixedPoint(GetVariableFromGlobalVariableMap('sul_da_exotic', Goods.MakeScope).GetValue, Location.MakeScope.ScriptValue('sul_burghers_exotic'))|4]"
 																	}
 																}
 															}
@@ -1389,7 +1331,7 @@ template location_tax_base_details {
 
 			# Soldiers
 			TooltipManualTableField = {
-				visible = "[GreaterThan_CFixedPoint(Location.MakeScope.ScriptValue('sul_soldier_share_pct'), '(CFixedPoint)0')]"
+				visible = "[GreaterThan_CFixedPoint(Location.MakeScope.ScriptValue('sul_soldier_share_pct'), '(CFixedPoint)0.0001')]"
 
 				blockoverride "field_content" {
 					icon = {
@@ -1448,7 +1390,7 @@ template location_tax_base_details {
 													set_parent_dimension_to_minimum = height
 
 													TooltipManualTableField = {
-														visible = "[GreaterThan_CFixedPoint(Location.MakeScope.ScriptValue('sul_soldiers_necessity'), '(CFixedPoint)0')]"
+														visible = "[GreaterThan_CFixedPoint(Location.MakeScope.ScriptValue('sul_soldiers_necessity'), '(CFixedPoint)0.0001')]"
 
 														blockoverride "field_content" {
 															text_single = {
@@ -1459,7 +1401,7 @@ template location_tax_base_details {
 													}
 
 													TooltipListRowContent = {
-														visible = "[GreaterThan_CFixedPoint(Location.MakeScope.ScriptValue('sul_soldiers_necessity'), '(CFixedPoint)0')]"
+														visible = "[GreaterThan_CFixedPoint(Location.MakeScope.ScriptValue('sul_soldiers_necessity'), '(CFixedPoint)0.0001')]"
 														max_update_rate = 30
 														datamodel = "[GetGlobalMapKeys('sul_da_necessity')]"
 
@@ -1481,7 +1423,7 @@ template location_tax_base_details {
 																	text_single = {
 																		min_width = 60
 																		align = right
-																		raw_text = "[Multiply_CFixedPoint(GetVariableFromGlobalVariableMap('sul_da_necessity', Goods.MakeScope).GetValue, Location.MakeScope.ScriptValue('sul_soldiers_necessity'))|2]"
+																		raw_text = "[Multiply_CFixedPoint(GetVariableFromGlobalVariableMap('sul_da_necessity', Goods.MakeScope).GetValue, Location.MakeScope.ScriptValue('sul_soldiers_necessity'))|4]"
 																	}
 																}
 															}
@@ -1489,7 +1431,7 @@ template location_tax_base_details {
 													}
 
 													TooltipManualTableField = {
-														visible = "[GreaterThan_CFixedPoint(Location.MakeScope.ScriptValue('sul_soldiers_basic'), '(CFixedPoint)0')]"
+														visible = "[GreaterThan_CFixedPoint(Location.MakeScope.ScriptValue('sul_soldiers_basic'), '(CFixedPoint)0.0001')]"
 
 														blockoverride "field_content" {
 															text_single = { layoutpolicy_horizontal = expanding raw_text = "#T Basic#!" }
@@ -1497,7 +1439,7 @@ template location_tax_base_details {
 													}
 
 													TooltipListRowContent = {
-														visible = "[GreaterThan_CFixedPoint(Location.MakeScope.ScriptValue('sul_soldiers_basic'), '(CFixedPoint)0')]"
+														visible = "[GreaterThan_CFixedPoint(Location.MakeScope.ScriptValue('sul_soldiers_basic'), '(CFixedPoint)0.0001')]"
 														max_update_rate = 30
 														datamodel = "[GetGlobalMapKeys('sul_da_basic')]"
 
@@ -1519,7 +1461,7 @@ template location_tax_base_details {
 																	text_single = {
 																		min_width = 60
 																		align = right
-																		raw_text = "[Multiply_CFixedPoint(GetVariableFromGlobalVariableMap('sul_da_basic', Goods.MakeScope).GetValue, Location.MakeScope.ScriptValue('sul_soldiers_basic'))|2]"
+																		raw_text = "[Multiply_CFixedPoint(GetVariableFromGlobalVariableMap('sul_da_basic', Goods.MakeScope).GetValue, Location.MakeScope.ScriptValue('sul_soldiers_basic'))|4]"
 																	}
 																}
 															}
@@ -1527,7 +1469,7 @@ template location_tax_base_details {
 													}
 
 													TooltipManualTableField = {
-														visible = "[GreaterThan_CFixedPoint(Location.MakeScope.ScriptValue('sul_soldiers_common'), '(CFixedPoint)0')]"
+														visible = "[GreaterThan_CFixedPoint(Location.MakeScope.ScriptValue('sul_soldiers_common'), '(CFixedPoint)0.0001')]"
 
 														blockoverride "field_content" {
 															text_single = { layoutpolicy_horizontal = expanding raw_text = "#T Common#!" }
@@ -1535,7 +1477,7 @@ template location_tax_base_details {
 													}
 
 													TooltipListRowContent = {
-														visible = "[GreaterThan_CFixedPoint(Location.MakeScope.ScriptValue('sul_soldiers_common'), '(CFixedPoint)0')]"
+														visible = "[GreaterThan_CFixedPoint(Location.MakeScope.ScriptValue('sul_soldiers_common'), '(CFixedPoint)0.0001')]"
 														max_update_rate = 30
 														datamodel = "[GetGlobalMapKeys('sul_da_common')]"
 
@@ -1557,7 +1499,7 @@ template location_tax_base_details {
 																	text_single = {
 																		min_width = 60
 																		align = right
-																		raw_text = "[Multiply_CFixedPoint(GetVariableFromGlobalVariableMap('sul_da_common', Goods.MakeScope).GetValue, Location.MakeScope.ScriptValue('sul_soldiers_common'))|2]"
+																		raw_text = "[Multiply_CFixedPoint(GetVariableFromGlobalVariableMap('sul_da_common', Goods.MakeScope).GetValue, Location.MakeScope.ScriptValue('sul_soldiers_common'))|4]"
 																	}
 																}
 															}
@@ -1565,7 +1507,7 @@ template location_tax_base_details {
 													}
 
 													TooltipManualTableField = {
-														visible = "[GreaterThan_CFixedPoint(Location.MakeScope.ScriptValue('sul_soldiers_upper'), '(CFixedPoint)0')]"
+														visible = "[GreaterThan_CFixedPoint(Location.MakeScope.ScriptValue('sul_soldiers_upper'), '(CFixedPoint)0.0001')]"
 
 														blockoverride "field_content" {
 															text_single = { layoutpolicy_horizontal = expanding raw_text = "#T Upper#!" }
@@ -1573,7 +1515,7 @@ template location_tax_base_details {
 													}
 
 													TooltipListRowContent = {
-														visible = "[GreaterThan_CFixedPoint(Location.MakeScope.ScriptValue('sul_soldiers_upper'), '(CFixedPoint)0')]"
+														visible = "[GreaterThan_CFixedPoint(Location.MakeScope.ScriptValue('sul_soldiers_upper'), '(CFixedPoint)0.0001')]"
 														max_update_rate = 30
 														datamodel = "[GetGlobalMapKeys('sul_da_upper')]"
 
@@ -1595,7 +1537,7 @@ template location_tax_base_details {
 																	text_single = {
 																		min_width = 60
 																		align = right
-																		raw_text = "[Multiply_CFixedPoint(GetVariableFromGlobalVariableMap('sul_da_upper', Goods.MakeScope).GetValue, Location.MakeScope.ScriptValue('sul_soldiers_upper'))|2]"
+																		raw_text = "[Multiply_CFixedPoint(GetVariableFromGlobalVariableMap('sul_da_upper', Goods.MakeScope).GetValue, Location.MakeScope.ScriptValue('sul_soldiers_upper'))|4]"
 																	}
 																}
 															}
@@ -1603,7 +1545,7 @@ template location_tax_base_details {
 													}
 
 													TooltipManualTableField = {
-														visible = "[GreaterThan_CFixedPoint(Location.MakeScope.ScriptValue('sul_soldiers_luxury'), '(CFixedPoint)0')]"
+														visible = "[GreaterThan_CFixedPoint(Location.MakeScope.ScriptValue('sul_soldiers_luxury'), '(CFixedPoint)0.0001')]"
 
 														blockoverride "field_content" {
 															text_single = { layoutpolicy_horizontal = expanding raw_text = "#T Luxury#!" }
@@ -1611,7 +1553,7 @@ template location_tax_base_details {
 													}
 
 													TooltipListRowContent = {
-														visible = "[GreaterThan_CFixedPoint(Location.MakeScope.ScriptValue('sul_soldiers_luxury'), '(CFixedPoint)0')]"
+														visible = "[GreaterThan_CFixedPoint(Location.MakeScope.ScriptValue('sul_soldiers_luxury'), '(CFixedPoint)0.0001')]"
 														max_update_rate = 30
 														datamodel = "[GetGlobalMapKeys('sul_da_luxury')]"
 
@@ -1633,7 +1575,7 @@ template location_tax_base_details {
 																	text_single = {
 																		min_width = 60
 																		align = right
-																		raw_text = "[Multiply_CFixedPoint(GetVariableFromGlobalVariableMap('sul_da_luxury', Goods.MakeScope).GetValue, Location.MakeScope.ScriptValue('sul_soldiers_luxury'))|2]"
+																		raw_text = "[Multiply_CFixedPoint(GetVariableFromGlobalVariableMap('sul_da_luxury', Goods.MakeScope).GetValue, Location.MakeScope.ScriptValue('sul_soldiers_luxury'))|4]"
 																	}
 																}
 															}
@@ -1641,7 +1583,7 @@ template location_tax_base_details {
 													}
 
 													TooltipManualTableField = {
-														visible = "[GreaterThan_CFixedPoint(Location.MakeScope.ScriptValue('sul_soldiers_exotic'), '(CFixedPoint)0')]"
+														visible = "[GreaterThan_CFixedPoint(Location.MakeScope.ScriptValue('sul_soldiers_exotic'), '(CFixedPoint)0.0001')]"
 
 														blockoverride "field_content" {
 															text_single = { layoutpolicy_horizontal = expanding raw_text = "#T Exotic#!" }
@@ -1649,7 +1591,7 @@ template location_tax_base_details {
 													}
 
 													TooltipListRowContent = {
-														visible = "[GreaterThan_CFixedPoint(Location.MakeScope.ScriptValue('sul_soldiers_exotic'), '(CFixedPoint)0')]"
+														visible = "[GreaterThan_CFixedPoint(Location.MakeScope.ScriptValue('sul_soldiers_exotic'), '(CFixedPoint)0.0001')]"
 														max_update_rate = 30
 														datamodel = "[GetGlobalMapKeys('sul_da_exotic')]"
 
@@ -1671,7 +1613,7 @@ template location_tax_base_details {
 																	text_single = {
 																		min_width = 60
 																		align = right
-																		raw_text = "[Multiply_CFixedPoint(GetVariableFromGlobalVariableMap('sul_da_exotic', Goods.MakeScope).GetValue, Location.MakeScope.ScriptValue('sul_soldiers_exotic'))|2]"
+																		raw_text = "[Multiply_CFixedPoint(GetVariableFromGlobalVariableMap('sul_da_exotic', Goods.MakeScope).GetValue, Location.MakeScope.ScriptValue('sul_soldiers_exotic'))|4]"
 																	}
 																}
 															}
@@ -1690,7 +1632,7 @@ template location_tax_base_details {
 
 			# Laborers
 			TooltipManualTableField = {
-				visible = "[GreaterThan_CFixedPoint(Location.MakeScope.ScriptValue('sul_laborer_share_pct'), '(CFixedPoint)0')]"
+				visible = "[GreaterThan_CFixedPoint(Location.MakeScope.ScriptValue('sul_laborer_share_pct'), '(CFixedPoint)0.0001')]"
 
 				blockoverride "field_content" {
 					icon = {
@@ -1749,7 +1691,7 @@ template location_tax_base_details {
 													set_parent_dimension_to_minimum = height
 
 													TooltipManualTableField = {
-														visible = "[GreaterThan_CFixedPoint(Location.MakeScope.ScriptValue('sul_laborers_necessity'), '(CFixedPoint)0')]"
+														visible = "[GreaterThan_CFixedPoint(Location.MakeScope.ScriptValue('sul_laborers_necessity'), '(CFixedPoint)0.0001')]"
 
 														blockoverride "field_content" {
 															text_single = {
@@ -1760,7 +1702,7 @@ template location_tax_base_details {
 													}
 
 													TooltipListRowContent = {
-														visible = "[GreaterThan_CFixedPoint(Location.MakeScope.ScriptValue('sul_laborers_necessity'), '(CFixedPoint)0')]"
+														visible = "[GreaterThan_CFixedPoint(Location.MakeScope.ScriptValue('sul_laborers_necessity'), '(CFixedPoint)0.0001')]"
 														max_update_rate = 30
 														datamodel = "[GetGlobalMapKeys('sul_da_necessity')]"
 
@@ -1782,7 +1724,7 @@ template location_tax_base_details {
 																	text_single = {
 																		min_width = 60
 																		align = right
-																		raw_text = "[Multiply_CFixedPoint(GetVariableFromGlobalVariableMap('sul_da_necessity', Goods.MakeScope).GetValue, Location.MakeScope.ScriptValue('sul_laborers_necessity'))|2]"
+																		raw_text = "[Multiply_CFixedPoint(GetVariableFromGlobalVariableMap('sul_da_necessity', Goods.MakeScope).GetValue, Location.MakeScope.ScriptValue('sul_laborers_necessity'))|4]"
 																	}
 																}
 															}
@@ -1790,7 +1732,7 @@ template location_tax_base_details {
 													}
 
 													TooltipManualTableField = {
-														visible = "[GreaterThan_CFixedPoint(Location.MakeScope.ScriptValue('sul_laborers_basic'), '(CFixedPoint)0')]"
+														visible = "[GreaterThan_CFixedPoint(Location.MakeScope.ScriptValue('sul_laborers_basic'), '(CFixedPoint)0.0001')]"
 
 														blockoverride "field_content" {
 															text_single = { layoutpolicy_horizontal = expanding raw_text = "#T Basic#!" }
@@ -1798,7 +1740,7 @@ template location_tax_base_details {
 													}
 
 													TooltipListRowContent = {
-														visible = "[GreaterThan_CFixedPoint(Location.MakeScope.ScriptValue('sul_laborers_basic'), '(CFixedPoint)0')]"
+														visible = "[GreaterThan_CFixedPoint(Location.MakeScope.ScriptValue('sul_laborers_basic'), '(CFixedPoint)0.0001')]"
 														max_update_rate = 30
 														datamodel = "[GetGlobalMapKeys('sul_da_basic')]"
 
@@ -1820,7 +1762,7 @@ template location_tax_base_details {
 																	text_single = {
 																		min_width = 60
 																		align = right
-																		raw_text = "[Multiply_CFixedPoint(GetVariableFromGlobalVariableMap('sul_da_basic', Goods.MakeScope).GetValue, Location.MakeScope.ScriptValue('sul_laborers_basic'))|2]"
+																		raw_text = "[Multiply_CFixedPoint(GetVariableFromGlobalVariableMap('sul_da_basic', Goods.MakeScope).GetValue, Location.MakeScope.ScriptValue('sul_laborers_basic'))|4]"
 																	}
 																}
 															}
@@ -1828,7 +1770,7 @@ template location_tax_base_details {
 													}
 
 													TooltipManualTableField = {
-														visible = "[GreaterThan_CFixedPoint(Location.MakeScope.ScriptValue('sul_laborers_common'), '(CFixedPoint)0')]"
+														visible = "[GreaterThan_CFixedPoint(Location.MakeScope.ScriptValue('sul_laborers_common'), '(CFixedPoint)0.0001')]"
 
 														blockoverride "field_content" {
 															text_single = { layoutpolicy_horizontal = expanding raw_text = "#T Common#!" }
@@ -1836,7 +1778,7 @@ template location_tax_base_details {
 													}
 
 													TooltipListRowContent = {
-														visible = "[GreaterThan_CFixedPoint(Location.MakeScope.ScriptValue('sul_laborers_common'), '(CFixedPoint)0')]"
+														visible = "[GreaterThan_CFixedPoint(Location.MakeScope.ScriptValue('sul_laborers_common'), '(CFixedPoint)0.0001')]"
 														max_update_rate = 30
 														datamodel = "[GetGlobalMapKeys('sul_da_common')]"
 
@@ -1858,7 +1800,7 @@ template location_tax_base_details {
 																	text_single = {
 																		min_width = 60
 																		align = right
-																		raw_text = "[Multiply_CFixedPoint(GetVariableFromGlobalVariableMap('sul_da_common', Goods.MakeScope).GetValue, Location.MakeScope.ScriptValue('sul_laborers_common'))|2]"
+																		raw_text = "[Multiply_CFixedPoint(GetVariableFromGlobalVariableMap('sul_da_common', Goods.MakeScope).GetValue, Location.MakeScope.ScriptValue('sul_laborers_common'))|4]"
 																	}
 																}
 															}
@@ -1866,7 +1808,7 @@ template location_tax_base_details {
 													}
 
 													TooltipManualTableField = {
-														visible = "[GreaterThan_CFixedPoint(Location.MakeScope.ScriptValue('sul_laborers_upper'), '(CFixedPoint)0')]"
+														visible = "[GreaterThan_CFixedPoint(Location.MakeScope.ScriptValue('sul_laborers_upper'), '(CFixedPoint)0.0001')]"
 
 														blockoverride "field_content" {
 															text_single = { layoutpolicy_horizontal = expanding raw_text = "#T Upper#!" }
@@ -1874,7 +1816,7 @@ template location_tax_base_details {
 													}
 
 													TooltipListRowContent = {
-														visible = "[GreaterThan_CFixedPoint(Location.MakeScope.ScriptValue('sul_laborers_upper'), '(CFixedPoint)0')]"
+														visible = "[GreaterThan_CFixedPoint(Location.MakeScope.ScriptValue('sul_laborers_upper'), '(CFixedPoint)0.0001')]"
 														max_update_rate = 30
 														datamodel = "[GetGlobalMapKeys('sul_da_upper')]"
 
@@ -1896,7 +1838,7 @@ template location_tax_base_details {
 																	text_single = {
 																		min_width = 60
 																		align = right
-																		raw_text = "[Multiply_CFixedPoint(GetVariableFromGlobalVariableMap('sul_da_upper', Goods.MakeScope).GetValue, Location.MakeScope.ScriptValue('sul_laborers_upper'))|2]"
+																		raw_text = "[Multiply_CFixedPoint(GetVariableFromGlobalVariableMap('sul_da_upper', Goods.MakeScope).GetValue, Location.MakeScope.ScriptValue('sul_laborers_upper'))|4]"
 																	}
 																}
 															}
@@ -1904,7 +1846,7 @@ template location_tax_base_details {
 													}
 
 													TooltipManualTableField = {
-														visible = "[GreaterThan_CFixedPoint(Location.MakeScope.ScriptValue('sul_laborers_luxury'), '(CFixedPoint)0')]"
+														visible = "[GreaterThan_CFixedPoint(Location.MakeScope.ScriptValue('sul_laborers_luxury'), '(CFixedPoint)0.0001')]"
 
 														blockoverride "field_content" {
 															text_single = { layoutpolicy_horizontal = expanding raw_text = "#T Luxury#!" }
@@ -1912,7 +1854,7 @@ template location_tax_base_details {
 													}
 
 													TooltipListRowContent = {
-														visible = "[GreaterThan_CFixedPoint(Location.MakeScope.ScriptValue('sul_laborers_luxury'), '(CFixedPoint)0')]"
+														visible = "[GreaterThan_CFixedPoint(Location.MakeScope.ScriptValue('sul_laborers_luxury'), '(CFixedPoint)0.0001')]"
 														max_update_rate = 30
 														datamodel = "[GetGlobalMapKeys('sul_da_luxury')]"
 
@@ -1934,7 +1876,7 @@ template location_tax_base_details {
 																	text_single = {
 																		min_width = 60
 																		align = right
-																		raw_text = "[Multiply_CFixedPoint(GetVariableFromGlobalVariableMap('sul_da_luxury', Goods.MakeScope).GetValue, Location.MakeScope.ScriptValue('sul_laborers_luxury'))|2]"
+																		raw_text = "[Multiply_CFixedPoint(GetVariableFromGlobalVariableMap('sul_da_luxury', Goods.MakeScope).GetValue, Location.MakeScope.ScriptValue('sul_laborers_luxury'))|4]"
 																	}
 																}
 															}
@@ -1942,7 +1884,7 @@ template location_tax_base_details {
 													}
 
 													TooltipManualTableField = {
-														visible = "[GreaterThan_CFixedPoint(Location.MakeScope.ScriptValue('sul_laborers_exotic'), '(CFixedPoint)0')]"
+														visible = "[GreaterThan_CFixedPoint(Location.MakeScope.ScriptValue('sul_laborers_exotic'), '(CFixedPoint)0.0001')]"
 
 														blockoverride "field_content" {
 															text_single = { layoutpolicy_horizontal = expanding raw_text = "#T Exotic#!" }
@@ -1950,7 +1892,7 @@ template location_tax_base_details {
 													}
 
 													TooltipListRowContent = {
-														visible = "[GreaterThan_CFixedPoint(Location.MakeScope.ScriptValue('sul_laborers_exotic'), '(CFixedPoint)0')]"
+														visible = "[GreaterThan_CFixedPoint(Location.MakeScope.ScriptValue('sul_laborers_exotic'), '(CFixedPoint)0.0001')]"
 														max_update_rate = 30
 														datamodel = "[GetGlobalMapKeys('sul_da_exotic')]"
 
@@ -1972,7 +1914,7 @@ template location_tax_base_details {
 																	text_single = {
 																		min_width = 60
 																		align = right
-																		raw_text = "[Multiply_CFixedPoint(GetVariableFromGlobalVariableMap('sul_da_exotic', Goods.MakeScope).GetValue, Location.MakeScope.ScriptValue('sul_laborers_exotic'))|2]"
+																		raw_text = "[Multiply_CFixedPoint(GetVariableFromGlobalVariableMap('sul_da_exotic', Goods.MakeScope).GetValue, Location.MakeScope.ScriptValue('sul_laborers_exotic'))|4]"
 																	}
 																}
 															}
@@ -1991,7 +1933,7 @@ template location_tax_base_details {
 
 			# Peasants
 			TooltipManualTableField = {
-				visible = "[GreaterThan_CFixedPoint(Location.MakeScope.ScriptValue('sul_peasant_share_pct'), '(CFixedPoint)0')]"
+				visible = "[GreaterThan_CFixedPoint(Location.MakeScope.ScriptValue('sul_peasant_share_pct'), '(CFixedPoint)0.0001')]"
 
 				blockoverride "field_content" {
 					icon = {
@@ -2050,7 +1992,7 @@ template location_tax_base_details {
 													set_parent_dimension_to_minimum = height
 
 													TooltipManualTableField = {
-														visible = "[GreaterThan_CFixedPoint(Location.MakeScope.ScriptValue('sul_peasants_necessity'), '(CFixedPoint)0')]"
+														visible = "[GreaterThan_CFixedPoint(Location.MakeScope.ScriptValue('sul_peasants_necessity'), '(CFixedPoint)0.0001')]"
 
 														blockoverride "field_content" {
 															text_single = {
@@ -2061,7 +2003,7 @@ template location_tax_base_details {
 													}
 
 													TooltipListRowContent = {
-														visible = "[GreaterThan_CFixedPoint(Location.MakeScope.ScriptValue('sul_peasants_necessity'), '(CFixedPoint)0')]"
+														visible = "[GreaterThan_CFixedPoint(Location.MakeScope.ScriptValue('sul_peasants_necessity'), '(CFixedPoint)0.0001')]"
 														max_update_rate = 30
 														datamodel = "[GetGlobalMapKeys('sul_da_necessity')]"
 
@@ -2083,7 +2025,7 @@ template location_tax_base_details {
 																	text_single = {
 																		min_width = 60
 																		align = right
-																		raw_text = "[Multiply_CFixedPoint(GetVariableFromGlobalVariableMap('sul_da_necessity', Goods.MakeScope).GetValue, Location.MakeScope.ScriptValue('sul_peasants_necessity'))|2]"
+																		raw_text = "[Multiply_CFixedPoint(GetVariableFromGlobalVariableMap('sul_da_necessity', Goods.MakeScope).GetValue, Location.MakeScope.ScriptValue('sul_peasants_necessity'))|4]"
 																	}
 																}
 															}
@@ -2091,7 +2033,7 @@ template location_tax_base_details {
 													}
 
 													TooltipManualTableField = {
-														visible = "[GreaterThan_CFixedPoint(Location.MakeScope.ScriptValue('sul_peasants_basic'), '(CFixedPoint)0')]"
+														visible = "[GreaterThan_CFixedPoint(Location.MakeScope.ScriptValue('sul_peasants_basic'), '(CFixedPoint)0.0001')]"
 
 														blockoverride "field_content" {
 															text_single = { layoutpolicy_horizontal = expanding raw_text = "#T Basic#!" }
@@ -2099,7 +2041,7 @@ template location_tax_base_details {
 													}
 
 													TooltipListRowContent = {
-														visible = "[GreaterThan_CFixedPoint(Location.MakeScope.ScriptValue('sul_peasants_basic'), '(CFixedPoint)0')]"
+														visible = "[GreaterThan_CFixedPoint(Location.MakeScope.ScriptValue('sul_peasants_basic'), '(CFixedPoint)0.0001')]"
 														max_update_rate = 30
 														datamodel = "[GetGlobalMapKeys('sul_da_basic')]"
 
@@ -2121,7 +2063,7 @@ template location_tax_base_details {
 																	text_single = {
 																		min_width = 60
 																		align = right
-																		raw_text = "[Multiply_CFixedPoint(GetVariableFromGlobalVariableMap('sul_da_basic', Goods.MakeScope).GetValue, Location.MakeScope.ScriptValue('sul_peasants_basic'))|2]"
+																		raw_text = "[Multiply_CFixedPoint(GetVariableFromGlobalVariableMap('sul_da_basic', Goods.MakeScope).GetValue, Location.MakeScope.ScriptValue('sul_peasants_basic'))|4]"
 																	}
 																}
 															}
@@ -2129,7 +2071,7 @@ template location_tax_base_details {
 													}
 
 													TooltipManualTableField = {
-														visible = "[GreaterThan_CFixedPoint(Location.MakeScope.ScriptValue('sul_peasants_common'), '(CFixedPoint)0')]"
+														visible = "[GreaterThan_CFixedPoint(Location.MakeScope.ScriptValue('sul_peasants_common'), '(CFixedPoint)0.0001')]"
 
 														blockoverride "field_content" {
 															text_single = { layoutpolicy_horizontal = expanding raw_text = "#T Common#!" }
@@ -2137,7 +2079,7 @@ template location_tax_base_details {
 													}
 
 													TooltipListRowContent = {
-														visible = "[GreaterThan_CFixedPoint(Location.MakeScope.ScriptValue('sul_peasants_common'), '(CFixedPoint)0')]"
+														visible = "[GreaterThan_CFixedPoint(Location.MakeScope.ScriptValue('sul_peasants_common'), '(CFixedPoint)0.0001')]"
 														max_update_rate = 30
 														datamodel = "[GetGlobalMapKeys('sul_da_common')]"
 
@@ -2159,7 +2101,7 @@ template location_tax_base_details {
 																	text_single = {
 																		min_width = 60
 																		align = right
-																		raw_text = "[Multiply_CFixedPoint(GetVariableFromGlobalVariableMap('sul_da_common', Goods.MakeScope).GetValue, Location.MakeScope.ScriptValue('sul_peasants_common'))|2]"
+																		raw_text = "[Multiply_CFixedPoint(GetVariableFromGlobalVariableMap('sul_da_common', Goods.MakeScope).GetValue, Location.MakeScope.ScriptValue('sul_peasants_common'))|4]"
 																	}
 																}
 															}
@@ -2167,7 +2109,7 @@ template location_tax_base_details {
 													}
 
 													TooltipManualTableField = {
-														visible = "[GreaterThan_CFixedPoint(Location.MakeScope.ScriptValue('sul_peasants_upper'), '(CFixedPoint)0')]"
+														visible = "[GreaterThan_CFixedPoint(Location.MakeScope.ScriptValue('sul_peasants_upper'), '(CFixedPoint)0.0001')]"
 
 														blockoverride "field_content" {
 															text_single = { layoutpolicy_horizontal = expanding raw_text = "#T Upper#!" }
@@ -2175,7 +2117,7 @@ template location_tax_base_details {
 													}
 
 													TooltipListRowContent = {
-														visible = "[GreaterThan_CFixedPoint(Location.MakeScope.ScriptValue('sul_peasants_upper'), '(CFixedPoint)0')]"
+														visible = "[GreaterThan_CFixedPoint(Location.MakeScope.ScriptValue('sul_peasants_upper'), '(CFixedPoint)0.0001')]"
 														max_update_rate = 30
 														datamodel = "[GetGlobalMapKeys('sul_da_upper')]"
 
@@ -2197,7 +2139,7 @@ template location_tax_base_details {
 																	text_single = {
 																		min_width = 60
 																		align = right
-																		raw_text = "[Multiply_CFixedPoint(GetVariableFromGlobalVariableMap('sul_da_upper', Goods.MakeScope).GetValue, Location.MakeScope.ScriptValue('sul_peasants_upper'))|2]"
+																		raw_text = "[Multiply_CFixedPoint(GetVariableFromGlobalVariableMap('sul_da_upper', Goods.MakeScope).GetValue, Location.MakeScope.ScriptValue('sul_peasants_upper'))|4]"
 																	}
 																}
 															}
@@ -2205,7 +2147,7 @@ template location_tax_base_details {
 													}
 
 													TooltipManualTableField = {
-														visible = "[GreaterThan_CFixedPoint(Location.MakeScope.ScriptValue('sul_peasants_luxury'), '(CFixedPoint)0')]"
+														visible = "[GreaterThan_CFixedPoint(Location.MakeScope.ScriptValue('sul_peasants_luxury'), '(CFixedPoint)0.0001')]"
 
 														blockoverride "field_content" {
 															text_single = { layoutpolicy_horizontal = expanding raw_text = "#T Luxury#!" }
@@ -2213,7 +2155,7 @@ template location_tax_base_details {
 													}
 
 													TooltipListRowContent = {
-														visible = "[GreaterThan_CFixedPoint(Location.MakeScope.ScriptValue('sul_peasants_luxury'), '(CFixedPoint)0')]"
+														visible = "[GreaterThan_CFixedPoint(Location.MakeScope.ScriptValue('sul_peasants_luxury'), '(CFixedPoint)0.0001')]"
 														max_update_rate = 30
 														datamodel = "[GetGlobalMapKeys('sul_da_luxury')]"
 
@@ -2235,7 +2177,7 @@ template location_tax_base_details {
 																	text_single = {
 																		min_width = 60
 																		align = right
-																		raw_text = "[Multiply_CFixedPoint(GetVariableFromGlobalVariableMap('sul_da_luxury', Goods.MakeScope).GetValue, Location.MakeScope.ScriptValue('sul_peasants_luxury'))|2]"
+																		raw_text = "[Multiply_CFixedPoint(GetVariableFromGlobalVariableMap('sul_da_luxury', Goods.MakeScope).GetValue, Location.MakeScope.ScriptValue('sul_peasants_luxury'))|4]"
 																	}
 																}
 															}
@@ -2243,7 +2185,7 @@ template location_tax_base_details {
 													}
 
 													TooltipManualTableField = {
-														visible = "[GreaterThan_CFixedPoint(Location.MakeScope.ScriptValue('sul_peasants_exotic'), '(CFixedPoint)0')]"
+														visible = "[GreaterThan_CFixedPoint(Location.MakeScope.ScriptValue('sul_peasants_exotic'), '(CFixedPoint)0.0001')]"
 
 														blockoverride "field_content" {
 															text_single = { layoutpolicy_horizontal = expanding raw_text = "#T Exotic#!" }
@@ -2251,7 +2193,7 @@ template location_tax_base_details {
 													}
 
 													TooltipListRowContent = {
-														visible = "[GreaterThan_CFixedPoint(Location.MakeScope.ScriptValue('sul_peasants_exotic'), '(CFixedPoint)0')]"
+														visible = "[GreaterThan_CFixedPoint(Location.MakeScope.ScriptValue('sul_peasants_exotic'), '(CFixedPoint)0.0001')]"
 														max_update_rate = 30
 														datamodel = "[GetGlobalMapKeys('sul_da_exotic')]"
 
@@ -2273,7 +2215,7 @@ template location_tax_base_details {
 																	text_single = {
 																		min_width = 60
 																		align = right
-																		raw_text = "[Multiply_CFixedPoint(GetVariableFromGlobalVariableMap('sul_da_exotic', Goods.MakeScope).GetValue, Location.MakeScope.ScriptValue('sul_peasants_exotic'))|2]"
+																		raw_text = "[Multiply_CFixedPoint(GetVariableFromGlobalVariableMap('sul_da_exotic', Goods.MakeScope).GetValue, Location.MakeScope.ScriptValue('sul_peasants_exotic'))|4]"
 																	}
 																}
 															}
@@ -2292,7 +2234,7 @@ template location_tax_base_details {
 
 			# Dhimmi
 			TooltipManualTableField = {
-				visible = "[GreaterThan_CFixedPoint(Location.MakeScope.ScriptValue('sul_dhimmi_share_pct'), '(CFixedPoint)0')]"
+				visible = "[GreaterThan_CFixedPoint(Location.MakeScope.ScriptValue('sul_dhimmi_share_pct'), '(CFixedPoint)0.0001')]"
 
 				blockoverride "field_content" {
 					text_single = {
@@ -2329,7 +2271,7 @@ template location_tax_base_details {
 
 			# Cossacks
 			TooltipManualTableField = {
-				visible = "[GreaterThan_CFixedPoint(Location.MakeScope.ScriptValue('sul_cossacks_share_pct'), '(CFixedPoint)0')]"
+				visible = "[GreaterThan_CFixedPoint(Location.MakeScope.ScriptValue('sul_cossacks_share_pct'), '(CFixedPoint)0.0001')]"
 
 				blockoverride "field_content" {
 					text_single = {
@@ -2366,7 +2308,7 @@ template location_tax_base_details {
 
 			# Tribes
 			TooltipManualTableField = {
-				visible = "[GreaterThan_CFixedPoint(Location.MakeScope.ScriptValue('sul_tribes_share_pct'), '(CFixedPoint)0')]"
+				visible = "[GreaterThan_CFixedPoint(Location.MakeScope.ScriptValue('sul_tribes_share_pct'), '(CFixedPoint)0.0001')]"
 
 				blockoverride "field_content" {
 					text_single = {

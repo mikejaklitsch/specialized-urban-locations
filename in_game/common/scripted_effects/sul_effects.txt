@@ -20,6 +20,25 @@
 sul_full_rebuild = {
 	sul_setup_goods_spec_map = yes
 
+	# Cleanup: destroy fruit orchards in locations that no longer meet climate gates
+	every_location_in_the_world = {
+		limit = {
+			has_building = building_type:fruit_orchard
+			NOT = {
+				OR = {
+					climate = mediterranean
+					climate = subtropical
+					climate = tropical
+				}
+			}
+		}
+
+		every_buildings_in_location = {
+			limit = { building_type = building_type:fruit_orchard }
+			location = { destroy_building = prev }
+		}
+	}
+
 	# All ownable locations: recalculate eligibility, then branch
 	every_location_in_the_world = {
 		limit = { is_ownable = yes exists = raw_material }

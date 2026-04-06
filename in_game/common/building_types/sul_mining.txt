@@ -2,7 +2,7 @@
 
 sul_iron_mine = {
 	is_foreign = no
-	max_levels = rural_building_cap
+	max_levels = sul_extraction_max_level
 	pop_type = laborers
 	employment_size = rural_peasant_produce_employment
 	rural_settlement = yes
@@ -30,11 +30,13 @@ sul_iron_mine = {
 
 	build_time = rural_build_time
 	construction_demand = basic_construction_needs
+
+	modifier = { sul_extraction_size = 0.25 sul_production_size = -0.25 }
 }
 
 sul_marble_quarry = {
 	is_foreign = no
-	max_levels = rural_building_cap
+	max_levels = sul_extraction_max_level
 	pop_type = laborers
 	employment_size = rural_peasant_produce_employment
 	rural_settlement = yes
@@ -59,26 +61,146 @@ sul_marble_quarry = {
 
 	build_time = rural_build_time
 	construction_demand = basic_construction_needs
+
+	modifier = { sul_extraction_size = 0.25 sul_production_size = -0.25 }
 }
 
 # Mining specialization gates
 
-INJECT:mercury_patio = {
+REPLACE:mercury_patio = {
+	is_foreign = no
+	max_levels = sul_extraction_max_level
+	pop_type = laborers
+
+	category = rgo_building_category
+	employment_size = advanced_peasant_building_employment
+
+	rural_settlement = yes
+	town = yes
+	city = yes
+
 	location_potential = {
+		OR = {
+			raw_material = goods:silver
+			raw_material = goods:goods_gold
+		}
+
 		sul_has_mining_specialization = yes
+	}
+
+	build_time = guild_build_time
+
+	unique_production_methods = {
+		sul_mercury_patio_maintenance = {
+			mercury = 1.0
+			category = building_maintenance
+		}
+	}
+
+	construction_demand = mercury_patio_construction
+
+	modifier = {
+		local_goods_gold_output_modifier = 1.0
+		local_silver_output_modifier = 1.0
+		sul_extraction_size = 0.25
+		sul_production_size = -0.25
 	}
 }
 
-INJECT:stone_quarry = {
+REPLACE:stone_quarry = {
+	is_foreign = no
+	max_levels = sul_extraction_max_level
+	pop_type = laborers
+
+	employment_size = rural_peasant_produce_employment
+
+	rural_settlement = yes
+	town = yes
+	city = yes
+
 	location_potential = {
+		OR = {
+			topography = mountains
+			topography = plateau
+			topography = hills
+		}
+		NOT = {
+			raw_material = goods:stone
+		}
+
 		sul_has_mining_specialization = yes
 	}
+
+	category = rgo_building_category
+
+	unique_production_methods = {
+		sul_stone_quarry_maintenance = {
+			tools = 0.1
+			lumber = 0.12
+			leather = 0.1
+
+			produced = stone
+			output = 1
+
+			category = building_maintenance
+		}
+
+		sul_crude_quarry_maintenance = {
+			lumber = 0.28
+
+			produced = stone
+			output = 0.5
+
+			category = building_maintenance
+		}
+	}
+
+	build_time = rural_build_time
+
+	construction_demand = basic_construction_needs
+
+	modifier = { sul_extraction_size = 0.25 sul_production_size = -0.25 }
 }
 
-INJECT:bog_iron_smelter = {
+REPLACE:bog_iron_smelter = {
+	is_foreign = no
+	max_levels = sul_extraction_max_level
+	pop_type = laborers
+
+	employment_size = rural_peasant_produce_employment
+
+	rural_settlement = yes
+	town = yes
+	city = yes
+
 	location_potential = {
+		OR = {
+			is_adjacent_to_lake = yes
+			topography = wetlands
+		}
+		NOT = {
+			raw_material = goods:iron
+		}
+
 		sul_has_mining_specialization = yes
 	}
+
+	category = rgo_building_category
+
+	unique_production_methods = {
+		sul_bog_iron_maintenance = {
+			produced = iron
+			output = 0.3
+			coal = 0.40
+			debug_max_profit = 0.2
+			category = building_maintenance
+		}
+	}
+
+	build_time = rural_build_time
+	construction_demand = basic_construction_needs
+
+	modifier = { sul_extraction_size = 0.25 sul_production_size = -0.25 }
 }
 
 REPLACE:local_smelters = {
@@ -130,6 +252,10 @@ INJECT:cannon_maker = {
 			has_variable = sul_allows_cannon_production
 		}
 	}
+
+	max_levels = sul_production_max_level
+
+	modifier = { sul_production_size = 0.25 sul_extraction_size = -0.25 }
 }
 
 INJECT:cannon_workshop = {
@@ -139,6 +265,10 @@ INJECT:cannon_workshop = {
 			has_variable = sul_allows_cannon_production
 		}
 	}
+
+	max_levels = sul_production_max_level
+
+	modifier = { sul_production_size = 0.25 sul_extraction_size = -0.25 }
 }
 
 INJECT:cannon_foundry = {
@@ -148,6 +278,10 @@ INJECT:cannon_foundry = {
 			has_variable = sul_allows_cannon_production
 		}
 	}
+
+	max_levels = sul_production_max_level
+
+	modifier = { sul_production_size = 0.25 sul_extraction_size = -0.25 }
 }
 
 INJECT:cannons_factory = {
@@ -157,6 +291,10 @@ INJECT:cannons_factory = {
 			has_variable = sul_allows_cannon_production
 		}
 	}
+
+	max_levels = sul_production_max_level
+
+	modifier = { sul_production_size = 0.25 sul_extraction_size = -0.25 }
 }
 
 INJECT:hand_cannon_guild = {
@@ -166,6 +304,10 @@ INJECT:hand_cannon_guild = {
 			has_variable = sul_allows_firearms_production
 		}
 	}
+
+	max_levels = sul_production_max_level
+
+	modifier = { sul_production_size = 0.25 sul_extraction_size = -0.25 }
 }
 
 INJECT:gun_smith = {
@@ -175,6 +317,10 @@ INJECT:gun_smith = {
 			has_variable = sul_allows_firearms_production
 		}
 	}
+
+	max_levels = sul_production_max_level
+
+	modifier = { sul_production_size = 0.25 sul_extraction_size = -0.25 }
 }
 
 INJECT:guns_workshop = {
@@ -184,6 +330,10 @@ INJECT:guns_workshop = {
 			has_variable = sul_allows_firearms_production
 		}
 	}
+
+	max_levels = sul_production_max_level
+
+	modifier = { sul_production_size = 0.25 sul_extraction_size = -0.25 }
 }
 
 INJECT:firearms_manufactory = {
@@ -193,6 +343,10 @@ INJECT:firearms_manufactory = {
 			has_variable = sul_allows_firearms_production
 		}
 	}
+
+	max_levels = sul_production_max_level
+
+	modifier = { sul_production_size = 0.25 sul_extraction_size = -0.25 }
 }
 
 INJECT:firearms_factory = {
@@ -202,6 +356,10 @@ INJECT:firearms_factory = {
 			has_variable = sul_allows_firearms_production
 		}
 	}
+
+	max_levels = sul_production_max_level
+
+	modifier = { sul_production_size = 0.25 sul_extraction_size = -0.25 }
 }
 
 INJECT:jewelry_guild = {
@@ -211,6 +369,10 @@ INJECT:jewelry_guild = {
 			has_variable = sul_allows_jewelry_production
 		}
 	}
+
+	max_levels = sul_production_max_level
+
+	modifier = { sul_production_size = 0.25 sul_extraction_size = -0.25 }
 }
 
 INJECT:weapon_guild = {
@@ -220,6 +382,10 @@ INJECT:weapon_guild = {
 			has_variable = sul_allows_weapons_production
 		}
 	}
+
+	max_levels = sul_production_max_level
+
+	modifier = { sul_production_size = 0.25 sul_extraction_size = -0.25 }
 }
 
 INJECT:weapon_workshop = {
@@ -229,6 +395,10 @@ INJECT:weapon_workshop = {
 			has_variable = sul_allows_weapons_production
 		}
 	}
+
+	max_levels = sul_production_max_level
+
+	modifier = { sul_production_size = 0.25 sul_extraction_size = -0.25 }
 }
 
 INJECT:weapon_manufactory = {
@@ -238,6 +408,10 @@ INJECT:weapon_manufactory = {
 			has_variable = sul_allows_weapons_production
 		}
 	}
+
+	max_levels = sul_production_max_level
+
+	modifier = { sul_production_size = 0.25 sul_extraction_size = -0.25 }
 }
 
 INJECT:weapon_factory = {
@@ -247,6 +421,10 @@ INJECT:weapon_factory = {
 			has_variable = sul_allows_weapons_production
 		}
 	}
+
+	max_levels = sul_production_max_level
+
+	modifier = { sul_production_size = 0.25 sul_extraction_size = -0.25 }
 }
 
 INJECT:steel_mill = {
@@ -256,6 +434,10 @@ INJECT:steel_mill = {
 			has_variable = sul_allows_steel_production
 		}
 	}
+
+	max_levels = sul_production_max_level
+
+	modifier = { sul_production_size = 0.25 sul_extraction_size = -0.25 }
 }
 
 INJECT:tools_guild = {
@@ -265,6 +447,10 @@ INJECT:tools_guild = {
 			has_variable = sul_allows_tools_production
 		}
 	}
+
+	max_levels = sul_production_max_level
+
+	modifier = { sul_production_size = 0.25 sul_extraction_size = -0.25 }
 }
 
 INJECT:tools_workshop = {
@@ -274,6 +460,10 @@ INJECT:tools_workshop = {
 			has_variable = sul_allows_tools_production
 		}
 	}
+
+	max_levels = sul_production_max_level
+
+	modifier = { sul_production_size = 0.25 sul_extraction_size = -0.25 }
 }
 
 INJECT:iron_foundry = {
@@ -283,6 +473,10 @@ INJECT:iron_foundry = {
 			has_variable = sul_allows_tools_production
 		}
 	}
+
+	max_levels = sul_production_max_level
+
+	modifier = { sul_production_size = 0.25 sul_extraction_size = -0.25 }
 }
 
 INJECT:iron_mill = {
@@ -292,6 +486,10 @@ INJECT:iron_mill = {
 			has_variable = sul_allows_tools_production
 		}
 	}
+
+	max_levels = sul_production_max_level
+
+	modifier = { sul_production_size = 0.25 sul_extraction_size = -0.25 }
 }
 
 # Custom cottage industry buildings
@@ -299,7 +497,7 @@ INJECT:iron_mill = {
 sul_rural_blacksmith = {
 	is_foreign = no
 	pop_type = laborers
-	max_levels = guild_max_level
+	max_levels = sul_production_max_level
 	category = consumer_goods_category
 	employment_size = 0.4
 	rural_settlement = yes
@@ -323,12 +521,14 @@ sul_rural_blacksmith = {
 	}
 
 	construction_demand = village_construction
+
+	modifier = { sul_production_size = 0.25 sul_extraction_size = -0.25 }
 }
 
 sul_rural_weaponmaker = {
 	is_foreign = no
 	pop_type = laborers
-	max_levels = guild_max_level
+	max_levels = sul_production_max_level
 	category = consumer_goods_category
 	employment_size = 0.4
 	rural_settlement = yes
@@ -356,12 +556,14 @@ sul_rural_weaponmaker = {
 	}
 
 	construction_demand = village_construction
+
+	modifier = { sul_production_size = 0.25 sul_extraction_size = -0.25 }
 }
 
 sul_rural_jeweler = {
 	is_foreign = no
 	pop_type = laborers
-	max_levels = guild_max_level
+	max_levels = sul_production_max_level
 	category = consumer_goods_category
 	employment_size = 0.4
 	rural_settlement = yes
@@ -387,60 +589,6 @@ sul_rural_jeweler = {
 	}
 
 	construction_demand = village_construction
-}
 
-# Rural blacksmith — tools production for mining settlements
-
-sul_rural_blacksmith = {
-	icon = tools_guild
-	is_foreign = no
-	pop_type = laborers
-	max_levels = guild_max_level
-	category = basic_industry_category
-	employment_size = rural_peasant_produce_employment
-	rural_settlement = yes
-	town = no
-	city = no
-	build_time = rural_build_time
-
-	location_potential = {
-		sul_has_mining_specialization = yes
-	}
-
-	unique_production_methods = {
-		sul_rural_metalwork_maintenance = {
-			iron = 0.5
-			produced = tools
-			output = 0.5
-			debug_max_profit = -1
-			category = guild_input
-		}
-
-		sul_rural_stone_tools_maintenance = {
-			stone = 1.0
-			produced = tools
-			output = 0.5
-			debug_max_profit = 1
-			category = guild_input
-		}
-
-		sul_rural_bronze_tools_maintenance = {
-			copper = 0.5
-			tin = 0.04
-			produced = tools
-			output = 0.55
-			debug_max_profit = -1
-			category = guild_input
-		}
-
-		sul_rural_copper_tools_maintenance = {
-			copper = 0.55
-			produced = tools
-			output = 0.55
-			debug_max_profit = -1
-			category = guild_input
-		}
-	}
-
-	construction_demand = village_construction
+	modifier = { sul_production_size = 0.25 sul_extraction_size = -0.25 }
 }

@@ -83,6 +83,26 @@ REPLACE:cc_setup_new_town = {
 	}
 }
 
+# Rebuilds 1 RGO level if all were destroyed (e.g. bankruptcy). Location scope.
+# Called from on_destroyed callback on RGO buildings.
+
+sul_rebuild_rgo_if_empty = {
+	if = {
+		limit = {
+			has_variable = sul_rgo_building_type
+			sul_location_rgo_building_level <= 0
+			modifier:sul_rgo_size > 0
+			# Verify destroyed building is still the correct RGO for this location
+			prev = { building_type = var:sul_rgo_building_type }
+		}
+
+		change_building_level_in_location = {
+			building = var:sul_rgo_building_type
+			value = 1
+		}
+	}
+}
+
 # Constructs one level of the location's RGO building. Location scope.
 # Used by the scripted GUI button.
 

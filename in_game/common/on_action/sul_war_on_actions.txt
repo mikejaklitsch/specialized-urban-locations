@@ -1,0 +1,200 @@
+﻿# War Systems - On Action Implementations
+# Referenced by sul_hardcoded.txt unified dispatcher.
+# War Momentum (sul_war_momentum) + Combat Overcrowding (sul_war_overcrowding)
+
+@sul_war_version = 201 # 2.0.1
+
+# =============================================================================
+# WAR MOMENTUM
+# =============================================================================
+
+### Annexation and Capital
+
+# Clean capital modifier and auto-conquest flag when a country is annexed.
+# Also removes stale auto-conquest tags on the annexer's locations that referenced the annexed country.
+# root = annexing country; scope:target = country being annexed
+
+sul_war_on_annex = {
+	effect = {
+		scope:target = {
+			capital ?= { remove_location_modifier = sul_war_momentum_capital }
+			remove_variable = sul_war_was_auto_conquered
+		}
+
+		# Clean all auto-conquest tags on the annexer's locations.
+		# Targets tags referencing the annexed country, but also cleans any stale tags
+		# from previously destroyed countries to prevent invalid reference errors.
+		every_owned_location = {
+			limit = { has_variable = sul_war_original_owner }
+			remove_variable = sul_war_original_owner
+		}
+	}
+}
+
+# Strip capital resilience modifier from the old capital when capital moves.
+# root = country; scope:old_capital = old location; scope:new_capital = new location
+
+sul_war_on_capital_moved = {
+	effect = {
+		scope:old_capital ?= { remove_location_modifier = sul_war_momentum_capital }
+	}
+}
+
+### Auto-Conquest
+
+# Tag a location when an auto_conquer nation takes it during war.
+# The tag (sul_war_original_owner) stores who owned the location before conquest.
+# Monthly recount in sul_war_apply_occupation finds these tags on enemy locations
+# and merges them into the regular occupation counts.
+# root = location; scope:winner = new owner; scope:loser = previous owner
+
+sul_war_on_auto_conquest = {
+	trigger = {
+		exists = scope:loser
+		exists = scope:winner
+		scope:winner = {
+			OR = {
+				modifier:auto_conquer_at_war = yes
+				modifier:auto_conquer_different_religion_at_war = yes
+			}
+
+			is_at_war_with = scope:loser
+		}
+	}
+
+	effect = {
+		set_variable = { name = sul_war_original_owner value = scope:loser }
+
+		scope:loser = {
+			set_variable = { name = sul_war_was_auto_conquered value = 1 }
+		}
+	}
+}
+
+### War End
+
+# Blanket cleanup of all auto-conquest tags on both sides' locations.
+# Prevents stale tags from carrying into future wars with the same enemy.
+# Over-cleans if a country is in two concurrent auto-conquest wars (effectively impossible).
+# root = country (fires for both sides); scope:winner, scope:loser, scope:war
+
+sul_war_on_war_end_cleanup = {
+	effect = {
+		scope:winner = {
+			every_owned_location = {
+				limit = { has_variable = sul_war_original_owner }
+				remove_variable = sul_war_original_owner
+			}
+
+			remove_variable = sul_war_was_auto_conquered
+		}
+
+		scope:loser = {
+			every_owned_location = {
+				limit = { has_variable = sul_war_original_owner }
+				remove_variable = sul_war_original_owner
+			}
+
+			remove_variable = sul_war_was_auto_conquered
+		}
+	}
+}
+
+### Bootstrap and Monthly Pulse
+
+# Initialize war momentum for countries already at war on game start.
+# Player assignment may not be finalized yet, so is_ai = no fails for everyone.
+# Runs the normal update then forces display population for all countries
+# so whichever one the player controls has data immediately.
+
+sul_war_on_game_start = {
+	effect = {
+		every_country = {
+			limit = { at_war = yes }
+			sul_war_monthly_update = yes
+
+			save_temporary_scope_as = sul_war_army_self
+
+			sul_war_display_army_components = yes
+			sul_war_display_army_losses = yes
+		}
+	}
+}
+
+# Version check using Bouvet Island (non-ownable location) as a persistent marker.
+# Executes rebuild once per game load when the mod is first installed or updated.
+# Modifiers depend on the mod existing (unlike variables), so removing and re-adding
+# the mod triggers a rebuild. Version comparison catches mod updates.
+
+sul_war_init_pulse = {
+	trigger = {
+		NOT = {
+			has_global_variable = sul_war_rebuilding
+		}
+
+		location:bouvet_island = {
+			OR = {
+				NOT = {
+					has_location_modifier = sul_war_active
+				}
+
+				AND = {
+					has_variable = sul_war_version
+					var:sul_war_version < @sul_war_version
+				}
+			}
+		}
+	}
+
+	effect = {
+		sul_war_init = yes
+	}
+}
+
+# Monthly update: fires for countries at war or with residual state needing cleanup.
+
+sul_war_monthly_pulse = {
+	trigger = {
+		OR = {
+			at_war = yes
+			has_variable = sul_war_momentum_army_size
+		}
+	}
+
+	effect = {
+		sul_war_monthly_update = yes
+	}
+}
+
+# =============================================================================
+# COMBAT OVERCROWDING
+# =============================================================================
+
+# Per-tick battle pulse: recalculate frontage penalty
+# root = character (supreme commander)
+
+sul_war_in_battle_action = {
+	effect = {
+		sul_war_battle_frontage_check = yes
+	}
+}
+
+# Clean up cached variables on battle end
+# root = character (winner or loser)
+
+sul_war_battle_cleanup_action = {
+	effect = {
+		if = {
+			limit = { has_variable = sul_war_in_battle }
+			remove_variable = sul_war_in_battle
+		}
+		if = {
+			limit = { has_variable = sul_war_prev_atk }
+			remove_variable = sul_war_prev_atk
+		}
+		if = {
+			limit = { has_variable = sul_war_prev_def }
+			remove_variable = sul_war_prev_def
+		}
+	}
+}

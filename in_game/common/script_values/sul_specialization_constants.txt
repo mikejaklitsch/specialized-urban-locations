@@ -393,110 +393,6 @@ sul_clay_market_pressure = {
 }
 
 # ============================================
-# PRICE BONUS SCRIPT VALUES (market scope)
-# Formula: (price / base_price - 1) × 8, capped at -8 to +16
-# Positive = shortage (high prices), negative = surplus (low prices)
-# ============================================
-# Mining raw: iron price bonus
-
-sul_mining_raw_price_bonus = {
-	value = "market_price(goods:iron)"
-	divide = "default_price(goods:iron)"
-	subtract = 1
-	multiply = 8
-	min = -8
-	max = 16
-}
-
-# Mining finished: tools price bonus
-
-sul_mining_finished_price_bonus = {
-	value = "market_price(goods:tools)"
-	divide = "default_price(goods:tools)"
-	subtract = 1
-	multiply = 8
-	min = -8
-	max = 16
-}
-
-# Farming raw: cotton price bonus
-
-sul_farming_raw_price_bonus = {
-	value = "market_price(goods:cotton)"
-	divide = "default_price(goods:cotton)"
-	subtract = 1
-	multiply = 8
-	min = -8
-	max = 16
-}
-
-# Gathering raw: wool price bonus
-
-sul_gathering_raw_price_bonus = {
-	value = "market_price(goods:wool)"
-	divide = "default_price(goods:wool)"
-	subtract = 1
-	multiply = 8
-	min = -8
-	max = 16
-}
-
-# Farming finished: leather price bonus
-
-sul_farming_finished_price_bonus = {
-	value = "market_price(goods:leather)"
-	divide = "default_price(goods:leather)"
-	subtract = 1
-	multiply = 8
-	min = -8
-	max = 16
-}
-
-# Woodland raw: lumber price bonus
-
-sul_woodland_raw_price_bonus = {
-	value = "market_price(goods:lumber)"
-	divide = "default_price(goods:lumber)"
-	subtract = 1
-	multiply = 8
-	min = -8
-	max = 16
-}
-
-# Woodland finished: furniture price bonus
-
-sul_woodland_finished_price_bonus = {
-	value = "market_price(goods:furniture)"
-	divide = "default_price(goods:furniture)"
-	subtract = 1
-	multiply = 8
-	min = -8
-	max = 16
-}
-
-# Gathering raw: salt price bonus
-
-sul_gathering_raw_price_bonus = {
-	value = "market_price(goods:salt)"
-	divide = "default_price(goods:salt)"
-	subtract = 1
-	multiply = 8
-	min = -8
-	max = 16
-}
-
-# Gathering finished: pottery price bonus
-
-sul_gathering_finished_price_bonus = {
-	value = "market_price(goods:pottery)"
-	divide = "default_price(goods:pottery)"
-	subtract = 1
-	multiply = 8
-	min = -8
-	max = 16
-}
-
-# ============================================
 # FOOD PRICE BONUSES (market scope)
 # ============================================
 # Uses explicit food_price from market scope
@@ -767,4 +663,19 @@ sul_commercial_finished_composite = {
 	max = 1
 	min = -1
 	multiply = 5
+}
+
+# ============================================
+# TRADE SPREAD CALCULATION
+# Calculates price deviation for a single good in a market.
+# Evaluated in goods scope, uses scope:current_market for price lookup.
+# Formula: |price/base - 1| × base
+# ============================================
+
+sul_goods_price_deviation = {
+	value = "price_in_market(scope:current_market)"
+	divide = "default_price(this)"
+	subtract = 1
+	abs = yes
+	multiply = "default_price(this)"
 }

@@ -1,11 +1,10 @@
 ﻿# Specialized Urban Locations - Map Tooltip Template Overrides
-# Loaded last (zzz prefix) to override vanilla templates from map_markers.gui
+# Loaded first (aaa prefix) to override vanilla templates (GUI: first loaded wins)
 # Adds specialization icons to location tooltips
 
 # =====================================================
 # MARKER SIDE COLOR OVERRIDES
 # =====================================================
-# More robust neutral detection (explicit Not+Or instead of IsNeutral)
 
 template marker_unit_side_color {
 	modify_texture = {
@@ -57,22 +56,22 @@ template marker_siege_side_color {
 	modify_texture = {
 		using = color_grey_texture
 		alpha = 0.35
-		visible = "[Not(Or(Or(SiegeMarker.GetAttackerCountry.IsPlayer, Player.IsEnemy(SiegeMarker.GetAttackerCountry.Self)), SiegeMarker.GetAttackerCountry.IsAllied))]"
+		visible = "[Or(Siege.GetSiegeDefender.IsNeutral, Siege.GetLocation.HasCombat)]"
 	}
 	modify_texture = {
 		using = color_enemy_red_texture
-		alpha = 1
-		visible = "[Player.IsEnemy(SiegeMarker.GetAttackerCountry.Self)]"
+		alpha = 0.4
+		visible = "[And(Siege.GetSiegeDefender.IsPlayer, Not(Siege.GetLocation.HasCombat))]"
 	}
 	modify_texture = {
 		using = color_allied_blue_texture
 		alpha = 0.6
-		visible = "[And(Not(SiegeMarker.GetAttackerCountry.IsPlayer), SiegeMarker.GetAttackerCountry.IsAllied)]"
+		visible = "[And(Siege.GetSiegeDefender.IsAllied, Not(Siege.GetLocation.HasCombat))]"
 	}
 	modify_texture = {
 		using = color_green_texture
-		alpha = 0.5
-		visible = "[SiegeMarker.GetAttackerCountry.IsPlayer]"
+		alpha = 0.3
+		visible = "[And(Player.IsEnemy(Siege.GetSiegeDefender.Self), Not(Siege.GetLocation.HasCombat))]"
 	}
 }
 

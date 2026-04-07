@@ -1,7 +1,8 @@
 ﻿# Unified hooks into vanilla hardcoded on_actions.
 # Only on_actions sub-blocks here — actual logic lives in respective files.
 # Specialization System: sul_on_actions.txt
-# Provisions System: sul_on_actions.txt, sul_swap_buildings.txt
+# Provisions System: sul_on_actions.txt
+# War Systems: sul_war_on_actions.txt, sul_war_overcrowding_effects.txt
 
 # =============================================================================
 # GAME START
@@ -15,6 +16,8 @@ on_game_start = {
 		sul_rgo_removal_start
 		sul_initialize_all
 		sul_initialize_economy
+		# War systems
+		sul_war_on_game_start
 	}
 }
 
@@ -43,7 +46,7 @@ on_raw_material_changed = {
 # =============================================================================
 
 on_location_changed_owner = {
-	on_actions = { sul_on_location_changed_owner }
+	on_actions = { sul_on_location_changed_owner sul_war_on_auto_conquest }
 }
 
 # =============================================================================
@@ -58,9 +61,11 @@ monthly_country_pulse = {
 		sul_refresh_market_cache
 		# Provisions system
 		sul_update_spending_rates
-		sul_swap_buildings
 		sul_player_wage_update
 		sul_ai_monthly_wage_payment
+		# War systems
+		sul_war_init_pulse
+		sul_war_monthly_pulse
 	}
 }
 
@@ -89,5 +94,37 @@ weather_monthly_pulse = {
 # =============================================================================
 
 four_yearly_country_pulse = {
-	random_events = { 10 = sul.1 }
+	# random_events = { 10 = sul.1 } # Capital relocation disabled — AI moves capitals suboptimally
+}
+
+# =============================================================================
+# WAR SYSTEMS - War Momentum hooks
+# =============================================================================
+
+on_annex = {
+	on_actions = { sul_war_on_annex }
+}
+
+on_capital_moved = {
+	on_actions = { sul_war_on_capital_moved }
+}
+
+on_ending_war = {
+	on_actions = { sul_war_on_war_end_cleanup }
+}
+
+# =============================================================================
+# WAR SYSTEMS - Combat Overcrowding hooks
+# =============================================================================
+
+in_battle = {
+	on_actions = { sul_war_in_battle_action }
+}
+
+on_battle_won_character = {
+	on_actions = { sul_war_battle_cleanup_action }
+}
+
+on_battle_lost_character = {
+	on_actions = { sul_war_battle_cleanup_action }
 }

@@ -1,0 +1,388 @@
+﻿# War Momentum - Army Penalty and Display Effects
+# Calculates fort defense penalty from military strength loss.
+# Populates variable maps for tooltip component and loss breakdowns.
+
+sul_war_calculate_army_penalty = {
+	# Calculate combined military strength for subjects with co-belligerent overlords
+	set_local_variable = {
+		name = sul_war_combined_army
+		value = local_var:sul_war_effective_strength
+	}
+	set_local_variable = {
+		name = sul_war_combined_peak
+		value = var:sul_war_potential_peak
+	}
+
+	# Subject+overlord combination: only subjects fighting with their overlord. A handful at most.
+	if = {
+		limit = { sul_war_is_subject_with_overlord_in_war = yes }
+
+		overlord = {
+			# Add overlord's effective strength (military_strength - max_manpower + manpower)
+			change_local_variable = {
+				name = sul_war_combined_army
+				add = { add = military_strength subtract = max_manpower add = manpower }
+			}
+			if = {
+				limit = { has_variable = sul_war_potential_peak }
+
+				change_local_variable = {
+					name = sul_war_combined_peak
+					add = var:sul_war_potential_peak
+				}
+			}
+			else = {
+				change_local_variable = {
+					name = sul_war_combined_peak
+					add = { add = military_strength subtract = max_manpower add = manpower }
+				}
+			}
+		}
+	}
+
+	if = {
+		limit = { local_var:sul_war_combined_peak > 0 }
+
+		set_variable = {
+			name = sul_war_momentum_army_size
+
+			value = {
+				add = 1
+
+				subtract = {
+					add = local_var:sul_war_combined_army
+					divide = local_var:sul_war_combined_peak
+				}
+			}
+		}
+	}
+	else = { set_variable = { name = sul_war_momentum_army_size value = 0 } }
+
+	if = {
+		limit = { var:sul_war_momentum_army_size > 1 }
+		set_variable = { name = sul_war_momentum_army_size value = 1 }
+	}
+	if = {
+		limit = { var:sul_war_momentum_army_size < 0 }
+		set_variable = { name = sul_war_momentum_army_size value = 0 }
+	}
+
+	remove_country_modifier = sul_war_momentum_army
+	if = {
+		limit = { var:sul_war_momentum_army_size > 0 }
+
+		add_country_modifier = {
+			modifier = sul_war_momentum_army
+			days = -1
+			size = var:sul_war_momentum_army_size
+		}
+	}
+}
+
+# Populate variable maps for self and overlord component display in the tooltip.
+
+sul_war_display_army_components = {
+	# Self: total strength current and peak
+	clear_variable_map = sul_war_army_breakdown
+	clear_variable_map = sul_war_army_peak_breakdown
+
+	set_local_variable = {
+		name = sul_war_total_display
+		value = { add = local_var:sul_war_effective_strength multiply = 1000 }
+	}
+	set_local_variable = {
+		name = sul_war_total_peak_display
+		value = { add = var:sul_war_potential_peak multiply = 1000 }
+	}
+
+	add_to_variable_map = {
+		name = sul_war_army_breakdown
+		key = scope:sul_war_army_self
+		value = local_var:sul_war_total_display
+	}
+	add_to_variable_map = {
+		name = sul_war_army_peak_breakdown
+		key = scope:sul_war_army_self
+		value = local_var:sul_war_total_peak_display
+	}
+
+	# Self: per-component current and peak (* 1000 for display)
+	clear_variable_map = sul_war_army_strength_map
+	clear_variable_map = sul_war_army_strength_peak_map
+	clear_variable_map = sul_war_manpower_map
+	clear_variable_map = sul_war_manpower_peak_map
+
+	set_local_variable = {
+		name = sul_war_army_str_display
+		value = { add = local_var:sul_war_effective_army multiply = 1000 }
+	}
+	set_local_variable = {
+		name = sul_war_army_str_peak_display
+		value = { add = var:sul_war_army_peak multiply = 1000 }
+	}
+	set_local_variable = {
+		name = sul_war_manpower_display
+		value = { add = manpower multiply = 1000 }
+	}
+	set_local_variable = {
+		name = sul_war_manpower_peak_display
+		value = { add = var:sul_war_manpower_peak multiply = 1000 }
+	}
+
+	add_to_variable_map = {
+		name = sul_war_army_strength_map
+		key = scope:sul_war_army_self
+		value = local_var:sul_war_army_str_display
+	}
+	add_to_variable_map = {
+		name = sul_war_army_strength_peak_map
+		key = scope:sul_war_army_self
+		value = local_var:sul_war_army_str_peak_display
+	}
+
+	# Manpower: raw manpower as current (not capped), capped peak as denominator
+	add_to_variable_map = {
+		name = sul_war_manpower_map
+		key = scope:sul_war_army_self
+		value = local_var:sul_war_manpower_display
+	}
+	add_to_variable_map = {
+		name = sul_war_manpower_peak_map
+		key = scope:sul_war_army_self
+		value = local_var:sul_war_manpower_peak_display
+	}
+
+	# Overlord display: re-enter overlord scope for GUI data (cheap scope lookup)
+	if = {
+		limit = { sul_war_is_subject_with_overlord_in_war = yes }
+
+		overlord = {
+			# Overlord total effective strength (* 1000 for display)
+			set_local_variable = {
+				name = sul_war_overlord_strength
+
+				value = {
+					add = military_strength
+					subtract = max_manpower
+					add = manpower
+					multiply = 1000
+				}
+			}
+			if = {
+				limit = { has_variable = sul_war_potential_peak }
+
+				set_local_variable = {
+					name = sul_war_overlord_peak
+					value = { add = var:sul_war_potential_peak multiply = 1000 }
+				}
+			}
+			else = {
+				set_local_variable = {
+					name = sul_war_overlord_peak
+					value = local_var:sul_war_overlord_strength
+				}
+			}
+
+			# Overlord components (* 1000 for display)
+			set_local_variable = {
+				name = sul_war_overlord_army
+				value = { add = military_strength subtract = max_manpower multiply = 1000 }
+			}
+			set_local_variable = {
+				name = sul_war_overlord_manpower
+				value = { add = manpower multiply = 1000 }
+			}
+
+			if = {
+				limit = { has_variable = sul_war_army_peak }
+
+				set_local_variable = {
+					name = sul_war_overlord_army_peak
+					value = { add = var:sul_war_army_peak multiply = 1000 }
+				}
+			}
+			else = {
+				set_local_variable = {
+					name = sul_war_overlord_army_peak
+					value = local_var:sul_war_overlord_army
+				}
+			}
+			if = {
+				limit = { has_variable = sul_war_manpower_peak }
+
+				set_local_variable = {
+					name = sul_war_overlord_manpower_peak
+					value = { add = var:sul_war_manpower_peak multiply = 1000 }
+				}
+			}
+			else = {
+				set_local_variable = {
+					name = sul_war_overlord_manpower_peak
+					value = local_var:sul_war_overlord_manpower
+				}
+			}
+
+			save_temporary_scope_as = sul_war_overlord_ref
+
+			prev = {
+				add_to_variable_map = {
+					name = sul_war_army_breakdown
+					key = scope:sul_war_overlord_ref
+					value = local_var:sul_war_overlord_strength
+				}
+				add_to_variable_map = {
+					name = sul_war_army_peak_breakdown
+					key = scope:sul_war_overlord_ref
+					value = local_var:sul_war_overlord_peak
+				}
+				add_to_variable_map = {
+					name = sul_war_army_strength_map
+					key = scope:sul_war_overlord_ref
+					value = local_var:sul_war_overlord_army
+				}
+				add_to_variable_map = {
+					name = sul_war_army_strength_peak_map
+					key = scope:sul_war_overlord_ref
+					value = local_var:sul_war_overlord_army_peak
+				}
+				add_to_variable_map = {
+					name = sul_war_manpower_map
+					key = scope:sul_war_overlord_ref
+					value = local_var:sul_war_overlord_manpower
+				}
+				add_to_variable_map = {
+					name = sul_war_manpower_peak_map
+					key = scope:sul_war_overlord_ref
+					value = local_var:sul_war_overlord_manpower_peak
+				}
+			}
+		}
+	}
+}
+
+# Populate per-component loss contribution maps.
+# Distributes the total WE and fort defense penalties proportionally between
+# army strength and manpower based on each component's raw loss from peak.
+
+sul_war_display_army_losses = {
+	clear_variable_map = sul_war_army_we_map
+	clear_variable_map = sul_war_army_fort_def_map
+	clear_variable_map = sul_war_manpower_we_map
+	clear_variable_map = sul_war_manpower_fort_def_map
+
+	if = {
+		limit = { var:sul_war_potential_peak > 0 }
+
+		set_local_variable = {
+			name = sul_war_raw_army_loss
+
+			value = {
+				add = var:sul_war_army_peak
+				subtract = local_var:sul_war_effective_army
+			}
+		}
+		if = {
+			limit = { local_var:sul_war_raw_army_loss < 0 }
+			set_local_variable = { name = sul_war_raw_army_loss value = 0 }
+		}
+
+		set_local_variable = {
+			name = sul_war_raw_manpower_loss
+
+			value = {
+				add = var:sul_war_manpower_peak
+				subtract = local_var:sul_war_effective_manpower
+			}
+		}
+		if = {
+			limit = { local_var:sul_war_raw_manpower_loss < 0 }
+			set_local_variable = { name = sul_war_raw_manpower_loss value = 0 }
+		}
+
+		set_local_variable = {
+			name = sul_war_raw_sum
+
+			value = {
+				add = local_var:sul_war_raw_army_loss
+				add = local_var:sul_war_raw_manpower_loss
+			}
+		}
+
+		if = {
+			limit = { local_var:sul_war_raw_sum > 0 }
+
+			# WE total: reuse sul_war_exhaustion_size from sul_war_update_exhaustion (runs first)
+			# Scale by 0.5 to match the static modifier's monthly_war_exhaustion multiplier
+			set_local_variable = {
+				name = sul_war_we_total
+				value = { add = local_var:sul_war_exhaustion_size multiply = 0.5 }
+			}
+
+			set_local_variable = {
+				name = sul_war_def_total
+				value = { add = var:sul_war_momentum_army_size multiply = 0.5 }
+			}
+
+			# Distribute proportionally
+			set_local_variable = {
+				name = sul_war_army_we
+
+				value = {
+					add = local_var:sul_war_raw_army_loss
+					divide = local_var:sul_war_raw_sum
+					multiply = local_var:sul_war_we_total
+				}
+			}
+			set_local_variable = {
+				name = sul_war_manpower_we
+
+				value = {
+					add = local_var:sul_war_raw_manpower_loss
+					divide = local_var:sul_war_raw_sum
+					multiply = local_var:sul_war_we_total
+				}
+			}
+			set_local_variable = {
+				name = sul_war_army_fort_def
+
+				value = {
+					add = local_var:sul_war_raw_army_loss
+					divide = local_var:sul_war_raw_sum
+					multiply = local_var:sul_war_def_total
+				}
+			}
+			set_local_variable = {
+				name = sul_war_manpower_fort_def
+
+				value = {
+					add = local_var:sul_war_raw_manpower_loss
+					divide = local_var:sul_war_raw_sum
+					multiply = local_var:sul_war_def_total
+				}
+			}
+
+			add_to_variable_map = {
+				name = sul_war_army_we_map
+				key = scope:sul_war_army_self
+				value = local_var:sul_war_army_we
+			}
+			add_to_variable_map = {
+				name = sul_war_manpower_we_map
+				key = scope:sul_war_army_self
+				value = local_var:sul_war_manpower_we
+			}
+			add_to_variable_map = {
+				name = sul_war_army_fort_def_map
+				key = scope:sul_war_army_self
+				value = local_var:sul_war_army_fort_def
+			}
+			add_to_variable_map = {
+				name = sul_war_manpower_fort_def_map
+				key = scope:sul_war_army_self
+				value = local_var:sul_war_manpower_fort_def
+			}
+		}
+	}
+}
+
+# Cost: scalar math + one trigger check + one modifier swap. Negligible.

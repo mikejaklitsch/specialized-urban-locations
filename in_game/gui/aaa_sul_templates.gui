@@ -6890,3 +6890,42 @@ template LocationBuildingLevels_tooltip {
 		}
 	}
 }
+
+# =====================================================
+# EXTRACTION / PRODUCTION BAR
+# =====================================================
+# Stacked progress bar showing building category split at a location.
+# Green = extraction, blue = production, grey background = other/untagged.
+# Requires Location data context.
+
+template sul_building_category_bar {
+	widget = {
+		layoutpolicy_horizontal = expanding
+		size = { -1 6 }
+
+		# Background (other/untagged buildings)
+		background = { using = color_grey_texture alpha = 0.3 }
+
+		# Extraction bar (green, from left)
+		progressbar = {
+			layoutpolicy_horizontal = expanding
+			size = { -1 6 }
+			using = progress_bar_green_alt
+			min = 0
+			max = 1
+			value = "[FixedPointToFloat(Location.MakeScope.ScriptValue('sul_extraction_ratio'))]"
+			direction = horizontal
+		}
+
+		# Production bar (blue, from right)
+		progressbar = {
+			layoutpolicy_horizontal = expanding
+			size = { -1 6 }
+			using = progress_bar_blue_green_alt
+			min = 0
+			max = 1
+			value = "[FixedPointToFloat(Location.MakeScope.ScriptValue('sul_production_ratio'))]"
+			direction = horizontal_reversed
+		}
+	}
+}

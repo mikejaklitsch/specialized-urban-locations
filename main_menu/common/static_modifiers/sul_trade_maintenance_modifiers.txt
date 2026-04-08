@@ -1,0 +1,93 @@
+﻿# Trade maintenance carriers + vanilla source overrides.
+#
+# Two carriers because add_country_modifier size only takes positive values:
+#   sul_trade_maintenance_reduction is applied with positive size when
+#   efficiency is net-positive, sul_trade_maintenance_penalty when net-negative.
+#   sul_trade_maintenance_apply picks one or the other each month based on the
+#   sign of root.modifier:sul_trade_maintenance_efficiency.
+#
+# The vanilla TRY_INJECTs below cancel each vanilla `merchant_maintenance_cost`
+# source and re-emit it as `sul_trade_maintenance_efficiency = -X`. The dynamic
+# apply effect then converts the engine-summed efficiency back into a
+# multiplicatively-compounded cost via the 1/(1+E) - 1 formula.
+
+sul_trade_maintenance_reduction = {
+	game_data = { category = country }
+
+	merchant_maintenance_cost = -1.0
+}
+
+sul_trade_maintenance_penalty = {
+	game_data = { category = country }
+
+	merchant_maintenance_cost = 1.0
+}
+
+# country.txt sources
+
+TRY_INJECT:minor_trade_crisis = {
+	merchant_maintenance_cost = -0.1
+	sul_trade_maintenance_efficiency = -0.1
+}
+
+TRY_INJECT:extra_merchant_support = {
+	merchant_maintenance_cost = -0.1
+	sul_trade_maintenance_efficiency = -0.1
+}
+
+TRY_INJECT:efficienct_merchants = {
+	merchant_maintenance_cost = 0.10
+	sul_trade_maintenance_efficiency = 0.10
+}
+
+TRY_INJECT:a_moving_city = {
+	merchant_maintenance_cost = 0.05
+	sul_trade_maintenance_efficiency = 0.05
+}
+
+TRY_INJECT:adventuring_merchants = {
+	merchant_maintenance_cost = 0.1
+	sul_trade_maintenance_efficiency = 0.1
+}
+
+TRY_INJECT:poor_merchants = {
+	merchant_maintenance_cost = -0.1
+	sul_trade_maintenance_efficiency = -0.1
+}
+
+TRY_INJECT:competitive_advantage = {
+	merchant_maintenance_cost = 0.05
+	sul_trade_maintenance_efficiency = 0.05
+}
+
+TRY_INJECT:protected_commerce = {
+	merchant_maintenance_cost = 0.05
+	sul_trade_maintenance_efficiency = 0.05
+}
+
+TRY_INJECT:fra_fleury_france_land_prosperity = {
+	merchant_maintenance_cost = 0.10
+	sul_trade_maintenance_efficiency = 0.10
+}
+
+TRY_INJECT:strong_guild = {
+	merchant_maintenance_cost = -0.1
+	sul_trade_maintenance_efficiency = -0.1
+}
+
+TRY_INJECT:merchant_advantage_modifier = {
+	merchant_maintenance_cost = 0.1
+	sul_trade_maintenance_efficiency = 0.1
+}
+
+# international_organization.txt sources
+
+TRY_INJECT:guelphs_sanction_emperor_modifier = {
+	merchant_maintenance_cost = -0.1
+	sul_trade_maintenance_efficiency = -0.1
+}
+
+TRY_INJECT:ghibellines_sanction_pope_modifier = {
+	merchant_maintenance_cost = -0.1
+	sul_trade_maintenance_efficiency = -0.1
+}

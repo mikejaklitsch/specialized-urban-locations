@@ -1,0 +1,370 @@
+﻿# Specialization rank modifiers + lifecycle modifiers.
+#
+# 15 rank modifiers = 5 specialization types x 3 location ranks (rural/town/city).
+# These IDs are referenced by name in sul_specialization_apply_modifier and the
+# generic specialization actions - DO NOT rename them, only their location.
+#
+# Lifecycle modifiers:
+#   sul_active                  - Bouvet Island marker, mod state anchor
+#                                 (engine strips on mod removal -> triggers rebuild)
+#   sul_init_pop_rush           - 45-day pop promotion boost on game start
+#   sul_recently_respecialized  - cooldown after specialization change
+
+sul_active = {
+	game_data = { category = location }
+}
+
+# ===================
+# RURAL SPECIALIZATIONS
+# ===================
+
+sul_mining_rural_specialization = {
+	game_data = { category = location }
+
+	local_trade_center_power = -0.2
+	local_soldiers_desired_pop = 0.025
+	# Mining bonuses: fortification and manpower
+	local_max_control = 0.05
+	local_defensive = 0.10
+	local_manpower_modifier = 0.10
+	# Building unlocks
+	sul_allows_tools_production = yes
+	sul_allows_weapons_production = yes
+	sul_allows_cannon_production = yes
+	sul_allows_firearms_production = yes
+	sul_allows_jewelry_production = yes
+	sul_allows_steel_production = yes
+}
+
+sul_farming_rural_specialization = {
+	game_data = { category = location }
+
+	local_trade_center_power = -0.2
+	local_nobles_desired_pop = 0.010
+	# Farming bonuses: population growth focus
+	local_population_capacity_modifier = 0.10
+	# Building unlocks
+	sul_allows_beer_production = yes
+	sul_allows_wine_production = yes
+	sul_allows_liquor_production = yes
+	sul_allows_leather_production = yes
+}
+
+sul_gathering_rural_specialization = {
+	game_data = { category = location }
+
+	local_trade_center_power = -0.2
+	local_laborers_desired_pop = 0.100
+	# Gathering bonuses: maritime and naval focus
+	local_maritime_presence = 0.05
+	local_sailors_modifier = 0.10
+	local_ship_build_speed = 0.10
+	# Building unlocks
+	sul_allows_glass_production = yes
+	sul_allows_pottery_production = yes
+	sul_allows_porcelain_production = yes
+	sul_allows_saltpeter_production = yes
+	sul_allows_apothecary_production = yes
+}
+
+sul_woodland_rural_specialization = {
+	game_data = { category = location }
+
+	local_trade_center_power = -0.2
+	local_laborers_desired_pop = 0.100
+	# Woodland bonuses: construction and defensive terrain
+	local_hostile_attrition = 0.5
+	local_construction_speed = 0.10
+	local_build_buildings_cost = -0.10
+	# Building unlocks
+	sul_allows_furniture_production = yes
+	sul_allows_paper_production = yes
+	sul_allows_lacquerware_production = yes
+	sul_allows_dye_production = yes
+	sul_allows_charcoal_production = yes
+	sul_allows_leather_production = yes
+	sul_allows_incense_production = yes
+}
+
+sul_commercial_rural_specialization = {
+	game_data = { category = location }
+
+	local_merchant_capacity = 1.0
+	local_merchant_power = 0.5
+	local_trades_per_burgher = 0.25
+	local_burghers_desired_pop = 0.025
+	local_migration_attraction = 0.05
+	# Building unlocks
+	sul_allows_printing_production = yes
+	sul_allows_cloth_production = yes
+	sul_allows_fine_cloth_production = yes
+	sul_allows_naval_supplies_production = yes
+	sul_allows_commerce_buildings = yes
+	sul_allows_university = yes
+}
+
+# ===================
+# TOWN SPECIALIZATIONS
+# ===================
+
+sul_mining_town_specialization = {
+	game_data = { category = location }
+
+	local_trade_center_power = -0.15
+	local_soldiers_desired_pop = 0.100
+	# Mining bonuses: fortification and manpower
+	local_max_control = 0.10
+	local_defensive = 0.25
+	local_manpower_modifier = 0.20
+	# Lite Urban Rights: small output bonus to goods mining spec enables
+	local_tools_output_modifier = 0.05
+	local_weaponry_output_modifier = 0.05
+	local_cannons_output_modifier = 0.05
+	local_firearms_output_modifier = 0.05
+	local_jewelry_output_modifier = 0.05
+	local_steel_output_modifier = 0.05
+	# Building unlocks
+	sul_allows_tools_production = yes
+	sul_allows_weapons_production = yes
+	sul_allows_cannon_production = yes
+	sul_allows_firearms_production = yes
+	sul_allows_jewelry_production = yes
+	sul_allows_steel_production = yes
+}
+
+sul_farming_town_specialization = {
+	game_data = { category = location }
+
+	local_trade_center_power = -0.15
+	local_nobles_desired_pop = 0.050
+	# Farming bonuses: population growth focus
+	local_population_capacity_modifier = 0.20
+	# Lite Urban Rights: small output bonus to goods farming spec enables
+	local_beer_output_modifier = 0.05
+	local_wine_output_modifier = 0.05
+	local_liquor_output_modifier = 0.05
+	local_leather_output_modifier = 0.05
+	# Building unlocks
+	sul_allows_beer_production = yes
+	sul_allows_wine_production = yes
+	sul_allows_liquor_production = yes
+	sul_allows_leather_production = yes
+}
+
+sul_gathering_town_specialization = {
+	game_data = { category = location }
+
+	local_trade_center_power = -0.15
+	local_laborers_desired_pop = 0.500
+	# Gathering bonuses: maritime and naval focus
+	local_maritime_presence = 0.10
+	local_sailors_modifier = 0.20
+	local_ship_build_speed = 0.15
+	# Lite Urban Rights: small output bonus to goods gathering spec enables
+	local_glass_output_modifier = 0.05
+	local_pottery_output_modifier = 0.05
+	local_porcelain_output_modifier = 0.05
+	local_saltpeter_output_modifier = 0.05
+	local_medicaments_output_modifier = 0.05
+	# Building unlocks
+	sul_allows_glass_production = yes
+	sul_allows_pottery_production = yes
+	sul_allows_porcelain_production = yes
+	sul_allows_saltpeter_production = yes
+	sul_allows_apothecary_production = yes
+}
+
+sul_woodland_town_specialization = {
+	game_data = { category = location }
+
+	local_trade_center_power = -0.15
+	local_laborers_desired_pop = 0.500
+	# Woodland bonuses: construction and defensive terrain
+	local_hostile_attrition = 1.0
+	local_construction_speed = 0.20
+	local_build_buildings_cost = -0.15
+	max_constructions_at_same_time = 1
+	# Lite Urban Rights: small output bonus to goods woodland spec enables
+	local_furniture_output_modifier = 0.05
+	local_paper_output_modifier = 0.05
+	local_lacquerware_output_modifier = 0.05
+	local_dyes_output_modifier = 0.05
+	local_coal_output_modifier = 0.05
+	local_leather_output_modifier = 0.05
+	local_incense_output_modifier = 0.05
+	# Building unlocks
+	sul_allows_furniture_production = yes
+	sul_allows_paper_production = yes
+	sul_allows_lacquerware_production = yes
+	sul_allows_dye_production = yes
+	sul_allows_charcoal_production = yes
+	sul_allows_leather_production = yes
+	sul_allows_incense_production = yes
+}
+
+sul_commercial_town_specialization = {
+	game_data = { category = location }
+
+	local_merchant_capacity = 10.0
+	local_merchant_power = 5.0
+	local_trades_per_burgher = 1.0
+	local_trade_center_power = 0.05
+	harbor_suitability = 0.1
+	local_burghers_desired_pop = 0.100
+	local_migration_attraction = 0.1
+	# Lite Urban Rights: small output bonus to goods commercial spec enables
+	local_cloth_output_modifier = 0.05
+	local_fine_cloth_output_modifier = 0.05
+	local_naval_supplies_output_modifier = 0.05
+	local_books_output_modifier = 0.05
+	# Building unlocks
+	sul_allows_printing_production = yes
+	sul_allows_cloth_production = yes
+	sul_allows_fine_cloth_production = yes
+	sul_allows_naval_supplies_production = yes
+	sul_allows_commerce_buildings = yes
+	sul_allows_university = yes
+}
+
+# ===================
+# CITY SPECIALIZATIONS
+# ===================
+
+sul_mining_city_specialization = {
+	game_data = { category = location }
+
+	local_trade_center_power = -0.1
+	local_soldiers_desired_pop = 0.250
+	# Mining bonuses: fortification and manpower
+	local_max_control = 0.15
+	local_defensive = 0.50
+	local_manpower_modifier = 0.30
+	# Lite Urban Rights: small output bonus to goods mining spec enables
+	local_tools_output_modifier = 0.10
+	local_weaponry_output_modifier = 0.10
+	local_cannons_output_modifier = 0.10
+	local_firearms_output_modifier = 0.10
+	local_jewelry_output_modifier = 0.10
+	local_steel_output_modifier = 0.10
+	# Building unlocks
+	sul_allows_tools_production = yes
+	sul_allows_weapons_production = yes
+	sul_allows_cannon_production = yes
+	sul_allows_firearms_production = yes
+	sul_allows_jewelry_production = yes
+	sul_allows_steel_production = yes
+}
+
+sul_farming_city_specialization = {
+	game_data = { category = location }
+
+	local_trade_center_power = -0.1
+	local_nobles_desired_pop = 0.100
+	# Farming bonuses: population growth focus
+	local_population_capacity_modifier = 0.30
+	# Lite Urban Rights: small output bonus to goods farming spec enables
+	local_beer_output_modifier = 0.10
+	local_wine_output_modifier = 0.10
+	local_liquor_output_modifier = 0.10
+	local_leather_output_modifier = 0.10
+	# Building unlocks
+	sul_allows_beer_production = yes
+	sul_allows_wine_production = yes
+	sul_allows_liquor_production = yes
+	sul_allows_leather_production = yes
+}
+
+sul_gathering_city_specialization = {
+	game_data = { category = location }
+
+	local_trade_center_power = -0.1
+	local_laborers_desired_pop = 1.000
+	# Gathering bonuses: maritime and naval focus
+	local_maritime_presence = 0.25
+	local_sailors_modifier = 0.30
+	local_ship_build_speed = 0.20
+	# Lite Urban Rights: small output bonus to goods gathering spec enables
+	local_glass_output_modifier = 0.10
+	local_pottery_output_modifier = 0.10
+	local_porcelain_output_modifier = 0.10
+	local_saltpeter_output_modifier = 0.10
+	local_medicaments_output_modifier = 0.10
+	# Building unlocks
+	sul_allows_glass_production = yes
+	sul_allows_pottery_production = yes
+	sul_allows_porcelain_production = yes
+	sul_allows_saltpeter_production = yes
+	sul_allows_apothecary_production = yes
+}
+
+sul_woodland_city_specialization = {
+	game_data = { category = location }
+
+	local_trade_center_power = -0.1
+	local_laborers_desired_pop = 1.000
+	# Woodland bonuses: construction and defensive terrain
+	local_hostile_attrition = 1.5
+	local_construction_speed = 0.30
+	local_build_buildings_cost = -0.20
+	max_constructions_at_same_time = 2
+	# Lite Urban Rights: small output bonus to goods woodland spec enables
+	local_furniture_output_modifier = 0.10
+	local_paper_output_modifier = 0.10
+	local_lacquerware_output_modifier = 0.10
+	local_dyes_output_modifier = 0.10
+	local_coal_output_modifier = 0.10
+	local_leather_output_modifier = 0.10
+	local_incense_output_modifier = 0.10
+	# Building unlocks
+	sul_allows_furniture_production = yes
+	sul_allows_paper_production = yes
+	sul_allows_lacquerware_production = yes
+	sul_allows_dye_production = yes
+	sul_allows_charcoal_production = yes
+	sul_allows_leather_production = yes
+	sul_allows_incense_production = yes
+}
+
+sul_commercial_city_specialization = {
+	game_data = { category = location }
+
+	local_merchant_capacity = 20.0
+	local_merchant_power = 10.0
+	local_trades_per_burgher = 3.0
+	local_trade_center_power = 0.1
+	harbor_suitability = 0.2
+	local_burghers_desired_pop = 0.250
+	local_migration_attraction = 0.15
+	# Lite Urban Rights: small output bonus to goods commercial spec enables
+	local_cloth_output_modifier = 0.10
+	local_fine_cloth_output_modifier = 0.10
+	local_naval_supplies_output_modifier = 0.10
+	local_books_output_modifier = 0.10
+	# Building unlocks
+	sul_allows_printing_production = yes
+	sul_allows_cloth_production = yes
+	sul_allows_fine_cloth_production = yes
+	sul_allows_naval_supplies_production = yes
+	sul_allows_commerce_buildings = yes
+	sul_allows_university = yes
+}
+
+# Game-start pop rush. Massively accelerates pop promotion for 45 days so
+# starting buildings get filled before the economy ticks for the first time.
+
+sul_init_pop_rush = {
+	game_data = { category = country }
+
+	global_pop_promotion_speed_modifier = 10000
+}
+
+# Decaying respec cooldown. Starts at full penalty when applied, scales to
+# 0 over the duration. sul_can_respecialize = no gates the respec UI.
+
+sul_recently_respecialized = {
+	game_data = { category = location decaying = yes }
+
+	sul_can_respecialize = no
+	local_raw_material_output = -0.30
+	local_production_efficiency = -0.30
+}

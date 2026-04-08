@@ -1,0 +1,471 @@
+﻿# Vanilla static modifier injects for the SUL economy/food/RGO overhaul.
+#
+# These cancel vanilla's abstract local_monthly_food_modifier (and related
+# RGO/development boosts) and replace them with concrete per-good output
+# modifiers, so food and raw materials come from actual production rather
+# than magic numbers.
+#
+# Each TRY_INJECT here is paired with a vanilla modifier of the same name -
+# the engine merges the two blocks at load time. Removing one of these
+# injects will silently re-enable the vanilla bypass for that source.
+
+# ===================
+# BUILDING LEVEL DRAG
+# ===================
+# Per total building level at a location - creates diminishing returns
+# for building density, offset by per-building efficiency bonus (define).
+
+TRY_INJECT:building_levels = {
+	local_population_growth = -0.0001
+	local_migration_attraction = 0.0001
+	local_production_efficiency = -0.005
+}
+
+# ===================
+# BASELINE FOOD CAPACITY
+# ===================
+# Every location gets a minimum food storage floor so rural settlements
+# can survive without needing granary infrastructure.
+
+TRY_INJECT:location_base_values = {
+	local_food_capacity = 100
+	local_max_rgo_size = -2				# nullify vanilla +2 (RGO removal)
+}
+
+TRY_INJECT:abundant_free_land = {
+	local_monthly_food = 20
+}
+
+TRY_INJECT:available_free_land = {
+	local_monthly_food = 10
+}
+
+# ===================
+# DEVELOPMENT & DEVASTATION - Food Modifier Removal
+# ===================
+# Vanilla development gives +0.01 local_monthly_food_modifier per dev point.
+# Vanilla devastation gives +0.50 local_monthly_food_modifier.
+# Both are abstract food boosts that bypass the provisions system.
+
+TRY_INJECT:development = {
+	local_monthly_food_modifier = -0.01          # nullify vanilla +0.01
+	local_max_rgo_size = -0.1                    # nullify vanilla +0.1 (RGO removal)
+}
+
+TRY_INJECT:devastation = {
+	local_monthly_food_modifier = -0.5           # nullify vanilla +0.50
+}
+
+# ===================
+# FOOD MODIFIER NULLIFICATION - Static Location Modifiers
+# ===================
+# Some entries also contain development system conversions
+# (local_monthly_development_modifier -> flat local_monthly_development).
+# These are included because they were part of the same vanilla modifier
+# block and cannot be split cleanly.
+
+# --- Geographic (permanent) ---
+
+TRY_INJECT:coastal = {
+	local_monthly_food_modifier = -0.05          # nullify vanilla +0.05
+	local_monthly_food = 2.5
+	local_fish_output_modifier = 0.05
+	local_salt_output_modifier = 0.02
+}
+
+TRY_INJECT:river_flowing_through = {
+	local_monthly_food_modifier = -0.05          # nullify vanilla +0.05
+	local_wheat_output_modifier = 0.025
+	local_rice_output_modifier = 0.025
+	local_fish_output_modifier = 0.025
+	local_legumes_output_modifier = 0.01
+	local_livestock_output_modifier = 0.01
+}
+
+TRY_INJECT:volcanic_soil = {
+	local_monthly_food_modifier = -0.5           # nullify vanilla +0.5
+	local_wheat_output_modifier = 0.10
+	local_rice_output_modifier = 0.10
+	local_millet_output_modifier = 0.10
+	local_maize_output_modifier = 0.10
+	local_legumes_output_modifier = 0.10
+	local_fruit_output_modifier = 0.15
+	local_olives_output_modifier = 0.15
+	local_potato_output_modifier = 0.10
+	local_livestock_output_modifier = 0.05
+}
+
+# --- Weather (temporary/decaying) ---
+
+TRY_INJECT:winter_mild = {
+	local_monthly_food_modifier = 0.25           # nullify vanilla -0.25
+	local_wheat_output_modifier = -0.10
+	local_rice_output_modifier = -0.10
+	local_millet_output_modifier = -0.10
+	local_maize_output_modifier = -0.10
+	local_legumes_output_modifier = -0.075
+	local_fruit_output_modifier = -0.20
+	local_olives_output_modifier = -0.15
+	local_potato_output_modifier = -0.05
+	local_livestock_output_modifier = -0.025
+	local_wild_game_output_modifier = 0.025
+}
+
+TRY_INJECT:winter_normal = {
+	local_monthly_food_modifier = 0.50           # nullify vanilla -0.50
+	local_wheat_output_modifier = -0.25
+	local_rice_output_modifier = -0.30
+	local_millet_output_modifier = -0.25
+	local_maize_output_modifier = -0.25
+	local_legumes_output_modifier = -0.20
+	local_fruit_output_modifier = -0.40
+	local_olives_output_modifier = -0.35
+	local_potato_output_modifier = -0.125
+	local_livestock_output_modifier = -0.075
+	local_fish_output_modifier = -0.025
+}
+
+TRY_INJECT:winter_severe = {
+	local_monthly_food_modifier = 2.0            # nullify vanilla -2.0
+	local_wheat_output_modifier = -0.45
+	local_rice_output_modifier = -0.50
+	local_millet_output_modifier = -0.45
+	local_maize_output_modifier = -0.45
+	local_legumes_output_modifier = -0.40
+	local_fruit_output_modifier = -0.50
+	local_olives_output_modifier = -0.50
+	local_potato_output_modifier = -0.30
+	local_livestock_output_modifier = -0.20
+	local_fish_output_modifier = -0.10
+	local_beeswax_output_modifier = -0.35
+}
+
+TRY_INJECT:heavy_rain_in_location = {
+	local_monthly_food_modifier = -0.25          # nullify vanilla +0.25
+	local_wheat_output_modifier = 0.05
+	local_rice_output_modifier = 0.10
+	local_millet_output_modifier = 0.05
+	local_legumes_output_modifier = 0.05
+	local_fruit_output_modifier = 0.05
+	local_olives_output_modifier = 0.05
+	local_livestock_output_modifier = 0.025
+	local_fish_output_modifier = 0.025
+}
+
+TRY_INJECT:high_winds_in_location = {
+	local_monthly_food_modifier = 0.05           # nullify vanilla -0.05
+	local_fruit_output_modifier = -0.05
+	local_olives_output_modifier = -0.03
+}
+
+TRY_INJECT:sandstorm_in_location = {
+	local_monthly_food_modifier = 0.15           # nullify vanilla -0.15
+	local_wheat_output_modifier = -0.10
+	local_millet_output_modifier = -0.10
+	local_legumes_output_modifier = -0.10
+	local_livestock_output_modifier = -0.05
+}
+
+TRY_INJECT:snow_storm_in_location = {
+	local_monthly_food_modifier = 0.25           # nullify vanilla -0.25
+	local_wheat_output_modifier = -0.15
+	local_rice_output_modifier = -0.20
+	local_millet_output_modifier = -0.15
+	local_fruit_output_modifier = -0.25
+	local_olives_output_modifier = -0.20
+	local_livestock_output_modifier = -0.10
+}
+
+TRY_INJECT:tornado_in_location = {
+	local_monthly_food_modifier = 0.2            # nullify vanilla -0.2
+	local_wheat_output_modifier = -0.15
+	local_maize_output_modifier = -0.15
+	local_fruit_output_modifier = -0.15
+	local_livestock_output_modifier = -0.10
+}
+
+# --- Infrastructure ---
+
+TRY_INJECT:agricultural_revolution = {
+	local_monthly_food_modifier = -0.1           # nullify vanilla +0.1
+	local_wheat_output_modifier = 0.05
+	local_rice_output_modifier = 0.05
+	local_millet_output_modifier = 0.03
+	local_maize_output_modifier = 0.03
+	local_legumes_output_modifier = 0.03
+	local_potato_output_modifier = 0.03
+	local_livestock_output_modifier = 0.02
+	local_fruit_output_modifier = 0.02
+	local_olives_output_modifier = 0.02
+}
+
+TRY_INJECT:introduction_of_self_sharpening_plows = {
+	local_monthly_food_modifier = -0.05          # nullify vanilla +0.05
+	local_wheat_output_modifier = 0.03
+	local_rice_output_modifier = 0.02
+	local_millet_output_modifier = 0.03
+	local_maize_output_modifier = 0.02
+	local_potato_output_modifier = 0.02
+	local_legumes_output_modifier = 0.02
+}
+
+# --- War/disruption (nullify only, raw_material_output already penalizes) ---
+
+TRY_INJECT:raised_levies = {
+	local_monthly_food_modifier = 0.2            # nullify vanilla -0.2
+	local_raw_material_output = -0.3             # vanilla -0.2 + this = -0.5 total
+}
+
+TRY_INJECT:hostile_troops = {
+	local_monthly_food_modifier = 0.05           # nullify vanilla -0.05
+}
+
+TRY_INJECT:recovering_from_raids = {
+	local_monthly_food_modifier = -0.5           # nullify vanilla +0.5
+	local_wheat_output_modifier = 0.10
+	local_rice_output_modifier = 0.10
+	local_livestock_output_modifier = 0.10
+	local_fish_output_modifier = 0.05
+}
+
+TRY_INJECT:fewer_fisheries_modifier = {
+	local_monthly_food_modifier = 0.25           # nullify vanilla -0.25
+	local_fish_output_modifier = -0.25
+}
+
+# --- Occupation & blockade ---
+
+TRY_INJECT:is_occupied = {
+	local_food_capacity_modifier = -0.8          # -80% food storage
+	hostile_food_multiplier = 0.5                # nullify vanilla -0.50
+	local_wheat_output_modifier = -0.25
+	local_rice_output_modifier = -0.25
+	local_millet_output_modifier = -0.25
+	local_maize_output_modifier = -0.25
+	local_livestock_output_modifier = -0.20
+	local_fish_output_modifier = -0.15
+	local_legumes_output_modifier = -0.20
+	local_fruit_output_modifier = -0.20
+	local_potato_output_modifier = -0.20
+}
+
+TRY_INJECT:looted = {
+	local_food_capacity_modifier = -0.4          # -40% food storage
+	hostile_food_multiplier = 0.10               # nullify vanilla -0.10
+	local_wheat_output_modifier = -0.05
+	local_rice_output_modifier = -0.05
+	local_livestock_output_modifier = -0.05
+	local_fish_output_modifier = -0.03
+}
+
+TRY_INJECT:is_blockaded_by_enemies = {
+	hostile_food_multiplier = 0.75               # nullify vanilla -0.75
+	local_wheat_output_modifier = -0.20
+	local_rice_output_modifier = -0.20
+	local_fish_output_modifier = -0.30
+	local_livestock_output_modifier = -0.10
+}
+
+TRY_INJECT:under_siege = {
+	hostile_food_multiplier = 1.0                # nullify vanilla -1.0
+	local_wheat_output_modifier = -0.40
+	local_rice_output_modifier = -0.40
+	local_fish_output_modifier = -0.30
+	local_livestock_output_modifier = -0.30
+	local_fruit_output_modifier = -0.30
+	local_legumes_output_modifier = -0.30
+}
+
+# --- Event modifiers ---
+
+TRY_INJECT:agricultural_boom = {
+	global_monthly_food_modifier = -0.05         # nullify vanilla +0.05
+	# vanilla already has global_wheat/rice/maize_output_modifier, keep those
+}
+
+TRY_INJECT:bountiful_harvest = {
+	local_monthly_food_modifier = -0.25          # nullify vanilla +0.25
+	local_wheat_output_modifier = 0.10
+	local_rice_output_modifier = 0.10
+	local_livestock_output_modifier = 0.05
+}
+
+TRY_INJECT:short_harvest_modifier = {
+	local_monthly_food_modifier = 0.5            # nullify vanilla -0.5
+	local_wheat_output_modifier = -0.20
+	local_rice_output_modifier = -0.20
+	local_fruit_output_modifier = -0.15
+	local_livestock_output_modifier = -0.10
+}
+
+TRY_INJECT:russian_famine = {
+	local_monthly_food_modifier = 0.75           # nullify vanilla -0.75
+	local_wheat_output_modifier = -0.30
+	local_rice_output_modifier = -0.30
+	local_livestock_output_modifier = -0.20
+	local_fish_output_modifier = -0.15
+}
+
+TRY_INJECT:refused_food_import = {
+	local_monthly_food_modifier = -0.05          # nullify vanilla +0.05
+}
+
+TRY_INJECT:expanded_food_production_modifier = {
+	local_monthly_food_modifier = -0.25          # nullify vanilla +0.25
+	local_wheat_output_modifier = 0.10
+	local_rice_output_modifier = 0.10
+	local_livestock_output_modifier = 0.05
+}
+
+# --- Misc static modifiers ---
+
+TRY_INJECT:merino_wool = {
+	local_monthly_food_modifier = 0.2            # nullify vanilla -0.2
+	local_livestock_output_modifier = -0.10
+	local_wheat_output_modifier = -0.10
+}
+
+TRY_INJECT:minority_prospers = {
+	local_monthly_food_modifier = -0.25          # nullify vanilla +0.25
+	local_wheat_output_modifier = 0.10
+	local_rice_output_modifier = 0.05
+	local_livestock_output_modifier = 0.05
+	local_legumes_output_modifier = 0.05
+}
+
+TRY_INJECT:local_abuses_modifier = {
+	local_monthly_food_modifier = 0.5            # nullify vanilla -0.5
+	local_wheat_output_modifier = -0.20
+	local_rice_output_modifier = -0.15
+	local_livestock_output_modifier = -0.10
+	local_fish_output_modifier = -0.05
+}
+
+TRY_INJECT:harsh_winters_modifier = {
+	local_monthly_food_modifier = 0.25           # nullify vanilla -0.25
+	local_wheat_output_modifier = -0.10
+	local_rice_output_modifier = -0.10
+	local_livestock_output_modifier = -0.05
+	local_fruit_output_modifier = -0.10
+}
+
+# --- Country-specific event modifiers (food nullification) ---
+
+TRY_INJECT:fra_english_ports_raided = {
+	local_monthly_food_modifier = 0.33           # nullify vanilla -0.33
+	local_fish_output_modifier = -0.20
+	local_wheat_output_modifier = -0.10
+}
+
+TRY_INJECT:pap_drained_marshes = {
+	local_monthly_food_modifier = -0.1           # nullify vanilla +0.10
+	local_wheat_output_modifier = 0.05
+	local_livestock_output_modifier = 0.03
+	local_legumes_output_modifier = 0.02
+}
+
+TRY_INJECT:lit_grain_supply_of_europe = {
+	local_monthly_food_modifier = -0.5           # nullify vanilla +0.50
+	local_wheat_output_modifier = 0.25
+	local_rice_output_modifier = 0.10
+	local_legumes_output_modifier = 0.10
+	local_livestock_output_modifier = 0.05
+}
+
+TRY_INJECT:mam_granary_of_the_mediterranean = {
+	local_monthly_food_modifier = -0.5           # nullify vanilla +0.50
+	local_wheat_output_modifier = 0.20
+	local_legumes_output_modifier = 0.15
+	local_rice_output_modifier = 0.10
+	local_livestock_output_modifier = 0.05
+}
+
+TRY_INJECT:spa_efficient_market_system = {
+	local_monthly_food_modifier = -0.5           # nullify vanilla +0.50
+	local_wheat_output_modifier = 0.15
+	local_olives_output_modifier = 0.15
+	local_fruit_output_modifier = 0.10
+	local_livestock_output_modifier = 0.10
+}
+
+TRY_INJECT:iro_three_sisters_harvest = {
+	local_monthly_food_modifier = -0.33          # nullify vanilla +0.33
+	local_maize_output_modifier = 0.15
+	local_legumes_output_modifier = 0.10
+	local_fruit_output_modifier = 0.08
+}
+
+TRY_INJECT:chk_food_conditions_horrific = {
+	local_monthly_food_modifier = 0.25           # nullify vanilla -0.25
+	local_maize_output_modifier = -0.15
+	local_wild_game_output_modifier = -0.10
+}
+
+TRY_INJECT:chk_nixtamalized_maize_practice_reintroduced = {
+	local_monthly_food_modifier = 0.10           # nullify vanilla -0.10
+}
+
+TRY_INJECT:pue_improve_capital_irrigation = {
+	local_monthly_food_modifier = -0.15          # nullify vanilla +0.15
+	local_maize_output_modifier = 0.10
+	local_legumes_output_modifier = 0.05
+}
+
+TRY_INJECT:pue_mesa_verde_capital = {
+	local_monthly_food_modifier = -0.5           # nullify vanilla +0.50
+	local_maize_output_modifier = 0.20
+	local_legumes_output_modifier = 0.15
+	local_wild_game_output_modifier = 0.10
+	local_fruit_output_modifier = 0.05
+}
+
+TRY_INJECT:jap_osaka_castle = {
+	local_monthly_food_modifier = -0.1           # nullify vanilla +0.10
+	local_rice_output_modifier = 0.05
+	local_fish_output_modifier = 0.05
+}
+
+# ===================
+# RGO REMOVAL HELPERS
+# ===================
+
+force_promote_vacancies = {
+	game_data = { category = country }
+
+	global_pop_promotion_speed_modifier = 99999
+}
+
+# Zero out vanilla RGO size scaling from blocks not touched by sul_food_modifiers.txt.
+# These are load-bearing: without them, vanilla RGO workers would still spawn from
+# population and rural development scaling.
+
+INJECT:total_population = {
+	local_max_rgo_size = -0.025				# nullify vanilla +0.025 - DO NOT CHANGE without verifying vanilla value
+	local_pop_food_consumption = 0.0025		# each pop increases local food consumption
+	sul_rgo_size = 0.04						# +1 per 25k pop (25 in code)
+}
+
+INJECT:rural_development_modifier = {
+	local_max_rgo_size = -1			# nullify vanilla +1 - DO NOT CHANGE without verifying vanilla value
+}
+
+# ===================
+# sul_rgo_size - drives RGO building max levels
+# ===================
+# Mirrors vanilla local_max_rgo_size sources but as a custom modifier
+# read by per-good max level script values. Engine-cached, not script-evaluated.
+
+INJECT:location_base_values = {
+	sul_rgo_size = 2				# vanilla base is 2
+}
+
+INJECT:development = {
+	sul_rgo_size = 0.1				# +0.1 per development point
+}
+
+# Polish Cracovian salt mines - vanilla +25% local RGO
+
+TRY_INJECT:pol_cracovian_salt_mines = {
+	local_max_rgo_size_modifier = -0.25
+	sul_rgo_size = 1
+}

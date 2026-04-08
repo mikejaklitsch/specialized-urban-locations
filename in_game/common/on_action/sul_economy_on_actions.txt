@@ -1,0 +1,215 @@
+﻿# Economy / GDP / wage on_actions registered in sul_hardcoded.txt.
+
+# Enrichment offsets are duplicated from sul_gdp_update.txt because @macros
+# are file-scoped in PDX script. Keep both files in sync if these change.
+@sul_enrichment_offset_nobles = 0.30
+@sul_enrichment_offset_clergy = 0.25
+@sul_enrichment_offset_burghers = 0.20
+@sul_enrichment_offset_commoners = 0.10
+
+# Economy bootstrap on game start. Seeds the budget pressure and spending
+# rate variables that the monthly economy update assumes already exist,
+# then runs one full pass so day 1 has correct values rather than zeros.
+
+sul_initialize_economy = {
+	effect = {
+		sul_init_demand_maps = yes
+
+		every_country = {
+			limit = { is_real_country = yes sul_is_valid_location_owner = yes }
+
+			# Neutral pressure (1 = neutral) before economy update so the
+			# first sul_update_country_economy doesn't multiply by undefined.
+			set_variable = { name = sul_budget_pressure_nobles value = 1 }
+			set_variable = { name = sul_budget_pressure_clergy value = 1 }
+			set_variable = { name = sul_budget_pressure_burghers value = 1 }
+			set_variable = { name = sul_budget_pressure_peasants value = 1 }
+
+			set_variable = {
+				name = sul_spending_nobles
+
+				value = {
+					value = 1
+					subtract = modifier:estate_enrichment
+					subtract = @sul_enrichment_offset_nobles
+					min = 0
+					max = 1
+				}
+			}
+			set_variable = {
+				name = sul_spending_clergy
+
+				value = {
+					value = 1
+					subtract = modifier:estate_enrichment
+					subtract = @sul_enrichment_offset_clergy
+					min = 0
+					max = 1
+				}
+			}
+			set_variable = {
+				name = sul_spending_burghers
+
+				value = {
+					value = 1
+					subtract = modifier:estate_enrichment
+					subtract = @sul_enrichment_offset_burghers
+					min = 0
+					max = 1
+				}
+			}
+			set_variable = {
+				name = sul_spending_commoners
+
+				value = {
+					value = 1
+					subtract = modifier:estate_enrichment
+					subtract = @sul_enrichment_offset_commoners
+					min = 0
+					max = 1
+				}
+			}
+
+			every_owned_location = { sul_init_zero_wpp = yes }
+
+			sul_update_country_economy = yes
+
+			# Convert vanilla efficiency sources to merchant_maintenance_cost on day 1.
+			sul_trade_maintenance_apply = yes
+		}
+	}
+}
+
+# WPP refresh batch. Walks at most @sul_ai_batch_size stale AI locations
+# per tick, ordered by oldest sul_last_update first.
+@sul_ai_batch_size = 333
+
+sul_batch_location_update = {
+	effect = {
+		ordered_sul_stale_ai_location = {
+			max = @sul_ai_batch_size
+
+			order_by = {
+				value = 0
+				if = {
+					limit = { has_variable = sul_last_update }
+					subtract = var:sul_last_update
+				}
+			}
+
+			sul_update_location_wpp = yes
+			set_variable = { name = sul_last_update value = current_year }
+		}
+	}
+}
+
+# Enrichment reduces estate spending: rate = 1 - (engine enrichment + sul offset)
+# Stored once per country, read by WPP update (location scope) and wage payment.
+
+sul_update_spending_rates = {
+	trigger = { is_real_country = yes }
+
+	effect = {
+		set_variable = {
+			name = sul_spending_nobles
+
+			value = {
+				value = 1
+				subtract = modifier:estate_enrichment
+				subtract = @sul_enrichment_offset_nobles
+				min = 0
+				max = 1
+			}
+		}
+		set_variable = {
+			name = sul_spending_clergy
+
+			value = {
+				value = 1
+				subtract = modifier:estate_enrichment
+				subtract = @sul_enrichment_offset_clergy
+				min = 0
+				max = 1
+			}
+		}
+		set_variable = {
+			name = sul_spending_burghers
+
+			value = {
+				value = 1
+				subtract = modifier:estate_enrichment
+				subtract = @sul_enrichment_offset_burghers
+				min = 0
+				max = 1
+			}
+		}
+		set_variable = {
+			name = sul_spending_commoners
+
+			value = {
+				value = 1
+				subtract = modifier:estate_enrichment
+				subtract = @sul_enrichment_offset_commoners
+				min = 0
+				max = 1
+			}
+		}
+	}
+}
+
+# Player wage path: accumulate + pay every month (no batching delay).
+# Skips countries formed mid-game that haven't had their first spending-rate
+# init yet - checking nobles is enough because all 4 sul_spending_* vars are
+# always set together.
+
+sul_player_wage_update = {
+	trigger = {
+		is_ai = no
+		is_real_country = yes
+		has_variable = sul_spending_nobles
+	}
+
+	effect = {
+		sul_accumulate_wages = yes
+		sul_estate_wages_pay_all = yes
+	}
+}
+
+# AI wage path: accumulate yearly, pay accumulated total the following month.
+# Splits the cost so AI economy ticks aren't dominated by per-pop math each month.
+
+sul_ai_yearly_wage_accumulate = {
+	trigger = {
+		is_ai = yes
+		is_real_country = yes
+		has_variable = sul_spending_nobles
+	}
+
+	effect = {
+		sul_accumulate_wages = yes
+	}
+}
+
+sul_ai_monthly_wage_payment = {
+	trigger = {
+		is_ai = yes
+		is_real_country = yes
+		has_variable = sul_monthly_wages_nobles
+	}
+
+	effect = {
+		sul_estate_wages_pay_all = yes
+	}
+}
+
+# Destroys AI armies that have been depleted to 0 strength. Without this they
+# linger as 0-strength stacks and corrupt army-iteration counts elsewhere.
+
+sul_cleanup_dead_units = {
+	effect = {
+		if = {
+			limit = { is_ai = yes }
+			every_army = { limit = { strength_percentage <= 0 } destroy_unit = yes }
+		}
+	}
+}

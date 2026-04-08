@@ -1,0 +1,125 @@
+﻿# Combined handlers for shared vanilla hooks - specialization logic plus
+# sibling-system dispatch. These are the entry points registered in
+# sul_hardcoded.txt for on_location_changed_rank, on_raw_material_changed,
+# and on_location_changed_owner.
+
+# Location rank changed: SUL spec logic first, then RGO trim to new rank cap
+# root = location
+
+sul_on_rank_changed = {
+	effect = {
+		if = {
+			limit = { sul_has_any_specialization = yes }
+			sul_specialization_refresh_modifier = yes
+			if = {
+				limit = {
+					OR = {
+						location_rank = location_rank:town
+						location_rank = location_rank:city
+					}
+				}
+
+				sul_specialization_destroy_non_matching_buildings = yes
+			}
+		}
+		else_if = {
+			limit = {
+				OR = {
+					location_rank = location_rank:rural_settlement
+					location_rank = location_rank:town
+					location_rank = location_rank:city
+				}
+			}
+
+			sul_specialization_assign_by_resources = yes
+			sul_specialization_apply_modifier = yes
+			if = {
+				limit = {
+					OR = {
+						location_rank = location_rank:town
+						location_rank = location_rank:city
+					}
+				}
+
+				sul_specialization_destroy_non_matching_buildings = yes
+			}
+		}
+
+		sul_trim_rgo_levels = yes
+	}
+}
+
+# Raw material changed: rebuild RGO under the new good, then revalidate spec
+# root = location, scope:old_goods, scope:new_goods
+
+sul_on_raw_material_changed = {
+	effect = {
+		# Save old RGO level so we can rebuild the new one at the same count.
+		# sul_rebuild_rgo_if_empty's prev check uses raw_material directly,
+		# so timing of the var update no longer affects the destroy/rebuild flow.
+		save_temporary_scope_value_as = {
+			name = sul_old_rgo_levels
+			value = sul_location_rgo_building_level
+		}
+
+		set_variable = {
+			name = sul_rgo_building_type
+			value = "global_variable_map(sul_rgo_map|raw_material)"
+		}
+
+		# Destroy old RGO via the OLD raw material in scope:old_goods
+		if = {
+			limit = { scope:sul_old_rgo_levels > 0 }
+
+			change_building_level_in_location = {
+				building = "global_variable_map(sul_rgo_map|scope:old_goods)"
+				value = { value = scope:sul_old_rgo_levels multiply = -1 }
+			}
+		}
+
+		# Build new RGO with same level count (or 1 if was empty)
+		if = {
+			limit = { exists = raw_material }
+
+			change_building_level_in_location = {
+				building = "global_variable_map(sul_rgo_map|raw_material)"
+				value = { value = scope:sul_old_rgo_levels min = 1 }
+			}
+		}
+
+		if = {
+			limit = { exists = owner }
+			sul_specialization_calculate_eligibility = yes
+			sul_specialization_validate = yes
+			remove_location_modifier = sul_recently_respecialized # new resource = free respec
+		}
+	}
+}
+
+# Owner changed: seed RGO for new colonies that have none
+# root = location, scope:loser, scope:winner
+
+sul_on_location_changed_owner = {
+	effect = {
+		if = {
+			limit = { exists = raw_material modifier:sul_rgo_size > 0 }
+
+			# GUI cache - idempotent, set on every owner change so the new
+			# owner sees the right building_type.
+			set_variable = {
+				name = sul_rgo_building_type
+				value = "global_variable_map(sul_rgo_map|raw_material)"
+			}
+
+			# Seed 1 RGO level if location has none (new colony / capture-with-empty-RGO)
+			if = {
+				limit = { sul_location_rgo_building_level <= 0 }
+
+				change_building_level_in_location = {
+					building = "global_variable_map(sul_rgo_map|raw_material)"
+					value = 1
+				}
+			}
+		}
+	}
+}

@@ -1,12 +1,6 @@
-﻿# ============================================
-# ADVANCE FOOD MODIFIER NULLIFICATION
-# ============================================
-# Vanilla advances give abstract global_monthly_food_modifier.
-# We nullify those and replace with per-good output bonuses
-# so food comes from actual production, not magic numbers.
-# NOTE: Advances use TOP-LEVEL modifiers, not country_modifier blocks.
-
-# --- Universal age-progression advances ---
+﻿# Cancel vanilla global_monthly_food_modifier on each advance and re-emit it
+# as concrete per-good output bonuses, so food comes from actual production.
+# Advances apply modifiers at the top level, NOT inside country_modifier {}.
 
 TRY_INJECT:food_advance_renaissance = {
 	global_monthly_food_modifier = -0.10     # nullify vanilla +0.10
@@ -284,13 +278,9 @@ INJECT:iron_working = {
 	unlock_building = sul_iron_mine
 }
 
-# ============================================
-# TRADE MAINTENANCE — vanilla advance overrides
-# ============================================
-# Each vanilla advance with `merchant_maintenance_cost` is converted to a
-# `sul_trade_maintenance_efficiency` source. The cost is cancelled by injecting
-# its negation; the efficiency is the same magnitude with flipped sign so that
-# vanilla cost-reductions become positive efficiency.
+# Trade maintenance: each vanilla merchant_maintenance_cost source is cancelled
+# and re-emitted as sul_trade_maintenance_efficiency with the sign flipped, so
+# vanilla cost-reductions become positive efficiency contributions.
 
 TRY_INJECT:global_trade_advance = {
 	merchant_maintenance_cost = 0.10

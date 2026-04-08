@@ -1,6 +1,4 @@
-﻿# Specialized Urban Locations - Custom Modifier Types
-# Boolean modifier for respecialization eligibility
-# yes = can respecialize (good/green), no = cannot respecialize (bad/red)
+﻿# Boolean color is reversed: yes = can respecialize (green), no = locked (red).
 
 sul_can_respecialize = {
 	boolean = yes
@@ -8,7 +6,8 @@ sul_can_respecialize = {
 	game_data = { category = location }
 }
 
-# Override modifiers to increase AI valuation of buildings with these modifiers
+# TRY_INJECTed so the engine recognizes these as modifiers worth weighing
+# in AI building valuation (vanilla doesn't expose them as such by default).
 
 TRY_INJECT:local_monthly_food_modifier = {
 	percent = yes
@@ -81,13 +80,8 @@ sul_designate_specialization_price_city_cost_modifier = {
 	game_data = { category = country }
 }
 
-# ============================================
-# BUILDING UNLOCK MODIFIERS
-# ============================================
-# Boolean modifiers that gate building chains per specialization.
-# Applied via static modifiers on specialization rank.
-
-# Mining
+# Booleans gating building chains. Applied by specialization rank static
+# modifiers, then read by each building's location_potential.
 
 sul_allows_tools_production = {
 	boolean = yes
@@ -125,8 +119,6 @@ sul_allows_steel_production = {
 	game_data = { category = location }
 }
 
-# Farming
-
 sul_allows_beer_production = {
 	boolean = yes
 
@@ -150,8 +142,6 @@ sul_allows_leather_production = {
 
 	game_data = { category = location }
 }
-
-# Gathering
 
 sul_allows_glass_production = {
 	boolean = yes
@@ -183,8 +173,6 @@ sul_allows_apothecary_production = {
 	game_data = { category = location }
 }
 
-# Woodland
-
 sul_allows_furniture_production = {
 	boolean = yes
 
@@ -214,8 +202,6 @@ sul_allows_charcoal_production = {
 
 	game_data = { category = location }
 }
-
-# Commercial
 
 sul_allows_printing_production = {
 	boolean = yes
@@ -259,10 +245,8 @@ sul_allows_university = {
 	game_data = { category = location }
 }
 
-# ============================================
-# PROVISIONS GOODS MODIFIER TYPES
-# ============================================
-# Required for custom goods — engine expects these 7 modifier types per good.
+# Engine expects these 7 modifier types per custom good — required for the
+# Provisions good to behave like vanilla goods (export bans, output, etc.).
 
 can_extract_provisions = {
 	boolean = yes
@@ -320,7 +304,7 @@ sul_lumbermill_price_cost_modifier = {
 	game_data = { category = country }
 }
 
-# Naval Provisioning Law — boolean modifiers for PM gating
+# Naval Provisioning Law: PM gating booleans, set by the active law.
 
 sul_standard_naval_provisioning = {
 	boolean = yes
@@ -348,9 +332,9 @@ sul_rural_granary_price_cost_modifier = {
 	game_data = { category = country }
 }
 
-# Custom modifier for RGO building max levels.
-# Accumulated from static modifiers (base, development, population, rank, vegetation).
-# Read by per-good max level script values via modifier:sul_rgo_size.
+# Replaces engine-internal local_max_rgo_size accumulation with a custom
+# accumulator that script_values can read via modifier:sul_rgo_size.
+# Necessary because vanilla local_max_rgo_size is not script-readable.
 
 sul_rgo_size = {
 	decimals = 3
@@ -364,9 +348,7 @@ sul_rgo_size_modifier = {
 	game_data = { category = location }
 }
 
-# Extraction vs Production tension — mutual cap reduction
-# Building category tags (display-only boolean).
-# Lets players identify building roles at a glance.
+# Display-only category tags so players can identify a building's role.
 
 sul_is_extraction_building = {
 	boolean = yes
@@ -386,8 +368,9 @@ sul_is_rgo_building = {
 	game_data = { category = location }
 }
 
-# Extraction buildings add +0.25 extraction, -0.25 production per level
-# Production buildings add +0.25 production, -0.25 extraction per level
+# Extraction vs production tension: each extraction building level adds
+# +0.25 extraction and -0.25 production; each production level inverses.
+# This forces locations to specialize one direction or the other.
 
 sul_extraction_size = {
 	decimals = 3
@@ -419,15 +402,11 @@ global_sul_rgo_size_in_non_rural = {
 	game_data = { category = country }
 }
 
-# ============================================
-# TRADE MAINTENANCE EFFICIENCY
-# ============================================
-# Reframes vanilla merchant_maintenance_cost (cost, lower=better) as
-# an efficiency modifier (higher=better) with multiplicative compounding.
-# Engine sums every source; sul_trade_maintenance_apply reads the total
-# via root.modifier:sul_trade_maintenance_efficiency, computes
-# 1/(1+E) - 1, and applies it as merchant_maintenance_cost via the
-# sul_trade_maintenance_applied static modifier.
+# Reframes vanilla merchant_maintenance_cost (linear, lower=better) as a
+# multiplicatively-compounding efficiency (higher=better). Engine sums every
+# source; sul_trade_maintenance_apply reads the total via
+# root.modifier:sul_trade_maintenance_efficiency, computes 1/(1+E) - 1, and
+# applies it back via the carrier static modifiers.
 
 sul_trade_maintenance_efficiency = {
 	percent = yes

@@ -3,9 +3,6 @@
 @sul_gathering_type = 3
 @sul_woodland_type = 4
 @sul_commercial_type = 5
-# ============================================
-# RANK CHECKS
-# ============================================
 
 is_town_or_city = {
 	OR = {
@@ -14,10 +11,7 @@ is_town_or_city = {
 	}
 }
 
-# ============================================
-# RESOURCE TRIGGERS (raw materials only)
-# Used for initialization - assigns specialization based on actual goods
-# ============================================
+# Raw-material checks used during initialization to assign specialization from goods.
 
 sul_has_mining_resources = {
 	exists = raw_material
@@ -95,11 +89,8 @@ sul_has_woodland_resources = {
 	}
 }
 
-# ============================================
-# SPECIALIZATION ELIGIBILITY TRIGGERS
-# These check cached variables set by sul_specialization_calculate_eligibility
-# Variables are calculated on: game start, colonization, raw material change
-# ============================================
+# Read cached eligibility set by sul_specialization_calculate_eligibility
+# (recomputed on game start, colonization, and raw material change).
 
 sul_can_specialize_mining = {
 	has_variable = sul_can_mine
@@ -117,13 +108,8 @@ sul_can_specialize_woodland = {
 	has_variable = sul_can_woodland
 }
 
-# ============================================
-# BUILDING CLASSIFICATION TRIGGERS
-# root = building
-# Used by destruction effects to determine if a building belongs to a specialization
-# Uses explicit building_type checks for reliability during initialization
-# ============================================
-# Mining buildings: ore extraction, smelting, metalworking
+# Building classification. root = building. Explicit building_type checks
+# (rather than category-based) for reliability during initialization.
 
 sul_is_mining_building = {
 	OR = {
@@ -346,12 +332,7 @@ sul_is_commercial_building = {
 	}
 }
 
-# ============================================
-# BUILDING DESTRUCTION TRIGGER
-# root = building
-# Returns yes if this building type can be destroyed when assigning a specialization
-# Optimized: uses specialization triggers instead of 336 explicit building checks
-# ============================================
+# root = building. Reuses the per-spec triggers above instead of 336 explicit checks.
 
 sul_is_destroyable_specialization_building = {
 	OR = {
@@ -363,15 +344,8 @@ sul_is_destroyable_specialization_building = {
 	}
 }
 
-# ============================================
-# SPECIALIZATION TYPE TRIGGERS
-# ============================================
-# These triggers check the sul_spec_type variable (1-5).
-# Rank is derived from the game's location_rank, not encoded in the variable.
-#
-# Type mapping: 1=mining, 2=farming, 3=gathering, 4=woodland, 5=commercial
-# ============================================
-# Individual rural checks (type + rank)
+# sul_spec_type stores type only (1=mining, 2=farming, 3=gathering, 4=woodland,
+# 5=commercial); rank comes from the engine's location_rank, not encoded here.
 
 sul_is_mining_rural = {
 	has_variable = sul_spec_type
@@ -403,8 +377,6 @@ sul_is_commercial_rural = {
 	location_rank = location_rank:rural_settlement
 }
 
-# Individual town checks (type + rank)
-
 sul_is_mining_town = {
 	has_variable = sul_spec_type
 	var:sul_spec_type = @sul_mining_type
@@ -434,8 +406,6 @@ sul_is_commercial_town = {
 	var:sul_spec_type = @sul_commercial_type
 	location_rank = location_rank:town
 }
-
-# Individual city checks (type + rank)
 
 sul_is_mining_city = {
 	has_variable = sul_spec_type
@@ -467,8 +437,6 @@ sul_is_commercial_city = {
 	location_rank = location_rank:city
 }
 
-# Combined checks (any rank of same type)
-
 sul_has_mining_specialization = {
 	has_variable = sul_spec_type
 	var:sul_spec_type = @sul_mining_type
@@ -494,14 +462,11 @@ sul_has_commercial_specialization = {
 	var:sul_spec_type = @sul_commercial_type
 }
 
-# Check if location has any specialization
-
 sul_has_any_specialization = {
 	has_variable = sul_spec_type
 }
 
-# Check if current specialization is still allowed under current eligibility rules
-# root = location (must have sul_spec_type and eligibility variables calculated)
+# root = location. Requires sul_spec_type and eligibility variables to exist.
 
 sul_current_specialization_is_valid = {
 	OR = {
@@ -530,19 +495,14 @@ sul_current_specialization_is_valid = {
 	}
 }
 
-# Check if location can respecialize (no cooldown active)
-
 sul_can_respecialize = {
 	NOT = {
 		modifier:sul_can_respecialize = no
 	}
 }
 
-# =============================================================================
-# COUNTRY VALIDITY
-# =============================================================================
-# Check if country is a valid location owner (for country iterations)
-# Filters out invalid/special country types and countries with no locations
+# Filters out invalid/special country types and countries with no locations.
+# Used as the gate for every_country iterations that need owned-location work.
 
 sul_is_valid_location_owner = {
 	exists = yes
@@ -555,15 +515,7 @@ sul_is_valid_location_owner = {
 	num_locations > 0
 }
 
-# =============================================================================
-# POP DEMAND OVERHAUL - SCRIPTED TRIGGERS
-# =============================================================================
-
-# ===================
-# RGO BUILDABILITY TRIGGER
-# ===================
-# Single parameterized trigger. Called as: can_build_RGO = { GOOD = iron }
-# Checks raw_material match and location ownership.
+# Parameterized: can_build_RGO = { GOOD = iron }
 
 can_build_RGO = {
 	has_owner = yes

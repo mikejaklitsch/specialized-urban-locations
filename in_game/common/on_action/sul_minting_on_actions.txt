@@ -1,9 +1,6 @@
-﻿# The Gold Standard - Minting On Actions
-# Mod logic dispatched from hardcoded hooks in sul_minting_hardcoded.txt.
-# Bouvet Island: impassable location used as mod state anchor.
-# sul_minting_active modifier applied here — stripped by engine when mod is removed.
-
-# ---- Game Start ----
+﻿# Bouvet Island (impassable) acts as the mod state anchor: sul_minting_active
+# modifier is applied here and is stripped by the engine when the mod is
+# removed, which is how sul_minting_version_check detects re-installs.
 
 sul_minting_initialize_all = {
 	effect = {
@@ -22,7 +19,6 @@ sul_minting_initialize_all = {
 	}
 }
 
-# ---- Policy Change ----
 # Rebuilds the minting goods variable list when currency laws change.
 
 sul_minting_on_policy_changed = {
@@ -54,10 +50,9 @@ sul_minting_on_policy_changed = {
 	}
 }
 
-# ---- Save Compatibility ----
 # Triggers full init if Bouvet marker OR global variable is missing.
 # Covers: mod added to existing save, AND old saves before global var was added.
-# Runs on monthly_weather_pulse (once globally, not per-country).
+# Runs on weather_monthly_pulse (once globally, not per-country).
 
 sul_minting_version_check = {
 	trigger = {
@@ -97,9 +92,6 @@ sul_minting_version_check = {
 		remove_global_variable = sul_minting_initializing
 	}
 }
-
-# ---- Monthly Update ----
-# Price cache + E recomputation + AI modifiers
 
 sul_minting_monthly_update = {
 	trigger = { sul_minting_is_active_country = yes }
@@ -201,7 +193,6 @@ sul_minting_monthly_update = {
 	}
 }
 
-# ---- Yearly Update ----
 # AI price cache — engine-parallelized, no timer variable needed.
 
 sul_minting_yearly_update = {

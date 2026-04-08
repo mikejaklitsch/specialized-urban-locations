@@ -9,12 +9,7 @@
 #   sul_market_cache_update      - per-market cache write (root = market)
 #   sul_market_cache_refresh_all - full refresh pass over every market (scopeless)
 
-# =============================================================================
-# PER-MARKET CACHE UPDATE
-# Stores supply/demand pressure and finished-good composites in global maps
-# keyed by market scope. Called once per market by sul_market_cache_refresh_all.
-# root = market
-# =============================================================================
+# Per-market cache write. root = market. Called once per market by refresh_all.
 
 sul_market_cache_update = {
 	add_to_global_variable_map = {
@@ -49,18 +44,9 @@ sul_market_cache_update = {
 	}
 }
 
-# =============================================================================
-# FULL MARKET CACHE REFRESH
-# Single pass over every market in the world. Caches per-market pressure,
-# trade spread, and per-good prices. Guarded by sul_market_demand_cached
-# global flag - sul_clear_market_cache (monthly on_action) clears the flag
-# so the next call rebuilds.
-#
-# Called from:
-#   - on_game_start (via sul_hardcoded.txt, before sul_minting_initialize_all)
-#   - sul_specialization_full_rebuild (specialization rebuild path)
-#   - monthly_country_pulse on_action (via sul_market_cache_on_pulse)
-# =============================================================================
+# Full world pass. Guarded by sul_market_demand_cached flag - sul_clear_market_cache
+# (monthly) clears the flag so the next call rebuilds. Must run before
+# sul_minting_initialize_all on game start (minting reads sul_market_prices).
 
 sul_market_cache_refresh_all = {
 	if = {

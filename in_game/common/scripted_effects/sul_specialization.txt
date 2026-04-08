@@ -10,12 +10,9 @@
 @sul_rank_offset_rural = 20
 @sul_farming_weight = 2
 
-# =============================================================================
-# FULL REBUILD
-# =============================================================================
-# Called on game start and when mod version changes (via version check)
-# Minimally invasive: preserves valid player specializations and buildings
-# Only reassigns locations whose current spec violates updated rules
+# Called on game start and on version change. Minimally invasive: preserves
+# valid player specializations and buildings, only reassigns locations whose
+# current spec violates the updated rules.
 
 sul_specialization_full_rebuild = {
 	sul_setup_goods_spec_map = yes
@@ -51,14 +48,10 @@ sul_specialization_full_rebuild = {
 	sul_market_cache_refresh_all = yes
 }
 
-# =============================================================================
-# REBUILD SINGLE LOCATION
-# =============================================================================
-# Handles one location during rebuild. Three paths:
-# 1. No specialization -> fresh assignment with buildings
-# 2. Valid specialization -> refresh modifier only (handles value changes)
-# 3. Invalid specialization -> reassign by resources + rebuild buildings
-# root = location (eligibility already calculated)
+# root = location (eligibility already calculated). Three paths:
+#   no spec        -> fresh assignment with buildings
+#   valid spec     -> refresh modifier only (handles tuning changes)
+#   invalid spec   -> reassign by resources + rebuild buildings
 
 sul_specialization_rebuild_location = {
 	if = {
@@ -79,11 +72,8 @@ sul_specialization_rebuild_location = {
 	}
 }
 
-# =============================================================================
-# REFRESH SPECIALIZATION MODIFIER
-# =============================================================================
-# Swaps the modifier for the current spec+rank without changing anything else
-# root = location (must have sul_spec_type set)
+# root = location with sul_spec_type. Swaps the modifier for the current
+# spec+rank without changing the spec itself.
 
 sul_specialization_refresh_modifier = {
 	sul_specialization_clear_all_modifiers = yes
@@ -91,12 +81,8 @@ sul_specialization_refresh_modifier = {
 	sul_specialization_apply_modifier = yes
 }
 
-# =============================================================================
-# REASSIGN SPECIALIZATION
-# =============================================================================
-# Current spec is no longer valid under updated rules
-# Clears old state, picks best match from resources, rebuilds buildings
-# root = location
+# root = location. Used when the current spec is no longer valid: clears old
+# state, picks best match from resources, rebuilds buildings.
 
 sul_specialization_reassign = {
 	sul_specialization_clear_all_modifiers = yes
@@ -112,11 +98,7 @@ sul_specialization_reassign = {
 	}
 }
 
-# =============================================================================
-# INIT NEW SPECIALIZATION
-# =============================================================================
-# First-time setup for a location that has never been specialized
-# root = location
+# root = location. First-time setup for a location that has never been specialized.
 
 sul_specialization_init_new = {
 	sul_specialization_assign_by_resources = yes
@@ -131,11 +113,8 @@ sul_specialization_init_new = {
 	}
 }
 
-# =============================================================================
-# BUILDING LEVEL COUNTING
-# Saves total building levels before specialization
-# root = location — sets sul_prior_building_levels variable
-# =============================================================================
+# root = location. Snapshots total_building_levels into sul_prior_building_levels
+# so post-rebuild logic can compare before/after counts.
 
 sul_specialization_save_building_levels = {
 	set_variable = {
@@ -144,12 +123,8 @@ sul_specialization_save_building_levels = {
 	}
 }
 
-# =============================================================================
-# SPECIALIZATION ELIGIBILITY CACHING
-# Calculates and stores which specializations a location can have
-# root = location
-# Called on: game start, colonization, raw material change
-# =============================================================================
+# root = location. Caches which specializations the location is eligible for.
+# Called on game start, colonization, and raw material change.
 
 sul_specialization_calculate_eligibility = {
 	# Mining: mining resources OR mountains OR wetlands OR lake adjacency
@@ -219,12 +194,8 @@ sul_specialization_calculate_eligibility = {
 	else = { remove_variable = sul_can_woodland }
 }
 
-# =============================================================================
-# SPECIALIZATION VALIDATION
-# Checks if current specialization is still valid after raw material change
-# If invalid, switches to commercial
-# root = location
-# =============================================================================
+# root = location. Re-checks current spec after a raw material change;
+# falls back to commercial if invalidated.
 
 sul_specialization_validate = {
 	if = {
@@ -272,12 +243,6 @@ sul_specialization_validate = {
 	}
 }
 
-# =============================================================================
-# SWITCH TO COMMERCIAL
-# Forces a location to commercial specialization
-# root = location
-# =============================================================================
-
 sul_specialization_switch_to_commercial = {
 	sul_specialization_clear_all_modifiers = yes
 
@@ -299,13 +264,10 @@ sul_specialization_switch_to_commercial = {
 # NOTE: Market cache effects (sul_market_cache_update, sul_market_cache_refresh_all)
 # moved to sul_market_cache.txt
 
-# =============================================================================
-# INIT PRODUCTION VARIABLES
-# Sets per-good variables with 1-day expiry for building validation during init
-# Variables mirror the sul_allows_* flags from static modifiers
-# Needed because modifier: checks aren't available during initialize_from_bookmark
-# root = location (must have sul_spec_type set)
-# =============================================================================
+# root = location with sul_spec_type. Sets per-good vars (1-day expiry) that
+# mirror the sul_allows_* static-modifier flags. Required because modifier:
+# reads aren't available during initialize_from_bookmark, so building
+# location_potential checks need a variable fallback during init.
 
 sul_specialization_set_init_production_variables = {
 	if = {
@@ -365,10 +327,6 @@ sul_specialization_set_init_production_variables = {
 # root = location
 # NOTE: Universities are always preserved in cities regardless of specialization
 
-# ============================================
-# Mining Specialization - keeps mining buildings
-# ============================================
-
 sul_specialization_destroy_non_mining_buildings = {
 	every_buildings_in_location = {
 		limit = {
@@ -385,10 +343,6 @@ sul_specialization_destroy_non_mining_buildings = {
 		location = { destroy_building = prev }
 	}
 }
-
-# ============================================
-# Farming Specialization - keeps farming buildings
-# ============================================
 
 sul_specialization_destroy_non_farming_buildings = {
 	every_buildings_in_location = {
@@ -407,10 +361,6 @@ sul_specialization_destroy_non_farming_buildings = {
 	}
 }
 
-# ============================================
-# Woodland Specialization - keeps woodland buildings
-# ============================================
-
 sul_specialization_destroy_non_woodland_buildings = {
 	every_buildings_in_location = {
 		limit = {
@@ -427,10 +377,6 @@ sul_specialization_destroy_non_woodland_buildings = {
 		location = { destroy_building = prev }
 	}
 }
-
-# ============================================
-# Gathering Specialization - keeps gathering buildings
-# ============================================
 
 sul_specialization_destroy_non_gathering_buildings = {
 	every_buildings_in_location = {
@@ -449,9 +395,7 @@ sul_specialization_destroy_non_gathering_buildings = {
 	}
 }
 
-# ============================================
-# Commercial Specialization - keeps commercial buildings (universities already part of commercial)
-# ============================================
+# Universities already classify as commercial, so they survive automatically.
 
 sul_specialization_destroy_non_commercial_buildings = {
 	every_buildings_in_location = {
@@ -466,10 +410,7 @@ sul_specialization_destroy_non_commercial_buildings = {
 	}
 }
 
-# ============================================
-# ROUTER — dispatches to the correct destroy effect
-# root = location (must have sul_spec_type variable set)
-# ============================================
+# Dispatcher to the per-spec destroy effect. root = location with sul_spec_type.
 
 sul_specialization_destroy_non_matching_buildings = {
 	if = {
@@ -496,11 +437,7 @@ sul_specialization_destroy_non_matching_buildings = {
 
 # Specialized Urban Locations - Modifier Management Effects
 
-# ============================================
-# CLEAR ALL SPECIALIZATION MODIFIERS
-# Checks type from variable and removes ALL rank variants that exist
-# root = location
-# ============================================
+# root = location. Removes every rank variant of the current spec's modifier.
 
 sul_specialization_clear_all_modifiers = {
 	if = {
@@ -580,12 +517,9 @@ sul_specialization_clear_all_modifiers = {
 	}
 }
 
-# ============================================
-# ASSIGN SPECIALIZATION BY RESOURCES
-# Priority: Commercial (special conditions) > Farming > Mining > Gathering > Woodland
-# root = location (rural, town, or city)
-# Sets sul_spec_type to type only (1-5); rank derived from location_rank
-# ============================================
+# root = location (any rank). Priority order:
+# Commercial (special conditions) > Farming > Mining > Gathering > Woodland.
+# Writes sul_spec_type only (1-5); rank is read live from location_rank.
 
 sul_specialization_assign_by_resources = {
 	# Commercial specialization (market centers always; cities require development > 30; towns pass through)
@@ -646,12 +580,8 @@ sul_specialization_assign_by_resources = {
 	}
 }
 
-# ============================================
-# UPDATE DESIGNATION
-# Encodes type+rank into one value for GUI (avoids rank lookups in GUI context)
-# Town: 1-5, City: 11-15, Rural: 21-25
-# root = location (must have sul_spec_type set)
-# ============================================
+# Encodes type+rank into a single value so the GUI doesn't need to query
+# location_rank from a non-location scope. Town 1-5, City 11-15, Rural 21-25.
 
 sul_specialization_update_designation = {
 	set_variable = { name = sul_designation value = var:sul_spec_type }
@@ -665,11 +595,7 @@ sul_specialization_update_designation = {
 	}
 }
 
-# ============================================
-# APPLY SPECIALIZATION MODIFIER
-# Applies correct modifier based on specialization type and current rank
-# root = location (must have sul_spec_type variable set)
-# ============================================
+# root = location with sul_spec_type. Applies the modifier matching spec+rank.
 
 sul_specialization_apply_modifier = {
 	if = {

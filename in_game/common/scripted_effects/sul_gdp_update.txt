@@ -1,15 +1,12 @@
-﻿# =============================================================================
-# ECONOMY UPDATE
-# =============================================================================
-# Simplified WPP pipeline: wages + GDP + estate weights → variable map.
-# No intermediate share variables. Estate power weights are inlined.
+﻿# Simplified WPP pipeline: wages + GDP + estate weights -> variable map.
+# No intermediate share variables; estate power weights are inlined.
 #
 # Stored per location (4 vars + 6 map entries):
-#   sul_local_wages    — wage accumulation + tooltip
-#   sul_total_weighted — wage accumulation + tooltip
-#   sul_local_gdp      — tooltip + GUI visibility
-#   sul_enfranchisement           — wage accumulation (avoids recomputation in owner scope)
-#   sul_wealth_per_pop — variable map read by pop_demands
+#   sul_local_wages       wage accumulation + tooltip
+#   sul_total_weighted    wage accumulation + tooltip
+#   sul_local_gdp         tooltip + GUI visibility
+#   sul_enfranchisement   wage accumulation (avoids recomputation in owner scope)
+#   sul_wealth_per_pop    variable map read by pop_demands
 #
 # WPP formula:
 #   base = GDP / total_weighted
@@ -17,7 +14,6 @@
 #   WPP_clergy   = base × 25
 #   WPP_burgher  = base × 20
 #   WPP_commoner = base × enfr
-# =============================================================================
 
 # Wage rates (must be duplicated here — @ variables are file-scoped)
 @sul_wage_nobles = 5.0
@@ -415,10 +411,7 @@ sul_update_country_economy = {
 		}
 	}
 
-	# =====================================================================
-	# POST-LOOP: budget pressure + enrichment + payment
-	# =====================================================================
-
+	# Post-loop: budget pressure + enrichment + payment
 	# Budget pressure per estate (reads estate_gold and estate_taxable_income)
 	sul_compute_budget_pressure = yes
 

@@ -4,9 +4,6 @@
 # Provisions System: sul_on_actions.txt
 # War Systems: sul_war_on_actions.txt, sul_war_overcrowding_effects.txt
 
-# =============================================================================
-# GAME START
-# =============================================================================
 # Order: WPDO RGO map first (locations need rgo_building_type before spec init),
 # then SUL specialization rebuild, then WPDO demand system + economy.
 
@@ -16,20 +13,14 @@ on_game_start = {
 		sul_rgo_removal_start
 		sul_initialize_all
 		sul_initialize_economy
-		# War systems
 		sul_war_on_game_start
-		# Population-based integration
 		sul_integration_on_game_start
 		# Prime shared market price cache before minting init reads it
 		sul_refresh_market_cache
-		# Minting / Gold Standard
 		sul_minting_initialize_all
 	}
 }
 
-# =============================================================================
-# LOCATION RANK CHANGED (root = location)
-# =============================================================================
 # Order: SUL spec logic first (may destroy/rebuild buildings),
 # then WPDO trim (adjusts RGO to new rank cap).
 
@@ -37,19 +28,12 @@ on_location_changed_rank = {
 	on_actions = { sul_on_rank_changed }
 }
 
-# =============================================================================
-# RAW MATERIAL CHANGED (root = location)
-# =============================================================================
 # Order: WPDO cache update first (just a variable set),
 # then SUL validation (may change spec based on new material).
 
 on_raw_material_changed = {
 	on_actions = { sul_on_raw_material_changed }
 }
-
-# =============================================================================
-# LOCATION CHANGED OWNER (root = location, scope:loser, scope:winner)
-# =============================================================================
 
 on_location_changed_owner = {
 	on_actions = {
@@ -59,73 +43,47 @@ on_location_changed_owner = {
 	}
 }
 
-# =============================================================================
-# MONTHLY COUNTRY PULSE (root = country)
-# =============================================================================
-
 monthly_country_pulse = {
 	on_actions = {
-		# Specialization system
 		sul_version_check
 		sul_clear_market_cache
 		sul_refresh_market_cache
-		# Passthrough demand pulse (per-country, uses every_market_center_in_country)
+		# Per-country, uses every_market_center_in_country (avoids unowned markets)
 		sul_passthrough_pulse
-		# Provisions system
 		sul_update_spending_rates
 		sul_player_wage_update
 		sul_ai_monthly_wage_payment
-		# Trade maintenance: convert sul_trade_maintenance_efficiency → merchant_maintenance_cost
+		# Convert sul_trade_maintenance_efficiency → merchant_maintenance_cost
 		sul_trade_maintenance_apply_action
-		# Minting / Gold Standard
 		sul_minting_monthly_update
-		# War systems
 		sul_war_init_pulse
 		sul_war_monthly_pulse
 	}
 }
-
-# =============================================================================
-# YEARLY COUNTRY PULSE (root = country)
-# =============================================================================
 
 yearly_country_pulse = {
 	on_actions = {
 		sul_ai_yearly_wage_accumulate
 		sul_cleanup_dead_units
 		sul_yearly_rgo_trim
-		# Minting / Gold Standard — AI price refresh + minting modifier update
 		sul_minting_yearly_update
 	}
 }
 
-# =============================================================================
-# WEATHER MONTHLY PULSE (scopeless, monthly)
-# =============================================================================
-
 weather_monthly_pulse = {
 	on_actions = {
 		sul_batch_location_update
-		# Population-based integration
 		sul_integration_init_check
 		sul_integration_monthly_update
-		# Minting / Gold Standard — version check,
-		# fixed here to weather_monthly_pulse so the version check actually fires)
+		# Minting version check belongs here, not monthly_weather_pulse (TGS typo);
+		# weather_monthly_pulse is the real engine action.
 		sul_minting_version_check
 	}
 }
 
-# =============================================================================
-# FOUR YEARLY COUNTRY PULSE (root = country)
-# =============================================================================
-
 four_yearly_country_pulse = {
 	# random_events = { 10 = sul.1 } # Capital relocation disabled — AI moves capitals suboptimally
 }
-
-# =============================================================================
-# WAR SYSTEMS - War Momentum hooks
-# =============================================================================
 
 on_annex = {
 	on_actions = { sul_war_on_annex }
@@ -139,10 +97,6 @@ on_ending_war = {
 	on_actions = { sul_war_on_war_end_cleanup }
 }
 
-# =============================================================================
-# WAR SYSTEMS - Combat Overcrowding hooks
-# =============================================================================
-
 in_battle = {
 	on_actions = { sul_war_in_battle_action }
 }
@@ -154,11 +108,6 @@ on_battle_won_character = {
 on_battle_lost_character = {
 	on_actions = { sul_war_battle_cleanup_action }
 }
-
-# =============================================================================
-# MINTING / GOLD STANDARD - Policy change hook
-# =============================================================================
-# Rebuilds the minting goods variable list when currency laws change.
 
 on_policy_changed = {
 	on_actions = { sul_minting_on_policy_changed }

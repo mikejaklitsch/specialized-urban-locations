@@ -104,3 +104,106 @@ TRY_REPLACE:jianzhou_jurchen_reform = {
 TRY_INJECT:kor_daedongbeob = {
 	location_modifier = { local_max_rgo_size_modifier = -0.1 sul_rgo_size = 0.5 }
 }
+
+# ============================================
+# TRADE MAINTENANCE — government reform overrides
+# ============================================
+# Government reform country_modifier blocks reject INJECT cancellations,
+# so we REPLACE the entire reform definition. Each reform's
+# merchant_maintenance_cost is dropped and re-emitted as
+# sul_trade_maintenance_efficiency with the sign flipped.
+
+TRY_REPLACE:casa_de_contratacion = {
+	unique = yes
+	government = monarchy
+
+	potential = {
+		culture = { has_culture_group = culture_group:iberian_group }
+		has_unlocked_government_reform_trigger = { type = casa_de_contratacion }
+	}
+
+	country_modifier = {
+		sul_trade_maintenance_efficiency = 0.2
+		subject_income_modifier = 0.025
+		merchant_power_from_maritime_modifier = 0.1
+		government_reform_slots = 1
+	}
+
+	years = 2
+}
+
+TRY_REPLACE:signoria_of_venice = {
+	unique = yes
+	government = republic
+
+	potential = {
+		has_unlocked_government_reform_trigger = { type = signoria_of_venice }
+	}
+
+	allow = {
+	}
+
+	country_modifier = {
+		global_merchant_capacity_modifier = 0.50
+		sul_trade_maintenance_efficiency = 0.25
+		global_crown_estate_power = 0.2
+		monthly_towards_free_trade = societal_value_monthly_move
+		government_reform_slots = 1
+	}
+
+	years = 2
+}
+
+TRY_REPLACE:bank_ledgers_system = {
+	societal_values = { capital_economy_focus }
+
+	age = age_2_renaissance
+
+	country_modifier = {
+		monthly_inflation = -0.00025
+		sul_trade_maintenance_efficiency = 0.20
+		monthly_towards_capital_economy = societal_value_monthly_move
+	}
+
+	years = 2
+}
+
+TRY_REPLACE:merchant_republic = {
+	major = yes
+	government = republic
+
+	country_modifier = {
+		global_merchant_capacity_modifier = 0.50
+		trade_income = 0.25
+		global_foreign_build_buildings_cost = -0.5
+
+		sul_trade_maintenance_efficiency = 0.25
+		global_integration_speed_modifier = -0.25
+		court_language_is_market_language_importance_modifier = 5
+	}
+
+	years = 2
+}
+
+TRY_REPLACE:hanseatic_merchant_federation = {
+	unique = yes
+	government = republic
+
+	potential = {
+		has_or_had_tag = HSA
+		country_type = building
+	}
+
+	locked = { country_type = building }
+
+	country_modifier = {
+		cannot_be_subjugated = yes
+		global_burghers_estate_power = -0.5
+		sul_trade_maintenance_efficiency = 0.25
+		allows_hanseatic_federation_buildings = yes
+		legislative_efficiency = -0.5
+		court_language_is_market_language_importance_modifier = 5
+	}
+
+	years = 2
+}

@@ -183,20 +183,12 @@ sul_on_rank_changed = {
 
 sul_on_raw_material_changed = {
 	effect = {
-		# Save old levels, then update type cache BEFORE destroying
-		# (on_destroyed checks sul_rgo_building_type — must point to new type so old building isn't rebuilt)
 		save_temporary_scope_value_as = {
 			name = sul_old_rgo_levels
 			value = sul_location_rgo_building_level
 		}
 
-		# Update cache to new raw material first
-		set_variable = {
-			name = sul_rgo_building_type
-			value = "global_variable_map(sul_rgo_map|raw_material)"
-		}
-
-		# Now destroy old RGO — on_destroyed won't rebuild because type no longer matches
+		# Destroy old RGO (looked up via the OLD raw material in scope:old_goods)
 		if = {
 			limit = { scope:sul_old_rgo_levels > 0 }
 
@@ -211,7 +203,7 @@ sul_on_raw_material_changed = {
 			limit = { exists = raw_material }
 
 			change_building_level_in_location = {
-				building = var:sul_rgo_building_type
+				building = "global_variable_map(sul_rgo_map|raw_material)"
 				value = { value = scope:sul_old_rgo_levels min = 1 }
 			}
 		}
@@ -234,26 +226,12 @@ sul_on_location_changed_owner = {
 		if = {
 			limit = { exists = raw_material modifier:sul_rgo_size > 0 }
 
-			# Initialize RGO type if not yet set (fresh colony)
-			if = {
-				limit = {
-					NOT = {
-						has_variable = sul_rgo_building_type
-					}
-				}
-
-				set_variable = {
-					name = sul_rgo_building_type
-					value = "global_variable_map(sul_rgo_map|raw_material)"
-				}
-			}
-
 			# Seed 1 RGO level if location has none
 			if = {
 				limit = { sul_location_rgo_building_level <= 0 }
 
 				change_building_level_in_location = {
-					building = var:sul_rgo_building_type
+					building = "global_variable_map(sul_rgo_map|raw_material)"
 					value = 1
 				}
 			}
@@ -271,11 +249,6 @@ sul_rgo_init = {
 		every_location_in_the_world = {
 			limit = { is_ownable = yes }
 			set_variable = { name = sul_rgo_constructing value = 0 }
-
-			set_variable = {
-				name = sul_rgo_building_type
-				value = "global_variable_map(sul_rgo_map|raw_material)"
-			}
 		}
 	}
 }
@@ -352,6 +325,9 @@ sul_initialize_economy = {
 			every_owned_location = { sul_init_zero_wpp = yes }
 
 			sul_update_country_economy = yes
+
+			# Convert vanilla efficiency sources to merchant_maintenance_cost on day 1.
+			sul_trade_maintenance_apply = yes
 		}
 	}
 }
@@ -466,7 +442,7 @@ sul_yearly_rgo_trim = {
 	effect = {
 		every_owned_location = {
 			limit = {
-				has_variable = sul_rgo_building_type
+				exists = raw_material
 				sul_location_rgo_building_level > sul_location_max_rgo_building_level_rounded
 			}
 
@@ -510,5 +486,20 @@ sul_cleanup_dead_units = {
 			limit = { is_ai = yes }
 			every_army = { limit = { strength_percentage <= 0 } destroy_unit = yes }
 		}
+	}
+}
+
+# =============================================================================
+# TRADE MAINTENANCE
+# =============================================================================
+# Reads engine-summed sul_trade_maintenance_efficiency and re-emits it as
+# merchant_maintenance_cost via the multiplicative inverse formula. See
+# sul_trade_maintenance_apply in sul_economy_effects.txt for the math.
+
+sul_trade_maintenance_apply_action = {
+	trigger = { is_real_country = yes }
+
+	effect = {
+		sul_trade_maintenance_apply = yes
 	}
 }

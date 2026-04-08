@@ -17,11 +17,13 @@ Organized by subsystem. **Update this document when adding, removing, or renamin
 ### Monthly Country Pulse
 1. `sul_version_check` — detect mod update, trigger rebuild if needed
 2. `sul_clear_market_cache` / `sul_refresh_market_cache` — invalidate + repopulate market cache
-3. `sul_update_spending_rates` — recalculate 4 spending vars per country
-4. `sul_player_wage_update` — accumulate + pay wages (player only)
+3. `sul_passthrough_pulse` — per-market stockpile-driven temp demand pass (every_market_center_in_country)
+4. `sul_update_spending_rates` — recalculate 4 spending vars per country
+5. `sul_player_wage_update` — accumulate + pay wages (player only)
 6. `sul_ai_monthly_wage_payment` — pay previously accumulated wages (AI only)
-7. `sul_war_init_pulse` — war system version check
-8. `sul_war_monthly_pulse` — war momentum update (countries at war only)
+7. `sul_trade_maintenance_apply_action` — convert summed efficiency to merchant_maintenance_cost
+8. `sul_war_init_pulse` — war system version check
+9. `sul_war_monthly_pulse` — war momentum update (countries at war only)
 
 ### Yearly Country Pulse
 - `sul_ai_yearly_wage_accumulate` — accumulate wages (AI only, paid next month)
@@ -123,7 +125,6 @@ Set by `sul_set_init_production_variables` during game start. Gate building vali
 ### Location Variables
 | Variable | Set By | Updated | Read By | Purpose |
 |----------|--------|---------|---------|---------|
-| `sul_rgo_building_type` | `sul_on_location_changed_owner`, RGO init | on_raw_material_changed | building construction/destruction | Cached building_type for this location's RGO |
 | `sul_rgo_constructing` | RGO construction callbacks | on_construction_ended (-1) | construction tracking | Levels under construction |
 | `sul_prior_building_levels` | `sul_save_building_levels` | on spec change | building redistribution | Saved levels before destruction |
 
@@ -348,6 +349,100 @@ All populated monthly, read only by GUI tooltip.
 | `sul_war_frontage_penalty` | -0.8 infantry, -0.65 cavalry, -0.25 artillery, -0.8 auxiliary | 5 days (auto-refresh per tick) |
 
 Applied to larger side only. Size = `1 - (smaller x age_mult / larger)`, clamped to 0.
+
+---
+
+## 8. Passthrough / Middleman Trading
+
+Stockpile-driven price-crush mechanism adapted from `yosiu_market_stockpiles`
+workshop mod, compressed via `$GOOD$` argument substitution. **Stateless** —
+no persistent variables, variable maps, or location flags. All state is read
+live from `stockpile_in_market`, `goods_supply_in_market`, and the
+`maximum_stockpile_capacity` location modifier.
+
+### Execution
+- `sul_passthrough_pulse` (monthly_country_pulse, `has_markets = yes` trigger)
+  → `sul_do_passthrough_pulse` (every_market_center_in_country)
+  → bulk-removes 75 `sul_<good>_stockpile` + 75 `sul_<good>_oversupply` temp demands
+  → calls `sul_passthrough_per_good = { GOOD = <name> }` 75 times (parse-time expansion)
+
+`sul_passthrough_per_good` checks `sul_passthrough_fill_ratio` against tier
+thresholds (5% / 50% / 75% / 95%) and applies the appropriate temp demand.
+Above 5% fill: piecewise linear ramp via `sul_passthrough_supply_effect`,
+plus paired `_oversupply` (cancels warehouse output). Below 4.9% fill on
+relevant goods: small reverse demand + `add_goods_supply` drip to keep
+depleted hubs visible to trade routing.
+
+### Files
+| Path | Purpose |
+|---|---|
+| `goods_demand/sul_passthrough_demands.txt` | 150 templates (75 `_stockpile`, 75 `_oversupply`), one pair per good |
+| `building_types/sul_warehouse_buildings.txt` | 75 fake `sul_<good>_warehouse` buildings (`free_building_levels = 1`, self-cancelling production method) |
+| `auto_modifiers/sul_passthrough_modifiers.txt` | INJECT `produced_in_market_bonus = -0.2` into `country_base_values` to cancel vanilla local-producer discount |
+| `generic_actions/sul_destroy_market.txt` | REPLACE vanilla `destroy_market` with the `has_temporary_demands = no` check removed |
+| `script_values/sul_economy_values.txt` (passthrough section) | `sul_passthrough_local_capacity`, `_fill_ratio`, `_upper_value`, `_lower_value`, `_upper_overflow`, `_supply_effect`, `_warehouse_correction`, `_low_supply_effect`, `_low_stockpile_effect`, `_1cutoff`, `_2cutoff`, `_3cutoff` |
+| `scripted_effects/sul_effects.txt` (passthrough section) | `sul_do_passthrough_pulse`, `sul_passthrough_per_good` |
+| `on_action/sul_on_actions.txt` | `sul_passthrough_pulse` handler |
+| `on_action/sul_hardcoded.txt` | `sul_passthrough_pulse` registered in `monthly_country_pulse` |
+
+### Defines tuned for passthrough (`loading_screen/common/defines/sul_food_defines.txt`)
+- `MARKET_MIN_STOCKPILE_TO_ALLOW_EXTRA_TRADE = 0.0`, `MARKET_STOCKPILE_PERCENTAGE_FOR_EXTRA_TRADE = 0.20` — vanilla extra-trade-supply mechanism always-on at 20%
+- `TRADE_IMPACT_ON_SUPPLY/DEMAND_SCALE = 1.0`, `BURGHER_TRADE_IMPACT_ON_SUPPLY/DEMAND_SCALE = 1.0` — trade counts at full weight on both sides
+- `SUPPLY_AND_DEMAND_STABILITY_OFFSET_CONSTANT = 0.02` — hyper-volatile prices (workshop mod's value)
+- `MONTHLY_PRICE_CHANGE = 0.2` — prices converge to target 4× faster than vanilla
+- `ADJUST_TRADE_ROUTE_CHANCE = 0.25` — AI trade route changes more conservative
+- `POP_MISSING_GOODS_UTILITY_FACTOR = 0.5` — AI strongly prioritizes filling pop shortages
+
+---
+
+## 9. Trade Maintenance Efficiency
+
+Reframes vanilla `merchant_maintenance_cost` (linear additive cost) as
+`sul_trade_maintenance_efficiency` (multiplicatively compounding bonus).
+Every vanilla source is overridden via INJECT to cancel its
+`merchant_maintenance_cost = X` and re-emit it as
+`sul_trade_maintenance_efficiency = -X`. Each month the engine-summed
+efficiency total `E` is read and converted to the actual cost via
+`final_cost = 1 / (1 + E) - 1`, then applied through one of two carrier
+modifiers (only one of which is ever active at a time).
+
+### Custom Modifier
+| Modifier | Category | Notes |
+|---|---|---|
+| `sul_trade_maintenance_efficiency` | country (percent) | Engine sums every source. Read via `modifier:sul_trade_maintenance_efficiency`. |
+
+### Country Variables
+| Variable | Set By | Lifetime | Purpose |
+|---|---|---|---|
+| `sul_trade_maintenance_efficiency_total` | `sul_trade_maintenance_apply` | monthly | Clamped (`min = -0.99`) snapshot of engine sum, fed into the formula |
+
+### Carrier Static Modifiers (`main_menu/common/static_modifiers/sul_modifiers.txt`)
+| Modifier | Effect | Applied When |
+|---|---|---|
+| `sul_trade_maintenance_reduction` | `merchant_maintenance_cost = -1.0` | `E > 0` (cost reduction); size = `E / (1 + E)` |
+| `sul_trade_maintenance_penalty` | `merchant_maintenance_cost = +1.0` | `E < 0` (cost increase); size = `1 / (1 + E) - 1` |
+
+`add_country_modifier`'s `size` parameter only takes positive values, so
+the sign of the result picks which carrier to apply.
+
+### Files
+| Path | Purpose |
+|---|---|
+| `main_menu/common/modifier_type_definitions/sul_modifier_types.txt` | Defines `sul_trade_maintenance_efficiency` modifier type |
+| `main_menu/common/modifier_icons/sul_modifier_icons.txt` | Reuses vanilla `merchant_maintenance_cost.dds` icon |
+| `main_menu/localization/english/sul_modifier_types_l_english.yml` | `MODIFIER_TYPE_NAME_sul_trade_maintenance_efficiency` |
+| `main_menu/common/static_modifiers/sul_modifiers.txt` | Carrier modifiers + country/IO source overrides |
+| `in_game/common/scripted_effects/sul_economy_effects.txt` | `sul_trade_maintenance_apply` |
+| `in_game/common/on_action/sul_on_actions.txt` | `sul_trade_maintenance_apply_action` (monthly trigger wrapper) |
+| `in_game/common/on_action/sul_hardcoded.txt` | Wires the action into `monthly_country_pulse` |
+| `in_game/common/advances/sul_advances.txt` | 15 advance overrides |
+| `in_game/common/religions/sul_religion_overrides.txt` | 53 folk asian religion overrides |
+| `in_game/common/government_reforms/sul_reform_adjustments.txt` | 5 reform overrides |
+| `in_game/common/societal_values/sul_societal_value_adjustments.txt` | `mercantilism_vs_free_trade` left-modifier override |
+| `in_game/common/estate_privileges/sul_estate_privilege_adjustments.txt` | `novgorod_ivans_hundred` override |
+| `in_game/common/age/sul_age_efficiency.txt` | `age_4_reformation` unique-block override |
+| `in_game/common/parliament_issues/sul_parliament_overrides.txt` | `expand_our_market` debate override |
+| `in_game/common/subject_types/sul_subject_type_overrides.txt` | `hanseatic_member` subject_modifier override |
 
 ---
 

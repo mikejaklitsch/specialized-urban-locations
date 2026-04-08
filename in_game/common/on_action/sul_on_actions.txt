@@ -111,6 +111,21 @@ sul_refresh_market_cache = {
 	}
 }
 
+# Per-country passthrough demand pulse. Uses every_market_center_in_country
+# from country scope so add_temporary_demand always runs on a valid owned
+# market — every_market_in_world includes unowned markets where the call
+# returns null. The pulse also lazy-initializes the natural demand variable
+# map for any market that doesn't have one yet (handles new games, loaded
+# saves, and newly created markets uniformly).
+
+sul_passthrough_pulse = {
+	trigger = { has_markets = yes }
+
+	effect = {
+		sul_do_passthrough_pulse = yes
+	}
+}
+
 # =============================================================================
 # COMBINED HANDLERS — Cross-system dispatch for shared hooks
 # =============================================================================

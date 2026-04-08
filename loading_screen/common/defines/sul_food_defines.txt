@@ -27,12 +27,17 @@ NAI = {
 	MOVE_CAPITAL_CURRENT_CAPITAL_AREA_SCORE_FACTOR = 1.5
 	# AI naval presence weight (vanilla: 1)
 	AI_GLOBAL_MARITIME_PRESENCE_MODIFIER_UTIL = 2
+	# AI trade route adjustment chance (vanilla: 0.5)
+	# Lowered to match workshop mod — slows AI trade churn so passthrough
+	# routes have time to stabilize before being recomputed
+	ADJUST_TRADE_ROUTE_CHANCE = 0.25
 }
 
 NAIEconomy = {
-	# Pop demand deficits (vanilla: 0.02)
-	# Increased so AI prioritizes filling pop goods shortages
-	POP_MISSING_GOODS_UTILITY_FACTOR = 0.15
+	# Pop demand deficits (vanilla: 0.02, workshop: 0.5)
+	# Raised to workshop mod's value — AI strongly prioritizes filling pop
+	# goods shortages, driving production where consumers are
+	POP_MISSING_GOODS_UTILITY_FACTOR = 0.5
 
 	# Building input shortages (vanilla: 0.02)
 	# Increased so AI builds supply chains for its own buildings
@@ -46,4 +51,93 @@ NAIEconomy = {
 
 NEconomy = {
 	BUILDING_UPKEEP_FACTOR = 1.0
+
+	# --- Trade path costs (sea/river vs land) ---
+	# Goal: water trade is dramatically more efficient than overland haulage,
+	# matching the historical reality that pre-rail bulk goods moved by water.
+
+	# Sea travel cost as fraction of land (vanilla: 0.2)
+	# 0.05 = sea is 5% the cost of land — coastal/maritime trade dominates
+	TRADE_SEA_MULTIPLIER = 0.05
+
+	# Fixed cost to load/unload at a port (vanilla: 10)
+	# Lowered so short sea hops aren't punished by port friction
+	TRADE_PORT_COST = 3
+
+	# River upstream discount vs land (vanilla: -0.2)
+	# -0.5 = upstream river travel costs 50% of equivalent land
+	TRADE_PATH_UPSTREAM_COST_MULTIPLIER = -0.5
+
+	# River downstream discount vs land (vanilla: -0.5)
+	# -0.8 = downstream is 20% of land cost — almost free
+	TRADE_PATH_DOWNSTREAM_COST_MULTIPLIER = -0.8
+
+	# Penalty for overland routes that must cross a river (vanilla: 0.3)
+	# 0.6 = doubled — unbridged crossings make pure-land routes painful
+	TRADE_PATH_RIVER_CROSSING_COST_MULTIPLIER = 0.6
+
+	# --- Price volatility ---
+	# Smoothing constant added to supply and demand before computing the
+	# price ratio. Higher = flatter prices; lower = sharper response.
+	# Vanilla 1 is heavy damping; workshop mod uses 0.02 for hyper-volatile
+	# markets that react instantly to S/D shifts.
+	SUPPLY_AND_DEMAND_STABILITY_OFFSET_CONSTANT = 0.02
+}
+
+##################################
+# Market
+##################################
+
+NMarket = {
+	# Monthly price approach speed toward target (vanilla: 0.05, workshop: 0.2)
+	# 0.2 = prices converge to target 4x faster than vanilla, so the
+	# stockpile-driven demand changes translate to visible price moves
+	# within the same season they're applied.
+	MONTHLY_PRICE_CHANGE = 0.2
+
+	# Stockpile threshold to allow extra trade supply (vanilla: 0.5)
+	# Lowered to 0 so any stockpile contributes to extra trade
+	MARKET_MIN_STOCKPILE_TO_ALLOW_EXTRA_TRADE = 0.0
+	# Percentage of stockpile available as extra trade supply (vanilla: 0.05)
+	# Raised to make stockpiles more impactful for trade
+	MARKET_STOCKPILE_PERCENTAGE_FOR_EXTRA_TRADE = 0.20
+
+	# --- Trade impact on supply/demand ---
+	# Vanilla discounts traded volume relative to local production (0.75 for
+	# imports/exports, 0.25 for burgher trade). Set all to 1.0 so trade
+	# pushes supply and demand at full weight, making market integration
+	# meaningful and rewarding the wider price band.
+	TRADE_IMPACT_ON_SUPPLY_SCALE = 1.0
+	TRADE_IMPACT_ON_DEMAND_SCALE = 1.0
+	BURGHER_TRADE_IMPACT_ON_SUPPLY_SCALE = 1.0
+	BURGHER_TRADE_IMPACT_ON_DEMAND_SCALE = 1.0
+
+	# --- Market propagation over water ---
+	# Markets reach further when connected by sea, making coastal cities
+	# the natural hubs of long-distance trade.
+
+	# Sea distance falloff for market attraction (vanilla: 0.75)
+	# 0.4 = sea distances count for ~half — coastal markets project power far
+	MARKET_SEA_DISTANCE_FACTOR = 0.4
+
+	# Open-ocean distance falloff (vanilla: 1.5)
+	# 1.0 = neutral — long transoceanic routes are viable, not penalized
+	MARKET_OPEN_SEA_DISTANCE_FACTOR = 1.0
+
+	# Sea-to-land transition cost (vanilla: 0.5)
+	# 0.3 = port→hinterland handoff is cheaper, so coastal markets feed inland
+	MARKET_SEA_TO_LAND_DISTANCE_FACTOR = 0.3
+
+	# --- Price range from supply and demand ---
+	# Vanilla compresses prices to a narrow 0.67x - 2.5x band, blunting the
+	# meaning of shortages and gluts. Widen it so scarcity actually bites and
+	# saturated markets actually crash.
+
+	# Floor: cheapest = base * (1 + MIN_PRICE_IMPACT) (vanilla: -0.33 -> 0.67x)
+	# -0.7 = a glutted good can fall to 30% of base price
+	MIN_PRICE_IMPACT = -0.7
+
+	# Ceiling: most expensive = base * (1 + MAX_PRICE_IMPACT) (vanilla: 1.5 -> 2.5x)
+	# 4.0 = a critically scarce good can spike to 5x base price
+	MAX_PRICE_IMPACT = 4.0
 }

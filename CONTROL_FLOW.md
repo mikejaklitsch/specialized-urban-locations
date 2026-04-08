@@ -22,16 +22,21 @@ Organized by subsystem. **Update this document when adding, removing, or renamin
 5. `sul_player_wage_update` — accumulate + pay wages (player only)
 6. `sul_ai_monthly_wage_payment` — pay previously accumulated wages (AI only)
 7. `sul_trade_maintenance_apply_action` — convert summed efficiency to merchant_maintenance_cost
-8. `sul_war_init_pulse` — war system version check
-9. `sul_war_monthly_pulse` — war momentum update (countries at war only)
+8. `sul_minting_monthly_update` — minting price cache, debasement, AI minting modifiers
+9. `sul_war_init_pulse` — war system version check
+10. `sul_war_monthly_pulse` — war momentum update (countries at war only)
 
 ### Yearly Country Pulse
 - `sul_ai_yearly_wage_accumulate` — accumulate wages (AI only, paid next month)
 - `sul_cleanup_dead_units` — remove dead unit references
 - `sul_yearly_rgo_trim` — cap RGO levels
+- `sul_minting_yearly_update` — AI minting price cache + minting modifier refresh
 
 ### Weather Monthly Pulse (every month, scopeless)
 - `sul_batch_location_update` — WPP refresh for up to 333 stale AI locations
+- `sul_integration_init_check` — Bouvet Island stamp check, full rebuild on mismatch
+- `sul_integration_monthly_update` — refresh capacity bonus on tracked conquered locations, drain remove queue
+- `sul_minting_version_check` — Bouvet Island stamp check for the minting subsystem (TGS originally hooked the wrong action name `monthly_weather_pulse`; corrected to `weather_monthly_pulse` here)
 
 ### On-Action Hooks
 | Hook | Handler | Purpose |
@@ -40,11 +45,13 @@ Organized by subsystem. **Update this document when adding, removing, or renamin
 | on_raw_material_changed | `sul_on_raw_material_changed` | Swap RGO + validate spec |
 | on_location_changed_owner | `sul_on_location_changed_owner` | Seed RGO for new colonies |
 | on_location_changed_owner | `sul_war_on_auto_conquest` | Tag auto-conquered locations |
+| on_location_changed_owner | `sul_integration_on_location_conquered` | Track + apply capacity bonus on new conquered locations |
 | on_annex | `sul_war_on_annex` | Clean capital modifier + tags |
 | on_capital_moved | `sul_war_on_capital_moved` | Strip old capital modifier |
 | on_ending_war | `sul_war_on_war_end_cleanup` | Clean auto-conquest tags |
 | in_battle | `sul_war_in_battle_action` | Frontage penalty per tick |
 | on_battle_won/lost_character | `sul_war_battle_cleanup_action` | Clear cached battle vars |
+| on_policy_changed | `sul_minting_on_policy_changed` | Rebuild minting goods list when currency law changes |
 
 ---
 
@@ -125,6 +132,7 @@ Set by `sul_set_init_production_variables` during game start. Gate building vali
 ### Location Variables
 | Variable | Set By | Updated | Read By | Purpose |
 |----------|--------|---------|---------|---------|
+| `sul_rgo_building_type` | `sul_on_location_changed_owner`, RGO init | on_raw_material_changed | building construction/destruction, `sul_location_rgo_building_level` script value | Cached building_type for this location's RGO |
 | `sul_rgo_constructing` | RGO construction callbacks | on_construction_ended (-1) | construction tracking | Levels under construction |
 | `sul_prior_building_levels` | `sul_save_building_levels` | on spec change | building redistribution | Saved levels before destruction |
 
@@ -443,6 +451,140 @@ the sign of the result picks which carrier to apply.
 | `in_game/common/age/sul_age_efficiency.txt` | `age_4_reformation` unique-block override |
 | `in_game/common/parliament_issues/sul_parliament_overrides.txt` | `expand_our_market` debate override |
 | `in_game/common/subject_types/sul_subject_type_overrides.txt` | `hanseatic_member` subject_modifier override |
+
+---
+
+## 10. Population-Based Integration
+
+Conquered locations integrate faster when they're below population capacity
+and slower when they're over it. Originally the standalone "Population Based
+Integration" mod, integrated under the `sul_integration_` prefix.
+
+### Quadratic Capacity Bonus
+A scripted location modifier `sul_integration_capacity_bonus` is applied to
+each tracked conquered location with `size = 2.5 × (1 - pop/cap)²`. The
+modifier value is `local_integration_speed_modifier = 1.0`, so size *is* the
+applied integration speed bonus. Result:
+- 0% filled → +250%
+- 50% filled → +63%
+- 100% filled → 0% (modifier removed)
+
+### Diplomatic Reputation Bonus
+`sul_integration_diplo_rep_annexation` is an auto_modifier that grants
+`annexation_speed_base = 1.0` scaled with `modifier:diplomatic_reputation`,
+so +1 flat annexation speed per 10 displayed diplomatic reputation.
+
+### Tracked-list Pattern
+Rather than iterating every owned location each month, the system tracks
+conquered locations in a global list `sul_integration_conquered_locations`.
+`sul_integration_on_location_conquered` adds entries on
+`on_location_changed_owner`. The monthly update walks the list, refreshes
+the bonus on still-conquered entries, and queues for removal anything that
+has advanced past `integration_level = conquered`. A second pass drains the
+removal queue (avoids mutating the list during iteration).
+
+### Files
+| Path | Purpose |
+|---|---|
+| `main_menu/common/static_modifiers/sul_integration_location.txt` | `sul_integration_capacity_bonus` static modifier |
+| `in_game/common/auto_modifiers/sul_integration_country.txt` | `sul_integration_diplo_rep_annexation` |
+| `in_game/common/scripted_effects/sul_integration_effects.txt` | `sul_integration_apply_capacity_bonus`, `_track_location`, `_initialize` |
+| `in_game/common/on_action/sul_integration_on_actions.txt` | `_on_game_start`, `_init_check`, `_on_location_conquered`, `_monthly_update` |
+| `main_menu/localization/english/sul_integration_l_english.yml` | Modifier loc |
+
+### Bouvet Island Marker
+`sul_integration_capacity_bonus` is applied to `location:bouvet_island` (size 0,
+years -1) along with a `sul_integration_version` variable. When the mod is
+removed and re-added, the marker disappears, `sul_integration_init_check`
+detects it on `weather_monthly_pulse`, and `sul_integration_initialize`
+rebuilds the tracking list.
+
+---
+
+## 11. Minting / Gold Standard
+
+Replaces vanilla minting with a price-based profitability system.
+Originally "The Gold Standard" mod, integrated under the `sul_minting_`
+prefix. Names that were already `tgs_minting_X` end up as
+`sul_minting_X` from the mechanical prefix swap — that doubling is
+intentional and grep-safe.
+
+### Core Concept
+Vanilla minting pays a flat 25 ducats per unit of demanded goods regardless
+of actual market price. This system computes a per-country
+`sul_minting_efficiency` (E) such that `25 × (1 + E)` equals the actual
+profit per coin set, then applies E via `minting_income_factor` modifiers.
+Coin sets that cost more on the market than they're worth as coins produce
+negative income; rare/cheap goods produce windfall.
+
+### Subsystems
+- **Liquidity** — `sul_minting_liquidity` modifier (replaces vanilla
+  `minting_income_factor` everywhere it appeared) tracks the face value
+  premium of coins above raw metal content. Sourced from coin laws,
+  advances, religious aspects, estate privileges, government reforms.
+- **Debasement** — Player and AI can debase coinage (variable
+  `sul_minting_debasement_level`, range 0–2.0), stretching bullion across
+  more coins for extra income at the cost of monthly inflation.
+- **Rebasement** — Negative debasement: crown buys impure coins 1-for-1
+  with fresh ones to reduce inflation, costing gold scaled by tax base.
+- **Minting Goods List** — `sul_minting_goods` variable list, kept
+  in sync with the active currency law's `*_used_for_minting` modifiers
+  via `sul_minting_rebuild_minting_goods` on init and `on_policy_changed`.
+- **Price Cache** — Market prices for the active minting goods are cached
+  on the market center location each month (player) or year (AI) to avoid
+  recomputing 70 per-good price lookups every tick.
+
+### Player/AI Split
+Auto modifiers (`scales_with`) drive the player display because they
+recompute live every frame. AI countries receive equivalent effects via
+direct `add_country_modifier` + `change_country_modifier_size` calls in
+`sul_minting_monthly_update` to keep the AI cost down to one tick per
+month.
+
+### AI Debasement
+`sul_minting_ai_set_debasement` (generic action, runs every 6 months)
+computes a target debasement level from monthly balance, num_loans, and
+current inflation, then sets `sul_minting_debasement_level` or
+`sul_minting_rebasement_level` accordingly.
+
+### Files (28 total)
+| Path | Purpose |
+|---|---|
+| `main_menu/common/modifier_type_definitions/sul_minting_modifier_types.txt` | `sul_minting_liquidity` modifier type |
+| `main_menu/common/modifier_icons/sul_minting_modifier_icons.txt` | Icon mapping |
+| `main_menu/common/static_modifiers/sul_minting_modifiers.txt` | `sul_minting_active`, `_ai_minting`, `_ai_inflation`, `_ai_rebasement` |
+| `main_menu/common/static_modifiers/sul_minting_vanilla_injects.txt` | INJECTs into vanilla static modifiers (franc coinage, novgorodka, etc.) to swap minting_income_factor → sul_minting_liquidity |
+| `main_menu/common/game_concepts/sul_minting_game_concepts.txt` | Game concept aliases for tooltip text |
+| `main_menu/gui/sul_minting_messagetypes.txt` | AI debasement message hidden from player |
+| `main_menu/localization/english/sul_minting_l_english.yml` | All TGS loc keys |
+| `in_game/common/script_values/sul_minting_efficiency.txt` | E formula, market cost, total income, AI modifier sizes |
+| `in_game/common/script_values/sul_minting_debasement.txt` | Debasement/rebasement formulas, AI target |
+| `in_game/common/scripted_effects/sul_minting_effects.txt` | `_initialize_country`, `_rebuild_minting_goods`, `_cache_market_center`, `_update_price_cache` |
+| `in_game/common/scripted_triggers/sul_minting_triggers.txt` | `sul_minting_is_active_country` |
+| `in_game/common/scripted_guis/sul_minting_debasement.txt` | Debasement panel button effects |
+| `in_game/common/on_action/sul_minting_on_actions.txt` | `_initialize_all`, `_on_policy_changed`, `_version_check`, `_monthly_update`, `_yearly_update` |
+| `in_game/common/auto_modifiers/sul_minting_country.txt` | Player auto modifiers (E → minting income, inflation scaling, debasement, rebasement) |
+| `in_game/common/auto_modifiers/sul_minting_base_values.txt` | INJECT `country_base_values` with baseline `sul_minting_liquidity = 0.5` |
+| `in_game/common/advances/sul_minting_advances.txt` | Vanilla advance INJECTs (banking_advance, photduang, mint_of_the_gulf, etc.) |
+| `in_game/common/laws/sul_minting_coin_laws.txt` | REPLACE `coin_laws` (full vanilla copy with `tgs_minting_liquidity` swaps) |
+| `in_game/common/laws/sul_minting_country_laws.txt` | REPLACE `kor_currency`, `six_ministries` |
+| `in_game/common/laws/sul_minting_precious_metals.txt` | REPLACE `precious_metal_distribution_law` |
+| `in_game/common/government_reforms/sul_minting_reforms.txt` | REPLACE `control_of_the_mahdali_coinage_reform` |
+| `in_game/common/estate_privileges/sul_minting_burghers.txt` | REPLACE `control_over_the_coinage`, `fra_marcel_*`, `bra_kreditwerk` |
+| `in_game/common/religious_aspects/sul_minting_aspects.txt` | REPLACE `usury_allowed` |
+| `in_game/common/building_types/sul_minting_buildings.txt` | INJECTs into `wisselbank`, `usa_national_bank`, `usa_national_mint` |
+| `in_game/common/generic_actions/sul_minting_debasement.txt` | AI debasement action |
+| `in_game/common/generic_action_ai_lists/sul_minting_debasement_list.txt` | AI list registration |
+| `in_game/gui/economy_lateralview.gui` | Full vanilla replacement (mint income panel + debasement breakdown) |
+| `in_game/gui/z_sul_minting_debasement_panel.gui` | Debasement adjustment panel |
+| `in_game/gui/shared/z_sul_minting_economy_tooltips.gui` | Tooltip windows for mint profitability/coinage value/etc. |
+
+### Engine Hook Bug Fix
+TGS originally registered its version-check on `monthly_weather_pulse`,
+which doesn't exist in EU5 (the real action is `weather_monthly_pulse`).
+This was silently a no-op in the source mod. The integrated version moves
+`sul_minting_version_check` to the correct `weather_monthly_pulse` block
+in `sul_hardcoded.txt`.
 
 ---
 

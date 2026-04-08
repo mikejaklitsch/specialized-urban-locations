@@ -926,8 +926,12 @@ sul_do_refresh_market_cache = {
 			# Calculate trade spread for commercial specialization
 			# Formula: sum of |price/base - 1| × base for all goods
 			# Use location for accumulation, then store in global map
-			location = { set_variable = { name = sul_trade_spread_temp value = 0 } }
-			# Accumulate price deviation for each good in THIS market
+			location = {
+				set_variable = { name = sul_trade_spread_temp value = 0 }
+				clear_variable_map = sul_market_prices
+			}
+
+			# Accumulate price deviation + cache raw prices per good
 			every_goods = {
 				save_temporary_scope_as = current_good
 
@@ -935,6 +939,12 @@ sul_do_refresh_market_cache = {
 					change_variable = {
 						name = sul_trade_spread_temp
 						add = "scope:current_good.sul_goods_price_deviation"
+					}
+
+					add_to_variable_map = {
+						name = sul_market_prices
+						key = scope:current_good
+						value = "price_in_market(scope:current_market)"
 					}
 				}
 			}

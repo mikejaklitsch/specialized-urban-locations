@@ -1,0 +1,102 @@
+﻿@sul_integration_version = 100 # Must match sul_integration_effects.txt
+
+### Bootstrap
+
+# New game: run full initialization immediately.
+
+sul_integration_on_game_start = {
+	effect = {
+		sul_integration_initialize = yes
+	}
+}
+
+### Save Game Detection
+
+# Bouvet Island version check — runs in weather_monthly_pulse (location-scoped).
+# Bouvet Island is unownable, so its modifiers vanish when the mod is removed
+# and reappear stale when re-added. Version mismatch catches mod updates.
+# Fires once, then the version stamp prevents repeat runs.
+
+sul_integration_init_check = {
+	trigger = {
+		NOT = {
+			has_global_variable = sul_integration_rebuilding
+		}
+
+		location:bouvet_island = {
+			OR = {
+				NOT = {
+					has_location_modifier = sul_integration_capacity_bonus
+				}
+
+				AND = {
+					has_variable = sul_integration_version
+					var:sul_integration_version < @sul_integration_version
+				}
+			}
+		}
+	}
+
+	effect = {
+		sul_integration_initialize = yes
+	}
+}
+
+### Location Conquered
+
+# Fires when any location changes owner (conquest, peace deal, etc.).
+# Only acts on locations that enter conquered status.
+
+sul_integration_on_location_conquered = {
+	trigger = { integration_level = conquered }
+
+	effect = {
+		sul_integration_track_location = yes
+		sul_integration_apply_capacity_bonus = yes
+	}
+}
+
+### Monthly Update
+
+# Iterate only tracked conquered locations, not all owned locations.
+# Locations that advanced past conquered get untracked and cleaned up.
+# Locations still conquered get their modifier size refreshed
+# (population and capacity may have shifted since last month).
+
+sul_integration_monthly_update = {
+	effect = {
+		# Pass 1: update or tag for removal.
+		# Avoids mutating the conquered list during iteration.
+		every_in_global_list = {
+			variable = sul_integration_conquered_locations
+
+			if = {
+				limit = {
+					NOT = {
+						integration_level = conquered
+					}
+				}
+
+				remove_location_modifier = sul_integration_capacity_bonus
+
+				add_to_global_variable_list = {
+					name = sul_integration_remove_queue
+					target = this
+				}
+			}
+			else = { sul_integration_apply_capacity_bonus = yes }
+		}
+
+		# Pass 2: drain the removal queue.
+		every_in_global_list = {
+			variable = sul_integration_remove_queue
+
+			remove_list_global_variable = {
+				name = sul_integration_conquered_locations
+				target = this
+			}
+		}
+
+		clear_global_variable_list = sul_integration_remove_queue
+	}
+}

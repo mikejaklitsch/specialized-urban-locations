@@ -1,0 +1,77 @@
+﻿# TGS Liquidity — estate privilege replacements
+# Must be kept in sync with vanilla.
+
+REPLACE:control_over_the_coinage = {
+	estate = burghers_estate
+
+	allow = {
+		trigger_if = {
+			limit = { has_or_had_tag = ZAN }
+			NOT = {
+				has_reform = government_reform:control_of_the_mahdali_coinage_reform
+			}
+		}
+	}
+
+	country_modifier = {
+		minting_inflation_threshold = 0.01
+		global_goods_gold_output_modifier = 0.05
+		global_silver_output_modifier = 0.05
+		global_copper_output_modifier = 0.05
+		burghers_estate_target_satisfaction = medium_privilege_target_satisfaction
+		global_burghers_estate_power = 0.5
+		sul_minting_liquidity = 0.05
+	}
+}
+
+REPLACE:fra_marcel_great_ordinance = {
+	estate = burghers_estate
+
+	potential = {
+		has_variable = allowed_marcel_ordinance
+		has_or_had_tag = FRA
+	}
+
+	country_modifier = {
+		sul_minting_liquidity = 0.05
+		burghers_estate_max_tax = 0.2
+		burghers_estate_target_satisfaction = medium_privilege_target_satisfaction
+		global_burghers_estate_power = 1
+		global_crown_estate_power = -0.15
+	}
+
+	can_revoke = { "estate_power(estate_type:crown_estate)" >= 0.33 }
+}
+
+REPLACE:fra_marcel_compromise_ordinance = {
+	estate = burghers_estate
+
+	potential = {
+		has_variable = compromise_marcel_ordinance
+		has_or_had_tag = FRA
+	}
+
+	country_modifier = {
+		sul_minting_liquidity = 0.05
+		burghers_estate_max_tax = 0.1
+		burghers_estate_target_satisfaction = small_privilege_target_satisfaction
+		global_burghers_estate_power = 0.25
+		global_crown_estate_power = -0.05
+	}
+
+	can_revoke = { "estate_power(estate_type:crown_estate)" >= 0.33 }
+}
+
+REPLACE:bra_kreditwerk = {
+	estate = burghers_estate
+
+	potential = {
+		has_variable = bra_kreditwerk
+	}
+
+	country_modifier = {
+		global_burghers_estate_power = 0.33
+		tax_income_efficiency = medium_tax_income_efficiency_penalty
+		sul_minting_liquidity = 0.25
+	}
+}

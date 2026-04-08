@@ -1,0 +1,120 @@
+﻿# The Gold Standard - AI Debasement / Rebasement
+# Generic action evaluated every 6 months.
+# Computes sul_minting_ai_debasement_target:
+#   Positive -> debase, clear rebasement
+#   Negative -> rebase (if conditions met), clear debasement
+# scope:actor = country
+
+sul_minting_ai_set_debasement = {
+	type = owncountry
+
+	potential = {
+	}
+
+	allow = {
+	}
+
+	show_message = no
+	show_in_gui_list = no
+
+	ai_tick = monthly
+	ai_tick_frequency = 6
+
+	ai_prerequisite = {
+		exists = capital
+		has_variable = sul_minting_debasement_level
+	}
+
+	ai_will_do = {
+		if = {
+			limit = {
+				scope:actor = {
+					OR = {
+						NOT = {
+							var:sul_minting_debasement_level = 0
+						}
+						NOT = {
+							var:sul_minting_rebasement_level = 0
+						}
+
+						num_loans >= 1
+						monthly_balance < 0
+						AND = {
+							inflation > 0.03
+							num_loans = 0
+							monthly_balance > 0
+						}
+					}
+				}
+			}
+
+			add = { value = 100 }
+		}
+	}
+
+	effect = {
+		scope:actor = {
+			set_variable = {
+				name = sul_minting_ai_debasement_target_temp
+				value = sul_minting_ai_debasement_target
+			}
+
+			# Positive target -> debase
+			if = {
+				limit = { var:sul_minting_ai_debasement_target_temp > 0 }
+
+				set_variable = {
+					name = sul_minting_debasement_level
+					value = var:sul_minting_ai_debasement_target_temp
+				}
+
+				clamp_variable = { name = sul_minting_debasement_level min = 0 max = 2.0 }
+				set_variable = { name = sul_minting_rebasement_level value = 0 }
+			}
+
+			# Negative target + deflation conditions met -> rebase
+			else_if = {
+				limit = {
+					var:sul_minting_ai_debasement_target_temp < 0
+					inflation > 0.03
+					num_loans = 0
+					monthly_balance > 0
+				}
+
+				set_variable = {
+					name = sul_minting_rebasement_level
+					value = var:sul_minting_ai_debasement_target_temp
+				}
+
+				change_variable = { name = sul_minting_rebasement_level multiply = -1 }
+				clamp_variable = { name = sul_minting_rebasement_level min = 0 max = 2.0 }
+				set_variable = { name = sul_minting_debasement_level value = 0 }
+			}
+
+			# Negative or zero target, conditions not met -> reset both
+			else = {
+				set_variable = { name = sul_minting_debasement_level value = 0 }
+				set_variable = { name = sul_minting_rebasement_level value = 0 }
+			}
+
+			remove_variable = sul_minting_ai_debasement_target_temp
+
+			# Recompute E and minting modifier from new debasement level
+			set_variable = {
+				name = sul_minting_efficiency
+				value = sul_minting_efficiency_from_cached_cost
+			}
+
+			add_country_modifier = {
+				modifier = sul_minting_ai_minting
+				days = -1
+				mode = replace
+			}
+
+			change_country_modifier_size = {
+				modifier = sul_minting_ai_minting
+				value = sul_minting_ai_minting_size
+			}
+		}
+	}
+}

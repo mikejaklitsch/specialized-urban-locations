@@ -1,0 +1,230 @@
+﻿# The Gold Standard - Minting On Actions
+# Mod logic dispatched from hardcoded hooks in sul_minting_hardcoded.txt.
+# Bouvet Island: impassable location used as mod state anchor.
+# sul_minting_active modifier applied here — stripped by engine when mod is removed.
+
+# ---- Game Start ----
+
+sul_minting_initialize_all = {
+	effect = {
+		every_country = {
+			limit = { capital ?= { exists = market } }
+			sul_minting_initialize_country = yes
+			set_variable = { name = sul_minting_first_month_tick value = yes days = 35 }
+		}
+
+		set_global_variable = { name = sul_minting_active value = yes }
+
+		location:bouvet_island = {
+			remove_location_modifier = sul_minting_active
+			add_location_modifier = { modifier = sul_minting_active days = -1 }
+		}
+	}
+}
+
+# ---- Policy Change ----
+# Rebuilds the minting goods variable list when currency laws change.
+
+sul_minting_on_policy_changed = {
+	trigger = { sul_minting_is_active_country = yes }
+
+	effect = {
+		sul_minting_rebuild_minting_goods = yes
+		sul_minting_cache_market_center = yes
+
+		# Recompute price cache + E from updated goods list
+		sul_minting_update_price_cache = yes
+
+		# AI: update minting modifier from fresh E
+		if = {
+			limit = { is_ai = yes }
+
+			add_country_modifier = {
+				modifier = sul_minting_ai_minting
+				days = -1
+				mode = replace
+				size = sul_minting_ai_minting_size
+			}
+
+			# change_country_modifier_size = {
+			# 	modifier = sul_minting_ai_minting
+			# 	value = sul_minting_ai_minting_size
+			# }
+		}
+	}
+}
+
+# ---- Save Compatibility ----
+# Triggers full init if Bouvet marker OR global variable is missing.
+# Covers: mod added to existing save, AND old saves before global var was added.
+# Runs on monthly_weather_pulse (once globally, not per-country).
+
+sul_minting_version_check = {
+	trigger = {
+		OR = {
+			location:bouvet_island = {
+				NOT = {
+					has_location_modifier = sul_minting_active
+				}
+			}
+
+			NOT = {
+				has_global_variable = sul_minting_active
+			}
+		}
+
+		NOT = {
+			has_global_variable = sul_minting_initializing
+		}
+	}
+
+	effect = {
+		set_global_variable = { name = sul_minting_initializing value = yes }
+
+		every_country = {
+			limit = { capital ?= { exists = market } }
+			sul_minting_initialize_country = yes
+			set_variable = { name = sul_minting_first_month_tick value = yes days = 35 }
+		}
+
+		set_global_variable = { name = sul_minting_active value = yes }
+
+		location:bouvet_island = {
+			remove_location_modifier = sul_minting_active
+			add_location_modifier = { modifier = sul_minting_active days = -1 }
+		}
+
+		remove_global_variable = sul_minting_initializing
+	}
+}
+
+# ---- Monthly Update ----
+# Price cache + E recomputation + AI modifiers
+
+sul_minting_monthly_update = {
+	trigger = { sul_minting_is_active_country = yes }
+
+	effect = {
+		# Initialize new countries (formed midgame, released, etc.)
+		if = {
+			limit = {
+				NOT = {
+					has_variable = sul_minting_debasement_level
+				}
+			}
+
+			sul_minting_initialize_country = yes
+			set_variable = { name = sul_minting_first_month_tick value = yes days = 35 }
+		}
+
+		# Price cache: player monthly, AI first tick only.
+		# Yearly pulse handles AI price refresh.
+		if = {
+			limit = {
+				OR = {
+					is_ai = no
+					has_variable = sul_minting_first_month_tick
+				}
+			}
+
+			sul_minting_update_price_cache = yes
+		}
+
+		# Reset rebasement if inflation has dropped to 0
+		if = {
+			limit = {
+				has_variable = sul_minting_rebasement_level
+				var:sul_minting_rebasement_level > 0
+				inflation = 0
+			}
+
+			set_variable = { name = sul_minting_rebasement_level value = 0 }
+		}
+
+		# AI — apply modifiers via static modifiers with dynamic size.
+		# Auto modifiers are player-only (performance); AI gets equivalents here.
+		# E + minting modifier updated yearly/on debasement (stable between).
+		if = {
+			limit = { is_ai = yes }
+
+			# First tick: apply minting modifier (yearly handles subsequent)
+			if = {
+				limit = { has_variable = sul_minting_first_month_tick }
+
+				add_country_modifier = {
+					modifier = sul_minting_ai_minting
+					days = -1
+					mode = replace
+					size = sul_minting_ai_minting_size
+				}
+
+				# change_country_modifier_size = {
+				# 	modifier = sul_minting_ai_minting
+				# 	value = sul_minting_ai_minting_size
+				# }
+			}
+
+			# Inflation: adjustment + debasement + rebasement deflation
+			add_country_modifier = {
+				modifier = sul_minting_ai_inflation
+				days = -1
+				mode = replace
+				size = sul_minting_ai_inflation_size
+			}
+
+			# change_country_modifier_size = {
+			# 	modifier = sul_minting_ai_inflation
+			# 	value = sul_minting_ai_inflation_size
+			# }
+
+			# Rebasement cost (separate modifier, only when active)
+			if = {
+				limit = {
+					has_variable = sul_minting_rebasement_level
+					var:sul_minting_rebasement_level > 0
+					inflation > 0
+				}
+
+				add_country_modifier = {
+					modifier = sul_minting_ai_rebasement
+					days = -1
+					mode = replace
+				}
+
+				change_country_modifier_size = {
+					modifier = sul_minting_ai_rebasement
+					value = sul_minting_ai_rebasement_size
+				}
+			}
+			else = { remove_country_modifier = sul_minting_ai_rebasement }
+		}
+	}
+}
+
+# ---- Yearly Update ----
+# AI price cache — engine-parallelized, no timer variable needed.
+
+sul_minting_yearly_update = {
+	trigger = {
+		is_ai = yes
+		sul_minting_is_active_country = yes
+		has_variable = sul_minting_debasement_level
+	}
+
+	effect = {
+		sul_minting_update_price_cache = yes
+
+		# Update minting modifier from fresh E
+		add_country_modifier = {
+			modifier = sul_minting_ai_minting
+			days = -1
+			mode = replace
+			size = sul_minting_ai_minting_size
+		}
+
+		# change_country_modifier_size = {
+		# 	modifier = sul_minting_ai_minting
+		# 	value = sul_minting_ai_minting_size
+		# }
+	}
+}

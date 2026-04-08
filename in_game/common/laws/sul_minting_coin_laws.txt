@@ -1,0 +1,197 @@
+﻿# TGS Liquidity — full coin_laws replacement
+# Removes minting_income_factor, adds sul_minting_liquidity.
+# Must be kept in sync with vanilla coin_laws in 01_common.txt.
+
+REPLACE:coin_laws = {
+	law_category = socioeconomic
+
+	gold_and_silver_coins = {
+		country_modifier = {
+			goods_gold_used_for_minting = yes
+			silver_used_for_minting = yes
+			minting_inflation_threshold = 0.03
+			sul_minting_liquidity = 0.15
+		}
+
+		estate_preferences = { crown_estate }
+
+		ai_will_do = {
+			if = {
+				limit = {
+					root = {
+						capital.market = {
+							"goods_supply_in_market(goods:goods_gold)" > 0
+							"goods_supply_in_market(goods:silver)" > 0
+						}
+					}
+				}
+
+				add = { desc = "has gold and silver" value = 200 }
+			}
+		}
+
+		years = 2
+	}
+
+	gold_coins = {
+		country_modifier = {
+			goods_gold_used_for_minting = yes
+			goods_gold_impacts_inflation = 0.1
+			minting_inflation_threshold = 0.01
+			sul_minting_liquidity = 0.05
+		}
+
+		estate_preferences = { crown_estate }
+
+		ai_will_do = {
+			if = {
+				limit = {
+					root = { capital.market = { "goods_supply_in_market(goods:goods_gold)" > 0 } }
+				}
+
+				add = { desc = "has gold" value = 100 }
+			}
+		}
+
+		years = 2
+	}
+
+	silver_coins = {
+		country_modifier = {
+			silver_used_for_minting = yes
+			silver_impacts_inflation = 0.1
+			minting_inflation_threshold = 0.01
+			sul_minting_liquidity = 0.05
+		}
+
+		estate_preferences = { crown_estate }
+
+		ai_will_do = {
+			if = {
+				limit = {
+					root = { capital.market = { "goods_supply_in_market(goods:silver)" > 0 } }
+				}
+
+				add = { desc = "has silver" value = 100 }
+			}
+		}
+
+		years = 2
+	}
+
+	copper_coins = {
+		country_modifier = {
+			copper_used_for_minting = yes
+			copper_impacts_inflation = 0.1
+			minting_inflation_threshold = -0.025
+			sul_minting_liquidity = -0.125
+		}
+
+		estate_preferences = { crown_estate }
+		years = 2
+	}
+
+	custom_union_of_the_rhine_policy = {
+		country_modifier = {
+			goods_gold_used_for_minting = yes
+			goods_gold_impacts_inflation = 0.1
+			global_merchant_capacity_modifier = 0.1
+			monthly_diplomats = 0.05
+		}
+
+		estate_preferences = { clergy_estate burghers_estate }
+		years = 2
+	}
+
+	hanseatic_coins_policy = {
+		country_modifier = {
+			goods_gold_used_for_minting = yes
+			silver_used_for_minting = yes
+			minting_inflation_threshold = 0.01
+			bank_interest = -0.01
+			sul_minting_liquidity = 0.05
+		}
+
+		estate_preferences = { burghers_estate }
+		years = 2
+	}
+
+	bullion_coins = {
+		country_modifier = {
+			silver_used_for_minting = yes
+			copper_used_for_minting = yes
+			minting_inflation_threshold = 0.02
+			sul_minting_liquidity = 0.10
+		}
+
+		estate_preferences = { crown_estate }
+
+		ai_will_do = {
+			if = {
+				limit = {
+					root = {
+						capital.market = {
+							"goods_supply_in_market(goods:silver)" > 0
+							"goods_supply_in_market(goods:copper)" > 0
+						}
+					}
+				}
+
+				add = { desc = "has silver and copper" value = 200 }
+			}
+		}
+
+		years = 2
+	}
+
+	barter_exchange = {
+		potential = {
+			AND = {
+				capital.market = {
+					"goods_supply_in_market(goods:goods_gold)" < 0
+					"goods_supply_in_market(goods:silver)" < 0
+				}
+			}
+			capital.market = { "goods_supply_in_market(goods:goods_gold)" < 0 }
+			capital.market = { "goods_supply_in_market(goods:silver)" < 0 }
+			AND = {
+				capital.market = {
+					"goods_supply_in_market(goods:silver)" < 0
+					"goods_supply_in_market(goods:copper)" < 0
+				}
+			}
+		}
+
+		country_modifier = {
+			minting_inflation_threshold = 0.01
+			sul_minting_liquidity = 0.05
+		}
+
+		estate_preferences = { crown_estate }
+
+		ai_will_do = {
+			if = {
+				limit = {
+					AND = {
+						capital.market = {
+							"goods_supply_in_market(goods:goods_gold)" < 0
+							"goods_supply_in_market(goods:silver)" < 0
+						}
+					}
+					capital.market = { "goods_supply_in_market(goods:goods_gold)" < 0 }
+					capital.market = { "goods_supply_in_market(goods:silver)" < 0 }
+					AND = {
+						capital.market = {
+							"goods_supply_in_market(goods:silver)" < 0
+							"goods_supply_in_market(goods:copper)" < 0
+						}
+					}
+				}
+
+				add = { desc = "has no metals" value = 200 }
+			}
+		}
+
+		years = 2
+	}
+}

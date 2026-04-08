@@ -183,9 +183,18 @@ sul_on_rank_changed = {
 
 sul_on_raw_material_changed = {
 	effect = {
+		# Save old levels, then update type cache (GUI reads var:sul_rgo_building_type)
+		# sul_rebuild_rgo_if_empty's prev check now uses raw_material directly,
+		# so timing of the var update no longer affects the destroy/rebuild flow.
 		save_temporary_scope_value_as = {
 			name = sul_old_rgo_levels
 			value = sul_location_rgo_building_level
+		}
+
+		# Update GUI cache to new raw material
+		set_variable = {
+			name = sul_rgo_building_type
+			value = "global_variable_map(sul_rgo_map|raw_material)"
 		}
 
 		# Destroy old RGO (looked up via the OLD raw material in scope:old_goods)
@@ -226,6 +235,12 @@ sul_on_location_changed_owner = {
 		if = {
 			limit = { exists = raw_material modifier:sul_rgo_size > 0 }
 
+			# Maintain GUI cache (idempotent — set on every owner change)
+			set_variable = {
+				name = sul_rgo_building_type
+				value = "global_variable_map(sul_rgo_map|raw_material)"
+			}
+
 			# Seed 1 RGO level if location has none
 			if = {
 				limit = { sul_location_rgo_building_level <= 0 }
@@ -249,6 +264,11 @@ sul_rgo_init = {
 		every_location_in_the_world = {
 			limit = { is_ownable = yes }
 			set_variable = { name = sul_rgo_constructing value = 0 }
+
+			set_variable = {
+				name = sul_rgo_building_type
+				value = "global_variable_map(sul_rgo_map|raw_material)"
+			}
 		}
 	}
 }

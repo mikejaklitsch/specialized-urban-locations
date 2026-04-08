@@ -1,0 +1,192 @@
+﻿# TGS Liquidity — country-specific law replacements
+# Must be kept in sync with vanilla.
+
+REPLACE:kor_currency = {
+	law_category = socioeconomic
+
+	potential = {
+		has_unlocked_law_trigger = { type = kor_currency }
+	}
+
+	kor_barter_economy = {
+		country_modifier = {
+			scale = {
+				add = {
+					desc = capital_economy_vs_traditional_economy
+					value = societal_value:capital_economy_vs_traditional_economy
+					multiply = 0.01
+					min = 0
+				}
+			}
+
+			trade_land_movement_cost_modifier = -0.2
+		}
+		country_modifier = {
+			monthly_towards_traditional_economy = societal_value_minor_monthly_move
+		}
+
+		years = 2
+	}
+
+	kor_metal_coinage = {
+		country_modifier = {
+			minting_inflation_threshold = 0.01
+			sul_minting_liquidity = 0.05
+		}
+
+		years = 2
+	}
+
+	kor_jeohwa = {
+		allow = {
+			capital.market = { "stockpile_in_market(goods:paper)" > 20 }
+		}
+
+		country_modifier = {
+			monthly_towards_capital_economy = societal_value_monthly_move
+		}
+		country_modifier = {
+			scale = {
+				add = {
+					desc = capital_economy_vs_traditional_economy
+					value = societal_value:capital_economy_vs_traditional_economy
+					multiply = -1
+					min = 0
+				}
+			}
+
+			bank_interest = -0.0001
+		}
+
+		on_activate = {
+			capital.market = { add_goods_supply = { amount = -20 goods = goods:paper } }
+		}
+
+		years = 2
+	}
+
+	kor_chinese_currency = {
+		potential = {
+			country_exists = c:CHI
+		}
+
+		country_modifier = {
+			scale = {
+				add = {
+					desc = "kor_scale_chinese_currency"
+					value = "c:CHI.opinion(root)"
+					multiply = 0.01
+				}
+			}
+
+			trade_efficiency = small_trade_efficiency_bonus
+		}
+
+		years = 2
+	}
+}
+
+REPLACE:six_ministries = {
+	potential = {
+		always = no
+	}
+
+	ministry_of_rites = {
+		on_activate = {
+			custom_tooltip = countries_more_likely_to_accept_invite_to_sect_tt
+		}
+
+		country_modifier = {
+			stability_investment = small_stability_investment
+			global_pop_conversion_speed_modifier = 0.1
+		}
+	}
+
+	ministry_of_personnel = {
+		on_activate = {
+			if = {
+				limit = {
+					is_leader_of_international_organization = international_organization:middle_kingdom
+				}
+
+				custom_tooltip = better_exams_results_tt
+			}
+		}
+
+		country_modifier = { government_size = 1 country_cabinet_efficiency = 0.2 }
+	}
+
+	ministry_of_revenue = {
+		on_activate = {
+			if = {
+				limit = {
+					is_leader_of_international_organization = international_organization:middle_kingdom
+				}
+
+				custom_tooltip = better_census_results_tt
+			}
+		}
+
+		country_modifier = {
+			minting_inflation_threshold = 0.01
+			global_estate_max_tax = 0.1
+			sul_minting_liquidity = 0.05
+		}
+	}
+
+	ministry_of_war = {
+		on_activate = {
+			if = {
+				limit = {
+					is_leader_of_international_organization = international_organization:middle_kingdom
+				}
+
+				custom_tooltip = better_reinforce_fortification_results_tt
+			}
+		}
+
+		country_modifier = {
+			army_maintenance_cost = -0.1
+			fort_maintenance_cost = -0.1
+			army_logistics_distance_modifier = 0.1
+		}
+	}
+
+	ministry_of_justice = {
+		on_activate = {
+			if = {
+				limit = {
+					is_leader_of_international_organization = international_organization:middle_kingdom
+				}
+
+				custom_tooltip = better_warning_results_tt
+			}
+		}
+
+		country_modifier = {
+			monthly_rebel_growth = -0.0005
+			pop_join_rebel_threshold = -0.05
+			pop_leave_rebels_threshold = -0.05
+		}
+	}
+
+	ministry_of_works = {
+		on_activate = {
+			if = {
+				limit = {
+					is_leader_of_international_organization = international_organization:middle_kingdom
+				}
+
+				custom_tooltip = better_infrastructure_works_results_tt
+			}
+		}
+
+		country_modifier = {
+			build_gravel_road_cost_modifier = -0.1
+			build_paved_road_cost_modifier = -0.1
+			build_modern_road_cost_modifier = -0.1
+			build_railroad_cost_modifier = -0.1
+			global_build_buildings_cost = -0.1
+		}
+	}
+}

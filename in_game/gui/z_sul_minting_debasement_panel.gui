@@ -1,0 +1,429 @@
+﻿
+template TGS_DebasementCard {
+	adjustable_budget_card = {
+		layoutpolicy_horizontal = expanding
+		size = { -1 55 }
+
+		visible = "[EconomyView.HasTaxes]"
+
+		blockoverride "header_color" { using = color_economy_texture }
+
+		blockoverride "top_widget" {
+			hbox = {
+				margin = { 5 0 }
+				spacing = 5
+
+				icon = {
+					size = { 24 24 }
+					texture = "gfx/interface/icons/flat_icons/balance/minting_coins.dds"
+					texture_density = 2
+				}
+
+				text_single = {
+					using = layoutpolicy_expanding
+					autoresize = no
+					align = left|nobaseline
+					raw_text = "[sul_minting_currency_debasement|E]"
+				}
+
+				# Debasement active: red
+				text_single = {
+					visible = "[GreaterThan_float(FixedPointToFloat(Player.MakeScope.ScriptValue('sul_minting_debasement_level_value')), '(float)0')]"
+					autoresize = yes
+					align = right|nobaseline
+					default_format = "#color_red"
+					raw_text = "+[Player.MakeScope.ScriptValue('sul_minting_debasement_level_value')|0%]"
+				}
+
+				# Zero debasement: default
+				text_single = {
+					visible = "[EqualTo_float(FixedPointToFloat(Player.MakeScope.ScriptValue('sul_minting_debasement_level_value')), '(float)0')]"
+					autoresize = yes
+					align = right|nobaseline
+					raw_text = "[Player.MakeScope.ScriptValue('sul_minting_debasement_level_value')|0%]"
+				}
+
+				tooltipmeta = {
+					texture = "gfx/interface/icons/flat_icons/balance/minting_coins.dds"
+					game_concept = "[sul_minting_currency_debasement|e]"
+				}
+
+				tooltipwidget = { using = TGS_DebasementTooltip }
+			}
+		}
+
+		blockoverride "bottom_widget" {
+			hbox = {
+				margin = { 5 0 }
+				spacing = 5
+
+				widget = {
+					using = layoutpolicy_expanding
+
+					# Dark background
+					icon = {
+						parentanchor = left|vcenter
+						position = { 21 0 }
+						size = { 78 10 }
+						texture = "gfx/interface/progressbars/progress_black.dds"
+						spriteType = Corneredstretched
+						spriteborder = { 12 0 }
+					}
+
+					# Active debasement level
+					progressbar = {
+						parentanchor = left|vcenter
+						position = { 21 0 }
+						size = { 78 10 }
+						progresstexture = "gfx/interface/progressbars/progress_bar_blue_alt.dds"
+						noprogresstexture = "gfx/interface/icons/unit_view/moral_bar_transparent.dds"
+						texture_density = 2
+						spriteType = Corneredstretched
+						spriteborder = { 12 0 }
+						min = 0
+						max = 1
+						value = "[FixedPointToFloat(Player.MakeScope.ScriptValue('sul_minting_debasement_progress'))]"
+					}
+
+					# Slider for +/- buttons only (visuals hidden, non-draggable)
+					economy_slider = {
+						parentanchor = left|vcenter
+						size = { 120 10 }
+						min = 0
+						max = 1
+						value = "[FixedPointToFloat(Player.MakeScope.ScriptValue('sul_minting_debasement_progress'))]"
+						mincap = "[FixedPointToFloat(Player.MakeScope.ScriptValue('sul_minting_debasement_progress'))]"
+						maxcap = "[FixedPointToFloat(Player.MakeScope.ScriptValue('sul_minting_debasement_progress'))]"
+
+						track = { button = { alpha = 0 } }
+						track_range = { EconomySlider_TrackRange = { alpha = 0 } }
+						track_highlight = { EconomySlider_TrackHighlight = { alpha = 0 } }
+						slider = { EconomySlider_Slider = { visible = no } }
+
+						blockoverride "economy_slider_dec_button_config" {
+							enabled = "[GetScriptedGui('sul_minting_debasement_dec_small').IsValid(GuiScope.SetRoot(GetPlayer.MakeScope).End)]"
+
+							action_tooltip = {
+								click_type = left
+								click_mode = single
+								click_modifier = default
+								title = "TGS_DEBASEMENT_DEC_SMALL_TT"
+								on_action = "[GetScriptedGui('sul_minting_debasement_dec_small').Execute(GuiScope.SetRoot(GetPlayer.MakeScope).End)]"
+								enabled = "[GetScriptedGui('sul_minting_debasement_dec_small').IsValid(GuiScope.SetRoot(GetPlayer.MakeScope).End)]"
+							}
+
+							action_tooltip = {
+								click_type = left
+								click_mode = single
+								click_modifier = ctrl
+								title = "TGS_DEBASEMENT_DEC_LARGE_TT"
+								on_action = "[GetScriptedGui('sul_minting_debasement_dec_large').Execute(GuiScope.SetRoot(GetPlayer.MakeScope).End)]"
+								enabled = "[GetScriptedGui('sul_minting_debasement_dec_large').IsValid(GuiScope.SetRoot(GetPlayer.MakeScope).End)]"
+							}
+
+							action_tooltip = {
+								click_type = left
+								click_mode = single
+								click_modifier = shift
+								title = "TGS_DEBASEMENT_DEC_HUGE_TT"
+								on_action = "[GetScriptedGui('sul_minting_debasement_dec_huge').Execute(GuiScope.SetRoot(GetPlayer.MakeScope).End)]"
+								enabled = "[GetScriptedGui('sul_minting_debasement_dec_huge').IsValid(GuiScope.SetRoot(GetPlayer.MakeScope).End)]"
+							}
+
+							action_tooltip = {
+								click_type = right
+								click_mode = single
+								click_modifier = default
+								title = "TGS_DEBASEMENT_RESET_TT"
+								on_action = "[GetScriptedGui('sul_minting_debasement_reset').Execute(GuiScope.SetRoot(GetPlayer.MakeScope).End)]"
+								enabled = "[GetScriptedGui('sul_minting_debasement_reset').IsValid(GuiScope.SetRoot(GetPlayer.MakeScope).End)]"
+							}
+
+							tooltipwidget = { BasicFunctionalTooltip = {  } }
+						}
+
+						blockoverride "economy_slider_inc_button_config" {
+							enabled = "[GetScriptedGui('sul_minting_debasement_inc_small').IsValid(GuiScope.SetRoot(GetPlayer.MakeScope).End)]"
+
+							action_tooltip = {
+								click_type = left
+								click_mode = single
+								click_modifier = default
+								title = "TGS_DEBASEMENT_INC_SMALL_TT"
+								on_action = "[GetScriptedGui('sul_minting_debasement_inc_small').Execute(GuiScope.SetRoot(GetPlayer.MakeScope).End)]"
+								enabled = "[GetScriptedGui('sul_minting_debasement_inc_small').IsValid(GuiScope.SetRoot(GetPlayer.MakeScope).End)]"
+							}
+
+							action_tooltip = {
+								click_type = left
+								click_mode = single
+								click_modifier = ctrl
+								title = "TGS_DEBASEMENT_INC_LARGE_TT"
+								on_action = "[GetScriptedGui('sul_minting_debasement_inc_large').Execute(GuiScope.SetRoot(GetPlayer.MakeScope).End)]"
+								enabled = "[GetScriptedGui('sul_minting_debasement_inc_large').IsValid(GuiScope.SetRoot(GetPlayer.MakeScope).End)]"
+							}
+
+							action_tooltip = {
+								click_type = left
+								click_mode = single
+								click_modifier = shift
+								title = "TGS_DEBASEMENT_INC_HUGE_TT"
+								on_action = "[GetScriptedGui('sul_minting_debasement_inc_huge').Execute(GuiScope.SetRoot(GetPlayer.MakeScope).End)]"
+								enabled = "[GetScriptedGui('sul_minting_debasement_inc_huge').IsValid(GuiScope.SetRoot(GetPlayer.MakeScope).End)]"
+							}
+
+							action_tooltip = {
+								click_type = right
+								click_mode = single
+								click_modifier = default
+								title = "TGS_DEBASEMENT_RESET_TT"
+								on_action = "[GetScriptedGui('sul_minting_debasement_reset').Execute(GuiScope.SetRoot(GetPlayer.MakeScope).End)]"
+								enabled = "[GetScriptedGui('sul_minting_debasement_reset').IsValid(GuiScope.SetRoot(GetPlayer.MakeScope).End)]"
+							}
+
+							tooltipwidget = { BasicFunctionalTooltip = {  } }
+						}
+					}
+
+					tooltipwidget = { using = TGS_DebasementTooltip }
+				}
+
+
+				# Inflation multiplier active: red
+				text_single = {
+					visible = "[GreaterThan_float(FixedPointToFloat(Player.MakeScope.ScriptValue('sul_minting_debasement_level_value')), '(float)0')]"
+					autoresize = no
+					align = center|nobaseline
+					size = { 80 20 }
+					default_format = "#color_red"
+					raw_text = "[Player.MakeScope.ScriptValue('sul_minting_debasement_inflation_multiplier')|2]×@inflation!"
+					tooltipwidget = { using = TGS_DebasementTooltip }
+				}
+
+				# Normal (×1): default
+				text_single = {
+					visible = "[EqualTo_float(FixedPointToFloat(Player.MakeScope.ScriptValue('sul_minting_debasement_level_value')), '(float)0')]"
+					autoresize = no
+					align = center|nobaseline
+					size = { 80 20 }
+					raw_text = "[Player.MakeScope.ScriptValue('sul_minting_debasement_inflation_multiplier')|2]×@inflation!"
+					tooltipwidget = { using = TGS_DebasementTooltip }
+				}
+			}
+		}
+	}
+}
+
+template TGS_RebasementCard {
+	adjustable_budget_card = {
+		layoutpolicy_horizontal = expanding
+		size = { -1 55 }
+
+		visible = "[EconomyView.HasTaxes]"
+
+		blockoverride "header_color" { using = color_economy_texture }
+
+		blockoverride "top_widget" {
+			hbox = {
+				margin = { 5 0 }
+				spacing = 5
+
+				icon = {
+					size = { 24 24 }
+					texture = "gfx/interface/icons/flat_icons/balance/minting_coins.dds"
+					texture_density = 2
+				}
+
+				text_single = {
+					using = layoutpolicy_expanding
+					autoresize = no
+					align = left|nobaseline
+					raw_text = "[sul_minting_currency_rebasement|E]"
+				}
+
+				# Active rebasement: show expense in red
+				text_single = {
+					visible = "[GreaterThan_float(FixedPointToFloat(Player.MakeScope.ScriptValue('sul_minting_rebasement_level_value')), '(float)0')]"
+					autoresize = yes
+					align = right|nobaseline
+					default_format = "#color_red"
+					raw_text = "-[Player.MakeScope.ScriptValue('sul_minting_rebasement_cost')|2]@expense!"
+				}
+
+				# Zero rebasement: no sign
+				text_single = {
+					visible = "[EqualTo_float(FixedPointToFloat(Player.MakeScope.ScriptValue('sul_minting_rebasement_level_value')), '(float)0')]"
+					autoresize = yes
+					align = right|nobaseline
+					raw_text = "[Player.MakeScope.ScriptValue('sul_minting_rebasement_cost')|2]@expense!"
+				}
+
+				tooltipmeta = {
+					texture = "gfx/interface/icons/flat_icons/balance/minting_coins.dds"
+					game_concept = "[sul_minting_currency_rebasement|e]"
+				}
+
+				tooltipwidget = { using = TGS_RebasementTooltip }
+			}
+		}
+
+		blockoverride "bottom_widget" {
+			hbox = {
+				margin = { 5 0 }
+				spacing = 5
+
+				widget = {
+					using = layoutpolicy_expanding
+
+					# Dark background
+					icon = {
+						parentanchor = left|vcenter
+						position = { 21 0 }
+						size = { 78 10 }
+						texture = "gfx/interface/progressbars/progress_black.dds"
+						spriteType = Corneredstretched
+						spriteborder = { 12 0 }
+					}
+
+					# Active rebasement level (green bar)
+					progressbar = {
+						parentanchor = left|vcenter
+						position = { 21 0 }
+						size = { 78 10 }
+						progresstexture = "gfx/interface/progressbars/progress_bar_blue_alt.dds"
+						noprogresstexture = "gfx/interface/icons/unit_view/moral_bar_transparent.dds"
+						texture_density = 2
+						spriteType = Corneredstretched
+						spriteborder = { 12 0 }
+						min = 0
+						max = 1
+						value = "[FixedPointToFloat(Player.MakeScope.ScriptValue('sul_minting_rebasement_progress'))]"
+					}
+
+					# Slider for +/- buttons only (visuals hidden, non-draggable)
+					economy_slider = {
+						parentanchor = left|vcenter
+						size = { 120 10 }
+						min = 0
+						max = 1
+						value = "[FixedPointToFloat(Player.MakeScope.ScriptValue('sul_minting_rebasement_progress'))]"
+						mincap = "[FixedPointToFloat(Player.MakeScope.ScriptValue('sul_minting_rebasement_progress'))]"
+						maxcap = "[FixedPointToFloat(Player.MakeScope.ScriptValue('sul_minting_rebasement_progress'))]"
+
+						track = { button = { alpha = 0 } }
+						track_range = { EconomySlider_TrackRange = { alpha = 0 } }
+						track_highlight = { EconomySlider_TrackHighlight = { alpha = 0 } }
+						slider = { EconomySlider_Slider = { visible = no } }
+
+						blockoverride "economy_slider_dec_button_config" {
+							enabled = "[GetScriptedGui('sul_minting_rebasement_dec_small').IsValid(GuiScope.SetRoot(GetPlayer.MakeScope).End)]"
+
+							action_tooltip = {
+								click_type = left
+								click_mode = single
+								click_modifier = default
+								title = "TGS_REBASEMENT_DEC_SMALL_TT"
+								on_action = "[GetScriptedGui('sul_minting_rebasement_dec_small').Execute(GuiScope.SetRoot(GetPlayer.MakeScope).End)]"
+								enabled = "[GetScriptedGui('sul_minting_rebasement_dec_small').IsValid(GuiScope.SetRoot(GetPlayer.MakeScope).End)]"
+							}
+
+							action_tooltip = {
+								click_type = left
+								click_mode = single
+								click_modifier = ctrl
+								title = "TGS_REBASEMENT_DEC_LARGE_TT"
+								on_action = "[GetScriptedGui('sul_minting_rebasement_dec_large').Execute(GuiScope.SetRoot(GetPlayer.MakeScope).End)]"
+								enabled = "[GetScriptedGui('sul_minting_rebasement_dec_large').IsValid(GuiScope.SetRoot(GetPlayer.MakeScope).End)]"
+							}
+
+							action_tooltip = {
+								click_type = left
+								click_mode = single
+								click_modifier = shift
+								title = "TGS_REBASEMENT_DEC_HUGE_TT"
+								on_action = "[GetScriptedGui('sul_minting_rebasement_dec_huge').Execute(GuiScope.SetRoot(GetPlayer.MakeScope).End)]"
+								enabled = "[GetScriptedGui('sul_minting_rebasement_dec_huge').IsValid(GuiScope.SetRoot(GetPlayer.MakeScope).End)]"
+							}
+
+							action_tooltip = {
+								click_type = right
+								click_mode = single
+								click_modifier = default
+								title = "TGS_REBASEMENT_RESET_TT"
+								on_action = "[GetScriptedGui('sul_minting_rebasement_reset').Execute(GuiScope.SetRoot(GetPlayer.MakeScope).End)]"
+								enabled = "[GetScriptedGui('sul_minting_rebasement_reset').IsValid(GuiScope.SetRoot(GetPlayer.MakeScope).End)]"
+							}
+
+							tooltipwidget = { BasicFunctionalTooltip = {  } }
+						}
+
+						blockoverride "economy_slider_inc_button_config" {
+							enabled = "[GetScriptedGui('sul_minting_rebasement_inc_small').IsValid(GuiScope.SetRoot(GetPlayer.MakeScope).End)]"
+
+							action_tooltip = {
+								click_type = left
+								click_mode = single
+								click_modifier = default
+								title = "TGS_REBASEMENT_INC_SMALL_TT"
+								on_action = "[GetScriptedGui('sul_minting_rebasement_inc_small').Execute(GuiScope.SetRoot(GetPlayer.MakeScope).End)]"
+								enabled = "[GetScriptedGui('sul_minting_rebasement_inc_small').IsValid(GuiScope.SetRoot(GetPlayer.MakeScope).End)]"
+							}
+
+							action_tooltip = {
+								click_type = left
+								click_mode = single
+								click_modifier = ctrl
+								title = "TGS_REBASEMENT_INC_LARGE_TT"
+								on_action = "[GetScriptedGui('sul_minting_rebasement_inc_large').Execute(GuiScope.SetRoot(GetPlayer.MakeScope).End)]"
+								enabled = "[GetScriptedGui('sul_minting_rebasement_inc_large').IsValid(GuiScope.SetRoot(GetPlayer.MakeScope).End)]"
+							}
+
+							action_tooltip = {
+								click_type = left
+								click_mode = single
+								click_modifier = shift
+								title = "TGS_REBASEMENT_INC_HUGE_TT"
+								on_action = "[GetScriptedGui('sul_minting_rebasement_inc_huge').Execute(GuiScope.SetRoot(GetPlayer.MakeScope).End)]"
+								enabled = "[GetScriptedGui('sul_minting_rebasement_inc_huge').IsValid(GuiScope.SetRoot(GetPlayer.MakeScope).End)]"
+							}
+
+							action_tooltip = {
+								click_type = right
+								click_mode = single
+								click_modifier = default
+								title = "TGS_REBASEMENT_RESET_TT"
+								on_action = "[GetScriptedGui('sul_minting_rebasement_reset').Execute(GuiScope.SetRoot(GetPlayer.MakeScope).End)]"
+								enabled = "[GetScriptedGui('sul_minting_rebasement_reset').IsValid(GuiScope.SetRoot(GetPlayer.MakeScope).End)]"
+							}
+
+							tooltipwidget = { BasicFunctionalTooltip = {  } }
+						}
+					}
+
+					tooltipwidget = { using = TGS_RebasementTooltip }
+				}
+
+				# Active rebasement: red
+				text_single = {
+					visible = "[GreaterThan_float(FixedPointToFloat(Player.MakeScope.ScriptValue('sul_minting_rebasement_level_value')), '(float)0')]"
+					autoresize = no
+					align = center|nobaseline
+					size = { 110 20 }
+					default_format = "#color_red"
+					raw_text = "[Player.MakeScope.ScriptValue('sul_minting_rebasement_deflation_effect')|2-=%] ([EconomyView.GetInflationChange|2-=%])@inflation!"
+					tooltipwidget = { using = TGS_RebasementTooltip }
+				}
+
+				# Zero rebasement: default
+				text_single = {
+					visible = "[EqualTo_float(FixedPointToFloat(Player.MakeScope.ScriptValue('sul_minting_rebasement_level_value')), '(float)0')]"
+					autoresize = no
+					align = center|nobaseline
+					size = { 110 20 }
+					raw_text = "[Player.MakeScope.ScriptValue('sul_minting_rebasement_deflation_effect')|2-=%] ([EconomyView.GetInflationChange|2-=%])@inflation!"
+					tooltipwidget = { using = TGS_RebasementTooltip }
+				}
+			}
+		}
+	}
+}

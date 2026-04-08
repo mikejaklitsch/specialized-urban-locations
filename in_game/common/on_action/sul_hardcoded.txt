@@ -18,6 +18,10 @@ on_game_start = {
 		sul_initialize_economy
 		# War systems
 		sul_war_on_game_start
+		# Population-based integration
+		sul_integration_on_game_start
+		# Minting / Gold Standard
+		sul_minting_initialize_all
 	}
 }
 
@@ -46,7 +50,11 @@ on_raw_material_changed = {
 # =============================================================================
 
 on_location_changed_owner = {
-	on_actions = { sul_on_location_changed_owner sul_war_on_auto_conquest }
+	on_actions = {
+		sul_on_location_changed_owner
+		sul_war_on_auto_conquest
+		sul_integration_on_location_conquered
+	}
 }
 
 # =============================================================================
@@ -67,6 +75,8 @@ monthly_country_pulse = {
 		sul_ai_monthly_wage_payment
 		# Trade maintenance: convert sul_trade_maintenance_efficiency → merchant_maintenance_cost
 		sul_trade_maintenance_apply_action
+		# Minting / Gold Standard
+		sul_minting_monthly_update
 		# War systems
 		sul_war_init_pulse
 		sul_war_monthly_pulse
@@ -82,6 +92,8 @@ yearly_country_pulse = {
 		sul_ai_yearly_wage_accumulate
 		sul_cleanup_dead_units
 		sul_yearly_rgo_trim
+		# Minting / Gold Standard — AI price refresh + minting modifier update
+		sul_minting_yearly_update
 	}
 }
 
@@ -90,7 +102,15 @@ yearly_country_pulse = {
 # =============================================================================
 
 weather_monthly_pulse = {
-	on_actions = { sul_batch_location_update }
+	on_actions = {
+		sul_batch_location_update
+		# Population-based integration
+		sul_integration_init_check
+		sul_integration_monthly_update
+		# Minting / Gold Standard — version check (TGS used the wrong hook name `monthly_weather_pulse`,
+		# fixed here to weather_monthly_pulse so the version check actually fires)
+		sul_minting_version_check
+	}
 }
 
 # =============================================================================
@@ -131,4 +151,13 @@ on_battle_won_character = {
 
 on_battle_lost_character = {
 	on_actions = { sul_war_battle_cleanup_action }
+}
+
+# =============================================================================
+# MINTING / GOLD STANDARD - Policy change hook
+# =============================================================================
+# Rebuilds the minting goods variable list when currency laws change.
+
+on_policy_changed = {
+	on_actions = { sul_minting_on_policy_changed }
 }

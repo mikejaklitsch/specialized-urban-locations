@@ -1,0 +1,100 @@
+﻿@sul_integration_version = 100 # 1.0.0
+
+# Integration speed scales with remaining capacity (quadratic).
+# Modifier value is 1.0, so size IS the integration speed modifier directly.
+#
+# Formula: size = 2.5 × (1 - pop/cap)², applied only while pop < cap
+#
+# Quadratic curve concentrates the bonus at low population density.
+# Most of the effect is gone by 50% capacity, tapering gently to 0 at full.
+# At or above capacity, the modifier is removed entirely.
+
+sul_integration_apply_capacity_bonus = {
+	if = {
+		limit = { population < location_max_population }
+
+		# (1 - pop/cap): ratio of remaining room
+		set_local_variable = {
+			name = pop_cap_remaining
+
+			value = {
+				value = location_max_population
+				subtract = population
+				divide = location_max_population
+			}
+		}
+
+		add_location_modifier = {
+			modifier = sul_integration_capacity_bonus
+			months = -1
+			# Refreshed each month.
+			size = {
+				value = local_var:pop_cap_remaining
+				multiply = local_var:pop_cap_remaining
+				# (1 - pop/cap)²: squared for exponential falloff
+				multiply = 2.5
+				# 2.5 × (1 - pop/cap)²: +250% at empty, ~0% near capacity
+			}
+
+			mode = replace
+		}
+	}
+	else = {
+		# Crossed over capacity since last refresh — clear the bonus.
+		remove_location_modifier = sul_integration_capacity_bonus
+	}
+}
+
+# Add a conquered location to the global tracking list.
+# Guards against duplicates so on_actions can call this freely.
+
+sul_integration_track_location = {
+	if = {
+		limit = {
+			NOT = {
+				is_target_in_global_variable_list = {
+					name = sul_integration_conquered_locations
+					target = this
+				}
+			}
+		}
+
+		add_to_global_variable_list = {
+			name = sul_integration_conquered_locations
+			target = this
+		}
+	}
+}
+
+# Full initialization: scan every location in the world for conquered status.
+# Called on first game load and when mod version changes.
+
+sul_integration_initialize = {
+	set_global_variable = sul_integration_rebuilding
+	clear_global_variable_list = sul_integration_conquered_locations
+
+	every_country = {
+		every_owned_location = {
+			limit = { integration_level = conquered }
+			sul_integration_track_location = yes
+			sul_integration_apply_capacity_bonus = yes
+		}
+	}
+
+	# Stamp version on Bouvet Island so we detect mod updates on next load
+	location:bouvet_island = {
+		add_location_modifier = {
+			modifier = sul_integration_capacity_bonus
+			years = -1
+			size = 0
+			mode = replace
+		}
+
+		set_variable = {
+			name = sul_integration_version
+			value = @sul_integration_version
+		}
+	}
+
+	remove_global_variable = sul_integration_rebuilding
+}

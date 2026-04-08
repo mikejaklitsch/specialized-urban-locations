@@ -1,0 +1,225 @@
+﻿# The Gold Standard - Scripted Effects
+# Scope: country
+
+# ---- Parameterized Helpers ----
+
+# Initialize a variable if not already set.
+
+sul_minting_init_variable = {
+	if = {
+		limit = {
+			NOT = {
+				has_variable = $name$
+			}
+		}
+
+		set_variable = { name = $name$ value = $value$ }
+	}
+}
+
+# Check a minting good modifier and add to the goods list if active.
+
+sul_minting_check_minting_good = {
+	if = {
+		limit = { modifier:$good$_used_for_minting = yes }
+
+		add_to_variable_list = { name = sul_minting_goods target = goods:$good$ }
+	}
+}
+
+# Adjust a currency level (debasement or rebasement) and reset the other.
+
+sul_minting_adjust_currency = {
+	change_variable = { name = sul_minting_$type$_level add = $delta$ }
+
+	clamp_variable = { name = sul_minting_$type$_level min = 0 max = 2.0 }
+
+	set_variable = { name = sul_minting_$other$_level value = 0 }
+}
+
+# ---- Per-Country Initialization ----
+# Sets default values for all TGS variables.
+
+sul_minting_initialize_country = {
+	sul_minting_init_variable = { name = sul_minting_debasement_level value = 0 }
+	sul_minting_init_variable = { name = sul_minting_rebasement_level value = 0 }
+	sul_minting_init_variable = { name = sul_minting_market_cost value = 0 }
+	sul_minting_init_variable = { name = sul_minting_efficiency value = 0 }
+
+	sul_minting_init_variable = {
+		name = sul_minting_real_minting_efficiency
+		value = 0
+	}
+
+	sul_minting_rebuild_minting_goods = yes
+	sul_minting_cache_market_center = yes
+}
+
+# ---- Rebuild Minting Goods List ----
+# Repopulates sul_minting_goods variable list from currency law modifiers.
+# Called on init and on_policy_changed. The monthly pulse iterates this
+# list (~2 goods) instead of checking all 70.
+
+sul_minting_rebuild_minting_goods = {
+	clear_variable_list = sul_minting_goods
+
+	sul_minting_check_minting_good = { good = horses }
+	sul_minting_check_minting_good = { good = clay }
+	sul_minting_check_minting_good = { good = sand }
+	sul_minting_check_minting_good = { good = coal }
+	sul_minting_check_minting_good = { good = iron }
+	sul_minting_check_minting_good = { good = copper }
+	sul_minting_check_minting_good = { good = goods_gold }
+	sul_minting_check_minting_good = { good = silver }
+	sul_minting_check_minting_good = { good = stone }
+	sul_minting_check_minting_good = { good = tin }
+	sul_minting_check_minting_good = { good = lead }
+	sul_minting_check_minting_good = { good = silk }
+	sul_minting_check_minting_good = { good = dyes }
+	sul_minting_check_minting_good = { good = incense }
+	sul_minting_check_minting_good = { good = tea }
+	sul_minting_check_minting_good = { good = cocoa }
+	sul_minting_check_minting_good = { good = coffee }
+	sul_minting_check_minting_good = { good = fiber_crops }
+	sul_minting_check_minting_good = { good = ivory }
+	sul_minting_check_minting_good = { good = lumber }
+	sul_minting_check_minting_good = { good = salt }
+	sul_minting_check_minting_good = { good = medicaments }
+	sul_minting_check_minting_good = { good = gems }
+	sul_minting_check_minting_good = { good = pearls }
+	sul_minting_check_minting_good = { good = amber }
+	sul_minting_check_minting_good = { good = saltpeter }
+	sul_minting_check_minting_good = { good = alum }
+	sul_minting_check_minting_good = { good = wine }
+	sul_minting_check_minting_good = { good = elephants }
+	sul_minting_check_minting_good = { good = marble }
+	sul_minting_check_minting_good = { good = mercury }
+	sul_minting_check_minting_good = { good = saffron }
+	sul_minting_check_minting_good = { good = pepper }
+	sul_minting_check_minting_good = { good = cloves }
+	sul_minting_check_minting_good = { good = chili }
+	sul_minting_check_minting_good = { good = cotton }
+	sul_minting_check_minting_good = { good = sugar }
+	sul_minting_check_minting_good = { good = tobacco }
+	sul_minting_check_minting_good = { good = tar }
+	sul_minting_check_minting_good = { good = porcelain }
+	sul_minting_check_minting_good = { good = naval_supplies }
+	sul_minting_check_minting_good = { good = firearms }
+	sul_minting_check_minting_good = { good = cannons }
+	sul_minting_check_minting_good = { good = weaponry }
+	sul_minting_check_minting_good = { good = glass }
+	sul_minting_check_minting_good = { good = steel }
+	sul_minting_check_minting_good = { good = cloth }
+	sul_minting_check_minting_good = { good = fine_cloth }
+	sul_minting_check_minting_good = { good = liquor }
+	sul_minting_check_minting_good = { good = beer }
+	sul_minting_check_minting_good = { good = paper }
+	sul_minting_check_minting_good = { good = books }
+	sul_minting_check_minting_good = { good = jewelry }
+	sul_minting_check_minting_good = { good = leather }
+	sul_minting_check_minting_good = { good = tools }
+	sul_minting_check_minting_good = { good = masonry }
+	sul_minting_check_minting_good = { good = lacquerware }
+	sul_minting_check_minting_good = { good = pottery }
+	sul_minting_check_minting_good = { good = furniture }
+	sul_minting_check_minting_good = { good = wool }
+	sul_minting_check_minting_good = { good = wild_game }
+	sul_minting_check_minting_good = { good = fur }
+	sul_minting_check_minting_good = { good = fish }
+	sul_minting_check_minting_good = { good = wheat }
+	sul_minting_check_minting_good = { good = maize }
+	sul_minting_check_minting_good = { good = rice }
+	sul_minting_check_minting_good = { good = millet }
+	sul_minting_check_minting_good = { good = legumes }
+	sul_minting_check_minting_good = { good = potato }
+	sul_minting_check_minting_good = { good = livestock }
+	sul_minting_check_minting_good = { good = olives }
+	sul_minting_check_minting_good = { good = fruit }
+	sul_minting_check_minting_good = { good = beeswax }
+	sul_minting_check_minting_good = { good = slaves_goods }
+
+	# Derive count and target value from the list
+	set_local_variable = { name = sul_minting_tmp_count value = 0 }
+	set_local_variable = { name = sul_minting_tmp_target value = 0 }
+
+	every_in_list = {
+		variable = sul_minting_goods
+
+		change_local_variable = { name = sul_minting_tmp_count add = 1 }
+		change_local_variable = {
+			name = sul_minting_tmp_target
+			add = "default_price(this)"
+		}
+	}
+
+	set_variable = {
+		name = sul_minting_goods_count
+		value = local_var:sul_minting_tmp_count
+	}
+	set_variable = {
+		name = sul_minting_target_value
+		value = local_var:sul_minting_tmp_target
+	}
+}
+
+# ---- Price Cache Update ----
+# Caches market prices on the market center location (per-good variable map).
+# First country per market per month computes; rest read from cache.
+# Also recomputes E and real E from cached prices.
+# Scope: country (requires capital with market)
+
+# ---- Market Center Cache ----
+# Resolves and caches the market center location reference on the country.
+# Called during init and when market changes. Avoids repeated
+# random_location_in_market searches at runtime.
+
+sul_minting_cache_market_center = {
+	capital ?= {
+		market ?= { location = { save_scope_as = sul_minting_mc_ref } }
+	}
+
+	set_variable = {
+		name = sul_minting_market_center
+		value = scope:sul_minting_mc_ref
+	}
+}
+
+# ---- Price Cache Update ----
+# Reads per-good prices from the shared sul_market_prices variable_map
+# populated by sul_do_refresh_market_cache in sul_effects.txt (monthly).
+# Sums the cost of one unit of each good in sul_minting_goods, then
+# recomputes E and real E from the result.
+# Scope: country (requires capital with market)
+
+sul_minting_update_price_cache = {
+	# Use cached market center reference (= market.location) as the
+	# variable-map carrier set by the shared cache refresh.
+	var:sul_minting_market_center = { save_temporary_scope_as = sul_minting_mc }
+
+	set_local_variable = { name = sul_minting_tmp_mc value = 0 }
+
+	every_in_list = {
+		variable = sul_minting_goods
+
+		scope:sul_minting_mc = {
+			change_local_variable = {
+				name = sul_minting_tmp_mc
+				add = "variable_map(sul_market_prices|prev)"
+			}
+		}
+	}
+
+	set_variable = {
+		name = sul_minting_market_cost
+		value = local_var:sul_minting_tmp_mc
+	}
+
+	set_variable = {
+		name = sul_minting_efficiency
+		value = sul_minting_efficiency_from_cached_cost
+	}
+	set_variable = {
+		name = sul_minting_real_minting_efficiency
+		value = sul_minting_real_efficiency_from_cached_cost
+	}
+}

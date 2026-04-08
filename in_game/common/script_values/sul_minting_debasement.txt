@@ -1,0 +1,131 @@
+﻿# The Gold Standard - Debasement & Rebasement
+# Scope: country (all values)
+
+@sul_minting_inflation_factor = 0.005
+
+# ---- Debasement (0 to 2.0) ----
+
+sul_minting_debasement_level_value = {
+	value = 0
+	if = {
+		limit = { has_variable = sul_minting_debasement_level }
+		add = var:sul_minting_debasement_level
+	}
+}
+
+# Face value multiplier: (1 + d). Debasement stretches bullion into more coins.
+
+sul_minting_debasement_inflation_multiplier = {
+	value = 1
+	if = {
+		limit = { has_variable = sul_minting_debasement_level }
+		add = var:sul_minting_debasement_level
+	}
+}
+
+# Additional monthly_inflation from debased coinage.
+# Tied to minting slider: no minting = no debased coins entering circulation.
+# At slider=1, d=2.0: 2.0 × 0.005 × 1.0 = +0.010
+
+sul_minting_debasement_inflation_effect = {
+	value = 0
+	if = {
+		limit = { var:sul_minting_debasement_level > 0 }
+
+		add = {
+			value = var:sul_minting_debasement_level
+			multiply = @sul_minting_inflation_factor
+			multiply = slider_minting_value
+		}
+	}
+}
+
+sul_minting_debasement_progress = {
+	value = var:sul_minting_debasement_level
+	divide = 2.0
+}
+
+# ---- Rebasement (0 to 2.0) ----
+# Crown buys impure coins 1-for-1 with pure coins. Cost scales with inflation.
+
+sul_minting_rebasement_level_value = {
+	value = 0
+	if = {
+		limit = { has_variable = sul_minting_rebasement_level }
+		add = var:sul_minting_rebasement_level
+	}
+}
+
+# Deflation from coin recall. Scales with inflation level.
+# At r=2.0, inflation=10%: -(2.0) × 0.01 × 0.10 = -0.0020
+
+sul_minting_rebasement_deflation_effect = {
+	value = 0
+	if = {
+		limit = { inflation > 0 }
+
+		add = {
+			value = var:sul_minting_rebasement_level
+			multiply = -0.01
+			multiply = inflation
+		}
+	}
+}
+
+# Monthly cost: r × tax_base × inflation × 0.5
+# At tax_base=200, inflation=10%, r=1.0: 10 gold/month
+
+sul_minting_rebasement_cost = {
+	value = 0
+	if = {
+		limit = { inflation > 0 }
+
+		add = {
+			value = var:sul_minting_rebasement_level
+			multiply = country_tax_base
+			multiply = inflation
+			multiply = 0.5
+		}
+	}
+}
+
+sul_minting_rebasement_progress = {
+	value = var:sul_minting_rebasement_level
+	divide = 2.0
+}
+
+# ---- AI Debasement Target ----
+# Continuous formula: positive = debase, negative = rebase.
+# target = (stress + loans) × dampener - penalty
+#   stress   = -3 × monthly_balance / tax_base
+#   loans    = 0.04 × num_loans
+#   dampener = max(0, 1 - 0.3 × inflation)
+#   penalty  = 3 × min(inflation, 0.10)
+
+sul_minting_ai_debasement_target = {
+	value = 0
+
+	# Financial pressure: stress + loans, dampened by inflation reluctance
+	add = {
+		value = 0
+
+		if = {
+			limit = { country_tax_base > 0 }
+			add = { value = monthly_balance multiply = -3 divide = country_tax_base }
+		}
+
+		add = { value = num_loans multiply = 0.04 }
+
+		multiply = {
+			value = 1
+			subtract = { value = inflation multiply = 0.3 }
+			min = 0
+		}
+	}
+
+	# Inflation penalty: steep up to 10%, capped
+	subtract = { value = inflation max = 0.10 multiply = 3 }
+
+	min = -2.0
+	max = 2.0
+}

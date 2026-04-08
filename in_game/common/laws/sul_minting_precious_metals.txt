@@ -1,0 +1,49 @@
+﻿# TGS Liquidity — precious metal distribution law replacement
+# Must be kept in sync with vanilla.
+
+REPLACE:precious_metal_distribution_law = {
+	law_category = socioeconomic
+
+	potential = {
+		OR = {
+			produced_in_country:goods_gold > 0
+			produced_in_country:silver > 0
+			has_law = precious_metal_distribution_law
+		}
+	}
+
+	gold_export_ban = {
+		country_modifier = {
+			ban_exports_of_goods_gold = yes
+			ban_exports_of_silver = yes
+			global_goods_gold_output_modifier = -0.05
+			global_silver_output_modifier = -0.05
+			sul_minting_liquidity = 0.33
+			monthly_towards_mercantilism = societal_value_tiny_monthly_move
+		}
+
+		estate_preferences = { nobles_estate }
+		years = 2
+
+		ai_will_do = { value = -100 }
+	}
+
+	regulated_gold_export = {
+		country_modifier = { trade_efficiency = tiny_trade_efficiency_bonus }
+		estate_preferences = { crown_estate }
+		years = 2
+	}
+
+	unlimited_gold_export = {
+		country_modifier = {
+			global_merchant_power = 0.1
+			global_goods_gold_output_modifier = 0.05
+			global_silver_output_modifier = 0.05
+			sul_minting_liquidity = -0.33
+			monthly_towards_free_trade = societal_value_tiny_monthly_move
+		}
+
+		estate_preferences = { burghers_estate }
+		years = 2
+	}
+}

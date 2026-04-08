@@ -16,6 +16,12 @@ remove_RGOs = {
 # Location scope. Map must be initialized before calling.
 
 replace_rgos_with_buildings = {
+	# Cache building_type on location for script value lookups
+	set_variable = {
+		name = sul_rgo_building_type
+		value = "global_variable_map(sul_rgo_map|raw_material)"
+	}
+
 	change_building_level_in_location = {
 		building = "global_variable_map(sul_rgo_map|raw_material)"
 		value = rgo_building_level
@@ -53,7 +59,12 @@ REPLACE:cc_setup_new_town = {
 
 	change_max_raw_material_workers = 1
 
-	# Spawn RGO building via map lookup
+	# Cache building_type and spawn RGO building via map lookup
+	set_variable = {
+		name = sul_rgo_building_type
+		value = "global_variable_map(sul_rgo_map|raw_material)"
+	}
+
 	change_building_level_in_location = {
 		building = "global_variable_map(sul_rgo_map|raw_material)"
 		value = 1
@@ -77,15 +88,24 @@ REPLACE:cc_setup_new_town = {
 
 sul_rebuild_rgo_if_empty = {
 	if = {
-		limit = {
-			exists = raw_material
-			sul_location_rgo_building_level <= 0
-			modifier:sul_rgo_size > 0
+		limit = { exists = raw_material }
+
+		"global_variable_map(sul_rgo_map|raw_material)" = {
+			save_temporary_scope_as = sul_rgo_btype
 		}
 
-		change_building_level_in_location = {
-			building = "global_variable_map(sul_rgo_map|raw_material)"
-			value = 1
+		if = {
+			limit = {
+				sul_location_rgo_building_level <= 0
+				modifier:sul_rgo_size > 0
+				# Verify destroyed building is still the correct RGO for this location
+				prev = { building_type = scope:sul_rgo_btype }
+			}
+
+			change_building_level_in_location = {
+				building = scope:sul_rgo_btype
+				value = 1
+			}
 		}
 	}
 }

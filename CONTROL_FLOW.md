@@ -70,7 +70,7 @@ Organized by subsystem. **Update this document when adding, removing, or renamin
 ### Country Variables
 | Variable | Set By | Updated | Read By | Purpose |
 |----------|--------|---------|---------|---------|
-| `sul_mining_count` | `sul_initialize_specialization_counts` | on spec change | diversity pressure | Per-spec location count |
+| `sul_mining_count` | `sul_specialization_count_initialize` | on spec change | diversity pressure | Per-spec location count |
 | `sul_farming_count` | (same) | (same) | (same) | (same) |
 | `sul_woodland_count` | (same) | (same) | (same) | (same) |
 | `sul_gathering_count` | (same) | (same) | (same) | (same) |

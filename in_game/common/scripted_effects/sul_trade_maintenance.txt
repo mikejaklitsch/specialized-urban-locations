@@ -1,0 +1,61 @@
+﻿# Trade Maintenance Efficiency -> merchant_maintenance_cost conversion
+#
+# Vanilla `merchant_maintenance_cost` is a flat additive cost modifier.
+# We replaced every source with `sul_trade_maintenance_efficiency = -X` so
+# the engine accumulates a single efficiency total. This effect reads that
+# total each month and re-emits it as merchant_maintenance_cost via the
+# multiplicative inverse formula:
+#
+#   final_cost = 1 / (1 + E) - 1
+#
+# E > 0  -> cost reduction with diminishing returns
+# E = 0  -> no modifier (both carriers removed)
+# E < 0  -> cost increase (clamped to E > -0.99 to keep the divisor finite)
+#
+# Carriers: `sul_trade_maintenance_reduction` (merchant_maintenance_cost = -1)
+# and `sul_trade_maintenance_penalty` (merchant_maintenance_cost = +1) - picked
+# by sign because add_country_modifier `size` only takes positive values.
+#
+# Country scope. Called from monthly_country_pulse via sul_hardcoded.txt.
+
+sul_trade_maintenance_apply = {
+	remove_country_modifier = sul_trade_maintenance_reduction
+	remove_country_modifier = sul_trade_maintenance_penalty
+
+	# Snapshot and clamp the engine-summed efficiency.
+	set_variable = {
+		name = sul_trade_maintenance_efficiency_total
+
+		value = { value = modifier:sul_trade_maintenance_efficiency min = -0.99 }
+	}
+
+	if = {
+		limit = { var:sul_trade_maintenance_efficiency_total > 0 }
+
+		# Cost reduction: |1/(1+E) - 1| = E/(1+E)
+		add_country_modifier = {
+			modifier = sul_trade_maintenance_reduction
+			days = -1
+
+			size = {
+				value = var:sul_trade_maintenance_efficiency_total
+				divide = { value = 1 add = var:sul_trade_maintenance_efficiency_total }
+			}
+		}
+	}
+	else_if = {
+		limit = { var:sul_trade_maintenance_efficiency_total < 0 }
+
+		# Cost increase: 1/(1+E) - 1 with E < 0 yields a positive number.
+		add_country_modifier = {
+			modifier = sul_trade_maintenance_penalty
+			days = -1
+
+			size = {
+				value = 1
+				divide = { value = 1 add = var:sul_trade_maintenance_efficiency_total }
+				subtract = 1
+			}
+		}
+	}
+}

@@ -182,7 +182,7 @@ All 4 are always set together. Guard: `has_variable = sul_spending_nobles`
 ### Country Variables — Accumulated Wages (monthly player / yearly AI)
 | Variable | Set By | Read By | Purpose |
 |----------|--------|---------|---------|
-| `sul_monthly_wages_nobles` | `sul_accumulate_wages` / `sul_update_country_economy` | `sul_pay_estate_wages` | Noble estate payment |
+| `sul_monthly_wages_nobles` | `sul_accumulate_wages` / `sul_update_country_economy` | `sul_estate_wages_pay_all` | Noble estate payment |
 | `sul_monthly_wages_clergy` | (same) | (same) | Clergy estate payment |
 | `sul_monthly_wages_burghers` | (same) | (same) | Burgher estate payment |
 | `sul_monthly_wages_peasants` | (same) | (same) | Peasant estate payment |
@@ -198,7 +198,7 @@ tax_base + wages        → sul_local_gdp
 gdp / weighted          → WPP base → per-estate WPP → sul_wealth_per_pop map
                                                      → sul_demand_* script values → pop_demands
 estate gold             → sul_budget_pressure_* → demand multiplier
-location wages          → sul_accumulate_wages → sul_monthly_wages_* → sul_pay_estate_wages → estate gold
+location wages          → sul_accumulate_wages → sul_monthly_wages_* → sul_estate_wages_pay_all → estate gold
 ```
 
 ---
@@ -440,7 +440,7 @@ the sign of the result picks which carrier to apply.
 | `main_menu/common/modifier_icons/sul_modifier_icons.txt` | Reuses vanilla `merchant_maintenance_cost.dds` icon |
 | `main_menu/localization/english/sul_modifier_types_l_english.yml` | `MODIFIER_TYPE_NAME_sul_trade_maintenance_efficiency` |
 | `main_menu/common/static_modifiers/sul_modifiers.txt` | Carrier modifiers + country/IO source overrides |
-| `in_game/common/scripted_effects/sul_economy_effects.txt` | `sul_trade_maintenance_apply` |
+| `in_game/common/scripted_effects/sul_trade_maintenance.txt` | `sul_trade_maintenance_apply` |
 | `in_game/common/on_action/sul_on_actions.txt` | `sul_trade_maintenance_apply_action` (monthly trigger wrapper) |
 | `in_game/common/on_action/sul_hardcoded.txt` | Wires the action into `monthly_country_pulse` |
 | `in_game/common/advances/sul_advances.txt` | 15 advance overrides |

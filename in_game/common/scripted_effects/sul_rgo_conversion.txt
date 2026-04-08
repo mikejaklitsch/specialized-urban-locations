@@ -1,0 +1,161 @@
+﻿# RGO Conversion - Vanilla RGO -> custom RGO building lifecycle
+#
+# Converts EU5's vanilla raw_material RGOs into our custom building-based
+# RGO system via the global sul_rgo_map (raw_material -> building_type).
+#
+# Effects defined here:
+#   sul_rgo_remove_all              - country: clear all RGO worker slots
+#                                     (called from a removal event)
+#   sul_rgo_replace_with_buildings  - location: convert vanilla RGO to
+#                                     building, seed market stockpile
+#   REPLACE:cc_setup_new_town       - vanilla override for new-town setup,
+#                                     spawns RGO building instead of vanilla
+#                                     RGO. (Name fixed by engine - do NOT
+#                                     rename, this is a vanilla override.)
+#   sul_rebuild_rgo_if_empty        - location: rebuild 1 RGO level if all
+#                                     destroyed (on_destroyed callback)
+#   sul_construct_rgo_building      - location: construct one RGO level
+#                                     (used by scripted GUI button)
+#   sul_trim_rgo_levels             - location: trim RGO levels to current
+#                                     max if over cap
+
+sul_rgo_remove_all = {
+	every_owned_location = { sul_rgo_replace_with_buildings = yes }
+
+	every_owned_location = { change_max_raw_material_workers = -100 }
+
+	add_country_modifier = {
+		modifier = force_promote_vacancies
+		months = 2
+		mode = add
+		desc = force_promote_vacancies_desc
+	}
+}
+
+# Converts vanilla RGO into corresponding building using the sul_rgo_map.
+# Location scope. Map must be initialized before calling.
+
+sul_rgo_replace_with_buildings = {
+	# Cache building_type on location for script value lookups
+	set_variable = {
+		name = sul_rgo_building_type
+		value = "global_variable_map(sul_rgo_map|raw_material)"
+	}
+
+	change_building_level_in_location = {
+		building = "global_variable_map(sul_rgo_map|raw_material)"
+		value = rgo_building_level
+	}
+
+	# Seed the market stockpile: 6 of the good + 1.8 tools (3 years of demand) per RGO level
+	save_temporary_scope_value_as = {
+		name = sul_rgo_seed_goods_amount
+		value = { value = rgo_building_level multiply = 6 }
+	}
+	save_temporary_scope_value_as = {
+		name = sul_rgo_seed_tools_amount
+		value = { value = rgo_building_level multiply = 1.8 }
+	}
+
+	market = {
+		add_goods_supply = {
+			goods = prev.raw_material
+			amount = scope:sul_rgo_seed_goods_amount
+		}
+		add_goods_supply = {
+			goods = goods:tools
+			amount = scope:sul_rgo_seed_tools_amount
+		}
+	}
+}
+
+# Overrides vanilla new-town setup to spawn RGO building instead of vanilla RGO.
+
+REPLACE:cc_setup_new_town = {
+	change_building_level_in_location = {
+		building = building_type:mason
+		value = 1
+	}
+
+	change_max_raw_material_workers = 1
+
+	# Cache building_type and spawn RGO building via map lookup
+	set_variable = {
+		name = sul_rgo_building_type
+		value = "global_variable_map(sul_rgo_map|raw_material)"
+	}
+
+	change_building_level_in_location = {
+		building = "global_variable_map(sul_rgo_map|raw_material)"
+		value = 1
+	}
+
+	if = {
+		limit = { market_access <= 0 }
+
+		create_market = {
+			builder = root
+			location = scope:new_town
+			price = price:create_market
+			instant = yes
+			price_modifier = 0
+		}
+	}
+}
+
+# Rebuilds 1 RGO level if all were destroyed (e.g. bankruptcy). Location scope.
+# Called from on_destroyed callback on RGO buildings.
+
+sul_rebuild_rgo_if_empty = {
+	if = {
+		limit = { exists = raw_material }
+
+		"global_variable_map(sul_rgo_map|raw_material)" = {
+			save_temporary_scope_as = sul_rgo_btype
+		}
+
+		if = {
+			limit = {
+				sul_location_rgo_building_level <= 0
+				modifier:sul_rgo_size > 0
+				# Verify destroyed building is still the correct RGO for this location
+				prev = { building_type = scope:sul_rgo_btype }
+			}
+
+			change_building_level_in_location = {
+				building = scope:sul_rgo_btype
+				value = 1
+			}
+		}
+	}
+}
+
+# Constructs one level of the location's RGO building. Location scope.
+# Used by the scripted GUI button.
+
+sul_construct_rgo_building = {
+	construct_building = {
+		building_type = "global_variable_map(sul_rgo_map|raw_material)"
+	}
+}
+
+# Trim RGO building levels down to max if over cap. Location scope.
+# Minimum 1 level always preserved for script safety.
+
+sul_trim_rgo_levels = {
+	if = {
+		limit = {
+			exists = raw_material
+			sul_location_rgo_building_level > sul_location_max_rgo_building_level_rounded
+		}
+
+		change_building_level_in_location = {
+			building = "global_variable_map(sul_rgo_map|raw_material)"
+
+			value = {
+				value = sul_location_max_rgo_building_level_rounded
+				subtract = sul_location_rgo_building_level
+			}
+		}
+	}
+}

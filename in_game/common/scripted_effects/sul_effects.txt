@@ -48,7 +48,7 @@ sul_full_rebuild = {
 	}
 
 	# Market cache
-	sul_do_refresh_market_cache = yes
+	sul_market_cache_refresh_all = yes
 }
 
 # =============================================================================
@@ -296,44 +296,8 @@ sul_switch_to_commercial = {
 	}
 }
 
-# =============================================================================
-# MARKET DEMAND CACHE UPDATE
-# Calculates and stores supply/demand ratios and high-demand flags
-# root = market
-# =============================================================================
-
-sul_update_market_cache = {
-	add_to_global_variable_map = {
-		name = sul_iron_pressure
-		key = this
-		value = sul_iron_market_pressure
-	}
-	add_to_global_variable_map = {
-		name = sul_mining_finished_composite
-		key = this
-		value = sul_mining_finished_composite
-	}
-	add_to_global_variable_map = {
-		name = sul_farming_finished_composite
-		key = this
-		value = sul_farming_finished_composite
-	}
-	add_to_global_variable_map = {
-		name = sul_woodland_finished_composite
-		key = this
-		value = sul_woodland_finished_composite
-	}
-	add_to_global_variable_map = {
-		name = sul_gathering_finished_composite
-		key = this
-		value = sul_gathering_finished_composite
-	}
-	add_to_global_variable_map = {
-		name = sul_commercial_finished_composite
-		key = this
-		value = sul_commercial_finished_composite
-	}
-}
+# NOTE: Market cache effects (sul_market_cache_update, sul_market_cache_refresh_all)
+# moved to sul_market_cache.txt
 
 # =============================================================================
 # INIT PRODUCTION VARIABLES
@@ -907,67 +871,8 @@ sul_increment_spec_count = {
 	}
 }
 
-# Refresh market cache if expired or not initialized
-# Called on game start (via sul_full_rebuild) and monthly (via on_action)
-
-sul_do_refresh_market_cache = {
-	if = {
-		limit = {
-			NOT = {
-				has_global_variable = sul_market_demand_cached
-			}
-		}
-
-		# Single pass through all markets
-		every_market_in_world = {
-			save_temporary_scope_as = current_market
-			# Cache pressure values and price bonuses
-			sul_update_market_cache = yes
-			# Calculate trade spread for commercial specialization
-			# Formula: sum of |price/base - 1| × base for all goods
-			# Use location for accumulation, then store in global map
-			location = {
-				set_variable = { name = sul_trade_spread_temp value = 0 }
-				clear_variable_map = sul_market_prices
-			}
-
-			# Accumulate price deviation + cache raw prices per good
-			every_goods = {
-				save_temporary_scope_as = current_good
-
-				scope:current_market.location = {
-					change_variable = {
-						name = sul_trade_spread_temp
-						add = "scope:current_good.sul_goods_price_deviation"
-					}
-
-					add_to_variable_map = {
-						name = sul_market_prices
-						key = scope:current_good
-						value = "scope:current_good.price_in_market(scope:current_market)"
-					}
-				}
-			}
-
-			# Normalize to 0-10 range (typical active market has ~50-100 total)
-			location = {
-				change_variable = { name = sul_trade_spread_temp divide = 10 }
-				clamp_variable = { name = sul_trade_spread_temp min = 0 max = 10 }
-			}
-
-			# Store in global variable map with market as key
-			add_to_global_variable_map = {
-				name = sul_trade_spread
-				key = this
-				value = location.var:sul_trade_spread_temp
-			}
-
-			location = { remove_variable = sul_trade_spread_temp }
-		}
-
-		set_global_variable = { name = sul_market_demand_cached value = 1 }
-	}
-}
+# NOTE: sul_market_cache_refresh_all (formerly sul_do_refresh_market_cache)
+# moved to sul_market_cache.txt
 
 # Per-country passthrough pulse. Implements the yosiu_market_stockpiles
 # workshop mod's approach compressed via $GOOD$ argument substitution:

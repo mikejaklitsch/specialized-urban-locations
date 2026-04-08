@@ -105,18 +105,18 @@ Set by `sul_set_init_production_variables` during game start. Gate building vali
 ### Global Variable Maps (keyed by market)
 | Map | Set By | Updated | Read By | Purpose |
 |-----|--------|---------|---------|---------|
-| `sul_iron_pressure` | `sul_update_market_cache` | monthly cache refresh | spec eligibility | Iron market pressure |
+| `sul_iron_pressure` | `sul_market_cache_update` | monthly cache refresh | spec eligibility | Iron market pressure |
 | `sul_mining_finished_composite` | (same) | (same) | spec eligibility | Mining output demand/supply ratio |
 | `sul_farming_finished_composite` | (same) | (same) | spec eligibility | Farming output demand/supply ratio |
 | `sul_woodland_finished_composite` | (same) | (same) | spec eligibility | Woodland output demand/supply ratio |
 | `sul_gathering_finished_composite` | (same) | (same) | spec eligibility | Gathering output demand/supply ratio |
 | `sul_commercial_finished_composite` | (same) | (same) | spec eligibility | Commercial output demand/supply ratio |
-| `sul_trade_spread` | `sul_do_refresh_market_cache` | monthly cache refresh | commercial spec gating | Price deviation across all goods in market |
+| `sul_trade_spread` | `sul_market_cache_refresh_all` | monthly cache refresh | commercial spec gating | Price deviation across all goods in market |
 
 ### Global Flags
 | Variable | Set By | Cleared By | Purpose |
 |----------|--------|------------|---------|
-| `sul_market_demand_cached` | `sul_do_refresh_market_cache` | `sul_clear_market_cache` (monthly) | Cache validity flag |
+| `sul_market_demand_cached` | `sul_market_cache_refresh_all` | `sul_clear_market_cache` (monthly) | Cache validity flag |
 | `sul_cache_month` | `sul_clear_market_cache` | (overwritten monthly) | Current month for expiry detection |
 
 ---

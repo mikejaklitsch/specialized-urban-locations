@@ -597,7 +597,7 @@ in `sul_hardcoded.txt`.
 - Enfranchisement bounds: min=0.1, max=1.0
 - Demand tiers: necessity=0, basic=0.05, common=0.12, upper=0.25, luxury=0.5, exotic=1.5
 
-### Specialization (sul_effects.txt)
+### Specialization (sul_specialization.txt)
 - Type IDs: `@sul_mining_type=1`, farming=2, gathering=3, woodland=4, commercial=5
 - Rank offsets: town=0, city=10, rural=20
 - `@sul_farming_weight=2`

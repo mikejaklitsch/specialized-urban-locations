@@ -369,8 +369,8 @@ live from `stockpile_in_market`, `goods_supply_in_market`, and the
 `maximum_stockpile_capacity` location modifier.
 
 ### Execution
-- `sul_passthrough_pulse` (monthly_country_pulse, `has_markets = yes` trigger)
-  → `sul_do_passthrough_pulse` (every_market_center_in_country)
+- `sul_passthrough_pulse` (on_action, monthly_country_pulse, `has_markets = yes` trigger)
+  → `sul_passthrough_apply` (every_market_center_in_country)
   → bulk-removes 75 `sul_<good>_stockpile` + 75 `sul_<good>_oversupply` temp demands
   → calls `sul_passthrough_per_good = { GOOD = <name> }` 75 times (parse-time expansion)
 
@@ -389,7 +389,7 @@ depleted hubs visible to trade routing.
 | `auto_modifiers/sul_passthrough_modifiers.txt` | INJECT `produced_in_market_bonus = -0.2` into `country_base_values` to cancel vanilla local-producer discount |
 | `generic_actions/sul_destroy_market.txt` | REPLACE vanilla `destroy_market` with the `has_temporary_demands = no` check removed |
 | `script_values/sul_economy_values.txt` (passthrough section) | `sul_passthrough_local_capacity`, `_fill_ratio`, `_upper_value`, `_lower_value`, `_upper_overflow`, `_supply_effect`, `_warehouse_correction`, `_low_supply_effect`, `_low_stockpile_effect`, `_1cutoff`, `_2cutoff`, `_3cutoff` |
-| `scripted_effects/sul_effects.txt` (passthrough section) | `sul_do_passthrough_pulse`, `sul_passthrough_per_good` |
+| `scripted_effects/sul_passthrough_pulse.txt` | `sul_passthrough_apply`, `sul_passthrough_per_good` |
 | `on_action/sul_on_actions.txt` | `sul_passthrough_pulse` handler |
 | `on_action/sul_hardcoded.txt` | `sul_passthrough_pulse` registered in `monthly_country_pulse` |
 

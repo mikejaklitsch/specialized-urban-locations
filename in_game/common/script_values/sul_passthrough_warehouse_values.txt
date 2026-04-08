@@ -1,0 +1,172 @@
+﻿# Passthrough warehouse stockpile math.
+#
+# Called from market scope (inside sul_passthrough_per_good's
+# scope:current_market block). Uses the workshop mod's script value
+# chaining pattern: helpers that read modifiers/stockpile from the right
+# scope, composed into the main formula.
+#
+# Scope chain paths like scope:X.location.modifier:Y DO NOT WORK in EU5 -
+# only single-hop prefixes (location.X, owner.X, prev.X) parse correctly.
+# That's why an intermediate location-scoped helper is needed for the
+# modifier reads.
+#
+# None of these read goods_demand_in_market - that read is stale after
+# remove_temporary_demand inside the same effect execution.
+
+# Location-scoped helper: returns the location's max stockpile capacity.
+# Referenced via location.sul_passthrough_local_capacity from market scope.
+
+sul_passthrough_local_capacity = {
+	value = "modifier:maximum_stockpile_capacity"
+}
+
+sul_passthrough_fill_ratio = {
+	value = "stockpile_in_market(scope:current_good)"
+	divide = location.sul_passthrough_local_capacity
+}
+
+sul_passthrough_upper_value = {
+	value = location.sul_passthrough_local_capacity
+	multiply = 0.05
+}
+
+sul_passthrough_lower_value = {
+	value = location.sul_passthrough_local_capacity
+	multiply = 0.049
+}
+
+# Overflow factor: how far above the 5% threshold the stockpile is,
+# as a percentage (0 at threshold, 95 at full). Used by supply_effect
+# to scale the demand reduction smoothly with fill level.
+
+sul_passthrough_upper_overflow = {
+	value = sul_passthrough_fill_ratio
+	subtract = 0.05
+	multiply = 100
+	min = 0
+}
+
+sul_passthrough_1cutoff = {
+	value = location.sul_passthrough_local_capacity
+	multiply = 0.5
+}
+
+sul_passthrough_2cutoff = {
+	value = location.sul_passthrough_local_capacity
+	multiply = 0.75
+}
+
+sul_passthrough_3cutoff = {
+	value = location.sul_passthrough_local_capacity
+	multiply = 0.95
+}
+
+# HIGH branch demand scale. Piecewise linear, evaluated via if/else_if so
+# only ONE tier's formula fires per call (checked highest-to-lowest).
+# Each tier is a single linear function:
+#   start_value + (fill - tier_start) × slope
+# where start_value matches the previous tier's endpoint to keep the curve
+# continuous without summing all prior contributions.
+#
+# Tier boundaries (start → end value as fill goes through the range):
+#   Base (≤ 50%):    workshop's gentle formula, 0 → 12
+#   Tier 1 (50-75%): 12 → 112  (slope 400)
+#   Tier 2 (75-95%): 112 → 412 (slope 1500)
+#   Tier 3 (> 95%):  412 → 812 (slope 8000)
+#
+# Max demand reduction at 100% fill = -812 (with _stockpile template -1).
+# Tune slopes (400 / 1500 / 8000) and starting offsets (12 / 112 / 412)
+# together to keep the curve continuous.
+
+sul_passthrough_supply_effect = {
+	value = 0
+
+	# Tier 3 (> 95%): final crush ramp. 412 → 812 as fill 95% → 100%.
+	if = {
+		limit = { sul_passthrough_fill_ratio > 0.95 }
+
+		add = {
+			value = sul_passthrough_fill_ratio
+			subtract = 0.95
+			multiply = 8000
+			add = 412
+		}
+	}
+
+	# Tier 2 (> 75%): strong ramp. 112 → 412 as fill 75% → 95%.
+	else_if = {
+		limit = { sul_passthrough_fill_ratio > 0.75 }
+
+		add = {
+			value = sul_passthrough_fill_ratio
+			subtract = 0.75
+			multiply = 1500
+			add = 112
+		}
+	}
+
+	# Tier 1 (> 50%): moderate ramp. 12 → 112 as fill 50% → 75%.
+	else_if = {
+		limit = { sul_passthrough_fill_ratio > 0.5 }
+
+		add = {
+			value = sul_passthrough_fill_ratio
+			subtract = 0.5
+			multiply = 400
+			add = 12
+		}
+	}
+
+	# Base (≤ 50%): workshop mod's original gentle ramp. 0 → 12.
+	else = {
+		add = {
+			value = "stockpile_in_market(scope:current_good)"
+			subtract = sul_passthrough_upper_value
+			divide = 18
+			min = 1
+			divide = 95
+			multiply = sul_passthrough_upper_overflow
+		}
+	}
+}
+
+# Warehouse efficiency correction - matches the warehouse building's net
+# output per tick (+0.03 base + local/global production_efficiency).
+# The paired _oversupply demand uses this scale to cancel the warehouse's
+# contribution at the flow layer, so the warehouse inflates the supply
+# reading without actually growing the stockpile.
+
+sul_passthrough_warehouse_correction = {
+	value = 0.03
+	add = location.modifier:local_production_efficiency
+	add = location.owner.modifier:global_production_efficiency
+}
+
+# LOW branch: price-up demand scale. Bounded small negative so it nudges
+# the price up without spiking.
+
+sul_passthrough_low_supply_effect = {
+	value = -0.1
+
+	multiply = {
+		value = 0.05
+		subtract = sul_passthrough_fill_ratio
+		min = 0
+		max = 0.05
+	}
+
+	multiply = 20
+	max = -0.01
+	min = -0.5
+}
+
+# LOW branch: how much supply to inject via add_goods_supply. Small
+# positive amount proportional to how empty the stockpile is.
+
+sul_passthrough_low_stockpile_effect = {
+	value = 0.05
+	subtract = sul_passthrough_fill_ratio
+	min = 0
+	multiply = location.sul_passthrough_local_capacity
+	multiply = 0.1
+}

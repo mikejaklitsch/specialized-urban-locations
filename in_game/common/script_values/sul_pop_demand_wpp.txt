@@ -1,0 +1,108 @@
+﻿# Pop wealth-per-pop reader + tier gates.
+#
+# sul_read_wpp returns the cached wealth-per-pop value for the current pop
+# scope (read via prev.pop_type from a location-scoped script value).
+# sul_read_tier_* returns max(0, wpp - threshold) for one tier.
+# sul_demand_* is the same gate × budget pressure (used by pop_demands.txt
+# in a single multiply rather than read_tier × budget_pressure separately).
+#
+# Tier thresholds must match TIER_THRESHOLD in tools/demand_calculator.py.
+
+@sul_tier_threshold_necessity = 0
+@sul_tier_threshold_basic = 0.05
+@sul_tier_threshold_common = 0.12
+@sul_tier_threshold_upper = 0.25
+@sul_tier_threshold_luxury = 0.5
+@sul_tier_threshold_exotic = 1.5
+
+sul_read_wpp = {
+	value = 0
+	if = {
+		limit = {
+			has_variable_map = sul_wealth_per_pop
+			is_key_in_variable_map = { name = sul_wealth_per_pop target = prev.pop_type }
+		}
+
+		add = "variable_map(sul_wealth_per_pop|prev.pop_type)"
+	}
+}
+
+sul_read_tier_necessity = {
+	value = sul_read_wpp
+	subtract = @sul_tier_threshold_necessity
+	min = 0
+}
+
+sul_read_tier_basic = {
+	value = sul_read_wpp
+	subtract = @sul_tier_threshold_basic
+	min = 0
+}
+
+sul_read_tier_common = {
+	value = sul_read_wpp
+	subtract = @sul_tier_threshold_common
+	min = 0
+}
+
+sul_read_tier_upper = {
+	value = sul_read_wpp
+	subtract = @sul_tier_threshold_upper
+	min = 0
+}
+
+sul_read_tier_luxury = {
+	value = sul_read_wpp
+	subtract = @sul_tier_threshold_luxury
+	min = 0
+}
+
+sul_read_tier_exotic = {
+	value = sul_read_wpp
+	subtract = @sul_tier_threshold_exotic
+	min = 0
+}
+
+# Combined tier gate × budget pressure (single multiply in pop_demands)
+
+sul_demand_necessity = {
+	value = sul_read_wpp
+	subtract = @sul_tier_threshold_necessity
+	min = 0
+	multiply = sul_budget_pressure
+}
+
+sul_demand_basic = {
+	value = sul_read_wpp
+	subtract = @sul_tier_threshold_basic
+	min = 0
+	multiply = sul_budget_pressure
+}
+
+sul_demand_common = {
+	value = sul_read_wpp
+	subtract = @sul_tier_threshold_common
+	min = 0
+	multiply = sul_budget_pressure
+}
+
+sul_demand_upper = {
+	value = sul_read_wpp
+	subtract = @sul_tier_threshold_upper
+	min = 0
+	multiply = sul_budget_pressure
+}
+
+sul_demand_luxury = {
+	value = sul_read_wpp
+	subtract = @sul_tier_threshold_luxury
+	min = 0
+	multiply = sul_budget_pressure
+}
+
+sul_demand_exotic = {
+	value = sul_read_wpp
+	subtract = @sul_tier_threshold_exotic
+	min = 0
+	multiply = sul_budget_pressure
+}

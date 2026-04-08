@@ -1,0 +1,48 @@
+﻿# Per-estate spending intensity, sourced from country variables that the
+# economy update writes each month. Looked up via prev.pop_type so the
+# value is automatically correct when called from inside sul_demand_*
+# (which itself runs inside the location-scoped pop demand evaluation).
+#
+# soldiers/laborers/peasants share the "peasants" pressure value because
+# they're all commoner estates from the GDP system's perspective.
+
+sul_budget_pressure = {
+	value = 1
+	if = {
+		limit = {
+			prev.pop_type = pop_type:nobles
+			owner = { has_variable = sul_budget_pressure_nobles }
+		}
+
+		value = owner.var:sul_budget_pressure_nobles
+	}
+	if = {
+		limit = {
+			prev.pop_type = pop_type:clergy
+			owner = { has_variable = sul_budget_pressure_clergy }
+		}
+
+		value = owner.var:sul_budget_pressure_clergy
+	}
+	if = {
+		limit = {
+			prev.pop_type = pop_type:burghers
+			owner = { has_variable = sul_budget_pressure_burghers }
+		}
+
+		value = owner.var:sul_budget_pressure_burghers
+	}
+	if = {
+		limit = {
+			OR = {
+				prev.pop_type = pop_type:peasants
+				prev.pop_type = pop_type:laborers
+				prev.pop_type = pop_type:soldiers
+			}
+
+			owner = { has_variable = sul_budget_pressure_peasants }
+		}
+
+		value = owner.var:sul_budget_pressure_peasants
+	}
+}

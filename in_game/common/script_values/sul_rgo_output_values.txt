@@ -1,0 +1,96 @@
+﻿# RGO building level / output / max-level math.
+#
+# sul_location_rgo_building_level reads var:sul_rgo_building_type which is
+# set during game start init on each location and refreshed on owner /
+# raw-material change. Without that variable, building_type lookups would
+# need a per-good if-chain.
+#
+# sul_rgo_max_level_base mirrors the sul_rgo_size static modifier
+# contributions but as an explicit script value with desc lines so the
+# tooltip can show each contribution separately.
+
+employment_size_RGO = 1
+
+build_time_RGO = 365
+
+sul_rgo_output_per_level = {
+	value = raw_material_output
+
+	divide = { value = sul_location_rgo_building_level min = 1 }
+}
+
+sul_location_rgo_building_level = {
+	value = "location_building_level(var:sul_rgo_building_type)"
+}
+
+sul_rgo_levels_under_construction = {
+	value = var:sul_rgo_constructing
+}
+
+sul_location_max_rgo_building_level = {
+	value = sul_rgo_max_level_base
+	min = 1
+}
+
+sul_location_max_rgo_building_level_rounded = {
+	value = sul_rgo_max_level_base
+	floor = yes
+	min = 1
+}
+
+# Starting level when an RGO is first created: 1 minimum + 1 per 50 pops.
+
+rgo_building_level = {
+	value = 1
+
+	add = { value = population divide = 50 }
+
+	floor = yes
+}
+
+sul_rgo_max_level_base = {
+	# Local flat: base(2) + dev(0.1) + pop(0.04) + farmland(0.5) + rural(4) + granary(0.05/lvl)
+	add = { desc = "SUL_RGO_LEVEL_FLAT" value = modifier:sul_rgo_size }
+
+	# Country flat: advances, laws, privileges, religion, societal values
+	if = {
+		limit = { has_owner = yes }
+
+		add = {
+			desc = "SUL_RGO_LEVEL_COUNTRY"
+			value = owner.modifier:global_sul_rgo_size
+		}
+
+		if = {
+			limit = { location_rank = location_rank:rural_settlement }
+
+			add = {
+				desc = "SUL_RGO_LEVEL_RURAL"
+				value = owner.modifier:global_sul_rgo_size_in_rural
+			}
+		}
+
+		if = {
+			limit = { is_town_or_city = yes }
+
+			add = {
+				desc = "SUL_RGO_LEVEL_URBAN"
+				value = owner.modifier:global_sul_rgo_size_in_non_rural
+			}
+		}
+	}
+
+	# Specialization tier bonus
+	if = {
+		limit = { sul_has_any_specialization = yes }
+		if = {
+			limit = { location_rank = location_rank:city }
+			add = { desc = "SUL_RGO_LEVEL_SPEC_CITY" value = 10 }
+		}
+		else_if = {
+			limit = { is_town_or_city = yes }
+			add = { desc = "SUL_RGO_LEVEL_SPEC_TOWN" value = 5 }
+		}
+		else = { add = { desc = "SUL_RGO_LEVEL_SPEC_RURAL" value = 3 } }
+	}
+}

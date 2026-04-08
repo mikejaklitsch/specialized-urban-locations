@@ -388,9 +388,9 @@ depleted hubs visible to trade routing.
 | `building_types/sul_warehouse_buildings.txt` | 75 fake `sul_<good>_warehouse` buildings (`free_building_levels = 1`, self-cancelling production method) |
 | `auto_modifiers/sul_passthrough_modifiers.txt` | INJECT `produced_in_market_bonus = -0.2` into `country_base_values` to cancel vanilla local-producer discount |
 | `generic_actions/sul_destroy_market.txt` | REPLACE vanilla `destroy_market` with the `has_temporary_demands = no` check removed |
-| `script_values/sul_economy_values.txt` (passthrough section) | `sul_passthrough_local_capacity`, `_fill_ratio`, `_upper_value`, `_lower_value`, `_upper_overflow`, `_supply_effect`, `_warehouse_correction`, `_low_supply_effect`, `_low_stockpile_effect`, `_1cutoff`, `_2cutoff`, `_3cutoff` |
+| `script_values/sul_passthrough_warehouse_values.txt` | `sul_passthrough_local_capacity`, `_fill_ratio`, `_upper_value`, `_lower_value`, `_upper_overflow`, `_supply_effect`, `_warehouse_correction`, `_low_supply_effect`, `_low_stockpile_effect`, `_1cutoff`, `_2cutoff`, `_3cutoff` |
 | `scripted_effects/sul_passthrough_pulse.txt` | `sul_passthrough_apply`, `sul_passthrough_per_good` |
-| `on_action/sul_on_actions.txt` | `sul_passthrough_pulse` handler |
+| `on_action/sul_passthrough_on_actions.txt` | `sul_passthrough_pulse` handler |
 | `on_action/sul_hardcoded.txt` | `sul_passthrough_pulse` registered in `monthly_country_pulse` |
 
 ### Defines tuned for passthrough (`loading_screen/common/defines/sul_food_defines.txt`)

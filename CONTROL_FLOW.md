@@ -60,12 +60,12 @@ Organized by subsystem. **Update this document when adding, removing, or renamin
 ### Location Variables
 | Variable | Set By | Updated | Read By | Purpose |
 |----------|--------|---------|---------|---------|
-| `sul_spec_type` | `sul_assign_specialization_by_resources` | on_raw_material_changed, rank change | triggers, effects, GUI | Type: 1=mining, 2=farming, 3=gathering, 4=woodland, 5=commercial |
-| `sul_designation` | `sul_update_designation` | after spec change | GUI | Combined type+rank encoding for tooltip display |
-| `sul_can_mine` | `sul_calculate_specialization_eligibility` | on_raw_material_changed, rank change | triggers | Eligibility flag |
-| `sul_can_farm` | `sul_calculate_specialization_eligibility` | on_raw_material_changed, rank change | triggers | Eligibility flag |
-| `sul_can_gather` | `sul_calculate_specialization_eligibility` | on_raw_material_changed, rank change | triggers | Eligibility flag |
-| `sul_can_woodland` | `sul_calculate_specialization_eligibility` | on_raw_material_changed, rank change | triggers | Eligibility flag |
+| `sul_spec_type` | `sul_specialization_assign_by_resources` | on_raw_material_changed, rank change | triggers, effects, GUI | Type: 1=mining, 2=farming, 3=gathering, 4=woodland, 5=commercial |
+| `sul_designation` | `sul_specialization_update_designation` | after spec change | GUI | Combined type+rank encoding for tooltip display |
+| `sul_can_mine` | `sul_specialization_calculate_eligibility` | on_raw_material_changed, rank change | triggers | Eligibility flag |
+| `sul_can_farm` | `sul_specialization_calculate_eligibility` | on_raw_material_changed, rank change | triggers | Eligibility flag |
+| `sul_can_gather` | `sul_specialization_calculate_eligibility` | on_raw_material_changed, rank change | triggers | Eligibility flag |
+| `sul_can_woodland` | `sul_specialization_calculate_eligibility` | on_raw_material_changed, rank change | triggers | Eligibility flag |
 
 ### Country Variables
 | Variable | Set By | Updated | Read By | Purpose |
@@ -79,14 +79,14 @@ Organized by subsystem. **Update this document when adding, removing, or renamin
 
 ### Location Modifiers (15 total: 5 specs x 3 ranks)
 Pattern: `sul_{spec}_{rank}_specialization` where spec = mining/farming/gathering/woodland/commercial, rank = rural/town/city.
-Applied by `sul_apply_specialization_modifier`, removed by `sul_clear_all_specialization_modifiers`.
+Applied by `sul_specialization_apply_modifier`, removed by `sul_specialization_clear_all_modifiers`.
 
 | Modifier | Scope | Purpose |
 |----------|-------|---------|
 | `sul_recently_respecialized` | location | 5-year cooldown after spec change. Applied by generic_actions + missions. Removed on raw material change. |
 
 ### Init-Only Variables (location scope, 1-day expiry)
-Set by `sul_set_init_production_variables` during game start. Gate building validation before modifiers load. All auto-expire.
+Set by `sul_specialization_set_init_production_variables` during game start. Gate building validation before modifiers load. All auto-expire.
 
 **Mining:** `sul_allows_tools_production`, `sul_allows_weapons_production`, `sul_allows_cannon_production`, `sul_allows_firearms_production`, `sul_allows_jewelry_production`, `sul_allows_steel_production`
 
@@ -134,7 +134,7 @@ Set by `sul_set_init_production_variables` during game start. Gate building vali
 |----------|--------|---------|---------|---------|
 | `sul_rgo_building_type` | `sul_on_location_changed_owner`, RGO init | on_raw_material_changed | building construction/destruction, `sul_location_rgo_building_level` script value | Cached building_type for this location's RGO |
 | `sul_rgo_constructing` | RGO construction callbacks | on_construction_ended (-1) | construction tracking | Levels under construction |
-| `sul_prior_building_levels` | `sul_save_building_levels` | on spec change | building redistribution | Saved levels before destruction |
+| `sul_prior_building_levels` | `sul_specialization_save_building_levels` | on spec change | building redistribution | Saved levels before destruction |
 
 ### Distribution Counters (location scope, temporary during `sul_distribute_*_buildings`)
 | Variable | Purpose |

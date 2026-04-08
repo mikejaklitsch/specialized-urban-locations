@@ -17,7 +17,7 @@
 # Minimally invasive: preserves valid player specializations and buildings
 # Only reassigns locations whose current spec violates updated rules
 
-sul_full_rebuild = {
+sul_specialization_full_rebuild = {
 	sul_setup_goods_spec_map = yes
 
 	# Cleanup: destroy fruit orchards in locations that no longer meet climate gates
@@ -42,9 +42,9 @@ sul_full_rebuild = {
 	# All ownable locations: recalculate eligibility, then branch
 	every_location_in_the_world = {
 		limit = { is_ownable = yes exists = raw_material }
-		sul_calculate_specialization_eligibility = yes
-		sul_rebuild_location = yes
-		sul_set_init_production_variables = yes
+		sul_specialization_calculate_eligibility = yes
+		sul_specialization_rebuild_location = yes
+		sul_specialization_set_init_production_variables = yes
 	}
 
 	# Market cache
@@ -60,22 +60,22 @@ sul_full_rebuild = {
 # 3. Invalid specialization -> reassign by resources + rebuild buildings
 # root = location (eligibility already calculated)
 
-sul_rebuild_location = {
+sul_specialization_rebuild_location = {
 	if = {
 		limit = { sul_has_any_specialization = yes }
 		if = {
 			# Current spec still valid - just refresh the modifier
 			limit = { sul_current_specialization_is_valid = yes }
-			sul_refresh_specialization_modifier = yes
+			sul_specialization_refresh_modifier = yes
 		}
 		else = {
 			# Current spec no longer valid - full reassignment
-			sul_reassign_specialization = yes
+			sul_specialization_reassign = yes
 		}
 	}
 	else = {
 		# No specialization yet - first-time init
-		sul_init_new_specialization = yes
+		sul_specialization_init_new = yes
 	}
 }
 
@@ -85,10 +85,10 @@ sul_rebuild_location = {
 # Swaps the modifier for the current spec+rank without changing anything else
 # root = location (must have sul_spec_type set)
 
-sul_refresh_specialization_modifier = {
-	sul_clear_all_specialization_modifiers = yes
-	sul_update_designation = yes
-	sul_apply_specialization_modifier = yes
+sul_specialization_refresh_modifier = {
+	sul_specialization_clear_all_modifiers = yes
+	sul_specialization_update_designation = yes
+	sul_specialization_apply_modifier = yes
 }
 
 # =============================================================================
@@ -98,16 +98,16 @@ sul_refresh_specialization_modifier = {
 # Clears old state, picks best match from resources, rebuilds buildings
 # root = location
 
-sul_reassign_specialization = {
-	sul_clear_all_specialization_modifiers = yes
-	sul_assign_specialization_by_resources = yes
-	sul_apply_specialization_modifier = yes
+sul_specialization_reassign = {
+	sul_specialization_clear_all_modifiers = yes
+	sul_specialization_assign_by_resources = yes
+	sul_specialization_apply_modifier = yes
 
 	# Replace incompatible buildings with matching ones for owned locations
 	if = {
 		limit = { exists = owner }
-		sul_save_building_levels = yes
-		sul_destroy_non_matching_buildings = yes
+		sul_specialization_save_building_levels = yes
+		sul_specialization_destroy_non_matching_buildings = yes
 		sul_distribute_specialization_buildings = yes
 	}
 }
@@ -118,15 +118,15 @@ sul_reassign_specialization = {
 # First-time setup for a location that has never been specialized
 # root = location
 
-sul_init_new_specialization = {
-	sul_assign_specialization_by_resources = yes
-	sul_apply_specialization_modifier = yes
+sul_specialization_init_new = {
+	sul_specialization_assign_by_resources = yes
+	sul_specialization_apply_modifier = yes
 
 	# Replace incompatible buildings with matching ones for owned locations
 	if = {
 		limit = { exists = owner }
-		sul_save_building_levels = yes
-		sul_destroy_non_matching_buildings = yes
+		sul_specialization_save_building_levels = yes
+		sul_specialization_destroy_non_matching_buildings = yes
 		sul_distribute_specialization_buildings = yes
 	}
 }
@@ -137,7 +137,7 @@ sul_init_new_specialization = {
 # root = location — sets sul_prior_building_levels variable
 # =============================================================================
 
-sul_save_building_levels = {
+sul_specialization_save_building_levels = {
 	set_variable = {
 		name = sul_prior_building_levels
 		value = total_building_levels
@@ -151,7 +151,7 @@ sul_save_building_levels = {
 # Called on: game start, colonization, raw material change
 # =============================================================================
 
-sul_calculate_specialization_eligibility = {
+sul_specialization_calculate_eligibility = {
 	# Mining: mining resources OR mountains OR wetlands OR lake adjacency
 	if = {
 		limit = {
@@ -226,7 +226,7 @@ sul_calculate_specialization_eligibility = {
 # root = location
 # =============================================================================
 
-sul_validate_specialization = {
+sul_specialization_validate = {
 	if = {
 		limit = { sul_has_any_specialization = yes }
 		if = {
@@ -237,7 +237,7 @@ sul_validate_specialization = {
 				}
 			}
 
-			sul_switch_to_commercial = yes
+			sul_specialization_switch_to_commercial = yes
 		}
 		else_if = {
 			limit = {
@@ -247,7 +247,7 @@ sul_validate_specialization = {
 				}
 			}
 
-			sul_switch_to_commercial = yes
+			sul_specialization_switch_to_commercial = yes
 		}
 		else_if = {
 			limit = {
@@ -257,7 +257,7 @@ sul_validate_specialization = {
 				}
 			}
 
-			sul_switch_to_commercial = yes
+			sul_specialization_switch_to_commercial = yes
 		}
 		else_if = {
 			limit = {
@@ -267,7 +267,7 @@ sul_validate_specialization = {
 				}
 			}
 
-			sul_switch_to_commercial = yes
+			sul_specialization_switch_to_commercial = yes
 		}
 	}
 }
@@ -278,12 +278,12 @@ sul_validate_specialization = {
 # root = location
 # =============================================================================
 
-sul_switch_to_commercial = {
-	sul_clear_all_specialization_modifiers = yes
+sul_specialization_switch_to_commercial = {
+	sul_specialization_clear_all_modifiers = yes
 
 	set_variable = { name = sul_spec_type value = @sul_commercial_type }
 
-	sul_apply_specialization_modifier = yes
+	sul_specialization_apply_modifier = yes
 	if = {
 		limit = {
 			OR = {
@@ -292,7 +292,7 @@ sul_switch_to_commercial = {
 			}
 		}
 
-		sul_destroy_non_matching_buildings = yes
+		sul_specialization_destroy_non_matching_buildings = yes
 	}
 }
 
@@ -307,7 +307,7 @@ sul_switch_to_commercial = {
 # root = location (must have sul_spec_type set)
 # =============================================================================
 
-sul_set_init_production_variables = {
+sul_specialization_set_init_production_variables = {
 	if = {
 		limit = { sul_has_mining_specialization = yes }
 		set_variable = { name = sul_allows_tools_production value = 1 days = 1 }
@@ -369,7 +369,7 @@ sul_set_init_production_variables = {
 # Mining Specialization - keeps mining buildings
 # ============================================
 
-sul_destroy_non_mining_buildings = {
+sul_specialization_destroy_non_mining_buildings = {
 	every_buildings_in_location = {
 		limit = {
 			sul_is_destroyable_specialization_building = yes
@@ -390,7 +390,7 @@ sul_destroy_non_mining_buildings = {
 # Farming Specialization - keeps farming buildings
 # ============================================
 
-sul_destroy_non_farming_buildings = {
+sul_specialization_destroy_non_farming_buildings = {
 	every_buildings_in_location = {
 		limit = {
 			sul_is_destroyable_specialization_building = yes
@@ -411,7 +411,7 @@ sul_destroy_non_farming_buildings = {
 # Woodland Specialization - keeps woodland buildings
 # ============================================
 
-sul_destroy_non_woodland_buildings = {
+sul_specialization_destroy_non_woodland_buildings = {
 	every_buildings_in_location = {
 		limit = {
 			sul_is_destroyable_specialization_building = yes
@@ -432,7 +432,7 @@ sul_destroy_non_woodland_buildings = {
 # Gathering Specialization - keeps gathering buildings
 # ============================================
 
-sul_destroy_non_gathering_buildings = {
+sul_specialization_destroy_non_gathering_buildings = {
 	every_buildings_in_location = {
 		limit = {
 			sul_is_destroyable_specialization_building = yes
@@ -453,7 +453,7 @@ sul_destroy_non_gathering_buildings = {
 # Commercial Specialization - keeps commercial buildings (universities already part of commercial)
 # ============================================
 
-sul_destroy_non_commercial_buildings = {
+sul_specialization_destroy_non_commercial_buildings = {
 	every_buildings_in_location = {
 		limit = {
 			sul_is_destroyable_specialization_building = yes
@@ -471,26 +471,26 @@ sul_destroy_non_commercial_buildings = {
 # root = location (must have sul_spec_type variable set)
 # ============================================
 
-sul_destroy_non_matching_buildings = {
+sul_specialization_destroy_non_matching_buildings = {
 	if = {
 		limit = { sul_has_mining_specialization = yes }
-		sul_destroy_non_mining_buildings = yes
+		sul_specialization_destroy_non_mining_buildings = yes
 	}
 	else_if = {
 		limit = { sul_has_farming_specialization = yes }
-		sul_destroy_non_farming_buildings = yes
+		sul_specialization_destroy_non_farming_buildings = yes
 	}
 	else_if = {
 		limit = { sul_has_woodland_specialization = yes }
-		sul_destroy_non_woodland_buildings = yes
+		sul_specialization_destroy_non_woodland_buildings = yes
 	}
 	else_if = {
 		limit = { sul_has_gathering_specialization = yes }
-		sul_destroy_non_gathering_buildings = yes
+		sul_specialization_destroy_non_gathering_buildings = yes
 	}
 	else_if = {
 		limit = { sul_has_commercial_specialization = yes }
-		sul_destroy_non_commercial_buildings = yes
+		sul_specialization_destroy_non_commercial_buildings = yes
 	}
 }
 
@@ -502,7 +502,7 @@ sul_destroy_non_matching_buildings = {
 # root = location
 # ============================================
 
-sul_clear_all_specialization_modifiers = {
+sul_specialization_clear_all_modifiers = {
 	if = {
 		limit = { sul_has_mining_specialization = yes }
 		if = {
@@ -587,7 +587,7 @@ sul_clear_all_specialization_modifiers = {
 # Sets sul_spec_type to type only (1-5); rank derived from location_rank
 # ============================================
 
-sul_assign_specialization_by_resources = {
+sul_specialization_assign_by_resources = {
 	# Commercial specialization (market centers always; cities require development > 30; towns pass through)
 	if = {
 		limit = {
@@ -640,7 +640,10 @@ sul_assign_specialization_by_resources = {
 	}
 
 	# Update combined designation for GUI
-	if = { limit = { has_variable = sul_spec_type } sul_update_designation = yes }
+	if = {
+		limit = { has_variable = sul_spec_type }
+		sul_specialization_update_designation = yes
+	}
 }
 
 # ============================================
@@ -650,7 +653,7 @@ sul_assign_specialization_by_resources = {
 # root = location (must have sul_spec_type set)
 # ============================================
 
-sul_update_designation = {
+sul_specialization_update_designation = {
 	set_variable = { name = sul_designation value = var:sul_spec_type }
 	if = {
 		limit = { location_rank = location_rank:city }
@@ -668,7 +671,7 @@ sul_update_designation = {
 # root = location (must have sul_spec_type variable set)
 # ============================================
 
-sul_apply_specialization_modifier = {
+sul_specialization_apply_modifier = {
 	if = {
 		limit = { var:sul_spec_type = @sul_mining_type }
 		if = {

@@ -1,0 +1,117 @@
+﻿# Power Projection — gate layer.
+# Subject-interaction gates: an overlord cannot force-convert (culture or
+# religion) a subject whose power projection exceeds its own. Implemented as
+# REPLACE on the vanilla interactions because INJECT cannot reach into nested
+# select_trigger.enabled blocks.
+#
+# Vanilla bodies are reproduced verbatim with the PP comparison appended to
+# the enabled block. If a patch changes either interaction, mirror the change
+# here and re-add the PP line.
+
+REPLACE:enforce_culture = {
+	type = subject
+	category = CATEGORY_SUBJECT_ACTIONS
+
+	potential = {
+	}
+
+	allow = {
+	}
+
+	select_trigger = {
+		looking_for_a = country
+
+		interaction_source_list = {
+			scope:actor = { every_subject = { add_to_list = source } }
+		}
+
+		target_flag = recipient
+		name = "choose_country"
+		column = { data = name }
+
+		visible = {
+			NOT = {
+				culture = scope:actor.culture
+			}
+		}
+
+		enabled = {
+			subject_loyalty >= MIN_SUBJECT_LOYALTY_FOR_ACTION
+			liberty_desire < MAX_SUBJECT_LIBERTY_DESIRE_FOR_ACTION
+			# SUL projection gate: overlord must out-project the subject.
+			scope:actor.power_projection >= power_projection
+		}
+	}
+
+	effect = {
+		enforce_culture_effect = {
+			actor = scope:actor
+			target = scope:recipient
+		}
+
+		scope:recipient = { add_liberty_desire = liberty_desire_ultimate_plus }
+	}
+}
+
+REPLACE:enforce_religion = {
+	type = subject
+	category = CATEGORY_SUBJECT_ACTIONS
+
+	potential = {
+	}
+
+	allow = {
+	}
+
+	select_trigger = {
+		looking_for_a = country
+
+		interaction_source_list = {
+			scope:actor = { every_subject = { add_to_list = source } }
+		}
+
+		target_flag = recipient
+		name = "choose_country"
+		column = { data = name }
+
+		visible = {
+			NOT = {
+				religion = scope:actor.religion
+			}
+		}
+
+		enabled = {
+			subject_loyalty >= MIN_SUBJECT_LOYALTY_FOR_ACTION
+			liberty_desire < MAX_SUBJECT_LIBERTY_DESIRE_FOR_ACTION
+
+			trigger_if = {
+				limit = {
+					modifier:blocked_from_conversion = yes
+					has_reform = government_reform:military_order_reform
+				}
+
+				overlord = { has_reform = government_reform:military_order_reform }
+			}
+
+			trigger_else = { modifier:blocked_from_conversion = no }
+			# SUL projection gate: overlord must out-project the subject.
+			scope:actor.power_projection >= power_projection
+		}
+	}
+
+	effect = {
+		enforce_religion_effect = {
+			actor = scope:actor
+			target = scope:recipient
+		}
+
+		scope:recipient = { add_liberty_desire = liberty_desire_ultimate_plus }
+	}
+
+	ai_will_do = {
+		if = {
+			limit = { scope:actor = { at_war = no } }
+			add = { value = 10 }
+		}
+	}
+}

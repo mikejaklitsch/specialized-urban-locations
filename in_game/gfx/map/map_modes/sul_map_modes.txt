@@ -1,10 +1,136 @@
 ﻿# ============================================
-# EXPANDED URBAN LOCATIONS - MAP MODE OVERRIDE
-# Adds specialization overlay colors to the cities map mode
+# EXPANDED URBAN LOCATIONS - MAP MODE OVERRIDES
 # ============================================
 
 # Variable definitions (copied from base game)
 @zoom_step_near = 2
+@zoom_step_far = 11
+@zoom_step_flatmap = 12
+@zoom_step_flatmap_far = 21
+
+# ============================================
+# POWER PROJECTION MAP MODE
+# Replaces vanilla hardcoded color_mode with scripted map_color to support
+# negative PP values. Red = negative, neutral = grey, green = positive.
+# Saturates at ±100.
+# ============================================
+
+REPLACE:power_projection = {
+	map_color = {
+		if = {
+			limit = { has_owner = yes }
+
+			if = {
+				limit = { owner.power_projection > 0 }
+
+				lerp = {
+					min_color = define:NMapColors|MAP_COLOR_MID
+					max_color = define:NMapColors|MAP_COLOR_HIGH
+					factor = { value = owner.power_projection divide = 100 }
+				}
+			}
+
+			else_if = {
+				limit = { owner.power_projection < 0 }
+
+				lerp = {
+					min_color = define:NMapColors|MAP_COLOR_LOW
+					max_color = define:NMapColors|MAP_COLOR_MIN
+					factor = { value = owner.power_projection multiply = -1 divide = 100 }
+				}
+			}
+
+			else = { value = define:NMapColors|MAP_COLOR_LOW }
+		}
+	}
+
+	small_map_names = country
+	medium_map_names = country
+	large_map_names = country
+
+	small_tooltip_context = country
+	medium_tooltip_context = country
+	large_tooltip_context = country
+
+	use_fow = no
+
+	category = diplomacy
+	index = 0
+
+	map_markers = { market_marker = no fort_marker = no toll_marker = no }
+
+	gradient_parameters = {
+		zoom_step = @zoom_step_near
+		gradient_alpha_inside = 1
+		gradient_alpha_outside = 1
+		gradient_width = 1
+		gradient_color_mult = 0.4
+		edge_width = 0.03
+		edge_sharpness = 0.0
+		edge_alpha = 1
+		edge_color_mult = 0.3
+		before_lighting_blend = 1
+		after_lighting_blend = 0.25
+	}
+	gradient_parameters = {
+		zoom_step = @zoom_step_far
+		gradient_alpha_inside = 1
+		gradient_alpha_outside = 1
+		gradient_width = 1
+		gradient_color_mult = 0.4
+		edge_width = 0.03
+		edge_sharpness = 0.0
+		edge_alpha = 1
+		edge_color_mult = 0.3
+		before_lighting_blend = 1
+		after_lighting_blend = 0.5
+	}
+
+	flatmap_gradient_parameters = {
+		zoom_step = @zoom_step_flatmap
+		gradient_alpha_inside = 0.75
+		gradient_alpha_outside = 0.75
+		gradient_width = 0.875
+		gradient_color_mult = 0.9
+		edge_width = 0
+		edge_sharpness = 0
+		edge_alpha = 0
+		edge_color_mult = 0
+		before_lighting_blend = 0.5
+		after_lighting_blend = 0.5
+	}
+	flatmap_gradient_parameters = {
+		zoom_step = @zoom_step_flatmap_far
+		gradient_alpha_inside = 0.75
+		gradient_alpha_outside = 0.75
+		gradient_width = 0.875
+		gradient_color_mult = 0.9
+		edge_width = 0
+		edge_sharpness = 0
+		edge_alpha = 0
+		edge_color_mult = 0
+		before_lighting_blend = 0.5
+		after_lighting_blend = 0.5
+	}
+
+	refresh_colors_on_selection_change = yes
+
+	color_refresh_counters = {
+		DiplomaticAction
+		RelationStatus
+		LocationControllerChanged
+	}
+
+	color_and_names_refresh_counters = {
+		LocationOwnerChanged
+		CountryStatus
+	}
+}
+
+# ============================================
+# SPECIALIZATION MAP MODE
+# Adds specialization overlay colors to the cities map mode
+# ============================================
 
 @data_gradient_alpha_inside = 1
 @data_gradient_alpha_outside = 1

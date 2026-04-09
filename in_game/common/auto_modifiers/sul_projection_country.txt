@@ -1,0 +1,84 @@
+﻿# Power Projection — scale layer (injected into vanilla) + structural drag layer.
+#
+# SCALE LAYER: vanilla already defines `power_projection = { scales_with = power_projection ... }`
+#   in in_game/common/auto_modifiers/country.txt with global_integration_speed_modifier.
+#   We INJECT the additional SUL levers into that same block so every PP-driven
+#   modifier shares one auto_modifier and one tooltip line.
+#
+# STRUCTURAL DRAG LAYER: separate auto_modifiers that *write* power_projection
+#   from country state. They cannot live inside the vanilla block (same modifier
+#   cannot both scale_with and write the same key without ambiguity).
+#
+# Sign rule: positive PP always improves the player's situation. Coefficients
+# below are placeholders — tune by feel during testing.
+
+# ============================================================================
+# Scale layer — injected into vanilla power_projection auto_modifier
+# ============================================================================
+
+INJECT:power_projection = {
+	global_pop_assimilation_speed_modifier = 0.005
+	global_pop_conversion_speed_modifier = 0.005
+	global_war_score_cost = -0.003
+	global_distance_from_capital_speed_propagation = 0.005
+	subject_loyalty = 0.005
+	diplomatic_annexation_cost = -0.003
+	antagonism_taking_land_giving_modifier = -0.005
+}
+
+# ============================================================================
+# Structural drag layer
+# ============================================================================
+# Each drag scales the power_projection key off a signed script_value.
+# Constants below are placeholders — they set how hard each structural
+# pressure bites and will need tuning.
+
+sul_projection_drag_control = {
+	scales_with = sul_projection_control_drag
+
+	power_projection = 25
+}
+
+sul_projection_drag_culture = {
+	scales_with = sul_projection_culture_drag
+
+	power_projection = 25
+}
+
+sul_projection_drag_religion = {
+	scales_with = sul_projection_religion_drag
+
+	power_projection = 25
+}
+
+sul_projection_drag_stability = {
+	scales_with = sul_projection_stability_drag
+
+	# Stability ranges -100..+100 in EU5, so 0.2 caps the contribution at ±20 PP.
+	power_projection = 0.2
+}
+
+sul_projection_drag_subjects = {
+	scales_with = sul_projection_subject_drag
+
+	# Variable is -(subject_load / overlord_strength). Each multiple of the
+	# overlord's country_strength in subjects gives -25 PP. Linear, no cap.
+	power_projection = 50
+}
+
+# Government rank. +10 PP per rank tier (county=10, duchy=20, kingdom=30).
+
+sul_projection_rank = {
+	scales_with = sul_projection_rank_value
+
+	power_projection = 1
+}
+
+# Conquest debt — variable is a positive magnitude, coefficient flips it to
+# negative PP. Decayed monthly by sul_projection_decay_conquest_debt.
+
+sul_projection_drag_conquest = {
+	scales_with = sul_projection_conquest_debt
+
+	power_projection = -1
+}

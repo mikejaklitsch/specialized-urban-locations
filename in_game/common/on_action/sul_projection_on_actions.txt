@@ -1,0 +1,48 @@
+﻿# Power Projection — on_action handlers.
+# Wired into vanilla on_actions through sul_hardcoded.txt.
+
+# Game start: initialize subject drag variables for every country so the
+# auto_modifier has values on the first tick instead of waiting a month.
+
+sul_projection_on_game_start = {
+	effect = {
+		every_country = { sul_projection_recompute_subject_drag = yes }
+	}
+}
+
+# Monthly per-country pass: refresh iteration-based drag variables and decay
+# the conquest debt variable. Cheap (formula-only) drags handle themselves
+# through their auto_modifier script_values and don't need updating here.
+
+sul_projection_monthly_update = {
+	effect = {
+		sul_projection_recompute_subject_drag = yes
+		sul_projection_decay_conquest_debt = yes
+	}
+}
+
+# Conquest hook — winner accumulates debt weighted by location development.
+# Root scope is the location; scope:winner / scope:loser are saved by the
+# vanilla on_location_changed_owner action.
+
+sul_projection_on_location_conquered = {
+	effect = {
+		# Compute weight in location scope: development × (pop / max_pop)
+		set_local_variable = {
+			name = sul_projection_pop_ratio
+
+			value = {
+				value = population
+				divide = { value = location_max_population min = 1 }
+			}
+		}
+
+		set_local_variable = {
+			name = sul_projection_conquest_weight
+
+			value = { value = development multiply = local_var:sul_projection_pop_ratio }
+		}
+
+		scope:winner = { sul_projection_apply_conquest_debt = yes }
+	}
+}

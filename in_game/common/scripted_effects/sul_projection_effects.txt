@@ -2,11 +2,6 @@
 # Per-country monthly recompute for drag sources that need iteration,
 # plus conquest-debt accumulation and decay.
 
-# Tuning constants. Per-conquest debt is `development × pop/cap × per-dev rate`.
-# Decay rate is 0.5 + (dip_rep / 10) per month.
-
-@sul_projection_debt_per_dev = 1.0
-
 # Sums every subject's country_strength weighted by its type constant, then
 # divides by overlord country_strength and negates. Result: -1 per "multiple"
 # of the overlord's strength in subjects. Auto_modifier coefficient of 25
@@ -47,61 +42,5 @@ sul_projection_recompute_subject_drag = {
 	}
 	else = {
 		set_variable = { name = sul_projection_subject_drag_value value = 0 }
-	}
-}
-
-# Increment conquest debt by the conquered location's development weighted by
-# used population capacity (pop / max_pop). A full location costs more PP than
-# an empty one. Called from sul_projection_on_location_conquered; the caller
-# sets local_var:sul_projection_conquest_weight before switching to winner scope.
-
-sul_projection_apply_conquest_debt = {
-	if = {
-		limit = {
-			NOT = {
-				has_variable = sul_projection_conquest_debt
-			}
-		}
-
-		set_variable = { name = sul_projection_conquest_debt value = 0 }
-	}
-
-	change_variable = {
-		name = sul_projection_conquest_debt
-
-		add = {
-			value = local_var:sul_projection_conquest_weight
-			multiply = @sul_projection_debt_per_dev
-		}
-	}
-}
-
-# Monthly decay: 0.5 base + 1 per 10 dip rep.
-# At 12 dip rep → 1.7/month. At 0 dip rep → 0.5/month.
-
-sul_projection_decay_conquest_debt = {
-	if = {
-		limit = { has_variable = sul_projection_conquest_debt }
-
-		set_local_variable = {
-			name = sul_projection_debt_decay
-
-			value = { value = modifier:diplomatic_reputation divide = 10 add = 0.5 }
-		}
-
-		change_variable = {
-			name = sul_projection_conquest_debt
-			subtract = local_var:sul_projection_debt_decay
-		}
-
-		if = {
-			limit = {
-				NOT = {
-					var:sul_projection_conquest_debt > 0
-				}
-			}
-
-			remove_variable = sul_projection_conquest_debt
-		}
 	}
 }

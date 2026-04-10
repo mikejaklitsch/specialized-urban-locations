@@ -48,6 +48,14 @@ sul_projection_religion_drag = {
 	subtract = 1
 }
 
+# Administrative overhead — raw location count.
+# More territory = more bureaucratic load regardless of composition.
+# Coefficient of -0.05 in the auto_modifier means -1 PP per 20 locations.
+
+sul_projection_size_drag = {
+	value = num_locations
+}
+
 # Government rank → PP. County = 10, Duchy = 20, Kingdom = 30.
 
 sul_projection_rank_value = {
@@ -92,18 +100,5 @@ sul_projection_subject_drag = {
 	if = {
 		limit = { has_variable = sul_projection_subject_drag_value }
 		add = var:sul_projection_subject_drag_value
-	}
-}
-
-# Conquest debt — accumulated each conquest, decayed monthly. Stored as a
-# POSITIVE magnitude on var:sul_projection_conquest_debt; the auto_modifier
-# coefficient flips its sign. This breaks the signed-variable convention used
-# by the other drags but reads more naturally as "debt amount."
-
-sul_projection_conquest_debt = {
-	value = 0
-	if = {
-		limit = { has_variable = sul_projection_conquest_debt }
-		add = var:sul_projection_conquest_debt
 	}
 }

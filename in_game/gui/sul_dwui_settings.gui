@@ -1,0 +1,265 @@
+﻿# SUL — Ported DWUI Settings Panel (slimmed)
+# Only fort-icon toggle, battle filter, and unit visibility.
+# City-marker coloring / name / capital-flag toggles are removed because
+# SUL owns the city marker design.
+
+types sul_dwui_settings_types
+{
+	type sul_dwui_setting_row = hbox {
+		layoutpolicy_horizontal = expanding
+		spacing = 10
+		margin = { 5 0 }
+
+		text_single = { layoutpolicy_horizontal = expanding block "setting_text" {  } }
+
+		checkbutton = { using = button_checkbox_template_alt block "setting_action" {  } }
+	}
+
+	type sul_dwui_divider = widget {
+		layoutpolicy_horizontal = expanding
+		size = { -1 2 }
+		background = { using = color_gold_texture alpha = 0.3 }
+	}
+}
+
+widget = {
+	name = "sul_dwui_settings_listener"
+	layer = topbar
+
+	size = { 100% 100% }
+
+	datacontext = "[GetPlayer]"
+	visible = "[Country.IsValid]"
+	alwaystransparent = yes
+
+	window = {
+		name = "sul_dwui_settings_panel"
+		size = { 380 480 }
+		parentanchor = center
+		visible = "[GetPlayer.MakeScope.GetVariable('sul_dwui_show_panel').IsSet]"
+		movable = yes
+		using = bg_window_default_alt
+		allow_outside = yes
+
+		vbox = {
+			using = window_margin_alt
+
+			window_header_alt = { blockoverride "header_text" { text = "SUL_DWUI_PANEL_TITLE" } }
+
+			vbox = {
+				using = layoutpolicy_expanding
+				using = bg_main_inner_alt
+
+				scrollarea = {
+					using = layoutpolicy_expanding
+					scrollbarpolicy_horizontal = always_off
+					scrollbar_vertical = { using = Scrollbar_Vertical }
+
+					scrollwidget = {
+						vbox = {
+							using = layoutpolicy_expanding
+							margin = { 15 10 }
+							spacing = 5
+
+							# ==== DISPLAY ====
+
+							text_single = {
+								layoutpolicy_horizontal = expanding
+								text = "SUL_DWUI_SECTION_DISPLAY"
+								using = Font_Type_Headers
+								default_format = "#T"
+								align = nobaseline
+							}
+
+							sul_dwui_setting_row = {
+								blockoverride "setting_text" { text = "SUL_DWUI_CHECKBOX_VANILLA_FORT" }
+								blockoverride "setting_action" {
+									checked = "[Country.MakeScope.GetVariable('dwui_vfort').IsSet]"
+									onclick = "[GetScriptedGui('sul_dwui_toggle_vfort').Execute(GuiScope.SetRoot(GetPlayer.MakeScope).End)]"
+									tooltip = "SUL_DWUI_TOOLTIP_VANILLA_FORT"
+								}
+							}
+
+							# ==== BATTLE FILTER ====
+
+							sul_dwui_divider = {  }
+
+							text_single = {
+								layoutpolicy_horizontal = expanding
+								text = "SUL_DWUI_SECTION_BATTLE_FILTER"
+								using = Font_Type_Headers
+								default_format = "#T"
+								align = nobaseline
+							}
+
+							sul_dwui_setting_row = {
+								blockoverride "setting_text" { text = "SUL_DWUI_BATTLE_FILTER_OFF" }
+								blockoverride "setting_action" {
+									checked = "[Or(Not(Country.MakeScope.GetVariable('dwui_battle_filter').IsSet), EqualTo_CFixedPoint(Country.MakeScope.GetVariable('dwui_battle_filter').GetValue, '(CFixedPoint)0'))]"
+									onclick = "[GetScriptedGui('sul_dwui_set_battle_filter_off').Execute(GuiScope.SetRoot(GetPlayer.MakeScope).End)]"
+									tooltip = "SUL_DWUI_TOOLTIP_BATTLE_FILTER_OFF"
+								}
+							}
+
+							sul_dwui_setting_row = {
+								blockoverride "setting_text" { text = "SUL_DWUI_BATTLE_FILTER_500" }
+								blockoverride "setting_action" {
+									checked = "[EqualTo_CFixedPoint(Country.MakeScope.GetVariable('dwui_battle_filter').GetValue, '(CFixedPoint)500')]"
+									onclick = "[GetScriptedGui('sul_dwui_set_battle_filter_500').Execute(GuiScope.SetRoot(GetPlayer.MakeScope).End)]"
+									tooltip = "SUL_DWUI_TOOLTIP_BATTLE_FILTER_500"
+								}
+							}
+
+							sul_dwui_setting_row = {
+								blockoverride "setting_text" { text = "SUL_DWUI_BATTLE_FILTER_1000" }
+								blockoverride "setting_action" {
+									checked = "[EqualTo_CFixedPoint(Country.MakeScope.GetVariable('dwui_battle_filter').GetValue, '(CFixedPoint)1000')]"
+									onclick = "[GetScriptedGui('sul_dwui_set_battle_filter_1000').Execute(GuiScope.SetRoot(GetPlayer.MakeScope).End)]"
+									tooltip = "SUL_DWUI_TOOLTIP_BATTLE_FILTER_1000"
+								}
+							}
+
+							sul_dwui_setting_row = {
+								blockoverride "setting_text" { text = "SUL_DWUI_BATTLE_FILTER_2500" }
+								blockoverride "setting_action" {
+									checked = "[EqualTo_CFixedPoint(Country.MakeScope.GetVariable('dwui_battle_filter').GetValue, '(CFixedPoint)2500')]"
+									onclick = "[GetScriptedGui('sul_dwui_set_battle_filter_2500').Execute(GuiScope.SetRoot(GetPlayer.MakeScope).End)]"
+									tooltip = "SUL_DWUI_TOOLTIP_BATTLE_FILTER_2500"
+								}
+							}
+
+							sul_dwui_setting_row = {
+								blockoverride "setting_text" { text = "SUL_DWUI_BATTLE_FILTER_5000" }
+								blockoverride "setting_action" {
+									checked = "[EqualTo_CFixedPoint(Country.MakeScope.GetVariable('dwui_battle_filter').GetValue, '(CFixedPoint)5000')]"
+									onclick = "[GetScriptedGui('sul_dwui_set_battle_filter_5000').Execute(GuiScope.SetRoot(GetPlayer.MakeScope).End)]"
+									tooltip = "SUL_DWUI_TOOLTIP_BATTLE_FILTER_5000"
+								}
+							}
+
+							sul_dwui_setting_row = {
+								blockoverride "setting_text" { text = "SUL_DWUI_BATTLE_FILTER_10000" }
+								blockoverride "setting_action" {
+									checked = "[EqualTo_CFixedPoint(Country.MakeScope.GetVariable('dwui_battle_filter').GetValue, '(CFixedPoint)10000')]"
+									onclick = "[GetScriptedGui('sul_dwui_set_battle_filter_10000').Execute(GuiScope.SetRoot(GetPlayer.MakeScope).End)]"
+									tooltip = "SUL_DWUI_TOOLTIP_BATTLE_FILTER_10000"
+								}
+							}
+
+							sul_dwui_setting_row = {
+								blockoverride "setting_text" { text = "SUL_DWUI_BATTLE_FILTER_HIDE_ALL" }
+								blockoverride "setting_action" {
+									checked = "[EqualTo_CFixedPoint(Country.MakeScope.GetVariable('dwui_battle_filter').GetValue, '(CFixedPoint)-1')]"
+									onclick = "[GetScriptedGui('sul_dwui_set_battle_filter_hide_all').Execute(GuiScope.SetRoot(GetPlayer.MakeScope).End)]"
+									tooltip = "SUL_DWUI_TOOLTIP_BATTLE_FILTER_HIDE_ALL"
+								}
+							}
+
+							# ==== UNIT VISIBILITY ====
+
+							sul_dwui_divider = {  }
+
+							text_single = {
+								layoutpolicy_horizontal = expanding
+								text = "SUL_DWUI_SECTION_UNIT_VISIBILITY"
+								using = Font_Type_Headers
+								default_format = "#T"
+								align = nobaseline
+							}
+
+							sul_dwui_setting_row = {
+								blockoverride "setting_text" { text = "SUL_DWUI_CHECKBOX_HIDE_OWN_ARMIES" }
+								blockoverride "setting_action" {
+									checked = "[Country.MakeScope.GetVariable('dwui_hide_own_army').IsSet]"
+									onclick = "[GetScriptedGui('sul_dwui_toggle_hide_own_army').Execute(GuiScope.SetRoot(GetPlayer.MakeScope).End)]"
+									tooltip = "SUL_DWUI_TOOLTIP_HIDE_OWN_ARMIES"
+								}
+							}
+
+							sul_dwui_setting_row = {
+								blockoverride "setting_text" { text = "SUL_DWUI_CHECKBOX_HIDE_OWN_NAVIES" }
+								blockoverride "setting_action" {
+									checked = "[Country.MakeScope.GetVariable('dwui_hide_own_navy').IsSet]"
+									onclick = "[GetScriptedGui('sul_dwui_toggle_hide_own_navy').Execute(GuiScope.SetRoot(GetPlayer.MakeScope).End)]"
+									tooltip = "SUL_DWUI_TOOLTIP_HIDE_OWN_NAVIES"
+								}
+							}
+
+							sul_dwui_divider = {  }
+
+							sul_dwui_setting_row = {
+								blockoverride "setting_text" { text = "SUL_DWUI_CHECKBOX_HIDE_ALLY_ARMIES" }
+								blockoverride "setting_action" {
+									checked = "[Country.MakeScope.GetVariable('dwui_hide_ally_army').IsSet]"
+									onclick = "[GetScriptedGui('sul_dwui_toggle_hide_ally_army').Execute(GuiScope.SetRoot(GetPlayer.MakeScope).End)]"
+									tooltip = "SUL_DWUI_TOOLTIP_HIDE_ALLY_ARMIES"
+								}
+							}
+
+							sul_dwui_setting_row = {
+								blockoverride "setting_text" { text = "SUL_DWUI_CHECKBOX_HIDE_ALLY_NAVIES" }
+								blockoverride "setting_action" {
+									checked = "[Country.MakeScope.GetVariable('dwui_hide_ally_navy').IsSet]"
+									onclick = "[GetScriptedGui('sul_dwui_toggle_hide_ally_navy').Execute(GuiScope.SetRoot(GetPlayer.MakeScope).End)]"
+									tooltip = "SUL_DWUI_TOOLTIP_HIDE_ALLY_NAVIES"
+								}
+							}
+
+							sul_dwui_divider = {  }
+
+							sul_dwui_setting_row = {
+								blockoverride "setting_text" { text = "SUL_DWUI_CHECKBOX_HIDE_ENEMY_ARMIES" }
+								blockoverride "setting_action" {
+									checked = "[Country.MakeScope.GetVariable('dwui_hide_enemy_army').IsSet]"
+									onclick = "[GetScriptedGui('sul_dwui_toggle_hide_enemy_army').Execute(GuiScope.SetRoot(GetPlayer.MakeScope).End)]"
+									tooltip = "SUL_DWUI_TOOLTIP_HIDE_ENEMY_ARMIES"
+								}
+							}
+
+							sul_dwui_setting_row = {
+								blockoverride "setting_text" { text = "SUL_DWUI_CHECKBOX_HIDE_ENEMY_NAVIES" }
+								blockoverride "setting_action" {
+									checked = "[Country.MakeScope.GetVariable('dwui_hide_enemy_navy').IsSet]"
+									onclick = "[GetScriptedGui('sul_dwui_toggle_hide_enemy_navy').Execute(GuiScope.SetRoot(GetPlayer.MakeScope).End)]"
+									tooltip = "SUL_DWUI_TOOLTIP_HIDE_ENEMY_NAVIES"
+								}
+							}
+
+							sul_dwui_divider = {  }
+
+							sul_dwui_setting_row = {
+								blockoverride "setting_text" { text = "SUL_DWUI_CHECKBOX_HIDE_NEUTRAL_ARMIES" }
+								blockoverride "setting_action" {
+									checked = "[Country.MakeScope.GetVariable('dwui_hide_neutral_army').IsSet]"
+									onclick = "[GetScriptedGui('sul_dwui_toggle_hide_neutral_army').Execute(GuiScope.SetRoot(GetPlayer.MakeScope).End)]"
+									tooltip = "SUL_DWUI_TOOLTIP_HIDE_NEUTRAL_ARMIES"
+								}
+							}
+
+							sul_dwui_setting_row = {
+								blockoverride "setting_text" { text = "SUL_DWUI_CHECKBOX_HIDE_NEUTRAL_NAVIES" }
+								blockoverride "setting_action" {
+									checked = "[Country.MakeScope.GetVariable('dwui_hide_neutral_navy').IsSet]"
+									onclick = "[GetScriptedGui('sul_dwui_toggle_hide_neutral_navy').Execute(GuiScope.SetRoot(GetPlayer.MakeScope).End)]"
+									tooltip = "SUL_DWUI_TOOLTIP_HIDE_NEUTRAL_NAVIES"
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+
+		widget = {
+			parentanchor = right
+			position = { -5 5 }
+			size = { 40 40 }
+
+			button_close_alt = {
+				blockoverride "close_onclick" {
+					onclick = "[GetScriptedGui('sul_dwui_settings_config').Execute(GuiScope.SetRoot(GetPlayer.MakeScope).End)]"
+				}
+			}
+		}
+	}
+}

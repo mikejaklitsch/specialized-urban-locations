@@ -4,7 +4,7 @@
 # SIZE VARIABLES (file-scoped)
 # =====================================================
 @city_marker_icon_size = 30
-@city_marker_fort_icon_size = 16
+@city_marker_fort_icon_size = 30
 @town_marker_icon_size = 26
 @rural_marker_icon_size = 20
 # Master icon set templates defined in aaa_sul_templates.gui (loads first)
@@ -159,7 +159,7 @@ window = {
 
 widget = {
 	name = "parliament_marker"
-	max_update_rate = 8
+	max_update_rate = 15
 	using = bg_circle_piechart
 
 	size = { 50 50 }
@@ -226,10 +226,6 @@ widget = {
 # MARKET MARKER OVERRIDE
 # Structure matches marker_rank_icon from map_markers_city.gui
 # =====================================================
-@city_marker_icon_size = 30
-@city_marker_fort_icon_size = 16
-@town_marker_icon_size = 26
-@rural_marker_icon_size = 20
 
 widget = {
 	name = "market_marker"
@@ -322,7 +318,7 @@ widget = {
 @unit_marker_frame_text_margin = 12
 @unit_marker_item_total_units_width = 60
 @unit_marker_morale_progressbar_size = 35
-@unit_marker_item_width = 115
+@unit_marker_item_width = 127
 @unit_marker_item_height = 71
 @unit_marker_item_short_factor = 0.8
 @unit_marker_item_verysmall_factor = 0.55
@@ -460,13 +456,15 @@ template unit_marker_item_unit_strength {
 	background = {
 		using = marker_unit_side_color
 		visible = "[Not(Unit.IsArmy)]"
-		texture = "gfx/interface/component_tiles/bg_navy_unit_map.dds"
+		texture = "gfx/interface/component_tiles/bg_army_unit_map.dds"
 		texture_density = 2
 		spriteType = corneredstretched
 		spriteBorder = { 20 0 }
+		mirror = horizontal
 		margin_left = -3
-		margin_right = -8
+		margin_right = -11
 		margin_top = -2
+		margin_bottom = -2
 
 		modify_texture = {
 			using = overlay_striped_texture
@@ -743,15 +741,10 @@ template unit_marker_item_unit_strength {
 		size = { 100% 100% }
 		visible = "[Or(Unit.GetCountry.IsNeutral, Unit.GetCountry.IsAllied)]"
 
-		button = {
+		unit_marker_army_button = {
 			size = { 100% 100% }
 			visible = "[Unit.IsArmy]"
-			# blockoverride "if_notplayer" {
-			# 	upframe = 3
-			# 	overframe = 3
-			# 	downframe = 3
-			# 	disableframe = 3
-			# }
+			blockoverride "if_notplayer" { upframe = 3 overframe = 3 downframe = 3 disableframe = 3 }
 
 			tagtooltip_enabled = yes
 			tooltip = "[UnitMarkerItem.GetTooltip]"
@@ -807,15 +800,10 @@ template unit_marker_item_unit_strength {
 			}
 		}
 
-		button = {
+		unit_marker_navy_button = {
 			size = { 100% 100% }
 			visible = "[Not(Unit.IsArmy)]"
-			# blockoverride "if_notplayer" {
-			# 	upframe = 5
-			# 	overframe = 5
-			# 	downframe = 5
-			# 	disableframe = 5
-			# }
+			blockoverride "if_notplayer" { upframe = 3 overframe = 3 downframe = 3 disableframe = 3 }
 
 			tagtooltip_enabled = yes
 			tooltip = "[UnitMarkerItem.GetTooltip]"
@@ -872,10 +860,10 @@ template unit_marker_item_unit_strength {
 		}
 	}
 
-	# PLAYER BUTTON SELECTED
+	# PLAYER BUTTON BORDER — always on for player-owned units.
+	# Transport gating is handled separately on the transported troop button.
 	widget = {
 		size = { 100% 100% }
-		visible = "[UnitMarkerItem.IsSelectedOrHighlighted]"
 
 		icon = {
 			size = { 100% 100% }
@@ -901,6 +889,7 @@ template unit_marker_item_unit_strength {
 }
 
 template unit_marker_item_commander {
+	max_update_rate = 15
 	visible = "[UnitMarkerItem.HasLeaderFrame]"
 	# block "unit_commander_size" {
 	size = { 33 @unit_marker_frame_height }
@@ -921,6 +910,14 @@ template unit_marker_item_commander {
 			blend_mode = overlay
 			alpha = 0.2
 		}
+	}
+	background = {
+		texture = "gfx/interface/component_tiles/tile_frame_thick.dds"
+		texture_density = 2
+		spriteType = corneredtiled
+		spriteBorder = { 20 20 }
+		margin = { 0 -2 }
+		using = non_clickable_color_gold_texture
 	}
 
 	button = {
@@ -952,6 +949,8 @@ template unit_marker_item_commander {
 }
 
 template unit_marker_item_transport {
+	max_update_rate = 15
+
 	block "unit_transport_size" { size = { 37 37 } }
 
 	background = {
@@ -1014,8 +1013,7 @@ template unit_marker_item_transport {
 	button = {
 		size = { 100% 100% }
 
-		tagtooltip_enabled = yes
-		tooltip = "[UnitMarkerItem.GetTooltip]"
+		block "transport_tooltip" { tagtooltip_enabled = yes tooltip = "[UnitMarkerItem.GetTooltip]" }
 		contextmenu_widget = { UnitMarkerContextMenu = {  } }
 
 		action_tooltip = {
@@ -1030,17 +1028,14 @@ template unit_marker_item_transport {
 	block "item_unit_transport_text_object" {  }
 }
 
-template bg_unit_marker_item_modifiers {
-	background = {
-		texture = "gfx/interface/component_tiles/map_markers/map_unit_modifiers.dds"
-		texture_density = 2
+# Disabled per-icon backgrounds; shared background on parent hbox instead (#8)
 
-		modify_texture = { using = color_dark_blue_texture }
-	}
+template bg_unit_marker_item_modifiers {
 }
 
 template unit_marker_item_modifiers {
 	widget = {
+		max_update_rate = 15
 		visible = "[And(UnitMarkerItem.GetUnit.IsNavy, GreaterThan_int32(UnitMarkerItem.GetUnit.GetUsedTransportCapacityValue, '(int32)0'))]"
 		block "item_container_size" { size = { 22 22 } }
 
@@ -1066,7 +1061,7 @@ template unit_marker_item_modifiers {
 			}
 
 			icon = {
-				texture = "gfx/interface/pie_charts/pie_chart_alpha_80.dds"
+				texture = "gfx/interface/pie_charts/piechart_alpha.dds"
 				size = { 75% 75% }
 				parentanchor = center
 				color = { 0 0 0 1 }
@@ -1101,6 +1096,7 @@ template unit_marker_item_modifiers {
 	}
 
 	widget = {
+		max_update_rate = 15
 		visible = "[GreaterThan_CFixedPoint(UnitMarkerItem.GetBlockadedPercent, '(CFixedPoint)0')]"
 		block "item_container_size" { size = { 22 22 } }
 
@@ -1110,8 +1106,6 @@ template unit_marker_item_modifiers {
 			block "item_modifiers_size" { size = { 22 22 } }
 
 			piechart = {
-				visible = "[GreaterThan_CFixedPoint(UnitMarkerItem.GetBlockadedPercent, '(CFixedPoint)0')]"
-
 				parentanchor = center
 				position = { 0 0 }
 				size = { 75% 75% }
@@ -1119,14 +1113,14 @@ template unit_marker_item_modifiers {
 				using = piechart_angles
 
 				icon = {
-					texture = "gfx/interface/pie_charts/pie_chart_alpha_80.dds"
+					texture = "gfx/interface/pie_charts/piechart_alpha.dds"
 					size = { 75% 75% }
 					parentanchor = center
 					color = { 0 0 0 1 }
 				}
 
 				pieslice_no_highlight = {
-					texture = "gfx/interface/pie_charts/pie_chart_alpha_80.dds"
+					texture = "gfx/interface/pie_charts/piechart_alpha.dds"
 					value = "[Subtract_float('(float)100.0', FixedPointToFloat(UnitMarkerItem.GetBlockadedPercent))]"
 					color = { 0.3 0.3 0.3 1 }
 					alpha = 0.8
@@ -1134,7 +1128,7 @@ template unit_marker_item_modifiers {
 				}
 
 				pieslice_no_highlight = {
-					texture = "gfx/interface/pie_charts/pie_chart_alpha_80.dds"
+					texture = "gfx/interface/pie_charts/piechart_alpha.dds"
 					value = "[UnitMarkerItem.GetBlockadedPercent]"
 					color = { 0.3 0.8 0.3 1 }
 					alpha = 0.8
@@ -1156,6 +1150,7 @@ template unit_marker_item_modifiers {
 	}
 
 	widget = {
+		max_update_rate = 8
 		visible = "[UnitMarkerItem.IsPlayer]"
 		block "item_container_size" { size = { 22 22 } }
 
@@ -1172,14 +1167,14 @@ template unit_marker_item_modifiers {
 				using = piechart_angles
 
 				icon = {
-					texture = "gfx/interface/pie_charts/pie_chart_alpha_80.dds"
+					texture = "gfx/interface/pie_charts/piechart_alpha.dds"
 					size = { 75% 75% }
 					parentanchor = center
 					color = { 0 0 0 1 }
 				}
 
 				pieslice_no_highlight = {
-					texture = "gfx/interface/pie_charts/pie_chart_alpha_80.dds"
+					texture = "gfx/interface/pie_charts/piechart_alpha.dds"
 					value = "[UnitMarkerItem.GetUnit.GetFoodPercentage]"
 					color = { 0.3 0.8 0.3 1 }
 					alpha = 0.8
@@ -1187,7 +1182,7 @@ template unit_marker_item_modifiers {
 				}
 
 				pieslice_no_highlight = {
-					texture = "gfx/interface/pie_charts/pie_chart_alpha_80.dds"
+					texture = "gfx/interface/pie_charts/piechart_alpha.dds"
 					value = "[Subtract_float('(float)100.0', UnitMarkerItem.GetUnit.GetFoodPercentage)]"
 					color = { 0.3 0.3 0.3 1 }
 					alpha = 0.8
@@ -1243,6 +1238,7 @@ template unit_marker_item_modifiers {
 	}
 
 	widget = {
+		max_update_rate = 15
 		visible = "[UnitMarkerItem.HasVisibleObjectiveGroup]"
 		block "item_container_size" { size = { 22 22 } }
 
@@ -1282,6 +1278,7 @@ template unit_marker_item_modifiers {
 	}
 
 	widget = {
+		max_update_rate = 15
 		visible = "[UnitMarkerItem.HasDisease]"
 		block "item_container_size" { size = { 22 22 } }
 
@@ -1331,7 +1328,7 @@ template unit_marker_item_modifiers {
 										tooltipwidget = { using = Disease_tooltip }
 
 										pieslice_no_highlight = {
-											texture = "gfx/interface/pie_charts/pie_chart_alpha_80.dds"
+											texture = "gfx/interface/pie_charts/piechart_alpha.dds"
 											value = "[Subtract_float('(float)1.0', FixedPointToFloat(Unit.GetDiseasePresence(Disease.Self)))]"
 											color = { 1 1 1 0.2 }
 											alwaystransparent = yes
@@ -1412,7 +1409,7 @@ template unit_marker_item_modifiers {
 										tooltipwidget = { using = Disease_tooltip }
 
 										pieslice_no_highlight = {
-											texture = "gfx/interface/pie_charts/pie_chart_alpha_80.dds"
+											texture = "gfx/interface/pie_charts/piechart_alpha.dds"
 											value = "[Subtract_float('(float)1.0', FixedPointToFloat(Unit.GetDiseaseResistance(Disease.Self)))]"
 											color = { 1 1 1 0.2 }
 											alwaystransparent = yes
@@ -1477,6 +1474,7 @@ template unit_marker_item_modifiers {
 	}
 
 	widget = {
+		max_update_rate = 15
 		visible = "[UnitMarkerItem.IsMovementLocked]"
 		block "item_container_size" { size = { 22 22 } }
 
@@ -1510,6 +1508,7 @@ template unit_marker_item_modifiers {
 	}
 
 	widget = {
+		max_update_rate = 15
 		visible = "[UnitMarkerItem.IsLargeEnoughForMovementSpeedImpact]"
 
 		tooltipwidget = {
@@ -1548,6 +1547,7 @@ template unit_marker_item_modifiers {
 	}
 
 	widget = {
+		max_update_rate = 8
 		visible = "[UnitMarkerItem.IsLosingSoldiers]"
 		block "item_container_size" { size = { 22 22 } }
 
@@ -1590,6 +1590,7 @@ template unit_marker_item_modifiers {
 	}
 
 	widget = {
+		max_update_rate = 15
 		visible = "[UnitMarkerItem.GetUnit.IsStuckInIce]"
 		block "item_container_size" { size = { 22 22 } }
 
@@ -1624,6 +1625,7 @@ template unit_marker_item_modifiers {
 	}
 
 	widget = {
+		max_update_rate = 15
 		visible = "[UnitMarkerItem.ShowActiveAbility]"
 		block "item_container_size" { size = { 22 22 } }
 
@@ -1659,6 +1661,7 @@ template unit_marker_item_modifiers {
 	using = unit_marker_item_modifiers_small_zoom
 
 	widget = {
+		max_update_rate = 15
 		visible = "[Or(UnitMarkerItem.IsHiddenFromLand, UnitMarkerItem.IsHiddenFromSea)]"
 		block "item_container_size" { size = { 22 22 } }
 
@@ -1749,6 +1752,7 @@ template unit_marker_item_modifiers {
 
 template unit_marker_item_modifiers_small_zoom {
 	widget = {
+		max_update_rate = 15
 		visible = "[UnitMarkerItem.IsExiled]"
 		block "item_container_size" { size = { 22 22 } }
 
@@ -1781,6 +1785,7 @@ template unit_marker_item_modifiers_small_zoom {
 	}
 
 	widget = {
+		max_update_rate = 8
 		visible = "[UnitMarkerItem.IsRetreating]"
 
 		block "item_container_size" { size = { 22 22 } }
@@ -1892,14 +1897,14 @@ template unit_marker_item_unit_banners {
 # 		}
 
 # 		pieslice_no_highlight = {
-# 			texture = "gfx/interface/pie_charts/pie_chart_alpha_80.dds"
+# 			texture = "gfx/interface/pie_charts/piechart_alpha.dds"
 # 			value = "[UnitMarkerItem.GetAverageMoralePercent]"
 # 			color = { 0.01 0.9 0.3 0.8 }
 # 			alwaystransparent = yes
 # 		}
 
 # 		pieslice_no_highlight = {
-# 			texture = "gfx/interface/pie_charts/pie_chart_alpha_80.dds"
+# 			texture = "gfx/interface/pie_charts/piechart_alpha.dds"
 # 			value = "[Subtract_float('(float)100.0', UnitMarkerItem.GetAverageMoralePercent)]"
 # 			color = { 0.0 0.1 0.1 1 }
 # 			alwaystransparent = yes
@@ -1922,23 +1927,25 @@ template unit_marker_item_unit_banners {
 
 types unit_marker_types
 {
+	# Shrunk siege banner (#9)
 	type unit_maker_siege_banner = widget {
+		max_update_rate = 15
 		allow_outside = yes
-		size = { 59 85 }
+		size = { 40 58 }
 
 		background = {
 			texture = "gfx/interface/component_tiles/map_markers/map_marker_shadow.dds"
 			texture_density = 2
 			spriteType = corneredstretched
 			spriteBorder = { 35 35 }
-			margin_bottom = 15
+			margin_bottom = 10
 			blend_mode = multiply
 			alpha = 0.7
 		}
 
 		circular_widget_button = {
 			parentanchor = top
-			size = { 57 57 }
+			size = { 38 38 }
 
 			background = {
 				texture = "gfx/interface/buttons/bg_button.dds"
@@ -1987,7 +1994,7 @@ types unit_marker_types
 			}
 
 			widget = { # siege
-				size = { 47 47 }
+				size = { 32 32 }
 				parentanchor = center
 
 				piechart = {
@@ -1996,14 +2003,14 @@ types unit_marker_types
 					using = piechart_angles
 
 					pieslice_no_highlight = {
-						texture = "gfx/interface/pie_charts/pie_chart_alpha_80.dds"
+						texture = "gfx/interface/pie_charts/piechart_alpha.dds"
 						value = "[Siege.GetSiegePhaseProgress]"
 						color = { 0.01 0.6 0.9 1 }
 						alwaystransparent = yes
 					}
 
 					pieslice_no_highlight = {
-						texture = "gfx/interface/pie_charts/pie_chart_alpha_80.dds"
+						texture = "gfx/interface/pie_charts/piechart_alpha.dds"
 						value = "[Subtract_float('(float)100.0', Siege.GetSiegePhaseProgress)]"
 						color = { 0.0 0.1 0.1 1 }
 						alwaystransparent = yes
@@ -2023,9 +2030,9 @@ types unit_marker_types
 		}
 
 		unit_siege_banner_button = {
-			size = { 40 30 }
+			size = { 30 20 }
 			parentanchor = hcenter|bottom
-			position = { 0 2 }
+			position = { 0 1 }
 
 			using = marker_siege_side_color
 
@@ -2057,32 +2064,30 @@ types unit_marker_types
 
 			text_single = {
 				visible = "[Not(Siege.IsTooFewMen)]"
-				size = { 30 16 }
-				position = { 0 -2 }
+				size = { 28 14 }
+				position = { 0 -1 }
 				autoresize = no
 				parentanchor = center
 				align = center|nobaseline
-
+				fontsize = 11
 				text = "[Siege.GetFallChance|2%]"
 			}
-
 			text_single = {
 				visible = "[Siege.IsTooFewMen]"
-
-				size = { 30 16 }
-				position = { 0 -2 }
+				size = { 28 14 }
+				position = { 0 -1 }
 				autoresize = no
 				parentanchor = center
 				align = center|nobaseline
-
+				fontsize = 11
 				text = "SIEGE_TOO_FEW_MEN_TXT"
 			}
 		}
 
 		widget = {
 			parentanchor = center
-			size = { 55 13 }
-			position = { 0 13 }
+			size = { 38 9 }
+			position = { 0 9 }
 
 			background = {
 				texture = "gfx/interface/component_tiles/map_markers/siege_pole.dds"
@@ -2108,6 +2113,7 @@ types unit_marker_types
 	}
 
 	type unit_marker_item_units = widget {
+		max_update_rate = 15
 		layoutpolicy_horizontal = expanding
 		size = { -1 15 }
 
@@ -2143,20 +2149,12 @@ types unit_marker_types
 			ignoreinvisible = yes
 			spacing = -5
 
-			# widget = { using = unit_marker_item_total_units }
-			# widget = { size = { 0 @unit_marker_morale_progressbar_size } }
-			widget = {
-				visible = "[And(Not(Unit.IsArmy), UnitMarkerItem.IsTransporting)]"
-				using = unit_marker_item_transport
-			}
-			widget = {
-				# using = bg_unit_marker_item_unit_strength
-				using = unit_marker_item_unit_strength
-			}
+			widget = { using = unit_marker_item_unit_strength }
 		}
 	}
 
 	type unit_marker_compass = widget {
+		max_update_rate = 15
 		visible = "[UnitMarkerItem.ShouldShowCompass]"
 		size = { 24 24 }
 		using = bg_circle_piechart
@@ -2269,14 +2267,14 @@ types unit_marker_types
 	# 		}
 
 	# 		pieslice_no_highlight = {
-	# 			texture = "gfx/interface/pie_charts/pie_chart_alpha_80.dds"
+	# 			texture = "gfx/interface/pie_charts/piechart_alpha.dds"
 	# 			value = "[UnitMarkerItem.GetAverageMoralePercent]"
 	# 			color = { 0.01 0.9 0.3 0.8 }
 	# 			alwaystransparent = yes
 	# 		}
 
 	# 		pieslice_no_highlight = {
-	# 			texture = "gfx/interface/pie_charts/pie_chart_alpha_80.dds"
+	# 			texture = "gfx/interface/pie_charts/piechart_alpha.dds"
 	# 			value = "[Subtract_float('(float)100.0', UnitMarkerItem.GetAverageMoralePercent)]"
 	# 			color = { 0.0 0.1 0.1 1 }
 	# 			alwaystransparent = yes
@@ -2298,7 +2296,7 @@ widget = {
 
 		# Siege banner
 		widget = {
-			visible = "[UnitMarker.HasSiege]"
+			visible = "[And3(UnitMarker.HasSiege, Not(UnitMarker.ShouldBeShownSmallSize), Not(Or4(And(Unit.GetCountry.IsPlayer, Or(GetPlayer.MakeScope.GetVariable('dwui_hide_own_army').IsSet, And(IsPlayerObserver, GetVariableSystem.Exists('dwui_hide_own_army')))), And(Unit.GetCountry.IsAllied, Or(GetPlayer.MakeScope.GetVariable('dwui_hide_ally_army').IsSet, And(IsPlayerObserver, GetVariableSystem.Exists('dwui_hide_ally_army')))), And(Player.IsEnemy(Unit.GetCountry.Self), Or(GetPlayer.MakeScope.GetVariable('dwui_hide_enemy_army').IsSet, And(IsPlayerObserver, GetVariableSystem.Exists('dwui_hide_enemy_army')))), And(Unit.GetCountry.IsNeutral, Or(GetPlayer.MakeScope.GetVariable('dwui_hide_neutral_army').IsSet, And(IsPlayerObserver, GetVariableSystem.Exists('dwui_hide_neutral_army')))))))]"
 			datacontext = "[UnitMarker.GetLeadingUnit]"
 			datacontext = "[UnitMarker.GetSiege]"
 
@@ -2307,16 +2305,8 @@ widget = {
 			allow_outside = yes
 
 			unit_maker_siege_banner = {
-				visible = "[UnitMarker.ShouldBeShownFullWidth]"
 				widgetanchor = vcenter|left
-				parentanchor = center
-			}
-
-			unit_maker_siege_banner = {
-				position = { @[20 - unit_marker_siege_banner_short_offset] 0 }
-				visible = "[And(UnitMarker.ShouldBeShownShortWidth, Not(UnitMarker.ShouldBeShownSmallSize))]"
-				widgetanchor = vcenter|left
-				parentanchor = center
+				parentanchor = vcenter|left
 			}
 		}
 
@@ -2342,135 +2332,18 @@ widget = {
 					# Army Marker
 					vbox = {
 						using = layoutpolicy_expanding
-						visible = "[UnitMarkerItem.GetUnit.IsArmy]"
+						visible = "[And(UnitMarkerItem.GetUnit.IsArmy, Not(Or4(And(Unit.GetCountry.IsPlayer, Or(GetPlayer.MakeScope.GetVariable('dwui_hide_own_army').IsSet, And(IsPlayerObserver, GetVariableSystem.Exists('dwui_hide_own_army')))), And(Unit.GetCountry.IsAllied, Or(GetPlayer.MakeScope.GetVariable('dwui_hide_ally_army').IsSet, And(IsPlayerObserver, GetVariableSystem.Exists('dwui_hide_ally_army')))), And(Player.IsEnemy(Unit.GetCountry.Self), Or(GetPlayer.MakeScope.GetVariable('dwui_hide_enemy_army').IsSet, And(IsPlayerObserver, GetVariableSystem.Exists('dwui_hide_enemy_army')))), And(Unit.GetCountry.IsNeutral, Or(GetPlayer.MakeScope.GetVariable('dwui_hide_neutral_army').IsSet, And(IsPlayerObserver, GetVariableSystem.Exists('dwui_hide_neutral_army')))))))]"
 						allow_outside = yes
 
-						# Full width
+						# Full width (disabled — presence in tree may help engine marker lifecycle)
 						unit_marker_item_layout = {
 							using = layoutpolicy_expanding
-							# spacing = -3
-							visible = "[UnitMarker.ShouldBeShownFullWidth]"
+							visible = no
 							allow_outside = yes
-
-							widget = {
-								ignore_layout = yes
-								size = { 70 40 }
-								parentanchor = vcenter|left
-								widgetanchor = vcenter|right
-								position = { 12 5 }
-								allow_outside = yes
-
-								hbox = {
-									allow_outside = yes
-									spacing = 2
-
-									expand = {  }
-
-									unit_marker_compass = {  }
-
-									widget = {
-										allow_outside = yes
-										using = unit_marker_item_commander
-
-										blockoverride "item_unit_commander_text_object" {
-											hbox = {
-												widget = {
-													size = { 26 26 }
-
-													# Has General
-													button = {
-														visible = "[UnitMarkerItem.HasLeaderFrame]"
-
-														size = { 26 26 }
-
-														framesize = { 32 32 }
-														frame = "[UnitMarkerItem.GetLeaderFrame]"
-
-														texture = "gfx/interface/mapitems/commander_rank.dds"
-														texture_density = 2
-
-														action_tooltip = {
-															title = "SHOW_CHARACTER"
-															on_action = "[UnitMarkerItem.OnLeaderClick]"
-														}
-
-														datacontext = "[UnitMarkerItem.GetUnit.GetCommander]"
-														tooltipwidget = { using = Character_tooltip }
-													}
-												}
-											}
-										}
-									}
-								}
-							}
-
-							blockoverride "item_modifiers_size" { size = { 28 28 } }
-
-							blockoverride "item_unit_text_object" {
-								hbox = {
-									# margin_left = @[unit_marker_morale_progressbar_size * 0.6]
-									margin = { 8 0 }
-									margin_right = 7
-
-									country_flag_small = {
-										datacontext = "[Unit.GetCountry]"
-										size = { 40 28 }
-
-										blockoverride "click" { onclick = "[UnitMarkerItem.OnFlagClick]" }
-
-										blockoverride "double_click" { ondoubleclick = "[UnitMarkerItem.OnRightClick]" }
-									}
-
-									vbox = {
-										using = layoutpolicy_expanding
-										margin_bottom = 4
-
-										expand = {  }
-
-										text_single = {
-											layoutpolicy_horizontal = expanding
-											autoresize = no
-											size = { -1 20 }
-											align = center|nobaseline
-											text = "[UnitMarkerItem.GetLabel]"
-										}
-
-										widget = {
-											layoutpolicy_horizontal = expanding
-											size = { -1 5 }
-
-											progressbar = {
-												visible = "[Unit.HasMaximumMaintenance]"
-												size = { 100% 5 }
-												using = progress_bar_green_alt
-												value = "[UnitMarkerItem.GetAverageMoralePercent]"
-												tooltipwidget = { using = UnitMorale_tooltip }
-											}
-											progressbar = {
-												visible = "[Not(Unit.HasMaximumMaintenance)]"
-												size = { 100% 5 }
-												using = progress_bar_goldish
-												value = "[UnitMarkerItem.GetAverageMoralePercent]"
-												tooltipwidget = { using = UnitMorale_tooltip }
-											}
-										}
-									}
-								}
-							}
-
-							blockoverride "item_unit_transport_text_object" {
-								text_single = {
-									size = { 100% 100% }
-									autoresize = no
-									align = center|nobaseline
-									text = "[UnitMarkerItem.GetTransportedTroops]"
-								}
-							}
 						}
 
-						# Short width
 						widget = {
-							visible = "[And(UnitMarker.ShouldBeShownShortWidth, Not(UnitMarker.ShouldBeShownVerySmallSize))]"
+							allow_outside = yes
 
 							size = {
 								@[unit_marker_item_width * unit_marker_item_short_factor]
@@ -2478,92 +2351,240 @@ widget = {
 							}
 
 							vbox = {
-								# hbox = {
-								# 	layoutpolicy_horizontal = expanding
-								# 	spacing = 2
-								# 	using = unit_marker_item_modifiers_small_zoom
-								# 	expand = {}
-								# }
+								allow_outside = yes
+								# Status icons - above the unit bar
+								hbox = {
+									minimumsize = { 0 22 }
+									spacing = 1
+									ignoreinvisible = yes
 
-								unit_marker_item_unit_info = {
-									unit_marker_compass = {
-										size = { 18 18 }
-										position = { -8 4 }
+									background = {
+										margin = { 2 1 }
+										texture = "gfx/interface/component_tiles/map_markers/map_unit_modifiers.dds"
+										texture_density = 2
+										modify_texture = { using = color_dark_blue_texture }
+									}
+									background = {
+										texture = "gfx/interface/component_tiles/tile_frame_squared.dds"
+										texture_density = 2
+										spriteType = corneredtiled
+										spriteBorder = { 20 20 }
+										margin = { 0 0 }
+										alpha = 0.5
+										using = non_clickable_color_gold_texture
 									}
 
-									blockoverride "unit_marker_item_unit_info_size" {
-										layoutpolicy_horizontal = expanding
-										size = { -1 @unit_marker_frame_height }
+									using = unit_marker_item_modifiers
+									blockoverride "item_container_size" { size = { 24 24 } }
+									blockoverride "item_modifiers_size" { size = { 24 24 } }
+								}
+
+								widget = {
+									size = {
+										@[unit_marker_item_width * unit_marker_item_short_factor]
+										@unit_marker_frame_height
 									}
-									blockoverride "item_modifiers_size" {
-										size = { 22 22 }
-										position = { 0 2 }
-									}
-									blockoverride "unit_transport_size" { size = { 28 28 } }
 
-									blockoverride "item_unit_text_object" {
-										hbox = {
-											margin_left = 10
-											margin_right = 7
+									allow_outside = yes
 
-											country_flag_small = {
-												datacontext = "[Unit.GetCountry]"
-												size = { 38 26 }
+									# Overlays (lower z)
+									widget = {
+										size = {
+											@[unit_marker_item_width * unit_marker_item_short_factor]
+											@unit_marker_frame_height
+										}
 
-												blockoverride "click" { onclick = "[UnitMarkerItem.OnFlagClick]" }
+										allow_outside = yes
 
-												blockoverride "double_click" { ondoubleclick = "[UnitMarkerItem.OnRightClick]" }
+										unit_marker_compass = {
+											widgetanchor = center
+
+											position = {
+												@[unit_marker_item_width * unit_marker_item_short_factor - 1]
+												@[unit_marker_frame_height / 2]
 											}
 
-											vbox = {
-												using = layoutpolicy_expanding
-												minimumsize = { 12 -1 }
-												margin_bottom = 4
+											size = { 17 17 }
+											allow_outside = yes
+										}
 
-												expand = {  }
+										widget = {
+											max_update_rate = 15
+											alwaystransparent = yes
+											widgetanchor = left|vcenter
 
-												text_single = {
-													layoutpolicy_horizontal = expanding
-													autoresize = yes
-													fontsize = 12
-													maximumsize = { -1 20 }
-													align = center|nobaseline
-													text = "[UnitMarkerItem.GetLabel]"
+											position = {
+												@[unit_marker_item_width * unit_marker_item_short_factor - 16]
+												@[unit_marker_frame_height / 2]
+											}
+
+											size = { 26 26 }
+											allow_outside = yes
+											datacontext = "[UnitMarkerItem.GetUnit]"
+
+											# Placeholder donut (100% levy) when no data
+											piechart = {
+												visible = "[Not(Unit.MakeScope.GetVariable('dwui_regular_str').IsSet)]"
+												parentanchor = center
+												size = { 100% 100% }
+												startangle = 450
+												endangle = 270
+
+												pieslice_no_highlight = {
+													texture = "gfx/interface/pie_charts/piechart_alpha.dds"
+													value = 1
+													color = { 0.72 0.45 0.2 1 }
+												}
+											}
+
+											# Data-driven donut
+											piechart = {
+												visible = "[Unit.MakeScope.GetVariable('dwui_regular_str').IsSet]"
+												parentanchor = center
+												size = { 100% 100% }
+												startangle = 450
+												endangle = 270
+
+												pieslice_no_highlight = {
+													texture = "gfx/interface/pie_charts/piechart_alpha.dds"
+													value = "[FixedPointToFloat(Unit.MakeScope.GetVariable('dwui_regular_str').GetValue)]"
+													color = { 0.85 0.75 0.2 1 }
 												}
 
-												widget = {
-													layoutpolicy_horizontal = expanding
-													size = { -1 5 }
+												pieslice_no_highlight = {
+													texture = "gfx/interface/pie_charts/piechart_alpha.dds"
+													value = "[FixedPointToFloat(Unit.MakeScope.GetVariable('dwui_merc_str').GetValue)]"
+													color = { 0.75 0.75 0.78 1 }
+												}
 
-													progressbar = {
-														visible = "[Unit.HasMaximumMaintenance]"
-														size = { 100% 5 }
-														using = progress_bar_green_alt
-														value = "[UnitMarkerItem.GetAverageMoralePercent]"
-														tooltipwidget = { using = UnitMorale_tooltip }
-													}
-													progressbar = {
-														visible = "[Not(Unit.HasMaximumMaintenance)]"
-														size = { 100% 5 }
-														using = progress_bar_goldish
-														value = "[UnitMarkerItem.GetAverageMoralePercent]"
-														tooltipwidget = { using = UnitMorale_tooltip }
+												pieslice_no_highlight = {
+													texture = "gfx/interface/pie_charts/piechart_alpha.dds"
+													value = "[FixedPointToFloat(Unit.MakeScope.GetVariable('dwui_levy_str').GetValue)]"
+													color = { 0.72 0.45 0.2 1 }
+												}
+											}
+										}
+
+										hbox = {
+											parentanchor = top|left
+											widgetanchor = top|right
+											position = { 10 0 }
+											allow_outside = yes
+											ignoreinvisible = yes
+											spacing = 2
+											minimumsize = { -1 @unit_marker_frame_height }
+											set_parent_size_to_minimum = yes
+
+											widget = {
+												allow_outside = yes
+												using = unit_marker_item_commander
+
+												blockoverride "item_unit_commander_text_object" {
+													hbox = {
+														widget = {
+															size = { 26 26 }
+
+															button = {
+																visible = "[UnitMarkerItem.HasLeaderFrame]"
+																size = { 26 26 }
+																framesize = { 32 32 }
+																frame = "[UnitMarkerItem.GetLeaderFrame]"
+																texture = "gfx/interface/mapitems/commander_rank.dds"
+																texture_density = 2
+
+																action_tooltip = {
+																	title = "SHOW_CHARACTER"
+																	on_action = "[UnitMarkerItem.OnLeaderClick]"
+																}
+
+																datacontext = "[UnitMarkerItem.GetUnit.GetCommander]"
+																tooltipwidget = { using = Character_tooltip }
+															}
+														}
 													}
 												}
 											}
 										}
 									}
 
-									blockoverride "item_unit_transport_text_object" {
-										text_single = {
-											size = { 100% 100% }
-											autoresize = no
-											align = center|nobaseline
-											text = "[UnitMarkerItem.GetTransportedTroops]"
+									# Card (higher z)
+									unit_marker_item_unit_info = {
+										size = { 100% 100% }
+
+										blockoverride "unit_marker_item_unit_info_size" { size = { 100% 100% } allow_outside = yes }
+										blockoverride "item_modifiers_size" {
+											size = { 22 22 }
+											position = { 0 2 }
+										}
+										blockoverride "unit_transport_size" { size = { 28 28 } }
+
+										blockoverride "item_unit_text_object" {
+											hbox = {
+												margin_left = 10
+												margin_right = 7
+
+												country_flag_small = {
+													datacontext = "[Unit.GetCountry]"
+													size = { 38 26 }
+
+													blockoverride "click" { onclick = "[UnitMarkerItem.OnFlagClick]" }
+
+													blockoverride "double_click" { ondoubleclick = "[UnitMarkerItem.OnRightClick]" }
+												}
+
+												vbox = {
+													using = layoutpolicy_expanding
+													minimumsize = { 12 -1 }
+													margin_bottom = 4
+
+													expand = {  }
+
+													text_single = {
+														layoutpolicy_horizontal = expanding
+														autoresize = yes
+														fontsize = 12
+														maximumsize = { -1 20 }
+														align = center|nobaseline
+														text = "[UnitMarkerItem.GetLabel]"
+													}
+
+													# Morale bar
+													widget = {
+														layoutpolicy_horizontal = expanding
+														size = { -1 5 }
+
+														progressbar = {
+															visible = "[Unit.HasMaximumMaintenance]"
+															size = { 100% 5 }
+															using = progress_bar_green_alt
+															value = "[UnitMarkerItem.GetAverageMoralePercent]"
+															tooltipwidget = { using = UnitMorale_tooltip }
+														}
+														progressbar = {
+															visible = "[Not(Unit.HasMaximumMaintenance)]"
+															size = { 100% 5 }
+															using = progress_bar_goldish
+															value = "[UnitMarkerItem.GetAverageMoralePercent]"
+															tooltipwidget = { using = UnitMorale_tooltip }
+														}
+													}
+												}
+											}
+										}
+
+										blockoverride "item_unit_transport_text_object" {
+											text_single = {
+												size = { 100% 100% }
+												autoresize = no
+												align = center|nobaseline
+												text = "[UnitMarkerItem.GetTransportedTroops]"
+											}
 										}
 									}
 								}
 
+								# Multi-unit tabs
+								unit_marker_item_units = {  }
 								expand = {  }
 							}
 						}
@@ -2572,138 +2593,19 @@ widget = {
 					# Navy Marker
 					vbox = {
 						using = layoutpolicy_expanding
-						visible = "[Not(UnitMarkerItem.GetUnit.IsArmy)]"
+						visible = "[And(Not(UnitMarkerItem.GetUnit.IsArmy), Not(Or4(And(Unit.GetCountry.IsPlayer, Or(GetPlayer.MakeScope.GetVariable('dwui_hide_own_navy').IsSet, And(IsPlayerObserver, GetVariableSystem.Exists('dwui_hide_own_navy')))), And(Unit.GetCountry.IsAllied, Or(GetPlayer.MakeScope.GetVariable('dwui_hide_ally_navy').IsSet, And(IsPlayerObserver, GetVariableSystem.Exists('dwui_hide_ally_navy')))), And(Player.IsEnemy(Unit.GetCountry.Self), Or(GetPlayer.MakeScope.GetVariable('dwui_hide_enemy_navy').IsSet, And(IsPlayerObserver, GetVariableSystem.Exists('dwui_hide_enemy_navy')))), And(Unit.GetCountry.IsNeutral, Or(GetPlayer.MakeScope.GetVariable('dwui_hide_neutral_navy').IsSet, And(IsPlayerObserver, GetVariableSystem.Exists('dwui_hide_neutral_navy')))))))]"
 						allow_outside = yes
 						margin_right = 5
 
-						# Full width
+						# Full width (disabled — presence in tree may help engine marker lifecycle)
 						unit_marker_item_layout = {
 							using = layoutpolicy_expanding
-							spacing = -3
-							visible = "[UnitMarker.ShouldBeShownFullWidth]"
+							visible = no
 							allow_outside = yes
-
-							widget = {
-								ignore_layout = yes
-								size = { 70 40 }
-								parentanchor = vcenter|left
-								widgetanchor = vcenter|right
-								position = { 4 5 }
-								allow_outside = yes
-
-								hbox = {
-									allow_outside = yes
-									spacing = 2
-
-									expand = {  }
-
-									unit_marker_compass = {  }
-
-									widget = {
-										allow_outside = yes
-										using = unit_marker_item_commander
-
-										blockoverride "item_unit_commander_text_object" {
-											hbox = {
-												widget = {
-													size = { 26 26 }
-
-													# Has General
-													button = {
-														visible = "[UnitMarkerItem.HasLeaderFrame]"
-
-														size = { 26 26 }
-
-														framesize = { 32 32 }
-														frame = "[UnitMarkerItem.GetLeaderFrame]"
-
-														texture = "gfx/interface/mapitems/commander_rank.dds"
-														texture_density = 2
-
-														action_tooltip = {
-															title = "SHOW_CHARACTER"
-															on_action = "[UnitMarkerItem.OnLeaderClick]"
-														}
-
-														datacontext = "[UnitMarkerItem.GetUnit.GetCommander]"
-														tooltipwidget = { using = Character_tooltip }
-													}
-												}
-											}
-										}
-									}
-								}
-							}
-
-							blockoverride "item_modifiers_size" { size = { 28 28 } }
-
-							blockoverride "item_unit_text_object" {
-								hbox = {
-									# margin_left = @[unit_marker_morale_progressbar_size * 0.6]
-									margin = { 4 0 }
-									margin_right = 8
-
-									vbox = {
-										using = layoutpolicy_expanding
-										margin_bottom = 4
-
-										expand = {  }
-
-										text_single = {
-											layoutpolicy_horizontal = expanding
-											autoresize = no
-											size = { -1 20 }
-											align = center|nobaseline
-											text = "[UnitMarkerItem.GetLabel]"
-										}
-
-										widget = {
-											layoutpolicy_horizontal = expanding
-											size = { -1 5 }
-
-											progressbar = {
-												parentanchor = right
-												visible = "[Unit.HasMaximumMaintenance]"
-												size = { 100% 5 }
-												using = progress_bar_green_alt
-												value = "[UnitMarkerItem.GetAverageMoralePercent]"
-												tooltipwidget = { using = UnitMorale_tooltip }
-											}
-											progressbar = {
-												parentanchor = right
-												visible = "[Not(Unit.HasMaximumMaintenance)]"
-												size = { 100% 5 }
-												using = progress_bar_goldish
-												value = "[UnitMarkerItem.GetAverageMoralePercent]"
-												tooltipwidget = { using = UnitMorale_tooltip }
-											}
-										}
-									}
-
-									country_flag_small = {
-										datacontext = "[Unit.GetCountry]"
-										size = { 42 29 }
-
-										blockoverride "click" { onclick = "[UnitMarkerItem.OnFlagClick]" }
-
-										blockoverride "double_click" { ondoubleclick = "[UnitMarkerItem.OnRightClick]" }
-									}
-								}
-							}
-
-							blockoverride "item_unit_transport_text_object" {
-								text_single = {
-									size = { 100% 100% }
-									autoresize = no
-									align = center|nobaseline
-									text = "[UnitMarkerItem.GetTransportedTroops]"
-								}
-							}
 						}
 
-						# Short width
 						widget = {
-							visible = "[And(UnitMarker.ShouldBeShownShortWidth, Not(UnitMarker.ShouldBeShownVerySmallSize))]"
+							allow_outside = yes
 
 							size = {
 								@[unit_marker_item_width * unit_marker_item_short_factor]
@@ -2711,94 +2613,255 @@ widget = {
 							}
 
 							vbox = {
-								# hbox = {
-								# 	layoutpolicy_horizontal = expanding
-								# 	spacing = 2
-								# 	using = unit_marker_item_modifiers_small_zoom
-								# 	expand = {}
-								# }
+								allow_outside = yes
+								# Status icons - above the unit bar
+								hbox = {
+									minimumsize = { 0 22 }
+									spacing = 1
+									ignoreinvisible = yes
 
-								unit_marker_item_unit_info = {
-									unit_marker_compass = {
-										size = { 18 18 }
-										position = { -8 4 }
+									background = {
+										margin = { 2 1 }
+										texture = "gfx/interface/component_tiles/map_markers/map_unit_modifiers.dds"
+										texture_density = 2
+										modify_texture = { using = color_dark_blue_texture }
+									}
+									background = {
+										texture = "gfx/interface/component_tiles/tile_frame_squared.dds"
+										texture_density = 2
+										spriteType = corneredtiled
+										spriteBorder = { 20 20 }
+										margin = { 0 0 }
+										alpha = 0.5
+										using = non_clickable_color_gold_texture
 									}
 
-									blockoverride "unit_marker_item_unit_info_size" {
-										layoutpolicy_horizontal = expanding
-										size = { -1 @unit_marker_frame_height }
+									using = unit_marker_item_modifiers
+									blockoverride "item_container_size" { size = { 24 24 } }
+									blockoverride "item_modifiers_size" { size = { 24 24 } }
+								}
+
+								widget = {
+									size = {
+										@[unit_marker_item_width * unit_marker_item_short_factor]
+										@unit_marker_frame_height
 									}
-									blockoverride "item_modifiers_size" {
-										size = { 22 22 }
-										position = { 0 2 }
-									}
-									blockoverride "unit_transport_size" { size = { 28 28 } }
 
-									blockoverride "item_unit_text_object" {
-										hbox = {
-											margin_left = 4
-											margin_right = 7
+									allow_outside = yes
 
-											vbox = {
-												using = layoutpolicy_expanding
-												minimumsize = { 12 -1 }
-												margin_bottom = 4
+									# Overlays (lower z) — mirrored: compass+donut left, commander right
+									widget = {
+										size = {
+											@[unit_marker_item_width * unit_marker_item_short_factor]
+											@unit_marker_frame_height
+										}
 
-												expand = {  }
+										allow_outside = yes
 
-												text_single = {
-													layoutpolicy_horizontal = expanding
-													autoresize = yes
-													fontsize = 12
-													maximumsize = { -1 20 }
-													align = center|nobaseline
-													text = "[UnitMarkerItem.GetLabel]"
+										# Compass (mirrored from army)
+										unit_marker_compass = {
+											widgetanchor = center
+											position = { 1 @[unit_marker_frame_height / 2] }
+											size = { 17 17 }
+											allow_outside = yes
+										}
+
+										# Half-donut piechart (mirrored from army)
+										widget = {
+											max_update_rate = 15
+											alwaystransparent = yes
+											widgetanchor = right|vcenter
+											position = { 16 @[unit_marker_frame_height / 2] }
+											size = { 26 26 }
+											allow_outside = yes
+											datacontext = "[UnitMarkerItem.GetUnit]"
+
+											# Placeholder donut (100% levy) when no data
+											piechart = {
+												visible = "[Not(Unit.MakeScope.GetVariable('dwui_regular_str').IsSet)]"
+												parentanchor = center
+												size = { 100% 100% }
+												startangle = 270
+												endangle = 90
+
+												pieslice_no_highlight = {
+													texture = "gfx/interface/pie_charts/piechart_alpha.dds"
+													value = 1
+													color = { 0.72 0.45 0.2 1 }
+												}
+											}
+
+											# Data-driven donut
+											piechart = {
+												visible = "[Unit.MakeScope.GetVariable('dwui_regular_str').IsSet]"
+												parentanchor = center
+												size = { 100% 100% }
+												startangle = 270
+												endangle = 90
+
+												pieslice_no_highlight = {
+													texture = "gfx/interface/pie_charts/piechart_alpha.dds"
+													value = "[FixedPointToFloat(Unit.MakeScope.GetVariable('dwui_regular_str').GetValue)]"
+													color = { 0.85 0.75 0.2 1 }
 												}
 
-												widget = {
-													layoutpolicy_horizontal = expanding
-													size = { -1 5 }
+												pieslice_no_highlight = {
+													texture = "gfx/interface/pie_charts/piechart_alpha.dds"
+													value = "[FixedPointToFloat(Unit.MakeScope.GetVariable('dwui_merc_str').GetValue)]"
+													color = { 0.75 0.75 0.78 1 }
+												}
 
-													progressbar = {
-														visible = "[Unit.HasMaximumMaintenance]"
-														parentanchor = right
-														size = { 100% 5 }
-														using = progress_bar_green_alt
-														value = "[UnitMarkerItem.GetAverageMoralePercent]"
-														tooltipwidget = { using = UnitMorale_tooltip }
-													}
-													progressbar = {
-														visible = "[Not(Unit.HasMaximumMaintenance)]"
-														parentanchor = right
-														size = { 100% 5 }
-														using = progress_bar_goldish
-														value = "[UnitMarkerItem.GetAverageMoralePercent]"
-														tooltipwidget = { using = UnitMorale_tooltip }
+												pieslice_no_highlight = {
+													texture = "gfx/interface/pie_charts/piechart_alpha.dds"
+													value = "[FixedPointToFloat(Unit.MakeScope.GetVariable('dwui_levy_str').GetValue)]"
+													color = { 0.72 0.45 0.2 1 }
+												}
+											}
+										}
+
+										# Commander + transport (right side)
+										hbox = {
+											widgetanchor = top|left
+
+											position = {
+												@[unit_marker_item_width * unit_marker_item_short_factor - 10]
+												0
+											}
+
+											allow_outside = yes
+											ignoreinvisible = yes
+											spacing = 2
+											minimumsize = { -1 @unit_marker_frame_height }
+											set_parent_size_to_minimum = yes
+
+											widget = {
+												allow_outside = yes
+												using = unit_marker_item_commander
+
+												blockoverride "item_unit_commander_text_object" {
+													hbox = {
+														widget = {
+															size = { 26 26 }
+
+															button = {
+																visible = "[UnitMarkerItem.HasLeaderFrame]"
+																size = { 26 26 }
+																framesize = { 32 32 }
+																frame = "[UnitMarkerItem.GetLeaderFrame]"
+																texture = "gfx/interface/mapitems/commander_rank.dds"
+																texture_density = 2
+
+																action_tooltip = {
+																	title = "SHOW_CHARACTER"
+																	on_action = "[UnitMarkerItem.OnLeaderClick]"
+																}
+
+																datacontext = "[UnitMarkerItem.GetUnit.GetCommander]"
+																tooltipwidget = { using = Character_tooltip }
+															}
+														}
 													}
 												}
 											}
 
-											country_flag_small = {
-												datacontext = "[Unit.GetCountry]"
-												size = { 38 26 }
+											widget = {
+												visible = "[UnitMarkerItem.IsTransporting]"
+												allow_outside = yes
+												using = unit_marker_item_transport
+												blockoverride "unit_transport_size" { size = { 28 28 } }
 
-												blockoverride "click" { onclick = "[UnitMarkerItem.OnFlagClick]" }
-
-												blockoverride "double_click" { ondoubleclick = "[UnitMarkerItem.OnRightClick]" }
+												blockoverride "item_unit_transport_text_object" {
+													text_single = {
+														size = { 100% 100% }
+														autoresize = no
+														align = center|nobaseline
+														text = "[UnitMarkerItem.GetTransportedTroops]"
+													}
+												}
 											}
 										}
 									}
 
-									blockoverride "item_unit_transport_text_object" {
-										text_single = {
-											size = { 100% 100% }
-											autoresize = no
-											align = center|nobaseline
-											text = "[UnitMarkerItem.GetTransportedTroops]"
+									# Card (higher z)
+									unit_marker_item_unit_info = {
+										size = { 100% 100% }
+
+										blockoverride "unit_marker_item_unit_info_size" { size = { 100% 100% } allow_outside = yes }
+										blockoverride "item_modifiers_size" {
+											size = { 22 22 }
+											position = { 0 2 }
+										}
+										blockoverride "unit_transport_size" { size = { 28 28 } }
+
+										blockoverride "item_unit_text_object" {
+											hbox = {
+												margin_left = 7
+												margin_right = 8
+
+												vbox = {
+													using = layoutpolicy_expanding
+													minimumsize = { 12 -1 }
+													margin_bottom = 4
+
+													expand = {  }
+
+													text_single = {
+														layoutpolicy_horizontal = expanding
+														autoresize = yes
+														fontsize = 12
+														maximumsize = { -1 20 }
+														align = center|nobaseline
+														text = "[UnitMarkerItem.GetLabel]"
+													}
+
+													# Morale bar
+													widget = {
+														layoutpolicy_horizontal = expanding
+														size = { -1 5 }
+
+														progressbar = {
+															visible = "[Unit.HasMaximumMaintenance]"
+															parentanchor = right
+															size = { 100% 5 }
+															using = progress_bar_green_alt
+															value = "[UnitMarkerItem.GetAverageMoralePercent]"
+															tooltipwidget = { using = UnitMorale_tooltip }
+														}
+														progressbar = {
+															visible = "[Not(Unit.HasMaximumMaintenance)]"
+															parentanchor = right
+															size = { 100% 5 }
+															using = progress_bar_goldish
+															value = "[UnitMarkerItem.GetAverageMoralePercent]"
+															tooltipwidget = { using = UnitMorale_tooltip }
+														}
+													}
+												}
+
+												country_flag_small = {
+													datacontext = "[Unit.GetCountry]"
+													size = { 38 26 }
+
+													blockoverride "click" { onclick = "[UnitMarkerItem.OnFlagClick]" }
+
+													blockoverride "double_click" { ondoubleclick = "[UnitMarkerItem.OnRightClick]" }
+												}
+											}
+										}
+
+										blockoverride "item_unit_transport_text_object" {
+											text_single = {
+												size = { 100% 100% }
+												autoresize = no
+												align = center|nobaseline
+												text = "[UnitMarkerItem.GetTransportedTroops]"
+											}
 										}
 									}
 								}
 
+								# Multi-unit tabs
+								unit_marker_item_units = {  }
 								expand = {  }
 							}
 						}
@@ -3294,10 +3357,27 @@ container = {
 			blockoverride "icon_size" { size = { 30 30 } parentanchor = bottom }
 		}
 
+		# Building-specific fort icon (mod default)
 		icon = {
-			visible = "[Location.HasAnyFort]"
+			visible = "[And(Location.HasAnyFort, Not(Or(GetPlayer.MakeScope.GetVariable('dwui_vfort').IsSet, And(IsPlayerObserver, GetVariableSystem.Exists('dwui_vfort')))))]"
 			parentanchor = center
 			texture = "[GetBuildingIcon(Location.GetBestFortBuilding.GetType)]"
+			size = { 30 30 }
+
+			glow = {
+				glow_radius = 2
+				color = { 0.0 0.0 0.0 1.0 }
+				alpha = 0.5
+			}
+
+			tooltipwidget = { using = Garrison_tooltip }
+		}
+
+		# Vanilla generic fort icon
+		icon = {
+			visible = "[And(Location.HasAnyFort, Or(GetPlayer.MakeScope.GetVariable('dwui_vfort').IsSet, And(IsPlayerObserver, GetVariableSystem.Exists('dwui_vfort'))))]"
+			parentanchor = center
+			texture = "gfx/interface/icons/map_modes/fort_level_icon.dds"
 			size = { 30 30 }
 
 			glow = {
@@ -3528,6 +3608,7 @@ widget = {
 
 widget = {
 	name = "supply_depot_marker"
+	max_update_rate = 15
 	allow_outside = yes
 	datacontext = "[SupplyDepotMarker.GetLocation.GetSupplyDepot]"
 
@@ -3581,14 +3662,14 @@ widget = {
 				using = piechart_angles
 
 				pieslice_no_highlight = {
-					texture = "gfx/interface/pie_charts/pie_chart_alpha_80.dds"
+					texture = "gfx/interface/pie_charts/piechart_alpha.dds"
 					value = "[SupplyDepotMarker.GetProgress]"
 					color = { 0.01 0.9 0.3 0.8 }
 					alwaystransparent = yes
 				}
 
 				pieslice_no_highlight = {
-					texture = "gfx/interface/pie_charts/pie_chart_alpha_80.dds"
+					texture = "gfx/interface/pie_charts/piechart_alpha.dds"
 					value = "[Subtract_float('(float)100.0', SupplyDepotMarker.GetProgress)]"
 					color = { 0.0 0.1 0.1 1 }
 					alwaystransparent = yes
@@ -3608,6 +3689,7 @@ widget = {
 
 widget = {
 	name = "flip_marker"
+	max_update_rate = 15
 	allow_outside = yes
 
 	position = { 0 0 }
@@ -3656,14 +3738,14 @@ widget = {
 			using = piechart_angles
 
 			pieslice_no_highlight = {
-				texture = "gfx/interface/pie_charts/pie_chart_alpha_80.dds"
+				texture = "gfx/interface/pie_charts/piechart_alpha.dds"
 				value = "[FortFlipRestoreMarker.GetProgress]"
 				color = { 0.01 0.9 0.2 1 }
 				alwaystransparent = yes
 			}
 
 			pieslice_no_highlight = {
-				texture = "gfx/interface/pie_charts/pie_chart_alpha_80.dds"
+				texture = "gfx/interface/pie_charts/piechart_alpha.dds"
 				value = "[Subtract_float('(float)100.0', FortFlipRestoreMarker.GetProgress)]"
 				color = { 0.0 0.1 0.0 1 }
 				alwaystransparent = yes
@@ -3842,14 +3924,14 @@ widget = {
 		using = piechart_angles
 
 		pieslice = {
-			texture = "gfx/interface/pie_charts/pie_chart_alpha_80.dds"
+			texture = "gfx/interface/pie_charts/piechart_alpha.dds"
 			value = "[CabinetActionMarker.GetProgress]"
 			color = { 0.01 0.6 0.9 1 }
 			alwaystransparent = yes
 		}
 
 		pieslice = {
-			texture = "gfx/interface/pie_charts/pie_chart_alpha_80.dds"
+			texture = "gfx/interface/pie_charts/piechart_alpha.dds"
 			value = "[Subtract_float('(float)100.0', CabinetActionMarker.GetProgress)]"
 			color = { 0.0 0.1 0.0 1 }
 			alwaystransparent = yes
@@ -3953,6 +4035,7 @@ widget = {
 
 widget = {
 	name = "annexation_marker"
+	max_update_rate = 15
 
 	size = { 40 40 }
 
@@ -3976,7 +4059,7 @@ widget = {
 		visible = "[Country.GetDiplomacy.IsBeingAnnexedStalled]"
 
 		icon = {
-			texture = "gfx/interface/pie_charts/pie_chart_alpha_80.dds"
+			texture = "gfx/interface/pie_charts/piechart_alpha.dds"
 			size = { 97% 97% }
 			parentanchor = center
 			color = { 0.45 0.59 0.67 1 }
@@ -3984,14 +4067,14 @@ widget = {
 		}
 
 		pieslice = {
-			texture = "gfx/interface/pie_charts/pie_chart_alpha_80.dds"
+			texture = "gfx/interface/pie_charts/piechart_alpha.dds"
 			value = "[AnnexationMarker.GetProgress]"
 			color = { 0.5 0.5 0.5 1 }
 			alpha = 0.8
 		}
 
 		pieslice = {
-			texture = "gfx/interface/pie_charts/pie_chart_alpha_80.dds"
+			texture = "gfx/interface/pie_charts/piechart_alpha.dds"
 			value = "[Subtract_float('(float)100.0', AnnexationMarker.GetProgress)]"
 			color = { 1 1 1 0 }
 		}
@@ -4004,7 +4087,7 @@ widget = {
 		visible = "[Not(Country.GetDiplomacy.IsBeingAnnexedStalled)]"
 
 		icon = {
-			texture = "gfx/interface/pie_charts/pie_chart_alpha_80.dds"
+			texture = "gfx/interface/pie_charts/piechart_alpha.dds"
 			size = { 97% 97% }
 			parentanchor = center
 			color = { 0.45 0.59 0.67 1 }
@@ -4012,14 +4095,14 @@ widget = {
 		}
 
 		pieslice = {
-			texture = "gfx/interface/pie_charts/pie_chart_alpha_80.dds"
+			texture = "gfx/interface/pie_charts/piechart_alpha.dds"
 			value = "[AnnexationMarker.GetProgress]"
 			color = { 0.3 0.8 0.3 1 }
 			alpha = 0.8
 		}
 
 		pieslice = {
-			texture = "gfx/interface/pie_charts/pie_chart_alpha_80.dds"
+			texture = "gfx/interface/pie_charts/piechart_alpha.dds"
 			value = "[Subtract_float('(float)100.0', AnnexationMarker.GetProgress)]"
 			color = { 1 1 1 0 }
 		}
@@ -4103,6 +4186,7 @@ widget = {
 
 widget = {
 	name = "colony_charter_marker"
+	max_update_rate = 15
 
 	size = { 40 40 }
 
@@ -4164,14 +4248,14 @@ widget = {
 		using = piechart_angles
 
 		pieslice = {
-			texture = "gfx/interface/pie_charts/pie_chart_alpha_80.dds"
+			texture = "gfx/interface/pie_charts/piechart_alpha.dds"
 			value = "[ColonyCharterMarker.GetProgress]"
 			color = { 0.01 0.6 0.9 1 }
 			alwaystransparent = yes
 		}
 
 		pieslice = {
-			texture = "gfx/interface/pie_charts/pie_chart_alpha_80.dds"
+			texture = "gfx/interface/pie_charts/piechart_alpha.dds"
 			value = "[Subtract_float('(float)100.0', ColonyCharterMarker.GetProgress)]"
 			color = { 0.0 0.1 0.0 1 }
 			alwaystransparent = yes
@@ -4183,6 +4267,7 @@ widget = {
 
 widget = {
 	name = "building_spy_network_marker"
+	max_update_rate = 15
 
 	size = { 40 40 }
 
@@ -4198,7 +4283,7 @@ widget = {
 		using = piechart_angles
 
 		icon = {
-			texture = "gfx/interface/pie_charts/pie_chart_alpha_80.dds"
+			texture = "gfx/interface/pie_charts/piechart_alpha.dds"
 			size = { 97% 97% }
 			parentanchor = center
 			color = { 0.45 0.59 0.67 1 }
@@ -4206,14 +4291,14 @@ widget = {
 		}
 
 		pieslice = {
-			texture = "gfx/interface/pie_charts/pie_chart_alpha_80.dds"
+			texture = "gfx/interface/pie_charts/piechart_alpha.dds"
 			value = "[BuildingSpyNetworkMarker.GetProgress]"
 			color = { 0.3 0.8 0.3 1 }
 			alpha = 0.8
 		}
 
 		pieslice = {
-			texture = "gfx/interface/pie_charts/pie_chart_alpha_80.dds"
+			texture = "gfx/interface/pie_charts/piechart_alpha.dds"
 			value = "[Subtract_float('(float)100.0', BuildingSpyNetworkMarker.GetProgress)]"
 			color = { 1 1 1 0 }
 		}
@@ -4261,6 +4346,7 @@ widget = {
 
 widget = {
 	name = "create_casus_belli_marker"
+	max_update_rate = 15
 
 	size = { 40 40 }
 
@@ -4276,7 +4362,7 @@ widget = {
 		using = piechart_angles
 
 		icon = {
-			texture = "gfx/interface/pie_charts/pie_chart_alpha_80.dds"
+			texture = "gfx/interface/pie_charts/piechart_alpha.dds"
 			size = { 97% 97% }
 			parentanchor = center
 			color = { 0.45 0.59 0.67 1 }
@@ -4284,14 +4370,14 @@ widget = {
 		}
 
 		pieslice = {
-			texture = "gfx/interface/pie_charts/pie_chart_alpha_80.dds"
+			texture = "gfx/interface/pie_charts/piechart_alpha.dds"
 			value = "[CreateCasusBelliMarker.GetProgress]"
 			color = { 0.3 0.8 0.3 1 }
 			alpha = 0.8
 		}
 
 		pieslice = {
-			texture = "gfx/interface/pie_charts/pie_chart_alpha_80.dds"
+			texture = "gfx/interface/pie_charts/piechart_alpha.dds"
 			value = "[Subtract_float('(float)100.0', CreateCasusBelliMarker.GetProgress)]"
 			color = { 1 1 1 0 }
 		}
@@ -4351,6 +4437,7 @@ widget = {
 
 widget = {
 	name = "improve_opinion_marker"
+	max_update_rate = 15
 
 	size = { 40 40 }
 
@@ -4366,7 +4453,7 @@ widget = {
 		using = piechart_angles
 
 		icon = {
-			texture = "gfx/interface/pie_charts/pie_chart_alpha_80.dds"
+			texture = "gfx/interface/pie_charts/piechart_alpha.dds"
 			size = { 97% 97% }
 			parentanchor = center
 			color = { 0.45 0.59 0.67 1 }
@@ -4374,14 +4461,14 @@ widget = {
 		}
 
 		pieslice = {
-			texture = "gfx/interface/pie_charts/pie_chart_alpha_80.dds"
+			texture = "gfx/interface/pie_charts/piechart_alpha.dds"
 			value = "[ImproveOpinionMarker.GetProgress]"
 			color = { 0.3 0.8 0.3 1 }
 			alpha = 0.8
 		}
 
 		pieslice = {
-			texture = "gfx/interface/pie_charts/pie_chart_alpha_80.dds"
+			texture = "gfx/interface/pie_charts/piechart_alpha.dds"
 			value = "[Subtract_float('(float)100.0', ImproveOpinionMarker.GetProgress)]"
 			color = { 1 1 1 0 }
 		}
@@ -4429,6 +4516,7 @@ widget = {
 
 widget = {
 	name = "currying_favors_marker"
+	max_update_rate = 15
 
 	size = { 40 40 }
 
@@ -4444,7 +4532,7 @@ widget = {
 		using = piechart_angles
 
 		icon = {
-			texture = "gfx/interface/pie_charts/pie_chart_alpha_80.dds"
+			texture = "gfx/interface/pie_charts/piechart_alpha.dds"
 			size = { 97% 97% }
 			parentanchor = center
 			color = { 0.45 0.59 0.67 1 }
@@ -4452,14 +4540,14 @@ widget = {
 		}
 
 		pieslice = {
-			texture = "gfx/interface/pie_charts/pie_chart_alpha_80.dds"
+			texture = "gfx/interface/pie_charts/piechart_alpha.dds"
 			value = "[CurryingFavorsMarker.GetProgress]"
 			color = { 0.3 0.8 0.3 1 }
 			alpha = 0.8
 		}
 
 		pieslice = {
-			texture = "gfx/interface/pie_charts/pie_chart_alpha_80.dds"
+			texture = "gfx/interface/pie_charts/piechart_alpha.dds"
 			value = "[Subtract_float('(float)100.0', CurryingFavorsMarker.GetProgress)]"
 			color = { 1 1 1 0 }
 		}

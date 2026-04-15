@@ -1,0 +1,36 @@
+﻿# SUL — Ported DWUI Unit Composition Calculator
+# Scope: unit (army or navy)
+# Counts levy/regular/mercenary sub-units.
+# Sets dwui_levy_str/dwui_merc_str/dwui_regular_str on the unit (kept under
+# the dwui_ prefix so the ported unit-marker GUI — and standalone DWUI if
+# also loaded — reads the same values).
+
+sul_dwui_calculate_unit_composition = {
+	set_local_variable = { name = levy_count value = 0 }
+	set_local_variable = { name = merc_count value = 0 }
+	set_local_variable = { name = total_count value = 0 }
+
+	every_sub_unit = {
+		change_local_variable = { name = total_count add = 1 }
+		if = {
+			limit = { is_levy = yes }
+			change_local_variable = { name = levy_count add = 1 }
+		}
+		else_if = {
+			limit = { is_mercenary = yes }
+			change_local_variable = { name = merc_count add = 1 }
+		}
+	}
+
+	set_variable = { name = dwui_levy_str value = local_var:levy_count }
+	set_variable = { name = dwui_merc_str value = local_var:merc_count }
+	set_variable = {
+		name = dwui_regular_str
+
+		value = {
+			value = local_var:total_count
+			subtract = local_var:levy_count
+			subtract = local_var:merc_count
+		}
+	}
+}

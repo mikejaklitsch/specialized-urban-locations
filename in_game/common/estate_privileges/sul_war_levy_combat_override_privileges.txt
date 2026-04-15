@@ -1,0 +1,79 @@
+﻿# Estate privileges: replace levy_combat_efficiency_modifier with discipline/morale.
+# Full-body REPLACE because the privileges re-emit the same fields under new values.
+
+REPLACE:auxilium_et_consilium = {
+	estate = nobles_estate
+
+	potential = {
+		government_type = government_type:monarchy
+	}
+
+	allow = {
+		has_advance = noble_knights
+		NOT = {
+			has_estate_privilege = estate_privilege:monetary_fiefs
+		}
+	}
+
+	can_revoke = {  }
+
+	country_modifier = {
+		global_nobles_estate_power = 0.5
+
+		discipline = 0.025
+		land_morale_modifier = 0.05
+		global_army_levy_size_modifier = 0.1
+		nobles_estate_levy_size = 0.20
+
+		monthly_towards_serfdom = societal_value_monthly_move
+		monthly_towards_aristocracy = societal_value_monthly_move
+	}
+}
+
+REPLACE:peasants_allowed_weapons_privilege = {
+	estate = peasants_estate
+
+	potential = {
+	}
+
+	allow = {
+		NOT = {
+			has_estate_privilege = estate_privilege:tur_banned_weaponry_for_peasants
+		}
+	}
+
+	can_revoke = {  }
+
+	country_modifier = {
+		peasants_estate_levy_size = 0.2
+		peasants_allowed_weapons = yes
+		discipline = 0.025
+		land_morale_modifier = 0.05
+		levy_recovery_modifier = 0.1
+		global_peasants_estate_power = 0.5
+		global_peasant_enfranchisment = 0.05
+		peasants_estate_target_satisfaction = medium_privilege_target_satisfaction
+	}
+}
+
+REPLACE:land_owning_farmers = {
+	estate = peasants_estate
+
+	potential = {
+		has_or_had_tag = SWE
+	}
+
+	allow = {
+	}
+
+	can_revoke = { "estate_power(estate_type:crown_estate)" > 0.66 }
+
+	country_modifier = {
+		discipline = 0.025
+		global_monthly_food_modifier = 0.1
+		global_peasants_estate_power = 0.5
+		peasants_estate_target_satisfaction = medium_privilege_target_satisfaction
+
+		monthly_towards_free_subjects = societal_value_monthly_move
+	}
+}

@@ -1,11 +1,8 @@
-﻿# Per-country passthrough demand pulse. Uses every_market_center_in_country
-# from country scope so add_temporary_demand always runs on a valid owned
-# market - every_market_in_world includes unowned markets where the call
-# returns null.
+﻿# Per-market passthrough demand pulse. Iterates every_market_in_world once
+# per weather tick, skipping unowned markets. Moved from monthly_country_pulse
+# to avoid redundant per-country iterations over shared markets.
 
 sul_passthrough_pulse = {
-	trigger = { has_markets = yes }
-
 	effect = {
 		sul_passthrough_apply = yes
 	}

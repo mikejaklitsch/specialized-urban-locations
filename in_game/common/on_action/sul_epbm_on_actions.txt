@@ -1,0 +1,225 @@
+﻿# Estate Building Maintenance for SUL - On Actions
+# ═══════════════════════════════════════════════
+# Initialization: stamp global PM maps, build location + country indexes
+# Monthly: player recalc+charge, AI charge only
+# Yearly: AI recalc
+# Ownership change: move location between country lists
+# ═══════════════════════════════════════════════
+# Rebuild version: major * 100 + minor (patch changes don't trigger rebuild)
+# Updated by post_deploy.py from .metadata/metadata.json
+@sul_epbm_rebuild_version = 20 # 0.2.x — sync with .metadata/metadata.json
+# Bouvet Island (27954): impassable location used as mod state anchor.
+# sul_epbm_active modifier applied here — stripped by engine when mod is removed.
+# sul_epbm_version variable stored here for version-based rebuild detection.
+
+# NOTE: Vanilla hooks are in sul_hardcoded.txt (unified dispatcher).
+# This file only contains the on_action effect definitions.
+
+sul_epbm_initialize_all = {
+	effect = {
+		sul_epbm_full_rebuild = yes
+		# Stamp version on Bouvet Island
+		location:bouvet_island = {
+			remove_location_modifier = sul_epbm_active
+			add_location_modifier = { modifier = sul_epbm_active days = -1 }
+			set_variable = { name = sul_epbm_version value = @sul_epbm_rebuild_version }
+		}
+	}
+}
+
+# ═══════════════════════════════════════════════
+# Version check: runs monthly, triggers rebuild if marker is missing or outdated
+# Handles first-time init, version upgrades, and mod remove/re-add
+# ═══════════════════════════════════════════════
+
+sul_epbm_version_check = {
+	trigger = {
+		OR = {
+			# Modifier missing = mod was removed and re-added (or first init on existing save)
+			location:bouvet_island = {
+				NOT = {
+					has_location_modifier = sul_epbm_active
+				}
+			}
+
+			# Modifier present but version outdated = mod was updated
+			location:bouvet_island = {
+				has_location_modifier = sul_epbm_active
+				has_variable = sul_epbm_version
+				var:sul_epbm_version < @sul_epbm_rebuild_version
+			}
+		}
+
+		# Guard: don't let multiple countries trigger rebuild in the same tick
+		NOT = {
+			has_global_variable = sul_epbm_rebuilding
+		}
+	}
+
+	effect = {
+		set_global_variable = { name = sul_epbm_rebuilding value = yes }
+		sul_epbm_full_rebuild = yes
+		# Stamp version on Bouvet Island
+		location:bouvet_island = {
+			remove_location_modifier = sul_epbm_active
+			add_location_modifier = { modifier = sul_epbm_active days = -1 }
+			set_variable = { name = sul_epbm_version value = @sul_epbm_rebuild_version }
+		}
+
+		remove_global_variable = sul_epbm_rebuilding
+	}
+}
+
+# Player: full recalculation + charge every month
+
+sul_epbm_player_monthly = {
+	trigger = {
+		location:bouvet_island = { has_location_modifier = sul_epbm_active }
+		is_ai = no
+		any_estate = { estate_type != estate_type:crown_estate }
+	}
+
+	effect = {
+		sul_epbm_collect_maintenance = yes
+	}
+}
+
+# AI: charge estates monthly using saved rates from last yearly calculation
+
+sul_epbm_ai_monthly_charge = {
+	trigger = {
+		location:bouvet_island = { has_location_modifier = sul_epbm_active }
+		is_ai = yes
+		is_real_country = yes
+		any_estate = { estate_type != estate_type:crown_estate }
+	}
+
+	effect = {
+		sul_epbm_charge_estates = yes
+	}
+}
+
+# ═══════════════════════════════════════════════
+# Yearly pulse
+# ═══════════════════════════════════════════════
+
+# AI: recalculate maintenance rates yearly (expensive iteration)
+
+sul_epbm_ai_yearly_recalc = {
+	trigger = {
+		# Bouvet Island carries mod version state (impassable, never owned).
+		# Skip if stale — IOs may be invalid during version transitions.
+		location:bouvet_island = {
+			has_location_modifier = sul_epbm_active
+			has_variable = sul_epbm_version
+			var:sul_epbm_version >= @sul_epbm_rebuild_version
+		}
+
+		is_ai = yes
+		is_real_country = yes
+		any_estate = { estate_type != estate_type:crown_estate }
+	}
+
+	effect = {
+		sul_epbm_calculate_maintenance = yes
+	}
+}
+
+# Safety net: full structural rebuild every 10 years to correct any drift.
+# Clears and repopulates per-location building lists + country location lists.
+
+sul_epbm_decade_rebuild = {
+	trigger = {
+		location:bouvet_island = { has_location_modifier = sul_epbm_active }
+		is_real_country = yes
+		any_estate = { estate_type != estate_type:crown_estate }
+	}
+
+	effect = {
+		if = {
+			limit = {
+				has_variable = sul_epbm_rebuild_counter
+				var:sul_epbm_rebuild_counter >= 9
+			}
+
+			sul_epbm_structural_rebuild = yes
+			set_variable = { name = sul_epbm_rebuild_counter value = 0 }
+		}
+		else_if = {
+			limit = { has_variable = sul_epbm_rebuild_counter }
+			change_variable = { name = sul_epbm_rebuild_counter add = 1 }
+		}
+	}
+}
+
+# ═══════════════════════════════════════════════
+# Location ownership change: move location between country lists
+# root = location, scope:loser = previous owner, scope:winner = new owner
+# ═══════════════════════════════════════════════
+
+sul_epbm_on_location_owner_changed = {
+	trigger = {
+		location:bouvet_island = { has_location_modifier = sul_epbm_active }
+	}
+
+	effect = {
+		save_temporary_scope_as = sul_epbm_loc
+		# Remove from loser's list (if they have one)
+		scope:loser ?= {
+			if = {
+				limit = {
+					has_variable_list = sul_epbm_locations
+
+					is_target_in_variable_list = {
+						name = sul_epbm_locations
+						target = scope:sul_epbm_loc
+					}
+				}
+
+				remove_list_variable = {
+					name = sul_epbm_locations
+					target = scope:sul_epbm_loc
+				}
+			}
+		}
+
+		# Add to winner's list if location has tracked buildings
+		scope:winner ?= {
+			if = {
+				limit = {
+					has_variable_list = sul_epbm_locations
+
+					scope:sul_epbm_loc = { has_variable_list = sul_epbm_buildings }
+					NOT = {
+						is_target_in_variable_list = {
+							name = sul_epbm_locations
+							target = scope:sul_epbm_loc
+						}
+					}
+				}
+
+				add_to_variable_list = {
+					name = sul_epbm_locations
+					target = scope:sul_epbm_loc
+				}
+			}
+		}
+	}
+}
+
+# ═══════════════════════════════════════════════
+# Global monthly pulse: clear cached PM costs so prices refresh
+# ═══════════════════════════════════════════════
+
+sul_epbm_monthly_cache_clear = {
+	trigger = {
+		location:bouvet_island = { has_location_modifier = sul_epbm_active }
+	}
+
+	effect = {
+		every_in_global_list = {
+			variable = sul_epbm_all_ios
+			clear_variable_map = sul_epbm_costs
+		}
+	}
+}

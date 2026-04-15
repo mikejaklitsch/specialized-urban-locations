@@ -3,6 +3,7 @@
 # Specialization System: sul_on_actions.txt
 # Provisions System: sul_on_actions.txt
 # War Systems: sul_war_on_actions.txt, sul_war_overcrowding_effects.txt
+# Estate Building Maintenance: sul_epbm_on_actions.txt
 
 # Order: WPDO RGO map first (locations need rgo_building_type before spec init),
 # then SUL specialization rebuild, then WPDO demand system + economy.
@@ -19,6 +20,7 @@ on_game_start = {
 		sul_refresh_market_cache
 		sul_minting_initialize_all
 		sul_projection_on_game_start
+		sul_epbm_initialize_all
 	}
 }
 
@@ -41,6 +43,7 @@ on_location_changed_owner = {
 		sul_on_location_changed_owner
 		sul_war_on_auto_conquest
 		sul_integration_on_location_conquered
+		sul_epbm_on_location_owner_changed
 	}
 }
 
@@ -49,8 +52,6 @@ monthly_country_pulse = {
 		sul_version_check
 		sul_clear_market_cache
 		sul_refresh_market_cache
-		# Per-country, uses every_market_center_in_country (avoids unowned markets)
-		sul_passthrough_pulse
 		sul_update_spending_rates
 		sul_player_wage_update
 		sul_ai_monthly_wage_payment
@@ -60,6 +61,9 @@ monthly_country_pulse = {
 		sul_war_init_pulse
 		sul_war_monthly_pulse
 		sul_projection_monthly_update
+		sul_epbm_version_check
+		sul_epbm_player_monthly
+		sul_epbm_ai_monthly_charge
 	}
 }
 
@@ -69,17 +73,21 @@ yearly_country_pulse = {
 		sul_cleanup_dead_units
 		sul_yearly_rgo_trim
 		sul_minting_yearly_update
+		sul_epbm_ai_yearly_recalc
+		sul_epbm_decade_rebuild
 	}
 }
 
 weather_monthly_pulse = {
 	on_actions = {
+		sul_passthrough_pulse
 		sul_batch_location_update
 		sul_integration_init_check
 		sul_integration_monthly_update
 		# Minting version check belongs here, not monthly_weather_pulse (TGS typo);
 		# weather_monthly_pulse is the real engine action.
 		sul_minting_version_check
+		sul_epbm_monthly_cache_clear
 	}
 }
 

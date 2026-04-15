@@ -1,0 +1,442 @@
+﻿# SUL EPBM: Calculation Engine
+# ═══════════════════════════════════════════════
+# Building maintenance split by estate_power at country level.
+# Estate-assigned buildings are charged entirely to their assigned estate.
+# Called from sul_epbm_collect_maintenance (player monthly) and sul_epbm_ai_yearly_recalc.
+# ═══════════════════════════════════════════════
+# PM cost lookup with lazy market cache
+# Scope: international_organization (PM IO via global_var:sul_epbm_pm_ref)
+# Requires: scope:sul_epbm_mkt (market ref for price lookup)
+# Sets: local_var:sul_epbm_pm_cost (total goods cost per building level)
+# Cache: sul_epbm_costs variable map on IO (market → cost), cleared monthly
+# ═══════════════════════════════════════════════
+
+sul_epbm_lookup_pm_cost = {
+	if = {
+		limit = {
+			has_variable_map = sul_epbm_costs
+			is_key_in_variable_map = { name = sul_epbm_costs target = scope:sul_epbm_mkt }
+		}
+
+		set_local_variable = {
+			name = sul_epbm_pm_cost
+			value = "variable_map(sul_epbm_costs|scope:sul_epbm_mkt)"
+		}
+	}
+	else = {
+		set_local_variable = { name = sul_epbm_pm_cost value = 0 }
+
+		every_key_in_variable_map = {
+			variable = sul_epbm_goods
+
+			global_var:sul_epbm_pm_ref = {
+				set_local_variable = {
+					name = sul_epbm_qty
+					value = "variable_map(sul_epbm_goods|prev)"
+				}
+			}
+
+			change_local_variable = {
+				name = sul_epbm_pm_cost
+
+				add = {
+					value = "price_in_market(scope:sul_epbm_mkt)"
+					multiply = local_var:sul_epbm_qty
+				}
+			}
+		}
+
+		add_to_variable_map = {
+			name = sul_epbm_costs
+			key = scope:sul_epbm_mkt
+			value = local_var:sul_epbm_pm_cost
+		}
+	}
+}
+
+# ═══════════════════════════════════════════════
+# Country: Main calculation entry point
+# ═══════════════════════════════════════════════
+# Scope: country
+# Runs monthly for player, yearly for AI
+
+sul_epbm_calculate_maintenance = {
+	# Shared accumulator for non-estate buildings (split by estate_power)
+	set_local_variable = { name = sul_epbm_total_cost value = 0 }
+
+	# Per-estate accumulators for estate-assigned buildings (charged in full)
+	set_local_variable = { name = sul_epbm_estate_nobles value = 0 }
+	set_local_variable = { name = sul_epbm_estate_clergy value = 0 }
+	set_local_variable = { name = sul_epbm_estate_burghers value = 0 }
+	set_local_variable = { name = sul_epbm_estate_peasants value = 0 }
+	set_local_variable = { name = sul_epbm_estate_tribes value = 0 }
+	set_local_variable = { name = sul_epbm_estate_dhimmi value = 0 }
+	set_local_variable = { name = sul_epbm_estate_cossacks value = 0 }
+
+	# Process each tracked location
+	every_in_list = {
+		variable = sul_epbm_locations
+		save_temporary_scope_as = sul_epbm_loc
+		market ?= { save_temporary_scope_as = sul_epbm_mkt }
+		sul_epbm_calc_location_costs = yes
+	}
+
+	# Process foreign buildings (country-level iteration, same accumulators)
+	sul_epbm_calc_foreign_building_costs = yes
+
+	# Apply maintenance burden to the shared pool
+	change_local_variable = {
+		name = sul_epbm_total_cost
+		multiply = sul_epbm_maint_burden
+	}
+
+	# Split shared pool by estate power, then add estate-assigned costs on top
+	sul_epbm_split_by_estate_power = yes
+	sul_epbm_add_estate_building_costs = yes
+}
+
+# ═══════════════════════════════════════════════
+# Helper: route a building's cost to the correct accumulator
+# ═══════════════════════════════════════════════
+# Scope: building (via every_in_list or every_owned_foreign_building)
+# Requires: scope:sul_epbm_bt, local_var:sul_epbm_bldg_cost already set
+# Routes to local_var:sul_epbm_estate_* if estate-assigned, else local_var:sul_epbm_total_cost
+
+sul_epbm_route_building_cost = {
+	if = {
+		limit = {
+			is_key_in_global_variable_map = {
+				name = sul_epbm_estate_map
+				target = scope:sul_epbm_bt
+			}
+		}
+
+		# Estate-assigned: charge full cost to that estate
+		set_global_variable = {
+			name = sul_epbm_estate_ref
+			value = "global_variable_map(sul_epbm_estate_map|scope:sul_epbm_bt)"
+		}
+
+		if = {
+			limit = { global_var:sul_epbm_estate_ref = estate_type:nobles_estate }
+
+			change_local_variable = {
+				name = sul_epbm_estate_nobles
+				add = local_var:sul_epbm_bldg_cost
+			}
+		}
+		else_if = {
+			limit = { global_var:sul_epbm_estate_ref = estate_type:clergy_estate }
+
+			change_local_variable = {
+				name = sul_epbm_estate_clergy
+				add = local_var:sul_epbm_bldg_cost
+			}
+		}
+		else_if = {
+			limit = { global_var:sul_epbm_estate_ref = estate_type:burghers_estate }
+
+			change_local_variable = {
+				name = sul_epbm_estate_burghers
+				add = local_var:sul_epbm_bldg_cost
+			}
+		}
+		else_if = {
+			limit = { global_var:sul_epbm_estate_ref = estate_type:peasants_estate }
+
+			change_local_variable = {
+				name = sul_epbm_estate_peasants
+				add = local_var:sul_epbm_bldg_cost
+			}
+		}
+		else_if = {
+			limit = { global_var:sul_epbm_estate_ref = estate_type:tribes_estate }
+
+			change_local_variable = {
+				name = sul_epbm_estate_tribes
+				add = local_var:sul_epbm_bldg_cost
+			}
+		}
+		else_if = {
+			limit = { global_var:sul_epbm_estate_ref = estate_type:dhimmi_estate }
+
+			change_local_variable = {
+				name = sul_epbm_estate_dhimmi
+				add = local_var:sul_epbm_bldg_cost
+			}
+		}
+		else_if = {
+			limit = { global_var:sul_epbm_estate_ref = estate_type:cossacks_estate }
+
+			change_local_variable = {
+				name = sul_epbm_estate_cossacks
+				add = local_var:sul_epbm_bldg_cost
+			}
+		}
+	}
+	else = {
+		# No estate assignment: add to shared pool (split by estate_power later)
+		change_local_variable = {
+			name = sul_epbm_total_cost
+			add = local_var:sul_epbm_bldg_cost
+		}
+	}
+}
+
+# ═══════════════════════════════════════════════
+# Location: Sum all building costs
+# ═══════════════════════════════════════════════
+# Scope: location
+# Requires: scope:sul_epbm_mkt
+# Accumulates into: local_var:sul_epbm_total_cost (shared) or local_var:sul_epbm_estate_* (assigned)
+
+sul_epbm_calc_location_costs = {
+	set_local_variable = { name = sul_epbm_loc_cost value = 0 }
+
+	every_in_list = {
+		variable = sul_epbm_buildings
+		limit = { is_opened = yes }
+		save_temporary_scope_as = sul_epbm_bldg
+		building_type ?= { save_temporary_scope_as = sul_epbm_bt }
+
+		set_global_variable = {
+			name = sul_epbm_pm_ref
+			value = "global_variable_map(sul_epbm_profiles|scope:sul_epbm_bt)"
+		}
+
+		global_var:sul_epbm_pm_ref = { sul_epbm_lookup_pm_cost = yes }
+
+		set_local_variable = {
+			name = sul_epbm_bldg_cost
+			value = { value = local_var:sul_epbm_pm_cost multiply = building_level }
+		}
+
+		# Route cost to correct accumulator
+		sul_epbm_route_building_cost = yes
+	}
+}
+
+# ═══════════════════════════════════════════════
+# Country: Foreign building cost accumulation
+# ═══════════════════════════════════════════════
+# Scope: country
+# Accumulates into: local_var:sul_epbm_total_cost or local_var:sul_epbm_estate_*
+
+sul_epbm_calc_foreign_building_costs = {
+	every_owned_foreign_building = {
+		limit = { is_opened = yes }
+		save_temporary_scope_as = sul_epbm_bldg
+		building_type ?= { save_temporary_scope_as = sul_epbm_bt }
+		if = {
+			limit = {
+				is_key_in_global_variable_map = {
+					name = sul_epbm_profiles
+					target = scope:sul_epbm_bt
+				}
+			}
+
+			set_global_variable = {
+				name = sul_epbm_pm_ref
+				value = "global_variable_map(sul_epbm_profiles|scope:sul_epbm_bt)"
+			}
+
+			location ?= { market ?= { save_temporary_scope_as = sul_epbm_mkt } }
+			global_var:sul_epbm_pm_ref = { sul_epbm_lookup_pm_cost = yes }
+
+			set_local_variable = {
+				name = sul_epbm_bldg_cost
+				value = { value = local_var:sul_epbm_pm_cost multiply = building_level }
+			}
+
+			sul_epbm_route_building_cost = yes
+		}
+	}
+}
+
+# ═══════════════════════════════════════════════
+# Country: Split total costs by estate power
+# ═══════════════════════════════════════════════
+# Scope: country
+# Reads: local_var:sul_epbm_total_cost (already scaled by maint_burden)
+# Sets: var:sul_epbm_pay_*
+
+sul_epbm_split_by_estate_power = {
+	if = {
+		limit = { local_var:sul_epbm_total_cost > 0 }
+
+		set_variable = {
+			name = sul_epbm_pay_nobles
+
+			value = {
+				value = local_var:sul_epbm_total_cost
+				multiply = "estate_power(estate_type:nobles_estate)"
+			}
+		}
+		set_variable = {
+			name = sul_epbm_pay_clergy
+
+			value = {
+				value = local_var:sul_epbm_total_cost
+				multiply = "estate_power(estate_type:clergy_estate)"
+			}
+		}
+		set_variable = {
+			name = sul_epbm_pay_burghers
+
+			value = {
+				value = local_var:sul_epbm_total_cost
+				multiply = "estate_power(estate_type:burghers_estate)"
+			}
+		}
+		set_variable = {
+			name = sul_epbm_pay_peasants
+
+			value = {
+				value = local_var:sul_epbm_total_cost
+				multiply = "estate_power(estate_type:peasants_estate)"
+			}
+		}
+		set_variable = {
+			name = sul_epbm_pay_tribes
+
+			value = {
+				value = local_var:sul_epbm_total_cost
+				multiply = "estate_power(estate_type:tribes_estate)"
+			}
+		}
+		if = {
+			limit = { country_has_estate = estate_type:dhimmi_estate }
+
+			set_variable = {
+				name = sul_epbm_pay_dhimmi
+
+				value = {
+					value = local_var:sul_epbm_total_cost
+					multiply = "estate_power(estate_type:dhimmi_estate)"
+				}
+			}
+		}
+		if = {
+			limit = { country_has_estate = estate_type:cossacks_estate }
+
+			set_variable = {
+				name = sul_epbm_pay_cossacks
+
+				value = {
+					value = local_var:sul_epbm_total_cost
+					multiply = "estate_power(estate_type:cossacks_estate)"
+				}
+			}
+		}
+	}
+	else = {
+		set_variable = { name = sul_epbm_pay_nobles value = 0 }
+		set_variable = { name = sul_epbm_pay_clergy value = 0 }
+		set_variable = { name = sul_epbm_pay_burghers value = 0 }
+		set_variable = { name = sul_epbm_pay_peasants value = 0 }
+		set_variable = { name = sul_epbm_pay_tribes value = 0 }
+		if = {
+			limit = { country_has_estate = estate_type:dhimmi_estate }
+			set_variable = { name = sul_epbm_pay_dhimmi value = 0 }
+		}
+		if = {
+			limit = { country_has_estate = estate_type:cossacks_estate }
+			set_variable = { name = sul_epbm_pay_cossacks value = 0 }
+		}
+	}
+}
+
+# ═══════════════════════════════════════════════
+# Country: Add estate-assigned building costs to per-estate totals
+# ═══════════════════════════════════════════════
+# Scope: country
+# Called after sul_epbm_split_by_estate_power sets sul_epbm_pay_* from the shared pool.
+# Adds the direct estate building costs (local_var:sul_epbm_estate_*) on top,
+# scaled by maint_burden.
+
+sul_epbm_add_estate_building_costs = {
+	if = {
+		limit = { local_var:sul_epbm_estate_nobles > 0 }
+
+		change_variable = {
+			name = sul_epbm_pay_nobles
+
+			add = {
+				value = local_var:sul_epbm_estate_nobles
+				multiply = sul_epbm_maint_burden
+			}
+		}
+	}
+	if = {
+		limit = { local_var:sul_epbm_estate_clergy > 0 }
+
+		change_variable = {
+			name = sul_epbm_pay_clergy
+
+			add = {
+				value = local_var:sul_epbm_estate_clergy
+				multiply = sul_epbm_maint_burden
+			}
+		}
+	}
+	if = {
+		limit = { local_var:sul_epbm_estate_burghers > 0 }
+
+		change_variable = {
+			name = sul_epbm_pay_burghers
+
+			add = {
+				value = local_var:sul_epbm_estate_burghers
+				multiply = sul_epbm_maint_burden
+			}
+		}
+	}
+	if = {
+		limit = { local_var:sul_epbm_estate_peasants > 0 }
+
+		change_variable = {
+			name = sul_epbm_pay_peasants
+
+			add = {
+				value = local_var:sul_epbm_estate_peasants
+				multiply = sul_epbm_maint_burden
+			}
+		}
+	}
+	if = {
+		limit = { local_var:sul_epbm_estate_tribes > 0 }
+
+		change_variable = {
+			name = sul_epbm_pay_tribes
+
+			add = {
+				value = local_var:sul_epbm_estate_tribes
+				multiply = sul_epbm_maint_burden
+			}
+		}
+	}
+	if = {
+		limit = { local_var:sul_epbm_estate_dhimmi > 0 }
+
+		change_variable = {
+			name = sul_epbm_pay_dhimmi
+
+			add = {
+				value = local_var:sul_epbm_estate_dhimmi
+				multiply = sul_epbm_maint_burden
+			}
+		}
+	}
+	if = {
+		limit = { local_var:sul_epbm_estate_cossacks > 0 }
+
+		change_variable = {
+			name = sul_epbm_pay_cossacks
+
+			add = {
+				value = local_var:sul_epbm_estate_cossacks
+				multiply = sul_epbm_maint_burden
+			}
+		}
+	}
+}

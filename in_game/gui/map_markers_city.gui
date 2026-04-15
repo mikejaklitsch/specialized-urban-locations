@@ -1,5 +1,5 @@
 ﻿@city_marker_icon_size = 30
-@city_marker_fort_icon_size = 16
+@city_marker_fort_icon_size = 30
 @town_marker_icon_size = 26
 @rural_marker_icon_size = 20
 
@@ -247,15 +247,21 @@ widget = {
 				margin = { 0 0 }
 				minimumsize = { -1 @city_marker_icon_size }
 				set_parent_size_to_minimum = yes
-				visible = "[CityMarker.ShouldShowOccupationFlag]"
+				visible = "[And(CityMarker.ShouldShowOccupationFlag, CityMarker.GetLocation.IsCapital)]"
 				datacontext = "[CityMarker.GetLocation.GetController]"
-				country_flag_small = { visible = "[MapMarkerFlagsVisible]" }
+
+				country_flag_small = {
+					visible = "[And(MapMarkerFlagsVisible, CityMarker.GetLocation.IsCapital)]"
+				}
 			}
 		}
 
 		widget = {
 			parentanchor = left|vcenter
 			widgetanchor = left|vcenter
+
+			# Hide non-capital / non-province-capital / non-fort settlements at medium zoom
+			visible = "[Or5(CityMarker.ShowDetails, Not(CityMarker.ShouldBeShownAsSettlement), CityMarker.GetLocation.IsCapital, CityMarker.GetLocation.IsProvinceCapital, CityMarker.HasWarFort)]"
 
 			background = {
 				visible = "[CityMarker.ShowDetails]"
@@ -295,10 +301,20 @@ widget = {
 						}
 					}
 
+					# Building-specific fort icon (default)
 					icon = {
 						alwaystransparent = no
 						onmousehierarchyenter = "[PdxGuiWidget.SetHighlightFort(CityMarker.GetLocation)]"
-						visible = "[CityMarker.GetLocation.HasAnyFort]"
+						visible = "[And(CityMarker.GetLocation.HasAnyFort, Not(GetPlayer.MakeScope.GetVariable('dwui_vfort').IsSet))]"
+						texture = "[GetBuildingIcon(CityMarker.GetLocation.GetBestFortBuilding.GetType)]"
+						size = { @city_marker_fort_icon_size @city_marker_fort_icon_size }
+					}
+
+					# Vanilla generic fort icon (opt-in via dwui_vfort)
+					icon = {
+						alwaystransparent = no
+						onmousehierarchyenter = "[PdxGuiWidget.SetHighlightFort(CityMarker.GetLocation)]"
+						visible = "[And(CityMarker.GetLocation.HasAnyFort, GetPlayer.MakeScope.GetVariable('dwui_vfort').IsSet)]"
 						texture = "gfx/interface/icons/map_modes/fort_level_icon.dds"
 						size = { @city_marker_fort_icon_size @city_marker_fort_icon_size }
 					}
@@ -317,7 +333,7 @@ widget = {
 	}
 
 	marker_rank_icon = {
-		max_update_rate = 2
+		max_update_rate = 15
 		visible = "[CityMarker.GetRankVisible]"
 	}
 }

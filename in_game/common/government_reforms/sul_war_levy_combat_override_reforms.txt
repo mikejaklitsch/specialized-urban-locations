@@ -1,0 +1,73 @@
+﻿# Government reforms: replace levy_combat_efficiency_modifier with discipline/morale.
+
+REPLACE:magna_carta_reform = {
+	age = age_1_traditions
+	government = monarchy
+
+	potential = {
+		OR = {
+			has_or_had_tag = ENG
+			culture = culture:english
+			AND = {
+				overlord ?= { has_reform = government_reform:magna_carta_reform }
+			}
+		}
+	}
+
+	allow = {
+		has_embraced_institution = institution:legalism
+	}
+
+	country_modifier = {
+		global_nobles_estate_power = 0.2
+		monthly_towards_free_subjects = societal_value_monthly_move
+		monthly_towards_individualism = societal_value_monthly_move
+		discipline = 0.025
+		land_morale_modifier = 0.05
+		parliament_base_support = 0.1
+	}
+
+	years = 2
+}
+
+REPLACE:noble_elite = {
+	major = yes
+	government = republic
+
+	country_modifier = {
+		global_nobles_estate_power = 0.1
+		discipline = 0.025
+		country_cabinet_efficiency = 0.10
+		monthly_towards_aristocracy = societal_value_monthly_move
+	}
+
+	years = 2
+}
+
+REPLACE:military_order_reform = {
+	age = age_1_traditions
+	government = theocracy
+	major = yes
+
+	potential = {
+		religion = religion:catholic
+		has_policy = monastic_order
+	}
+
+	locked = { has_estate_privilege = estate_privilege:clergy_military_orders }
+
+	country_modifier = {
+		clergy_estate_allowed_leading_military = yes
+		clergy_estate_blocked_from_leading_military = no
+		monthly_towards_offensive = societal_value_monthly_move
+		monthly_towards_belligerent = societal_value_monthly_move
+		clergy_estate_levy_size = 0.25
+		fort_limit_modifier = 0.25
+		target_of_military_sponsorships = yes
+		blocked_from_conversion = yes
+		discipline = 0.025
+		land_morale_modifier = 0.05
+	}
+
+	years = 2
+}

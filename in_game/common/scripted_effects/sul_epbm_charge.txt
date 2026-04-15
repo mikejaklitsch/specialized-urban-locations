@@ -1,0 +1,144 @@
+﻿# SUL EPBM: Charging & Display
+# ═══════════════════════════════════════════════
+# Estate charging and display snapshot effects.
+# sul_epbm_charge_estates: applies saved per-estate amounts (monthly, both player and AI)
+# sul_epbm_snapshot_for_display: copies pay vars to show vars before recalc (player only)
+# ═══════════════════════════════════════════════
+# Charging: apply saved per-estate monthly amounts
+# Scope: country
+# Cheap — runs monthly for both player and AI
+# Reads sul_epbm_pay_* persistent variables (single category, split by estate power)
+# ═══════════════════════════════════════════════
+
+sul_epbm_charge_estates = {
+	# Nobles
+	if = {
+		limit = {
+			any_estate = { estate_type = estate_type:nobles_estate }
+			has_variable = sul_epbm_pay_nobles
+			var:sul_epbm_pay_nobles > 0
+		}
+
+		add_gold_to_estate = {
+			estate_type = estate_type:nobles_estate
+			value = var:sul_epbm_pay_nobles
+		}
+	}
+
+	# Clergy
+	if = {
+		limit = {
+			any_estate = { estate_type = estate_type:clergy_estate }
+			has_variable = sul_epbm_pay_clergy
+			var:sul_epbm_pay_clergy > 0
+		}
+
+		add_gold_to_estate = {
+			estate_type = estate_type:clergy_estate
+			value = var:sul_epbm_pay_clergy
+		}
+	}
+
+	# Burghers
+	if = {
+		limit = {
+			any_estate = { estate_type = estate_type:burghers_estate }
+			has_variable = sul_epbm_pay_burghers
+			var:sul_epbm_pay_burghers > 0
+		}
+
+		add_gold_to_estate = {
+			estate_type = estate_type:burghers_estate
+			value = var:sul_epbm_pay_burghers
+		}
+	}
+
+	# Peasants
+	if = {
+		limit = {
+			any_estate = { estate_type = estate_type:peasants_estate }
+			has_variable = sul_epbm_pay_peasants
+			var:sul_epbm_pay_peasants > 0
+		}
+
+		add_gold_to_estate = {
+			estate_type = estate_type:peasants_estate
+			value = var:sul_epbm_pay_peasants
+		}
+	}
+
+	# Tribes
+	if = {
+		limit = {
+			any_estate = { estate_type = estate_type:tribes_estate }
+			has_variable = sul_epbm_pay_tribes
+			var:sul_epbm_pay_tribes > 0
+		}
+
+		add_gold_to_estate = {
+			estate_type = estate_type:tribes_estate
+			value = var:sul_epbm_pay_tribes
+		}
+	}
+
+	# Dhimmi
+	if = {
+		limit = {
+			any_estate = { estate_type = estate_type:dhimmi_estate }
+			has_variable = sul_epbm_pay_dhimmi
+			var:sul_epbm_pay_dhimmi > 0
+		}
+
+		add_gold_to_estate = {
+			estate_type = estate_type:dhimmi_estate
+			value = var:sul_epbm_pay_dhimmi
+		}
+	}
+
+	# Cossacks
+	if = {
+		limit = {
+			any_estate = { estate_type = estate_type:cossacks_estate }
+			has_variable = sul_epbm_pay_cossacks
+			var:sul_epbm_pay_cossacks > 0
+		}
+
+		add_gold_to_estate = {
+			estate_type = estate_type:cossacks_estate
+			value = var:sul_epbm_pay_cossacks
+		}
+	}
+}
+
+# ═══════════════════════════════════════════════
+# Snapshot display variables: copy sul_epbm_pay_* → sul_epbm_show_* before recalc
+# Scope: country (player only — called from sul_epbm_collect_maintenance)
+# Single category — just copy the pay vars directly.
+# ═══════════════════════════════════════════════
+
+sul_epbm_snapshot_for_display = {
+	set_variable = { name = sul_epbm_show_nobles value = var:sul_epbm_pay_nobles }
+	set_variable = { name = sul_epbm_show_clergy value = var:sul_epbm_pay_clergy }
+	set_variable = {
+		name = sul_epbm_show_burghers
+		value = var:sul_epbm_pay_burghers
+	}
+	set_variable = {
+		name = sul_epbm_show_peasants
+		value = var:sul_epbm_pay_peasants
+	}
+	set_variable = { name = sul_epbm_show_tribes value = var:sul_epbm_pay_tribes }
+
+	if = {
+		limit = { country_has_estate = estate_type:dhimmi_estate }
+		set_variable = { name = sul_epbm_show_dhimmi value = var:sul_epbm_pay_dhimmi }
+	}
+	if = {
+		limit = { country_has_estate = estate_type:cossacks_estate }
+
+		set_variable = {
+			name = sul_epbm_show_cossacks
+			value = var:sul_epbm_pay_cossacks
+		}
+	}
+}

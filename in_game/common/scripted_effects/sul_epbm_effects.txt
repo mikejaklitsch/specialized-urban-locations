@@ -1,0 +1,165 @@
+﻿# SUL EPBM: Core Scripted Effects
+# ═══════════════════════════════════════════════
+# List-based architecture:
+#   international_organization:sul_epbm_pm_{name} → variable map per PM profile (goods_ref → per_level_amount)
+#   global sul_epbm_profiles → variable map (building_type → IO scope ref)
+#   location → sul_epbm_buildings variable list (all tracked building_type refs)
+#   country → sul_epbm_locations variable list (location refs)
+#
+# File layout:
+#   sul_epbm_effects.txt      — system lifecycle: init, rebuild, hooks, orchestration
+#   sul_epbm_calculate.txt    — maintenance calculation engine and all sub-effects
+#   sul_epbm_charge.txt       — estate charging and display snapshot
+# ═══════════════════════════════════════════════
+# Initialization
+# ═══════════════════════════════════════════════
+# Build a location's tracking list from existing buildings
+# Scope: location
+
+sul_epbm_initialize_location = {
+	every_buildings_in_location = { sul_epbm_init_building = yes }
+}
+
+# Build a country's sul_epbm_locations list from owned locations
+# Scope: country
+
+sul_epbm_rebuild_location_lists = {
+	clear_variable_list = sul_epbm_locations
+
+	every_owned_location = {
+		limit = { has_variable_list = sul_epbm_buildings }
+
+		save_temporary_scope_as = sul_epbm_loc
+
+		prev = {
+			add_to_variable_list = {
+				name = sul_epbm_locations
+				target = scope:sul_epbm_loc
+			}
+		}
+	}
+}
+
+# Structural rebuild: clear and repopulate per-location building lists, then rebuild country lists.
+# Does NOT touch globals (IOs), display vars, or calc/charge — those run on their own cycles.
+# Scope: country
+
+sul_epbm_structural_rebuild = {
+	every_owned_location = {
+		clear_variable_list = sul_epbm_buildings
+		sul_epbm_initialize_location = yes
+	}
+
+	sul_epbm_rebuild_location_lists = yes
+}
+
+# Full rebuild: stamp globals, clear and rebuild all lists, collect maintenance
+# Called on game start and when mod version changes (via on_actions version check)
+# Scope: none
+
+sul_epbm_full_rebuild = {
+	sul_epbm_stamp_globals = yes
+
+	every_location_in_the_world = {
+		limit = { is_ownable = yes }
+		clear_variable_list = sul_epbm_buildings
+		sul_epbm_initialize_location = yes
+	}
+
+	every_country = {
+		limit = {
+			is_real_country = yes
+			any_estate = { estate_type != estate_type:crown_estate }
+		}
+
+		sul_epbm_rebuild_location_lists = yes
+		sul_epbm_calculate_maintenance = yes
+		sul_epbm_charge_estates = yes
+		# Zero display vars for player (engine doesn't show income data until month 1)
+		if = {
+			limit = { is_ai = no }
+			set_variable = { name = sul_epbm_pay_nobles value = 0 }
+			set_variable = { name = sul_epbm_pay_clergy value = 0 }
+			set_variable = { name = sul_epbm_pay_burghers value = 0 }
+			set_variable = { name = sul_epbm_pay_peasants value = 0 }
+			set_variable = { name = sul_epbm_pay_tribes value = 0 }
+			if = {
+				limit = { country_has_estate = estate_type:dhimmi_estate }
+				set_variable = { name = sul_epbm_pay_dhimmi value = 0 }
+			}
+			if = {
+				limit = { country_has_estate = estate_type:cossacks_estate }
+				set_variable = { name = sul_epbm_pay_cossacks value = 0 }
+			}
+		}
+		set_variable = { name = sul_epbm_rebuild_counter value = 0 }
+	}
+
+	# Version stamp is set by the calling on_action on Bouvet Island
+}
+
+# ═══════════════════════════════════════════════
+# Building event handlers (called from INJECT hooks)
+# ═══════════════════════════════════════════════
+# on_built handler: register location with owner country
+# Scope: building (INJECT already added building_type to location's list)
+
+sul_epbm_on_building_built = {
+	location = { save_temporary_scope_as = sul_epbm_loc }
+
+	owner ?= {
+		if = {
+			limit = {
+				NOT = {
+					is_target_in_variable_list = {
+						name = sul_epbm_locations
+						target = scope:sul_epbm_loc
+					}
+				}
+			}
+
+			add_to_variable_list = {
+				name = sul_epbm_locations
+				target = scope:sul_epbm_loc
+			}
+		}
+	}
+}
+
+# on_destroyed handler: clean up empty locations from country list
+# Scope: building (INJECT already removed building_type from location's list)
+
+sul_epbm_on_building_destroyed = {
+	location = {
+		if = {
+			limit = {
+				NOT = {
+					has_variable_list = sul_epbm_buildings
+				}
+			}
+
+			save_temporary_scope_as = sul_epbm_loc
+
+			owner ?= {
+				remove_list_variable = {
+					name = sul_epbm_locations
+					target = scope:sul_epbm_loc
+				}
+			}
+		}
+	}
+}
+
+# ═══════════════════════════════════════════════
+# Combined: snapshot + recalculate + charge (player monthly)
+# Scope: country
+# 1. Snapshot sul_epbm_pay_* → sul_epbm_show_* (preserves last month for display)
+# 2. Calculate new sul_epbm_pay_* (overwrites with this month's rates)
+# 3. Charge estates using new rates
+# ═══════════════════════════════════════════════
+
+sul_epbm_collect_maintenance = {
+	sul_epbm_snapshot_for_display = yes
+	sul_epbm_calculate_maintenance = yes
+	sul_epbm_charge_estates = yes
+}

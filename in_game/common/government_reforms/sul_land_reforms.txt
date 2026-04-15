@@ -1,0 +1,58 @@
+﻿# Land-focus government reforms (integrated from Land Value Gives Governors mod).
+# Grant local governors and inland development bonuses, gated by land_focus societal value.
+# Mirrors the naval reforms that grant naval governors.
+
+sul_land_administration = {
+	age = age_1_traditions
+
+	potential = {
+		NOR = {
+			country_type = pop
+			country_type = building
+		}
+	}
+
+	societal_values = { land_focus }
+
+	country_modifier = {
+		num_local_governors = 1
+		monthly_towards_land = societal_value_large_monthly_move
+	}
+
+	location_modifier = {
+		potential_trigger = { custom_tooltip = { text = sul_every_inland_location_gains_tt is_coastal = no } }
+		local_monthly_development_modifier = 0.1
+		local_distance_from_capital_speed_propagation = 0.2
+	}
+
+	years = 2
+}
+
+sul_land_infrastructure_act = {
+	age = age_4_reformation
+
+	societal_values = { land_focus }
+
+	country_modifier = {
+		monthly_towards_land = societal_value_monthly_move
+		road_cost_on_distance_from_capital = -2
+		num_local_governors = 1
+	}
+
+	location_modifier = {
+		potential_trigger = {
+			custom_tooltip = {
+				text = sul_inland_city_or_town_gets_tt
+				is_coastal = no
+				OR = {
+					location_rank = location_rank:town
+					location_rank = location_rank:city
+				}
+			}
+		}
+
+		local_distance_from_capital_speed_propagation = 0.1
+	}
+
+	years = 2
+}

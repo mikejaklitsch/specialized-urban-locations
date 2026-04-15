@@ -1,0 +1,363 @@
+﻿# SUL - Game Defines
+# Central tuning file for economy, market, AI behaviour, and engine performance.
+# Performance-oriented overrides sourced from Faster Universalis are marked
+# with a [PERF] tag on each line. They trade AI optimality for tick speed.
+
+##################################
+# Tick Rate (HOUR_TICK = 24: one simulation tick per in-game day)
+##################################
+# Vanilla runs 12 ticks/day (HOUR_TICK = 2). We run 1 tick/day, cutting
+# simulation cost by 12x at the same calendar pace. Movement speed and
+# combat scalars below compensate so per-day gameplay matches vanilla.
+# Calendar-day mechanics (parliaments, pregnancy, event delays, monthly
+# pulses) are unaffected because they run on the calendar, not ticks.
+
+NGame = {
+	HOUR_TICK = 24 # [PERF] vanilla: 2 (one tick per day instead of twelve)
+	MORNING_OFFSET = 0 # vanilla: 8 (visual only)
+
+	# Real-time seconds per in-game hour at each speed slot. Engine reads
+	# slot 0-6 for UI speeds 1-7; the two extra blocks are safety padding
+	# for engine code paths that read beyond slot 6.
+	GAME_SPEED_TICKS = {
+		2.3
+		1.1
+		0.5
+		0.2
+		0.1
+		0.02
+		0.0
+		2.3
+		1.1
+		0.5
+		0.2
+		0.1
+		0.02
+		0.0
+		2.3
+		1.1
+		0.5
+		0.2
+		0.1
+		0.02
+		0.0
+	}
+
+	GAME_SPEED_SCALES = {
+		0.5
+		0.75
+		1.0
+		1.25
+		1.5
+		1.75
+		2.0
+		0.5
+		0.75
+		1.0
+		1.25
+		1.5
+		1.75
+		2.0
+		0.5
+		0.75
+		1.0
+		1.25
+		1.5
+		1.75
+		2.0
+	}
+}
+
+##################################
+# Unit Movement (per-tick compensation for HOUR_TICK = 24)
+##################################
+# Movement is applied per simulation tick. At 1 tick/day (vs vanilla's 12
+# ticks/day) each tick must move ~12x as far to preserve per-day distance.
+
+NUnit = {
+	ARMY_MOVEMENT_SPEED = 1.52 # vanilla: 0.13 (x11.7 for HOUR_TICK = 24)
+	NAVY_MOVEMENT_SPEED = 5.87 # vanilla: 0.5  (x11.7 for HOUR_TICK = 24)
+}
+
+##################################
+# Combat (per-tick compensation + balance tweaks)
+##################################
+# Combat scalars can't be fully compensated by 12x because of how the
+# initiative formula composes: (1/(0.1+0.02*6)) = 50/11 = 4.54. Scaling
+# higher than that would let battles resolve in a single tick before
+# initiative/morale phases play out. Result: battles take ~2.6x as long
+# in calendar days as vanilla, which is the intended feel.
+
+NCombat = {
+	# --- Pure per-tick compensation (~4.54x) ---
+	COMBAT_DAMAGE_MULT = 0.04 # vanilla: 0.01
+	COMBAT_HOURLY_MORALE_TICK = 0.05 # vanilla: 0.01
+	INITIATIVE_BASE_CHANCE = 0.45 # vanilla: 0.10
+	INITIATIVE_CHANCE_EACH = 0.09 # vanilla: 0.02
+	INITIATIVE_CHANCE_HOURS = 0.04 # vanilla: 0.01
+	COMBAT_SPEED_SCALE = 0.22 # vanilla: 0.05
+	BASE_MORALE_DAMAGE = 4.54 # vanilla: 1.0
+
+	# --- Balance tweaks (not tick compensators, FUM gameplay choices) ---
+	RETREAT_STRENGTH_DAMAGE = 0.02 # vanilla: 0.10 (softer retreats)
+	MINIMUM_COMBAT_DURATION = 5 # vanilla: 1 (longer minimum combat)
+	BOMBARD_HOURS = 1 # vanilla: 5 (faster bombardment phase)
+}
+
+##################################
+# Location
+##################################
+
+NLocation = {
+	SUBSISTENCE_AGRICULTURE = 1.5 # Vanilla: 0.8
+}
+
+##################################
+# Population
+##################################
+
+NPop = {
+	# Cap food-based growth benefits (vanilla: 10, mod: 2)
+	# Lower cap = diminishing returns from hoarding food
+	GROWTH_FROM_FOOD_MULTIPLIER_MAX = 2
+
+	# [PERF] Pop demand update throughput (vanilla max: 100)
+	# Engine tries to refresh all pop demands within a year, bounded by these
+	# per-day limits. Halving the ceiling cuts per-tick pop work, at the cost
+	# of slower demand reaction. Kept at 75 (above FUM's 50) because WPDO
+	# wages/demand pipeline is more sensitive to stale demand than vanilla.
+	PERFORMANCE_UPDATE_DEMANDS_MIN = 0   # [PERF] unchanged floor
+	PERFORMANCE_UPDATE_DEMANDS_MAX = 75  # [PERF] vanilla: 100
+}
+
+##################################
+# Portrait (cosmetic, pure perf)
+##################################
+
+NPortrait = {
+	# [PERF] Generate ancestors up to this depth when filling missing portraits
+	MAX_PORTRAIT_GENERATION_DEPTH = 4 # [PERF] vanilla: 8
+	# [PERF] Years between portrait weight updates toward target
+	WEIGHT_UPDATE_YEAR_INTERVAL = 6 # [PERF] vanilla: 3
+}
+
+##################################
+# AI Economy
+##################################
+
+NAI = {
+	# Capital relocation: prefer current capital area (vanilla: 1)
+	MOVE_CAPITAL_CURRENT_CAPITAL_AREA_SCORE_FACTOR = 1.5
+	# AI naval presence weight (vanilla: 1)
+	AI_GLOBAL_MARITIME_PRESENCE_MODIFIER_UTIL = 2
+	# AI trade route adjustment chance (vanilla: 0.5)
+	# Lowered to match workshop mod — slows AI trade churn so passthrough
+	# routes have time to stabilize before being recomputed
+	ADJUST_TRADE_ROUTE_CHANCE = 0.25
+
+	# --- AI performance throttles (sourced from Faster Universalis) ---
+	# Every entry below sacrifices AI evaluation breadth or frequency for
+	# simulation speed. All are safe: they tune existing engine throttles
+	# rather than changing mechanics.
+
+	# [PERF] Ratio of market locations AI evaluates per building per tick
+	AI_PERFORMANCE_EVALUATE_MARKET_RATIO_PER_BUILDING = 0.02 # [PERF] vanilla: 0.042
+	# [PERF] Minimum locations sampled before AI gives up on a building
+	AI_PERFORMANCE_EVALUATE_MARKET_MINIMUM_PER_BUILDING = 10 # [PERF] vanilla: 20
+	# [PERF] Minimum sample size when scanning for city upgrades
+	AI_PERFORMANCE_EVALUATE_CITY_UPGRADES_MINIMUM = 10 # [PERF] vanilla: 20
+	# [PERF] Ratio of locations evaluated for city upgrades each tick
+	AI_PERFORMANCE_EVALUATE_CITY_UPGRADES_RATIO = 0.1 # [PERF] vanilla: 0.017
+
+	# [PERF] Cap on concurrent same-type construction (ratio of locations)
+	AI_ALLOWED_PARALLEL_SAME_TYPE_CONSTRUCTION_RATIO = 0.01 # [PERF] vanilla: 0.02
+	# [PERF] Floor on concurrent same-type construction
+	AI_ALLOWED_PARALLEL_SAME_TYPE_CONSTRUCTION_MINIMUM = 2 # [PERF] vanilla: 3
+	# [PERF] Cap on total concurrent construction starts per tick
+	AI_ALLOWED_PARALLEL_TOTAL_CONSTRUCTION_RATIO = 0.02 # [PERF] vanilla: 0.05
+
+	# [PERF] Sample size for costly modifier utility calculations
+	AI_PERFORMANCE_UTILITY_LOCATIONS_TO_SAMPLE = 10 # [PERF] vanilla: 20
+	# [PERF] Sample sizes for cabinet action targeting
+	AI_PERFORMANCE_CABINET_ACTION_LOCATION_SAMPLE_SIZE = 10 # [PERF] vanilla: 20
+	AI_PERFORMANCE_CABINET_ACTION_PROVINCE_SAMPLE_SIZE = 2 # [PERF] vanilla: 5
+	AI_PERFORMANCE_CABINET_ACTION_AREA_SAMPLE_SIZE = 1 # [PERF] area sample floor
+
+	# [PERF] Months between AI reconsideration of high-level decisions
+	AI_PERFORMANCE_CABINET_ACTION_MONTHS_BETWEEN_UPDATES = 72 # [PERF] vanilla: 36
+	AI_PERFORMANCE_REFORMS_MONTHS_BETWEEN_UPDATES = 48 # [PERF] vanilla: 24
+	AI_PERFORMANCE_POLICIES_MONTHS_BETWEEN_UPDATES = 12 # [PERF] vanilla: 6
+	AI_PERFORMANCE_ESTATE_PRIVILEGES_MONTHS_BETWEEN_UPDATES = 24 # [PERF] vanilla: 12
+	AI_PERFORMANCE_ESTATE_PRIVILEGES_UNUSED_TAX_MONTHS_BETWEEN_UPDATES = 4 # [PERF] vanilla: 2
+	AI_PERFORMANCE_SCHOLARS_MONTHS_BETWEEN_UPDATES = 12 # [PERF] vanilla: 6
+
+	# [PERF] Skip trade routes whose profit-per-weight falls below this cut-off
+	AI_PERFORMANCE_TRADE_PROFIT_PER_WEIGHT_CUTOFF = 0.6 # [PERF] vanilla: 0.5
+
+	# [PERF] Pathfinding budgets (halved to dramatically reduce movement cost)
+	AI_PERFORMANCE_PATHFIND_DISTANCE_THRESHOLD = 50 # [PERF] vanilla: 100
+	AI_PERFORMANCE_NODE_LIMIT_PER_DISTANCE = 2 # [PERF] vanilla: 4
+	AI_PERFORMANCE_NAVAL_NODE_LIMIT_PER_DISTANCE = 2 # [PERF] vanilla: 3
+	AI_PERFORMANCE_NODE_LIMIT_BASE = 50 # [PERF] vanilla: 100
+	AI_PERFORMANCE_ATTACH_UNIT_MAX_DISTANCE = 100 # [PERF] vanilla: 200
+
+	# [PERF] Trade-route discovery attempts per good
+	AI_PERFORMANCE_TRADE_ATTEMPT_PER_GOOD = 2 # [PERF] vanilla: 5
+	# [PERF] Skip goods whose base/max price diff is under this ratio
+	AI_PERFORMANCE_EXPORT_PRICE_DIFF = 0.5 # [PERF] vanilla: 0.65
+	# [PERF] Colonial charter sample size
+	AI_PERFORMANCE_SAMPLE_SIZE = 2 # [PERF] vanilla: 3
+	# [PERF] Larger tech queue = fewer re-evaluations
+	AI_PERFORMANCE_TECH_QUEUE_SIZE = 10 # [PERF] vanilla: 5
+
+	# [PERF] Days between AI checks of diplomatic / character interactions
+	AI_DEFAULT_COUNTRY_INTERACTION_FREQUENCY = 61 # [PERF] vanilla: 30
+	AI_DEFAULT_CHARACTER_INTERACTION_FREQUENCY = 361 # [PERF] vanilla: 180
+
+	# [PERF] Cap on simultaneous AI military objectives of each type
+	MAXIMUM_ALLOWED_NUMBER_OF_EACH_OBJECTIVE = 10 # [PERF] vanilla: 20
+
+	# [PERF] Carpet siege search depth per unit slot (halved across the board)
+	CARPET_SIEGE_SEARCH_DEPTHS = {
+		5
+		4
+		3
+		2
+		2
+		2
+		2
+		2
+		1
+		1
+		1
+		1
+		1
+		1
+		1
+		1
+		1
+		1 # [PERF] vanilla: 10 8 6 5 4 3 2 2 2 2 1 1 1 1 1 1 1 1
+	}
+
+	# [PERF] Attrition-avoidance pathfinding reach
+	AI_AVOID_ATTRITION_MAX_PATH_FIND_DISTANCE = 50 # [PERF] vanilla: 100
+	# [PERF] Number of top expansion targets AI evaluates for war
+	AI_NUM_EXPANSION_TARGETS = 10 # [PERF] vanilla: 20
+}
+
+NAIEconomy = {
+	# Pop demand deficits (vanilla: 0.02, workshop: 0.5)
+	# Raised to workshop mod's value — AI strongly prioritizes filling pop
+	# goods shortages, driving production where consumers are
+	POP_MISSING_GOODS_UTILITY_FACTOR = 0.5
+
+	# Building input shortages (vanilla: 0.02)
+	# Increased so AI builds supply chains for its own buildings
+	INPUT_GOODS_SHORTAGE_UTILITY_FACTOR = 0.1
+
+	# Construction goods shortages (vanilla: 0.66, max: 2)
+	# Slightly increased to keep construction flowing
+	CONSTRUCTION_GOODS_SHORTAGE_UTILITY_FACTOR = 0.8
+	CONSTRUCTION_GOODS_SHORTAGE_MAX_UTILITY_FACTOR = 3
+}
+
+NEconomy = {
+	BUILDING_UPKEEP_FACTOR = 1.0
+
+	# --- Trade path costs (sea/river vs land) ---
+	# Goal: water trade is dramatically more efficient than overland haulage,
+	# matching the historical reality that pre-rail bulk goods moved by water.
+
+	# Sea travel cost as fraction of land (vanilla: 0.2)
+	# 0.05 = sea is 5% the cost of land — coastal/maritime trade dominates
+	TRADE_SEA_MULTIPLIER = 0.05
+
+	# Fixed cost to load/unload at a port (vanilla: 10)
+	# Lowered so short sea hops aren't punished by port friction
+	TRADE_PORT_COST = 3
+
+	# River upstream discount vs land (vanilla: -0.2)
+	# -0.5 = upstream river travel costs 50% of equivalent land
+	TRADE_PATH_UPSTREAM_COST_MULTIPLIER = -0.5
+
+	# River downstream discount vs land (vanilla: -0.5)
+	# -0.8 = downstream is 20% of land cost — almost free
+	TRADE_PATH_DOWNSTREAM_COST_MULTIPLIER = -0.8
+
+	# Penalty for overland routes that must cross a river (vanilla: 0.3)
+	# 0.6 = doubled — unbridged crossings make pure-land routes painful
+	TRADE_PATH_RIVER_CROSSING_COST_MULTIPLIER = 0.6
+
+	# --- Price volatility ---
+	# Smoothing constant added to supply and demand before computing the
+	# price ratio. Higher = flatter prices; lower = sharper response.
+	# Vanilla 1 is heavy damping; workshop mod uses 0.02 for hyper-volatile
+	# markets that react instantly to S/D shifts.
+	SUPPLY_AND_DEMAND_STABILITY_OFFSET_CONSTANT = 0.02
+}
+
+##################################
+# Market
+##################################
+
+NMarket = {
+	# [PERF] Lower = cheaper market reassignment cost, but distant locations
+	# may ignore protectionism. Sourced from Faster Universalis.
+	MARKET_ASSIGNMENT_PERFORMANCE_FACTOR = 0.2 # [PERF] vanilla: 0.5
+
+	# Monthly price approach speed toward target (vanilla: 0.05, workshop: 0.2)
+	# 0.2 = prices converge to target 4x faster than vanilla, so the
+	# stockpile-driven demand changes translate to visible price moves
+	# within the same season they're applied.
+	MONTHLY_PRICE_CHANGE = 0.2
+
+	# Stockpile threshold to allow extra trade supply (vanilla: 0.5)
+	# Lowered to 0 so any stockpile contributes to extra trade
+	MARKET_MIN_STOCKPILE_TO_ALLOW_EXTRA_TRADE = 0.1
+	# Percentage of stockpile available as extra trade supply (vanilla: 0.05)
+	# Raised to make stockpiles more impactful for trade
+	MARKET_STOCKPILE_PERCENTAGE_FOR_EXTRA_TRADE = 0.20
+
+	# --- Trade impact on supply/demand ---
+	# Vanilla discounts traded volume relative to local production (0.75 for
+	# imports/exports, 0.25 for burgher trade). Set all to 1.0 so trade
+	# pushes supply and demand at full weight, making market integration
+	# meaningful and rewarding the wider price band.
+	TRADE_IMPACT_ON_SUPPLY_SCALE = 1.0
+	TRADE_IMPACT_ON_DEMAND_SCALE = 1.0
+	BURGHER_TRADE_IMPACT_ON_SUPPLY_SCALE = 1.0
+	BURGHER_TRADE_IMPACT_ON_DEMAND_SCALE = 1.0
+
+	# --- Market propagation over water ---
+	# Markets reach further when connected by sea, making coastal cities
+	# the natural hubs of long-distance trade.
+
+	# Sea distance falloff for market attraction (vanilla: 0.75)
+	# 0.4 = sea distances count for ~half — coastal markets project power far
+	MARKET_SEA_DISTANCE_FACTOR = 0.4
+
+	# Open-ocean distance falloff (vanilla: 1.5)
+	# 1.0 = neutral — long transoceanic routes are viable, not penalized
+	MARKET_OPEN_SEA_DISTANCE_FACTOR = 1.0
+
+	# Sea-to-land transition cost (vanilla: 0.5)
+	# 0.3 = port→hinterland handoff is cheaper, so coastal markets feed inland
+	MARKET_SEA_TO_LAND_DISTANCE_FACTOR = 0.3
+
+	# --- Price range from supply and demand ---
+	# Vanilla compresses prices to a narrow 0.67x - 2.5x band, blunting the
+	# meaning of shortages and gluts. Widen it so scarcity actually bites and
+	# saturated markets actually crash.
+
+	# Floor: cheapest = base * (1 + MIN_PRICE_IMPACT) (vanilla: -0.33 -> 0.67x)
+	# -0.7 = a glutted good can fall to 30% of base price
+	MIN_PRICE_IMPACT = -0.7
+
+	# Ceiling: most expensive = base * (1 + MAX_PRICE_IMPACT) (vanilla: 1.5 -> 2.5x)
+	# 4.0 = a critically scarce good can spike to 5x base price
+	MAX_PRICE_IMPACT = 4.0
+}
+
+NCountry = {
+	MERCHANT_MAINTENANCE_COST = 0.25
+}

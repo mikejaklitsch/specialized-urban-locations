@@ -1,6 +1,6 @@
-﻿# Passthrough Pulse - Per-country warehouse stockpile pulse
+﻿# Passthrough Pulse - Global warehouse stockpile pulse
 # Implements the yosiu_market_stockpiles workshop mod's approach compressed
-# via $GOOD$ argument substitution. Called monthly from country scope.
+# via $GOOD$ argument substitution. Called each weather tick from scopeless.
 #
 # Branches:
 #   - HIGH branch (stockpile > upper_value = 5% capacity):
@@ -10,16 +10,16 @@
 #     Apply negative _stockpile temp demand scaled inverse + direct
 #     add_goods_supply injection to keep the market from starving.
 #
-# Iterates only owned markets (every_market_center_in_country) so
-# add_temporary_demand always has a valid market scope.
+# Iterates every_market_in_world once, skipping unowned markets.
 #
 # Effects defined here:
-#   sul_passthrough_apply        - per-country pulse entry point
+#   sul_passthrough_apply        - global pulse entry point
 #                                  (called by on_action sul_passthrough_pulse)
 #   sul_passthrough_per_good     - per-good HIGH/LOW branch handler
 
 sul_passthrough_apply = {
-	every_market_center_in_country = {
+	every_market_in_world = {
+		limit = { location = { exists = owner } }
 		save_scope_as = current_market
 
 		# Bulk-remove all _stockpile and _oversupply templates at the top of

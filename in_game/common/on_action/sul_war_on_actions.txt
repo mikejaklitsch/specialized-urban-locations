@@ -1,8 +1,6 @@
 ﻿# Hosts War Momentum and Combat Overcrowding handlers; dispatched from
 # sul_hardcoded.txt.
 
-@sul_war_version = 210 # 2.1.0 — adds levy combat ability override, grants levy_warfare_traditions advance
-
 # Clean capital modifier and auto-conquest flag when a country is annexed.
 # Also removes stale auto-conquest tags on the annexer's locations that referenced the annexed country.
 # root = annexing country; scope:target = country being annexed
@@ -96,19 +94,6 @@ sul_war_on_war_end_cleanup = {
 
 sul_war_on_game_start = {
 	effect = {
-		# Grant the baseline levy combat traditions advance immediately, so already-at-war
-		# countries fight their first battles with the replacement bonuses applied.
-		# sul_war_init re-grants it via version check, but that runs on the first monthly pulse.
-		every_country = {
-			limit = {
-				NOT = {
-					has_advance = levy_warfare_traditions
-				}
-			}
-
-			research_advance = advance_type:levy_warfare_traditions
-		}
-
 		every_country = {
 			limit = { at_war = yes }
 			sul_war_monthly_update = yes
@@ -128,21 +113,9 @@ sul_war_on_game_start = {
 
 sul_war_init_pulse = {
 	trigger = {
-		NOT = {
-			has_global_variable = sul_war_rebuilding
-		}
-
-		location:bouvet_island = {
-			OR = {
-				NOT = {
-					has_location_modifier = sul_war_active
-				}
-
-				AND = {
-					has_variable = sul_war_version
-					var:sul_war_version < @sul_war_version
-				}
-			}
+		OR = {
+			NOT = { has_global_variable = sul_war_version }
+			global_var:sul_war_version < sul_war_version_value
 		}
 	}
 
@@ -163,6 +136,24 @@ sul_war_monthly_pulse = {
 
 	effect = {
 		sul_war_monthly_update = yes
+	}
+}
+
+# Force rebellions during war — vanilla suppresses rebel firing while at war.
+# We bypass that by calling start_civil_war for factions at 100% progress.
+# start_civil_war creates the rebel country with territory control, matching
+# what vanilla's create_instant_rebellion uses internally.
+
+sul_war_force_rebellions = {
+	trigger = {
+		at_war = yes
+	}
+
+	effect = {
+		every_rebel = {
+			limit = { rebel_progress >= 1.0 }
+			start_civil_war = {}
+		}
 	}
 }
 

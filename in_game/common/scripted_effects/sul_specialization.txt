@@ -95,6 +95,7 @@ sul_specialization_reassign = {
 		sul_specialization_save_building_levels = yes
 		sul_specialization_destroy_non_matching_buildings = yes
 		sul_distribute_specialization_buildings = yes
+		sul_specialization_tech_cleanup = yes
 	}
 }
 
@@ -110,16 +111,49 @@ sul_specialization_init_new = {
 		sul_specialization_save_building_levels = yes
 		sul_specialization_destroy_non_matching_buildings = yes
 		sul_distribute_specialization_buildings = yes
+		sul_specialization_tech_cleanup = yes
 	}
 }
 
-# root = location. Snapshots total_building_levels into sul_prior_building_levels
-# so post-rebuild logic can compare before/after counts.
+# root = location. Snapshots building levels by pop_type so the distributor
+# can redistribute destroyed levels into surviving-spec buildings of the
+# matching pop_type, keeping pops employed in their original class.
 
 sul_specialization_save_building_levels = {
-	set_variable = {
-		name = sul_prior_building_levels
-		value = total_building_levels
+	set_variable = { name = sul_prior_laborer_levels value = 0 }
+	set_variable = { name = sul_prior_burgher_levels value = 0 }
+	set_variable = { name = sul_prior_peasant_levels value = 0 }
+	set_variable = { name = sul_prior_clergy_levels value = 0 }
+
+	every_buildings_in_location = {
+		if = {
+			limit = { building_pop_type = pop_type:laborers }
+
+			location ?= {
+				change_variable = { name = sul_prior_laborer_levels add = prev.building_level }
+			}
+		}
+		else_if = {
+			limit = { building_pop_type = pop_type:burghers }
+
+			location ?= {
+				change_variable = { name = sul_prior_burgher_levels add = prev.building_level }
+			}
+		}
+		else_if = {
+			limit = { building_pop_type = pop_type:peasants }
+
+			location ?= {
+				change_variable = { name = sul_prior_peasant_levels add = prev.building_level }
+			}
+		}
+		else_if = {
+			limit = { building_pop_type = pop_type:clergy }
+
+			location ?= {
+				change_variable = { name = sul_prior_clergy_levels add = prev.building_level }
+			}
+		}
 	}
 }
 
@@ -677,3 +711,90 @@ sul_specialization_apply_modifier = {
 
 # NOTE: Passthrough pulse effects (sul_passthrough_pulse, sul_passthrough_per_good)
 # moved to sul_passthrough_pulse.txt
+
+# root = location. Destroys pre-placed buildings the current owner can't build
+# due to missing advances. Called from sul_specialization_full_rebuild before
+# the spec-mismatch destroy pass, so tech-invalid buildings are cleared first.
+# The setup generator places a universal pool everywhere; this effect prunes
+# the ones the country hasn't unlocked.
+sul_specialization_tech_cleanup = {
+	# sul_iron_mine requires iron_working (no naturally iron raw_material + mining topography)
+	if = {
+		limit = {
+			has_building = sul_iron_mine
+			owner ?= { NOT = { has_advance = iron_working } }
+		}
+
+		destroy_building = sul_iron_mine
+	}
+
+	# weapon_guild requires weapon_guild_advance
+	if = {
+		limit = {
+			has_building = weapon_guild
+			owner ?= { NOT = { has_advance = weapon_guild_advance } }
+		}
+
+		destroy_building = weapon_guild
+	}
+
+	# tools_guild requires metallurgy
+	if = {
+		limit = {
+			has_building = tools_guild
+			owner ?= { NOT = { has_advance = metallurgy } }
+		}
+
+		destroy_building = tools_guild
+	}
+
+	# porcelain_guild requires porcelain_kiln_advance
+	if = {
+		limit = {
+			has_building = porcelain_guild
+			owner ?= { NOT = { has_advance = porcelain_kiln_advance } }
+		}
+
+		destroy_building = porcelain_guild
+	}
+
+	# apothecary requires apothecary_advance
+	if = {
+		limit = {
+			has_building = apothecary
+			owner ?= { NOT = { has_advance = apothecary_advance } }
+		}
+
+		destroy_building = apothecary
+	}
+
+	# lacquerware_guild requires lacquerware_guild_advance (east_asia sub_continent only)
+	if = {
+		limit = {
+			has_building = lacquerware_guild
+			owner ?= { NOT = { has_advance = lacquerware_guild_advance } }
+		}
+
+		destroy_building = lacquerware_guild
+	}
+
+	# paper_guild requires paper_guild_advance (chain via scriptorium_advance)
+	if = {
+		limit = {
+			has_building = paper_guild
+			owner ?= { NOT = { has_advance = paper_guild_advance } }
+		}
+
+		destroy_building = paper_guild
+	}
+
+	# scriptorium requires scriptorium_advance
+	if = {
+		limit = {
+			has_building = scriptorium
+			owner ?= { NOT = { has_advance = scriptorium_advance } }
+		}
+
+		destroy_building = scriptorium
+	}
+}

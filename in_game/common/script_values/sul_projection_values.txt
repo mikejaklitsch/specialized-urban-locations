@@ -28,13 +28,6 @@ sul_projection_culture_drag = {
 	subtract = 1
 }
 
-# Stability impact. Symmetric: negative stab penalises, positive stab rewards.
-# Final PP contribution = stability × sul_projection_stability_constant.
-
-sul_projection_stability_drag = {
-	value = stability
-}
-
 # Religious friction — fraction of pops NOT in the country's own religion.
 # Captures both heretics (same group) and heathens (different group), unlike
 # heretic_population_fraction which only counts the same-group case.
@@ -48,25 +41,6 @@ sul_projection_religion_drag = {
 	subtract = 1
 }
 
-# Administrative overhead — raw location count.
-# More territory = more bureaucratic load regardless of composition.
-# Coefficient of -0.05 in the auto_modifier means -1 PP per 20 locations.
-
-sul_projection_size_drag = {
-	value = num_locations
-}
-
-# Regular army ratio — regular_army_size / expected_army_size.
-# Ignores levies, so only professional standing forces contribute.
-# 1.0 = at expected, 2.0 = double, 0.5 = half. Auto_modifier coefficient of 10
-# gives +10 PP per multiple of expected.
-
-sul_projection_regular_army_ratio = {
-	value = regular_army_size
-
-	divide = { value = expected_army_size min = 1 }
-}
-
 # Government rank → PP. County = 10, Duchy = 20, Kingdom = 30.
 
 sul_projection_rank_value = {
@@ -76,40 +50,29 @@ sul_projection_rank_value = {
 	else_if = { limit = { country_rank = country_rank:rank_duchy } add = 5 }
 }
 
-# Per-subject-type weight applied to that subject's country_strength before
-# summing into the overlord's drag total. Evaluated in the subject scope by
-# sul_projection_recompute_subject_drag. Placeholder values — every entry
-# defaults to 1.0; tune per type without touching the iteration code.
+# Diplomatic capacity usage ratio — used / total.
+# 0 = no slots used, 1.0 = fully committed. Auto_modifier multiplies by -50.
 
-sul_projection_subject_type_weight = {
-	value = 0
-	if = { limit = { is_subject_type = vassal } add = 1.0 }
-	else_if = { limit = { is_subject_type = march } add = 1.0 }
-	else_if = { limit = { is_subject_type = appanage } add = 1.0 }
-	else_if = { limit = { is_subject_type = dominion } add = 1.0 }
-	else_if = { limit = { is_subject_type = fiefdom } add = 1.0 }
-	else_if = { limit = { is_subject_type = tributary } add = 1.0 }
-	else_if = { limit = { is_subject_type = colonial_nation } add = 1.0 }
-	else_if = { limit = { is_subject_type = conquistador } add = 1.0 }
-	else_if = { limit = { is_subject_type = trade_company } add = 1.0 }
-	else_if = { limit = { is_subject_type = hanseatic_member } add = 1.0 }
-	else_if = { limit = { is_subject_type = state_bank } add = 1.0 }
-	else_if = { limit = { is_subject_type = samanta } add = 1.0 }
-	else_if = { limit = { is_subject_type = tusi } add = 1.0 }
-	else_if = { limit = { is_subject_type = uc_bey } add = 1.0 }
-	else_if = { limit = { is_subject_type = secessionists } add = 1.0 }
+sul_debug_diplo_used = { value = used_diplomatic_capacity }
+sul_debug_diplo_base = { value = modifier:diplomatic_capacity }
+sul_debug_diplo_modifier = { value = modifier:diplomatic_capacity_modifier }
+sul_debug_diplo_total = {
+	value = modifier:diplomatic_capacity
+	multiply = {
+		value = 1
+		add = modifier:diplomatic_capacity_modifier
+	}
 }
 
-# Subject relative-strength drag — read by the auto_modifier.
-# The actual signed value is computed monthly by
-# sul_projection_recompute_subject_drag and stored in
-# var:sul_projection_subject_drag_value. This wrapper provides a safe 0
-# fallback for countries that have not yet had the variable set.
-
-sul_projection_subject_drag = {
-	value = 0
-	if = {
-		limit = { has_variable = sul_projection_subject_drag_value }
-		add = var:sul_projection_subject_drag_value
+sul_projection_diplo_usage_ratio = {
+	value = used_diplomatic_capacity
+	divide = {
+		value = modifier:diplomatic_capacity
+		multiply = {
+			value = 1
+			add = modifier:diplomatic_capacity_modifier
+		}
+		min = 1
 	}
+	min = 0
 }

@@ -1,33 +1,17 @@
-﻿@sul_integration_version = 100 # Must match sul_integration_effects.txt
-
-sul_integration_on_game_start = {
+﻿sul_integration_on_game_start = {
 	effect = {
 		sul_integration_initialize = yes
 	}
 }
 
-# Bouvet Island version check — runs in weather_monthly_pulse (location-scoped).
-# Bouvet Island is unownable, so its modifiers vanish when the mod is removed
-# and reappear stale when re-added. Version mismatch catches mod updates.
-# Fires once, then the version stamp prevents repeat runs.
+# Fires on weather_monthly_pulse (once globally) if the version marker is
+# missing or stale. No reentrance guard needed — pulse is global, not per-country.
 
 sul_integration_init_check = {
 	trigger = {
-		NOT = {
-			has_global_variable = sul_integration_rebuilding
-		}
-
-		location:bouvet_island = {
-			OR = {
-				NOT = {
-					has_location_modifier = sul_integration_capacity_bonus
-				}
-
-				AND = {
-					has_variable = sul_integration_version
-					var:sul_integration_version < @sul_integration_version
-				}
-			}
+		OR = {
+			NOT = { has_global_variable = sul_integration_version }
+			global_var:sul_integration_version < sul_integration_version_value
 		}
 	}
 

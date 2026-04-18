@@ -1,11 +1,3 @@
-﻿# Bouvet Island (location:bouvet_island): impassable location used as mod state anchor.
-# sul_active modifier applied here - stripped by engine when mod is removed.
-# sul_version variable stored here for version-based rebuild detection.
-
-# Rebuild version: major * 100 + minor (patch changes don't trigger rebuild)
-# Bump this when save-breaking changes require re-initialization
-@sul_rebuild_version = 10 # 0.1.x
-
 sul_initialize_all = {
 	effect = {
 		sul_specialization_full_rebuild = yes
@@ -15,49 +7,23 @@ sul_initialize_all = {
 			add_country_modifier = { modifier = sul_init_pop_rush days = 45 }
 		}
 
-		# Stamp version on Bouvet Island
-		location:bouvet_island = {
-			remove_location_modifier = sul_active
-			add_location_modifier = { modifier = sul_active days = -1 }
-			set_variable = { name = sul_version value = @sul_rebuild_version }
-		}
+		set_global_variable = { name = sul_version value = sul_specialization_version_value }
 	}
 }
 
-# Triggers rebuild if marker is missing (mod was removed and re-added) or
-# outdated (mod was updated). Single-tick reentrance guard via sul_rebuilding global.
+# Fires on weather_monthly_pulse (once globally) if the version marker is
+# missing or stale. No reentrance guard needed — pulse is global, not per-country.
 
 sul_version_check = {
 	trigger = {
 		OR = {
-			location:bouvet_island = {
-				NOT = {
-					has_location_modifier = sul_active
-				}
-			}
-
-			location:bouvet_island = {
-				has_location_modifier = sul_active
-				has_variable = sul_version
-				var:sul_version < @sul_rebuild_version
-			}
-		}
-
-		NOT = {
-			has_global_variable = sul_rebuilding
+			NOT = { has_global_variable = sul_version }
+			global_var:sul_version < sul_specialization_version_value
 		}
 	}
 
 	effect = {
-		set_global_variable = { name = sul_rebuilding value = yes }
 		sul_specialization_full_rebuild = yes
-
-		location:bouvet_island = {
-			remove_location_modifier = sul_active
-			add_location_modifier = { modifier = sul_active days = -1 }
-			set_variable = { name = sul_version value = @sul_rebuild_version }
-		}
-
-		remove_global_variable = sul_rebuilding
+		set_global_variable = { name = sul_version value = sul_specialization_version_value }
 	}
 }

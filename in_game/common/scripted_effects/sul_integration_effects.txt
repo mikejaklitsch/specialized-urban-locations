@@ -1,6 +1,4 @@
-﻿@sul_integration_version = 100 # 1.0.0
-
-# Integration speed scales with remaining capacity (quadratic).
+﻿# Integration speed scales with remaining capacity (quadratic).
 # Modifier value is 1.0, so size IS the integration speed modifier directly.
 #
 # Formula: size = 2.5 × (1 - pop/cap)², applied only while pop < cap
@@ -70,7 +68,6 @@ sul_integration_track_location = {
 # Called on first game load and when mod version changes.
 
 sul_integration_initialize = {
-	set_global_variable = sul_integration_rebuilding
 	clear_global_variable_list = sul_integration_conquered_locations
 
 	every_country = {
@@ -81,20 +78,5 @@ sul_integration_initialize = {
 		}
 	}
 
-	# Stamp version on Bouvet Island so we detect mod updates on next load
-	location:bouvet_island = {
-		add_location_modifier = {
-			modifier = sul_integration_capacity_bonus
-			years = -1
-			size = 0
-			mode = replace
-		}
-
-		set_variable = {
-			name = sul_integration_version
-			value = @sul_integration_version
-		}
-	}
-
-	remove_global_variable = sul_integration_rebuilding
+	set_global_variable = { name = sul_integration_version value = sul_integration_version_value }
 }

@@ -10,34 +10,39 @@ Organized by subsystem. **Update this document when adding, removing, or renamin
 ### Game Start
 1. `sul_rgo_init` — populate `sul_rgo_map` (goods → building_type)
 2. `sul_rgo_removal_start` — remove vanilla RGO buildings
-3. `sul_initialize_all` — full specialization rebuild, stamp version on Bouvet Island
+3. `sul_initialize_all` — full specialization rebuild, set `sul_version` global variable
 4. `sul_initialize_economy` — seed spending rates + budget pressure, run first economy update
 5. `sul_war_on_game_start` — initialize war momentum for countries already at war
 
 ### Monthly Country Pulse
-1. `sul_version_check` — detect mod update, trigger rebuild if needed
-2. `sul_clear_market_cache` / `sul_refresh_market_cache` — invalidate + repopulate market cache
-3. `sul_passthrough_pulse` — per-market stockpile-driven temp demand pass (every_market_center_in_country)
-4. `sul_update_spending_rates` — recalculate 4 spending vars per country
-5. `sul_player_wage_update` — accumulate + pay wages (player only)
-6. `sul_ai_monthly_wage_payment` — pay previously accumulated wages (AI only)
-7. `sul_trade_maintenance_apply_action` — convert summed efficiency to merchant_maintenance_cost
-8. `sul_minting_monthly_update` — minting price cache, debasement, AI minting modifiers
-9. `sul_war_init_pulse` — war system version check
-10. `sul_war_monthly_pulse` — war momentum update (countries at war only)
-11. `sul_projection_monthly_update` — recompute subject-strength drag, decay conquest debt
+1. `sul_clear_market_cache` / `sul_refresh_market_cache` — invalidate + repopulate market cache
+2. `sul_update_spending_rates` — recalculate 4 spending vars per country
+3. `sul_player_wage_update` — accumulate + pay wages (player only)
+4. `sul_ai_monthly_wage_payment` — pay previously accumulated wages (AI only)
+5. `sul_trade_maintenance_apply_action` — convert summed efficiency to merchant_maintenance_cost
+6. `sul_minting_monthly_update` — minting price cache, debasement, AI minting modifiers
+7. `sul_war_monthly_pulse` — war momentum update (countries at war only)
+8. `sul_projection_monthly_update` — recompute subject-strength drag, decay conquest debt
+9. `sul_epbm_player_monthly` / `sul_epbm_ai_monthly_charge` — EPBM maintenance charging
 
 ### Yearly Country Pulse
 - `sul_ai_yearly_wage_accumulate` — accumulate wages (AI only, paid next month)
 - `sul_cleanup_dead_units` — remove dead unit references
 - `sul_yearly_rgo_trim` — cap RGO levels
 - `sul_minting_yearly_update` — AI minting price cache + minting modifier refresh
+- `sul_epbm_ai_yearly_recalc` / `sul_epbm_decade_rebuild` — EPBM AI recalc + safety rebuild
 
 ### Weather Monthly Pulse (every month, scopeless)
+All version checks live here because the pulse fires once globally (no per-country race, so no reentrance guard needed). Each check compares a `sul_X_version` global variable against its matching `sul_X_version_value` script_value (defined in `main_menu/common/script_values/sul_versions.txt`) and re-runs full init on mismatch.
+- `sul_passthrough_pulse` — per-market stockpile-driven temp demand pass
 - `sul_batch_location_update` — WPP refresh for up to 333 stale AI locations
-- `sul_integration_init_check` — Bouvet Island stamp check, full rebuild on mismatch
+- `sul_version_check` — specialization system version gate
+- `sul_war_init_pulse` — war system version gate
+- `sul_minting_version_check` — minting system version gate
+- `sul_integration_init_check` — integration system version gate
+- `sul_epbm_version_check` — EPBM version gate
 - `sul_integration_monthly_update` — refresh capacity bonus on tracked conquered locations, drain remove queue
-- `sul_minting_version_check` — Bouvet Island stamp check for the minting subsystem (TGS originally hooked the wrong action name `monthly_weather_pulse`; corrected to `weather_monthly_pulse` here)
+- `sul_epbm_monthly_cache_clear` — clear PM cost caches globally
 
 ### On-Action Hooks
 | Hook | Handler | Purpose |
@@ -207,12 +212,18 @@ location wages          → sul_accumulate_wages → sul_monthly_wages_* → sul
 
 ## 5. Version / Init
 
-| Variable | Scope | Set By | Purpose |
-|----------|-------|--------|---------|
-| `sul_version` | location (Bouvet Island) | `sul_initialize_all` | Specialization system version stamp |
-| `sul_rebuilding` | global | `sul_version_check` | Guard: prevent concurrent rebuilds |
-| `sul_active` | location (Bouvet Island) | `sul_initialize_all` | Modifier marker for mod detection |
-| `sul_init_pop_rush` | country modifier | `sul_initialize_all` | 45-day modifier accelerating pop promotion on game start |
+All subsystems use the same pattern: a `sul_X_version` **global variable** (integer, saved in save file) is compared against a matching `sul_X_version_value` **script_value** (defined in `main_menu/common/script_values/sul_versions.txt` — single source of truth). On mismatch, the version check fires on `weather_monthly_pulse` and triggers a full re-init of that subsystem only. Weather pulse is scopeless and global, so no reentrance guard is needed.
+
+Bump **only** the subsystem's value you're changing — other subsystems keep their saved state and skip re-init. Each integer is independent.
+
+| Global Variable | Script Value (in sul_versions.txt) | Set By |
+|-----------------|------------------------------------|--------|
+| `sul_version` | `sul_specialization_version_value` | `sul_initialize_all` |
+| `sul_war_version` | `sul_war_version_value` | `sul_war_init` |
+| `sul_minting_version` | `sul_minting_version_value` | `sul_minting_initialize_all` |
+| `sul_integration_version` | `sul_integration_version_value` | `sul_integration_initialize` |
+| `sul_epbm_version` | `sul_epbm_version_value` | `sul_epbm_initialize_all` |
+| `sul_init_pop_rush` | — (country modifier, 45 days, pop promotion on game start) | `sul_initialize_all` |
 
 ### Capital Relocation (event sul.1, four_yearly_country_pulse)
 | Variable | Scope | Type | Purpose |
@@ -336,11 +347,7 @@ All populated monthly, read only by GUI tooltip.
 - `sul_war_display_pressure` (total pressure value)
 
 ### Version
-| Variable | Scope | Purpose |
-|----------|-------|---------|
-| `sul_war_version` | location (Bouvet Island) | War system version stamp |
-| `sul_war_active` | location (Bouvet Island) | Modifier marker for mod detection |
-| `sul_war_rebuilding` | global | Guard: prevent concurrent rebuilds |
+See the unified version-stamp table in section 5. War uses `sul_war_version` (global variable) paired with `sul_war_version_value` (script_value).
 
 ---
 
@@ -494,12 +501,10 @@ removal queue (avoids mutating the list during iteration).
 | `in_game/common/on_action/sul_integration_on_actions.txt` | `_on_game_start`, `_init_check`, `_on_location_conquered`, `_monthly_update` |
 | `main_menu/localization/english/sul_integration_l_english.yml` | Modifier loc |
 
-### Bouvet Island Marker
-`sul_integration_capacity_bonus` is applied to `location:bouvet_island` (size 0,
-years -1) along with a `sul_integration_version` variable. When the mod is
-removed and re-added, the marker disappears, `sul_integration_init_check`
-detects it on `weather_monthly_pulse`, and `sul_integration_initialize`
-rebuilds the tracking list.
+### Version Check
+`sul_integration_version` is a **global variable** set to the `sul_integration_version_value` script_value on init.
+`sul_integration_init_check` runs on `weather_monthly_pulse`, compares the stored value against the script_value, and re-runs `sul_integration_initialize` on mismatch.
+Bumping `sul_integration_version_value` in `main_menu/common/script_values/sul_versions.txt` forces a full re-init on existing saves.
 
 ---
 
@@ -554,7 +559,7 @@ current inflation, then sets `sul_minting_debasement_level` or
 |---|---|
 | `main_menu/common/modifier_type_definitions/sul_minting_modifier_types.txt` | `sul_minting_liquidity` modifier type |
 | `main_menu/common/modifier_icons/sul_minting_modifier_icons.txt` | Icon mapping |
-| `main_menu/common/static_modifiers/sul_minting_modifiers.txt` | `sul_minting_active`, `_ai_minting`, `_ai_inflation`, `_ai_rebasement` |
+| `main_menu/common/static_modifiers/sul_minting_modifiers.txt` | `_ai_minting`, `_ai_inflation`, `_ai_rebasement` |
 | `main_menu/common/static_modifiers/sul_minting_vanilla_injects.txt` | INJECTs into vanilla static modifiers (franc coinage, novgorodka, etc.) to swap minting_income_factor → sul_minting_liquidity |
 | `main_menu/common/game_concepts/sul_minting_game_concepts.txt` | Game concept aliases for tooltip text |
 | `main_menu/gui/sul_minting_messagetypes.txt` | AI debasement message hidden from player |
@@ -590,110 +595,178 @@ in `sul_hardcoded.txt`.
 
 ---
 
-## 12. Power Projection
+## 12. Power Projection + Complacency
 
-Turns vanilla `power_projection` from a flavor stat into the central
-slowdown lever for conquest and integration. Two layers share one PP score:
-a **scale layer** that uses PP as a multiplier on rate-style modifiers, and
-a **gate layer** that hard-blocks specific subject interactions when an
-overlord is out-projected by its own subject.
+PP is the central slowdown lever for conquest and integration; complacency
+is its long-run counterweight. The two are coupled both ways so sustained
+high PP breeds complacency, and complacency in turn drags PP back down.
 
-### Two Layers
+### Scale Layer (`sul_power_projection_impact`)
 
-**Scale layer** — vanilla already defines a `power_projection` auto_modifier
-in `in_game/common/auto_modifiers/country.txt` that does
-`global_integration_speed_modifier = 0.01` per PP. SUL **INJECTs** seven
-additional levers into that same block so every PP-driven effect lives in
-one tooltip line:
+One auto_modifier scales_with `power_projection` and holds every effect
+proportional to current PP — benefits, complacency coupling, and the PP
+cost package. Defined fresh (not INJECT on vanilla) because INJECTing into
+vanilla's `power_projection` block hits a self-referential name collision.
 
-| Modifier | Coefficient (per PP) | Direction |
+| Modifier | Coefficient (per PP) | Category |
 |---|---|---|
-| `global_pop_assimilation_speed_modifier` | +0.005 | positive PP speeds assimilation |
-| `global_pop_conversion_speed_modifier` | +0.005 | positive PP speeds religious conversion |
-| `global_war_score_cost` | -0.003 | positive PP cheapens taking provinces |
-| `global_distance_from_capital_speed_propagation` | +0.005 | positive PP speeds proximity |
-| `subject_loyalty` | +0.005 | positive PP improves subject loyalty |
-| `diplomatic_annexation_cost` | -0.003 | positive PP cheapens annexation |
-| `antagonism_taking_land_giving_modifier` | -0.005 | positive PP generates less antagonism |
+| `global_pop_assimilation_speed_modifier` | +0.005 | benefit |
+| `global_pop_conversion_speed_modifier` | +0.005 | benefit |
+| `global_war_score_cost` | -0.003 | benefit |
+| `global_distance_from_capital_speed_propagation` | +0.005 | benefit |
+| `subject_loyalty` | +0.5 | benefit |
+| `diplomatic_annexation_cost` | -0.003 | benefit |
+| `antagonism_taking_land_giving_modifier` | -0.005 | benefit |
+| `levy_recovery_modifier` | +0.02 | benefit |
+| `global_levy_size_modifier` | +0.0025 | benefit |
+| `monthly_complacency` | +0.0015 | **coupling** (negative PP drains complacency) |
+| `stability_decay` | +0.001 | **PP cost** (mobilization strains the state) |
+| `global_estate_target_satisfaction` | -0.001 | **PP cost** (estates resent projection) |
+| `trade_efficiency` | -0.0005 | **PP cost** (commercial friction) |
+| `global_urban_build_buildings_cost` | +0.002 | **PP cost** (bureaucratic overhead) |
+| `global_migration_speed_modifier` | -0.001 | **PP cost** (migration outflow) |
 
-All coefficients are placeholders pending tuning.
+Coefficients are placeholders pending playtest.
 
-**Gate layer** — REPLACE on `enforce_culture` and `enforce_religion` country
-interactions. The vanilla bodies are reproduced verbatim with one extra
-trigger appended to `select_trigger.enabled`:
-`scope:actor.power_projection >= power_projection`. The action is hidden as
-"available" but disabled until the overlord out-projects the subject.
+### Gate Layer
+
+REPLACE on `enforce_culture` and `enforce_religion` country interactions.
+Vanilla bodies reproduced verbatim with one extra trigger appended to
+`select_trigger.enabled`: `scope:actor.power_projection >= power_projection`.
+Action is visible but disabled until the overlord out-projects the subject.
 
 ### Structural Drag Layer
 
-Five separate auto_modifiers write negative `power_projection` from country
-state. Each scales off a signed script_value, with the coefficient sized so
-the worst case lands in the calibration band the design doc specifies.
+Nine auto_modifiers write PP from country state. Each scales off a signed
+script_value so the coefficient stays positive on the auto_modifier side.
 
-| Auto modifier | Source script_value | Coefficient | Worst case |
+| Auto modifier | Source script_value | Coefficient | Effect |
 |---|---|---|---|
-| `sul_projection_drag_control` | `sul_projection_control_drag` (= control_pop/total_pop − 1) | 25 | -25 PP at zero control |
-| `sul_projection_drag_culture` | `sul_projection_culture_drag` (= accepted_pop/total_pop − 1) | 50 | -50 PP at zero accepted-culture pop |
-| `sul_projection_drag_religion` | `sul_projection_religion_drag` (= religion_percentage_in_country(root.religion) − 1) | 50 | -50 PP at zero same-religion pop. Captures both heretics (same group) and heathens (different group). |
-| `sul_projection_drag_stability` | `sul_projection_stability_drag` (= stability) | 0.2 | ±20 PP at stability ±100 (EU5 stab is -100..+100, not -3..+3) |
-| `sul_projection_drag_subjects` | `sul_projection_subject_drag` (= var:sul_projection_subject_drag_value) | 1 | Tapered: -50 × load / (load + K), caps at -50 PP. Uses country_strength, not gp score. |
-| `sul_projection_drag_conquest` | `sul_projection_conquest_debt` (= var:sul_projection_conquest_debt) | -1 | scales linearly with debt magnitude |
+| `sul_projection_drag_control` | `sul_projection_control_drag` | 25 | -25 PP at zero control |
+| `sul_projection_drag_culture` | `sul_projection_culture_drag` | 25 | -25 PP at zero accepted-culture pop |
+| `sul_projection_drag_religion` | `sul_projection_religion_drag` | 25 | -25 PP at zero same-religion pop (captures heretics and heathens together) |
+| `sul_projection_drag_stability` | `sul_projection_stability_drag` | 0.1 | ±10 PP at stability ±100 |
+| `sul_projection_drag_subjects` | `sul_projection_subject_drag` | 50 | -50 PP per multiple of overlord strength in weighted subjects. Linear, no cap. |
+| `sul_projection_drag_size` | `sul_projection_size_drag` | -0.05 | -1 PP per 20 locations (coefficient flips the positive location count to negative PP) |
+| `sul_projection_rank` | `sul_projection_rank_value` | 1 | +5 duchy / +10 kingdom / +15 empire |
+| `sul_projection_army` | `sul_projection_regular_army_ratio` | 10 | +10 PP per multiple of expected regular army (excludes levies) |
+| `sul_projection_navy` | `navy_size_percentage` | 10 | +10 PP per multiple of expected navy (vanilla script_value) |
 
-`sul_projection_dip_rep_bonus` (coefficient +2) is the lone direct positive
-PP source on top of vanilla, scaled off `modifier:diplomatic_reputation`.
+Control/culture/religion/stability/size drags compute inline in the
+script_value — no country variables, no monthly maintenance. Subject drag
+requires iteration and so caches a variable.
 
-The control, culture, and stability drags compute their entire formula
-inline in the script_value `scales_with` block — no country variables, no
-monthly maintenance. The subject and conquest drags need country variables
-because they require iteration / event-driven accumulation respectively.
+### Complacency Coupling
+
+Two-way feedback. PP builds complacency via the scale layer above;
+complacency drags PP back via `INJECT:complacency_impact`. Vanilla's
+`scales_with = complacency × 0.01` applies to every entry we inject.
+
+**Complacency → PP** (in `INJECT:complacency_impact`)
+- `power_projection = -200` → -2 PP per complacency point
+
+**Vanilla complacency_impact extensions** (same INJECT)
+
+Positives (comfortable-empire wellbeing):
+| Modifier | Coefficient | Effect at complacency 100 |
+|---|---|---|
+| `global_estate_satisfaction_recovery` | 0.005 | +0.5 estate recovery |
+| `global_migration_speed_modifier` | 0.003 | +0.3 migration |
+| `cultural_tradition_modifier` | 0.005 | +0.5 cultural tradition |
+| `monthly_prestige` | 0.005 | +0.5 prestige/month |
+| `global_monthly_development` | 0.003 | +0.3 dev/month |
+
+Negatives (state-as-instrument atrophy):
+| Modifier | Coefficient | Effect at complacency 100 |
+|---|---|---|
+| `global_institution_growth_modifier` | -0.5 | -50% |
+| `global_manpower_modifier` | -0.3 | -30% |
+| `global_sailors_modifier` | -0.3 | -30% |
+| `levy_recovery_modifier` | -0.3 | -30% |
+| `land_morale_modifier` | -0.15 | -15% |
+| `naval_morale_modifier` | -0.15 | -15% |
+| `discipline` | -0.10 | -10% |
+| `global_urban_build_buildings_cost` | 0.002 | +0.2 |
+| `global_rural_build_buildings_cost` | 0.002 | +0.2 |
+| `settle_country_cost_modifier` | 0.005 | +0.5 |
+| `casus_belli_creation_speed_modifier` | -0.5 | -50% |
+| `court_spending_cost` | 0.003 | +0.3 |
+| `diplomatic_capacity` | -2.0 | -2 slots |
+| `global_pop_assimilation_speed_modifier` | -0.003 | -0.3 |
+| `global_pop_conversion_speed_modifier` | -0.003 | -0.3 |
+| `global_integration_speed_modifier` | -0.003 | -0.3 |
+| `add_accepted_culture_cost_modifier` | 1.0 | +100% |
+| `declaring_war_cost_modifier` | 1.0 | +100% |
+
+**War Exhaustion → complacency** (in `INJECT:war_exhaustion_impact`)
+- `monthly_complacency = -0.01` per WE point. At WE=20 drains 0.2/month,
+  matching vanilla `recovery_motivation`.
+
+### Top-bar GUI
+
+`in_game/gui/hud_topbar.gui` is a full vanilla copy with two `stat_player`
+blocks inserted between `stat_prestige` and `stat_diplo`:
+- `stat_complacency` — `Country.GetCurrencyValue('complacency')` + delta row
+  using `GetModifierValue('monthly_complacency')`; reuses vanilla
+  `ComplacencyResourceTooltip`.
+- `stat_power_projection` — `Country.GetPowerProjection|1` (no currency-API
+  delta getter available); reuses vanilla `power_projection_tooltip`.
+
+Patch fragility: copying 2495 lines of vanilla means a Paradox edit to
+`hud_topbar.gui` breaks us silently. On patch days, grep for
+`stat_complacency` / `stat_power_projection` and re-apply the inserts on
+top of fresh vanilla.
 
 ### Country Variables
 | Variable | Set By | Updated | Read By | Purpose |
 |---|---|---|---|---|
-| `sul_projection_subject_drag_value` | `sul_projection_recompute_subject_drag` | monthly_country_pulse | `sul_projection_subject_drag` script_value | Tapered drag: `-50 × sum(country_strength × weight) / (sum + K)`. Uses `country_strength`, not GP score. Always 0 or negative. |
-| `sul_projection_conquest_debt` | `sul_projection_apply_conquest_debt` | per-conquest add, monthly decay | `sul_projection_conquest_debt` script_value | Positive magnitude representing accumulated conquest burden. Coefficient on the auto modifier flips it to negative PP. |
+| `sul_projection_subject_drag_value` | `sul_projection_recompute_subject_drag` | on_game_start + monthly_country_pulse | `sul_projection_subject_drag` script_value | Signed load: `-sum(subject_strength × type_weight) / max(1, overlord_strength)`, clamped to min -6. Negative-weight types (marches) can make this positive. |
+| `sul_projection_weight_map` | `sul_projection_recompute_subject_drag` | monthly_country_pulse | GUI tooltip | Variable map: subject_scope → type weight. Display only. |
+| `sul_projection_contribution_map` | `sul_projection_recompute_subject_drag` | monthly_country_pulse | GUI tooltip | Variable map: subject_scope → PP contribution per subject. Display only. |
 
 ### Effects (sul_projection_effects.txt)
 | Effect | Purpose |
 |---|---|
-| `sul_projection_recompute_subject_drag` | Iterates `every_subject`, sums `country_strength × sul_projection_subject_type_weight` into a local var, then applies taper curve `-50 × load / (load + K)`. Result is always 0 or negative, capping at -50 PP. K = `@sul_projection_subject_half_saturation`. |
-| `sul_projection_apply_conquest_debt` | Single conquest increment: `change_variable` adds `conquered_location.development × @sul_projection_debt_per_dev`. Caller sets `scope:sul_projection_conquered_location` and runs in winner scope. |
-| `sul_projection_decay_conquest_debt` | Monthly drain: `subtract = base × dip_rep / reference`. Removes the variable entirely when it crosses zero (cleaner than clamping). |
+| `sul_projection_recompute_subject_drag` | Sums `country_strength × sul_projection_subject_type_weight` across subjects, divides by overlord `country_strength` (min 1), negates, clamps to min -6. Also populates `sul_projection_weight_map` and `sul_projection_contribution_map` for tooltip display. |
 
 ### Script Values (sul_projection_values.txt)
 | Script value | Purpose |
 |---|---|
 | `sul_projection_control_drag` | `(total_control_scaled_population / total_population) - 1` |
 | `sul_projection_culture_drag` | `(total_accepted_culture_population / total_population) - 1` |
-| `sul_projection_religion_drag` | `religion_percentage_in_country(root.religion) - 1` (function-call form, total share of country's own religion) |
+| `sul_projection_religion_drag` | `religion_percentage_in_country(root.religion) - 1` |
 | `sul_projection_stability_drag` | `stability` |
-| `sul_projection_subject_type_weight` | Per-type constant for the subject scope. Currently all 16 subject types weighted 1.0; tune individually without touching the iteration. |
-| `sul_projection_subject_drag` | Safe-fallback wrapper around `var:sul_projection_subject_drag_value`. |
-| `sul_projection_conquest_debt` | Safe-fallback wrapper around `var:sul_projection_conquest_debt`. |
-| `sul_projection_dip_rep_value` | Returns `modifier:diplomatic_reputation`. |
+| `sul_projection_size_drag` | `num_locations` |
+| `sul_projection_regular_army_ratio` | `regular_army_size / max(1, expected_army_size)` |
+| `sul_projection_rank_value` | 5 duchy / 10 kingdom / 15 empire |
+| `sul_projection_subject_type_weight` | Per-subject-type scalar. Tuned per type: tributary 0.1, colonial 0.25, dominion 0.5, fiefdom/uc_bey/tusi 0.75, vassal/conquistador/hanseatic 1.0, appanage 1.25, march -0.25 (adds PP), secessionist/state_bank/trade_company 0.25, samanta 1.0. |
+| `sul_projection_subject_drag` | Safe wrapper around `var:sul_projection_subject_drag_value` (0 when variable missing). |
 
 ### On-Action Handlers (sul_projection_on_actions.txt)
 | Handler | Hook | Purpose |
 |---|---|---|
-| `sul_projection_monthly_update` | monthly_country_pulse | Calls `sul_projection_recompute_subject_drag` and `sul_projection_decay_conquest_debt`. |
-| `sul_projection_on_location_conquered` | on_location_changed_owner | Saves the location as `scope:sul_projection_conquered_location`, then runs `sul_projection_apply_conquest_debt` inside `scope:winner`. |
+| `sul_projection_on_game_start` | on_game_start | Seed `sul_projection_subject_drag_value` on every country so the scale layer reads a real value on tick one. |
+| `sul_projection_monthly_update` | monthly_country_pulse | Refresh subject drag variable. |
 
 ### Files
 | Path | Purpose |
 |---|---|
-| `in_game/common/auto_modifiers/sul_projection_country.txt` | INJECT into vanilla `power_projection` for the scale layer; structural drag auto_modifiers; dip-rep PP bonus |
-| `in_game/common/script_values/sul_projection_values.txt` | Drag formulas, per-subject-type weights, dip-rep wrapper, safe-fallback wrappers |
-| `in_game/common/scripted_effects/sul_projection_effects.txt` | Subject drag recompute, conquest debt apply/decay |
-| `in_game/common/on_action/sul_projection_on_actions.txt` | Monthly + on_conquest handlers |
-| `in_game/common/country_interactions/sul_projection_subject_gates.txt` | REPLACE `enforce_culture` / `enforce_religion` with PP comparison appended to `enabled` |
-| `main_menu/localization/english/sul_projection_l_english.yml` | `AUTO_MODIFIER_NAME_*` strings for the six structural drag/source auto_modifiers |
+| `in_game/common/auto_modifiers/sul_projection_country.txt` | Unified scale layer + 9 structural drag auto_modifiers |
+| `in_game/common/auto_modifiers/sul_complacency_country.txt` | `INJECT:complacency_impact` — PP drag + wellbeing/atrophy package |
+| `in_game/common/auto_modifiers/sul_war_auto_modifiers.txt` | `INJECT:war_exhaustion_impact` — stability decay + complacency drain |
+| `in_game/common/script_values/sul_projection_values.txt` | Drag formulas, rank/army ratios, subject type weights |
+| `in_game/common/scripted_effects/sul_projection_effects.txt` | Subject drag monthly recompute |
+| `in_game/common/on_action/sul_projection_on_actions.txt` | Game start + monthly handlers |
+| `in_game/common/country_interactions/sul_projection_subject_gates.txt` | REPLACE `enforce_culture` / `enforce_religion` with PP gate |
+| `in_game/gui/hud_topbar.gui` | Full vanilla override adding `stat_complacency` + `stat_power_projection` |
+| `in_game/gui/shared/aaa_sul_power_projection_tooltip.gui` | Override vanilla PP tooltip with scrollable subject breakdown |
+| `main_menu/localization/english/sul_projection_l_english.yml` | `AUTO_MODIFIER_NAME_*` strings, tooltip labels |
 
 ### Known Gaps
-- **Per-subject-type weights** — all 16 entries in
-  `sul_projection_subject_type_weight` set to 1.0. Differentiation between
-  PUs / vassals / marches / tributaries is the next tuning pass.
-- **All scale and drag coefficients are placeholders.** Numbers are
-  educated guesses; real values come from playtesting.
+- **Subject type weights** — tuned but may need further balancing.
+- **All scale/drag/impact coefficients are placeholders** pending playtest.
+- **Engagement channels, DoE reframe, Forced Opening disaster** — deferred.
+  See `docs/complacency_coupling_plan.md` for design context.
 
 ---
 
@@ -711,13 +784,6 @@ because they require iteration / event-driven accumulation respectively.
 - Rank offsets: town=0, city=10, rural=20
 - `@sul_farming_weight=2`
 
-### War Momentum (sul_war_on_actions.txt)
-- `@sul_war_version=201`
-
-### Power Projection (sul_projection_effects.txt)
-- `@sul_projection_debt_per_dev=1.0` — conquest debt added per point of conquered-location development
-- `@sul_projection_debt_decay_base=1.0` — base monthly debt decay before dip-rep scaling
-- `@sul_projection_debt_decay_dip_rep_reference=12` — dip rep reference point; current dip rep / reference is the decay multiplier
 
 ### Batching
 - `@sul_ai_batch_size=333` — locations per weather_monthly_pulse tick

@@ -1,8 +1,4 @@
-﻿# Bouvet Island (impassable) acts as the mod state anchor: sul_minting_active
-# modifier is applied here and is stripped by the engine when the mod is
-# removed, which is how sul_minting_version_check detects re-installs.
-
-sul_minting_initialize_all = {
+﻿sul_minting_initialize_all = {
 	effect = {
 		every_country = {
 			limit = { capital ?= { exists = market } }
@@ -10,12 +6,7 @@ sul_minting_initialize_all = {
 			set_variable = { name = sul_minting_first_month_tick value = yes days = 35 }
 		}
 
-		set_global_variable = { name = sul_minting_active value = yes }
-
-		location:bouvet_island = {
-			remove_location_modifier = sul_minting_active
-			add_location_modifier = { modifier = sul_minting_active days = -1 }
-		}
+		set_global_variable = { name = sul_minting_version value = sul_minting_version_value }
 	}
 }
 
@@ -50,46 +41,25 @@ sul_minting_on_policy_changed = {
 	}
 }
 
-# Triggers full init if Bouvet marker OR global variable is missing.
-# Covers: mod added to existing save, AND old saves before global var was added.
-# Runs on weather_monthly_pulse (once globally, not per-country).
+# Fires on weather_monthly_pulse (once globally) if the version marker is
+# missing or stale. No reentrance guard needed — pulse is global, not per-country.
 
 sul_minting_version_check = {
 	trigger = {
 		OR = {
-			location:bouvet_island = {
-				NOT = {
-					has_location_modifier = sul_minting_active
-				}
-			}
-
-			NOT = {
-				has_global_variable = sul_minting_active
-			}
-		}
-
-		NOT = {
-			has_global_variable = sul_minting_initializing
+			NOT = { has_global_variable = sul_minting_version }
+			global_var:sul_minting_version < sul_minting_version_value
 		}
 	}
 
 	effect = {
-		set_global_variable = { name = sul_minting_initializing value = yes }
-
 		every_country = {
 			limit = { capital ?= { exists = market } }
 			sul_minting_initialize_country = yes
 			set_variable = { name = sul_minting_first_month_tick value = yes days = 35 }
 		}
 
-		set_global_variable = { name = sul_minting_active value = yes }
-
-		location:bouvet_island = {
-			remove_location_modifier = sul_minting_active
-			add_location_modifier = { modifier = sul_minting_active days = -1 }
-		}
-
-		remove_global_variable = sul_minting_initializing
+		set_global_variable = { name = sul_minting_version value = sul_minting_version_value }
 	}
 }
 

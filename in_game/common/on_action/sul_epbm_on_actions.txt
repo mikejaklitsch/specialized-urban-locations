@@ -1,72 +1,39 @@
-﻿# Estate Building Maintenance for SUL - On Actions
+# Estate Building Maintenance for SUL - On Actions
 # ═══════════════════════════════════════════════
 # Initialization: stamp global PM maps, build location + country indexes
 # Monthly: player recalc+charge, AI charge only
 # Yearly: AI recalc
 # Ownership change: move location between country lists
 # ═══════════════════════════════════════════════
-# Rebuild version: major * 100 + minor (patch changes don't trigger rebuild)
-# Updated by post_deploy.py from .metadata/metadata.json
-@sul_epbm_rebuild_version = 20 # 0.2.x — sync with .metadata/metadata.json
-# Bouvet Island (27954): impassable location used as mod state anchor.
-# sul_epbm_active modifier applied here — stripped by engine when mod is removed.
-# sul_epbm_version variable stored here for version-based rebuild detection.
-
+# Version integer lives in main_menu/common/script_values/sul_versions.txt
+# (patched at deploy time by tools/post_deploy.py from .metadata/metadata.json).
+#
 # NOTE: Vanilla hooks are in sul_hardcoded.txt (unified dispatcher).
 # This file only contains the on_action effect definitions.
 
 sul_epbm_initialize_all = {
 	effect = {
 		sul_epbm_full_rebuild = yes
-		# Stamp version on Bouvet Island
-		location:bouvet_island = {
-			remove_location_modifier = sul_epbm_active
-			add_location_modifier = { modifier = sul_epbm_active days = -1 }
-			set_variable = { name = sul_epbm_version value = @sul_epbm_rebuild_version }
-		}
+		set_global_variable = { name = sul_epbm_version value = sul_epbm_version_value }
 	}
 }
 
 # ═══════════════════════════════════════════════
-# Version check: runs monthly, triggers rebuild if marker is missing or outdated
-# Handles first-time init, version upgrades, and mod remove/re-add
+# Version check: fires on weather_monthly_pulse (once globally).
+# No reentrance guard needed — pulse is global, not per-country.
 # ═══════════════════════════════════════════════
 
 sul_epbm_version_check = {
 	trigger = {
 		OR = {
-			# Modifier missing = mod was removed and re-added (or first init on existing save)
-			location:bouvet_island = {
-				NOT = {
-					has_location_modifier = sul_epbm_active
-				}
-			}
-
-			# Modifier present but version outdated = mod was updated
-			location:bouvet_island = {
-				has_location_modifier = sul_epbm_active
-				has_variable = sul_epbm_version
-				var:sul_epbm_version < @sul_epbm_rebuild_version
-			}
-		}
-
-		# Guard: don't let multiple countries trigger rebuild in the same tick
-		NOT = {
-			has_global_variable = sul_epbm_rebuilding
+			NOT = { has_global_variable = sul_epbm_version }
+			global_var:sul_epbm_version < sul_epbm_version_value
 		}
 	}
 
 	effect = {
-		set_global_variable = { name = sul_epbm_rebuilding value = yes }
 		sul_epbm_full_rebuild = yes
-		# Stamp version on Bouvet Island
-		location:bouvet_island = {
-			remove_location_modifier = sul_epbm_active
-			add_location_modifier = { modifier = sul_epbm_active days = -1 }
-			set_variable = { name = sul_epbm_version value = @sul_epbm_rebuild_version }
-		}
-
-		remove_global_variable = sul_epbm_rebuilding
+		set_global_variable = { name = sul_epbm_version value = sul_epbm_version_value }
 	}
 }
 
@@ -74,7 +41,7 @@ sul_epbm_version_check = {
 
 sul_epbm_player_monthly = {
 	trigger = {
-		location:bouvet_island = { has_location_modifier = sul_epbm_active }
+		has_global_variable = sul_epbm_version
 		is_ai = no
 		any_estate = { estate_type != estate_type:crown_estate }
 	}
@@ -88,7 +55,7 @@ sul_epbm_player_monthly = {
 
 sul_epbm_ai_monthly_charge = {
 	trigger = {
-		location:bouvet_island = { has_location_modifier = sul_epbm_active }
+		has_global_variable = sul_epbm_version
 		is_ai = yes
 		is_real_country = yes
 		any_estate = { estate_type != estate_type:crown_estate }
@@ -107,14 +74,8 @@ sul_epbm_ai_monthly_charge = {
 
 sul_epbm_ai_yearly_recalc = {
 	trigger = {
-		# Bouvet Island carries mod version state (impassable, never owned).
-		# Skip if stale — IOs may be invalid during version transitions.
-		location:bouvet_island = {
-			has_location_modifier = sul_epbm_active
-			has_variable = sul_epbm_version
-			var:sul_epbm_version >= @sul_epbm_rebuild_version
-		}
-
+		has_global_variable = sul_epbm_version
+		global_var:sul_epbm_version >= sul_epbm_version_value
 		is_ai = yes
 		is_real_country = yes
 		any_estate = { estate_type != estate_type:crown_estate }
@@ -130,7 +91,7 @@ sul_epbm_ai_yearly_recalc = {
 
 sul_epbm_decade_rebuild = {
 	trigger = {
-		location:bouvet_island = { has_location_modifier = sul_epbm_active }
+		has_global_variable = sul_epbm_version
 		is_real_country = yes
 		any_estate = { estate_type != estate_type:crown_estate }
 	}
@@ -159,7 +120,7 @@ sul_epbm_decade_rebuild = {
 
 sul_epbm_on_location_owner_changed = {
 	trigger = {
-		location:bouvet_island = { has_location_modifier = sul_epbm_active }
+		has_global_variable = sul_epbm_version
 	}
 
 	effect = {
@@ -213,7 +174,7 @@ sul_epbm_on_location_owner_changed = {
 
 sul_epbm_monthly_cache_clear = {
 	trigger = {
-		location:bouvet_island = { has_location_modifier = sul_epbm_active }
+		has_global_variable = sul_epbm_version
 	}
 
 	effect = {

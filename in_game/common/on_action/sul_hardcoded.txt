@@ -19,7 +19,6 @@ on_game_start = {
 		# Prime shared market price cache before minting init reads it
 		sul_refresh_market_cache
 		sul_minting_initialize_all
-		sul_projection_on_game_start
 		sul_epbm_initialize_all
 	}
 }
@@ -49,7 +48,6 @@ on_location_changed_owner = {
 
 monthly_country_pulse = {
 	on_actions = {
-		sul_version_check
 		sul_clear_market_cache
 		sul_refresh_market_cache
 		sul_update_spending_rates
@@ -58,12 +56,10 @@ monthly_country_pulse = {
 		# Convert sul_trade_maintenance_efficiency → merchant_maintenance_cost
 		sul_trade_maintenance_apply_action
 		sul_minting_monthly_update
-		sul_war_init_pulse
 		sul_war_monthly_pulse
-		sul_projection_monthly_update
-		sul_epbm_version_check
 		sul_epbm_player_monthly
 		sul_epbm_ai_monthly_charge
+		sul_war_force_rebellions
 	}
 }
 
@@ -82,11 +78,13 @@ weather_monthly_pulse = {
 	on_actions = {
 		sul_passthrough_pulse
 		sul_batch_location_update
-		sul_integration_init_check
-		sul_integration_monthly_update
-		# Minting version check belongs here, not monthly_weather_pulse (TGS typo);
-		# weather_monthly_pulse is the real engine action.
+		# Version checks — fire once globally, no per-country race
+		sul_version_check
+		sul_war_init_pulse
 		sul_minting_version_check
+		sul_integration_init_check
+		sul_epbm_version_check
+		sul_integration_monthly_update
 		sul_epbm_monthly_cache_clear
 	}
 }

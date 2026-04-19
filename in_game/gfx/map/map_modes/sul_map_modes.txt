@@ -139,11 +139,6 @@ REPLACE:power_projection = {
 	}
 }
 
-# ============================================
-# SPECIALIZATION MAP MODE
-# Adds specialization overlay colors to the cities map mode
-# ============================================
-
 @data_gradient_alpha_inside = 1
 @data_gradient_alpha_outside = 1
 @data_gradient_width = 0.875
@@ -154,6 +149,143 @@ REPLACE:power_projection = {
 @data_edge_color_mult = 0
 @data_before_lighting_blend = 0.5
 @data_after_lighting_blend = 0.5
+
+# ============================================
+# DEVELOPMENT MAP MODE (REPLACE vanilla hardcoded)
+# Brown (extraction) below 50 dev, yellow (production) above 50
+# ============================================
+
+REPLACE:development = {
+	map_color = {
+		if = {
+			limit = { is_ownable = yes }
+
+			lerp = {
+				min_color = rgb { 140 89 38 }
+				max_color = rgb { 34 139 34 }
+				factor = { value = development divide = 100 }
+			}
+		}
+	}
+
+	tooltip_key = { value = "SUL_DEV_MAP_TOOLTIP" }
+
+	legend_key = {
+		desc = "SUL_LEGEND_DEV_EXTRACTION"
+		color = rgb { 140 89 38 }
+	}
+	legend_key = {
+		desc = "SUL_LEGEND_DEV_PRODUCTION"
+		color = rgb { 34 139 34 }
+	}
+
+	small_map_names = development
+	medium_map_names = development
+	large_map_names = country
+
+	small_tooltip_context = location
+	medium_tooltip_context = location
+	large_tooltip_context = country
+
+	fill_in_impassable = no
+	flatmap_behaviour = Always
+	use_fow = no
+
+	pinned_by_default = no
+	category = economy
+	index = 0
+
+	map_markers = { market_marker = no fort_marker = no toll_marker = no }
+
+	gradient_parameters = {
+		zoom_step = @zoom_step_near
+
+		gradient_alpha_inside = @data_gradient_alpha_inside
+		gradient_alpha_outside = @data_gradient_alpha_outside
+		gradient_width = @data_gradient_width
+		gradient_color_mult = @data_gradient_color_mult
+		edge_width = @data_edge_width
+		edge_sharpness = @data_edge_sharpness
+		edge_alpha = @data_edge_alpha
+		edge_color_mult = @data_edge_color_mult
+		before_lighting_blend = @data_before_lighting_blend
+		after_lighting_blend = @data_after_lighting_blend
+	}
+
+	color_refresh_counters = { LocationDevelopmentChanged }
+	color_and_names_refresh_counters = { LocationOwnerChanged CountryStatus }
+}
+
+# ============================================
+# DEVELOPMENT EQUILIBRIUM MAP MODE
+# Shows predicted equilibrium from building pressure + spring forces
+# Brown = extraction-leaning (eq < 50), yellow = production-leaning (eq > 50)
+# ============================================
+
+sul_development_equilibrium = {
+	map_color = {
+		if = {
+			limit = { is_ownable = yes }
+
+			lerp = {
+				min_color = rgb { 140 89 38 }
+				max_color = rgb { 34 139 34 }
+				factor = { value = sul_development_equilibrium divide = 100 }
+			}
+		}
+	}
+
+	tooltip_key = { value = "SUL_EQ_MAP_TOOLTIP" }
+
+	legend_key = {
+		desc = "SUL_LEGEND_EQ_EXTRACTION"
+		color = rgb { 140 89 38 }
+	}
+	legend_key = {
+		desc = "SUL_LEGEND_EQ_PRODUCTION"
+		color = rgb { 34 139 34 }
+	}
+
+	small_map_names = development
+	medium_map_names = development
+	large_map_names = country
+
+	small_tooltip_context = location
+	medium_tooltip_context = location
+	large_tooltip_context = location
+
+	fill_in_impassable = no
+	flatmap_behaviour = Always
+	use_fow = no
+
+	category = economy
+	index = 1
+
+	map_markers = { market_marker = no fort_marker = no toll_marker = no }
+
+	gradient_parameters = {
+		zoom_step = @zoom_step_near
+
+		gradient_alpha_inside = @data_gradient_alpha_inside
+		gradient_alpha_outside = @data_gradient_alpha_outside
+		gradient_width = @data_gradient_width
+		gradient_color_mult = @data_gradient_color_mult
+		edge_width = @data_edge_width
+		edge_sharpness = @data_edge_sharpness
+		edge_alpha = @data_edge_alpha
+		edge_color_mult = @data_edge_color_mult
+		before_lighting_blend = @data_before_lighting_blend
+		after_lighting_blend = @data_after_lighting_blend
+	}
+
+	color_refresh_counters = { Month }
+	color_and_names_refresh_counters = { LocationOwnerChanged CountryStatus }
+}
+
+# ============================================
+# SPECIALIZATION MAP MODE
+# Adds specialization overlay colors to the cities map mode
+# ============================================
 
 REPLACE:cities = {
 	# Primary color: specialization

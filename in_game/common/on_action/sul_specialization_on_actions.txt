@@ -96,6 +96,34 @@ sul_on_raw_material_changed = {
 	}
 }
 
+# Conquered market center: fire event if conqueror's market already
+# has strong access nearby (neighbor with >= 90% market access owned by winner)
+# root = location, scope:loser, scope:winner
+
+sul_on_market_conquered = {
+	trigger = {
+		is_market_center = yes
+		any_neighbor_location = {
+			market_access >= 0.90
+			market.location.owner = scope:winner
+		}
+	}
+
+	effect = {
+		save_scope_as = target
+		random_neighbor_location = {
+			limit = {
+				market_access >= 0.90
+				market.location.owner = scope:winner
+			}
+			market = { save_scope_as = winner_market }
+		}
+		scope:winner = {
+			trigger_event = { id = sul.100 }
+		}
+	}
+}
+
 # Owner changed: seed RGO for new colonies that have none
 # root = location, scope:loser, scope:winner
 

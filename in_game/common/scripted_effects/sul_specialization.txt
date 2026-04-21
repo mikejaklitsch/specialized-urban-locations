@@ -229,7 +229,7 @@ sul_specialization_calculate_eligibility = {
 }
 
 # root = location. Re-checks current spec after a raw material change;
-# falls back to commercial if invalidated.
+# market centers fall back to commercial, others reassign by resources.
 
 sul_specialization_validate = {
 	if = {
@@ -237,43 +237,48 @@ sul_specialization_validate = {
 		if = {
 			limit = {
 				sul_has_mining_specialization = yes
-				NOT = {
-					has_variable = sul_can_mine
-				}
+				NOT = { has_variable = sul_can_mine }
 			}
 
-			sul_specialization_switch_to_commercial = yes
+			sul_specialization_reassign_or_commercial = yes
 		}
 		else_if = {
 			limit = {
 				sul_has_farming_specialization = yes
-				NOT = {
-					has_variable = sul_can_farm
-				}
+				NOT = { has_variable = sul_can_farm }
 			}
 
-			sul_specialization_switch_to_commercial = yes
+			sul_specialization_reassign_or_commercial = yes
 		}
 		else_if = {
 			limit = {
 				sul_has_gathering_specialization = yes
-				NOT = {
-					has_variable = sul_can_gather
-				}
+				NOT = { has_variable = sul_can_gather }
 			}
 
-			sul_specialization_switch_to_commercial = yes
+			sul_specialization_reassign_or_commercial = yes
 		}
 		else_if = {
 			limit = {
 				sul_has_woodland_specialization = yes
-				NOT = {
-					has_variable = sul_can_woodland
-				}
+				NOT = { has_variable = sul_can_woodland }
 			}
 
-			sul_specialization_switch_to_commercial = yes
+			sul_specialization_reassign_or_commercial = yes
 		}
+	}
+}
+
+sul_specialization_reassign_or_commercial = {
+	if = {
+		limit = { is_market_center = yes }
+		sul_specialization_switch_to_commercial = yes
+	}
+	else = {
+		sul_specialization_clear_all_modifiers = yes
+		sul_specialization_calculate_eligibility = yes
+		sul_specialization_assign_by_resources = yes
+		sul_specialization_apply_modifier = yes
 	}
 }
 
@@ -444,6 +449,31 @@ sul_specialization_destroy_non_commercial_buildings = {
 	}
 }
 
+# Count non-matching buildings, destroy them, apply respec penalty scaled by count.
+# root = location with sul_spec_type already set to the NEW spec.
+
+sul_specialization_destroy_and_penalize = {
+	set_variable = { name = sul_respec_destroyed value = total_building_levels }
+
+	sul_specialization_destroy_non_matching_buildings = yes
+
+	change_variable = { name = sul_respec_destroyed subtract = total_building_levels }
+
+	if = {
+		limit = { var:sul_respec_destroyed > 0 }
+		add_location_modifier = {
+			modifier = sul_recently_respecialized
+			years = 5
+			size = var:sul_respec_destroyed
+		}
+	}
+	else = {
+		add_location_modifier = { modifier = sul_recently_respecialized years = 5 }
+	}
+
+	remove_variable = sul_respec_destroyed
+}
+
 # Dispatcher to the per-spec destroy effect. root = location with sul_spec_type.
 
 sul_specialization_destroy_non_matching_buildings = {
@@ -548,6 +578,15 @@ sul_specialization_clear_all_modifiers = {
 			limit = { has_location_modifier = sul_commercial_city_specialization }
 			remove_location_modifier = sul_commercial_city_specialization
 		}
+		if = {
+			limit = { is_market_center = yes }
+			market = {
+				destroy_market = {
+					price = 0
+					instant = yes
+				}
+			}
+		}
 	}
 }
 
@@ -556,38 +595,9 @@ sul_specialization_clear_all_modifiers = {
 # Writes sul_spec_type only (1-5); rank is read live from location_rank.
 
 sul_specialization_assign_by_resources = {
-	# Commercial specialization (market centers always; cities require development > 30; towns pass through)
+	# Commercial specialization: market centers only
 	if = {
-		limit = {
-			OR = {
-				is_market_center = yes
-				AND = {
-					NOT = {
-						location_rank = location_rank:city
-					}
-					owner ?= { num_locations > 1 }
-					OR = {
-						modifier:harbor_suitability > 0.7
-						AND = {
-							is_capital = yes
-							owner ?= { government_type = government_type:republic }
-						}
-					}
-				}
-				AND = {
-					location_rank = location_rank:city
-					development > 30
-					OR = {
-						modifier:harbor_suitability > 0.7
-						AND = {
-							is_capital = yes
-							owner ?= { government_type = government_type:republic }
-						}
-					}
-				}
-			}
-		}
-
+		limit = { is_market_center = yes }
 		set_variable = { name = sul_spec_type value = @sul_commercial_type }
 	}
 	else_if = {

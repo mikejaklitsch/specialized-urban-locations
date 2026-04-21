@@ -1,70 +1,152 @@
-﻿# Specialized Urban Locations - Vegetation Overrides
+# Specialized Urban Locations - Vegetation Overrides
 # Pop capacity reduced to make buildings matter more
-# Food modifiers nullified and replaced with per-good output bonuses
+# Food modifiers replaced with per-good output bonuses
+# Development modifiers replaced with flat extraction push
 
-TRY_INJECT:desert = {
+REPLACE:desert = {
+	color = terrain_desert
+	movement_cost = 1.1
+	proximity = -0.05
+	has_sand = yes
+
+	# Removed: local_monthly_development_modifier = -0.33, local_monthly_food_modifier = -0.33
 	location_modifier = {
-		local_monthly_food_modifier = 0.33       # nullify vanilla -0.33
-		local_monthly_development_modifier = 0.33 # nullify vanilla -0.33
-		local_monthly_development = -0.012       # flat extraction push (eq -12)
+		local_rgo_build_time = 0.5
+		local_road_building_time = 1.0
+		local_population_capacity = 10
+		supply_limit = -5
+		local_monthly_development = -0.12
 		local_wheat_output_modifier = -0.20
 		local_livestock_output_modifier = -0.15
 		local_fruit_output_modifier = -0.10
 	}
+
+	colonial_migration_size_modifier = -0.2
+
+	audio_tags = {
+		masDataVegetationDensity = 0.0
+	}
+	debug_color = rgb { 242 242 111 }
 }
 
-TRY_INJECT:grasslands = {
+REPLACE:grasslands = {
+	color = terrain_grasslands
+	movement_cost = 1.0
+	# Removed: local_monthly_food_modifier = 0.1
+	# Reduced: local_population_capacity 50 → 30
 	location_modifier = {
-		local_population_capacity = -20          # 50 → 30
-		local_monthly_food_modifier = -0.1       # nullify vanilla +0.1
+		local_population_capacity = 30
+		supply_limit = 2
 		local_livestock_output_modifier = 0.05
 		local_wheat_output_modifier = 0.025
 		local_wool_output_modifier = 0.025
 	}
+
+	audio_tags = {
+		masDataVegetationDensity = 0.2
+	}
+	debug_color = rgb { 90 235 27 }
 }
 
-TRY_INJECT:farmland = {
+REPLACE:farmland = {
+	color = terrain_farmlands
+	movement_cost = 1.10
+	proximity = -0.05
+	# Removed: local_monthly_food_modifier = 0.33, local_monthly_development_modifier = 0.10, local_max_rgo_size_modifier = 0.10
+	# Reduced: local_population_capacity 100 → 40
 	location_modifier = {
-		local_population_capacity = -60          # 100 → 40
-		local_monthly_food_modifier = -0.33      # nullify vanilla +0.33
-		local_monthly_development_modifier = -0.10 # nullify vanilla +0.10
+		local_road_building_time = 0.20
+		local_population_capacity = 40
+		supply_limit = 5
+		sul_rgo_size = 0.5
 		local_wheat_output_modifier = 0.10
 		local_rice_output_modifier = 0.10
 		local_legumes_output_modifier = 0.05
 		local_livestock_output_modifier = 0.05
 		local_fruit_output_modifier = 0.03
-		local_max_rgo_size_modifier = -0.10      # nullify vanilla +0.10 (replaced by flat)
-		sul_rgo_size = 0.5                       # flat: fertile farmland
 	}
+
+	colonial_migration_size_modifier = 0.1
+
+	audio_tags = {
+		masDataVegetationDensity = 0.3
+	}
+	debug_color = rgb { 0 255 0 }
 }
 
-TRY_INJECT:woods = {
+REPLACE:woods = {
+	color = terrain_woods
+	movement_cost = 1.25
+	proximity = -0.125
+	defender = 1
+	# Removed: local_monthly_food_modifier = 0.1, local_monthly_development_modifier = -0.20
+	# Reduced: local_population_capacity 50 → 25
 	location_modifier = {
-		local_population_capacity = -25          # 50 → 25
-		local_monthly_food_modifier = -0.1       # nullify vanilla +0.1
-		local_monthly_development_modifier = 0.20 # nullify vanilla -0.20
-		local_monthly_development = -0.003       # flat extraction push (eq -3)
+		local_frontage_allowed = -2
+		local_road_building_time = 0.50
+		local_population_capacity = 25
+		blocks_vision_from_sea = yes
+		supply_limit = 2
+		local_monthly_development = -0.03
 		local_wild_game_output_modifier = 0.05
 		local_fur_output_modifier = 0.025
 		local_lumber_output_modifier = 0.025
 	}
-}
 
-TRY_INJECT:forest = {
-	location_modifier = {
-		local_population_capacity = -5           # 25 → 20
-		local_monthly_development_modifier = 0.25 # nullify vanilla -0.25
-		local_monthly_development = -0.008       # flat extraction push (eq -8)
+	audio_tags = {
+		masDataVegetationDensity = 0.5
 	}
+	debug_color = rgb { 41 155 22 }
 }
 
-TRY_INJECT:jungle = {
+REPLACE:forest = {
+	color = terrain_forest
+	movement_cost = 1.5
+	proximity = -0.25
+	defender = 1
+	# Removed: local_monthly_development_modifier = -0.25
+	# Reduced: local_population_capacity 25 → 20
 	location_modifier = {
-		local_population_capacity = -20          # 50 → 30
-		local_monthly_food_modifier = -0.1       # nullify vanilla +0.1
-		local_monthly_development_modifier = 0.30 # nullify vanilla -0.30
-		local_monthly_development = -0.020       # flat extraction push (eq -20)
+		local_frontage_allowed = -3
+		local_rgo_build_time = 0.33
+		local_road_building_time = 1.0
+		local_population_capacity = 20
+		blocks_vision_from_land = yes
+		blocks_vision_from_sea = yes
+		local_monthly_development = -0.08
+	}
+
+	colonial_migration_size_modifier = -0.1
+
+	audio_tags = {
+		masDataVegetationDensity = 0.75
+	}
+	debug_color = rgb { 18 74 9 }
+}
+
+REPLACE:jungle = {
+	color = terrain_jungle
+	movement_cost = 2
+	proximity = -0.5
+	defender = 1
+	# Removed: local_monthly_food_modifier = 0.1, local_monthly_development_modifier = -0.30
+	# Reduced: local_population_capacity 50 → 30
+	location_modifier = {
+		local_frontage_allowed = -4
+		local_rgo_build_time = 0.5
+		local_road_building_time = 3.0
+		local_population_capacity = 30
+		blocks_vision_from_land = yes
+		blocks_vision_from_sea = yes
+		local_monthly_development = -0.20
 		local_fruit_output_modifier = 0.05
 		local_wild_game_output_modifier = 0.025
 	}
+
+	colonial_migration_size_modifier = -0.3
+
+	audio_tags = {
+		masDataVegetationDensity = 1.0
+	}
+	debug_color = rgb { 8 41 3 }
 }

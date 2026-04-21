@@ -1,0 +1,64 @@
+namespace = sul
+
+# Fate of a Conquered Market
+# Fires when a market center changes owner and the conqueror's market
+# already has strong access to the area (neighbor with >= 90% access
+# to a market whose center is owned by the conqueror).
+# Root = winner (country), scope:target = conquered location,
+# scope:winner_market = conqueror's nearby market
+
+sul.100 = {
+	type = country_event
+	title = sul.100.title
+	desc = sul.100.desc
+
+	picture = {
+		texture = "gfx/event_pictures/ep_trade.dds"
+	}
+
+	# Option A: Dismantle the market, reassign spec by local resources
+	option = {
+		name = sul.100.a
+		scope:target = {
+			sul_specialization_reassign = yes
+		}
+
+		ai_chance = {
+			base = 100
+			if = {
+				limit = { scope:target = { tax_base >= 20 } }
+				add = {
+					value = scope:target.tax_base
+					subtract = 20
+					multiply = -3.33
+				}
+			}
+			if = {
+				limit = { scope:target = { exists = raw_material } }
+				multiply = {
+					scope:target.raw_material = {
+						value = "price_in_market(scope:winner_market)"
+						divide = default_price
+					}
+				}
+			}
+		}
+	}
+
+	# Option B: Preserve the market under new administration
+	option = {
+		name = sul.100.b
+
+		ai_chance = {
+			base = 0
+			if = {
+				limit = { scope:target = { tax_base >= 20 } }
+				add = {
+					value = scope:target.tax_base
+					subtract = 20
+					multiply = 3.33
+				}
+			}
+		}
+	}
+}

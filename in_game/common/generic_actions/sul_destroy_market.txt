@@ -1,8 +1,7 @@
-﻿# Vanilla blocks destroying markets with active temporary demands, but our
-# passthrough system applies temp demands to every market center each month —
-# which would make destroying ANY market impossible. This REPLACE drops the
-# has_temporary_demands check from the select_trigger; everything else is
-# byte-identical to vanilla.
+# Market destruction is gated behind specialization: a location with
+# commercial specialization cannot have its market destroyed directly.
+# Change the specialization away from commercial first — that triggers
+# destroy_market as a side effect via sul_specialization_clear_all_modifiers.
 
 REPLACE:destroy_market = {
 	type = owncountry
@@ -18,7 +17,17 @@ REPLACE:destroy_market = {
 	automation_tick = never
 	automation_tick_frequency = 12
 
-	price = price:destroy_market
+	price = {
+		if = {
+			limit = { exists = scope:target scope:target.location = { location_rank = location_rank:rural_settlement } }
+			value = price:sul_designate_specialization_price_rural
+		}
+		else_if = {
+			limit = { exists = scope:target scope:target.location = { location_rank = location_rank:town } }
+			value = price:sul_designate_specialization_price_town
+		}
+		else = { value = price:sul_designate_specialization_price_city }
+	}
 
 	# market in scope:target
 	select_trigger = {
@@ -43,7 +52,7 @@ REPLACE:destroy_market = {
 		}
 
 		enabled = {
-			# has_temporary_demands = no   # removed — passthrough system applies persistent temp demands
+			location = { sul_has_commercial_specialization = no }
 		}
 	}
 
@@ -53,14 +62,12 @@ REPLACE:destroy_market = {
 
 			scope:target = {
 				location = { save_scope_as = old_location }
-				destroy_market = {  }
+				destroy_market = {}
 			}
 		}
 	}
 
 	ai_will_do = {
-		# this is actually handled in code to more precisely target exactly which locations we want to check,
-		# but included here for debugging purposes
 		if = {
 			limit = { exists = scope:target }
 

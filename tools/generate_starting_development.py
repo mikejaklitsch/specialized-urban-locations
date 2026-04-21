@@ -11,7 +11,7 @@ Reads:
 Writes:
   <mod>/main_menu/setup/start/14_development.txt   (REPLACE vanilla)
 
-Equilibrium formula:
+Equilibrium formula (1 dev per 0.01 monthly_development):
   eq = 50
        - peasant_share * 30
        - tribesman_share * 30
@@ -41,11 +41,11 @@ from pathlib import Path
 # ─────────────────────────────────────────────────────────────────────────────
 
 POP_PRESSURE = {
-    "peasants":   -0.03,
-    "tribesmen":  -0.03,
-    "slaves":     -0.03,
-    "laborers":   -0.015,
-    "burghers":    0.03,
+    "peasants":   -0.3,
+    "tribesmen":  -0.3,
+    "slaves":     -0.3,
+    "laborers":   -0.15,
+    "burghers":    0.3,
 }
 
 # Building classification
@@ -53,11 +53,22 @@ EXTRACTION_PREFIXES = ("sul_rgo_",)
 EXTRACTION_EXACT = {"farming_village", "fishing_village", "sul_mining_village", "forest_village"}
 PRODUCTION_EXACT = {"market_village"}
 
-MARKET_CENTER_BONUS = 5  # dev points
+MARKET_CENTER_BONUS = 25  # dev points
 
 RANK_BONUS = {
-    "town": 10,
-    "city": 25,
+    "town": 10,    # +0.10 monthly dev / 0.01 decay
+    "city": 25,    # +0.25 monthly dev / 0.01 decay
+}
+
+# Government type global_monthly_development (must match sul_gov_type_adjustments.txt)
+GOV_TYPE_DEV = {
+    "republic": 0.1,
+    "steppe_horde": -0.1,
+}
+
+# Reform bonuses (stacks with gov type)
+REFORM_DEV = {
+    "merchant_republic": 0.15,
 }
 
 # Geography equilibrium shifts (flat_value / 0.001 spring decay)
@@ -88,10 +99,13 @@ CLIMATE_SHIFT = {
     "arid":         0,
 }
 
-# Base equilibrium (from the spring: +0.05 base, -0.001/dev → eq=50)
+# Base equilibrium (from the spring: +0.50 base, -0.01/dev → eq=50)
 BASE_EQ = 50.0
 
-# dev shift per building: ±0.0002 / 0.001 = ±0.2
+# Spring decay rate (equilibrium = flat_monthly_dev / DECAY)
+SPRING_DECAY = 0.01
+
+# dev shift per building: ±0.002 / 0.01 = ±0.2
 BUILDING_DEV_SHIFT = 0.2
 
 
@@ -204,11 +218,13 @@ def parse_buildings(path: Path) -> dict:
 TERRAIN_FIELD_RE = re.compile(
     r"\b(topography|vegetation|climate)\s*=\s*([a-z_]+)"
 )
+OWNABLE_RE = re.compile(r"\b(religion|culture)\s*=\s*[a-z_]")
 
 
-def parse_terrain(path: Path) -> dict:
-    """Return {location: {topography, vegetation, climate}}."""
+def parse_terrain(path: Path) -> tuple:
+    """Return ({location: {topography, vegetation, climate}}, {ownable locations})."""
     result = {}
+    ownable = set()
     for line in path.read_text(encoding="utf-8-sig").splitlines():
         line = line.strip()
         if not line or line.startswith("#"):
@@ -219,7 +235,113 @@ def parse_terrain(path: Path) -> dict:
         loc = m.group(1)
         fields = dict(TERRAIN_FIELD_RE.findall(line))
         result[loc] = fields
-    return result
+        if OWNABLE_RE.search(line):
+            ownable.add(loc)
+    return result, ownable
+
+
+TAG_RE = re.compile(r"^([A-Z]{3})\s*=\s*\{")
+GOV_TYPE_RE = re.compile(r"\btype\s*=\s*([a-z_]+)")
+REFORM_RE = re.compile(r"^\s*([a-z_][a-z0-9_]*)\s*$")
+OWN_BLOCK_RE = re.compile(r"\b(own_control_core|own_control_integrated|own_control_conquered|own_control_colony|own_core|own_conquered|own_integrated|own_colony)\s*=\s*\{")
+LOC_NAME_RE = re.compile(r"[a-z_][a-z0-9_]*")
+
+
+def parse_countries(path: Path) -> tuple:
+    """Parse 10_countries.txt. Return (location→tag, tag→gov_dev_bonus)."""
+    text = path.read_text(encoding="utf-8-sig")
+    loc_owner = {}
+    tag_bonus = {}
+
+    current_tag = None
+    gov_type = None
+    reforms = set()
+    owned_locs = []
+    in_own_block = False
+    in_gov_block = False
+    in_reforms_block = False
+    depth = 0
+    tag_depth = 0
+    own_depth = 0
+    gov_depth = 0
+    reforms_depth = 0
+
+    for line in text.splitlines():
+        stripped = line.strip()
+        if not stripped or stripped.startswith("#"):
+            continue
+
+        opens = stripped.count("{")
+        closes = stripped.count("}")
+
+        # Detect new country tag at depth 2 (inside countries = { countries = { )
+        if depth == 2 and not current_tag:
+            m = TAG_RE.match(stripped)
+            if m:
+                current_tag = m.group(1)
+                tag_depth = depth + opens
+                gov_type = None
+                reforms = set()
+                owned_locs = []
+
+        if current_tag:
+            # Detect ownership blocks
+            if not in_own_block and OWN_BLOCK_RE.search(stripped):
+                in_own_block = True
+                own_depth = depth + opens
+
+            # Detect government block
+            if not in_gov_block and "government" in stripped and "{" in stripped and "type" not in stripped:
+                in_gov_block = True
+                gov_depth = depth + opens
+
+            # Inside ownership block: collect location names
+            if in_own_block:
+                for word in LOC_NAME_RE.findall(stripped):
+                    if word not in ("own_control_core", "own_control_integrated",
+                                    "own_control_conquered", "own_control_colony",
+                                    "own_core", "own_conquered", "own_integrated",
+                                    "own_colony"):
+                        owned_locs.append(word)
+
+            # Inside government block
+            if in_gov_block:
+                gm = GOV_TYPE_RE.search(stripped)
+                if gm:
+                    gov_type = gm.group(1)
+
+                if "reforms" in stripped and "{" in stripped:
+                    in_reforms_block = True
+                    reforms_depth = depth + opens
+
+                if in_reforms_block:
+                    for rm in REFORM_RE.finditer(stripped):
+                        name = rm.group(1)
+                        if name != "reforms":
+                            reforms.add(name)
+
+        new_depth = depth + opens - closes
+
+        # Check for block closures
+        if in_reforms_block and new_depth <= reforms_depth:
+            in_reforms_block = False
+        if in_gov_block and new_depth < gov_depth:
+            in_gov_block = False
+        if in_own_block and new_depth < own_depth:
+            in_own_block = False
+        if current_tag and new_depth < tag_depth:
+            # Country block closed — commit
+            bonus = GOV_TYPE_DEV.get(gov_type, 0)
+            for r in reforms:
+                bonus += REFORM_DEV.get(r, 0)
+            tag_bonus[current_tag] = bonus
+            for loc in owned_locs:
+                loc_owner[loc] = current_tag
+            current_tag = None
+
+        depth = new_depth
+
+    return loc_owner, tag_bonus
 
 
 def classify_building(name: str) -> str:
@@ -244,6 +366,7 @@ def compute_equilibrium(
     is_market_center: bool,
     rank: str = "rural_settlement",
     terrain: dict = None,
+    gov_bonus: float = 0.0,
 ) -> float:
     """Compute predicted development equilibrium for a location."""
     eq = BASE_EQ
@@ -259,8 +382,8 @@ def compute_equilibrium(
     if total_pop > 0:
         for pop_type, coeff in POP_PRESSURE.items():
             share = pop_dist.get(pop_type, 0) / total_pop
-            # coeff is monthly pressure; shift = coeff / 0.001
-            eq += (coeff / 0.001) * share
+            # coeff is monthly pressure; shift = coeff / SPRING_DECAY
+            eq += (coeff / SPRING_DECAY) * share
 
     # Building pressure
     ext_count = 0
@@ -281,6 +404,9 @@ def compute_equilibrium(
     if is_market_center:
         eq += MARKET_CENTER_BONUS
 
+    # Government type / reform bonus
+    eq += gov_bonus / SPRING_DECAY
+
     return max(0.0, min(100.0, eq))
 
 
@@ -292,7 +418,7 @@ def generate_development_file(
     locations: dict,
     output_path: Path,
 ):
-    """Write the development setup file with per-location values."""
+    """Write the development setup file with per-location absolute values."""
     lines = [
         "# Generated by tools/generate_starting_development.py — do not hand-edit.",
         "# Starting development based on pop-pressure equilibrium.",
@@ -301,18 +427,14 @@ def generate_development_file(
         "# Pop pressure: peasants/tribesmen/slaves -30/100%, laborers -15/100%, burghers +30/100%",
         "",
         "development = {",
-        "\tbase = 20",
-        "",
-        "\t# Per-location values are offsets from base",
+        "\tbase = 0",
         "",
     ]
 
-    BASE = 20
-    # Sort locations alphabetically for reproducibility
     for loc_name in sorted(locations.keys()):
-        delta = locations[loc_name] - BASE
-        if delta != 0:
-            lines.append(f"\t{loc_name} = {delta}")
+        dev = locations[loc_name]
+        if dev != 0:
+            lines.append(f"\t{loc_name} = {dev}")
 
     lines.append("}")
     lines.append("")
@@ -358,48 +480,73 @@ def main():
     if not pops_file.exists():
         pops_file = vanilla / "main_menu/setup/start/06_pops.txt"
 
-    markets_file = vanilla / "main_menu/setup/start/03_markets.txt"
+    vanilla_markets_file = vanilla / "main_menu/setup/start/03_markets.txt"
+    mod_markets_file = mod / "main_menu/setup/start/51_sul_markets.txt"
     ranks_file = vanilla / "main_menu/setup/start/07_cities_and_buildings.txt"
     buildings_file = mod / "main_menu/setup/start/50_sul_setup.txt"
     terrain_file = vanilla / "in_game/map_data/location_templates.txt"
+    countries_file = vanilla / "main_menu/setup/start/10_countries.txt"
     output_file = mod / "main_menu/setup/start/14_development.txt"
 
-    print(f"Pops:      {pops_file}")
-    print(f"Markets:   {markets_file}")
-    print(f"Ranks:     {ranks_file}")
-    print(f"Terrain:   {terrain_file}")
-    print(f"Buildings: {buildings_file}")
-    print(f"Output:    {output_file}")
+    print(f"Pops:       {pops_file}")
+    print(f"Markets:    {vanilla_markets_file}")
+    print(f"Mod mkts:   {mod_markets_file}")
+    print(f"Ranks:      {ranks_file}")
+    print(f"Terrain:    {terrain_file}")
+    print(f"Countries:  {countries_file}")
+    print(f"Buildings:  {buildings_file}")
+    print(f"Output:     {output_file}")
     print()
 
     # Parse inputs
     pop_data = parse_pops(pops_file)
-    market_centers = parse_market_centers(markets_file)
+    market_centers = parse_market_centers(vanilla_markets_file)
+    if mod_markets_file.exists():
+        market_centers |= parse_market_centers(mod_markets_file)
     ranks = parse_ranks(ranks_file)
-    terrain_data = parse_terrain(terrain_file) if terrain_file.exists() else {}
+    terrain_data, ownable_locations = parse_terrain(terrain_file) if terrain_file.exists() else ({}, set())
     buildings = parse_buildings(buildings_file) if buildings_file.exists() else {}
+    loc_owner, tag_bonus = parse_countries(countries_file) if countries_file.exists() else ({}, {})
 
-    print(f"Locations with pops:  {len(pop_data)}")
-    print(f"Market centers:       {len(market_centers)}")
-    print(f"Locations with rank:  {len(ranks)}")
-    print(f"Locations with terrain: {len(terrain_data)}")
-    print(f"Locations with bldgs: {len(buildings)}")
+    # All ownable locations: those with pops + those with terrain flagged ownable
+    all_locations = set(pop_data.keys()) | ownable_locations
+
+    # Gov type stats
+    gov_counts = defaultdict(int)
+    for tag, bonus in tag_bonus.items():
+        if bonus != 0:
+            gov_counts[bonus] += 1
+
+    print(f"Locations with pops:    {len(pop_data)}")
+    print(f"Market centers:         {len(market_centers)}")
+    print(f"Locations with rank:    {len(ranks)}")
+    print(f"Ownable locations:      {len(ownable_locations)}")
+    print(f"Total locations:        {len(all_locations)}")
+    print(f"Locations with bldgs:   {len(buildings)}")
+    print(f"Countries parsed:       {len(tag_bonus)}")
+    print(f"Owned locations:        {len(loc_owner)}")
+    for bonus, count in sorted(gov_counts.items()):
+        shift = bonus / SPRING_DECAY
+        print(f"  gov bonus {bonus:+.2f} ({shift:+.0f} eq): {count} countries")
     print()
 
-    # Compute equilibrium for every location with pops
+    # Compute equilibrium for every ownable location
     results = {}
     eq_sum = 0
     eq_min = 100
     eq_max = 0
     count_by_bucket = defaultdict(int)
 
-    for loc_name, pops in pop_data.items():
+    for loc_name in all_locations:
+        pops = pop_data.get(loc_name, {})
         loc_buildings = buildings.get(loc_name, [])
         is_mc = loc_name in market_centers
         loc_terrain = terrain_data.get(loc_name, {})
 
         loc_rank = ranks.get(loc_name, "rural_settlement")
-        eq = compute_equilibrium(pops, loc_buildings, is_mc, loc_rank, loc_terrain)
+        owner_tag = loc_owner.get(loc_name)
+        gov_bonus = tag_bonus.get(owner_tag, 0) if owner_tag else 0
+        eq = compute_equilibrium(pops, loc_buildings, is_mc, loc_rank, loc_terrain, gov_bonus)
         dev = round(eq)
 
         results[loc_name] = dev

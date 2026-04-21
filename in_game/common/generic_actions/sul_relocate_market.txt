@@ -1,0 +1,109 @@
+@sul_commercial_type = 5
+
+REPLACE:relocate_market = {
+	type = owncountry
+
+	potential = {
+	}
+
+	allow = {
+	}
+
+	ai_tick = never
+
+	automation_tick = never
+	automation_tick_frequency = 12
+
+	price = {
+		# Cost for old location losing commercial
+		if = {
+			limit = { exists = scope:target scope:target.location = { location_rank = location_rank:rural_settlement } }
+			value = price:sul_designate_specialization_price_rural
+		}
+		else_if = {
+			limit = { exists = scope:target scope:target.location = { location_rank = location_rank:town } }
+			value = price:sul_designate_specialization_price_town
+		}
+		else = { value = price:sul_designate_specialization_price_city }
+
+		# Cost for new location gaining commercial
+		if = {
+			limit = { exists = scope:target_location scope:target_location = { location_rank = location_rank:rural_settlement } }
+			add = price:sul_designate_specialization_price_rural
+		}
+		else_if = {
+			limit = { exists = scope:target_location scope:target_location = { location_rank = location_rank:town } }
+			add = price:sul_designate_specialization_price_town
+		}
+		else = { add = price:sul_designate_specialization_price_city }
+	}
+
+	# market in scope:target
+	select_trigger = {
+		looking_for_a = market
+		source = actor
+		target_flag = target
+		name = "relocate_market_select_market"
+		none_available_msg_key = "relocate_market_no_markets"
+		column = { data = name }
+
+		visible = {
+			location = { owner ?= scope:actor }
+		}
+	}
+
+	# location in scope:target_location
+	select_trigger = {
+		looking_for_a = location
+		source = actor
+		target_flag = target_location
+		name = "relocate_market_select_location"
+		none_available_msg_key = "relocate_market_no_locations"
+		column = { data = name }
+		column = { data = population }
+
+		visible = {
+			is_city = yes
+			market = scope:target
+			this != scope:target.location
+			owner ?= scope:actor
+		}
+	}
+
+	effect = {
+		if = {
+			limit = {
+				exists = scope:target
+				exists = scope:target_location
+			}
+
+			# Relocate first — old location stops being market center
+			scope:target = {
+				location = { save_scope_as = old_location }
+				relocate_market = scope:target_location
+			}
+
+			# Old location: no longer market center, full reassign by resources
+			scope:old_location = {
+				sul_specialization_reassign = yes
+			}
+
+			# New location: switch to commercial with building cleanup
+			scope:target_location = {
+				sul_specialization_switch_to_commercial = yes
+			}
+		}
+	}
+
+	ai_will_do = {
+		if = {
+			limit = {
+				exists = scope:target
+				exists = scope:target_location
+			}
+			add = "scope:target_location.add_static_modifier_utility(market_center)"
+			add = "scope:target.location.remove_static_modifier_utility:market_center"
+			add = "scope:actor.relocate_market_utility(scope:target.location|scope:target_location)"
+		}
+	}
+}

@@ -152,7 +152,7 @@ REPLACE:power_projection = {
 
 # ============================================
 # DEVELOPMENT MAP MODE (REPLACE vanilla hardcoded)
-# Brown (extraction) below 50 dev, yellow (production) above 50
+# Black→white (0-50 dev), white→green (50-100 dev)
 # ============================================
 
 REPLACE:development = {
@@ -160,10 +160,22 @@ REPLACE:development = {
 		if = {
 			limit = { is_ownable = yes }
 
-			lerp = {
-				min_color = rgb { 230 140 30 }
-				max_color = rgb { 34 139 34 }
-				factor = { value = development divide = 100 }
+			if = {
+				limit = { development < 50 }
+
+				lerp = {
+					min_color = rgb { 101 67 33 }
+					max_color = rgb { 255 255 255 }
+					factor = { value = development divide = 50 }
+				}
+			}
+
+			else = {
+				lerp = {
+					min_color = rgb { 255 255 255 }
+					max_color = rgb { 34 139 34 }
+					factor = { value = development subtract = 50 divide = 50 }
+				}
 			}
 		}
 	}
@@ -171,11 +183,15 @@ REPLACE:development = {
 	tooltip_key = { value = "SUL_DEV_MAP_TOOLTIP" }
 
 	legend_key = {
-		desc = "SUL_LEGEND_DEV_EXTRACTION"
-		color = rgb { 230 140 30 }
+		desc = "SUL_LEGEND_DEV_LOW"
+		color = rgb { 101 67 33 }
 	}
 	legend_key = {
-		desc = "SUL_LEGEND_DEV_PRODUCTION"
+		desc = "SUL_LEGEND_DEV_MID"
+		color = rgb { 255 255 255 }
+	}
+	legend_key = {
+		desc = "SUL_LEGEND_DEV_HIGH"
 		color = rgb { 34 139 34 }
 	}
 
@@ -219,7 +235,7 @@ REPLACE:development = {
 # ============================================
 # DEVELOPMENT EQUILIBRIUM MAP MODE
 # Shows predicted equilibrium from building pressure + spring forces
-# Brown = extraction-leaning (eq < 50), yellow = production-leaning (eq > 50)
+# Black→white (0-50), white→green (50-100)
 # ============================================
 
 sul_development_equilibrium = {
@@ -227,10 +243,22 @@ sul_development_equilibrium = {
 		if = {
 			limit = { is_ownable = yes }
 
-			lerp = {
-				min_color = rgb { 230 140 30 }
-				max_color = rgb { 34 139 34 }
-				factor = { value = sul_development_equilibrium divide = 100 }
+			if = {
+				limit = { sul_development_equilibrium < 50 }
+
+				lerp = {
+					min_color = rgb { 101 67 33 }
+					max_color = rgb { 255 255 255 }
+					factor = { value = sul_development_equilibrium divide = 50 }
+				}
+			}
+
+			else = {
+				lerp = {
+					min_color = rgb { 255 255 255 }
+					max_color = rgb { 34 139 34 }
+					factor = { value = sul_development_equilibrium subtract = 50 divide = 50 }
+				}
 			}
 		}
 	}
@@ -238,11 +266,15 @@ sul_development_equilibrium = {
 	tooltip_key = { value = "SUL_EQ_MAP_TOOLTIP" }
 
 	legend_key = {
-		desc = "SUL_LEGEND_EQ_EXTRACTION"
-		color = rgb { 230 140 30 }
+		desc = "SUL_LEGEND_EQ_LOW"
+		color = rgb { 101 67 33 }
 	}
 	legend_key = {
-		desc = "SUL_LEGEND_EQ_PRODUCTION"
+		desc = "SUL_LEGEND_EQ_MID"
+		color = rgb { 255 255 255 }
+	}
+	legend_key = {
+		desc = "SUL_LEGEND_EQ_HIGH"
 		color = rgb { 34 139 34 }
 	}
 

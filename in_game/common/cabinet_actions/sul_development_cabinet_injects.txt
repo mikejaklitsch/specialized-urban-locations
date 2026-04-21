@@ -1,23 +1,195 @@
-# Development specialization: cancel flat local_monthly_development on cabinet actions,
-# replace with local_monthly_development_modifier (percentage)
+# Development specialization: replace flat local_monthly_development on cabinet actions
+# with local_monthly_development_modifier (percentage-based equilibrium)
 
-INJECT:develop_province = {
+REPLACE:develop_province = {
+	ability = adm
+
+	allow_multiple = yes
+
+	potential = {
+		num_locations > 0
+	}
+
+	allow = {
+		any_province = {
+			any_location_in_province = {
+				integration_level = core
+				count = all
+			}
+		}
+	}
+
+	select_trigger = {
+		looking_for_a = province
+		source = actor
+		target_flag = target
+		name = "develop_province_select_province"
+		none_available_msg_key = "develop_province_no_provinces"
+		column = {
+			data = name
+		}
+		column = {
+			data = development
+		}
+		column = {
+			data = population
+		}
+		visible = {
+			NOT = { cabinet_already_performing_same_task_on_target = { cabinet_action = develop_province interaction_target = target } }
+		}
+		enabled = {
+			any_location_in_province = {
+				integration_level = core
+				count = all
+			}
+		}
+		map_color = {
+			lerp = {
+				min_color = define:NMapColors|MAP_COLOR_LOW
+				max_color = define:NMapColors|MAP_COLOR_HIGH
+				factor = {
+					value = development
+					divide = 100
+				}
+			}
+		}
+	}
+
+	# Removed: local_monthly_development = 0.0025
 	location_modifier = {
-		local_monthly_development = -0.0025
 		local_monthly_development_modifier = 0.05
+	}
+
+	progress = {
+		scope:target = {
+			value = province_average_development
+		}
+	}
+
+	map_marker = {
+		show_for_owner = yes
+	}
+
+	ai_will_do = {
+		add = {
+			if = {
+				limit = {
+					scope:actor = { is_subject = no }
+				}
+				value = -1000
+			}
+		}
 	}
 }
 
-INJECT:aid_constantinople = {
+REPLACE:aid_constantinople = {
+	ability = adm
+	allow_multiple = no
+	icon = develop_province
+	potential = {
+		has_variable = byz_unlocked_constantinople_cabinet_action
+		location:constantinople = {
+			is_capital = yes
+			owner = root
+		}
+	}
+	allow = {
+		has_variable = byz_unlocked_constantinople_cabinet_action
+		location:constantinople = {
+			is_capital = yes
+			owner = root
+		}
+	}
+
+	select_trigger = {
+		looking_for_a = province
+		source = actor
+		target_flag = target
+		name = "byz_aid_constantinople_action_select_province"
+		none_available_msg_key = "byz_aid_constantinople_action_no_provinces"
+		column = {
+			data = name
+		}
+		column = {
+			data = primary_culture_percentage
+		}
+		column = {
+			data = population
+		}
+		visible = {
+			any_location_in_province = {
+				is_capital = yes
+			}
+		}
+	}
+
+	# Removed: local_monthly_development = 0.005
 	location_modifier = {
-		local_monthly_development = -0.005
 		local_monthly_development_modifier = 0.05
+		local_population_growth = 0.0005
+		local_pop_promotion_speed = 0.05
 	}
 }
 
-INJECT:swe_slash_and_burn_new_farms = {
+REPLACE:swe_slash_and_burn_new_farms = {
+	ability = adm
+	icon = pop_promote_action
+	allow_multiple = yes
+
+	potential = {
+		OR = {
+			has_or_had_tag = SWE
+			has_or_had_tag = FIN
+		}
+	}
+
+	select_trigger = {
+		looking_for_a = province
+		source = actor
+		target_flag = target
+		name = "swe_slash_and_burn_new_farms_select_province"
+		none_available_msg_key = "swe_slash_and_burn_new_farms_no_provinces"
+		column = {
+			data = name
+		}
+		column = {
+			data = population
+		}
+		visible = {
+			province_average_development < 20
+			population < 10
+			OR = {
+				area = area:finland_area
+				area = area:norrland_area
+			}
+			province_definition != province_definition:finland_province
+			province_definition != province_definition:nyland_province
+
+			NOT = { cabinet_already_performing_same_task_on_target = { cabinet_action = swe_slash_and_burn_new_farms interaction_target = target } }
+		}
+		map_color = {
+			lerp = {
+				min_color = define:NMapColors|MAP_COLOR_LOW
+				max_color = define:NMapColors|MAP_COLOR_HIGH
+				factor = province.province_average_development
+			}
+		}
+	}
+
+	is_finished = {
+		scope:target ?= {
+			population > 15
+		}
+	}
+
+	# Removed: local_monthly_development = 0.01
 	location_modifier = {
-		local_monthly_development = -0.01
 		local_monthly_development_modifier = 0.05
+		local_population_growth = 0.02
+		local_migration_attraction = 0.25
+	}
+
+	map_marker = {
+		show_for_owner = yes
 	}
 }

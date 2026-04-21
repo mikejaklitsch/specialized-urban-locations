@@ -1,9 +1,46 @@
 ﻿l_english:
+ # Vanilla Overrides: Development → Urbanization
+ game_concept_development: "Urbanization"
+ game_concept_development_desc: "Urbanization represents how built-up and densely settled a [location|E] is. Higher urbanization attracts more [population|E], boosts manufactured output, and shifts the economy from raw extraction toward production — but at the cost of slower population growth, reduced raw material output, and rising unrest."
+
+ # Modifier Type Overrides: Development → Urbanization
+ MODIFIER_TYPE_NAME_local_monthly_development: "Local Monthly Urbanization"
+ MODIFIER_TYPE_DESC_local_monthly_development: "Affects how much [development|e] changes monthly in a [location|e]."
+ MODIFIER_TYPE_NAME_local_monthly_development_modifier: "Local Monthly Urbanization Growth"
+ MODIFIER_TYPE_DESC_local_monthly_development_modifier: "Affects how much [development|e] changes monthly in a [location|e]."
+ MODIFIER_TYPE_NAME_global_monthly_development: "Monthly Urbanization"
+ MODIFIER_TYPE_DESC_global_monthly_development: "Affects how much [development|e] changes monthly in all [locations|e] in a [country|e]."
+
+ # Vanilla Tooltip Overrides
+ LOCATION_DEVELOPMENT_TOOLTIP: "#T Urbanization#!\nThe [development|e] of [LOCATION.GetName] is currently [LOCATION.GetDevelopment|2], and it changes by [LOCATION.GetModifierValueAndPercentWithCountry('local_monthly_development','local_monthly_development_modifier','global_monthly_development')] each month, while currently having the following effects:\n[LOCATION.GetDevelopmentEffect]"
+ DEVELOPMENT_IN_LOC: "Urbanization is [Location.GetDevelopment|2V] in [Location.GetNameWithNoTooltip]"
+ DEV_CHANGE_DUE_TO: "Changes by [Location.GetModifierValueAndPercentWithCountry('local_monthly_development','local_monthly_development_modifier','global_monthly_development')] each month due to:"
+
+ # Vanilla Map Mode Override
+ mapmode_development_name: "Urbanization"
+ MAPMODE_DEVELOPMENT: "#T $mapmode_development_name$#!\n$mapmode_common_start$ their [development|e], where the highest urbanization in the world is the brightest green."
+
+ # Vanilla Search Filter Override
+ search_filter_province_average_development_name: "[Localize('game_concept_province')] average [Localize('game_concept_development')]"
+ search_filter_province_average_development_desc: "Show [provinces|e] within the specified [development|e] percentage range"
+
+ # Vanilla UI String Overrides
+ SORT_LOCATION_DEVELOPMENT: "Urbanization"
+ SORT_BY_DEVELOPMENT_TT: "Sort by urbanization"
+ LOC_VIEW_DEV: "Urbanization:"
+ DEV_EFFECT_DUE_TO: "Urbanization of [Location.GetDevelopment|2V] has the following effects:"
+ POP_FROM_DEV: "[development|e]: x ($VAL|2+=$)"
+ POP_ONLY_IF_DEVELOPMENT: "Pops need to live in a [location|e] with [development|e] above $VAL|0G$ to demand it."
+ LOCATION_DEVELOPMENT_ENTRY: "[LOCATION.GetRank.GetIcon] [LOCATION.GetName]: [LOCATION.GetDevelopment|2] [development_icon]"
+ PROVINCE_AVERAGE_DEVELOPMENT_TT: "Average [development|e] in [PROVINCE.GetNameWithNoTooltip] is [PROVINCE.GetAverageDevelopment|2W] due to:\n$BREAKDOWN$"
+ BUILDING_LEVEL_DEVELOPMENT: "[development|e]"
+ development: "Urbanization"
+
  # Specialization System Concepts
  game_concept_sul_building_level: "Building Level"
  game_concept_building_level: "Building Level"
  game_concept_building_levels: "Building Levels"
- game_concept_sul_building_level_desc: "Each building level in a [location|E] has cumulative effects:\n\n#bold Per Level:#!\n#G +0.1#! population capacity\n#G +0.1%#! population capacity modifier\n#G +0.04%#! trade center power\n#G +0.5%#! provisions output (offsets efficiency loss for food)\n#G +0.12#! monthly development\n\n#R -0.5%#! production efficiency (pressure to specialize)\n#R -0.5%#! max RGO size (less rural land)\n#R -0.005%#! population growth (urbanization slows growth)\n\nSpecialized [buildings|E] provide bonuses that offset the production efficiency penalty for goods matching their specialization."
+ game_concept_sul_building_level_desc: "Each building level in a [location|E] has cumulative effects:\n\n#bold Per Level:#!\n#G +0.1#! population capacity\n#G +0.1%#! population capacity modifier\n#G +0.04%#! trade center power\n#G +0.5%#! provisions output (offsets efficiency loss for food)\n#G +0.12#! monthly urbanization\n\n#R -0.5%#! production efficiency (pressure to specialize)\n#R -0.5%#! max RGO size (less rural land)\n#R -0.005%#! population growth (urbanization slows growth)\n\nSpecialized [buildings|E] provide bonuses that offset the production efficiency penalty for goods matching their specialization."
  game_concept_sul_demand_elasticity: "Elasticity"
  game_concept_sul_demand_elasticity_desc: "Elasticity controls how much the wealth multiplier affects each category of good.\n\n[sul_category_necessities|E] are inelastic — everyone needs food and cloth regardless of wealth, so the multiplier barely changes demand (#Y ×0.2#!).\n\n[sul_category_common|E] goods are moderately elastic (#Y ×0.5#!).\n\n[sul_category_upper|E] goods are highly elastic (#Y ×0.8#!).\n\n[sul_category_luxury|E] goods scale fully with wealth (#Y ×1.0#!).\n\n#italic Formula: effective = 1 + (base - 1) × multiplier#!"
  game_concept_sul_category_necessities: "Necessities"

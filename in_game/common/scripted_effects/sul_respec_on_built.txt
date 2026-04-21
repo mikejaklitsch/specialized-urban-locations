@@ -1,0 +1,73 @@
+# Shared on_built logic for specialization carrier buildings.
+# Called from each sul_respec_*_* building's on_built block.
+# Root = building. Parameters: $SPEC_TYPE$, $BUILDING_TYPE$, $COUNT_VAR$, $WEIGHT$
+#
+# Also handles country-level spec count bookkeeping and
+# commercial market creation/destruction.
+
+@sul_mining_type = 1
+@sul_farming_type = 2
+@sul_gathering_type = 3
+@sul_woodland_type = 4
+@sul_commercial_type = 5
+
+sul_respec_on_built_effect = {
+	location = {
+		# === UPDATE COUNTRY SPECIALIZATION COUNTS ===
+		owner = {
+			if = {
+				limit = { NOT = { has_variable = sul_mining_count } }
+				sul_specialization_count_initialize = yes
+			}
+			prev = { save_temporary_scope_as = sul_loc }
+			sul_specialization_count_decrement = yes
+			change_variable = { name = $COUNT_VAR$ add = 1 }
+			change_variable = { name = sul_total_weighted add = $WEIGHT$ }
+		}
+
+		# === APPLY SPECIALIZATION ===
+		sul_specialization_clear_all_modifiers = yes
+		set_variable = { name = sul_spec_type value = $SPEC_TYPE$ }
+		sul_specialization_update_designation = yes
+		add_location_modifier = { modifier = $MODIFIER$ }
+		sul_specialization_destroy_and_penalize = yes
+
+		# === SELF-DESTRUCT CARRIER ===
+		destroy_building = { building_type = $BUILDING_TYPE$ }
+	}
+}
+
+sul_respec_commercial_on_built_effect = {
+	location = {
+		# === UPDATE COUNTRY SPECIALIZATION COUNTS ===
+		owner = {
+			if = {
+				limit = { NOT = { has_variable = sul_mining_count } }
+				sul_specialization_count_initialize = yes
+			}
+			prev = { save_temporary_scope_as = sul_loc }
+			sul_specialization_count_decrement = yes
+			change_variable = { name = sul_commercial_count add = 1 }
+			change_variable = { name = sul_total_weighted add = 1 }
+		}
+
+		# === APPLY SPECIALIZATION ===
+		sul_specialization_clear_all_modifiers = yes
+		set_variable = { name = sul_spec_type value = @sul_commercial_type }
+		sul_specialization_update_designation = yes
+		add_location_modifier = { modifier = $MODIFIER$ }
+		sul_specialization_destroy_and_penalize = yes
+
+		# === CREATE MARKET ===
+		create_market = {
+			builder = owner
+			location = prev
+			price = price:create_market
+			price_modifier = 0
+			instant = yes
+		}
+
+		# === SELF-DESTRUCT CARRIER ===
+		destroy_building = { building_type = $BUILDING_TYPE$ }
+	}
+}

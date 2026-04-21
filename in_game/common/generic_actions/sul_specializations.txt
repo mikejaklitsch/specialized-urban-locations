@@ -392,25 +392,6 @@ sul_designate_mining_specialization = {
 		add = { desc = "diversity_pressure" value = scope:actor.sul_mining_diversity }
 	}
 
-	price = {
-		if = {
-			limit = {
-				exists = scope:target
-				scope:target = { location_rank = location_rank:rural_settlement }
-			}
-
-			value = price:sul_designate_specialization_price_rural
-		}
-		else_if = {
-			limit = {
-				exists = scope:target
-				scope:target = { location_rank = location_rank:town }
-			}
-
-			value = price:sul_designate_specialization_price_town
-		}
-		else = { value = price:sul_designate_specialization_price_city }
-	}
 	select_trigger = {
 		looking_for_a = location
 		target_flag = target
@@ -460,47 +441,18 @@ sul_designate_mining_specialization = {
 	effect = {
 		if = {
 			limit = { exists = scope:target }
-			# === UPDATE SPECIALIZATION COUNTS ===
-			scope:actor = {
-				# Initialize counts if they don't exist (existing saves)
-				if = {
-					limit = {
-						NOT = {
-							has_variable = sul_mining_count
-						}
-					}
-
-					sul_specialization_count_initialize = yes
-				}
-
-				# Decrement old type (if changing from another specialization)
-				scope:target = { save_temporary_scope_as = sul_loc }
-				sul_specialization_count_decrement = yes
-				# Increment new type
-				change_variable = { name = sul_mining_count add = 1 }
-				change_variable = { name = sul_total_weighted add = 1 }
-			}
-
 			scope:target = {
 				if = {
-					limit = { is_market_center = yes }
-					custom_tooltip = sul_will_destroy_market_tt
-				}
-				sul_specialization_clear_all_modifiers = yes
-				set_variable = { name = sul_spec_type value = @sul_mining_type }
-				sul_specialization_update_designation = yes
-				# Inlined instead of sul_specialization_apply_modifier so tooltip preview
-				# shows the correct new modifier (preview evaluates limits before effects run)
-				if = {
 					limit = { location_rank = location_rank:rural_settlement }
-					add_location_modifier = { modifier = sul_mining_rural_specialization }
+					change_building_level_in_location = { building = building_type:sul_respec_mining_rural value = 1 }
 				}
 				else_if = {
 					limit = { location_rank = location_rank:town }
-					add_location_modifier = { modifier = sul_mining_town_specialization }
+					change_building_level_in_location = { building = building_type:sul_respec_mining_town value = 1 }
 				}
-				else = { add_location_modifier = { modifier = sul_mining_city_specialization } }
-				sul_specialization_destroy_and_penalize = yes
+				else = {
+					change_building_level_in_location = { building = building_type:sul_respec_mining_city value = 1 }
+				}
 			}
 		}
 	}
@@ -920,25 +872,6 @@ sul_designate_farming_specialization = {
 		}
 	}
 
-	price = {
-		if = {
-			limit = {
-				exists = scope:target
-				scope:target = { location_rank = location_rank:rural_settlement }
-			}
-
-			value = price:sul_designate_specialization_price_rural
-		}
-		else_if = {
-			limit = {
-				exists = scope:target
-				scope:target = { location_rank = location_rank:town }
-			}
-
-			value = price:sul_designate_specialization_price_town
-		}
-		else = { value = price:sul_designate_specialization_price_city }
-	}
 	select_trigger = {
 		looking_for_a = location
 		target_flag = target
@@ -1005,50 +938,18 @@ sul_designate_farming_specialization = {
 	effect = {
 		if = {
 			limit = { exists = scope:target }
-			# === UPDATE SPECIALIZATION COUNTS ===
-			scope:actor = {
-				# Initialize counts if they don't exist (existing saves)
-				if = {
-					limit = {
-						NOT = {
-							has_variable = sul_mining_count
-						}
-					}
-
-					sul_specialization_count_initialize = yes
-				}
-
-				# Decrement old type (if changing from another specialization)
-				scope:target = { save_temporary_scope_as = sul_loc }
-				sul_specialization_count_decrement = yes
-				# Increment new type (farming = weight 2)
-				change_variable = { name = sul_farming_count add = 1 }
-				change_variable = { name = sul_total_weighted add = 2 }
-			}
-
 			scope:target = {
 				if = {
-					limit = { is_market_center = yes }
-					custom_tooltip = sul_will_destroy_market_tt
-				}
-				sul_specialization_clear_all_modifiers = yes
-				set_variable = { name = sul_spec_type value = @sul_farming_type }
-				sul_specialization_update_designation = yes
-				# Inlined instead of sul_specialization_apply_modifier so tooltip preview
-				# shows the correct new modifier (preview evaluates limits before effects run)
-				if = {
 					limit = { location_rank = location_rank:rural_settlement }
-					add_location_modifier = { modifier = sul_farming_rural_specialization }
+					change_building_level_in_location = { building = building_type:sul_respec_farming_rural value = 1 }
 				}
 				else_if = {
 					limit = { location_rank = location_rank:town }
-					add_location_modifier = { modifier = sul_farming_town_specialization }
+					change_building_level_in_location = { building = building_type:sul_respec_farming_town value = 1 }
 				}
 				else = {
-					add_location_modifier = { modifier = sul_farming_city_specialization }
+					change_building_level_in_location = { building = building_type:sul_respec_farming_city value = 1 }
 				}
-
-				sul_specialization_destroy_and_penalize = yes
 			}
 		}
 	}
@@ -1409,25 +1310,6 @@ sul_designate_woodland_specialization = {
 		}
 	}
 
-	price = {
-		if = {
-			limit = {
-				exists = scope:target
-				scope:target = { location_rank = location_rank:rural_settlement }
-			}
-
-			value = price:sul_designate_specialization_price_rural
-		}
-		else_if = {
-			limit = {
-				exists = scope:target
-				scope:target = { location_rank = location_rank:town }
-			}
-
-			value = price:sul_designate_specialization_price_town
-		}
-		else = { value = price:sul_designate_specialization_price_city }
-	}
 	select_trigger = {
 		looking_for_a = location
 		target_flag = target
@@ -1472,50 +1354,18 @@ sul_designate_woodland_specialization = {
 	effect = {
 		if = {
 			limit = { exists = scope:target }
-			# === UPDATE SPECIALIZATION COUNTS ===
-			scope:actor = {
-				# Initialize counts if they don't exist (existing saves)
-				if = {
-					limit = {
-						NOT = {
-							has_variable = sul_mining_count
-						}
-					}
-
-					sul_specialization_count_initialize = yes
-				}
-
-				# Decrement old type (if changing from another specialization)
-				scope:target = { save_temporary_scope_as = sul_loc }
-				sul_specialization_count_decrement = yes
-				# Increment new type
-				change_variable = { name = sul_woodland_count add = 1 }
-				change_variable = { name = sul_total_weighted add = 1 }
-			}
-
 			scope:target = {
 				if = {
-					limit = { is_market_center = yes }
-					custom_tooltip = sul_will_destroy_market_tt
-				}
-				sul_specialization_clear_all_modifiers = yes
-				set_variable = { name = sul_spec_type value = @sul_woodland_type }
-				sul_specialization_update_designation = yes
-				# Inlined instead of sul_specialization_apply_modifier so tooltip preview
-				# shows the correct new modifier (preview evaluates limits before effects run)
-				if = {
 					limit = { location_rank = location_rank:rural_settlement }
-					add_location_modifier = { modifier = sul_woodland_rural_specialization }
+					change_building_level_in_location = { building = building_type:sul_respec_woodland_rural value = 1 }
 				}
 				else_if = {
 					limit = { location_rank = location_rank:town }
-					add_location_modifier = { modifier = sul_woodland_town_specialization }
+					change_building_level_in_location = { building = building_type:sul_respec_woodland_town value = 1 }
 				}
 				else = {
-					add_location_modifier = { modifier = sul_woodland_city_specialization }
+					change_building_level_in_location = { building = building_type:sul_respec_woodland_city value = 1 }
 				}
-
-				sul_specialization_destroy_and_penalize = yes
 			}
 		}
 	}
@@ -1904,25 +1754,6 @@ sul_designate_gathering_specialization = {
 		}
 	}
 
-	price = {
-		if = {
-			limit = {
-				exists = scope:target
-				scope:target = { location_rank = location_rank:rural_settlement }
-			}
-
-			value = price:sul_designate_specialization_price_rural
-		}
-		else_if = {
-			limit = {
-				exists = scope:target
-				scope:target = { location_rank = location_rank:town }
-			}
-
-			value = price:sul_designate_specialization_price_town
-		}
-		else = { value = price:sul_designate_specialization_price_city }
-	}
 	select_trigger = {
 		looking_for_a = location
 		target_flag = target
@@ -1968,50 +1799,18 @@ sul_designate_gathering_specialization = {
 	effect = {
 		if = {
 			limit = { exists = scope:target }
-			# === UPDATE SPECIALIZATION COUNTS ===
-			scope:actor = {
-				# Initialize counts if they don't exist (existing saves)
-				if = {
-					limit = {
-						NOT = {
-							has_variable = sul_mining_count
-						}
-					}
-
-					sul_specialization_count_initialize = yes
-				}
-
-				# Decrement old type (if changing from another specialization)
-				scope:target = { save_temporary_scope_as = sul_loc }
-				sul_specialization_count_decrement = yes
-				# Increment new type
-				change_variable = { name = sul_gathering_count add = 1 }
-				change_variable = { name = sul_total_weighted add = 1 }
-			}
-
 			scope:target = {
 				if = {
-					limit = { is_market_center = yes }
-					custom_tooltip = sul_will_destroy_market_tt
-				}
-				sul_specialization_clear_all_modifiers = yes
-				set_variable = { name = sul_spec_type value = @sul_gathering_type }
-				sul_specialization_update_designation = yes
-				# Inlined instead of sul_specialization_apply_modifier so tooltip preview
-				# shows the correct new modifier (preview evaluates limits before effects run)
-				if = {
 					limit = { location_rank = location_rank:rural_settlement }
-					add_location_modifier = { modifier = sul_gathering_rural_specialization }
+					change_building_level_in_location = { building = building_type:sul_respec_gathering_rural value = 1 }
 				}
 				else_if = {
 					limit = { location_rank = location_rank:town }
-					add_location_modifier = { modifier = sul_gathering_town_specialization }
+					change_building_level_in_location = { building = building_type:sul_respec_gathering_town value = 1 }
 				}
 				else = {
-					add_location_modifier = { modifier = sul_gathering_city_specialization }
+					change_building_level_in_location = { building = building_type:sul_respec_gathering_city value = 1 }
 				}
-
-				sul_specialization_destroy_and_penalize = yes
 			}
 		}
 	}
@@ -2217,25 +2016,6 @@ sul_designate_commercial_specialization = {
 		}
 	}
 
-	price = {
-		if = {
-			limit = {
-				exists = scope:target
-				scope:target = { location_rank = location_rank:rural_settlement }
-			}
-
-			value = price:sul_designate_specialization_price_rural
-		}
-		else_if = {
-			limit = {
-				exists = scope:target
-				scope:target = { location_rank = location_rank:town }
-			}
-
-			value = price:sul_designate_specialization_price_town
-		}
-		else = { value = price:sul_designate_specialization_price_city }
-	}
 	select_trigger = {
 		looking_for_a = location
 		target_flag = target
@@ -2263,52 +2043,18 @@ sul_designate_commercial_specialization = {
 	effect = {
 		if = {
 			limit = { exists = scope:target }
-			# === UPDATE SPECIALIZATION COUNTS ===
-			scope:actor = {
-				# Initialize counts if they don't exist (existing saves)
-				if = {
-					limit = {
-						NOT = {
-							has_variable = sul_mining_count
-						}
-					}
-
-					sul_specialization_count_initialize = yes
-				}
-
-				# Decrement old type (if changing from another specialization)
-				scope:target = { save_temporary_scope_as = sul_loc }
-				sul_specialization_count_decrement = yes
-				# Increment new type
-				change_variable = { name = sul_commercial_count add = 1 }
-				change_variable = { name = sul_total_weighted add = 1 }
-			}
-
 			scope:target = {
-				sul_specialization_clear_all_modifiers = yes
-				set_variable = { name = sul_spec_type value = @sul_commercial_type }
-				sul_specialization_update_designation = yes
 				if = {
 					limit = { location_rank = location_rank:rural_settlement }
-					add_location_modifier = { modifier = sul_commercial_rural_specialization }
+					change_building_level_in_location = { building = building_type:sul_respec_commercial_rural value = 1 }
 				}
 				else_if = {
 					limit = { location_rank = location_rank:town }
-					add_location_modifier = { modifier = sul_commercial_town_specialization }
+					change_building_level_in_location = { building = building_type:sul_respec_commercial_town value = 1 }
 				}
 				else = {
-					add_location_modifier = { modifier = sul_commercial_city_specialization }
+					change_building_level_in_location = { building = building_type:sul_respec_commercial_city value = 1 }
 				}
-
-				sul_specialization_destroy_and_penalize = yes
-			}
-
-			create_market = {
-				builder = scope:actor
-				location = scope:target
-				price = price:create_market
-				price_modifier = 0
-				instant = yes
 			}
 		}
 	}

@@ -28,10 +28,46 @@ TRY_INJECT:building_levels = {
 # Every location gets a minimum food storage floor so rural settlements
 # can survive without needing granary infrastructure.
 
-TRY_INJECT:location_base_values = {
+REPLACE:location_base_values = {
+	game_data = {
+		category = location
+	}
+
+	# Vanilla base values (preserved)
+	local_devastation_recovery = 0.005
+	local_monthly_control = 0.0005
+	max_regiments_trained_at_same_time = 1
+	max_constructions_at_same_time = 1
+	local_pop_promotion_speed = 0.01
+	local_pop_demotion_speed = 0.10
+	local_frontage_allowed = 10
+	local_migration_attraction = 0.1
+	local_garrison_growth = 0.01
+	max_attrition = 10
+	supply_limit = 15
+	hostile_disembark_time_modifier = 0.25
+	local_monthly_prosperity = 0.0025
+	local_trade_embark_disembark_cost_modifier = 0.1
+	local_clergy_desired_pop_scaled = 0.005
+	local_nobles_desired_pop_scaled = 0.0025
+
 	local_food_capacity = 100
 	local_max_rgo_size = -2				# nullify vanilla +2 (RGO removal)
 	local_monthly_development = 0.05	# constant upward push (equilibrium spring)
+
+	# Development tradeoff: extraction bonuses (cancelled by development scaling)
+	local_population_growth = 0.02
+	local_disease_resistance = 0.20
+	local_wheat_output_modifier = 0.10
+	local_rice_output_modifier = 0.10
+	local_millet_output_modifier = 0.10
+	local_maize_output_modifier = 0.10
+	local_livestock_output_modifier = 0.10
+	local_fish_output_modifier = 0.10
+	local_iron_output_modifier = 0.10
+	local_copper_output_modifier = 0.10
+	local_lumber_output_modifier = 0.10
+	local_wild_game_output_modifier = 0.10
 }
 
 TRY_INJECT:abundant_free_land = {
@@ -49,15 +85,64 @@ TRY_INJECT:available_free_land = {
 # Vanilla devastation gives +0.50 local_monthly_food_modifier.
 # Both are abstract food boosts that bypass the provisions system.
 
-TRY_INJECT:development = {
-	local_monthly_food_modifier = -0.01          # nullify vanilla +0.01
-	local_max_rgo_size = -0.1                    # nullify vanilla +0.1 (RGO removal)
-	local_monthly_development = -0.001           # per-dev downward push (equilibrium at 50)
+REPLACE:development = {
+	game_data = {
+		category = location
+	}
+
+	# Vanilla development values (preserved)
+	local_population_capacity_modifier = 0.025
+	local_distance_from_capital_speed_propagation = 0.005
+	local_supply_limit_modifier = 0.02
+	blockade_force_required = 0.01
+	local_trade_center_power = 0.001
+	free_building_levels = 1
+	local_life_expectancy = 0.1
+	occupation_time = 0.01
+	local_build_buildings_cost = -0.001
+	maximum_stockpile_capacity = 5
+
+	# SUL overrides
+	local_monthly_development = -0.001           # per-dev downward push (equilibrium spring)
+
+	# Development tradeoff: extraction offsets (cancel base at dev 100)
+	local_population_growth = -0.0002
+	local_disease_resistance = -0.002
+	local_wheat_output_modifier = -0.001
+	local_rice_output_modifier = -0.001
+	local_millet_output_modifier = -0.001
+	local_maize_output_modifier = -0.001
+	local_livestock_output_modifier = -0.001
+	local_fish_output_modifier = -0.001
+	local_iron_output_modifier = -0.001
+	local_copper_output_modifier = -0.001
+	local_lumber_output_modifier = -0.001
+	local_wild_game_output_modifier = -0.001
+
+	# Development tradeoff: production bonuses (scale 0 → max at dev 100)
+	local_migration_attraction = 0.001
+	local_pop_promotion_speed_modifier = 0.005
+	local_pop_demotion_speed_modifier = 0.003
+	local_pop_assimilation_speed_modifier = 0.003
+	local_pop_conversion_speed_modifier = 0.002
+	local_institution_growth_modifier = 0.003
+	local_monthly_literacy = 0.0001
+	local_construction_speed = 0.002
+	local_peasant_enfranchisment = 0.001
+	local_cloth_output_modifier = 0.002
+	local_fine_cloth_output_modifier = 0.002
+	local_tools_output_modifier = 0.002
+	local_steel_output_modifier = 0.002
+	local_glass_output_modifier = 0.002
+	local_paper_output_modifier = 0.002
+
+	# Urban costs
+	local_unrest = 0.01
 }
 
 TRY_INJECT:devastation = {
 	local_monthly_food_modifier = -0.5           # nullify vanilla +0.50
-	local_monthly_development_modifier = -1.0    # full devastation freezes development
+	# development_modifier handled in sul_development_overrides.txt (-0.50)
 }
 
 # ===================

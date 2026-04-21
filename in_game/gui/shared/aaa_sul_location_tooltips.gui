@@ -2345,3 +2345,581 @@ template location_tax_base_details {
 		}
 	}
 }
+
+template location_development_tooltip {
+	ContextualTooltipType = {
+
+		blockoverride "title_icon" {
+			icon = {
+				using = tooltip_title_icon_size
+				texture = "gfx/interface/icons/location_icons/development.dds"
+			}
+		}
+
+		blockoverride "title_text" {
+			text = "DEVELOPMENT_IN_LOC"
+		}
+
+		blockoverride "concept_link" {
+			text = [development|e]
+		}
+
+		blockoverride "tooltip_content" {
+			widget = {
+				size = { 400 62 }
+
+				# Monthly change badge (centered on bar, renders behind)
+				widget = {
+					position = { 100 7 }
+					size = { 200 24 }
+
+					# Left wing decoration
+					icon = {
+						position = { -5 0 }
+						size = { 50 24 }
+						using = left_decoration_icon
+					}
+
+					# Right wing decoration
+					icon = {
+						position = { 155 0 }
+						size = { 50 24 }
+						using = right_decoration_icon
+					}
+
+					using = bg_mapmenu_tab
+
+					tooltipwidget = {
+						ContextualTooltipType = {
+							blockoverride "title_text" { text = "SUL_DEV_TOTAL_LABEL" }
+							blockoverride "title_icon" {
+								ContextualTooltipDefaultIcon = {
+									blockoverride "title_icon_texture" { texture = "gfx/interface/icons/location_icons/development.dds" }
+								}
+							}
+							blockoverride "tooltip_content" {
+								TooltipStringPairList = {
+									blockoverride "block_title" {
+										datacontext = "[Location]"
+										text = "SUL_DEV_TOTAL_LABEL"
+									}
+									textcontext = "[Location.GetDescriptionValueAndPercentWithCountryFor('local_monthly_development','local_monthly_development_modifier','global_monthly_development')]"
+								}
+							}
+						}
+					}
+
+					text_single = {
+						parentanchor = center
+						fontsize = 13
+						align = center|nobaseline
+						raw_text = "[Location.GetModifierValue('local_monthly_development')]"
+					}
+				}
+
+				# Bordered bar area (centered, with side padding for circle overlap)
+				widget = {
+					position = { 14 28 }
+					size = { 372 34 }
+
+					using = bg_paper_card
+					using = bg_cabinet_card_frame
+
+					# Main development bar (0-100)
+					progressbar = {
+						position = { 18 8 }
+						size = { 336 16 }
+						using = progress_bar_green_red_alt
+						min = 0
+						max = 1
+						value = "[Divide_float(FixedPointToFloat(Location.GetDevelopment), '(float)100.0')]"
+						direction = horizontal
+					}
+
+					# Equilibrium bar (thin, directly touching main bar)
+					progressbar = {
+						position = { 18 24 }
+						size = { 336 4 }
+						using = progress_bar_blue_alt
+						min = 0
+						max = 1
+						value = "[Divide_float(FixedPointToFloat(Location.MakeScope.ScriptValue('sul_development_equilibrium')), '(float)100.0')]"
+						direction = horizontal
+					}
+
+					# Quartile mark (25%)
+					icon = {
+						position = { 102 8 }
+						size = { 2 20 }
+						texture = "gfx/interface/progressbars/progress_black.dds"
+						spriteType = Corneredstretched
+						spriteborder = { 1 1 }
+						alpha = 0.3
+					}
+
+					# Center mark (50%)
+					icon = {
+						position = { 186 8 }
+						size = { 2 20 }
+						texture = "gfx/interface/progressbars/progress_black.dds"
+						spriteType = Corneredstretched
+						spriteborder = { 1 1 }
+						alpha = 0.9
+					}
+
+					# Quartile mark (75%)
+					icon = {
+						position = { 270 8 }
+						size = { 2 20 }
+						texture = "gfx/interface/progressbars/progress_black.dds"
+						spriteType = Corneredstretched
+						spriteborder = { 1 1 }
+						alpha = 0.3
+					}
+				}
+
+				# Extraction icon (left, centered on border edge)
+				widget = {
+					position = { 0 31 }
+					size = { 29 29 }
+					using = bg_circle
+					using = bg_circle_piechart
+
+					tooltipwidget = {
+						ContextualTooltipType = {
+							blockoverride "title_text" { text = "SUL_DEV_EXTRACTION_TITLE" }
+							blockoverride "title_icon" {
+								ContextualTooltipDefaultIcon = {
+									blockoverride "title_icon_texture" { texture = "gfx/interface/icons/modifier_types/global_raw_material_output.dds" }
+								}
+							}
+							blockoverride "tooltip_content" {
+								TooltipTextBlock = {
+									blockoverride "text" { text = "SUL_DEV_EXTRACTION_DESC" }
+								}
+								TooltipListBase = {
+									blockoverride "block_title" { text = "SUL_DEV_EXTRACTION_EFFECTS_TITLE" }
+									TooltipListScrollArea = {
+										blockoverride "block_scrollarea" {
+											maximumsize = { -1 200 }
+											minimumsize = { -1 30 }
+										}
+										blockoverride "scrollarea_content" {
+											vbox = {
+												set_parent_dimension_to_minimum = height
+												layoutpolicy_horizontal = expanding
+												TooltipManualTableField = {
+													icon = { size = { 28 28 } texture = "gfx/interface/icons/location_icons/new/population_growth.dds" }
+													text_single = { fontsize = 15 text = "MODIFIER_TYPE_NAME_local_population_growth" }
+													expand = {}
+													text_single = { fontsize = 15 raw_text = "#color_green +2%#!" }
+												}
+												TooltipManualTableField = {
+													icon = { size = { 28 28 } texture = "gfx/interface/icons/modifier_types/local_disease_resistance.dds" }
+													text_single = { fontsize = 15 text = "MODIFIER_TYPE_NAME_local_disease_resistance" }
+													expand = {}
+													text_single = { fontsize = 15 raw_text = "#color_green +20%#!" }
+												}
+												TooltipManualTableField = {
+													icon = { size = { 28 28 } texture = "gfx/interface/icons/modifier_types/wheat_positive.dds" }
+													text_single = { fontsize = 15 text = "MODIFIER_TYPE_NAME_local_wheat_output_modifier" }
+													expand = {}
+													text_single = { fontsize = 15 raw_text = "#color_green +10%#!" }
+												}
+												TooltipManualTableField = {
+													icon = { size = { 28 28 } texture = "gfx/interface/icons/modifier_types/rice_positive.dds" }
+													text_single = { fontsize = 15 text = "MODIFIER_TYPE_NAME_local_rice_output_modifier" }
+													expand = {}
+													text_single = { fontsize = 15 raw_text = "#color_green +10%#!" }
+												}
+												TooltipManualTableField = {
+													icon = { size = { 28 28 } texture = "gfx/interface/icons/modifier_types/millet_positive.dds" }
+													text_single = { fontsize = 15 text = "MODIFIER_TYPE_NAME_local_millet_output_modifier" }
+													expand = {}
+													text_single = { fontsize = 15 raw_text = "#color_green +10%#!" }
+												}
+												TooltipManualTableField = {
+													icon = { size = { 28 28 } texture = "gfx/interface/icons/modifier_types/maize_positive.dds" }
+													text_single = { fontsize = 15 text = "MODIFIER_TYPE_NAME_local_maize_output_modifier" }
+													expand = {}
+													text_single = { fontsize = 15 raw_text = "#color_green +10%#!" }
+												}
+												TooltipManualTableField = {
+													icon = { size = { 28 28 } texture = "gfx/interface/icons/modifier_types/livestock_positive.dds" }
+													text_single = { fontsize = 15 text = "MODIFIER_TYPE_NAME_local_livestock_output_modifier" }
+													expand = {}
+													text_single = { fontsize = 15 raw_text = "#color_green +10%#!" }
+												}
+												TooltipManualTableField = {
+													icon = { size = { 28 28 } texture = "gfx/interface/icons/modifier_types/fish_positive.dds" }
+													text_single = { fontsize = 15 text = "MODIFIER_TYPE_NAME_local_fish_output_modifier" }
+													expand = {}
+													text_single = { fontsize = 15 raw_text = "#color_green +10%#!" }
+												}
+												TooltipManualTableField = {
+													icon = { size = { 28 28 } texture = "gfx/interface/icons/modifier_types/iron_positive.dds" }
+													text_single = { fontsize = 15 text = "MODIFIER_TYPE_NAME_local_iron_output_modifier" }
+													expand = {}
+													text_single = { fontsize = 15 raw_text = "#color_green +10%#!" }
+												}
+												TooltipManualTableField = {
+													icon = { size = { 28 28 } texture = "gfx/interface/icons/modifier_types/copper_positive.dds" }
+													text_single = { fontsize = 15 text = "MODIFIER_TYPE_NAME_local_copper_output_modifier" }
+													expand = {}
+													text_single = { fontsize = 15 raw_text = "#color_green +10%#!" }
+												}
+												TooltipManualTableField = {
+													icon = { size = { 28 28 } texture = "gfx/interface/icons/modifier_types/lumber_positive.dds" }
+													text_single = { fontsize = 15 text = "MODIFIER_TYPE_NAME_local_lumber_output_modifier" }
+													expand = {}
+													text_single = { fontsize = 15 raw_text = "#color_green +10%#!" }
+												}
+												TooltipManualTableField = {
+													icon = { size = { 28 28 } texture = "gfx/interface/icons/modifier_types/wild_game_positive.dds" }
+													text_single = { fontsize = 15 text = "MODIFIER_TYPE_NAME_local_wild_game_output_modifier" }
+													expand = {}
+													text_single = { fontsize = 15 raw_text = "#color_green +10%#!" }
+												}
+											}
+										}
+									}
+								}
+							}
+						}
+					}
+
+					icon = {
+						size = { 16 16 }
+						parentanchor = center
+						texture = "gfx/interface/icons/modifier_types/global_raw_material_output.dds"
+					}
+				}
+
+				# Production icon (right, centered on border edge)
+				widget = {
+					position = { 372 31 }
+					size = { 29 29 }
+					using = bg_circle
+					using = bg_circle_piechart
+
+					tooltipwidget = {
+						ContextualTooltipType = {
+							blockoverride "title_text" { text = "SUL_DEV_PRODUCTION_TITLE" }
+							blockoverride "title_icon" {
+								ContextualTooltipDefaultIcon = {
+									blockoverride "title_icon_texture" { texture = "gfx/interface/icons/modifier_types/global_production_efficiency.dds" }
+								}
+							}
+							blockoverride "tooltip_content" {
+								TooltipTextBlock = {
+									blockoverride "text" { text = "SUL_DEV_PRODUCTION_DESC" }
+								}
+								TooltipListBase = {
+									blockoverride "block_title" { text = "SUL_DEV_PRODUCTION_EFFECTS_TITLE" }
+									TooltipListScrollArea = {
+										blockoverride "block_scrollarea" {
+											maximumsize = { -1 300 }
+											minimumsize = { -1 30 }
+										}
+										blockoverride "scrollarea_content" {
+											vbox = {
+												set_parent_dimension_to_minimum = height
+												layoutpolicy_horizontal = expanding
+												TooltipManualTableField = {
+													icon = { size = { 28 28 } texture = "gfx/interface/icons/modifier_types/migration_attraction.dds" }
+													text_single = { fontsize = 15 text = "MODIFIER_TYPE_NAME_local_migration_attraction" }
+													expand = {}
+													text_single = { fontsize = 15 raw_text = "#color_green +0.10#!" }
+												}
+												TooltipManualTableField = {
+													icon = { size = { 28 28 } texture = "gfx/interface/icons/location_icons/promotion.dds" }
+													text_single = { fontsize = 15 text = "MODIFIER_TYPE_NAME_local_pop_promotion_speed_modifier" }
+													expand = {}
+													text_single = { fontsize = 15 raw_text = "#color_green +50%#!" }
+												}
+												TooltipManualTableField = {
+													icon = { size = { 28 28 } texture = "gfx/interface/icons/location_icons/promotion.dds" }
+													text_single = { fontsize = 15 text = "MODIFIER_TYPE_NAME_local_pop_demotion_speed_modifier" }
+													expand = {}
+													text_single = { fontsize = 15 raw_text = "#color_green +30%#!" }
+												}
+												TooltipManualTableField = {
+													icon = { size = { 28 28 } texture = "gfx/interface/icons/modifier_types/global_pop_assimilation_speed.dds" }
+													text_single = { fontsize = 15 text = "MODIFIER_TYPE_NAME_local_pop_assimilation_speed_modifier" }
+													expand = {}
+													text_single = { fontsize = 15 raw_text = "#color_green +30%#!" }
+												}
+												TooltipManualTableField = {
+													icon = { size = { 28 28 } texture = "gfx/interface/icons/location_icons/monthly_conversion.dds" }
+													text_single = { fontsize = 15 text = "MODIFIER_TYPE_NAME_local_pop_conversion_speed_modifier" }
+													expand = {}
+													text_single = { fontsize = 15 raw_text = "#color_green +20%#!" }
+												}
+												TooltipManualTableField = {
+													icon = { size = { 28 28 } texture = "gfx/interface/icons/modifier_types/study_institutions.dds" }
+													text_single = { fontsize = 15 text = "MODIFIER_TYPE_NAME_local_institution_growth_modifier" }
+													expand = {}
+													text_single = { fontsize = 15 raw_text = "#color_green +30%#!" }
+												}
+												TooltipManualTableField = {
+													icon = { size = { 28 28 } texture = "gfx/interface/icons/location_icons/literacy.dds" }
+													text_single = { fontsize = 15 text = "MODIFIER_TYPE_NAME_local_monthly_literacy" }
+													expand = {}
+													text_single = { fontsize = 15 raw_text = "#color_green +0.01#!" }
+												}
+												TooltipManualTableField = {
+													icon = { size = { 28 28 } texture = "gfx/interface/icons/modifier_types/free_building_levels.dds" }
+													text_single = { fontsize = 15 text = "MODIFIER_TYPE_NAME_local_construction_speed" }
+													expand = {}
+													text_single = { fontsize = 15 raw_text = "#color_green +20%#!" }
+												}
+												TooltipManualTableField = {
+													icon = { size = { 28 28 } texture = "gfx/interface/icons/modifier_types/_default.dds" }
+													text_single = { fontsize = 15 text = "MODIFIER_TYPE_NAME_local_peasant_enfranchisment" }
+													expand = {}
+													text_single = { fontsize = 15 raw_text = "#color_green +10%#!" }
+												}
+												TooltipManualTableField = {
+													icon = { size = { 28 28 } texture = "gfx/interface/icons/modifier_types/cloth_positive.dds" }
+													text_single = { fontsize = 15 text = "MODIFIER_TYPE_NAME_local_cloth_output_modifier" }
+													expand = {}
+													text_single = { fontsize = 15 raw_text = "#color_green +20%#!" }
+												}
+												TooltipManualTableField = {
+													icon = { size = { 28 28 } texture = "gfx/interface/icons/modifier_types/fine_cloth_positive.dds" }
+													text_single = { fontsize = 15 text = "MODIFIER_TYPE_NAME_local_fine_cloth_output_modifier" }
+													expand = {}
+													text_single = { fontsize = 15 raw_text = "#color_green +20%#!" }
+												}
+												TooltipManualTableField = {
+													icon = { size = { 28 28 } texture = "gfx/interface/icons/modifier_types/tools_positive.dds" }
+													text_single = { fontsize = 15 text = "MODIFIER_TYPE_NAME_local_tools_output_modifier" }
+													expand = {}
+													text_single = { fontsize = 15 raw_text = "#color_green +20%#!" }
+												}
+												TooltipManualTableField = {
+													icon = { size = { 28 28 } texture = "gfx/interface/icons/modifier_types/steel_positive.dds" }
+													text_single = { fontsize = 15 text = "MODIFIER_TYPE_NAME_local_steel_output_modifier" }
+													expand = {}
+													text_single = { fontsize = 15 raw_text = "#color_green +20%#!" }
+												}
+												TooltipManualTableField = {
+													icon = { size = { 28 28 } texture = "gfx/interface/icons/modifier_types/glass_positive.dds" }
+													text_single = { fontsize = 15 text = "MODIFIER_TYPE_NAME_local_glass_output_modifier" }
+													expand = {}
+													text_single = { fontsize = 15 raw_text = "#color_green +20%#!" }
+												}
+												TooltipManualTableField = {
+													icon = { size = { 28 28 } texture = "gfx/interface/icons/modifier_types/paper_positive.dds" }
+													text_single = { fontsize = 15 text = "MODIFIER_TYPE_NAME_local_paper_output_modifier" }
+													expand = {}
+													text_single = { fontsize = 15 raw_text = "#color_green +20%#!" }
+												}
+												TooltipManualTableField = {
+													icon = { size = { 28 28 } texture = "gfx/interface/icons/resources/war_exhaustion.dds" }
+													text_single = { fontsize = 15 text = "MODIFIER_TYPE_NAME_local_unrest" }
+													expand = {}
+													text_single = { fontsize = 15 raw_text = "#color_red +100%#!" }
+												}
+											}
+										}
+									}
+								}
+							}
+						}
+					}
+
+					icon = {
+						size = { 16 16 }
+						parentanchor = center
+						texture = "gfx/interface/icons/modifier_types/global_production_efficiency.dds"
+					}
+				}
+			}
+
+			TooltipListBase = {
+				blockoverride "block_title" { text = "SUL_DEV_CURRENT_EFFECTS_TITLE" }
+				TooltipListScrollArea = {
+					blockoverride "block_scrollarea" {
+						maximumsize = { -1 300 }
+						minimumsize = { -1 30 }
+					}
+					blockoverride "scrollarea_content" {
+						vbox = {
+							set_parent_dimension_to_minimum = height
+							layoutpolicy_horizontal = expanding
+							TooltipManualTableField = {
+								icon = { size = { 28 28 } texture = "gfx/interface/icons/location_icons/new/population_growth.dds" }
+								text_single = { fontsize = 15 text = "MODIFIER_TYPE_NAME_local_population_growth" }
+								expand = {}
+								text_single = { fontsize = 15 default_format = "#color_green" raw_text = "[Location.MakeScope.ScriptValue('sul_dev_tt_pop_growth')|+1%]" }
+							}
+							TooltipManualTableField = {
+								icon = { size = { 28 28 } texture = "gfx/interface/icons/modifier_types/local_disease_resistance.dds" }
+								text_single = { fontsize = 15 text = "MODIFIER_TYPE_NAME_local_disease_resistance" }
+								expand = {}
+								text_single = { fontsize = 15 default_format = "#color_green" raw_text = "[Location.MakeScope.ScriptValue('sul_dev_tt_disease_resist')|+0%]" }
+							}
+							TooltipManualTableField = {
+								icon = { size = { 28 28 } texture = "gfx/interface/icons/modifier_types/wheat_positive.dds" }
+								text_single = { fontsize = 15 text = "MODIFIER_TYPE_NAME_local_wheat_output_modifier" }
+								expand = {}
+								text_single = { fontsize = 15 default_format = "#color_green" raw_text = "[Location.MakeScope.ScriptValue('sul_dev_tt_raw_output')|+0%]" }
+							}
+							TooltipManualTableField = {
+								icon = { size = { 28 28 } texture = "gfx/interface/icons/modifier_types/rice_positive.dds" }
+								text_single = { fontsize = 15 text = "MODIFIER_TYPE_NAME_local_rice_output_modifier" }
+								expand = {}
+								text_single = { fontsize = 15 default_format = "#color_green" raw_text = "[Location.MakeScope.ScriptValue('sul_dev_tt_raw_output')|+0%]" }
+							}
+							TooltipManualTableField = {
+								icon = { size = { 28 28 } texture = "gfx/interface/icons/modifier_types/millet_positive.dds" }
+								text_single = { fontsize = 15 text = "MODIFIER_TYPE_NAME_local_millet_output_modifier" }
+								expand = {}
+								text_single = { fontsize = 15 default_format = "#color_green" raw_text = "[Location.MakeScope.ScriptValue('sul_dev_tt_raw_output')|+0%]" }
+							}
+							TooltipManualTableField = {
+								icon = { size = { 28 28 } texture = "gfx/interface/icons/modifier_types/maize_positive.dds" }
+								text_single = { fontsize = 15 text = "MODIFIER_TYPE_NAME_local_maize_output_modifier" }
+								expand = {}
+								text_single = { fontsize = 15 default_format = "#color_green" raw_text = "[Location.MakeScope.ScriptValue('sul_dev_tt_raw_output')|+0%]" }
+							}
+							TooltipManualTableField = {
+								icon = { size = { 28 28 } texture = "gfx/interface/icons/modifier_types/livestock_positive.dds" }
+								text_single = { fontsize = 15 text = "MODIFIER_TYPE_NAME_local_livestock_output_modifier" }
+								expand = {}
+								text_single = { fontsize = 15 default_format = "#color_green" raw_text = "[Location.MakeScope.ScriptValue('sul_dev_tt_raw_output')|+0%]" }
+							}
+							TooltipManualTableField = {
+								icon = { size = { 28 28 } texture = "gfx/interface/icons/modifier_types/fish_positive.dds" }
+								text_single = { fontsize = 15 text = "MODIFIER_TYPE_NAME_local_fish_output_modifier" }
+								expand = {}
+								text_single = { fontsize = 15 default_format = "#color_green" raw_text = "[Location.MakeScope.ScriptValue('sul_dev_tt_raw_output')|+0%]" }
+							}
+							TooltipManualTableField = {
+								icon = { size = { 28 28 } texture = "gfx/interface/icons/modifier_types/iron_positive.dds" }
+								text_single = { fontsize = 15 text = "MODIFIER_TYPE_NAME_local_iron_output_modifier" }
+								expand = {}
+								text_single = { fontsize = 15 default_format = "#color_green" raw_text = "[Location.MakeScope.ScriptValue('sul_dev_tt_raw_output')|+0%]" }
+							}
+							TooltipManualTableField = {
+								icon = { size = { 28 28 } texture = "gfx/interface/icons/modifier_types/copper_positive.dds" }
+								text_single = { fontsize = 15 text = "MODIFIER_TYPE_NAME_local_copper_output_modifier" }
+								expand = {}
+								text_single = { fontsize = 15 default_format = "#color_green" raw_text = "[Location.MakeScope.ScriptValue('sul_dev_tt_raw_output')|+0%]" }
+							}
+							TooltipManualTableField = {
+								icon = { size = { 28 28 } texture = "gfx/interface/icons/modifier_types/lumber_positive.dds" }
+								text_single = { fontsize = 15 text = "MODIFIER_TYPE_NAME_local_lumber_output_modifier" }
+								expand = {}
+								text_single = { fontsize = 15 default_format = "#color_green" raw_text = "[Location.MakeScope.ScriptValue('sul_dev_tt_raw_output')|+0%]" }
+							}
+							TooltipManualTableField = {
+								icon = { size = { 28 28 } texture = "gfx/interface/icons/modifier_types/wild_game_positive.dds" }
+								text_single = { fontsize = 15 text = "MODIFIER_TYPE_NAME_local_wild_game_output_modifier" }
+								expand = {}
+								text_single = { fontsize = 15 default_format = "#color_green" raw_text = "[Location.MakeScope.ScriptValue('sul_dev_tt_raw_output')|+0%]" }
+							}
+							TooltipManualTableField = {
+								icon = { size = { 28 28 } texture = "gfx/interface/icons/modifier_types/migration_attraction.dds" }
+								text_single = { fontsize = 15 text = "MODIFIER_TYPE_NAME_local_migration_attraction" }
+								expand = {}
+								text_single = { fontsize = 15 default_format = "#color_green" raw_text = "[Location.MakeScope.ScriptValue('sul_dev_tt_migration')|+2]" }
+							}
+							TooltipManualTableField = {
+								icon = { size = { 28 28 } texture = "gfx/interface/icons/location_icons/promotion.dds" }
+								text_single = { fontsize = 15 text = "MODIFIER_TYPE_NAME_local_pop_promotion_speed_modifier" }
+								expand = {}
+								text_single = { fontsize = 15 default_format = "#color_green" raw_text = "[Location.MakeScope.ScriptValue('sul_dev_tt_promotion')|+0%]" }
+							}
+							TooltipManualTableField = {
+								icon = { size = { 28 28 } texture = "gfx/interface/icons/location_icons/promotion.dds" }
+								text_single = { fontsize = 15 text = "MODIFIER_TYPE_NAME_local_pop_demotion_speed_modifier" }
+								expand = {}
+								text_single = { fontsize = 15 default_format = "#color_green" raw_text = "[Location.MakeScope.ScriptValue('sul_dev_tt_demotion')|+0%]" }
+							}
+							TooltipManualTableField = {
+								icon = { size = { 28 28 } texture = "gfx/interface/icons/modifier_types/global_pop_assimilation_speed.dds" }
+								text_single = { fontsize = 15 text = "MODIFIER_TYPE_NAME_local_pop_assimilation_speed_modifier" }
+								expand = {}
+								text_single = { fontsize = 15 default_format = "#color_green" raw_text = "[Location.MakeScope.ScriptValue('sul_dev_tt_assimilation')|+0%]" }
+							}
+							TooltipManualTableField = {
+								icon = { size = { 28 28 } texture = "gfx/interface/icons/location_icons/monthly_conversion.dds" }
+								text_single = { fontsize = 15 text = "MODIFIER_TYPE_NAME_local_pop_conversion_speed_modifier" }
+								expand = {}
+								text_single = { fontsize = 15 default_format = "#color_green" raw_text = "[Location.MakeScope.ScriptValue('sul_dev_tt_conversion')|+0%]" }
+							}
+							TooltipManualTableField = {
+								icon = { size = { 28 28 } texture = "gfx/interface/icons/modifier_types/study_institutions.dds" }
+								text_single = { fontsize = 15 text = "MODIFIER_TYPE_NAME_local_institution_growth_modifier" }
+								expand = {}
+								text_single = { fontsize = 15 default_format = "#color_green" raw_text = "[Location.MakeScope.ScriptValue('sul_dev_tt_institutions')|+0%]" }
+							}
+							TooltipManualTableField = {
+								icon = { size = { 28 28 } texture = "gfx/interface/icons/location_icons/literacy.dds" }
+								text_single = { fontsize = 15 text = "MODIFIER_TYPE_NAME_local_monthly_literacy" }
+								expand = {}
+								text_single = { fontsize = 15 default_format = "#color_green" raw_text = "[Location.MakeScope.ScriptValue('sul_dev_tt_literacy')|+2]" }
+							}
+							TooltipManualTableField = {
+								icon = { size = { 28 28 } texture = "gfx/interface/icons/modifier_types/free_building_levels.dds" }
+								text_single = { fontsize = 15 text = "MODIFIER_TYPE_NAME_local_construction_speed" }
+								expand = {}
+								text_single = { fontsize = 15 default_format = "#color_green" raw_text = "[Location.MakeScope.ScriptValue('sul_dev_tt_construction')|+0%]" }
+							}
+							TooltipManualTableField = {
+								icon = { size = { 28 28 } texture = "gfx/interface/icons/modifier_types/_default.dds" }
+								text_single = { fontsize = 15 text = "MODIFIER_TYPE_NAME_local_peasant_enfranchisment" }
+								expand = {}
+								text_single = { fontsize = 15 default_format = "#color_green" raw_text = "[Location.MakeScope.ScriptValue('sul_dev_tt_enfranchisement')|+0%]" }
+							}
+							TooltipManualTableField = {
+								icon = { size = { 28 28 } texture = "gfx/interface/icons/modifier_types/cloth_positive.dds" }
+								text_single = { fontsize = 15 text = "MODIFIER_TYPE_NAME_local_cloth_output_modifier" }
+								expand = {}
+								text_single = { fontsize = 15 default_format = "#color_green" raw_text = "[Location.MakeScope.ScriptValue('sul_dev_tt_mfg_output')|+0%]" }
+							}
+							TooltipManualTableField = {
+								icon = { size = { 28 28 } texture = "gfx/interface/icons/modifier_types/fine_cloth_positive.dds" }
+								text_single = { fontsize = 15 text = "MODIFIER_TYPE_NAME_local_fine_cloth_output_modifier" }
+								expand = {}
+								text_single = { fontsize = 15 default_format = "#color_green" raw_text = "[Location.MakeScope.ScriptValue('sul_dev_tt_mfg_output')|+0%]" }
+							}
+							TooltipManualTableField = {
+								icon = { size = { 28 28 } texture = "gfx/interface/icons/modifier_types/tools_positive.dds" }
+								text_single = { fontsize = 15 text = "MODIFIER_TYPE_NAME_local_tools_output_modifier" }
+								expand = {}
+								text_single = { fontsize = 15 default_format = "#color_green" raw_text = "[Location.MakeScope.ScriptValue('sul_dev_tt_mfg_output')|+0%]" }
+							}
+							TooltipManualTableField = {
+								icon = { size = { 28 28 } texture = "gfx/interface/icons/modifier_types/steel_positive.dds" }
+								text_single = { fontsize = 15 text = "MODIFIER_TYPE_NAME_local_steel_output_modifier" }
+								expand = {}
+								text_single = { fontsize = 15 default_format = "#color_green" raw_text = "[Location.MakeScope.ScriptValue('sul_dev_tt_mfg_output')|+0%]" }
+							}
+							TooltipManualTableField = {
+								icon = { size = { 28 28 } texture = "gfx/interface/icons/modifier_types/glass_positive.dds" }
+								text_single = { fontsize = 15 text = "MODIFIER_TYPE_NAME_local_glass_output_modifier" }
+								expand = {}
+								text_single = { fontsize = 15 default_format = "#color_green" raw_text = "[Location.MakeScope.ScriptValue('sul_dev_tt_mfg_output')|+0%]" }
+							}
+							TooltipManualTableField = {
+								icon = { size = { 28 28 } texture = "gfx/interface/icons/modifier_types/paper_positive.dds" }
+								text_single = { fontsize = 15 text = "MODIFIER_TYPE_NAME_local_paper_output_modifier" }
+								expand = {}
+								text_single = { fontsize = 15 default_format = "#color_green" raw_text = "[Location.MakeScope.ScriptValue('sul_dev_tt_mfg_output')|+0%]" }
+							}
+							TooltipManualTableField = {
+								icon = { size = { 28 28 } texture = "gfx/interface/icons/resources/war_exhaustion.dds" }
+								text_single = { fontsize = 15 text = "MODIFIER_TYPE_NAME_local_unrest" }
+								expand = {}
+								text_single = { fontsize = 15 default_format = "#color_red" raw_text = "[Location.MakeScope.ScriptValue('sul_dev_tt_unrest')|+0%]" }
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+}

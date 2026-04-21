@@ -683,18 +683,65 @@ sul_production_ratio = {
 
 # Development equilibrium estimate for map mode.
 # Spring: +0.05 base, -0.001 per dev point. Buildings: ±0.0002 each.
-# Pop pressure: peasants/tribesmen/slaves -0.03, laborers -0.015 (per % share).
-# Equilibrium: dev_eq = (0.05 + building_push + pop_push + market_push) / 0.001
+# Each -0.001 flat = -1 dev point of equilibrium shift.
+# Equilibrium: dev_eq = (base + buildings + geography + market + pops) / 0.001
 sul_development_equilibrium = {
 	value = 50
+	# Buildings: each level shifts eq by 0.0002/0.001 = 0.2
 	add = {
 		value = sul_production_building_levels
 		subtract = sul_extraction_building_levels
 		multiply = 0.2
 	}
-	# Pop extraction pressure: each % of pop type shifts equilibrium
-	# peasants/tribesmen/slaves: -0.03 per 100% → -30 dev shift
-	# laborers: -0.015 per 100% → -15 dev shift
+	# Geography: vegetation
+	if = {
+		limit = { vegetation = vegetation:desert }
+		subtract = 12
+	}
+	else_if = {
+		limit = { vegetation = vegetation:jungle }
+		subtract = 20
+	}
+	else_if = {
+		limit = { vegetation = vegetation:forest }
+		subtract = 8
+	}
+	else_if = {
+		limit = { vegetation = vegetation:woods }
+		subtract = 3
+	}
+	# Geography: topography
+	if = {
+		limit = { topography = topography:mountains }
+		subtract = 25
+	}
+	else_if = {
+		limit = { topography = topography:wetlands }
+		subtract = 15
+	}
+	else_if = {
+		limit = { topography = topography:hills }
+		subtract = 2
+	}
+	else_if = {
+		limit = { topography = topography:plateau }
+		subtract = 1
+	}
+	# Geography: climate
+	if = {
+		limit = { climate = climate:arctic }
+		subtract = 30
+	}
+	else_if = {
+		limit = { climate = climate:tropical }
+		subtract = 2
+	}
+	# Market center: +0.005 flat = +5
+	if = {
+		limit = { is_market_center = yes }
+		add = 5
+	}
+	# Pop pressure
 	subtract = {
 		value = percentage_pop_type_in_location:peasants
 		multiply = 30
@@ -711,12 +758,11 @@ sul_development_equilibrium = {
 		value = percentage_pop_type_in_location:laborers
 		multiply = 15
 	}
-	# Burghers: production pressure, pushes UP
 	add = {
 		value = percentage_pop_type_in_location:burghers
 		multiply = 30
 	}
-	# Rank: towns +10, cities +25
+	# Rank
 	if = {
 		limit = { location_rank = location_rank:city }
 		add = 25
@@ -724,10 +770,6 @@ sul_development_equilibrium = {
 	else_if = {
 		limit = { location_rank = location_rank:town }
 		add = 10
-	}
-	if = {
-		limit = { is_market_center = yes }
-		add = 5
 	}
 	min = 0
 	max = 100
@@ -743,3 +785,98 @@ sul_development_equilibrium_factor = {
 	value = sul_development_equilibrium
 	divide = 100
 }
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Development tradeoff tooltip display values
+# Net bonus = base - (development × per_dev_offset)
+# Extraction bonuses diminish with development; production bonuses grow.
+# ─────────────────────────────────────────────────────────────────────────────
+
+# Extraction: pop growth base 0.02, offset -0.0002/dev
+sul_dev_tt_pop_growth = {
+	value = 0.02
+	subtract = {
+		value = development
+		multiply = 0.0002
+	}
+}
+
+# Extraction: disease resistance base 0.20, offset -0.002/dev
+sul_dev_tt_disease_resist = {
+	value = 0.20
+	subtract = {
+		value = development
+		multiply = 0.002
+	}
+}
+
+# Extraction: raw material output base 0.10, offset -0.001/dev
+sul_dev_tt_raw_output = {
+	value = 0.10
+	subtract = {
+		value = development
+		multiply = 0.001
+	}
+}
+
+# Production: migration attraction 0.001/dev
+sul_dev_tt_migration = {
+	value = development
+	multiply = 0.001
+}
+
+# Production: promotion speed 0.005/dev
+sul_dev_tt_promotion = {
+	value = development
+	multiply = 0.005
+}
+
+# Production: assimilation speed 0.003/dev
+sul_dev_tt_assimilation = {
+	value = development
+	multiply = 0.003
+}
+
+# Production: institution growth 0.003/dev
+sul_dev_tt_institutions = {
+	value = development
+	multiply = 0.003
+}
+
+# Production: literacy 0.0001/dev
+sul_dev_tt_literacy = {
+	value = development
+	multiply = 0.0001
+}
+
+# Production: manufactured output 0.002/dev
+sul_dev_tt_mfg_output = {
+	value = development
+	multiply = 0.002
+}
+
+sul_dev_tt_demotion = {
+	value = development
+	multiply = 0.003
+}
+
+sul_dev_tt_conversion = {
+	value = development
+	multiply = 0.002
+}
+
+sul_dev_tt_construction = {
+	value = development
+	multiply = 0.002
+}
+
+sul_dev_tt_enfranchisement = {
+	value = development
+	multiply = 0.001
+}
+
+sul_dev_tt_unrest = {
+	value = development
+	multiply = 0.01
+}
+

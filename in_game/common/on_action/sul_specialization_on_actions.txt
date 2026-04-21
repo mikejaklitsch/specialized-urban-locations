@@ -112,8 +112,18 @@ sul_on_location_changed_owner = {
 			}
 
 			# Seed 1 RGO level if location has none (new colony / capture-with-empty-RGO)
+			# iron_working gates iron + coal extraction
 			if = {
-				limit = { sul_location_rgo_building_level <= 0 }
+				limit = {
+					sul_location_rgo_building_level <= 0
+					OR = {
+						NOR = {
+							raw_material = goods:iron
+							raw_material = goods:coal
+						}
+						owner = { has_advance = advance:iron_working }
+					}
+				}
 
 				change_building_level_in_location = {
 					building = "global_variable_map(sul_rgo_map|raw_material)"

@@ -60,6 +60,34 @@ RANK_BONUS = {
     "city": 25,
 }
 
+# Geography equilibrium shifts (flat_value / 0.001 spring decay)
+# Must match in_game/common/script_values/sul_specialization_constants.txt
+VEGETATION_SHIFT = {
+    "desert":    -12,
+    "jungle":    -20,
+    "forest":     -8,
+    "woods":      -3,
+    "farmland":    0,
+    "grasslands":  0,
+}
+
+TOPOGRAPHY_SHIFT = {
+    "mountains": -25,
+    "wetlands":  -15,
+    "hills":      -2,
+    "plateau":    -1,
+    "flatland":    0,
+    "lakes":       0,
+}
+
+CLIMATE_SHIFT = {
+    "arctic":     -30,
+    "tropical":    -2,
+    "continental":  0,
+    "temperate":    0,
+    "arid":         0,
+}
+
 # Base equilibrium (from the spring: +0.05 base, -0.001/dev → eq=50)
 BASE_EQ = 50.0
 
@@ -173,6 +201,27 @@ def parse_buildings(path: Path) -> dict:
     return dict(result)
 
 
+TERRAIN_FIELD_RE = re.compile(
+    r"\b(topography|vegetation|climate)\s*=\s*([a-z_]+)"
+)
+
+
+def parse_terrain(path: Path) -> dict:
+    """Return {location: {topography, vegetation, climate}}."""
+    result = {}
+    for line in path.read_text(encoding="utf-8-sig").splitlines():
+        line = line.strip()
+        if not line or line.startswith("#"):
+            continue
+        m = re.match(r"([a-z_][a-z0-9_]*)\s*=\s*\{", line)
+        if not m:
+            continue
+        loc = m.group(1)
+        fields = dict(TERRAIN_FIELD_RE.findall(line))
+        result[loc] = fields
+    return result
+
+
 def classify_building(name: str) -> str:
     """Return 'extraction', 'production', or 'other'."""
     if name in EXTRACTION_EXACT:
@@ -194,9 +243,16 @@ def compute_equilibrium(
     buildings: list,
     is_market_center: bool,
     rank: str = "rural_settlement",
+    terrain: dict = None,
 ) -> float:
     """Compute predicted development equilibrium for a location."""
     eq = BASE_EQ
+
+    # Geography shifts
+    if terrain:
+        eq += VEGETATION_SHIFT.get(terrain.get("vegetation", ""), 0)
+        eq += TOPOGRAPHY_SHIFT.get(terrain.get("topography", ""), 0)
+        eq += CLIMATE_SHIFT.get(terrain.get("climate", ""), 0)
 
     # Pop pressure
     total_pop = sum(pop_dist.values())
@@ -305,11 +361,13 @@ def main():
     markets_file = vanilla / "main_menu/setup/start/03_markets.txt"
     ranks_file = vanilla / "main_menu/setup/start/07_cities_and_buildings.txt"
     buildings_file = mod / "main_menu/setup/start/50_sul_setup.txt"
+    terrain_file = vanilla / "in_game/map_data/location_templates.txt"
     output_file = mod / "main_menu/setup/start/14_development.txt"
 
     print(f"Pops:      {pops_file}")
     print(f"Markets:   {markets_file}")
     print(f"Ranks:     {ranks_file}")
+    print(f"Terrain:   {terrain_file}")
     print(f"Buildings: {buildings_file}")
     print(f"Output:    {output_file}")
     print()
@@ -318,11 +376,13 @@ def main():
     pop_data = parse_pops(pops_file)
     market_centers = parse_market_centers(markets_file)
     ranks = parse_ranks(ranks_file)
+    terrain_data = parse_terrain(terrain_file) if terrain_file.exists() else {}
     buildings = parse_buildings(buildings_file) if buildings_file.exists() else {}
 
     print(f"Locations with pops:  {len(pop_data)}")
     print(f"Market centers:       {len(market_centers)}")
     print(f"Locations with rank:  {len(ranks)}")
+    print(f"Locations with terrain: {len(terrain_data)}")
     print(f"Locations with bldgs: {len(buildings)}")
     print()
 
@@ -336,9 +396,10 @@ def main():
     for loc_name, pops in pop_data.items():
         loc_buildings = buildings.get(loc_name, [])
         is_mc = loc_name in market_centers
+        loc_terrain = terrain_data.get(loc_name, {})
 
         loc_rank = ranks.get(loc_name, "rural_settlement")
-        eq = compute_equilibrium(pops, loc_buildings, is_mc, loc_rank)
+        eq = compute_equilibrium(pops, loc_buildings, is_mc, loc_rank, loc_terrain)
         dev = round(eq)
 
         results[loc_name] = dev

@@ -43,11 +43,10 @@ LEVEL_CAP = 10
 EXCLUDED_POP_TYPES = {"slaves", "tribesmen"}
 SHIFT_DONOR = "peasants"
 
-# Iron RGO is the only raw good tech-gated. Tags without iron_working
-# researched at game start don't receive sul_rgo_iron placements.
-IRON_RGO = "sul_rgo_iron"
-IRON_WORKING_ADVANCE = "iron_working"
+# iron_working unlocks both iron and coal extraction (STL >= 1).
+# Tags without it don't receive sul_rgo_iron or sul_rgo_coal placements.
 IRON_WORKING_REQUIRED_STL = 1
+TECH_GATED_RGOS = {"sul_rgo_iron", "sul_rgo_coal"}
 
 # Village selected from predicted spec (market center → commercial).
 VILLAGE_BY_SPEC = {
@@ -118,6 +117,7 @@ OWN_BLOCK_RE = re.compile(r"\b(own_[a-z_]+)\s*=\s*\{([^{}]*)\}", re.DOTALL)
 LOC_TOKEN_RE = re.compile(r"[a-z_][a-z0-9_]*", re.IGNORECASE)
 
 STL_RE = re.compile(r"\bstarting_technology_level\s*=\s*(\d+)")
+INCLUDE_RE = re.compile(r'\binclude\s*=\s*"?([a-z_][a-z0-9_]*)"?')
 
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -300,9 +300,36 @@ def parse_market_centers(path: Path) -> set:
     return {m.group(1) for m in MARKET_ADD_RE.finditer(text)}
 
 
-def parse_countries(path: Path):
+def _load_templates(vanilla: Path) -> dict:
+    """Load setup templates, returning {name: text_content}."""
+    tpl_dir = vanilla / "main_menu/setup/templates"
+    templates = {}
+    if tpl_dir.is_dir():
+        for f in tpl_dir.glob("*.txt"):
+            templates[f.stem] = f.read_text(encoding="utf-8-sig")
+    return templates
+
+
+def _resolve_stl(body: str, templates: dict, depth: int = 0) -> int:
+    """Find starting_technology_level in body or its includes (recursive)."""
+    if depth > 10:
+        return 0
+    m = STL_RE.search(body)
+    if m:
+        return int(m.group(1))
+    for inc in INCLUDE_RE.findall(body):
+        tpl = templates.get(inc, "")
+        if tpl:
+            result = _resolve_stl(tpl, templates, depth + 1)
+            if result > 0:
+                return result
+    return 0
+
+
+def parse_countries(path: Path, vanilla: Path = None):
     """10_countries.txt: returns (loc_to_tag, tag_to_info).
     tag_to_info[tag] = {'stl': int}. Only info the RGO-only generator needs."""
+    templates = _load_templates(vanilla) if vanilla else {}
     text = path.read_text(encoding="utf-8-sig")
     text = re.sub(r"#[^\n]*", "", text)
     outer = re.search(r"\bcountries\s*=\s*\{\s*countries\s*=\s*\{", text)
@@ -338,9 +365,8 @@ def parse_countries(path: Path):
                 for om in OWN_BLOCK_RE.finditer(country_body):
                     for tok in LOC_TOKEN_RE.findall(om.group(2)):
                         loc_to_tag[tok] = tag
-                stl_match = STL_RE.search(country_body)
                 tag_info[tag] = {
-                    "stl": int(stl_match.group(1)) if stl_match else 0,
+                    "stl": _resolve_stl(country_body, templates),
                 }
                 i = j
             else:
@@ -621,7 +647,7 @@ def main():
     rgo_map            = parse_rgo_map(rgo_map_file)
     goods_to_spec      = parse_goods_to_spec(rgo_map_file)
     rgo_pop_types      = parse_rgo_building_pop_types(rgo_bldg_file)
-    owned, tag_info    = parse_countries(countries_file)
+    owned, tag_info    = parse_countries(countries_file, vanilla=args.vanilla)
     ranks              = parse_ranks(cities_file)
     market_centers     = parse_market_centers(markets_file)
 
@@ -643,9 +669,9 @@ def main():
         # ---- RGO ----
         rgo_bldg = rgo_map.get(rm) if rm else None
         if rgo_bldg:
-            # Iron tech gate: skip sul_rgo_iron if owner lacks iron_working.
-            if rgo_bldg == IRON_RGO and tag_info.get(tag, {}).get("stl", 0) < IRON_WORKING_REQUIRED_STL:
-                stats["iron_skipped_no_tech"] += 1
+            # Tech gate: iron_working (STL >= 1) unlocks iron + coal.
+            if rgo_bldg in TECH_GATED_RGOS and tag_info.get(tag, {}).get("stl", 0) < IRON_WORKING_REQUIRED_STL:
+                stats["tech_gated_skipped"] += 1
             else:
                 rgo_level = min(LEVEL_CAP, 1 + floor(eligible_pop / RGO_POP_PER_LEVEL))
                 if rgo_level > 0:
@@ -691,7 +717,7 @@ def main():
     print(f"market centers:                     {len(market_centers)}")
     print(f"ranks parsed:                       {len(ranks)}")
     print(f"RGO placements:                     {stats['rgo_placed']}")
-    print(f"iron RGOs skipped (no iron_working): {stats['iron_skipped_no_tech']}")
+    print(f"RGOs skipped (no iron_working):      {stats['tech_gated_skipped']}")
     print(f"village placements:                 {stats['village_placed']}")
     print(f"owned but no pop entry:             {stats['owned_no_pop_entry']}")
     print(f"wrote: {setup_out}")

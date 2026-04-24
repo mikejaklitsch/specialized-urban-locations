@@ -308,120 +308,24 @@ template location_tax_base_details {
 						max_width = 80
 						align = right
 						raw_text = "#T Share#!"
-
-						tooltipwidget = {
-							ContextualTooltipType = {
-								blockoverride "tooltip_title" {
-									ContextualTooltipHeader = {
-										blockoverride "title_icon" {
-											icon = {
-												using = tooltip_title_icon_size
-												texture = "[GetConceptTexture('wealth')]"
-											}
-										}
-										blockoverride "title_text" { raw_text = "Wealth Share" }
-										blockoverride "concept_link" { text = "[wealth_share|e]" }
-									}
-								}
-								blockoverride "tooltip_content" {
-									text_multi = {
-										layoutpolicy_horizontal = expanding
-										max_width = 350
-										raw_text = "Each pop type receives a share of this location's wealth based on the political influence of their [estate|e]. More powerful estates claim a larger portion of the total economic output."
-									}
-								}
-							}
-						}
 					}
 					text_single = {
 						min_width = 80
 						max_width = 80
 						align = right
 						raw_text = "#T Tax Base#!"
-
-						tooltipwidget = {
-							ContextualTooltipType = {
-								blockoverride "tooltip_title" {
-									ContextualTooltipHeader = {
-										blockoverride "title_icon" {
-											icon = {
-												using = tooltip_title_icon_size
-												texture = "gfx/interface/icons/location_icons/tax_base.dds"
-											}
-										}
-										blockoverride "title_text" { raw_text = "Tax Base Income" }
-										blockoverride "concept_link" { text = "[tax_base|e]" }
-									}
-								}
-								blockoverride "tooltip_content" {
-									text_multi = {
-										layoutpolicy_horizontal = expanding
-										max_width = 350
-										raw_text = "Income from the location's base economic output before wages are added. This represents rents, land revenue, and other non-labor income, distributed among pop types by their [wealth_share|e]."
-									}
-								}
-							}
-						}
 					}
 					text_single = {
 						min_width = 80
 						max_width = 80
 						align = right
 						raw_text = "#T Wages#!"
-
-						tooltipwidget = {
-							ContextualTooltipType = {
-								blockoverride "tooltip_title" {
-									ContextualTooltipHeader = {
-										blockoverride "title_icon" {
-											icon = {
-												using = tooltip_title_icon_size
-												texture = "gfx/interface/icons/resources/gold.dds"
-											}
-										}
-										blockoverride "title_text" { raw_text = "Wage Income" }
-										blockoverride "concept_link" {  }
-									}
-								}
-								blockoverride "tooltip_content" {
-									text_multi = {
-										layoutpolicy_horizontal = expanding
-										max_width = 350
-										raw_text = "Additional income earned through labor, scaled by [market_access|e]. Each pop earns wages based on their role: #T Nobles#! @gold!5.0 #T Clergy#! @gold!2.0 #T Burghers#! @gold!1.0 #T Soldiers#! @gold!0.5 #T Laborers#! @gold!0.25 #T Peasants#! @gold!0.05. Wages are added to the pop demand budget and distributed to [estates|e] based on local [estate_power|e]."
-									}
-								}
-							}
-						}
 					}
 					text_single = {
 						min_width = 80
 						max_width = 80
 						align = right
-						raw_text = "#T Budget#!"
-
-						tooltipwidget = {
-							ContextualTooltipType = {
-								blockoverride "tooltip_title" {
-									ContextualTooltipHeader = {
-										blockoverride "title_icon" {
-											icon = {
-												using = tooltip_title_icon_size
-												texture = "gfx/interface/icons/resources/gold.dds"
-											}
-										}
-										blockoverride "title_text" { raw_text = "Spending Budget" }
-										blockoverride "concept_link" {  }
-									}
-								}
-								blockoverride "tooltip_content" {
-									text_multi = {
-										layoutpolicy_horizontal = expanding
-										max_width = 350
-										raw_text = "Total income available for purchasing goods (#T Tax Base + Wages#!). This determines what goods each pop type demands and in what quantities. Hover over a pop's budget value to see a detailed breakdown by good."
-									}
-								}
-							}
-						}
+						raw_text = "#T Demand#!"
 					}
 				}
 			}
@@ -451,19 +355,55 @@ template location_tax_base_details {
 						min_width = 80
 						max_width = 80
 						align = right
-						raw_text = "[Location.MakeScope.ScriptValue('sul_noble_tax_income')|2]@gold!"
+						raw_text = "[Location.MakeScope.ScriptValue('sul_noble_tax_per_pop')|2]@gold!"
 					}
 					text_single = {
 						min_width = 80
 						max_width = 80
 						align = right
-						raw_text = "[Subtract_CFixedPoint(Location.MakeScope.ScriptValue('sul_noble_rents_wages'), Location.MakeScope.ScriptValue('sul_noble_tax_income'))|2]@gold!"
+						raw_text = "[Location.MakeScope.ScriptValue('sul_noble_wage_rate')|2]@gold!"
+
+						tooltipwidget = {
+							ContextualTooltipType = {
+								blockoverride "tooltip_title" {
+									ContextualTooltipHeader = {
+										blockoverride "title_icon" { icon = { using = tooltip_title_icon_size texture = "[GetGraphicalCultureTextureForPopType(GetPopTypeByName('nobles'))]" } }
+										blockoverride "title_text" { raw_text = "Nobles [sul_wages|E]: [Location.MakeScope.ScriptValue('sul_noble_wage_rate')|2]@gold!" }
+									}
+								}
+								blockoverride "tooltip_content" {
+									TooltipListBase = {
+										TooltipManualTableField = {
+											blockoverride "field_content" {
+												text_single = { layoutpolicy_horizontal = expanding raw_text = "Base Wage" }
+												text_single = { align = right min_width = 100 raw_text = "[Location.MakeScope.ScriptValue('sul_noble_base_wage')|2]@gold!" }
+											}
+										}
+										TooltipManualTableField = {
+											datacontext = "[Location.GetOwner.GetModifierTooltipContext('sul_global_nobles_wages_modifier')]"
+											blockoverride "field_content" {
+												icon = { size = { 20 20 } texture = "[CountryModifierWrap.GetIcon]" }
+												text_single = { layoutpolicy_horizontal = expanding margin_left = 3 raw_text = "Global Nobles Wages" }
+												text_single = { align = right min_width = 100 raw_text = "[Location.MakeScope.ScriptValue('sul_noble_global_wage_modifier')|+=0%]" }
+											}
+										}
+										TooltipManualTableField = {
+											blockoverride "field_content" {
+												icon = { size = { 20 20 } texture = "gfx/interface/icons/modifier_types/sul_local_nobles_wages_modifier.dds" }
+												text_single = { layoutpolicy_horizontal = expanding margin_left = 3 raw_text = "Local Nobles Wages" }
+												text_single = { align = right min_width = 100 raw_text = "[Location.MakeScope.ScriptValue('sul_noble_local_wage_modifier')|+=0%]" }
+											}
+										}
+									}
+								}
+							}
+						}
 					}
 					text_single = {
 						min_width = 80
 						max_width = 80
 						align = right
-						raw_text = "[Location.MakeScope.ScriptValue('sul_noble_rents_wages')|2]@gold!"
+						raw_text = "[Location.MakeScope.ScriptValue('sul_noble_demand_per_pop')|2]@gold!"
 
 						tooltipwidget = {
 							ContextualTooltipType = {
@@ -752,19 +692,61 @@ template location_tax_base_details {
 						min_width = 80
 						max_width = 80
 						align = right
-						raw_text = "[Location.MakeScope.ScriptValue('sul_clergy_tax_income')|2]@gold!"
+						raw_text = "[Location.MakeScope.ScriptValue('sul_clergy_tax_per_pop')|2]@gold!"
 					}
 					text_single = {
 						min_width = 80
 						max_width = 80
 						align = right
-						raw_text = "[Subtract_CFixedPoint(Location.MakeScope.ScriptValue('sul_clergy_rents_wages'), Location.MakeScope.ScriptValue('sul_clergy_tax_income'))|2]@gold!"
+						raw_text = "[Location.MakeScope.ScriptValue('sul_clergy_wage_rate')|2]@gold!"
+
+						tooltipwidget = {
+							ContextualTooltipType = {
+								blockoverride "tooltip_title" {
+									ContextualTooltipHeader = {
+										blockoverride "title_icon" { icon = { using = tooltip_title_icon_size texture = "[GetGraphicalCultureTextureForPopType(GetPopTypeByName('clergy'))]" } }
+										blockoverride "title_text" { raw_text = "Clergy [sul_wages|E]: [Location.MakeScope.ScriptValue('sul_clergy_wage_rate')|2]@gold!" }
+									}
+								}
+								blockoverride "tooltip_content" {
+									TooltipListBase = {
+										TooltipManualTableField = {
+											blockoverride "field_content" {
+												text_single = { layoutpolicy_horizontal = expanding raw_text = "Base Wage" }
+												text_single = { align = right min_width = 100 raw_text = "[Location.MakeScope.ScriptValue('sul_clergy_base_wage')|2]@gold!" }
+											}
+										}
+										TooltipManualTableField = {
+											datacontext = "[Location.GetOwner.GetModifierTooltipContext('sul_global_clergy_wages_modifier')]"
+											blockoverride "field_content" {
+												icon = { size = { 20 20 } texture = "[CountryModifierWrap.GetIcon]" }
+												text_single = { layoutpolicy_horizontal = expanding margin_left = 3 raw_text = "Global Clergy Wages" }
+												text_single = { align = right min_width = 100 raw_text = "[Location.MakeScope.ScriptValue('sul_clergy_global_wage_modifier')|+=0%]" }
+											}
+										}
+										TooltipManualTableField = {
+											blockoverride "field_content" {
+												icon = { size = { 20 20 } texture = "gfx/interface/icons/modifier_types/sul_local_clergy_wages_modifier.dds" }
+												text_single = { layoutpolicy_horizontal = expanding margin_left = 3 raw_text = "Local Clergy Wages" }
+												text_single = { align = right min_width = 100 raw_text = "[Location.MakeScope.ScriptValue('sul_clergy_local_wage_modifier')|+=0%]" }
+											}
+										}
+										TooltipManualTableField = {
+											blockoverride "field_content" {
+												text_single = { layoutpolicy_horizontal = expanding raw_text = "Population Capacity of [Location.MakeScope.ScriptValue('sul_display_pop_capacity_pct')|0]%" }
+												text_single = { align = right min_width = 100 raw_text = "[Location.MakeScope.ScriptValue('sul_clergy_pop_cap_wage')|+=0%]" }
+											}
+										}
+									}
+								}
+							}
+						}
 					}
 					text_single = {
 						min_width = 80
 						max_width = 80
 						align = right
-						raw_text = "[Location.MakeScope.ScriptValue('sul_clergy_rents_wages')|2]@gold!"
+						raw_text = "[Location.MakeScope.ScriptValue('sul_clergy_demand_per_pop')|2]@gold!"
 
 						tooltipwidget = {
 							ContextualTooltipType = {
@@ -1053,19 +1035,61 @@ template location_tax_base_details {
 						min_width = 80
 						max_width = 80
 						align = right
-						raw_text = "[Location.MakeScope.ScriptValue('sul_burgher_tax_income')|2]@gold!"
+						raw_text = "[Location.MakeScope.ScriptValue('sul_burgher_tax_per_pop')|2]@gold!"
 					}
 					text_single = {
 						min_width = 80
 						max_width = 80
 						align = right
-						raw_text = "[Subtract_CFixedPoint(Location.MakeScope.ScriptValue('sul_burgher_rents_wages'), Location.MakeScope.ScriptValue('sul_burgher_tax_income'))|2]@gold!"
+						raw_text = "[Location.MakeScope.ScriptValue('sul_burgher_wage_rate')|2]@gold!"
+
+						tooltipwidget = {
+							ContextualTooltipType = {
+								blockoverride "tooltip_title" {
+									ContextualTooltipHeader = {
+										blockoverride "title_icon" { icon = { using = tooltip_title_icon_size texture = "[GetGraphicalCultureTextureForPopType(GetPopTypeByName('burghers'))]" } }
+										blockoverride "title_text" { raw_text = "Burghers [sul_wages|E]: [Location.MakeScope.ScriptValue('sul_burgher_wage_rate')|2]@gold!" }
+									}
+								}
+								blockoverride "tooltip_content" {
+									TooltipListBase = {
+										TooltipManualTableField = {
+											blockoverride "field_content" {
+												text_single = { layoutpolicy_horizontal = expanding raw_text = "Base Wage" }
+												text_single = { align = right min_width = 100 raw_text = "[Location.MakeScope.ScriptValue('sul_burgher_base_wage')|2]@gold!" }
+											}
+										}
+										TooltipManualTableField = {
+											datacontext = "[Location.GetOwner.GetModifierTooltipContext('sul_global_burghers_wages_modifier')]"
+											blockoverride "field_content" {
+												icon = { size = { 20 20 } texture = "[CountryModifierWrap.GetIcon]" }
+												text_single = { layoutpolicy_horizontal = expanding margin_left = 3 raw_text = "Global Burghers Wages" }
+												text_single = { align = right min_width = 100 raw_text = "[Location.MakeScope.ScriptValue('sul_burgher_global_wage_modifier')|+=0%]" }
+											}
+										}
+										TooltipManualTableField = {
+											blockoverride "field_content" {
+												icon = { size = { 20 20 } texture = "gfx/interface/icons/modifier_types/sul_local_burghers_wages_modifier.dds" }
+												text_single = { layoutpolicy_horizontal = expanding margin_left = 3 raw_text = "Local Burghers Wages" }
+												text_single = { align = right min_width = 100 raw_text = "[Location.MakeScope.ScriptValue('sul_burgher_local_wage_modifier')|+=0%]" }
+											}
+										}
+										TooltipManualTableField = {
+											blockoverride "field_content" {
+												text_single = { layoutpolicy_horizontal = expanding raw_text = "Population Capacity of [Location.MakeScope.ScriptValue('sul_display_pop_capacity_pct')|0]%" }
+												text_single = { align = right min_width = 100 raw_text = "[Location.MakeScope.ScriptValue('sul_burgher_pop_cap_wage')|+=0%]" }
+											}
+										}
+									}
+								}
+							}
+						}
 					}
 					text_single = {
 						min_width = 80
 						max_width = 80
 						align = right
-						raw_text = "[Location.MakeScope.ScriptValue('sul_burgher_rents_wages')|2]@gold!"
+						raw_text = "[Location.MakeScope.ScriptValue('sul_burgher_demand_per_pop')|2]@gold!"
 
 						tooltipwidget = {
 							ContextualTooltipType = {
@@ -1354,19 +1378,67 @@ template location_tax_base_details {
 						min_width = 80
 						max_width = 80
 						align = right
-						raw_text = "[Location.MakeScope.ScriptValue('sul_soldier_tax_income')|2]@gold!"
+						raw_text = "[Location.MakeScope.ScriptValue('sul_soldier_tax_per_pop')|2]@gold!"
 					}
 					text_single = {
 						min_width = 80
 						max_width = 80
 						align = right
-						raw_text = "[Subtract_CFixedPoint(Location.MakeScope.ScriptValue('sul_soldier_rents_wages'), Location.MakeScope.ScriptValue('sul_soldier_tax_income'))|2]@gold!"
+						raw_text = "[Location.MakeScope.ScriptValue('sul_soldier_wage_rate')|2]@gold!"
+
+						tooltipwidget = {
+							ContextualTooltipType = {
+								blockoverride "tooltip_title" {
+									ContextualTooltipHeader = {
+										blockoverride "title_icon" { icon = { using = tooltip_title_icon_size texture = "[GetGraphicalCultureTextureForPopType(GetPopTypeByName('soldiers'))]" } }
+										blockoverride "title_text" { raw_text = "Soldiers [sul_wages|E]: [Location.MakeScope.ScriptValue('sul_soldier_wage_rate')|2]@gold!" }
+									}
+								}
+								blockoverride "tooltip_content" {
+									TooltipListBase = {
+										TooltipManualTableField = {
+											blockoverride "field_content" {
+												text_single = { layoutpolicy_horizontal = expanding raw_text = "Base Wage" }
+												text_single = { align = right min_width = 100 raw_text = "[Location.MakeScope.ScriptValue('sul_soldier_base_wage')|2]@gold!" }
+											}
+										}
+										TooltipManualTableField = {
+											datacontext = "[Location.GetOwner.GetModifierTooltipContext('sul_global_soldiers_wages_modifier')]"
+											blockoverride "field_content" {
+												icon = { size = { 20 20 } texture = "[CountryModifierWrap.GetIcon]" }
+												text_single = { layoutpolicy_horizontal = expanding margin_left = 3 raw_text = "Global Soldiers Wages" }
+												text_single = { align = right min_width = 100 raw_text = "[Location.MakeScope.ScriptValue('sul_soldier_global_wage_modifier')|+=0%]" }
+											}
+										}
+										TooltipManualTableField = {
+											blockoverride "field_content" {
+												icon = { size = { 20 20 } texture = "gfx/interface/icons/modifier_types/sul_local_soldiers_wages_modifier.dds" }
+												text_single = { layoutpolicy_horizontal = expanding margin_left = 3 raw_text = "Local Soldiers Wages" }
+												text_single = { align = right min_width = 100 raw_text = "[Location.MakeScope.ScriptValue('sul_soldier_local_wage_modifier')|+=0%]" }
+											}
+										}
+										TooltipManualTableField = {
+											blockoverride "field_content" {
+												text_single = { layoutpolicy_horizontal = expanding raw_text = "Population Capacity of [Location.MakeScope.ScriptValue('sul_display_pop_capacity_pct')|0]%" }
+												text_single = { align = right min_width = 100 raw_text = "[Location.MakeScope.ScriptValue('sul_soldier_pop_cap_wage')|+=0%]" }
+											}
+										}
+										TooltipManualTableField = {
+											blockoverride "field_content" {
+												text_single = { layoutpolicy_horizontal = expanding raw_text = "Peasant Enfranchisement of [Location.MakeScope.ScriptValue('sul_display_enfranchisement_pct')|0]%" }
+												text_single = { align = right min_width = 100 raw_text = "[Location.MakeScope.ScriptValue('sul_commoner_enfr_wage')|+=0%]" }
+											}
+										}
+									}
+								}
+							}
+						}
 					}
 					text_single = {
 						min_width = 80
 						max_width = 80
 						align = right
-						raw_text = "[Location.MakeScope.ScriptValue('sul_soldier_rents_wages')|2]@gold!"
+						raw_text = "[Location.MakeScope.ScriptValue('sul_soldier_demand_per_pop')|2]@gold!"
 
 						tooltipwidget = {
 							ContextualTooltipType = {
@@ -1655,19 +1727,67 @@ template location_tax_base_details {
 						min_width = 80
 						max_width = 80
 						align = right
-						raw_text = "[Location.MakeScope.ScriptValue('sul_laborer_tax_income')|2]@gold!"
+						raw_text = "[Location.MakeScope.ScriptValue('sul_laborer_tax_per_pop')|2]@gold!"
 					}
 					text_single = {
 						min_width = 80
 						max_width = 80
 						align = right
-						raw_text = "[Subtract_CFixedPoint(Location.MakeScope.ScriptValue('sul_laborer_rents_wages'), Location.MakeScope.ScriptValue('sul_laborer_tax_income'))|2]@gold!"
+						raw_text = "[Location.MakeScope.ScriptValue('sul_laborer_wage_rate')|2]@gold!"
+
+						tooltipwidget = {
+							ContextualTooltipType = {
+								blockoverride "tooltip_title" {
+									ContextualTooltipHeader = {
+										blockoverride "title_icon" { icon = { using = tooltip_title_icon_size texture = "[GetGraphicalCultureTextureForPopType(GetPopTypeByName('laborers'))]" } }
+										blockoverride "title_text" { raw_text = "Laborers [sul_wages|E]: [Location.MakeScope.ScriptValue('sul_laborer_wage_rate')|2]@gold!" }
+									}
+								}
+								blockoverride "tooltip_content" {
+									TooltipListBase = {
+										TooltipManualTableField = {
+											blockoverride "field_content" {
+												text_single = { layoutpolicy_horizontal = expanding raw_text = "Base Wage" }
+												text_single = { align = right min_width = 100 raw_text = "[Location.MakeScope.ScriptValue('sul_laborer_base_wage')|2]@gold!" }
+											}
+										}
+										TooltipManualTableField = {
+											datacontext = "[Location.GetOwner.GetModifierTooltipContext('sul_global_laborers_wages_modifier')]"
+											blockoverride "field_content" {
+												icon = { size = { 20 20 } texture = "[CountryModifierWrap.GetIcon]" }
+												text_single = { layoutpolicy_horizontal = expanding margin_left = 3 raw_text = "Global Laborers Wages" }
+												text_single = { align = right min_width = 100 raw_text = "[Location.MakeScope.ScriptValue('sul_laborer_global_wage_modifier')|+=0%]" }
+											}
+										}
+										TooltipManualTableField = {
+											blockoverride "field_content" {
+												icon = { size = { 20 20 } texture = "gfx/interface/icons/modifier_types/sul_local_laborers_wages_modifier.dds" }
+												text_single = { layoutpolicy_horizontal = expanding margin_left = 3 raw_text = "Local Laborers Wages" }
+												text_single = { align = right min_width = 100 raw_text = "[Location.MakeScope.ScriptValue('sul_laborer_local_wage_modifier')|+=0%]" }
+											}
+										}
+										TooltipManualTableField = {
+											blockoverride "field_content" {
+												text_single = { layoutpolicy_horizontal = expanding raw_text = "Population Capacity of [Location.MakeScope.ScriptValue('sul_display_pop_capacity_pct')|0]%" }
+												text_single = { align = right min_width = 100 raw_text = "[Location.MakeScope.ScriptValue('sul_laborer_pop_cap_wage')|+=0%]" }
+											}
+										}
+										TooltipManualTableField = {
+											blockoverride "field_content" {
+												text_single = { layoutpolicy_horizontal = expanding raw_text = "Peasant Enfranchisement of [Location.MakeScope.ScriptValue('sul_display_enfranchisement_pct')|0]%" }
+												text_single = { align = right min_width = 100 raw_text = "[Location.MakeScope.ScriptValue('sul_commoner_enfr_wage')|+=0%]" }
+											}
+										}
+									}
+								}
+							}
+						}
 					}
 					text_single = {
 						min_width = 80
 						max_width = 80
 						align = right
-						raw_text = "[Location.MakeScope.ScriptValue('sul_laborer_rents_wages')|2]@gold!"
+						raw_text = "[Location.MakeScope.ScriptValue('sul_laborer_demand_per_pop')|2]@gold!"
 
 						tooltipwidget = {
 							ContextualTooltipType = {
@@ -1956,19 +2076,67 @@ template location_tax_base_details {
 						min_width = 80
 						max_width = 80
 						align = right
-						raw_text = "[Location.MakeScope.ScriptValue('sul_peasant_tax_income')|2]@gold!"
+						raw_text = "[Location.MakeScope.ScriptValue('sul_peasant_tax_per_pop')|2]@gold!"
 					}
 					text_single = {
 						min_width = 80
 						max_width = 80
 						align = right
-						raw_text = "[Subtract_CFixedPoint(Location.MakeScope.ScriptValue('sul_peasant_rents_wages'), Location.MakeScope.ScriptValue('sul_peasant_tax_income'))|2]@gold!"
+						raw_text = "[Location.MakeScope.ScriptValue('sul_peasant_wage_rate')|2]@gold!"
+
+						tooltipwidget = {
+							ContextualTooltipType = {
+								blockoverride "tooltip_title" {
+									ContextualTooltipHeader = {
+										blockoverride "title_icon" { icon = { using = tooltip_title_icon_size texture = "[GetGraphicalCultureTextureForPopType(GetPopTypeByName('peasants'))]" } }
+										blockoverride "title_text" { raw_text = "Peasants [sul_wages|E]: [Location.MakeScope.ScriptValue('sul_peasant_wage_rate')|2]@gold!" }
+									}
+								}
+								blockoverride "tooltip_content" {
+									TooltipListBase = {
+										TooltipManualTableField = {
+											blockoverride "field_content" {
+												text_single = { layoutpolicy_horizontal = expanding raw_text = "Base Wage" }
+												text_single = { align = right min_width = 100 raw_text = "[Location.MakeScope.ScriptValue('sul_peasant_base_wage')|2]@gold!" }
+											}
+										}
+										TooltipManualTableField = {
+											datacontext = "[Location.GetOwner.GetModifierTooltipContext('sul_global_peasants_wages_modifier')]"
+											blockoverride "field_content" {
+												icon = { size = { 20 20 } texture = "[CountryModifierWrap.GetIcon]" }
+												text_single = { layoutpolicy_horizontal = expanding margin_left = 3 raw_text = "Global Peasants Wages" }
+												text_single = { align = right min_width = 100 raw_text = "[Location.MakeScope.ScriptValue('sul_peasant_global_wage_modifier')|+=0%]" }
+											}
+										}
+										TooltipManualTableField = {
+											blockoverride "field_content" {
+												icon = { size = { 20 20 } texture = "gfx/interface/icons/modifier_types/sul_local_peasants_wages_modifier.dds" }
+												text_single = { layoutpolicy_horizontal = expanding margin_left = 3 raw_text = "Local Peasants Wages" }
+												text_single = { align = right min_width = 100 raw_text = "[Location.MakeScope.ScriptValue('sul_peasant_local_wage_modifier')|+=0%]" }
+											}
+										}
+										TooltipManualTableField = {
+											blockoverride "field_content" {
+												text_single = { layoutpolicy_horizontal = expanding raw_text = "Population Capacity of [Location.MakeScope.ScriptValue('sul_display_pop_capacity_pct')|0]%" }
+												text_single = { align = right min_width = 100 raw_text = "[Location.MakeScope.ScriptValue('sul_peasant_pop_cap_wage')|+=0%]" }
+											}
+										}
+										TooltipManualTableField = {
+											blockoverride "field_content" {
+												text_single = { layoutpolicy_horizontal = expanding raw_text = "Peasant Enfranchisement of [Location.MakeScope.ScriptValue('sul_display_enfranchisement_pct')|0]%" }
+												text_single = { align = right min_width = 100 raw_text = "[Location.MakeScope.ScriptValue('sul_commoner_enfr_wage')|+=0%]" }
+											}
+										}
+									}
+								}
+							}
+						}
 					}
 					text_single = {
 						min_width = 80
 						max_width = 80
 						align = right
-						raw_text = "[Location.MakeScope.ScriptValue('sul_peasant_rents_wages')|2]@gold!"
+						raw_text = "[Location.MakeScope.ScriptValue('sul_peasant_demand_per_pop')|2]@gold!"
 
 						tooltipwidget = {
 							ContextualTooltipType = {

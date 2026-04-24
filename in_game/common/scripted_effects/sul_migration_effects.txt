@@ -1,0 +1,142 @@
+﻿# Inter-Market Migration Effects
+# Moves pops between market centers along export routes.
+# Processes num_markets/12 most-stale markets per month via weather_monthly_pulse.
+
+# ── Initialization ──────────────────────────────────────────────────────────
+
+sul_migration_initialize = {
+	set_global_variable = { name = sul_migration_market_count value = 0 }
+	set_global_variable = { name = sul_migration_total_fired value = 0 }
+	every_market_in_world = {
+		change_global_variable = { name = sul_migration_market_count add = 1 }
+		location = {
+			add_location_modifier = {
+				modifier = sul_migration_center_suppression
+				months = -1
+				size = location_population_percentage
+				mode = replace
+			}
+		}
+	}
+}
+
+# ── Monthly Batch Update ────────────────────────────────────────────────────
+
+sul_migration_monthly_update = {
+	ordered_market_in_world = {
+		max = sul_migration_batch_size
+
+		order_by = {
+			value = 0
+			if = {
+				limit = { location = { has_variable = sul_migration_last_update } }
+				subtract = location.var:sul_migration_last_update
+			}
+		}
+
+		sul_migration_process_market = yes
+	}
+}
+
+# ── Per-Market Processing ───────────────────────────────────────────────────
+
+sul_migration_process_market = {
+	save_temporary_scope_as = source_market
+	location = {
+		save_temporary_scope_as = source_loc
+	}
+
+	# Timestamp for staleness ordering
+	location = {
+		set_variable = {
+			name = sul_migration_last_update
+			value = {
+				value = current_year
+				multiply = 12
+				add = current_month
+			}
+		}
+	}
+
+	# Apply center suppression — reduces attraction based on how full the center is
+	location = {
+		add_location_modifier = {
+			modifier = sul_migration_center_suppression
+			months = -1
+			size = location_population_percentage
+			mode = replace
+		}
+	}
+
+	# Find best export target whose center is more attractive than ours
+	ordered_export = {
+		limit = {
+			to_market.location = { has_owner = yes }
+			sul_migration_target_score > 0
+		}
+		order_by = sul_migration_target_score
+		max = 1
+		to_market = {
+			save_temporary_scope_as = migration_target
+		}
+	}
+
+	if = {
+		limit = { exists = scope:migration_target }
+		sul_migration_fire = yes
+	}
+}
+
+# ── Fire Migration ──────────────────────────────────────────────────────────
+
+sul_migration_fire = {
+	save_temporary_scope_as = source_market
+
+	location = {
+		set_variable = {
+			name = sul_migration_flow
+			value = sul_migration_amount
+		}
+	}
+
+	if = {
+		limit = { location = { var:sul_migration_flow >= 0.001 } }
+
+		add_migration = {
+			from_location = scope:source_market.location
+			to_location = scope:migration_target.location
+			months = 12
+			amount = scope:source_market.location.var:sul_migration_flow
+		}
+		change_global_variable = { name = sul_migration_total_fired add = 1 }
+		debug_log = "SUL_MIGRATION: FIRED"
+	}
+	else = {
+		debug_log = "SUL_MIGRATION: target found but flow too low"
+	}
+
+	location = {
+		remove_variable = sul_migration_flow
+	}
+}
+
+# ── Market Lifecycle ────────────────────────────────────────────────────────
+
+# Root = location (new market center). Called from sul_respec_commercial_on_built_effect.
+sul_migration_on_market_created = {
+	set_variable = { name = sul_migration_last_update value = 0 }
+	change_global_variable = { name = sul_migration_market_count add = 1 }
+	add_location_modifier = {
+		modifier = sul_migration_center_suppression
+		months = -1
+		size = location_population_percentage
+		mode = replace
+	}
+}
+
+# Root = location (about to lose market center status). Called from sul_respec_on_built_effect.
+sul_migration_on_market_destroyed = {
+	remove_variable = sul_migration_last_update
+	remove_location_modifier = sul_migration_center_suppression
+	change_global_variable = { name = sul_migration_market_count add = -1 }
+}

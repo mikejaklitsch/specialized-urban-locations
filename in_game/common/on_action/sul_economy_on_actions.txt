@@ -72,6 +72,9 @@ sul_initialize_economy = {
 
 			every_owned_location = { sul_init_zero_wpp = yes }
 
+			# Seed per-location wage rates before first economy pass
+			every_owned_location = { sul_calculate_location_wages = yes }
+
 			sul_update_country_economy = yes
 
 			# Convert vanilla efficiency sources to merchant_maintenance_cost on day 1.
@@ -199,6 +202,19 @@ sul_ai_monthly_wage_payment = {
 
 	effect = {
 		sul_estate_wages_pay_all = yes
+	}
+}
+
+# Yearly recalculation of per-location wage rates from base wages + modifiers.
+# Stores final wage per pop type as location variables so the monthly GDP
+# update only pays variable-read cost, not modifier lookups.
+#   wage = base × (1 + global_modifier + local_modifier)
+
+sul_yearly_wage_recalc = {
+	trigger = { is_real_country = yes }
+
+	effect = {
+		every_owned_location = { sul_calculate_location_wages = yes }
 	}
 }
 

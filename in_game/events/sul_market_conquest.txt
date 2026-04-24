@@ -1,4 +1,4 @@
-namespace = sul
+﻿namespace = sul
 
 # Fate of a Conquered Market
 # Fires when a market center changes owner and the conqueror's market
@@ -11,10 +11,7 @@ sul.100 = {
 	type = country_event
 	title = sul.100.title
 	desc = sul.100.desc
-
-	picture = {
-		texture = "gfx/event_pictures/ep_trade.dds"
-	}
+	orphan = yes
 
 	# Option A: Dismantle the market, reassign spec by local resources
 	option = {
@@ -23,7 +20,7 @@ sul.100 = {
 			sul_specialization_reassign = yes
 		}
 
-		ai_chance = {
+		ai_will_select = {
 			base = 100
 			if = {
 				limit = { scope:target = { tax_base >= 20 } }
@@ -33,15 +30,6 @@ sul.100 = {
 					multiply = -3.33
 				}
 			}
-			if = {
-				limit = { scope:target = { exists = raw_material } }
-				multiply = {
-					scope:target.raw_material = {
-						value = "price_in_market(scope:winner_market)"
-						divide = default_price
-					}
-				}
-			}
 		}
 	}
 
@@ -49,7 +37,7 @@ sul.100 = {
 	option = {
 		name = sul.100.b
 
-		ai_chance = {
+		ai_will_select = {
 			base = 0
 			if = {
 				limit = { scope:target = { tax_base >= 20 } }

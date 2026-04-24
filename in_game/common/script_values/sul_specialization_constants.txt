@@ -12,171 +12,6 @@ sul_debug_market_utility = {
 # sul_spec_type stores type only (1=mining, 2=farming, 3=gathering, 4=woodland,
 # 5=commercial); rank comes from the engine's location_rank.
 
-# Price thresholds: high demand at 1.5x base price, surplus at 0.75x base.
-
-sul_iron_high = {
-	value = "default_price(goods:iron)"
-	multiply = 1.5
-}
-
-sul_stone_high = {
-	value = "default_price(goods:stone)"
-	multiply = 1.5
-}
-
-sul_tools_high = {
-	value = "default_price(goods:tools)"
-	multiply = 1.5
-}
-
-sul_weaponry_high = {
-	value = "default_price(goods:weaponry)"
-	multiply = 1.5
-}
-
-sul_steel_high = {
-	value = "default_price(goods:steel)"
-	multiply = 1.5
-}
-
-# Farming high demand thresholds (1.5x base)
-
-sul_wool_high = {
-	value = "default_price(goods:wool)"
-	multiply = 1.5
-}
-
-sul_fiber_crops_high = {
-	value = "default_price(goods:fiber_crops)"
-	multiply = 1.5
-}
-
-sul_fruit_high = {
-	value = "default_price(goods:fruit)"
-	multiply = 1.5
-}
-
-sul_wine_high = {
-	value = "default_price(goods:wine)"
-	multiply = 1.5
-}
-
-sul_beer_high = {
-	value = "default_price(goods:beer)"
-	multiply = 1.5
-}
-
-sul_liquor_high = {
-	value = "default_price(goods:liquor)"
-	multiply = 1.5
-}
-
-sul_leather_high = {
-	value = "default_price(goods:leather)"
-	multiply = 1.5
-}
-
-# Gathering high demand thresholds (1.5x base)
-
-sul_salt_high = {
-	value = "default_price(goods:salt)"
-	multiply = 1.5
-}
-
-sul_fish_high = {
-	value = "default_price(goods:fish)"
-	multiply = 1.5
-}
-
-sul_clay_high = {
-	value = "default_price(goods:clay)"
-	multiply = 1.5
-}
-
-sul_porcelain_high = {
-	value = "default_price(goods:porcelain)"
-	multiply = 1.5
-}
-
-sul_pottery_high = {
-	value = "default_price(goods:pottery)"
-	multiply = 1.5
-}
-
-# Woodland high demand thresholds (1.5x base)
-
-sul_lumber_high = {
-	value = "default_price(goods:lumber)"
-	multiply = 1.5
-}
-
-sul_tar_high = {
-	value = "default_price(goods:tar)"
-	multiply = 1.5
-}
-
-sul_coal_high = {
-	value = "default_price(goods:coal)"
-	multiply = 1.5
-}
-
-sul_furniture_high = {
-	value = "default_price(goods:furniture)"
-	multiply = 1.5
-}
-
-sul_naval_supplies_high = {
-	value = "default_price(goods:naval_supplies)"
-	multiply = 1.5
-}
-
-# Commercial surplus thresholds (0.75x base - low prices)
-
-sul_wheat_low = {
-	value = "default_price(goods:wheat)"
-	multiply = 0.75
-}
-
-sul_iron_low = {
-	value = "default_price(goods:iron)"
-	multiply = 0.75
-}
-
-sul_lumber_low = {
-	value = "default_price(goods:lumber)"
-	multiply = 0.75
-}
-
-sul_cloth_low = {
-	value = "default_price(goods:cloth)"
-	multiply = 0.75
-}
-
-sul_wine_low = {
-	value = "default_price(goods:wine)"
-	multiply = 0.75
-}
-
-sul_silk_low = {
-	value = "default_price(goods:silk)"
-	multiply = 0.75
-}
-
-sul_pepper_low = {
-	value = "default_price(goods:pepper)"
-	multiply = 0.75
-}
-
-sul_gems_low = {
-	value = "default_price(goods:gems)"
-	multiply = 0.75
-}
-
-sul_dyes_low = {
-	value = "default_price(goods:dyes)"
-	multiply = 0.75
-}
-
 @sul_mining_type = 1
 @sul_farming_type = 2
 @sul_gathering_type = 3
@@ -386,36 +221,23 @@ sul_clay_market_pressure = {
 	multiply = 5
 }
 
-# Food price bonuses. Market scope. food_price scale:
-# 0.01 = minimum, 0.02 = baseline, higher = shortage.
-# Farming gets stronger food price pressure (main food producer)
-# Gathering gets weaker food price pressure (supplementary food)
-# Farming food price bonus: (food_price - 0.02) × 400 (strong)
-# At 0.01 (minimum): -4 penalty
-# At 0.02 (baseline): 0 bonus
-# At 0.04 (shortage): +8 bonus
-# At 0.045+: +10 bonus (capped)
+# Food price bonuses. Market scope.
+# Base food price = 0.04. Formula: 5 × (food_price / 0.04)
+# At 0.02 (cheap): 2.5
+# At 0.04 (base): 5
+# At 0.08 (double): 10
+# Farming gets full signal, gathering gets half.
 
 sul_farming_food_price_bonus = {
 	value = food_price
-	subtract = 0.02
-	multiply = 400
-	min = -4
-	max = 10
+	divide = 0.04
+	multiply = 5
 }
-
-# Gathering food price bonus: (food_price - 0.02) × 200 (weak)
-# At 0.01 (minimum): -2 penalty
-# At 0.02 (baseline): 0 bonus
-# At 0.04 (shortage): +4 bonus
-# At 0.05+: +6 bonus (capped)
 
 sul_gathering_food_price_bonus = {
 	value = food_price
-	subtract = 0.02
-	multiply = 200
-	min = -2
-	max = 6
+	divide = 0.04
+	multiply = 2.5
 }
 
 # Composite finished-goods demand per specialization. Market scope.
@@ -653,6 +475,358 @@ sul_commercial_finished_composite = {
 	multiply = 5
 }
 
+# Trade profit per good: total_goods_value_traded / total_goods_traded.
+# Market scope. Average price per unit traded — high means the market
+# moves valuable goods. Normalized to 0-10 scale (divide by 2, clamp).
+
+sul_trade_profit_per_good = {
+	value = total_goods_value_traded
+	divide = { value = total_goods_traded min = 1 }
+	divide = 2
+	max = 10
+}
+
+# ════════════════════════════════════════════════════════════════════
+# AI SPECIALIZATION SCORING
+# Two-part system: per-spec attractiveness (pure positive) vs
+# cost of leaving current spec. AI respec action fires when
+# best alternative attractiveness > cost of leaving.
+# ════════════════════════════════════════════════════════════════════
+
+# Raw material price premium: base price anchored, dampened downside.
+# Location scope. Collapsed market prices (e.g. gold at 1 vs base 10)
+# still reflect the good's inherent trade value — negative deviation is
+# dampened to 1/3. Positive deviation passes through at full rate to
+# encourage switching toward high-demand goods.
+#
+# Formula: base + delta * scale
+#   delta >= 0 → scale = 1.0
+#   delta <  0 → scale = 0.33
+
+@sul_price_downside_dampening = 0.33
+
+sul_raw_material_base_price = {
+	value = "default_price(raw_material)"
+}
+
+sul_raw_material_market_price = {
+	value = "market.location.variable_map(sul_market_prices|raw_material)"
+}
+
+sul_raw_material_price_delta = {
+	value = sul_raw_material_market_price
+	subtract = sul_raw_material_base_price
+}
+
+sul_raw_material_price_premium = {
+	value = sul_raw_material_base_price
+	# Above base: full positive signal
+	if = {
+		limit = { sul_raw_material_market_price >= sul_raw_material_base_price }
+		add = sul_raw_material_price_delta
+	}
+	# Below base: dampened negative signal
+	else = {
+		add = {
+			value = sul_raw_material_price_delta
+			multiply = @sul_price_downside_dampening
+		}
+	}
+}
+
+# ── Per-spec attractiveness (location scope, pure positive) ──
+
+sul_attractiveness_mining = {
+	# Ineligible: hard block
+	if = {
+		limit = { NOT = { has_variable = sul_can_mine } }
+		add = -10000
+	}
+	# Terrain
+	if = {
+		limit = { topography = wetlands }
+		add = 3
+	}
+	else_if = {
+		limit = { topography = mountains }
+		add = 2
+	}
+	# Raw material pull (only if mining resource)
+	if = {
+		limit = { sul_has_mining_resources = yes }
+		add = sul_raw_material_price_premium
+	}
+	# Finished goods demand (cached)
+	market ?= {
+		if = {
+			limit = { is_key_in_global_variable_map = { name = sul_mining_finished_composite target = this } }
+			add = "global_variable_map(sul_mining_finished_composite|this)"
+		}
+	}
+	# Diversity
+	add = owner.sul_mining_diversity
+}
+
+sul_attractiveness_farming = {
+	# Ineligible: hard block
+	if = {
+		limit = { NOT = { has_variable = sul_can_farm } }
+		add = -10000
+	}
+	# Terrain
+	if = {
+		limit = { vegetation = farmland }
+		add = 4
+	}
+	else_if = {
+		limit = { topography = flatland vegetation = grasslands }
+		add = 2
+	}
+	else_if = {
+		limit = { vegetation = grasslands }
+		add = 1
+	}
+	if = {
+		limit = { has_river = yes }
+		add = 1
+	}
+	# Government
+	owner = {
+		if = {
+			limit = { OR = { government_type = government_type:tribe government_type = government_type:steppe_horde } }
+			add = 2
+		}
+	}
+	# Raw material pull (only if farming resource)
+	if = {
+		limit = { sul_has_farming_resources = yes }
+		add = sul_raw_material_price_premium
+	}
+	# Finished goods demand (cached)
+	market ?= {
+		if = {
+			limit = { is_key_in_global_variable_map = { name = sul_farming_finished_composite target = this } }
+			add = "global_variable_map(sul_farming_finished_composite|this)"
+		}
+	}
+	# Food price
+	market ?= {
+		add = sul_farming_food_price_bonus
+	}
+	# Diversity
+	add = owner.sul_farming_diversity
+}
+
+sul_attractiveness_woodland = {
+	# Ineligible: hard block
+	if = {
+		limit = { NOT = { has_variable = sul_can_woodland } }
+		add = -10000
+	}
+	# Terrain
+	if = {
+		limit = { OR = { vegetation = forest vegetation = woods } }
+		add = 4
+	}
+	if = {
+		limit = { OR = { topography = hills topography = plateau } }
+		add = 1
+	}
+	# Government
+	owner = {
+		if = {
+			limit = { OR = { government_type = government_type:tribe government_type = government_type:steppe_horde } }
+			add = 2
+		}
+	}
+	# Raw material pull (only if woodland resource)
+	if = {
+		limit = { sul_has_woodland_resources = yes }
+		add = sul_raw_material_price_premium
+	}
+	# Finished goods demand (cached)
+	market ?= {
+		if = {
+			limit = { is_key_in_global_variable_map = { name = sul_woodland_finished_composite target = this } }
+			add = "global_variable_map(sul_woodland_finished_composite|this)"
+		}
+	}
+	# Diversity
+	add = owner.sul_woodland_diversity
+}
+
+sul_attractiveness_gathering = {
+	# Ineligible: hard block
+	if = {
+		limit = { NOT = { has_variable = sul_can_gather } }
+		add = -10000
+	}
+	# Terrain
+	if = {
+		limit = { is_coastal = yes }
+		add = 2
+	}
+	if = {
+		limit = { has_river = yes }
+		add = 3
+	}
+	if = {
+		limit = { is_adjacent_to_lake = yes }
+		add = 2
+	}
+	if = {
+		limit = { OR = { vegetation = forest vegetation = woods } }
+		add = 1
+	}
+	# Raw material pull (only if gathering resource)
+	if = {
+		limit = { sul_has_gathering_resources = yes }
+		add = sul_raw_material_price_premium
+	}
+	# Finished goods demand (cached)
+	market ?= {
+		if = {
+			limit = { is_key_in_global_variable_map = { name = sul_gathering_finished_composite target = this } }
+			add = "global_variable_map(sul_gathering_finished_composite|this)"
+		}
+	}
+	# Food price
+	market ?= {
+		add = sul_gathering_food_price_bonus
+	}
+	# Diversity
+	add = owner.sul_gathering_diversity
+}
+
+sul_attractiveness_commercial = {
+	# Development pull: high-dev locations want commerce, extraction centers don't
+	add = {
+		value = development
+		subtract = 50
+		divide = 2
+	}
+	# Trade profit per good (cached)
+	market ?= {
+		if = {
+			limit = { is_key_in_global_variable_map = { name = sul_trade_profit target = this } }
+			add = "global_variable_map(sul_trade_profit|this)"
+		}
+	}
+	# Trade spread (cached)
+	market ?= {
+		if = {
+			limit = { is_key_in_global_variable_map = { name = sul_trade_spread target = this } }
+			add = "global_variable_map(sul_trade_spread|this)"
+		}
+	}
+	# Market access deficit
+	add = {
+		value = 1
+		subtract = market_access
+		multiply = 5
+		max = 5
+	}
+	# Finished goods demand (cached)
+	market ?= {
+		if = {
+			limit = { is_key_in_global_variable_map = { name = sul_commercial_finished_composite target = this } }
+			add = "global_variable_map(sul_commercial_finished_composite|this)"
+		}
+	}
+	# Government
+	owner = {
+		if = {
+			limit = { government_type = government_type:republic }
+			add = 3
+		}
+	}
+	# Diversity
+	add = owner.sul_commercial_diversity
+}
+
+# ── Current spec attractiveness (location scope) ──
+# Returns the attractiveness of whichever spec this location currently has.
+# 0 for unspecialized locations.
+
+sul_current_attractiveness = {
+	if = {
+		limit = { sul_has_mining_specialization = yes }
+		value = sul_attractiveness_mining
+	}
+	else_if = {
+		limit = { sul_has_farming_specialization = yes }
+		value = sul_attractiveness_farming
+	}
+	else_if = {
+		limit = { sul_has_woodland_specialization = yes }
+		value = sul_attractiveness_woodland
+	}
+	else_if = {
+		limit = { sul_has_gathering_specialization = yes }
+		value = sul_attractiveness_gathering
+	}
+	else_if = {
+		limit = { sul_has_commercial_specialization = yes }
+		value = sul_attractiveness_commercial
+	}
+}
+
+# ── Cost of leaving current spec (location scope, always positive) ──
+# Current spec attractiveness × 1.5 + mechanical friction.
+# 0 for unspecialized locations.
+
+sul_cost_of_leaving = {
+	value = sul_current_attractiveness
+	multiply = 1.5
+	# Building levels (more buildings = more to lose)
+	add = {
+		value = total_building_levels
+		multiply = 0.25
+	}
+	# Rank inertia
+	if = {
+		limit = { location_rank = location_rank:town }
+		add = 5
+	}
+	else_if = {
+		limit = { location_rank = location_rank:city }
+		add = 10
+	}
+}
+
+# ── Best alternative attractiveness (location scope) ──
+# Max attractiveness across non-current specs. Uses min= as floor/max.
+
+sul_best_alternative = {
+	value = -1000
+	if = {
+		limit = { NOT = { sul_has_mining_specialization = yes } }
+		min = sul_attractiveness_mining
+	}
+	if = {
+		limit = { NOT = { sul_has_farming_specialization = yes } }
+		min = sul_attractiveness_farming
+	}
+	if = {
+		limit = { NOT = { sul_has_woodland_specialization = yes } }
+		min = sul_attractiveness_woodland
+	}
+	if = {
+		limit = { NOT = { sul_has_gathering_specialization = yes } }
+		min = sul_attractiveness_gathering
+	}
+	if = {
+		limit = { NOT = { sul_has_commercial_specialization = yes } }
+		min = sul_attractiveness_commercial
+	}
+}
+
+# Net respec score: best alternative minus cost of staying. Positive = should switch.
+sul_respec_score = {
+	value = sul_best_alternative
+	subtract = sul_cost_of_leaving
+}
+
 # Per-good price deviation: |price/base - 1| × base.
 # Goods scope; reads price via scope:current_market.
 
@@ -700,7 +874,10 @@ sul_development_equilibrium = {
 	# monthly_dev = local + global + (-0.01 * dev)
 	# eq = (local + global) / 0.01 + current_dev
 	value = modifier:local_monthly_development
-	add = owner.modifier:global_monthly_development
+	if = {
+		limit = { exists = owner }
+		add = owner.modifier:global_monthly_development
+	}
 	divide = 0.01
 	add = development
 	min = 0

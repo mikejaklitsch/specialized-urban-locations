@@ -7,26 +7,24 @@ Reads:
   <vanilla>/main_menu/setup/start/03_markets.txt   (market center locations)
   <vanilla>/main_menu/setup/start/07_cities_and_buildings.txt (ranks)
   <mod>/main_menu/setup/start/50_sul_setup.txt     (seeded buildings)
+  <mod>/in_game/common/building_types/*.txt        (building local_monthly_development)
 
 Writes:
   <mod>/main_menu/setup/start/14_development.txt   (REPLACE vanilla)
 
 Equilibrium formula (1 dev per 0.01 monthly_development):
   eq = 50
+       + sum(building_flat_dev / 0.01)  per building level
        - peasant_share * 30
        - tribesman_share * 30
        - slave_share * 30
        - laborer_share * 15
        + burgher_share * 30
-       + (production_buildings - extraction_buildings) * 0.2
        + 5 if market_center
   clamped to [0, 100], rounded to nearest integer.
 
-Building classification:
-  Extraction: sul_rgo_*, farming_village, fishing_village, sul_mining_village,
-              forest_village
-  Production: market_village
-  (All seeded buildings in 50_sul_setup.txt)
+Building dev contribution is parsed from actual building definitions
+(local_monthly_development per level in each building's modifier block).
 """
 
 import argparse
@@ -47,11 +45,6 @@ POP_PRESSURE = {
     "laborers":   -0.15,
     "burghers":    0.3,
 }
-
-# Building classification
-EXTRACTION_PREFIXES = ("sul_rgo_",)
-EXTRACTION_EXACT = {"farming_village", "fishing_village", "sul_mining_village", "forest_village"}
-PRODUCTION_EXACT = {"market_village"}
 
 MARKET_CENTER_BONUS = 25  # dev points
 
@@ -104,9 +97,6 @@ BASE_EQ = 50.0
 
 # Spring decay rate (equilibrium = flat_monthly_dev / DECAY)
 SPRING_DECAY = 0.01
-
-# dev shift per building: ±0.002 / 0.01 = ±0.2
-BUILDING_DEV_SHIFT = 0.2
 
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -344,16 +334,64 @@ def parse_countries(path: Path) -> tuple:
     return loc_owner, tag_bonus
 
 
-def classify_building(name: str) -> str:
-    """Return 'extraction', 'production', or 'other'."""
-    if name in EXTRACTION_EXACT:
-        return "extraction"
-    if name in PRODUCTION_EXACT:
-        return "production"
-    for prefix in EXTRACTION_PREFIXES:
-        if name.startswith(prefix):
-            return "extraction"
-    return "other"
+BUILDING_DEV_RE = re.compile(r"local_monthly_development\s*=\s*(-?[0-9.]+)")
+
+
+def parse_building_dev(building_types_dir: Path) -> dict:
+    """Parse local_monthly_development per level from building definition files.
+
+    Returns {building_type: flat_dev_per_level}.
+    Buildings without local_monthly_development are omitted (contribute 0).
+    """
+    result = {}
+    for txt_file in sorted(building_types_dir.glob("*.txt")):
+        text = txt_file.read_text(encoding="utf-8-sig")
+        current_building = None
+        in_modifier = False
+        depth = 0
+        modifier_depth = 0
+
+        for line in text.splitlines():
+            stripped = line.strip()
+            if not stripped or stripped.startswith("#"):
+                continue
+
+            opens = stripped.count("{")
+            closes = stripped.count("}")
+
+            # Top-level or REPLACE/new building definition
+            if depth == 0:
+                m = re.match(
+                    r"(?:(?:REPLACE|INJECT):)?([a-z_][a-z0-9_]*)\s*=\s*\{",
+                    stripped,
+                )
+                if m:
+                    current_building = m.group(1)
+                    in_modifier = False
+
+            # Detect modifier block inside building
+            if current_building and not in_modifier:
+                if re.search(r"\bmodifier\s*=\s*\{", stripped):
+                    in_modifier = True
+                    modifier_depth = depth + opens
+
+            # Inside modifier: look for local_monthly_development (not _modifier)
+            if in_modifier and "local_monthly_development" in stripped:
+                if "local_monthly_development_modifier" not in stripped:
+                    dm = BUILDING_DEV_RE.search(stripped)
+                    if dm and current_building:
+                        result[current_building] = float(dm.group(1))
+
+            new_depth = depth + opens - closes
+
+            if in_modifier and new_depth < modifier_depth:
+                in_modifier = False
+            if current_building and new_depth <= 0:
+                current_building = None
+
+            depth = new_depth
+
+    return result
 
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -367,6 +405,7 @@ def compute_equilibrium(
     rank: str = "rural_settlement",
     terrain: dict = None,
     gov_bonus: float = 0.0,
+    building_dev_map: dict = None,
 ) -> float:
     """Compute predicted development equilibrium for a location."""
     eq = BASE_EQ
@@ -382,20 +421,13 @@ def compute_equilibrium(
     if total_pop > 0:
         for pop_type, coeff in POP_PRESSURE.items():
             share = pop_dist.get(pop_type, 0) / total_pop
-            # coeff is monthly pressure; shift = coeff / SPRING_DECAY
             eq += (coeff / SPRING_DECAY) * share
 
-    # Building pressure
-    ext_count = 0
-    prod_count = 0
-    for btype, level in buildings:
-        cls = classify_building(btype)
-        if cls == "extraction":
-            ext_count += level
-        elif cls == "production":
-            prod_count += level
-
-    eq += (prod_count - ext_count) * BUILDING_DEV_SHIFT
+    # Building pressure: actual flat local_monthly_development per building level
+    if building_dev_map:
+        for btype, level in buildings:
+            flat_dev = building_dev_map.get(btype, 0)
+            eq += (flat_dev / SPRING_DECAY) * level
 
     # Rank bonus
     eq += RANK_BONUS.get(rank, 0)
@@ -423,8 +455,9 @@ def generate_development_file(
         "# Generated by tools/generate_starting_development.py — do not hand-edit.",
         "# Starting development based on pop-pressure equilibrium.",
         "#",
-        "# Equilibrium = 50 + pop_pressure + building_pressure + market_bonus",
+        "# Equilibrium = 50 + pop_pressure + building_dev/0.01 + terrain + market + rank + gov",
         "# Pop pressure: peasants/tribesmen/slaves -30/100%, laborers -15/100%, burghers +30/100%",
+        "# Building dev: actual local_monthly_development per level from building definitions",
         "",
         "development = {",
         "\tbase = 0",
@@ -486,6 +519,7 @@ def main():
     buildings_file = mod / "main_menu/setup/start/50_sul_setup.txt"
     terrain_file = vanilla / "in_game/map_data/location_templates.txt"
     countries_file = vanilla / "main_menu/setup/start/10_countries.txt"
+    building_types_dir = mod / "in_game/common/building_types"
     output_file = mod / "main_menu/setup/start/14_development.txt"
 
     print(f"Pops:       {pops_file}")
@@ -495,6 +529,7 @@ def main():
     print(f"Terrain:    {terrain_file}")
     print(f"Countries:  {countries_file}")
     print(f"Buildings:  {buildings_file}")
+    print(f"Bldg defs:  {building_types_dir}")
     print(f"Output:     {output_file}")
     print()
 
@@ -507,6 +542,7 @@ def main():
     terrain_data, ownable_locations = parse_terrain(terrain_file) if terrain_file.exists() else ({}, set())
     buildings = parse_buildings(buildings_file) if buildings_file.exists() else {}
     loc_owner, tag_bonus = parse_countries(countries_file) if countries_file.exists() else ({}, {})
+    building_dev_map = parse_building_dev(building_types_dir) if building_types_dir.exists() else {}
 
     # All ownable locations: those with pops + those with terrain flagged ownable
     all_locations = set(pop_data.keys()) | ownable_locations
@@ -523,11 +559,16 @@ def main():
     print(f"Ownable locations:      {len(ownable_locations)}")
     print(f"Total locations:        {len(all_locations)}")
     print(f"Locations with bldgs:   {len(buildings)}")
+    print(f"Building types w/ dev:  {len(building_dev_map)}")
     print(f"Countries parsed:       {len(tag_bonus)}")
     print(f"Owned locations:        {len(loc_owner)}")
     for bonus, count in sorted(gov_counts.items()):
         shift = bonus / SPRING_DECAY
         print(f"  gov bonus {bonus:+.2f} ({shift:+.0f} eq): {count} countries")
+    for btype in sorted(building_dev_map):
+        flat = building_dev_map[btype]
+        shift = flat / SPRING_DECAY
+        print(f"  {btype}: {flat:+.3f} flat ({shift:+.1f} eq/level)")
     print()
 
     # Compute equilibrium for every ownable location
@@ -546,7 +587,7 @@ def main():
         loc_rank = ranks.get(loc_name, "rural_settlement")
         owner_tag = loc_owner.get(loc_name)
         gov_bonus = tag_bonus.get(owner_tag, 0) if owner_tag else 0
-        eq = compute_equilibrium(pops, loc_buildings, is_mc, loc_rank, loc_terrain, gov_bonus)
+        eq = compute_equilibrium(pops, loc_buildings, is_mc, loc_rank, loc_terrain, gov_bonus, building_dev_map)
         dev = round(eq)
 
         results[loc_name] = dev

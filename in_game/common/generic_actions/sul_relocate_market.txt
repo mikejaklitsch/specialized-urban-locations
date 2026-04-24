@@ -1,4 +1,4 @@
-@sul_commercial_type = 5
+﻿@sul_commercial_type = 5
 
 REPLACE:relocate_market = {
 	type = owncountry
@@ -14,30 +14,6 @@ REPLACE:relocate_market = {
 	automation_tick = never
 	automation_tick_frequency = 12
 
-	price = {
-		# Cost for old location losing commercial
-		if = {
-			limit = { exists = scope:target scope:target.location = { location_rank = location_rank:rural_settlement } }
-			value = price:sul_designate_specialization_price_rural
-		}
-		else_if = {
-			limit = { exists = scope:target scope:target.location = { location_rank = location_rank:town } }
-			value = price:sul_designate_specialization_price_town
-		}
-		else = { value = price:sul_designate_specialization_price_city }
-
-		# Cost for new location gaining commercial
-		if = {
-			limit = { exists = scope:target_location scope:target_location = { location_rank = location_rank:rural_settlement } }
-			add = price:sul_designate_specialization_price_rural
-		}
-		else_if = {
-			limit = { exists = scope:target_location scope:target_location = { location_rank = location_rank:town } }
-			add = price:sul_designate_specialization_price_town
-		}
-		else = { add = price:sul_designate_specialization_price_city }
-	}
-
 	# market in scope:target
 	select_trigger = {
 		looking_for_a = market
@@ -48,7 +24,10 @@ REPLACE:relocate_market = {
 		column = { data = name }
 
 		visible = {
-			location = { owner ?= scope:actor }
+			location = {
+				owner ?= scope:actor
+				NOT = { has_location_modifier = sul_recently_respecialized }
+			}
 		}
 	}
 
@@ -63,10 +42,11 @@ REPLACE:relocate_market = {
 		column = { data = population }
 
 		visible = {
-			is_city = yes
 			market = scope:target
 			this != scope:target.location
 			owner ?= scope:actor
+			NOT = { sul_has_commercial_specialization = yes }
+			NOT = { has_location_modifier = sul_recently_respecialized }
 		}
 	}
 
@@ -77,20 +57,26 @@ REPLACE:relocate_market = {
 				exists = scope:target_location
 			}
 
-			# Relocate first — old location stops being market center
+			# Old location: queue resource-based spec carrier
 			scope:target = {
-				location = { save_scope_as = old_location }
-				relocate_market = scope:target_location
+				location = {
+					sul_construct_resource_spec_carrier = yes
+				}
 			}
 
-			# Old location: no longer market center, full reassign by resources
-			scope:old_location = {
-				sul_specialization_reassign = yes
-			}
-
-			# New location: switch to commercial with building cleanup
+			# New location: queue commercial carrier
 			scope:target_location = {
-				sul_specialization_switch_to_commercial = yes
+				if = {
+					limit = { location_rank = location_rank:rural_settlement }
+					construct_building = { building_type = building_type:sul_respec_commercial_rural }
+				}
+				else_if = {
+					limit = { location_rank = location_rank:town }
+					construct_building = { building_type = building_type:sul_respec_commercial_town }
+				}
+				else = {
+					construct_building = { building_type = building_type:sul_respec_commercial_city }
+				}
 			}
 		}
 	}

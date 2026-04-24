@@ -1,0 +1,72 @@
+﻿@sul_mining_type = 1
+@sul_farming_type = 2
+@sul_gathering_type = 3
+@sul_woodland_type = 4
+@sul_commercial_type = 5
+
+# Per-location cache write. Location scope.
+# Stores sul_cached_respec_score and sul_cached_desired_spec.
+
+sul_cache_respec_location = {
+	set_variable = { name = sul_cached_respec_score value = sul_respec_score }
+
+	# Tournament: find best non-current spec
+	set_local_variable = { name = best value = -1000 }
+	set_local_variable = { name = winner value = 0 }
+
+	if = {
+		limit = { NOT = { sul_has_mining_specialization = yes } }
+		set_local_variable = { name = score value = sul_attractiveness_mining }
+		if = {
+			limit = { local_var:score > local_var:best }
+			set_local_variable = { name = best value = local_var:score }
+			set_local_variable = { name = winner value = @sul_mining_type }
+		}
+	}
+	if = {
+		limit = { NOT = { sul_has_farming_specialization = yes } }
+		set_local_variable = { name = score value = sul_attractiveness_farming }
+		if = {
+			limit = { local_var:score > local_var:best }
+			set_local_variable = { name = best value = local_var:score }
+			set_local_variable = { name = winner value = @sul_farming_type }
+		}
+	}
+	if = {
+		limit = { NOT = { sul_has_woodland_specialization = yes } }
+		set_local_variable = { name = score value = sul_attractiveness_woodland }
+		if = {
+			limit = { local_var:score > local_var:best }
+			set_local_variable = { name = best value = local_var:score }
+			set_local_variable = { name = winner value = @sul_woodland_type }
+		}
+	}
+	if = {
+		limit = { NOT = { sul_has_gathering_specialization = yes } }
+		set_local_variable = { name = score value = sul_attractiveness_gathering }
+		if = {
+			limit = { local_var:score > local_var:best }
+			set_local_variable = { name = best value = local_var:score }
+			set_local_variable = { name = winner value = @sul_gathering_type }
+		}
+	}
+	if = {
+		limit = { NOT = { sul_has_commercial_specialization = yes } }
+		set_local_variable = { name = score value = sul_attractiveness_commercial }
+		if = {
+			limit = { local_var:score > local_var:best }
+			set_local_variable = { name = best value = local_var:score }
+			set_local_variable = { name = winner value = @sul_commercial_type }
+		}
+	}
+
+	if = {
+		limit = { var:sul_cached_respec_score > 0 }
+		set_variable = { name = sul_cached_desired_spec value = local_var:winner }
+	}
+	else = {
+		set_variable = { name = sul_cached_desired_spec value = 0 }
+	}
+
+	set_variable = { name = sul_last_respec_cache value = current_year }
+}

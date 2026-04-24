@@ -1,0 +1,233 @@
+﻿@sul_mining_type = 1
+@sul_farming_type = 2
+@sul_gathering_type = 3
+@sul_woodland_type = 4
+@sul_commercial_type = 5
+
+sul_ai_respecialize = {
+	type = owncountry
+	show_in_gui_list = no
+
+	potential = {
+	}
+
+	allow = {
+	}
+
+	price = {
+		if = {
+			limit = { exists = scope:target scope:target = { location_rank = location_rank:rural_settlement } }
+			value = price:sul_respec_mining_rural_price
+		}
+		else_if = {
+			limit = { exists = scope:target scope:target = { location_rank = location_rank:town } }
+			value = price:sul_respec_mining_town_price
+		}
+		else = { value = price:sul_respec_mining_city_price }
+	}
+	price_modifier = {
+		add = scope:actor.modifier:global_build_buildings_cost
+		if = {
+			limit = { exists = scope:target }
+			add = scope:target.modifier:local_build_buildings_cost
+			add = scope:target.modifier:local_build_new_buildings_cost
+		}
+	}
+	should_execute_price = no
+
+	ai_tick = monthly
+	ai_tick_frequency = 120
+
+	ai_prerequisite = {
+		is_real_country = yes
+		current_year >= 1338
+		num_loans = 0
+		gold >= 50
+		monthly_balance >= 0
+	}
+
+	ai_will_do = {
+		if = {
+			limit = { exists = scope:target }
+
+			add = {
+				desc = "respec_score"
+				value = scope:target.sul_respec_score
+			}
+		}
+	}
+
+	select_trigger = {
+		looking_for_a = location
+		target_flag = target
+		source = actor
+		name = "ai_respec_select"
+
+		visible = {
+			owner = scope:actor
+			OR = {
+				location_rank = location_rank:rural_settlement
+				location_rank = location_rank:town
+				location_rank = location_rank:city
+			}
+		}
+
+		enabled = {
+			NOT = { sul_has_respec_construction = yes }
+			NOT = { has_location_modifier = sul_recently_respecialized }
+			controller = owner
+		}
+	}
+
+	effect = {
+		if = {
+			limit = { exists = scope:target }
+			scope:target = {
+				# Tournament: find best eligible non-current spec
+				set_local_variable = { name = best value = -1000 }
+				set_local_variable = { name = winner value = 0 }
+
+				# Mining
+				if = {
+					limit = {
+						NOT = { sul_has_mining_specialization = yes }
+						sul_can_specialize_mining = yes
+					}
+					set_local_variable = { name = score value = sul_attractiveness_mining }
+					if = {
+						limit = { local_var:score > local_var:best }
+						set_local_variable = { name = best value = local_var:score }
+						set_local_variable = { name = winner value = @sul_mining_type }
+					}
+				}
+
+				# Farming
+				if = {
+					limit = {
+						NOT = { sul_has_farming_specialization = yes }
+						sul_can_specialize_farming = yes
+					}
+					set_local_variable = { name = score value = sul_attractiveness_farming }
+					if = {
+						limit = { local_var:score > local_var:best }
+						set_local_variable = { name = best value = local_var:score }
+						set_local_variable = { name = winner value = @sul_farming_type }
+					}
+				}
+
+				# Woodland
+				if = {
+					limit = {
+						NOT = { sul_has_woodland_specialization = yes }
+						sul_can_specialize_woodland = yes
+					}
+					set_local_variable = { name = score value = sul_attractiveness_woodland }
+					if = {
+						limit = { local_var:score > local_var:best }
+						set_local_variable = { name = best value = local_var:score }
+						set_local_variable = { name = winner value = @sul_woodland_type }
+					}
+				}
+
+				# Gathering
+				if = {
+					limit = {
+						NOT = { sul_has_gathering_specialization = yes }
+						sul_can_specialize_gathering = yes
+					}
+					set_local_variable = { name = score value = sul_attractiveness_gathering }
+					if = {
+						limit = { local_var:score > local_var:best }
+						set_local_variable = { name = best value = local_var:score }
+						set_local_variable = { name = winner value = @sul_gathering_type }
+					}
+				}
+
+				# Commercial
+				if = {
+					limit = {
+						NOT = { sul_has_commercial_specialization = yes }
+					}
+					set_local_variable = { name = score value = sul_attractiveness_commercial }
+					if = {
+						limit = { local_var:score > local_var:best }
+						set_local_variable = { name = best value = local_var:score }
+						set_local_variable = { name = winner value = @sul_commercial_type }
+					}
+				}
+
+				# Construct the winning spec's carrier building
+				if = {
+					limit = { local_var:winner = @sul_mining_type }
+					if = {
+						limit = { location_rank = location_rank:rural_settlement }
+						construct_building = { building_type = building_type:sul_respec_mining_rural }
+					}
+					else_if = {
+						limit = { location_rank = location_rank:town }
+						construct_building = { building_type = building_type:sul_respec_mining_town }
+					}
+					else = {
+						construct_building = { building_type = building_type:sul_respec_mining_city }
+					}
+				}
+				else_if = {
+					limit = { local_var:winner = @sul_farming_type }
+					if = {
+						limit = { location_rank = location_rank:rural_settlement }
+						construct_building = { building_type = building_type:sul_respec_farming_rural }
+					}
+					else_if = {
+						limit = { location_rank = location_rank:town }
+						construct_building = { building_type = building_type:sul_respec_farming_town }
+					}
+					else = {
+						construct_building = { building_type = building_type:sul_respec_farming_city }
+					}
+				}
+				else_if = {
+					limit = { local_var:winner = @sul_woodland_type }
+					if = {
+						limit = { location_rank = location_rank:rural_settlement }
+						construct_building = { building_type = building_type:sul_respec_woodland_rural }
+					}
+					else_if = {
+						limit = { location_rank = location_rank:town }
+						construct_building = { building_type = building_type:sul_respec_woodland_town }
+					}
+					else = {
+						construct_building = { building_type = building_type:sul_respec_woodland_city }
+					}
+				}
+				else_if = {
+					limit = { local_var:winner = @sul_gathering_type }
+					if = {
+						limit = { location_rank = location_rank:rural_settlement }
+						construct_building = { building_type = building_type:sul_respec_gathering_rural }
+					}
+					else_if = {
+						limit = { location_rank = location_rank:town }
+						construct_building = { building_type = building_type:sul_respec_gathering_town }
+					}
+					else = {
+						construct_building = { building_type = building_type:sul_respec_gathering_city }
+					}
+				}
+				else_if = {
+					limit = { local_var:winner = @sul_commercial_type }
+					if = {
+						limit = { location_rank = location_rank:rural_settlement }
+						construct_building = { building_type = building_type:sul_respec_commercial_rural }
+					}
+					else_if = {
+						limit = { location_rank = location_rank:town }
+						construct_building = { building_type = building_type:sul_respec_commercial_town }
+					}
+					else = {
+						construct_building = { building_type = building_type:sul_respec_commercial_city }
+					}
+				}
+			}
+		}
+	}
+}

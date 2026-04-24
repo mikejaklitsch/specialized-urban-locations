@@ -1,0 +1,34 @@
+﻿# Inter-Market Migration - Script Values
+
+sul_migration_batch_size = {
+	value = global_var:sul_migration_market_count
+	divide = 12
+	ceiling = yes
+	min = 1
+}
+
+# Target score for ordered_export. Evaluated in trade scope.
+# Picks the export destination whose center is most attractive relative to ours.
+sul_migration_target_score = {
+	value = to_market.location.migration_attraction
+	subtract = from_market.location.migration_attraction
+	min = 0
+	multiply = 1000000
+	divide = {
+		value = "to_market.location.distance_to_squared(scope:source_loc)"
+		min = 1
+	}
+}
+
+# Migration amount. Evaluated in location scope (source market center).
+# 1 attractiveness_diff = 5 people/month at 10k pop = 0.006 pop units/year
+sul_migration_amount = {
+	value = population
+	multiply = {
+		value = scope:migration_target.location.migration_attraction
+		subtract = migration_attraction
+		min = 0
+	}
+	multiply = 0.001
+	min = 0
+}

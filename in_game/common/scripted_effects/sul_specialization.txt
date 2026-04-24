@@ -127,28 +127,28 @@ sul_specialization_save_building_levels = {
 
 	every_buildings_in_location = {
 		if = {
-			limit = { building_pop_type = pop_type:laborers }
+			limit = { building_pop_type =laborers }
 
 			location ?= {
 				change_variable = { name = sul_prior_laborer_levels add = prev.building_level }
 			}
 		}
 		else_if = {
-			limit = { building_pop_type = pop_type:burghers }
+			limit = { building_pop_type =burghers }
 
 			location ?= {
 				change_variable = { name = sul_prior_burgher_levels add = prev.building_level }
 			}
 		}
 		else_if = {
-			limit = { building_pop_type = pop_type:peasants }
+			limit = { building_pop_type =peasants }
 
 			location ?= {
 				change_variable = { name = sul_prior_peasant_levels add = prev.building_level }
 			}
 		}
 		else_if = {
-			limit = { building_pop_type = pop_type:clergy }
+			limit = { building_pop_type =clergy }
 
 			location ?= {
 				change_variable = { name = sul_prior_clergy_levels add = prev.building_level }
@@ -578,15 +578,6 @@ sul_specialization_clear_all_modifiers = {
 			limit = { has_location_modifier = sul_commercial_city_specialization }
 			remove_location_modifier = sul_commercial_city_specialization
 		}
-		if = {
-			limit = { is_market_center = yes }
-			market = {
-				destroy_market = {
-					price = 0
-					instant = yes
-				}
-			}
-		}
 	}
 }
 
@@ -728,83 +719,44 @@ sul_specialization_apply_modifier = {
 # The setup generator places a universal pool everywhere; this effect prunes
 # the ones the country hasn't unlocked.
 sul_specialization_tech_cleanup = {
-	# sul_iron_mine requires iron_working (no naturally iron raw_material + mining topography)
-	if = {
+	every_buildings_in_location = {
 		limit = {
-			has_building = sul_iron_mine
-			owner ?= { NOT = { has_advance = iron_working } }
+			OR = {
+				AND = {
+					building_type = building_type:sul_iron_mine
+					location = { owner ?= { NOT = { has_advance = iron_working } } }
+				}
+				AND = {
+					building_type = building_type:weapon_guild
+					location = { owner ?= { NOT = { has_advance = weapon_guild_advance } } }
+				}
+				AND = {
+					building_type = building_type:tools_guild
+					location = { owner ?= { NOT = { has_advance = metallurgy } } }
+				}
+				AND = {
+					building_type = building_type:porcelain_guild
+					location = { owner ?= { NOT = { has_advance = porcelain_kiln_advance } } }
+				}
+				AND = {
+					building_type = building_type:apothecary
+					location = { owner ?= { NOT = { has_advance = apothecary_advance } } }
+				}
+				AND = {
+					building_type = building_type:lacquerware_guild
+					location = { owner ?= { NOT = { has_advance = lacquerware_guild_advance } } }
+				}
+				AND = {
+					building_type = building_type:paper_guild
+					location = { owner ?= { NOT = { has_advance = paper_guild_advance } } }
+				}
+				AND = {
+					building_type = building_type:scriptorium
+					location = { owner ?= { NOT = { has_advance = scriptorium_advance } } }
+				}
+			}
 		}
 
-		destroy_building = sul_iron_mine
-	}
-
-	# weapon_guild requires weapon_guild_advance
-	if = {
-		limit = {
-			has_building = weapon_guild
-			owner ?= { NOT = { has_advance = weapon_guild_advance } }
-		}
-
-		destroy_building = weapon_guild
-	}
-
-	# tools_guild requires metallurgy
-	if = {
-		limit = {
-			has_building = tools_guild
-			owner ?= { NOT = { has_advance = metallurgy } }
-		}
-
-		destroy_building = tools_guild
-	}
-
-	# porcelain_guild requires porcelain_kiln_advance
-	if = {
-		limit = {
-			has_building = porcelain_guild
-			owner ?= { NOT = { has_advance = porcelain_kiln_advance } }
-		}
-
-		destroy_building = porcelain_guild
-	}
-
-	# apothecary requires apothecary_advance
-	if = {
-		limit = {
-			has_building = apothecary
-			owner ?= { NOT = { has_advance = apothecary_advance } }
-		}
-
-		destroy_building = apothecary
-	}
-
-	# lacquerware_guild requires lacquerware_guild_advance (east_asia sub_continent only)
-	if = {
-		limit = {
-			has_building = lacquerware_guild
-			owner ?= { NOT = { has_advance = lacquerware_guild_advance } }
-		}
-
-		destroy_building = lacquerware_guild
-	}
-
-	# paper_guild requires paper_guild_advance (chain via scriptorium_advance)
-	if = {
-		limit = {
-			has_building = paper_guild
-			owner ?= { NOT = { has_advance = paper_guild_advance } }
-		}
-
-		destroy_building = paper_guild
-	}
-
-	# scriptorium requires scriptorium_advance
-	if = {
-		limit = {
-			has_building = scriptorium
-			owner ?= { NOT = { has_advance = scriptorium_advance } }
-		}
-
-		destroy_building = scriptorium
+		location = { destroy_building = prev }
 	}
 }

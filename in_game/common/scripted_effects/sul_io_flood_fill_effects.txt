@@ -1,0 +1,195 @@
+# ============================================================
+# IO Flood Fill — BFS core and entry points
+# ============================================================
+# Variable lists are country-scoped (safe for multiplayer).
+# All entry points save scope:sul_io_ff_country for the BFS core.
+# Only locations owned by the initiating country are candidates.
+#
+# Entry points:
+#   sul_add_all_eligible_to_io    — country scope → all IO borders → all eligible
+#   sul_expand_io_from_location   — location scope → one source → connected eligible
+#   sul_add_province_to_io        — location scope → IO borders in province → province eligible
+# ============================================================
+
+# --------------------------------------------------
+# BFS Core
+# --------------------------------------------------
+# Preconditions:
+#   scope:sul_io_ff_country is set and is a member of $IO$
+#   scope:sul_io_ff_country has variable lists sul_io_ff_frontier and sul_io_ff_candidates populated
+# Parameter: $IO$
+# --------------------------------------------------
+sul_io_flood_fill_bfs = {
+	scope:sul_io_ff_country = {
+		set_variable = { name = sul_io_ff_changed value = 1 }
+
+		while = {
+			limit = { var:sul_io_ff_changed > 0 }
+			count = 200
+
+			set_variable = { name = sul_io_ff_changed value = 0 }
+
+			every_in_list = {
+				variable = sul_io_ff_frontier
+
+				every_neighbor_location = {
+					limit = {
+						scope:sul_io_ff_country = {
+							is_target_in_variable_list = { name = sul_io_ff_candidates target = prev }
+						}
+					}
+
+					save_scope_as = sul_io_ff_hit
+
+					$IO$ = {
+						add_location_to_international_organization = scope:sul_io_ff_hit
+					}
+
+					scope:sul_io_ff_country = {
+						remove_list_variable = { name = sul_io_ff_candidates target = scope:sul_io_ff_hit }
+						add_to_variable_list = { name = sul_io_ff_next_frontier target = scope:sul_io_ff_hit }
+						change_variable = { name = sul_io_ff_changed add = 1 }
+					}
+				}
+			}
+
+			# Swap: next_frontier → frontier
+			clear_variable_list = sul_io_ff_frontier
+			every_in_list = {
+				variable = sul_io_ff_next_frontier
+				save_scope_as = sul_io_ff_swap
+				scope:sul_io_ff_country = {
+					add_to_variable_list = { name = sul_io_ff_frontier target = scope:sul_io_ff_swap }
+				}
+			}
+			clear_variable_list = sul_io_ff_next_frontier
+		}
+
+		# Cleanup
+		clear_variable_list = sul_io_ff_frontier
+		clear_variable_list = sul_io_ff_next_frontier
+		clear_variable_list = sul_io_ff_candidates
+		remove_variable = sul_io_ff_changed
+	}
+}
+
+# Ensures the country is a member of the IO before BFS begins
+sul_io_flood_fill_ensure_membership = {
+	scope:sul_io_ff_country = {
+		if = {
+			limit = {
+				NOT = { is_member_of_international_organization = $IO$ }
+				country_can_join_international_organization = $IO$
+			}
+			$IO$ = {
+				add_country_to_international_organization = scope:sul_io_ff_country
+			}
+		}
+	}
+}
+
+# --------------------------------------------------
+# Entry Point 1: Add All Eligible to IO
+# --------------------------------------------------
+# Scope: country
+# --------------------------------------------------
+sul_add_all_eligible_to_io = {
+	save_scope_as = sul_io_ff_country
+
+	sul_io_flood_fill_ensure_membership = { IO = $IO$ }
+
+	every_owned_location = {
+		limit = {
+			sul_io_flood_fill_can_add_location = { IO = $IO$ }
+		}
+		save_scope_as = sul_io_ff_loc
+		scope:sul_io_ff_country = {
+			add_to_variable_list = { name = sul_io_ff_candidates target = scope:sul_io_ff_loc }
+		}
+	}
+
+	$IO$ = {
+		every_international_organization_owned_location = {
+			save_scope_as = sul_io_ff_loc
+			scope:sul_io_ff_country = {
+				add_to_variable_list = { name = sul_io_ff_frontier target = scope:sul_io_ff_loc }
+			}
+		}
+	}
+
+	sul_io_flood_fill_bfs = { IO = $IO$ }
+}
+
+# --------------------------------------------------
+# Entry Point 2: Expand IO From Location
+# --------------------------------------------------
+# Scope: location
+# --------------------------------------------------
+sul_expand_io_from_location = {
+	owner = { save_scope_as = sul_io_ff_country }
+
+	sul_io_flood_fill_ensure_membership = { IO = $IO$ }
+
+	if = {
+		limit = {
+			NOT = { is_owned_by_international_organization = $IO$ }
+		}
+		$IO$ = {
+			add_location_to_international_organization = prev
+		}
+	}
+
+	owner = {
+		every_owned_location = {
+			limit = {
+				sul_io_flood_fill_can_add_location = { IO = $IO$ }
+			}
+			save_scope_as = sul_io_ff_loc
+			scope:sul_io_ff_country = {
+				add_to_variable_list = { name = sul_io_ff_candidates target = scope:sul_io_ff_loc }
+			}
+		}
+	}
+
+	save_scope_as = sul_io_ff_loc
+	scope:sul_io_ff_country = {
+		add_to_variable_list = { name = sul_io_ff_frontier target = scope:sul_io_ff_loc }
+	}
+
+	sul_io_flood_fill_bfs = { IO = $IO$ }
+}
+
+# --------------------------------------------------
+# Entry Point 3: Add Province to IO
+# --------------------------------------------------
+# Scope: location (any location in the target province)
+# --------------------------------------------------
+sul_add_province_to_io = {
+	owner = { save_scope_as = sul_io_ff_country }
+
+	sul_io_flood_fill_ensure_membership = { IO = $IO$ }
+
+	province = {
+		every_location_in_province = {
+			limit = {
+				sul_io_flood_fill_can_add_location = { IO = $IO$ }
+			}
+			save_scope_as = sul_io_ff_loc
+			scope:sul_io_ff_country = {
+				add_to_variable_list = { name = sul_io_ff_candidates target = scope:sul_io_ff_loc }
+			}
+		}
+
+		every_location_in_province = {
+			limit = {
+				is_owned_by_international_organization = $IO$
+			}
+			save_scope_as = sul_io_ff_loc
+			scope:sul_io_ff_country = {
+				add_to_variable_list = { name = sul_io_ff_frontier target = scope:sul_io_ff_loc }
+			}
+		}
+	}
+
+	sul_io_flood_fill_bfs = { IO = $IO$ }
+}

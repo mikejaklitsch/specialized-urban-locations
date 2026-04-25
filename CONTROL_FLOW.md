@@ -64,15 +64,27 @@ All version checks live here because the pulse fires once globally (no per-count
 
 ## 1. Specialization Core
 
+### Rank Modifiers (authoritative specialization identity)
+Each custom location rank carries boolean modifiers in its `rank_modifier` block:
+- `sul_mining_specialization = yes` — on all mining_city/town/rural ranks
+- `sul_farming_specialization = yes` — on all farming ranks
+- `sul_gathering_specialization = yes` — on all gathering ranks
+- `sul_woodland_specialization = yes` — on all woodland ranks
+- `sul_commercial_specialization = yes` — on all commercial ranks
+- `sul_is_rural_settlement_rank_tier = yes` / `sul_is_town_rank_tier` / `sul_is_city_rank_tier` — tier identification
+
+These are the authoritative source for specialization identity in script. `sul_spec_id` has been removed.
+
 ### Location Variables
 | Variable | Set By | Updated | Read By | Purpose |
 |----------|--------|---------|---------|---------|
-| `sul_spec_type` | `sul_specialization_assign_by_resources` | on_raw_material_changed, rank change | triggers, effects, GUI | Type: 1=mining, 2=farming, 3=gathering, 4=woodland, 5=commercial |
-| `sul_designation` | `sul_specialization_update_designation` | after spec change | GUI | Combined type+rank encoding for tooltip display |
+| `sul_spec_type` | `sul_specialization_update_designation` | after rank change | GUI visibility checks | Derived from boolean rank modifiers. 1=mining, 2=farming, 3=gathering, 4=woodland, 5=commercial |
 | `sul_can_mine` | `sul_specialization_calculate_eligibility` | on_raw_material_changed, rank change | triggers | Eligibility flag |
 | `sul_can_farm` | `sul_specialization_calculate_eligibility` | on_raw_material_changed, rank change | triggers | Eligibility flag |
 | `sul_can_gather` | `sul_specialization_calculate_eligibility` | on_raw_material_changed, rank change | triggers | Eligibility flag |
 | `sul_can_woodland` | `sul_specialization_calculate_eligibility` | on_raw_material_changed, rank change | triggers | Eligibility flag |
+
+**Removed:** `sul_designation` — replaced by `Location.GetRankIcon` (native engine call) for icon display.
 
 ### Country Variables
 | Variable | Set By | Updated | Read By | Purpose |
@@ -84,13 +96,10 @@ All version checks live here because the pulse fires once globally (no per-count
 | `sul_commercial_count` | (same) | (same) | (same) | (same) |
 | `sul_total_weighted` | (same) | (same) | (same) | Weighted count (farming=2x) |
 
-### Location Modifiers (15 total: 5 specs x 3 ranks)
-Pattern: `sul_{spec}_{rank}_specialization` where spec = mining/farming/gathering/woodland/commercial, rank = rural/town/city.
-Applied by `sul_specialization_apply_modifier`, removed by `sul_specialization_clear_all_modifiers`.
-
+### Location Modifiers
 | Modifier | Scope | Purpose |
 |----------|-------|---------|
-| `sul_recently_respecialized` | location | 5-year cooldown after spec change. Applied by generic_actions + missions. Removed on raw material change. |
+| `sul_recently_respecialized` | location | 5-year penalty after spec change, scaled by buildings destroyed. Applied by carrier building on_built + `sul_specialization_destroy_and_penalize`. Removed on raw material change. |
 
 ### Init-Only Variables (location scope, 1-day expiry)
 Set by `sul_specialization_set_init_production_variables` during game start. Gate building validation before modifiers load. All auto-expire.

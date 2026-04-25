@@ -1,0 +1,284 @@
+﻿# Routing effects for change_location_rank calls.
+# Vanilla uses change_location_rank = location_rank:town etc.
+# With 15 custom ranks, these route to the matching spec variant.
+
+sul_set_rank_rural = {
+	if = {
+		limit = {
+			OR = {
+				location_rank = location_rank:mining_rural
+				location_rank = location_rank:mining_town
+				location_rank = location_rank:mining_city
+			}
+		}
+		change_location_rank = location_rank:mining_rural
+	}
+	else_if = {
+		limit = {
+			OR = {
+				location_rank = location_rank:farming_rural
+				location_rank = location_rank:farming_town
+				location_rank = location_rank:farming_city
+			}
+		}
+		change_location_rank = location_rank:farming_rural
+	}
+	else_if = {
+		limit = {
+			OR = {
+				location_rank = location_rank:gathering_rural
+				location_rank = location_rank:gathering_town
+				location_rank = location_rank:gathering_city
+			}
+		}
+		change_location_rank = location_rank:gathering_rural
+	}
+	else_if = {
+		limit = {
+			OR = {
+				location_rank = location_rank:woodland_rural
+				location_rank = location_rank:woodland_town
+				location_rank = location_rank:woodland_city
+			}
+		}
+		change_location_rank = location_rank:woodland_rural
+	}
+	else_if = {
+		limit = {
+			OR = {
+				location_rank = location_rank:commercial_rural
+				location_rank = location_rank:commercial_town
+				location_rank = location_rank:commercial_city
+			}
+		}
+		change_location_rank = location_rank:commercial_rural
+	}
+}
+
+sul_set_rank_town = {
+	if = {
+		limit = {
+			OR = {
+				location_rank = location_rank:mining_rural
+				location_rank = location_rank:mining_town
+				location_rank = location_rank:mining_city
+			}
+		}
+		change_location_rank = location_rank:mining_town
+	}
+	else_if = {
+		limit = {
+			OR = {
+				location_rank = location_rank:farming_rural
+				location_rank = location_rank:farming_town
+				location_rank = location_rank:farming_city
+			}
+		}
+		change_location_rank = location_rank:farming_town
+	}
+	else_if = {
+		limit = {
+			OR = {
+				location_rank = location_rank:gathering_rural
+				location_rank = location_rank:gathering_town
+				location_rank = location_rank:gathering_city
+			}
+		}
+		change_location_rank = location_rank:gathering_town
+	}
+	else_if = {
+		limit = {
+			OR = {
+				location_rank = location_rank:woodland_rural
+				location_rank = location_rank:woodland_town
+				location_rank = location_rank:woodland_city
+			}
+		}
+		change_location_rank = location_rank:woodland_town
+	}
+	else_if = {
+		limit = {
+			OR = {
+				location_rank = location_rank:commercial_rural
+				location_rank = location_rank:commercial_town
+				location_rank = location_rank:commercial_city
+			}
+		}
+		change_location_rank = location_rank:commercial_town
+	}
+}
+
+sul_set_rank_city = {
+	if = {
+		limit = {
+			OR = {
+				location_rank = location_rank:mining_rural
+				location_rank = location_rank:mining_town
+				location_rank = location_rank:mining_city
+			}
+		}
+		change_location_rank = location_rank:mining_city
+	}
+	else_if = {
+		limit = {
+			OR = {
+				location_rank = location_rank:farming_rural
+				location_rank = location_rank:farming_town
+				location_rank = location_rank:farming_city
+			}
+		}
+		change_location_rank = location_rank:farming_city
+	}
+	else_if = {
+		limit = {
+			OR = {
+				location_rank = location_rank:gathering_rural
+				location_rank = location_rank:gathering_town
+				location_rank = location_rank:gathering_city
+			}
+		}
+		change_location_rank = location_rank:gathering_city
+	}
+	else_if = {
+		limit = {
+			OR = {
+				location_rank = location_rank:woodland_rural
+				location_rank = location_rank:woodland_town
+				location_rank = location_rank:woodland_city
+			}
+		}
+		change_location_rank = location_rank:woodland_city
+	}
+	else_if = {
+		limit = {
+			OR = {
+				location_rank = location_rank:commercial_rural
+				location_rank = location_rank:commercial_town
+				location_rank = location_rank:commercial_city
+			}
+		}
+		change_location_rank = location_rank:commercial_city
+	}
+}
+
+# Override vanilla upgrade_location_rank — promotes within specialization.
+# Called by the engine when development crosses population thresholds.
+REPLACE:upgrade_location_rank = {
+	if = {
+		limit = { location_rank = location_rank:mining_rural }
+		change_location_rank = location_rank:mining_town
+	}
+	else_if = {
+		limit = { location_rank = location_rank:mining_town }
+		change_location_rank = location_rank:mining_city
+	}
+	else_if = {
+		limit = { location_rank = location_rank:farming_rural }
+		change_location_rank = location_rank:farming_town
+	}
+	else_if = {
+		limit = { location_rank = location_rank:farming_town }
+		change_location_rank = location_rank:farming_city
+	}
+	else_if = {
+		limit = { location_rank = location_rank:gathering_rural }
+		change_location_rank = location_rank:gathering_town
+	}
+	else_if = {
+		limit = { location_rank = location_rank:gathering_town }
+		change_location_rank = location_rank:gathering_city
+	}
+	else_if = {
+		limit = { location_rank = location_rank:woodland_rural }
+		change_location_rank = location_rank:woodland_town
+	}
+	else_if = {
+		limit = { location_rank = location_rank:woodland_town }
+		change_location_rank = location_rank:woodland_city
+	}
+	else_if = {
+		limit = { location_rank = location_rank:commercial_rural }
+		change_location_rank = location_rank:commercial_town
+	}
+	else_if = {
+		limit = { location_rank = location_rank:commercial_town }
+		change_location_rank = location_rank:commercial_city
+	}
+	else = {
+		change_development = development_mild_bonus
+	}
+}
+
+# Spec-change routing: set specialization while preserving current tier.
+# root = location. Reads tier from sul_is_*_rank_tier modifier (custom ranks)
+# or falls back to vanilla location_rank for init-time assignment.
+
+sul_rank_set_mining = {
+	if = {
+		limit = { modifier:sul_is_city_rank_tier = yes }
+		change_location_rank = location_rank:mining_city
+	}
+	else_if = {
+		limit = { NOT = { modifier:sul_is_rural_settlement_rank_tier = yes } }
+		change_location_rank = location_rank:mining_town
+	}
+	else = {
+		change_location_rank = location_rank:mining_rural
+	}
+}
+
+sul_rank_set_farming = {
+	if = {
+		limit = { modifier:sul_is_city_rank_tier = yes }
+		change_location_rank = location_rank:farming_city
+	}
+	else_if = {
+		limit = { NOT = { modifier:sul_is_rural_settlement_rank_tier = yes } }
+		change_location_rank = location_rank:farming_town
+	}
+	else = {
+		change_location_rank = location_rank:farming_rural
+	}
+}
+
+sul_rank_set_gathering = {
+	if = {
+		limit = { modifier:sul_is_city_rank_tier = yes }
+		change_location_rank = location_rank:gathering_city
+	}
+	else_if = {
+		limit = { NOT = { modifier:sul_is_rural_settlement_rank_tier = yes } }
+		change_location_rank = location_rank:gathering_town
+	}
+	else = {
+		change_location_rank = location_rank:gathering_rural
+	}
+}
+
+sul_rank_set_woodland = {
+	if = {
+		limit = { modifier:sul_is_city_rank_tier = yes }
+		change_location_rank = location_rank:woodland_city
+	}
+	else_if = {
+		limit = { NOT = { modifier:sul_is_rural_settlement_rank_tier = yes } }
+		change_location_rank = location_rank:woodland_town
+	}
+	else = {
+		change_location_rank = location_rank:woodland_rural
+	}
+}
+
+sul_rank_set_commercial = {
+	if = {
+		limit = { modifier:sul_is_city_rank_tier = yes }
+		change_location_rank = location_rank:commercial_city
+	}
+	else_if = {
+		limit = { NOT = { modifier:sul_is_rural_settlement_rank_tier = yes } }
+		change_location_rank = location_rank:commercial_town
+	}
+	else = {
+		change_location_rank = location_rank:commercial_rural
+	}
+}

@@ -1,14 +1,5 @@
-﻿@sul_mining_type = 1
-@sul_farming_type = 2
-@sul_gathering_type = 3
-@sul_woodland_type = 4
-@sul_commercial_type = 5
-
-is_town_or_city = {
-	OR = {
-		location_rank = location_rank:town
-		location_rank = location_rank:city
-	}
+﻿is_town_or_city = {
+	NOT = { modifier:sul_is_rural_settlement_rank_tier = yes }
 }
 
 # Raw-material checks used during initialization to assign specialization from goods.
@@ -344,129 +335,113 @@ sul_is_destroyable_specialization_building = {
 	}
 }
 
-# sul_spec_type stores type only (1=mining, 2=farming, 3=gathering, 4=woodland,
-# 5=commercial); rank comes from the engine's location_rank, not encoded here.
+# Combo triggers: check specific specialization + tier via custom location rank.
 
 sul_is_mining_rural = {
-	has_variable = sul_spec_type
-	var:sul_spec_type = @sul_mining_type
-	location_rank = location_rank:rural_settlement
+	location_rank = location_rank:mining_rural
 }
 
 sul_is_farming_rural = {
-	has_variable = sul_spec_type
-	var:sul_spec_type = @sul_farming_type
-	location_rank = location_rank:rural_settlement
+	location_rank = location_rank:farming_rural
 }
 
 sul_is_gathering_rural = {
-	has_variable = sul_spec_type
-	var:sul_spec_type = @sul_gathering_type
-	location_rank = location_rank:rural_settlement
+	location_rank = location_rank:gathering_rural
 }
 
 sul_is_woodland_rural = {
-	has_variable = sul_spec_type
-	var:sul_spec_type = @sul_woodland_type
-	location_rank = location_rank:rural_settlement
+	location_rank = location_rank:woodland_rural
 }
 
 sul_is_commercial_rural = {
-	has_variable = sul_spec_type
-	var:sul_spec_type = @sul_commercial_type
-	location_rank = location_rank:rural_settlement
+	location_rank = location_rank:commercial_rural
 }
 
 sul_is_mining_town = {
-	has_variable = sul_spec_type
-	var:sul_spec_type = @sul_mining_type
-	location_rank = location_rank:town
+	location_rank = location_rank:mining_town
 }
 
 sul_is_farming_town = {
-	has_variable = sul_spec_type
-	var:sul_spec_type = @sul_farming_type
-	location_rank = location_rank:town
+	location_rank = location_rank:farming_town
 }
 
 sul_is_gathering_town = {
-	has_variable = sul_spec_type
-	var:sul_spec_type = @sul_gathering_type
-	location_rank = location_rank:town
+	location_rank = location_rank:gathering_town
 }
 
 sul_is_woodland_town = {
-	has_variable = sul_spec_type
-	var:sul_spec_type = @sul_woodland_type
-	location_rank = location_rank:town
+	location_rank = location_rank:woodland_town
 }
 
 sul_is_commercial_town = {
-	has_variable = sul_spec_type
-	var:sul_spec_type = @sul_commercial_type
-	location_rank = location_rank:town
+	location_rank = location_rank:commercial_town
 }
 
 sul_is_mining_city = {
-	has_variable = sul_spec_type
-	var:sul_spec_type = @sul_mining_type
-	location_rank = location_rank:city
+	location_rank = location_rank:mining_city
 }
 
 sul_is_farming_city = {
-	has_variable = sul_spec_type
-	var:sul_spec_type = @sul_farming_type
-	location_rank = location_rank:city
+	location_rank = location_rank:farming_city
 }
 
 sul_is_gathering_city = {
-	has_variable = sul_spec_type
-	var:sul_spec_type = @sul_gathering_type
-	location_rank = location_rank:city
+	location_rank = location_rank:gathering_city
 }
 
 sul_is_woodland_city = {
-	has_variable = sul_spec_type
-	var:sul_spec_type = @sul_woodland_type
-	location_rank = location_rank:city
+	location_rank = location_rank:woodland_city
 }
 
 sul_is_commercial_city = {
-	has_variable = sul_spec_type
-	var:sul_spec_type = @sul_commercial_type
-	location_rank = location_rank:city
+	location_rank = location_rank:commercial_city
 }
 
 sul_has_mining_specialization = {
-	has_variable = sul_spec_type
-	var:sul_spec_type = @sul_mining_type
+	OR = {
+		location_rank = location_rank:mining_rural
+		location_rank = location_rank:mining_town
+		location_rank = location_rank:mining_city
+	}
 }
 
 sul_has_farming_specialization = {
-	has_variable = sul_spec_type
-	var:sul_spec_type = @sul_farming_type
+	OR = {
+		location_rank = location_rank:farming_rural
+		location_rank = location_rank:farming_town
+		location_rank = location_rank:farming_city
+	}
 }
 
 sul_has_gathering_specialization = {
-	has_variable = sul_spec_type
-	var:sul_spec_type = @sul_gathering_type
+	OR = {
+		location_rank = location_rank:gathering_rural
+		location_rank = location_rank:gathering_town
+		location_rank = location_rank:gathering_city
+	}
 }
 
 sul_has_woodland_specialization = {
-	has_variable = sul_spec_type
-	var:sul_spec_type = @sul_woodland_type
+	OR = {
+		location_rank = location_rank:woodland_rural
+		location_rank = location_rank:woodland_town
+		location_rank = location_rank:woodland_city
+	}
 }
 
 sul_has_commercial_specialization = {
-	has_variable = sul_spec_type
-	var:sul_spec_type = @sul_commercial_type
+	OR = {
+		location_rank = location_rank:commercial_rural
+		location_rank = location_rank:commercial_town
+		location_rank = location_rank:commercial_city
+	}
 }
 
 sul_has_any_specialization = {
-	has_variable = sul_spec_type
+	OR = { modifier:sul_is_rural_settlement_rank_tier = yes modifier:sul_is_town_rank_tier = yes modifier:sul_is_city_rank_tier = yes }
 }
 
-# root = location. Requires sul_spec_type and eligibility variables to exist.
+# root = location. Checks if the current rank's specialization matches eligibility.
 
 sul_current_specialization_is_valid = {
 	OR = {
@@ -474,22 +449,18 @@ sul_current_specialization_is_valid = {
 			sul_has_mining_specialization = yes
 			has_variable = sul_can_mine
 		}
-
 		AND = {
 			sul_has_farming_specialization = yes
 			has_variable = sul_can_farm
 		}
-
 		AND = {
 			sul_has_gathering_specialization = yes
 			has_variable = sul_can_gather
 		}
-
 		AND = {
 			sul_has_woodland_specialization = yes
 			has_variable = sul_can_woodland
 		}
-
 		# Commercial is always valid (fallback specialization)
 		sul_has_commercial_specialization = yes
 	}

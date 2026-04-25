@@ -1,0 +1,45 @@
+﻿REPLACE:peace_take_over_market_center = {
+	cost = {
+		add = {
+			desc = "DIPLOREASON_BASE"
+			value = 60
+		}
+	}
+
+	potential = {
+		scope:loser = {
+			any_market_center_in_country = {
+				location = { sul_has_commercial_specialization = yes }
+			}
+		}
+	}
+
+	select_trigger = {
+		looking_for_a = location
+		source = recipient
+		target_flag = target
+		visible = {
+			is_market_center = yes
+			sul_has_commercial_specialization = yes
+			owner = scope:recipient
+		}
+	}
+
+	allow = {
+	}
+
+	effect = {
+		scope:target = {
+			sul_migration_on_market_destroyed = yes
+			market = { destroy_market = {} }
+			sul_rank_assign_by_resources = yes
+		}
+	}
+
+	ai_desire = {
+		add = {
+			desc = "SUL_AI_DESTROY_ENEMY_MARKET"
+			value = 10
+		}
+	}
+}

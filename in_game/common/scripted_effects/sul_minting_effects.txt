@@ -191,13 +191,16 @@ sul_minting_update_price_cache = {
 
 	set_local_variable = { name = sul_minting_tmp_mc value = 0 }
 
-	every_in_list = {
-		variable = sul_minting_goods
+	if = {
+		limit = { scope:sul_minting_mc = { has_variable_map = sul_market_prices } }
+		every_in_list = {
+			variable = sul_minting_goods
 
-		scope:sul_minting_mc = {
-			change_local_variable = {
-				name = sul_minting_tmp_mc
-				add = "variable_map(sul_market_prices|prev)"
+			scope:sul_minting_mc = {
+				change_local_variable = {
+					name = sul_minting_tmp_mc
+					add = "variable_map(sul_market_prices|prev)"
+				}
 			}
 		}
 	}

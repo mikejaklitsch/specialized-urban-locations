@@ -1,8 +1,9 @@
-﻿@sul_mining_type = 1
-@sul_farming_type = 2
-@sul_gathering_type = 3
-@sul_woodland_type = 4
-@sul_commercial_type = 5
+﻿# Local variable winner values: 1=mining, 2=farming, 3=woodland, 4=gathering, 5=commercial
+@sul_winner_mining = 1
+@sul_winner_farming = 2
+@sul_winner_woodland = 3
+@sul_winner_gathering = 4
+@sul_winner_commercial = 5
 
 sul_ai_respecialize = {
 	type = owncountry
@@ -14,17 +15,7 @@ sul_ai_respecialize = {
 	allow = {
 	}
 
-	price = {
-		if = {
-			limit = { exists = scope:target scope:target = { location_rank = location_rank:rural_settlement } }
-			value = price:sul_respec_mining_rural_price
-		}
-		else_if = {
-			limit = { exists = scope:target scope:target = { location_rank = location_rank:town } }
-			value = price:sul_respec_mining_town_price
-		}
-		else = { value = price:sul_respec_mining_city_price }
-	}
+	price = price:sul_respec_price
 	price_modifier = {
 		add = scope:actor.modifier:global_build_buildings_cost
 		if = {
@@ -64,16 +55,13 @@ sul_ai_respecialize = {
 		name = "ai_respec_select"
 
 		visible = {
+			exists = owner
 			owner = scope:actor
-			OR = {
-				location_rank = location_rank:rural_settlement
-				location_rank = location_rank:town
-				location_rank = location_rank:city
-			}
+			OR = { modifier:sul_is_rural_settlement_rank_tier = yes modifier:sul_is_town_rank_tier = yes modifier:sul_is_city_rank_tier = yes }
 		}
 
 		enabled = {
-			NOT = { sul_has_respec_construction = yes }
+
 			NOT = { has_location_modifier = sul_recently_respecialized }
 			controller = owner
 		}
@@ -97,7 +85,7 @@ sul_ai_respecialize = {
 					if = {
 						limit = { local_var:score > local_var:best }
 						set_local_variable = { name = best value = local_var:score }
-						set_local_variable = { name = winner value = @sul_mining_type }
+						set_local_variable = { name = winner value = @sul_winner_mining }
 					}
 				}
 
@@ -111,7 +99,7 @@ sul_ai_respecialize = {
 					if = {
 						limit = { local_var:score > local_var:best }
 						set_local_variable = { name = best value = local_var:score }
-						set_local_variable = { name = winner value = @sul_farming_type }
+						set_local_variable = { name = winner value = @sul_winner_farming }
 					}
 				}
 
@@ -125,7 +113,7 @@ sul_ai_respecialize = {
 					if = {
 						limit = { local_var:score > local_var:best }
 						set_local_variable = { name = best value = local_var:score }
-						set_local_variable = { name = winner value = @sul_woodland_type }
+						set_local_variable = { name = winner value = @sul_winner_woodland }
 					}
 				}
 
@@ -139,7 +127,7 @@ sul_ai_respecialize = {
 					if = {
 						limit = { local_var:score > local_var:best }
 						set_local_variable = { name = best value = local_var:score }
-						set_local_variable = { name = winner value = @sul_gathering_type }
+						set_local_variable = { name = winner value = @sul_winner_gathering }
 					}
 				}
 
@@ -152,80 +140,29 @@ sul_ai_respecialize = {
 					if = {
 						limit = { local_var:score > local_var:best }
 						set_local_variable = { name = best value = local_var:score }
-						set_local_variable = { name = winner value = @sul_commercial_type }
+						set_local_variable = { name = winner value = @sul_winner_commercial }
 					}
 				}
 
-				# Construct the winning spec's carrier building
 				if = {
-					limit = { local_var:winner = @sul_mining_type }
-					if = {
-						limit = { location_rank = location_rank:rural_settlement }
-						construct_building = { building_type = building_type:sul_respec_mining_rural }
-					}
-					else_if = {
-						limit = { location_rank = location_rank:town }
-						construct_building = { building_type = building_type:sul_respec_mining_town }
-					}
-					else = {
-						construct_building = { building_type = building_type:sul_respec_mining_city }
-					}
+					limit = { local_var:winner = @sul_winner_mining }
+					sul_respec_to_mining = yes
 				}
 				else_if = {
-					limit = { local_var:winner = @sul_farming_type }
-					if = {
-						limit = { location_rank = location_rank:rural_settlement }
-						construct_building = { building_type = building_type:sul_respec_farming_rural }
-					}
-					else_if = {
-						limit = { location_rank = location_rank:town }
-						construct_building = { building_type = building_type:sul_respec_farming_town }
-					}
-					else = {
-						construct_building = { building_type = building_type:sul_respec_farming_city }
-					}
+					limit = { local_var:winner = @sul_winner_farming }
+					sul_respec_to_farming = yes
 				}
 				else_if = {
-					limit = { local_var:winner = @sul_woodland_type }
-					if = {
-						limit = { location_rank = location_rank:rural_settlement }
-						construct_building = { building_type = building_type:sul_respec_woodland_rural }
-					}
-					else_if = {
-						limit = { location_rank = location_rank:town }
-						construct_building = { building_type = building_type:sul_respec_woodland_town }
-					}
-					else = {
-						construct_building = { building_type = building_type:sul_respec_woodland_city }
-					}
+					limit = { local_var:winner = @sul_winner_woodland }
+					sul_respec_to_woodland = yes
 				}
 				else_if = {
-					limit = { local_var:winner = @sul_gathering_type }
-					if = {
-						limit = { location_rank = location_rank:rural_settlement }
-						construct_building = { building_type = building_type:sul_respec_gathering_rural }
-					}
-					else_if = {
-						limit = { location_rank = location_rank:town }
-						construct_building = { building_type = building_type:sul_respec_gathering_town }
-					}
-					else = {
-						construct_building = { building_type = building_type:sul_respec_gathering_city }
-					}
+					limit = { local_var:winner = @sul_winner_gathering }
+					sul_respec_to_gathering = yes
 				}
 				else_if = {
-					limit = { local_var:winner = @sul_commercial_type }
-					if = {
-						limit = { location_rank = location_rank:rural_settlement }
-						construct_building = { building_type = building_type:sul_respec_commercial_rural }
-					}
-					else_if = {
-						limit = { location_rank = location_rank:town }
-						construct_building = { building_type = building_type:sul_respec_commercial_town }
-					}
-					else = {
-						construct_building = { building_type = building_type:sul_respec_commercial_city }
-					}
+					limit = { local_var:winner = @sul_winner_commercial }
+					sul_respec_to_commercial = yes
 				}
 			}
 		}

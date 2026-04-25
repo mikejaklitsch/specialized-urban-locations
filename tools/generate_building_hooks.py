@@ -189,7 +189,7 @@ def load_exclusions(filepath):
         print(f"  WARNING: Exclusion file not found: {filepath}")
         return set()
     exclusions = set()
-    for line in path.read_text(encoding="utf-8").splitlines():
+    for line in path.read_text(encoding="utf-8-sig").splitlines():
         line = line.strip()
         if line and not line.startswith("#"):
             exclusions.add(line)

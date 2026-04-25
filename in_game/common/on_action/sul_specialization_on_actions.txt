@@ -1,4 +1,10 @@
-﻿# Combined handlers for shared vanilla hooks - specialization logic plus
+﻿@sul_mining_type = 1
+@sul_farming_type = 2
+@sul_gathering_type = 3
+@sul_woodland_type = 4
+@sul_commercial_type = 5
+
+# Combined handlers for shared vanilla hooks - specialization logic plus
 # sibling-system dispatch. These are the entry points registered in
 # sul_hardcoded.txt for on_location_changed_rank, on_raw_material_changed,
 # and on_location_changed_owner.
@@ -8,41 +14,102 @@
 
 sul_on_rank_changed = {
 	effect = {
+		# Redirect vanilla rural_settlement back to the correct specialization rural
 		if = {
-			limit = { sul_has_any_specialization = yes }
-			sul_specialization_refresh_modifier = yes
+			limit = {
+				location_rank = location_rank:rural_settlement
+				has_variable = sul_spec_type
+			}
 			if = {
-				limit = {
-					OR = {
-						location_rank = location_rank:town
-						location_rank = location_rank:city
-					}
-				}
-
-				sul_specialization_destroy_non_matching_buildings = yes
+				limit = { var:sul_spec_type = 1 }
+				change_location_rank = location_rank:mining_rural
+			}
+			else_if = {
+				limit = { var:sul_spec_type = 2 }
+				change_location_rank = location_rank:farming_rural
+			}
+			else_if = {
+				limit = { var:sul_spec_type = 3 }
+				change_location_rank = location_rank:gathering_rural
+			}
+			else_if = {
+				limit = { var:sul_spec_type = 4 }
+				change_location_rank = location_rank:woodland_rural
+			}
+			else_if = {
+				limit = { var:sul_spec_type = 5 }
+				change_location_rank = location_rank:commercial_rural
 			}
 		}
-		else_if = {
-			limit = {
-				OR = {
-					location_rank = location_rank:rural_settlement
-					location_rank = location_rank:town
-					location_rank = location_rank:city
-				}
-			}
 
-			sul_specialization_assign_by_resources = yes
-			sul_specialization_apply_modifier = yes
+		if = {
+			limit = { OR = { modifier:sul_is_rural_settlement_rank_tier = yes modifier:sul_is_town_rank_tier = yes modifier:sul_is_city_rank_tier = yes } }
+
+			# Detect spec change: var:sul_spec_type has OLD spec,
+			# the new rank's boolean modifier identifies the NEW spec.
+			# Nested if to prevent var:sul_spec_type evaluation on uninitialized locations.
 			if = {
+				limit = { has_variable = sul_spec_type }
+				if = {
 				limit = {
 					OR = {
-						location_rank = location_rank:town
-						location_rank = location_rank:city
+						AND = { var:sul_spec_type = @sul_mining_type NOT = { modifier:sul_mining_specialization = yes } }
+						AND = { var:sul_spec_type = @sul_farming_type NOT = { modifier:sul_farming_specialization = yes } }
+						AND = { var:sul_spec_type = @sul_gathering_type NOT = { modifier:sul_gathering_specialization = yes } }
+						AND = { var:sul_spec_type = @sul_woodland_type NOT = { modifier:sul_woodland_specialization = yes } }
+						AND = { var:sul_spec_type = @sul_commercial_type NOT = { modifier:sul_commercial_specialization = yes } }
 					}
 				}
 
-				sul_specialization_destroy_non_matching_buildings = yes
+				# === SPECIALIZATION CHANGED ===
+				# Primary respec path is on_built (carrier buildings).
+				# This fallback catches script-driven rank changes.
+				sul_specialization_destroy_and_penalize = yes
+
+				if = {
+					limit = { exists = owner }
+					owner = {
+						if = {
+							limit = { NOT = { has_variable = sul_mining_count } }
+							sul_specialization_count_initialize = yes
+						}
+						prev = { save_temporary_scope_as = sul_loc }
+						sul_specialization_count_decrement = yes
+						sul_specialization_count_increment = yes
+					}
+				}
+
+				if = {
+					limit = {
+						is_market_center = yes
+						NOT = { sul_has_commercial_specialization = yes }
+					}
+					sul_migration_on_market_destroyed = yes
+					market = { destroy_market = {} }
+				}
+
+				if = {
+					limit = {
+						sul_has_commercial_specialization = yes
+						NOT = { is_market_center = yes }
+					}
+					create_market = {
+						builder = owner
+						location = prev
+						price = price:create_market
+						price_modifier = 0
+						instant = yes
+					}
+					sul_migration_on_market_created = yes
+				}
 			}
+			else = {
+				# === TIER CHANGED (upgrade/downgrade within same spec) ===
+			}
+			}
+
+			# Update GUI bridge variables (sets sul_spec_type to new value)
+			sul_specialization_update_designation = yes
 		}
 
 		sul_trim_rgo_levels = yes

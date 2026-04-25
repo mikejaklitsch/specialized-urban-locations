@@ -11,14 +11,6 @@
 #   sul_specialization_count_increment  - +1 for the spec on scope:sul_loc
 #   sul_specialization_count_decrement  - -1 for the spec on scope:sul_loc
 #
-# Constants are file-local in PDX script - redeclared here to keep this
-# file self-contained.
-
-@sul_mining_type = 1
-@sul_farming_type = 2
-@sul_gathering_type = 3
-@sul_woodland_type = 4
-@sul_commercial_type = 5
 @sul_farming_weight = 2
 
 # Full recount. root = country. Called when variables don't exist (first run
@@ -33,10 +25,10 @@ sul_specialization_count_initialize = {
 	set_variable = { name = sul_total_weighted value = 0 }
 
 	every_owned_location = {
-		limit = { has_variable = sul_spec_type }
+		limit = { sul_has_any_specialization = yes }
 
 		if = {
-			limit = { var:sul_spec_type = @sul_mining_type }
+			limit = { sul_has_mining_specialization = yes }
 
 			owner = {
 				change_variable = { name = sul_mining_count add = 1 }
@@ -44,7 +36,7 @@ sul_specialization_count_initialize = {
 			}
 		}
 		else_if = {
-			limit = { var:sul_spec_type = @sul_farming_type }
+			limit = { sul_has_farming_specialization = yes }
 
 			owner = {
 				change_variable = { name = sul_farming_count add = 1 }
@@ -52,7 +44,7 @@ sul_specialization_count_initialize = {
 			}
 		}
 		else_if = {
-			limit = { var:sul_spec_type = @sul_woodland_type }
+			limit = { sul_has_woodland_specialization = yes }
 
 			owner = {
 				change_variable = { name = sul_woodland_count add = 1 }
@@ -60,7 +52,7 @@ sul_specialization_count_initialize = {
 			}
 		}
 		else_if = {
-			limit = { var:sul_spec_type = @sul_gathering_type }
+			limit = { sul_has_gathering_specialization = yes }
 
 			owner = {
 				change_variable = { name = sul_gathering_count add = 1 }
@@ -68,7 +60,7 @@ sul_specialization_count_initialize = {
 			}
 		}
 		else_if = {
-			limit = { var:sul_spec_type = @sul_commercial_type }
+			limit = { sul_has_commercial_specialization = yes }
 
 			owner = {
 				change_variable = { name = sul_commercial_count add = 1 }
@@ -82,27 +74,27 @@ sul_specialization_count_initialize = {
 
 sul_specialization_count_decrement = {
 	if = {
-		limit = { scope:sul_loc = { var:sul_spec_type = @sul_mining_type } }
+		limit = { scope:sul_loc = { sul_has_mining_specialization = yes } }
 		change_variable = { name = sul_mining_count subtract = 1 }
 		change_variable = { name = sul_total_weighted subtract = 1 }
 	}
 	else_if = {
-		limit = { scope:sul_loc = { var:sul_spec_type = @sul_farming_type } }
+		limit = { scope:sul_loc = { sul_has_farming_specialization = yes } }
 		change_variable = { name = sul_farming_count subtract = 1 }
 		change_variable = { name = sul_total_weighted subtract = @sul_farming_weight }
 	}
 	else_if = {
-		limit = { scope:sul_loc = { var:sul_spec_type = @sul_woodland_type } }
+		limit = { scope:sul_loc = { sul_has_woodland_specialization = yes } }
 		change_variable = { name = sul_woodland_count subtract = 1 }
 		change_variable = { name = sul_total_weighted subtract = 1 }
 	}
 	else_if = {
-		limit = { scope:sul_loc = { var:sul_spec_type = @sul_gathering_type } }
+		limit = { scope:sul_loc = { sul_has_gathering_specialization = yes } }
 		change_variable = { name = sul_gathering_count subtract = 1 }
 		change_variable = { name = sul_total_weighted subtract = 1 }
 	}
 	else_if = {
-		limit = { scope:sul_loc = { var:sul_spec_type = @sul_commercial_type } }
+		limit = { scope:sul_loc = { sul_has_commercial_specialization = yes } }
 		change_variable = { name = sul_commercial_count subtract = 1 }
 		change_variable = { name = sul_total_weighted subtract = 1 }
 	}
@@ -112,27 +104,27 @@ sul_specialization_count_decrement = {
 
 sul_specialization_count_increment = {
 	if = {
-		limit = { scope:sul_loc = { var:sul_spec_type = @sul_mining_type } }
+		limit = { scope:sul_loc = { sul_has_mining_specialization = yes } }
 		change_variable = { name = sul_mining_count add = 1 }
 		change_variable = { name = sul_total_weighted add = 1 }
 	}
 	else_if = {
-		limit = { scope:sul_loc = { var:sul_spec_type = @sul_farming_type } }
+		limit = { scope:sul_loc = { sul_has_farming_specialization = yes } }
 		change_variable = { name = sul_farming_count add = 1 }
 		change_variable = { name = sul_total_weighted add = @sul_farming_weight }
 	}
 	else_if = {
-		limit = { scope:sul_loc = { var:sul_spec_type = @sul_woodland_type } }
+		limit = { scope:sul_loc = { sul_has_woodland_specialization = yes } }
 		change_variable = { name = sul_woodland_count add = 1 }
 		change_variable = { name = sul_total_weighted add = 1 }
 	}
 	else_if = {
-		limit = { scope:sul_loc = { var:sul_spec_type = @sul_gathering_type } }
+		limit = { scope:sul_loc = { sul_has_gathering_specialization = yes } }
 		change_variable = { name = sul_gathering_count add = 1 }
 		change_variable = { name = sul_total_weighted add = 1 }
 	}
 	else_if = {
-		limit = { scope:sul_loc = { var:sul_spec_type = @sul_commercial_type } }
+		limit = { scope:sul_loc = { sul_has_commercial_specialization = yes } }
 		change_variable = { name = sul_commercial_count add = 1 }
 		change_variable = { name = sul_total_weighted add = 1 }
 	}

@@ -46,11 +46,12 @@ POP_PRESSURE = {
     "burghers":    0.3,
 }
 
-MARKET_CENTER_BONUS = 25  # dev points
+MARKET_CENTER_BONUS = 0
 
 RANK_BONUS = {
-    "town": 10,    # +0.10 monthly dev / 0.01 decay
-    "city": 25,    # +0.25 monthly dev / 0.01 decay
+    "commercial_rural": 10,   # +0.10 monthly dev / 0.01 decay
+    "commercial_town": 25,    # +0.25 monthly dev / 0.01 decay
+    "commercial_city": 50,    # +0.50 monthly dev / 0.01 decay
 }
 
 # Government type global_monthly_development (must match sul_gov_type_adjustments.txt)
@@ -111,7 +112,8 @@ POP_FIELD_RE = re.compile(
 )
 DEFINE_POP_RE = re.compile(r"define_pop\s*=\s*\{([^}]*)\}", re.DOTALL)
 MARKET_ADD_RE = re.compile(r"\badd_market\s*=\s*([a-z_][a-z0-9_]*)")
-RANK_RE = re.compile(r"\brank\s*=\s*(rural_settlement|town|city)")
+RANK_RE = re.compile(r"\brank\s*=\s*([a-z_]+)")
+TOWN_SETUP_RE = re.compile(r"\btown_setup\s*=\s*([a-z_][a-z0-9_]*)")
 BUILDING_LINE_RE = re.compile(
     r"^\s*([a-z_][a-z0-9_]*)\s*=\s*\{\s*location\s*=\s*([a-z_][a-z0-9_]*)",
     re.MULTILINE,
@@ -171,9 +173,10 @@ def parse_market_centers(path: Path) -> set:
     return {m.group(1) for m in MARKET_ADD_RE.finditer(text)}
 
 
-def parse_ranks(path: Path) -> dict:
-    """Return {location: rank}."""
-    result = {}
+def parse_ranks(path: Path) -> tuple:
+    """Return ({location: rank}, {location: town_setup_name})."""
+    ranks = {}
+    town_setups = {}
     for line in path.read_text(encoding="utf-8-sig").splitlines():
         m = LOCATION_BLOCK_RE.match(line.strip())
         if m:
@@ -181,8 +184,11 @@ def parse_ranks(path: Path) -> dict:
             body = m.group(2)
             rm = RANK_RE.search(body)
             if rm:
-                result[loc_name] = rm.group(1)
-    return result
+                ranks[loc_name] = rm.group(1)
+            tm = TOWN_SETUP_RE.search(body)
+            if tm:
+                town_setups[loc_name] = tm.group(1)
+    return ranks, town_setups
 
 
 def parse_buildings(path: Path) -> dict:
@@ -332,6 +338,51 @@ def parse_countries(path: Path) -> tuple:
         depth = new_depth
 
     return loc_owner, tag_bonus
+
+
+TOWN_SETUP_BLOCK_RE = re.compile(
+    r"(?:INJECT:)?([a-z_][a-z0-9_]*)\s*=\s*\{", re.IGNORECASE
+)
+TOWN_SETUP_ENTRY_RE = re.compile(
+    r"^\s*([a-z_][a-z0-9_]*)\s*=\s*(\d+)\s*$"
+)
+
+
+def parse_town_setups(*paths: Path) -> dict:
+    """Parse town_setup template files. Returns {template_name: {building: level}}.
+
+    Later files merge into earlier ones (INJECT: adds to existing templates).
+    """
+    result = defaultdict(lambda: defaultdict(int))
+    for path in paths:
+        if not path.exists():
+            continue
+        current = None
+        depth = 0
+        for line in path.read_text(encoding="utf-8-sig").splitlines():
+            stripped = line.strip()
+            if not stripped or stripped.startswith("#"):
+                continue
+            opens = stripped.count("{")
+            closes = stripped.count("}")
+
+            if depth == 0 and opens > 0:
+                m = TOWN_SETUP_BLOCK_RE.match(stripped)
+                if m:
+                    current = m.group(1)
+
+            if current and depth >= 1:
+                em = TOWN_SETUP_ENTRY_RE.match(stripped)
+                if em:
+                    btype, level = em.group(1), int(em.group(2))
+                    result[current][btype] += level
+
+            depth += opens - closes
+            if depth <= 0:
+                current = None
+                depth = 0
+
+    return {k: dict(v) for k, v in result.items()}
 
 
 BUILDING_DEV_RE = re.compile(r"local_monthly_development\s*=\s*(-?[0-9.]+)")
@@ -515,12 +566,20 @@ def main():
 
     vanilla_markets_file = vanilla / "main_menu/setup/start/03_markets.txt"
     mod_markets_file = mod / "main_menu/setup/start/51_sul_markets.txt"
-    ranks_file = vanilla / "main_menu/setup/start/07_cities_and_buildings.txt"
+    vanilla_ranks_file = vanilla / "main_menu/setup/start/07_cities_and_buildings.txt"
+    mod_ranks_file = mod / "main_menu/setup/start/07_cities_and_buildings.txt"
     buildings_file = mod / "main_menu/setup/start/50_sul_setup.txt"
     terrain_file = vanilla / "in_game/map_data/location_templates.txt"
     countries_file = vanilla / "main_menu/setup/start/10_countries.txt"
     building_types_dir = mod / "in_game/common/building_types"
     output_file = mod / "main_menu/setup/start/14_development.txt"
+
+    # Town setup template files (vanilla base + mod new templates + mod INJECT overlays)
+    vanilla_town_setups_file = vanilla / "in_game/common/town_setups/00_default.txt"
+    mod_town_setups_dir = mod / "in_game/common/town_setups"
+
+    # Prefer mod ranks file, fall back to vanilla
+    ranks_file = mod_ranks_file if mod_ranks_file.exists() else vanilla_ranks_file
 
     print(f"Pops:       {pops_file}")
     print(f"Markets:    {vanilla_markets_file}")
@@ -529,6 +588,8 @@ def main():
     print(f"Terrain:    {terrain_file}")
     print(f"Countries:  {countries_file}")
     print(f"Buildings:  {buildings_file}")
+    print(f"Town setups:{vanilla_town_setups_file}")
+    print(f"Mod setups: {mod_town_setups_dir}")
     print(f"Bldg defs:  {building_types_dir}")
     print(f"Output:     {output_file}")
     print()
@@ -538,11 +599,39 @@ def main():
     market_centers = parse_market_centers(vanilla_markets_file)
     if mod_markets_file.exists():
         market_centers |= parse_market_centers(mod_markets_file)
-    ranks = parse_ranks(ranks_file)
+    ranks, loc_town_setups = parse_ranks(ranks_file)
+
+    # Parse individual building placements from the ranks file (which contains both
+    # rank/town_setup lines and individual building = { location = X ... } lines)
+    ranks_buildings = parse_buildings(ranks_file) if ranks_file.exists() else {}
+
     terrain_data, ownable_locations = parse_terrain(terrain_file) if terrain_file.exists() else ({}, set())
     buildings = parse_buildings(buildings_file) if buildings_file.exists() else {}
     loc_owner, tag_bonus = parse_countries(countries_file) if countries_file.exists() else ({}, {})
     building_dev_map = parse_building_dev(building_types_dir) if building_types_dir.exists() else {}
+
+    # Parse town_setup templates: vanilla first, then mod files (INJECT merges)
+    town_setup_files = [vanilla_town_setups_file]
+    if mod_town_setups_dir.exists():
+        town_setup_files.extend(sorted(mod_town_setups_dir.glob("*.txt")))
+    town_setups = parse_town_setups(*town_setup_files)
+
+    # Merge all building sources per location:
+    # 1. Individual buildings from 07_cities_and_buildings.txt (mod or vanilla)
+    # 2. Individual buildings from mod 50_sul_setup.txt
+    # 3. Town setup template buildings
+    merged_buildings = defaultdict(list)
+    for loc, blist in ranks_buildings.items():
+        merged_buildings[loc].extend(blist)
+    for loc, blist in buildings.items():
+        merged_buildings[loc].extend(blist)
+    for loc, template_name in loc_town_setups.items():
+        template = town_setups.get(template_name, {})
+        if not template:
+            print(f"  WARNING: town_setup '{template_name}' for {loc} not found")
+        for btype, level in template.items():
+            merged_buildings[loc].append((btype, level))
+    buildings = dict(merged_buildings)
 
     # All ownable locations: those with pops + those with terrain flagged ownable
     all_locations = set(pop_data.keys()) | ownable_locations
@@ -556,6 +645,8 @@ def main():
     print(f"Locations with pops:    {len(pop_data)}")
     print(f"Market centers:         {len(market_centers)}")
     print(f"Locations with rank:    {len(ranks)}")
+    print(f"Town setup templates:   {len(town_setups)}")
+    print(f"Locations w/ town_setup:{len(loc_town_setups)}")
     print(f"Ownable locations:      {len(ownable_locations)}")
     print(f"Total locations:        {len(all_locations)}")
     print(f"Locations with bldgs:   {len(buildings)}")

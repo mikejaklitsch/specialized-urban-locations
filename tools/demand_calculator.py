@@ -253,7 +253,7 @@ def scan_vanilla(vanilla_dir=None):
         if not filename.endswith(".txt"):
             continue
         filepath = os.path.join(vanilla_dir, filename)
-        with open(filepath, encoding="utf-8-sig") as f:
+        with open(filepath, encoding="utf-8") as f:
             text = f.read()
 
         tokens = _tokenize(text)
@@ -827,16 +827,16 @@ def write_demand_init(results):
 
 
 def write_gui(results):
-    """Write the generated GUI tooltip to aaa_pdo_location_tooltips.gui.
+    """Write the generated GUI tooltip to aaa_sul_location_tooltips.gui.
 
     Replaces everything from ### PDO: POP DEMAND BUDGET to the end of the template.
     """
     script_dir = os.path.dirname(os.path.abspath(__file__))
     mod_dir = os.path.dirname(script_dir)
     gui_path = os.path.join(mod_dir, "in_game", "gui", "shared",
-                            "aaa_pdo_location_tooltips.gui")
+                            "aaa_sul_location_tooltips.gui")
 
-    with open(gui_path, encoding="utf-8-sig") as f:
+    with open(gui_path, encoding="utf-8") as f:
         content = f.read()
 
     marker = "### PDO: POP DEMAND BUDGET"
@@ -878,7 +878,7 @@ def main():
     parser.add_argument("--write", action="store_true",
                         help="Write PDX output to pdo_goods_overrides.txt")
     parser.add_argument("--gui", action="store_true",
-                        help="Write generated GUI tooltip to aaa_pdo_location_tooltips.gui")
+                        help="Write generated GUI tooltip to aaa_sul_location_tooltips.gui")
     parser.add_argument("--cache", action="store_true",
                         help="Write demand init scripted effect (pdo_demand_init.txt)")
     parser.add_argument("--vanilla-dir", metavar="DIR",

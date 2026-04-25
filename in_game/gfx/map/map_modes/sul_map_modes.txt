@@ -323,24 +323,28 @@ REPLACE:cities = {
 	# Primary color: specialization
 	map_color = {
 		if = {
-			limit = { sul_has_mining_specialization = yes }
-			value = rgb { 128 0 0 }
-		}
-		else_if = {
-			limit = { sul_has_gathering_specialization = yes }
-			value = rgb { 0 0 128 }
-		}
-		else_if = {
-			limit = { sul_has_woodland_specialization = yes }
-			value = rgb { 85 34 0 }
-		}
-		else_if = {
-			limit = { sul_has_commercial_specialization = yes }
-			value = rgb { 128 0 128 }
-		}
-		else_if = {
-			limit = { sul_has_farming_specialization = yes }
-			value = rgb { 34 85 0 }
+			limit = { is_ownable = yes }
+
+			if = {
+				limit = { sul_has_mining_specialization = yes }
+				value = rgb { 128 0 0 }
+			}
+			else_if = {
+				limit = { sul_has_gathering_specialization = yes }
+				value = rgb { 0 0 128 }
+			}
+			else_if = {
+				limit = { sul_has_woodland_specialization = yes }
+				value = rgb { 85 34 0 }
+			}
+			else_if = {
+				limit = { sul_has_commercial_specialization = yes }
+				value = rgb { 128 0 128 }
+			}
+			else_if = {
+				limit = { sul_has_farming_specialization = yes }
+				value = rgb { 34 85 0 }
+			}
 		}
 	}
 
@@ -348,11 +352,11 @@ REPLACE:cities = {
 	# Guard with exists check to prevent errors on sea/wasteland tiles
 	secondary_map_color = {
 		if = {
-			limit = { exists = location_rank location_rank = location_rank:city }
+			limit = { modifier:sul_is_city_rank_tier = yes }
 			value = rgb { 255 230 128 }
 		}
 		else_if = {
-			limit = { exists = location_rank location_rank = location_rank:town }
+			limit = { modifier:sul_is_town_rank_tier = yes }
 			value = rgb { 40 40 40 }
 		}
 
@@ -474,15 +478,15 @@ sul_mining_potential = {
 
 	tooltip_key = {
 		if = {
-			limit = { location_rank = location_rank:city }
+			limit = { modifier:sul_is_city_rank_tier = yes }
 			value = "sul_mining_city_specialization"
 		}
 		else_if = {
-			limit = { location_rank = location_rank:town }
+			limit = { modifier:sul_is_town_rank_tier = yes }
 			value = "sul_mining_town_specialization"
 		}
 		else_if = {
-			limit = { location_rank = location_rank:rural_settlement }
+			limit = { modifier:sul_is_rural_settlement_rank_tier = yes }
 			value = "sul_mining_rural_specialization"
 		}
 	}
@@ -539,15 +543,15 @@ sul_gathering_potential = {
 
 	tooltip_key = {
 		if = {
-			limit = { location_rank = location_rank:city }
+			limit = { modifier:sul_is_city_rank_tier = yes }
 			value = "sul_gathering_city_specialization"
 		}
 		else_if = {
-			limit = { location_rank = location_rank:town }
+			limit = { modifier:sul_is_town_rank_tier = yes }
 			value = "sul_gathering_town_specialization"
 		}
 		else_if = {
-			limit = { location_rank = location_rank:rural_settlement }
+			limit = { modifier:sul_is_rural_settlement_rank_tier = yes }
 			value = "sul_gathering_rural_specialization"
 		}
 	}
@@ -604,15 +608,15 @@ sul_woodland_potential = {
 
 	tooltip_key = {
 		if = {
-			limit = { location_rank = location_rank:city }
+			limit = { modifier:sul_is_city_rank_tier = yes }
 			value = "sul_woodland_city_specialization"
 		}
 		else_if = {
-			limit = { location_rank = location_rank:town }
+			limit = { modifier:sul_is_town_rank_tier = yes }
 			value = "sul_woodland_town_specialization"
 		}
 		else_if = {
-			limit = { location_rank = location_rank:rural_settlement }
+			limit = { modifier:sul_is_rural_settlement_rank_tier = yes }
 			value = "sul_woodland_rural_specialization"
 		}
 	}
@@ -772,15 +776,15 @@ sul_farming_potential = {
 
 	tooltip_key = {
 		if = {
-			limit = { location_rank = location_rank:city }
+			limit = { modifier:sul_is_city_rank_tier = yes }
 			value = "sul_farming_city_specialization"
 		}
 		else_if = {
-			limit = { location_rank = location_rank:town }
+			limit = { modifier:sul_is_town_rank_tier = yes }
 			value = "sul_farming_town_specialization"
 		}
 		else_if = {
-			limit = { location_rank = location_rank:rural_settlement }
+			limit = { modifier:sul_is_rural_settlement_rank_tier = yes }
 			value = "sul_farming_rural_specialization"
 		}
 	}

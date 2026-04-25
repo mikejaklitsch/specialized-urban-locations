@@ -5,9 +5,8 @@
 @sul_commercial_type = 5
 
 # Specialization carrier buildings. Hidden from the build menu, queued by
-# generic actions. Gold-only cost (no construction_demand) so the generic
-# action price block stays in sync with the actual charge. Canceling refunds
-# everything. on_built applies the specialization then self-destructs.
+# generic actions. Gold-only cost via vanilla rank upgrade prices.
+# on_built applies the specialization then remove_if self-destructs.
 
 # ========================================================================
 # MINING
@@ -20,27 +19,32 @@ sul_respec_mining_rural = {
 	employment_size = 0
 	category = government_category
 
-	rural_settlement = yes
-	town = no
-	city = no
+	mining_rural = yes
+	farming_rural = yes
+	gathering_rural = yes
+	woodland_rural = yes
+	commercial_rural = yes
 
 	build_time = sul_respec_rural_build_time
-	price = sul_respec_mining_rural_price
+	price = rural_settlement_upgrade
 	construction_demand = basic_construction_needs
 
 	unique_production_methods = {
-		sul_respec_mining_rural_pm = { masonry = 0.01 category = building_construction }
+		sul_respec_mining_rural_pm = {
+			masonry = 0.1
+			category = building_construction
+		}
 	}
 
 	country_potential = { always = no }
 	allow = { always = no }
-	can_destroy = {}
-	remove_if = { location = { var:sul_spec_type = @sul_mining_type } }
+	can_destroy = { }
+
+	remove_if = { location = { modifier:sul_mining_specialization = yes } }
 
 	on_built = {
 		sul_respec_on_built_effect = {
-			SPEC_TYPE = @sul_mining_type
-			MODIFIER = sul_mining_rural_specialization
+			SPEC = mining
 			COUNT_VAR = sul_mining_count
 			WEIGHT = 1
 		}
@@ -54,27 +58,32 @@ sul_respec_mining_town = {
 	employment_size = 0
 	category = government_category
 
-	rural_settlement = no
-	town = yes
-	city = no
+	mining_town = yes
+	farming_town = yes
+	gathering_town = yes
+	woodland_town = yes
+	commercial_town = yes
 
 	build_time = sul_respec_town_build_time
-	price = sul_respec_mining_town_price
+	price = town_upgrade
 	construction_demand = basic_construction_needs
 
 	unique_production_methods = {
-		sul_respec_mining_town_pm = { masonry = 0.01 category = building_construction }
+		sul_respec_mining_town_pm = {
+			masonry = 0.1
+			category = building_construction
+		}
 	}
 
 	country_potential = { always = no }
 	allow = { always = no }
-	can_destroy = {}
-	remove_if = { location = { var:sul_spec_type = @sul_mining_type } }
+	can_destroy = { }
+
+	remove_if = { location = { modifier:sul_mining_specialization = yes } }
 
 	on_built = {
 		sul_respec_on_built_effect = {
-			SPEC_TYPE = @sul_mining_type
-			MODIFIER = sul_mining_town_specialization
+			SPEC = mining
 			COUNT_VAR = sul_mining_count
 			WEIGHT = 1
 		}
@@ -88,27 +97,32 @@ sul_respec_mining_city = {
 	employment_size = 0
 	category = government_category
 
-	rural_settlement = no
-	town = no
-	city = yes
+	mining_city = yes
+	farming_city = yes
+	gathering_city = yes
+	woodland_city = yes
+	commercial_city = yes
 
 	build_time = sul_respec_city_build_time
-	price = sul_respec_mining_city_price
+	price = city_upgrade
 	construction_demand = basic_construction_needs
 
 	unique_production_methods = {
-		sul_respec_mining_city_pm = { masonry = 0.01 category = building_construction }
+		sul_respec_mining_city_pm = {
+			masonry = 0.1
+			category = building_construction
+		}
 	}
 
 	country_potential = { always = no }
 	allow = { always = no }
-	can_destroy = {}
-	remove_if = { location = { var:sul_spec_type = @sul_mining_type } }
+	can_destroy = { }
+
+	remove_if = { location = { modifier:sul_mining_specialization = yes } }
 
 	on_built = {
 		sul_respec_on_built_effect = {
-			SPEC_TYPE = @sul_mining_type
-			MODIFIER = sul_mining_city_specialization
+			SPEC = mining
 			COUNT_VAR = sul_mining_count
 			WEIGHT = 1
 		}
@@ -126,27 +140,32 @@ sul_respec_farming_rural = {
 	employment_size = 0
 	category = government_category
 
-	rural_settlement = yes
-	town = no
-	city = no
+	mining_rural = yes
+	farming_rural = yes
+	gathering_rural = yes
+	woodland_rural = yes
+	commercial_rural = yes
 
 	build_time = sul_respec_rural_build_time
-	price = sul_respec_farming_rural_price
+	price = rural_settlement_upgrade
 	construction_demand = basic_construction_needs
 
 	unique_production_methods = {
-		sul_respec_farming_rural_pm = { masonry = 0.01 category = building_construction }
+		sul_respec_farming_rural_pm = {
+			masonry = 0.1
+			category = building_construction
+		}
 	}
 
 	country_potential = { always = no }
 	allow = { always = no }
-	can_destroy = {}
-	remove_if = { location = { var:sul_spec_type = @sul_farming_type } }
+	can_destroy = { }
+
+	remove_if = { location = { modifier:sul_farming_specialization = yes } }
 
 	on_built = {
 		sul_respec_on_built_effect = {
-			SPEC_TYPE = @sul_farming_type
-			MODIFIER = sul_farming_rural_specialization
+			SPEC = farming
 			COUNT_VAR = sul_farming_count
 			WEIGHT = 2
 		}
@@ -160,27 +179,32 @@ sul_respec_farming_town = {
 	employment_size = 0
 	category = government_category
 
-	rural_settlement = no
-	town = yes
-	city = no
+	mining_town = yes
+	farming_town = yes
+	gathering_town = yes
+	woodland_town = yes
+	commercial_town = yes
 
 	build_time = sul_respec_town_build_time
-	price = sul_respec_farming_town_price
+	price = town_upgrade
 	construction_demand = basic_construction_needs
 
 	unique_production_methods = {
-		sul_respec_farming_town_pm = { masonry = 0.01 category = building_construction }
+		sul_respec_farming_town_pm = {
+			masonry = 0.1
+			category = building_construction
+		}
 	}
 
 	country_potential = { always = no }
 	allow = { always = no }
-	can_destroy = {}
-	remove_if = { location = { var:sul_spec_type = @sul_farming_type } }
+	can_destroy = { }
+
+	remove_if = { location = { modifier:sul_farming_specialization = yes } }
 
 	on_built = {
 		sul_respec_on_built_effect = {
-			SPEC_TYPE = @sul_farming_type
-			MODIFIER = sul_farming_town_specialization
+			SPEC = farming
 			COUNT_VAR = sul_farming_count
 			WEIGHT = 2
 		}
@@ -194,27 +218,32 @@ sul_respec_farming_city = {
 	employment_size = 0
 	category = government_category
 
-	rural_settlement = no
-	town = no
-	city = yes
+	mining_city = yes
+	farming_city = yes
+	gathering_city = yes
+	woodland_city = yes
+	commercial_city = yes
 
 	build_time = sul_respec_city_build_time
-	price = sul_respec_farming_city_price
+	price = city_upgrade
 	construction_demand = basic_construction_needs
 
 	unique_production_methods = {
-		sul_respec_farming_city_pm = { masonry = 0.01 category = building_construction }
+		sul_respec_farming_city_pm = {
+			masonry = 0.1
+			category = building_construction
+		}
 	}
 
 	country_potential = { always = no }
 	allow = { always = no }
-	can_destroy = {}
-	remove_if = { location = { var:sul_spec_type = @sul_farming_type } }
+	can_destroy = { }
+
+	remove_if = { location = { modifier:sul_farming_specialization = yes } }
 
 	on_built = {
 		sul_respec_on_built_effect = {
-			SPEC_TYPE = @sul_farming_type
-			MODIFIER = sul_farming_city_specialization
+			SPEC = farming
 			COUNT_VAR = sul_farming_count
 			WEIGHT = 2
 		}
@@ -232,27 +261,32 @@ sul_respec_gathering_rural = {
 	employment_size = 0
 	category = government_category
 
-	rural_settlement = yes
-	town = no
-	city = no
+	mining_rural = yes
+	farming_rural = yes
+	gathering_rural = yes
+	woodland_rural = yes
+	commercial_rural = yes
 
 	build_time = sul_respec_rural_build_time
-	price = sul_respec_gathering_rural_price
+	price = rural_settlement_upgrade
 	construction_demand = basic_construction_needs
 
 	unique_production_methods = {
-		sul_respec_gathering_rural_pm = { masonry = 0.01 category = building_construction }
+		sul_respec_gathering_rural_pm = {
+			masonry = 0.1
+			category = building_construction
+		}
 	}
 
 	country_potential = { always = no }
 	allow = { always = no }
-	can_destroy = {}
-	remove_if = { location = { var:sul_spec_type = @sul_gathering_type } }
+	can_destroy = { }
+
+	remove_if = { location = { modifier:sul_gathering_specialization = yes } }
 
 	on_built = {
 		sul_respec_on_built_effect = {
-			SPEC_TYPE = @sul_gathering_type
-			MODIFIER = sul_gathering_rural_specialization
+			SPEC = gathering
 			COUNT_VAR = sul_gathering_count
 			WEIGHT = 1
 		}
@@ -266,27 +300,32 @@ sul_respec_gathering_town = {
 	employment_size = 0
 	category = government_category
 
-	rural_settlement = no
-	town = yes
-	city = no
+	mining_town = yes
+	farming_town = yes
+	gathering_town = yes
+	woodland_town = yes
+	commercial_town = yes
 
 	build_time = sul_respec_town_build_time
-	price = sul_respec_gathering_town_price
+	price = town_upgrade
 	construction_demand = basic_construction_needs
 
 	unique_production_methods = {
-		sul_respec_gathering_town_pm = { masonry = 0.01 category = building_construction }
+		sul_respec_gathering_town_pm = {
+			masonry = 0.1
+			category = building_construction
+		}
 	}
 
 	country_potential = { always = no }
 	allow = { always = no }
-	can_destroy = {}
-	remove_if = { location = { var:sul_spec_type = @sul_gathering_type } }
+	can_destroy = { }
+
+	remove_if = { location = { modifier:sul_gathering_specialization = yes } }
 
 	on_built = {
 		sul_respec_on_built_effect = {
-			SPEC_TYPE = @sul_gathering_type
-			MODIFIER = sul_gathering_town_specialization
+			SPEC = gathering
 			COUNT_VAR = sul_gathering_count
 			WEIGHT = 1
 		}
@@ -300,27 +339,32 @@ sul_respec_gathering_city = {
 	employment_size = 0
 	category = government_category
 
-	rural_settlement = no
-	town = no
-	city = yes
+	mining_city = yes
+	farming_city = yes
+	gathering_city = yes
+	woodland_city = yes
+	commercial_city = yes
 
 	build_time = sul_respec_city_build_time
-	price = sul_respec_gathering_city_price
+	price = city_upgrade
 	construction_demand = basic_construction_needs
 
 	unique_production_methods = {
-		sul_respec_gathering_city_pm = { masonry = 0.01 category = building_construction }
+		sul_respec_gathering_city_pm = {
+			masonry = 0.1
+			category = building_construction
+		}
 	}
 
 	country_potential = { always = no }
 	allow = { always = no }
-	can_destroy = {}
-	remove_if = { location = { var:sul_spec_type = @sul_gathering_type } }
+	can_destroy = { }
+
+	remove_if = { location = { modifier:sul_gathering_specialization = yes } }
 
 	on_built = {
 		sul_respec_on_built_effect = {
-			SPEC_TYPE = @sul_gathering_type
-			MODIFIER = sul_gathering_city_specialization
+			SPEC = gathering
 			COUNT_VAR = sul_gathering_count
 			WEIGHT = 1
 		}
@@ -338,27 +382,32 @@ sul_respec_woodland_rural = {
 	employment_size = 0
 	category = government_category
 
-	rural_settlement = yes
-	town = no
-	city = no
+	mining_rural = yes
+	farming_rural = yes
+	gathering_rural = yes
+	woodland_rural = yes
+	commercial_rural = yes
 
 	build_time = sul_respec_rural_build_time
-	price = sul_respec_woodland_rural_price
+	price = rural_settlement_upgrade
 	construction_demand = basic_construction_needs
 
 	unique_production_methods = {
-		sul_respec_woodland_rural_pm = { masonry = 0.01 category = building_construction }
+		sul_respec_woodland_rural_pm = {
+			masonry = 0.1
+			category = building_construction
+		}
 	}
 
 	country_potential = { always = no }
 	allow = { always = no }
-	can_destroy = {}
-	remove_if = { location = { var:sul_spec_type = @sul_woodland_type } }
+	can_destroy = { }
+
+	remove_if = { location = { modifier:sul_woodland_specialization = yes } }
 
 	on_built = {
 		sul_respec_on_built_effect = {
-			SPEC_TYPE = @sul_woodland_type
-			MODIFIER = sul_woodland_rural_specialization
+			SPEC = woodland
 			COUNT_VAR = sul_woodland_count
 			WEIGHT = 1
 		}
@@ -372,27 +421,32 @@ sul_respec_woodland_town = {
 	employment_size = 0
 	category = government_category
 
-	rural_settlement = no
-	town = yes
-	city = no
+	mining_town = yes
+	farming_town = yes
+	gathering_town = yes
+	woodland_town = yes
+	commercial_town = yes
 
 	build_time = sul_respec_town_build_time
-	price = sul_respec_woodland_town_price
+	price = town_upgrade
 	construction_demand = basic_construction_needs
 
 	unique_production_methods = {
-		sul_respec_woodland_town_pm = { masonry = 0.01 category = building_construction }
+		sul_respec_woodland_town_pm = {
+			masonry = 0.1
+			category = building_construction
+		}
 	}
 
 	country_potential = { always = no }
 	allow = { always = no }
-	can_destroy = {}
-	remove_if = { location = { var:sul_spec_type = @sul_woodland_type } }
+	can_destroy = { }
+
+	remove_if = { location = { modifier:sul_woodland_specialization = yes } }
 
 	on_built = {
 		sul_respec_on_built_effect = {
-			SPEC_TYPE = @sul_woodland_type
-			MODIFIER = sul_woodland_town_specialization
+			SPEC = woodland
 			COUNT_VAR = sul_woodland_count
 			WEIGHT = 1
 		}
@@ -406,27 +460,32 @@ sul_respec_woodland_city = {
 	employment_size = 0
 	category = government_category
 
-	rural_settlement = no
-	town = no
-	city = yes
+	mining_city = yes
+	farming_city = yes
+	gathering_city = yes
+	woodland_city = yes
+	commercial_city = yes
 
 	build_time = sul_respec_city_build_time
-	price = sul_respec_woodland_city_price
+	price = city_upgrade
 	construction_demand = basic_construction_needs
 
 	unique_production_methods = {
-		sul_respec_woodland_city_pm = { masonry = 0.01 category = building_construction }
+		sul_respec_woodland_city_pm = {
+			masonry = 0.1
+			category = building_construction
+		}
 	}
 
 	country_potential = { always = no }
 	allow = { always = no }
-	can_destroy = {}
-	remove_if = { location = { var:sul_spec_type = @sul_woodland_type } }
+	can_destroy = { }
+
+	remove_if = { location = { modifier:sul_woodland_specialization = yes } }
 
 	on_built = {
 		sul_respec_on_built_effect = {
-			SPEC_TYPE = @sul_woodland_type
-			MODIFIER = sul_woodland_city_specialization
+			SPEC = woodland
 			COUNT_VAR = sul_woodland_count
 			WEIGHT = 1
 		}
@@ -444,26 +503,34 @@ sul_respec_commercial_rural = {
 	employment_size = 0
 	category = government_category
 
-	rural_settlement = yes
-	town = no
-	city = no
+	mining_rural = yes
+	farming_rural = yes
+	gathering_rural = yes
+	woodland_rural = yes
+	commercial_rural = yes
 
 	build_time = sul_respec_rural_build_time
-	price = sul_respec_commercial_rural_price
+	price = rural_settlement_upgrade
 	construction_demand = basic_construction_needs
 
 	unique_production_methods = {
-		sul_respec_commercial_rural_pm = { masonry = 0.01 category = building_construction }
+		sul_respec_commercial_rural_pm = {
+			masonry = 0.1
+			category = building_construction
+		}
 	}
 
 	country_potential = { always = no }
 	allow = { always = no }
-	can_destroy = {}
-	remove_if = { location = { var:sul_spec_type = @sul_commercial_type } }
+	can_destroy = { }
+
+	remove_if = { location = { modifier:sul_commercial_specialization = yes } }
 
 	on_built = {
-		sul_respec_commercial_on_built_effect = {
-			MODIFIER = sul_commercial_rural_specialization
+		sul_respec_on_built_effect = {
+			SPEC = commercial
+			COUNT_VAR = sul_commercial_count
+			WEIGHT = 1
 		}
 	}
 }
@@ -475,26 +542,34 @@ sul_respec_commercial_town = {
 	employment_size = 0
 	category = government_category
 
-	rural_settlement = no
-	town = yes
-	city = no
+	mining_town = yes
+	farming_town = yes
+	gathering_town = yes
+	woodland_town = yes
+	commercial_town = yes
 
 	build_time = sul_respec_town_build_time
-	price = sul_respec_commercial_town_price
+	price = town_upgrade
 	construction_demand = basic_construction_needs
 
 	unique_production_methods = {
-		sul_respec_commercial_town_pm = { masonry = 0.01 category = building_construction }
+		sul_respec_commercial_town_pm = {
+			masonry = 0.1
+			category = building_construction
+		}
 	}
 
 	country_potential = { always = no }
 	allow = { always = no }
-	can_destroy = {}
-	remove_if = { location = { var:sul_spec_type = @sul_commercial_type } }
+	can_destroy = { }
+
+	remove_if = { location = { modifier:sul_commercial_specialization = yes } }
 
 	on_built = {
-		sul_respec_commercial_on_built_effect = {
-			MODIFIER = sul_commercial_town_specialization
+		sul_respec_on_built_effect = {
+			SPEC = commercial
+			COUNT_VAR = sul_commercial_count
+			WEIGHT = 1
 		}
 	}
 }
@@ -506,26 +581,34 @@ sul_respec_commercial_city = {
 	employment_size = 0
 	category = government_category
 
-	rural_settlement = no
-	town = no
-	city = yes
+	mining_city = yes
+	farming_city = yes
+	gathering_city = yes
+	woodland_city = yes
+	commercial_city = yes
 
 	build_time = sul_respec_city_build_time
-	price = sul_respec_commercial_city_price
+	price = city_upgrade
 	construction_demand = basic_construction_needs
 
 	unique_production_methods = {
-		sul_respec_commercial_city_pm = { masonry = 0.01 category = building_construction }
+		sul_respec_commercial_city_pm = {
+			masonry = 0.1
+			category = building_construction
+		}
 	}
 
 	country_potential = { always = no }
 	allow = { always = no }
-	can_destroy = {}
-	remove_if = { location = { var:sul_spec_type = @sul_commercial_type } }
+	can_destroy = { }
+
+	remove_if = { location = { modifier:sul_commercial_specialization = yes } }
 
 	on_built = {
-		sul_respec_commercial_on_built_effect = {
-			MODIFIER = sul_commercial_city_specialization
+		sul_respec_on_built_effect = {
+			SPEC = commercial
+			COUNT_VAR = sul_commercial_count
+			WEIGHT = 1
 		}
 	}
 }

@@ -68,7 +68,7 @@ def parse_modifier_types():
     for fn in os.listdir(VANILLA_MODIFIER_DEFS):
         if not fn.endswith('.txt'):
             continue
-        with open(os.path.join(VANILLA_MODIFIER_DEFS, fn)) as f:
+        with open(os.path.join(VANILLA_MODIFIER_DEFS, fn), encoding='utf-8-sig') as f:
             content = f.read()
         for m in re.finditer(r'(\w+)\s*=\s*\{([^}]*)\}', content):
             name = m.group(1)
@@ -87,7 +87,7 @@ def parse_modifier_types():
 
 def parse_static_modifiers():
     """Parse our static modifier file for base_values and development tradeoff modifiers."""
-    with open(STATIC_MOD_FILE) as f:
+    with open(STATIC_MOD_FILE, encoding='utf-8-sig') as f:
         content = f.read()
 
     base_values = {}
@@ -349,7 +349,7 @@ def inject_into_gui(gui_path, extraction, production, mod_types, base_values):
 
     Sections: EXTRACTION_ROWS, PRODUCTION_ROWS, CURRENT_EFFECTS_ROWS
     """
-    with open(gui_path, 'r') as f:
+    with open(gui_path, 'r', encoding='utf-8-sig') as f:
         content = f.read()
 
     sections = {}
@@ -437,7 +437,7 @@ def inject_into_gui(gui_path, extraction, production, mod_types, base_values):
             print(f"  WARNING: Marker not found for {section_name}")
 
     if replaced > 0:
-        with open(gui_path, 'w') as f:
+        with open(gui_path, 'w', encoding='utf-8-sig') as f:
             f.write(content)
 
     return replaced
@@ -450,7 +450,7 @@ def main():
 
     # Generate script values
     sv_content = generate_script_values(extraction, production, mod_types, base_values)
-    with open(SCRIPT_VALUES_FILE, 'w') as f:
+    with open(SCRIPT_VALUES_FILE, 'w', encoding='utf-8-sig') as f:
         f.write(sv_content)
     print(f"Wrote script values to {SCRIPT_VALUES_FILE}")
 

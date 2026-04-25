@@ -1,20 +1,18 @@
-﻿@sul_commercial_type = 5
-
-REPLACE:relocate_market = {
+﻿REPLACE:relocate_market = {
 	type = owncountry
 
 	potential = {
 	}
 
 	allow = {
+		custom_tooltip = {
+			text = SUL_RELOCATE_MARKET_DISABLED
+			always = no
+		}
 	}
 
 	ai_tick = never
 
-	automation_tick = never
-	automation_tick_frequency = 12
-
-	# market in scope:target
 	select_trigger = {
 		looking_for_a = market
 		source = actor
@@ -24,72 +22,9 @@ REPLACE:relocate_market = {
 		column = { data = name }
 
 		visible = {
-			location = {
-				owner ?= scope:actor
-				NOT = { has_location_modifier = sul_recently_respecialized }
-			}
+			always = no
 		}
 	}
 
-	# location in scope:target_location
-	select_trigger = {
-		looking_for_a = location
-		source = actor
-		target_flag = target_location
-		name = "relocate_market_select_location"
-		none_available_msg_key = "relocate_market_no_locations"
-		column = { data = name }
-		column = { data = population }
-
-		visible = {
-			market = scope:target
-			this != scope:target.location
-			owner ?= scope:actor
-			NOT = { sul_has_commercial_specialization = yes }
-			NOT = { has_location_modifier = sul_recently_respecialized }
-		}
-	}
-
-	effect = {
-		if = {
-			limit = {
-				exists = scope:target
-				exists = scope:target_location
-			}
-
-			# Old location: queue resource-based spec carrier
-			scope:target = {
-				location = {
-					sul_construct_resource_spec_carrier = yes
-				}
-			}
-
-			# New location: queue commercial carrier
-			scope:target_location = {
-				if = {
-					limit = { location_rank = location_rank:rural_settlement }
-					construct_building = { building_type = building_type:sul_respec_commercial_rural }
-				}
-				else_if = {
-					limit = { location_rank = location_rank:town }
-					construct_building = { building_type = building_type:sul_respec_commercial_town }
-				}
-				else = {
-					construct_building = { building_type = building_type:sul_respec_commercial_city }
-				}
-			}
-		}
-	}
-
-	ai_will_do = {
-		if = {
-			limit = {
-				exists = scope:target
-				exists = scope:target_location
-			}
-			add = "scope:target_location.add_static_modifier_utility(market_center)"
-			add = "scope:target.location.remove_static_modifier_utility:market_center"
-			add = "scope:actor.relocate_market_utility(scope:target.location|scope:target_location)"
-		}
-	}
+	effect = { }
 }

@@ -1,12 +1,7 @@
-﻿# Player-facing specialization designation actions. Each action takes a town
-# or city, charges gold + prestige, destroys non-matching buildings, and
-# applies the rank modifier. scope:actor = country, scope:target = location.
-
-@sul_mining_type = 1
-@sul_farming_type = 2
-@sul_gathering_type = 3
-@sul_woodland_type = 4
-@sul_commercial_type = 5
+﻿# Player-facing specialization designation actions. Each action selects a
+# location, displays price (not charged — carrier building handles payment),
+# and queues a carrier building whose on_built fires the respec.
+# scope:actor = country, scope:target = location.
 
 sul_designate_mining_specialization = {
 	type = owncountry
@@ -17,18 +12,17 @@ sul_designate_mining_specialization = {
 	allow = {
 	}
 
-	price = {
+	price = price:sul_respec_price
+	price_modifier = {
+		value = 1
 		if = {
-			limit = { exists = scope:target scope:target = { location_rank = location_rank:rural_settlement } }
-			value = price:sul_respec_mining_rural_price
+			limit = { exists = scope:target scope:target = { modifier:sul_is_city_rank_tier = yes } }
+			multiply = 20
 		}
 		else_if = {
-			limit = { exists = scope:target scope:target = { location_rank = location_rank:town } }
-			value = price:sul_respec_mining_town_price
+			limit = { exists = scope:target scope:target = { modifier:sul_is_town_rank_tier = yes } }
+			multiply = 5
 		}
-		else = { value = price:sul_respec_mining_city_price }
-	}
-	price_modifier = {
 		add = scope:actor.modifier:global_build_buildings_cost
 		if = {
 			limit = { exists = scope:target }
@@ -48,17 +42,11 @@ sul_designate_mining_specialization = {
 
 		visible = {
 			owner = scope:actor
-			OR = {
-				location_rank = location_rank:rural_settlement
-				location_rank = location_rank:town
-				location_rank = location_rank:city
-			}
+			OR = { modifier:sul_is_rural_settlement_rank_tier = yes modifier:sul_is_town_rank_tier = yes modifier:sul_is_city_rank_tier = yes }
 		}
 
 		enabled = {
-			# Mining eligibility: resources OR terrain
 			OR = {
-				# Mining resources
 				raw_material = goods:coal
 				raw_material = goods:iron
 				raw_material = goods:copper
@@ -71,19 +59,12 @@ sul_designate_mining_specialization = {
 				raw_material = goods:gems
 				raw_material = goods:marble
 				raw_material = goods:mercury
-				# Mining terrain
 				topography = mountains
 				topography = wetlands
 				is_adjacent_to_lake = yes
 			}
-			NOT = {
-				sul_has_mining_specialization = yes
-			}
-			NOT = {
-				has_location_modifier = sul_recently_respecialized
-			}
-			NOT = { sul_has_respec_construction = yes }
-
+			NOT = { sul_has_mining_specialization = yes }
+			NOT = { has_location_modifier = sul_recently_respecialized }
 			controller = owner
 		}
 	}
@@ -91,17 +72,14 @@ sul_designate_mining_specialization = {
 		if = {
 			limit = { exists = scope:target }
 			scope:target = {
+				custom_tooltip = SUL_RESPEC_BUILD_TIME
+				sul_respec_show_destroy_non_mining = yes
 				if = {
-					limit = { location_rank = location_rank:rural_settlement }
-					construct_building = { building_type = building_type:sul_respec_mining_rural }
+					limit = { is_market_center = yes }
+					custom_tooltip = SUL_RESPEC_MARKET_DESTROYED
 				}
-				else_if = {
-					limit = { location_rank = location_rank:town }
-					construct_building = { building_type = building_type:sul_respec_mining_town }
-				}
-				else = {
-					construct_building = { building_type = building_type:sul_respec_mining_city }
-				}
+				custom_tooltip = SUL_RESPEC_PENALTY_APPLIED
+				hidden_effect = { sul_respec_to_mining = yes }
 			}
 		}
 	}
@@ -116,18 +94,17 @@ sul_designate_farming_specialization = {
 	allow = {
 	}
 
-	price = {
+	price = price:sul_respec_price
+	price_modifier = {
+		value = 1
 		if = {
-			limit = { exists = scope:target scope:target = { location_rank = location_rank:rural_settlement } }
-			value = price:sul_respec_farming_rural_price
+			limit = { exists = scope:target scope:target = { modifier:sul_is_city_rank_tier = yes } }
+			multiply = 20
 		}
 		else_if = {
-			limit = { exists = scope:target scope:target = { location_rank = location_rank:town } }
-			value = price:sul_respec_farming_town_price
+			limit = { exists = scope:target scope:target = { modifier:sul_is_town_rank_tier = yes } }
+			multiply = 5
 		}
-		else = { value = price:sul_respec_farming_city_price }
-	}
-	price_modifier = {
 		add = scope:actor.modifier:global_build_buildings_cost
 		if = {
 			limit = { exists = scope:target }
@@ -147,17 +124,11 @@ sul_designate_farming_specialization = {
 
 		visible = {
 			owner = scope:actor
-			OR = {
-				location_rank = location_rank:rural_settlement
-				location_rank = location_rank:town
-				location_rank = location_rank:city
-			}
+			OR = { modifier:sul_is_rural_settlement_rank_tier = yes modifier:sul_is_town_rank_tier = yes modifier:sul_is_city_rank_tier = yes }
 		}
 
 		enabled = {
-			# Farming eligibility: resources OR terrain
 			OR = {
-				# Farming resources
 				raw_material = goods:horses
 				raw_material = goods:silk
 				raw_material = goods:tea
@@ -181,7 +152,6 @@ sul_designate_farming_specialization = {
 				raw_material = goods:livestock
 				raw_material = goods:olives
 				raw_material = goods:fruit
-				# Farming terrain
 				vegetation = farmland
 				AND = {
 					topography = flatland
@@ -192,14 +162,8 @@ sul_designate_farming_specialization = {
 					vegetation = grasslands
 				}
 			}
-			NOT = {
-				sul_has_farming_specialization = yes
-			}
-			NOT = {
-				has_location_modifier = sul_recently_respecialized
-			}
-			NOT = { sul_has_respec_construction = yes }
-
+			NOT = { sul_has_farming_specialization = yes }
+			NOT = { has_location_modifier = sul_recently_respecialized }
 			controller = owner
 		}
 	}
@@ -207,17 +171,14 @@ sul_designate_farming_specialization = {
 		if = {
 			limit = { exists = scope:target }
 			scope:target = {
+				custom_tooltip = SUL_RESPEC_BUILD_TIME
+				sul_respec_show_destroy_non_farming = yes
 				if = {
-					limit = { location_rank = location_rank:rural_settlement }
-					construct_building = { building_type = building_type:sul_respec_farming_rural }
+					limit = { is_market_center = yes }
+					custom_tooltip = SUL_RESPEC_MARKET_DESTROYED
 				}
-				else_if = {
-					limit = { location_rank = location_rank:town }
-					construct_building = { building_type = building_type:sul_respec_farming_town }
-				}
-				else = {
-					construct_building = { building_type = building_type:sul_respec_farming_city }
-				}
+				custom_tooltip = SUL_RESPEC_PENALTY_APPLIED
+				hidden_effect = { sul_respec_to_farming = yes }
 			}
 		}
 	}
@@ -232,18 +193,17 @@ sul_designate_woodland_specialization = {
 	allow = {
 	}
 
-	price = {
+	price = price:sul_respec_price
+	price_modifier = {
+		value = 1
 		if = {
-			limit = { exists = scope:target scope:target = { location_rank = location_rank:rural_settlement } }
-			value = price:sul_respec_woodland_rural_price
+			limit = { exists = scope:target scope:target = { modifier:sul_is_city_rank_tier = yes } }
+			multiply = 20
 		}
 		else_if = {
-			limit = { exists = scope:target scope:target = { location_rank = location_rank:town } }
-			value = price:sul_respec_woodland_town_price
+			limit = { exists = scope:target scope:target = { modifier:sul_is_town_rank_tier = yes } }
+			multiply = 5
 		}
-		else = { value = price:sul_respec_woodland_city_price }
-	}
-	price_modifier = {
 		add = scope:actor.modifier:global_build_buildings_cost
 		if = {
 			limit = { exists = scope:target }
@@ -263,17 +223,11 @@ sul_designate_woodland_specialization = {
 
 		visible = {
 			owner = scope:actor
-			OR = {
-				location_rank = location_rank:rural_settlement
-				location_rank = location_rank:town
-				location_rank = location_rank:city
-			}
+			OR = { modifier:sul_is_rural_settlement_rank_tier = yes modifier:sul_is_town_rank_tier = yes modifier:sul_is_city_rank_tier = yes }
 		}
 
 		enabled = {
-			# Woodland eligibility: resources OR terrain
 			OR = {
-				# Woodland resources
 				raw_material = goods:lumber
 				raw_material = goods:wild_game
 				raw_material = goods:fur
@@ -281,19 +235,12 @@ sul_designate_woodland_specialization = {
 				raw_material = goods:elephants
 				raw_material = goods:beeswax
 				raw_material = goods:dyes
-				# Woodland terrain
 				vegetation = forest
 				vegetation = woods
 				vegetation = jungle
 			}
-			NOT = {
-				sul_has_woodland_specialization = yes
-			}
-			NOT = {
-				has_location_modifier = sul_recently_respecialized
-			}
-			NOT = { sul_has_respec_construction = yes }
-
+			NOT = { sul_has_woodland_specialization = yes }
+			NOT = { has_location_modifier = sul_recently_respecialized }
 			controller = owner
 		}
 	}
@@ -301,17 +248,14 @@ sul_designate_woodland_specialization = {
 		if = {
 			limit = { exists = scope:target }
 			scope:target = {
+				custom_tooltip = SUL_RESPEC_BUILD_TIME
+				sul_respec_show_destroy_non_woodland = yes
 				if = {
-					limit = { location_rank = location_rank:rural_settlement }
-					construct_building = { building_type = building_type:sul_respec_woodland_rural }
+					limit = { is_market_center = yes }
+					custom_tooltip = SUL_RESPEC_MARKET_DESTROYED
 				}
-				else_if = {
-					limit = { location_rank = location_rank:town }
-					construct_building = { building_type = building_type:sul_respec_woodland_town }
-				}
-				else = {
-					construct_building = { building_type = building_type:sul_respec_woodland_city }
-				}
+				custom_tooltip = SUL_RESPEC_PENALTY_APPLIED
+				hidden_effect = { sul_respec_to_woodland = yes }
 			}
 		}
 	}
@@ -326,18 +270,17 @@ sul_designate_gathering_specialization = {
 	allow = {
 	}
 
-	price = {
+	price = price:sul_respec_price
+	price_modifier = {
+		value = 1
 		if = {
-			limit = { exists = scope:target scope:target = { location_rank = location_rank:rural_settlement } }
-			value = price:sul_respec_gathering_rural_price
+			limit = { exists = scope:target scope:target = { modifier:sul_is_city_rank_tier = yes } }
+			multiply = 20
 		}
 		else_if = {
-			limit = { exists = scope:target scope:target = { location_rank = location_rank:town } }
-			value = price:sul_respec_gathering_town_price
+			limit = { exists = scope:target scope:target = { modifier:sul_is_town_rank_tier = yes } }
+			multiply = 5
 		}
-		else = { value = price:sul_respec_gathering_city_price }
-	}
-	price_modifier = {
 		add = scope:actor.modifier:global_build_buildings_cost
 		if = {
 			limit = { exists = scope:target }
@@ -357,17 +300,11 @@ sul_designate_gathering_specialization = {
 
 		visible = {
 			owner = scope:actor
-			OR = {
-				location_rank = location_rank:rural_settlement
-				location_rank = location_rank:town
-				location_rank = location_rank:city
-			}
+			OR = { modifier:sul_is_rural_settlement_rank_tier = yes modifier:sul_is_town_rank_tier = yes modifier:sul_is_city_rank_tier = yes }
 		}
 
 		enabled = {
-			# Gathering eligibility: resources OR geography
 			OR = {
-				# Gathering resources
 				raw_material = goods:clay
 				raw_material = goods:sand
 				raw_material = goods:salt
@@ -376,19 +313,12 @@ sul_designate_gathering_specialization = {
 				raw_material = goods:amber
 				raw_material = goods:fish
 				raw_material = goods:wool
-				# Gathering geography
 				is_coastal = yes
 				has_river = yes
 				is_adjacent_to_lake = yes
 			}
-			NOT = {
-				sul_has_gathering_specialization = yes
-			}
-			NOT = {
-				has_location_modifier = sul_recently_respecialized
-			}
-			NOT = { sul_has_respec_construction = yes }
-
+			NOT = { sul_has_gathering_specialization = yes }
+			NOT = { has_location_modifier = sul_recently_respecialized }
 			controller = owner
 		}
 	}
@@ -396,17 +326,14 @@ sul_designate_gathering_specialization = {
 		if = {
 			limit = { exists = scope:target }
 			scope:target = {
+				custom_tooltip = SUL_RESPEC_BUILD_TIME
+				sul_respec_show_destroy_non_gathering = yes
 				if = {
-					limit = { location_rank = location_rank:rural_settlement }
-					construct_building = { building_type = building_type:sul_respec_gathering_rural }
+					limit = { is_market_center = yes }
+					custom_tooltip = SUL_RESPEC_MARKET_DESTROYED
 				}
-				else_if = {
-					limit = { location_rank = location_rank:town }
-					construct_building = { building_type = building_type:sul_respec_gathering_town }
-				}
-				else = {
-					construct_building = { building_type = building_type:sul_respec_gathering_city }
-				}
+				custom_tooltip = SUL_RESPEC_PENALTY_APPLIED
+				hidden_effect = { sul_respec_to_gathering = yes }
 			}
 		}
 	}
@@ -421,18 +348,17 @@ sul_designate_commercial_specialization = {
 	allow = {
 	}
 
-	price = {
+	price = price:sul_respec_price
+	price_modifier = {
+		value = 1
 		if = {
-			limit = { exists = scope:target scope:target = { location_rank = location_rank:rural_settlement } }
-			value = price:sul_respec_commercial_rural_price
+			limit = { exists = scope:target scope:target = { modifier:sul_is_city_rank_tier = yes } }
+			multiply = 20
 		}
 		else_if = {
-			limit = { exists = scope:target scope:target = { location_rank = location_rank:town } }
-			value = price:sul_respec_commercial_town_price
+			limit = { exists = scope:target scope:target = { modifier:sul_is_town_rank_tier = yes } }
+			multiply = 5
 		}
-		else = { value = price:sul_respec_commercial_city_price }
-	}
-	price_modifier = {
 		add = scope:actor.modifier:global_build_buildings_cost
 		if = {
 			limit = { exists = scope:target }
@@ -452,18 +378,13 @@ sul_designate_commercial_specialization = {
 
 		visible = {
 			owner = scope:actor
-			OR = {
-				location_rank = location_rank:rural_settlement
-				location_rank = location_rank:town
-				location_rank = location_rank:city
-			}
+			OR = { modifier:sul_is_rural_settlement_rank_tier = yes modifier:sul_is_town_rank_tier = yes modifier:sul_is_city_rank_tier = yes }
 		}
 
 		enabled = {
 			NOT = { sul_has_commercial_specialization = yes }
 			NOT = { has_location_modifier = sul_recently_respecialized }
 			NOT = { is_market_center = yes }
-			NOT = { sul_has_respec_construction = yes }
 			controller = owner
 		}
 	}
@@ -471,17 +392,14 @@ sul_designate_commercial_specialization = {
 		if = {
 			limit = { exists = scope:target }
 			scope:target = {
+				custom_tooltip = SUL_RESPEC_BUILD_TIME
+				sul_respec_show_destroy_non_commercial = yes
 				if = {
-					limit = { location_rank = location_rank:rural_settlement }
-					construct_building = { building_type = building_type:sul_respec_commercial_rural }
+					limit = { NOT = { is_market_center = yes } }
+					custom_tooltip = SUL_RESPEC_MARKET_CREATED
 				}
-				else_if = {
-					limit = { location_rank = location_rank:town }
-					construct_building = { building_type = building_type:sul_respec_commercial_town }
-				}
-				else = {
-					construct_building = { building_type = building_type:sul_respec_commercial_city }
-				}
+				custom_tooltip = SUL_RESPEC_PENALTY_APPLIED
+				hidden_effect = { sul_respec_to_commercial = yes }
 			}
 		}
 	}

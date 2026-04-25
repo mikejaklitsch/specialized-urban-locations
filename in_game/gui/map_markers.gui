@@ -159,7 +159,7 @@ window = {
 
 widget = {
 	name = "parliament_marker"
-	max_update_rate = 15
+
 	using = bg_circle_piechart
 
 	size = { 50 50 }
@@ -260,39 +260,26 @@ widget = {
 			}
 		}
 
-		# ICON CONTAINER - concept texture resolves color + rank + capital
 		widget = {
 			size = { 100% 100% }
-			# CITY BRANCH
+			datacontext = "[MarketMarker.GetLocation]"
 			icon = {
 				parentanchor = center
+				visible = "[And(Location.GetRank.IsCity, Location.GetRank.IsMaxRank)]"
 				size = { @city_marker_icon_size @city_marker_icon_size }
-				using = sul_vis_market_any_city
-				using = sul_concept_texture_market
+				texture = "[Location.GetRankIcon]"
 			}
-
-			# TOWN BRANCH
 			icon = {
 				parentanchor = center
+				visible = "[And(Location.GetRank.IsCity, Not(Location.GetRank.IsMaxRank))]"
 				size = { @town_marker_icon_size @town_marker_icon_size }
-				using = sul_vis_market_any_town
-				using = sul_concept_texture_market
+				texture = "[Location.GetRankIcon]"
 			}
-
-			# RURAL BRANCH
 			icon = {
 				parentanchor = center
+				visible = "[Not(Location.GetRank.IsCity)]"
 				size = { @rural_marker_icon_size @rural_marker_icon_size }
-				using = sul_vis_market_any_rural
-				using = sul_concept_texture_market
-			}
-
-			# FALLBACK
-			icon = {
-				parentanchor = center
-				size = { 25 25 }
-				visible = "[Not(MarketMarker.GetLocation.MakeScope.GetVariable('sul_spec_type').IsSet)]"
-				texture = "[MarketMarker.GetLocation.GetRankIcon]"
+				texture = "[Location.GetRankIcon]"
 			}
 		}
 
@@ -889,7 +876,7 @@ template unit_marker_item_unit_strength {
 }
 
 template unit_marker_item_commander {
-	max_update_rate = 15
+
 	visible = "[UnitMarkerItem.HasLeaderFrame]"
 	# block "unit_commander_size" {
 	size = { 33 @unit_marker_frame_height }
@@ -949,7 +936,7 @@ template unit_marker_item_commander {
 }
 
 template unit_marker_item_transport {
-	max_update_rate = 15
+
 
 	block "unit_transport_size" { size = { 37 37 } }
 
@@ -1035,7 +1022,7 @@ template bg_unit_marker_item_modifiers {
 
 template unit_marker_item_modifiers {
 	widget = {
-		max_update_rate = 15
+	
 		visible = "[And(UnitMarkerItem.GetUnit.IsNavy, GreaterThan_int32(UnitMarkerItem.GetUnit.GetUsedTransportCapacityValue, '(int32)0'))]"
 		block "item_container_size" { size = { 22 22 } }
 
@@ -1096,7 +1083,7 @@ template unit_marker_item_modifiers {
 	}
 
 	widget = {
-		max_update_rate = 15
+	
 		visible = "[GreaterThan_CFixedPoint(UnitMarkerItem.GetBlockadedPercent, '(CFixedPoint)0')]"
 		block "item_container_size" { size = { 22 22 } }
 
@@ -1150,7 +1137,6 @@ template unit_marker_item_modifiers {
 	}
 
 	widget = {
-		max_update_rate = 8
 		visible = "[UnitMarkerItem.IsPlayer]"
 		block "item_container_size" { size = { 22 22 } }
 
@@ -1238,7 +1224,7 @@ template unit_marker_item_modifiers {
 	}
 
 	widget = {
-		max_update_rate = 15
+	
 		visible = "[UnitMarkerItem.HasVisibleObjectiveGroup]"
 		block "item_container_size" { size = { 22 22 } }
 
@@ -1278,7 +1264,7 @@ template unit_marker_item_modifiers {
 	}
 
 	widget = {
-		max_update_rate = 15
+	
 		visible = "[UnitMarkerItem.HasDisease]"
 		block "item_container_size" { size = { 22 22 } }
 
@@ -1474,7 +1460,7 @@ template unit_marker_item_modifiers {
 	}
 
 	widget = {
-		max_update_rate = 15
+	
 		visible = "[UnitMarkerItem.IsMovementLocked]"
 		block "item_container_size" { size = { 22 22 } }
 
@@ -1508,7 +1494,7 @@ template unit_marker_item_modifiers {
 	}
 
 	widget = {
-		max_update_rate = 15
+	
 		visible = "[UnitMarkerItem.IsLargeEnoughForMovementSpeedImpact]"
 
 		tooltipwidget = {
@@ -1547,7 +1533,6 @@ template unit_marker_item_modifiers {
 	}
 
 	widget = {
-		max_update_rate = 8
 		visible = "[UnitMarkerItem.IsLosingSoldiers]"
 		block "item_container_size" { size = { 22 22 } }
 
@@ -1590,7 +1575,7 @@ template unit_marker_item_modifiers {
 	}
 
 	widget = {
-		max_update_rate = 15
+	
 		visible = "[UnitMarkerItem.GetUnit.IsStuckInIce]"
 		block "item_container_size" { size = { 22 22 } }
 
@@ -1625,7 +1610,7 @@ template unit_marker_item_modifiers {
 	}
 
 	widget = {
-		max_update_rate = 15
+	
 		visible = "[UnitMarkerItem.ShowActiveAbility]"
 		block "item_container_size" { size = { 22 22 } }
 
@@ -1661,7 +1646,7 @@ template unit_marker_item_modifiers {
 	using = unit_marker_item_modifiers_small_zoom
 
 	widget = {
-		max_update_rate = 15
+	
 		visible = "[Or(UnitMarkerItem.IsHiddenFromLand, UnitMarkerItem.IsHiddenFromSea)]"
 		block "item_container_size" { size = { 22 22 } }
 
@@ -1752,7 +1737,7 @@ template unit_marker_item_modifiers {
 
 template unit_marker_item_modifiers_small_zoom {
 	widget = {
-		max_update_rate = 15
+	
 		visible = "[UnitMarkerItem.IsExiled]"
 		block "item_container_size" { size = { 22 22 } }
 
@@ -1785,7 +1770,6 @@ template unit_marker_item_modifiers_small_zoom {
 	}
 
 	widget = {
-		max_update_rate = 8
 		visible = "[UnitMarkerItem.IsRetreating]"
 
 		block "item_container_size" { size = { 22 22 } }
@@ -1929,7 +1913,7 @@ types unit_marker_types
 {
 	# Shrunk siege banner (#9)
 	type unit_maker_siege_banner = widget {
-		max_update_rate = 15
+	
 		allow_outside = yes
 		size = { 40 58 }
 
@@ -2113,7 +2097,7 @@ types unit_marker_types
 	}
 
 	type unit_marker_item_units = widget {
-		max_update_rate = 15
+	
 		layoutpolicy_horizontal = expanding
 		size = { -1 15 }
 
@@ -2154,7 +2138,7 @@ types unit_marker_types
 	}
 
 	type unit_marker_compass = widget {
-		max_update_rate = 15
+	
 		visible = "[UnitMarkerItem.ShouldShowCompass]"
 		size = { 24 24 }
 		using = bg_circle_piechart
@@ -2409,7 +2393,7 @@ widget = {
 										}
 
 										widget = {
-											max_update_rate = 15
+										
 											alwaystransparent = yes
 											widgetanchor = left|vcenter
 
@@ -2668,7 +2652,7 @@ widget = {
 
 										# Half-donut piechart (mirrored from army)
 										widget = {
-											max_update_rate = 15
+										
 											alwaystransparent = yes
 											widgetanchor = right|vcenter
 											position = { 16 @[unit_marker_frame_height / 2] }
@@ -3608,7 +3592,7 @@ widget = {
 
 widget = {
 	name = "supply_depot_marker"
-	max_update_rate = 15
+
 	allow_outside = yes
 	datacontext = "[SupplyDepotMarker.GetLocation.GetSupplyDepot]"
 
@@ -3689,7 +3673,7 @@ widget = {
 
 widget = {
 	name = "flip_marker"
-	max_update_rate = 15
+
 	allow_outside = yes
 
 	position = { 0 0 }
@@ -4035,7 +4019,7 @@ widget = {
 
 widget = {
 	name = "annexation_marker"
-	max_update_rate = 15
+
 
 	size = { 40 40 }
 
@@ -4186,7 +4170,7 @@ widget = {
 
 widget = {
 	name = "colony_charter_marker"
-	max_update_rate = 15
+
 
 	size = { 40 40 }
 
@@ -4267,7 +4251,7 @@ widget = {
 
 widget = {
 	name = "building_spy_network_marker"
-	max_update_rate = 15
+
 
 	size = { 40 40 }
 
@@ -4346,7 +4330,7 @@ widget = {
 
 widget = {
 	name = "create_casus_belli_marker"
-	max_update_rate = 15
+
 
 	size = { 40 40 }
 
@@ -4437,7 +4421,7 @@ widget = {
 
 widget = {
 	name = "improve_opinion_marker"
-	max_update_rate = 15
+
 
 	size = { 40 40 }
 
@@ -4516,7 +4500,7 @@ widget = {
 
 widget = {
 	name = "currying_favors_marker"
-	max_update_rate = 15
+
 
 	size = { 40 40 }
 

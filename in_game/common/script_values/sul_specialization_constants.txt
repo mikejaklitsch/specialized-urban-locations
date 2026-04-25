@@ -9,19 +9,6 @@ sul_debug_market_utility = {
 	value = "owner.create_market_utility(this)"
 }
 
-# sul_spec_type stores type only (1=mining, 2=farming, 3=gathering, 4=woodland,
-# 5=commercial); rank comes from the engine's location_rank.
-
-@sul_mining_type = 1
-@sul_farming_type = 2
-@sul_gathering_type = 3
-@sul_woodland_type = 4
-@sul_commercial_type = 5
-# Rank offsets for sul_designation (type + offset = designation)
-# Town: 1-5, City: 11-15, Rural: 21-25
-@sul_rank_offset_town = 0
-@sul_rank_offset_city = 10
-@sul_rank_offset_rural = 20
 # Diversity pressure. Reads cached counts (sul_mining_count, etc.) updated
 # only when specializations change.
 # var:sul_total_weighted = farming×2 + others×1
@@ -785,11 +772,11 @@ sul_cost_of_leaving = {
 	}
 	# Rank inertia
 	if = {
-		limit = { location_rank = location_rank:town }
+		limit = { modifier:sul_is_town_rank_tier = yes }
 		add = 5
 	}
 	else_if = {
-		limit = { location_rank = location_rank:city }
+		limit = { modifier:sul_is_city_rank_tier = yes }
 		add = 10
 	}
 }

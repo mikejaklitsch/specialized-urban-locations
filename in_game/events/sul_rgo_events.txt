@@ -1,0 +1,34 @@
+﻿namespace = sul_rgo_pulse
+
+# Yearly RGO trim
+sul_rgo_pulse.0 = {
+	type = country_event
+	hidden = yes
+	title = "sul_rgo_pulse.0"
+
+	trigger = { is_real_country = yes }
+
+	immediate = {
+		every_owned_location = {
+			limit = {
+				exists = raw_material
+				sul_location_rgo_building_level > sul_location_max_rgo_building_level_rounded
+			}
+			sul_trim_rgo_levels = yes
+		}
+	}
+}
+
+# Cleanup dead AI army units
+sul_rgo_pulse.1 = {
+	type = country_event
+	hidden = yes
+	title = "sul_rgo_pulse.1"
+
+	immediate = {
+		if = {
+			limit = { is_ai = yes }
+			every_army = { limit = { strength_percentage <= 0 } destroy_unit = yes }
+		}
+	}
+}

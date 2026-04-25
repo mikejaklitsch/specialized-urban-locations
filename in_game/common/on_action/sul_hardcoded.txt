@@ -1,9 +1,7 @@
 ﻿# Unified hooks into vanilla hardcoded on_actions.
-# Only on_actions sub-blocks here — actual logic lives in respective files.
-# Specialization System: sul_on_actions.txt
-# Provisions System: sul_on_actions.txt
-# War Systems: sul_war_on_actions.txt, sul_war_overcrowding_effects.txt
-# Estate Building Maintenance: sul_epbm_on_actions.txt
+# Sequential on_actions for order-dependent work; events = { } for parallelized.
+# Monthly/yearly country pulses use hidden events (in_game/events/sul_*_events.txt)
+# for engine-level parallelization by country.
 
 # Order: WPDO RGO map first (locations need rgo_building_type before spec init),
 # then SUL specialization rebuild, then WPDO demand system + economy.
@@ -17,7 +15,6 @@ on_game_start = {
 		sul_initialize_economy
 		sul_war_on_game_start
 		sul_integration_on_game_start
-		# Prime shared market price cache before minting init reads it
 		sul_refresh_market_cache
 		sul_minting_initialize_all
 		sul_epbm_initialize_all
@@ -56,28 +53,12 @@ monthly_country_pulse = {
 		sul_clear_market_cache
 		sul_refresh_market_cache
 		sul_update_spending_rates
-		sul_player_wage_update
-		sul_ai_monthly_wage_payment
-		# Convert sul_trade_maintenance_efficiency → merchant_maintenance_cost
-		sul_trade_maintenance_apply_action
-		sul_minting_monthly_update
-		sul_war_monthly_pulse
-		sul_epbm_player_monthly
-		sul_epbm_ai_monthly_charge
-		sul_war_force_rebellions
+		sul_monthly_country_pulse
 	}
 }
 
 yearly_country_pulse = {
-	on_actions = {
-		sul_yearly_wage_recalc
-		sul_ai_yearly_wage_accumulate
-		sul_cleanup_dead_units
-		sul_yearly_rgo_trim
-		sul_minting_yearly_update
-		sul_epbm_ai_yearly_recalc
-		sul_epbm_decade_rebuild
-	}
+	on_actions = { sul_yearly_country_pulse }
 }
 
 weather_monthly_pulse = {

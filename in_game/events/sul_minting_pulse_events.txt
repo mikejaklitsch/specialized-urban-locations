@@ -1,0 +1,100 @@
+﻿namespace = sul_minting_pulse
+
+# Minting monthly (uses price_in_market() directly, no shared cache)
+sul_minting_pulse.0 = {
+	type = country_event
+	hidden = yes
+	title = "sul_minting_pulse.0"
+
+	trigger = { sul_minting_is_active_country = yes }
+
+	immediate = {
+		if = {
+			limit = { NOT = { has_variable = sul_minting_debasement_level } }
+			sul_minting_initialize_country = yes
+			set_variable = { name = sul_minting_first_month_tick value = yes days = 35 }
+		}
+
+		if = {
+			limit = {
+				OR = {
+					is_ai = no
+					has_variable = sul_minting_first_month_tick
+				}
+			}
+			sul_minting_update_price_cache = yes
+		}
+
+		if = {
+			limit = {
+				has_variable = sul_minting_rebasement_level
+				var:sul_minting_rebasement_level > 0
+				inflation = 0
+			}
+			set_variable = { name = sul_minting_rebasement_level value = 0 }
+		}
+
+		if = {
+			limit = { is_ai = yes }
+
+			if = {
+				limit = { has_variable = sul_minting_first_month_tick }
+				add_country_modifier = {
+					modifier = sul_minting_ai_minting
+					days = -1
+					mode = replace
+					size = sul_minting_ai_minting_size
+				}
+			}
+
+			add_country_modifier = {
+				modifier = sul_minting_ai_inflation
+				days = -1
+				mode = replace
+				size = sul_minting_ai_inflation_size
+			}
+
+			if = {
+				limit = {
+					has_variable = sul_minting_rebasement_level
+					var:sul_minting_rebasement_level > 0
+					inflation > 0
+				}
+				add_country_modifier = {
+					modifier = sul_minting_ai_rebasement
+					days = -1
+					mode = replace
+				}
+				change_country_modifier_size = {
+					modifier = sul_minting_ai_rebasement
+					value = sul_minting_ai_rebasement_size
+				}
+			}
+			else = { remove_country_modifier = sul_minting_ai_rebasement }
+		}
+	}
+}
+
+# Minting yearly: AI price cache refresh
+sul_minting_pulse.1 = {
+	type = country_event
+	hidden = yes
+	title = "sul_minting_pulse.1"
+
+	trigger = {
+		is_ai = yes
+		sul_minting_is_active_country = yes
+		has_variable = sul_minting_debasement_level
+	}
+
+	immediate = {
+		sul_minting_update_price_cache = yes
+
+		add_country_modifier = {
+			modifier = sul_minting_ai_minting
+			days = -1
+			mode = replace
+			size = sul_minting_ai_minting_size
+		}
+	}
+}

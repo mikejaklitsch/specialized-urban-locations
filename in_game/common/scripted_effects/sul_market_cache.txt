@@ -1,52 +1,23 @@
-﻿# Market Cache - Shared price/pressure cache
-# Populated each month from on_action sul_market_cache_on_pulse, then read by:
-#   - Specialization eligibility (sul_*_pressure / *_finished_composite globals)
+# Market Cache - Shared price cache
+# Populated each month, read by:
 #   - Passthrough pulse (sul_market_prices variable_map per market)
-#   - Minting price cache (sul_minting_update_price_cache reads sul_market_prices)
-#   - Commercial spec gating (sul_trade_spread, sul_trade_profit globals)
-#
-# Effects defined here:
-#   sul_market_cache_update      - per-market cache write (root = market)
-#   sul_market_cache_refresh_all - full refresh pass over every market (scopeless)
+#   - Minting price cache (reads sul_market_prices)
+#   - Commercial spec scoring (sul_trade_value_per_capita)
+# Composites (finished goods demand/supply) computed inline by attractiveness
+# script_values — no longer cached monthly.
 
-# Per-market cache write. root = market. Called once per market by refresh_all.
+# Per-market cache write. root = market.
 
 sul_market_cache_update = {
 	add_to_global_variable_map = {
-		name = sul_mining_finished_composite
+		name = sul_trade_value_per_capita
 		key = this
-		value = sul_mining_finished_composite
-	}
-	add_to_global_variable_map = {
-		name = sul_farming_finished_composite
-		key = this
-		value = sul_farming_finished_composite
-	}
-	add_to_global_variable_map = {
-		name = sul_woodland_finished_composite
-		key = this
-		value = sul_woodland_finished_composite
-	}
-	add_to_global_variable_map = {
-		name = sul_gathering_finished_composite
-		key = this
-		value = sul_gathering_finished_composite
-	}
-	add_to_global_variable_map = {
-		name = sul_commercial_finished_composite
-		key = this
-		value = sul_commercial_finished_composite
-	}
-	add_to_global_variable_map = {
-		name = sul_trade_profit
-		key = this
-		value = sul_trade_profit_per_good
+		value = sul_trade_value_per_capita
 	}
 }
 
-# Full world pass. Guarded by sul_market_demand_cached flag - sul_clear_market_cache
-# (monthly) clears the flag so the next call rebuilds. Must run before
-# sul_minting_initialize_all on game start (minting reads sul_market_prices).
+# Full world pass. Used for game-start cache warmup.
+# Monthly refresh now handled by sul_passthrough_apply (merged loop).
 
 sul_market_cache_refresh_all = {
 	if = {
@@ -56,29 +27,16 @@ sul_market_cache_refresh_all = {
 			}
 		}
 
-		# Single pass through all markets
 		every_market_in_world = {
 			save_temporary_scope_as = current_market
-			# Cache pressure values and price bonuses
 			sul_market_cache_update = yes
-			# Calculate trade spread for commercial specialization
-			# Formula: sum of |price/base - 1| × base for all goods
-			# Use location for accumulation, then store in global map
-			location = {
-				set_variable = { name = sul_trade_spread_temp value = 0 }
-				clear_variable_map = sul_market_prices
-			}
 
-			# Accumulate price deviation + cache raw prices per good
+			location = { clear_variable_map = sul_market_prices }
+
 			every_goods = {
 				save_temporary_scope_as = current_good
 
 				scope:current_market.location = {
-					change_variable = {
-						name = sul_trade_spread_temp
-						add = "scope:current_good.sul_goods_price_deviation"
-					}
-
 					add_to_variable_map = {
 						name = sul_market_prices
 						key = scope:current_good
@@ -86,21 +44,6 @@ sul_market_cache_refresh_all = {
 					}
 				}
 			}
-
-			# Normalize to 0-10 range (typical active market has ~50-100 total)
-			location = {
-				change_variable = { name = sul_trade_spread_temp divide = 10 }
-				clamp_variable = { name = sul_trade_spread_temp min = 0 max = 10 }
-			}
-
-			# Store in global variable map with market as key
-			add_to_global_variable_map = {
-				name = sul_trade_spread
-				key = this
-				value = location.var:sul_trade_spread_temp
-			}
-
-			location = { remove_variable = sul_trade_spread_temp }
 		}
 
 		set_global_variable = { name = sul_market_demand_cached value = 1 }

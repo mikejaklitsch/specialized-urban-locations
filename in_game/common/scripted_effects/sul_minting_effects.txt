@@ -178,22 +178,28 @@ sul_minting_cache_market_center = {
 }
 
 # ---- Price Cache Update ----
-# Sums the market price of one unit of each good in sul_minting_goods via
-# price_in_market(), then recomputes E and real E from the result.
-# Self-contained: no dependency on the shared sul_market_prices cache.
-# Scope: country (requires capital with market)
+# Reads per-good prices from the shared sul_market_prices variable map
+# (populated by sul_passthrough_apply in the weather pulse).
+# Sums the cost of one unit of each good in sul_minting_goods, then
+# recomputes E and real E from the result.
+# Scope: country (requires cached market center location)
 
 sul_minting_update_price_cache = {
-	var:sul_minting_market_center = { market ?= { save_temporary_scope_as = sul_minting_mkt } }
+	var:sul_minting_market_center = { save_temporary_scope_as = sul_minting_mc }
 
 	set_local_variable = { name = sul_minting_tmp_mc value = 0 }
 
-	every_in_list = {
-		variable = sul_minting_goods
+	if = {
+		limit = { scope:sul_minting_mc = { has_variable_map = sul_market_prices } }
+		every_in_list = {
+			variable = sul_minting_goods
 
-		change_local_variable = {
-			name = sul_minting_tmp_mc
-			add = "price_in_market(scope:sul_minting_mkt)"
+			scope:sul_minting_mc = {
+				change_local_variable = {
+					name = sul_minting_tmp_mc
+					add = "variable_map(sul_market_prices|prev)"
+				}
+			}
 		}
 	}
 

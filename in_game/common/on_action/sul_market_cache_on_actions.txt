@@ -1,24 +1,4 @@
-﻿# Clears the cached-flag at the start of a new month, forcing the next
-# refresh call to rebuild from scratch. The actual cache write happens in
-# sul_market_cache_refresh_all (in sul_market_cache.txt).
-
-sul_clear_market_cache = {
-	effect = {
-		if = {
-			limit = {
-				has_global_variable = sul_market_demand_cached
-				has_global_variable = sul_cache_month
-				NOT = {
-					global_var:sul_cache_month = current_month
-				}
-			}
-
-			remove_global_variable = sul_market_demand_cached
-		}
-
-		set_global_variable = { name = sul_cache_month value = current_month }
-	}
-}
+# Game-start cache warmup. Monthly cache refresh moved to sul_passthrough_apply.
 
 sul_refresh_market_cache = {
 	effect = {

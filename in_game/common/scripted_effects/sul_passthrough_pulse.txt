@@ -18,320 +18,140 @@
 #   sul_passthrough_per_good     - per-good HIGH/LOW branch handler
 
 sul_passthrough_apply = {
+	# Market cache guard: rebuild prices when month changes.
+	if = {
+		limit = {
+			has_global_variable = sul_market_demand_cached
+			has_global_variable = sul_cache_month
+			NOT = { global_var:sul_cache_month = current_month }
+		}
+		remove_global_variable = sul_market_demand_cached
+	}
+	set_global_variable = { name = sul_cache_month value = current_month }
+	set_local_variable = { name = sul_pt_rebuild_cache value = 0 }
+	if = {
+		limit = { NOT = { has_global_variable = sul_market_demand_cached } }
+		set_local_variable = { name = sul_pt_rebuild_cache value = 1 }
+	}
+
 	every_market_in_world = {
 		limit = { location = { exists = owner } }
 		save_scope_as = current_market
 
-		# Bulk-remove all _stockpile and _oversupply templates at the top of
-		# the iteration so re-applies don't stack. This matches the workshop
-		# mod's pattern exactly.
-		remove_temporary_demand = demand:sul_horses_stockpile
-		remove_temporary_demand = demand:sul_clay_stockpile
-		remove_temporary_demand = demand:sul_sand_stockpile
-		remove_temporary_demand = demand:sul_coal_stockpile
-		remove_temporary_demand = demand:sul_iron_stockpile
-		remove_temporary_demand = demand:sul_copper_stockpile
-		remove_temporary_demand = demand:sul_goods_gold_stockpile
-		remove_temporary_demand = demand:sul_silver_stockpile
-		remove_temporary_demand = demand:sul_stone_stockpile
-		remove_temporary_demand = demand:sul_tin_stockpile
-		remove_temporary_demand = demand:sul_lead_stockpile
-		remove_temporary_demand = demand:sul_silk_stockpile
-		remove_temporary_demand = demand:sul_dyes_stockpile
-		remove_temporary_demand = demand:sul_incense_stockpile
-		remove_temporary_demand = demand:sul_tea_stockpile
-		remove_temporary_demand = demand:sul_cocoa_stockpile
-		remove_temporary_demand = demand:sul_coffee_stockpile
-		remove_temporary_demand = demand:sul_fiber_crops_stockpile
-		remove_temporary_demand = demand:sul_ivory_stockpile
-		remove_temporary_demand = demand:sul_lumber_stockpile
-		remove_temporary_demand = demand:sul_salt_stockpile
-		remove_temporary_demand = demand:sul_medicaments_stockpile
-		remove_temporary_demand = demand:sul_gems_stockpile
-		remove_temporary_demand = demand:sul_pearls_stockpile
-		remove_temporary_demand = demand:sul_amber_stockpile
-		remove_temporary_demand = demand:sul_saltpeter_stockpile
-		remove_temporary_demand = demand:sul_alum_stockpile
-		remove_temporary_demand = demand:sul_wine_stockpile
-		remove_temporary_demand = demand:sul_elephants_stockpile
-		remove_temporary_demand = demand:sul_marble_stockpile
-		remove_temporary_demand = demand:sul_mercury_stockpile
-		remove_temporary_demand = demand:sul_saffron_stockpile
-		remove_temporary_demand = demand:sul_pepper_stockpile
-		remove_temporary_demand = demand:sul_cloves_stockpile
-		remove_temporary_demand = demand:sul_chili_stockpile
-		remove_temporary_demand = demand:sul_cotton_stockpile
-		remove_temporary_demand = demand:sul_sugar_stockpile
-		remove_temporary_demand = demand:sul_tobacco_stockpile
-		remove_temporary_demand = demand:sul_tar_stockpile
-		remove_temporary_demand = demand:sul_porcelain_stockpile
-		remove_temporary_demand = demand:sul_naval_supplies_stockpile
-		remove_temporary_demand = demand:sul_firearms_stockpile
-		remove_temporary_demand = demand:sul_cannons_stockpile
-		remove_temporary_demand = demand:sul_weaponry_stockpile
-		remove_temporary_demand = demand:sul_glass_stockpile
-		remove_temporary_demand = demand:sul_steel_stockpile
-		remove_temporary_demand = demand:sul_cloth_stockpile
-		remove_temporary_demand = demand:sul_fine_cloth_stockpile
-		remove_temporary_demand = demand:sul_liquor_stockpile
-		remove_temporary_demand = demand:sul_beer_stockpile
-		remove_temporary_demand = demand:sul_paper_stockpile
-		remove_temporary_demand = demand:sul_books_stockpile
-		remove_temporary_demand = demand:sul_jewelry_stockpile
-		remove_temporary_demand = demand:sul_leather_stockpile
-		remove_temporary_demand = demand:sul_tools_stockpile
-		remove_temporary_demand = demand:sul_masonry_stockpile
-		remove_temporary_demand = demand:sul_lacquerware_stockpile
-		remove_temporary_demand = demand:sul_pottery_stockpile
-		remove_temporary_demand = demand:sul_furniture_stockpile
-		remove_temporary_demand = demand:sul_wool_stockpile
-		remove_temporary_demand = demand:sul_wild_game_stockpile
-		remove_temporary_demand = demand:sul_fur_stockpile
-		remove_temporary_demand = demand:sul_fish_stockpile
-		remove_temporary_demand = demand:sul_wheat_stockpile
-		remove_temporary_demand = demand:sul_maize_stockpile
-		remove_temporary_demand = demand:sul_rice_stockpile
-		remove_temporary_demand = demand:sul_millet_stockpile
-		remove_temporary_demand = demand:sul_legumes_stockpile
-		remove_temporary_demand = demand:sul_potato_stockpile
-		remove_temporary_demand = demand:sul_livestock_stockpile
-		remove_temporary_demand = demand:sul_olives_stockpile
-		remove_temporary_demand = demand:sul_fruit_stockpile
-		remove_temporary_demand = demand:sul_beeswax_stockpile
-		remove_temporary_demand = demand:sul_slaves_goods_stockpile
-		remove_temporary_demand = demand:sul_provisions_stockpile
-
-		remove_temporary_demand = demand:sul_horses_oversupply
-		remove_temporary_demand = demand:sul_clay_oversupply
-		remove_temporary_demand = demand:sul_sand_oversupply
-		remove_temporary_demand = demand:sul_coal_oversupply
-		remove_temporary_demand = demand:sul_iron_oversupply
-		remove_temporary_demand = demand:sul_copper_oversupply
-		remove_temporary_demand = demand:sul_goods_gold_oversupply
-		remove_temporary_demand = demand:sul_silver_oversupply
-		remove_temporary_demand = demand:sul_stone_oversupply
-		remove_temporary_demand = demand:sul_tin_oversupply
-		remove_temporary_demand = demand:sul_lead_oversupply
-		remove_temporary_demand = demand:sul_silk_oversupply
-		remove_temporary_demand = demand:sul_dyes_oversupply
-		remove_temporary_demand = demand:sul_incense_oversupply
-		remove_temporary_demand = demand:sul_tea_oversupply
-		remove_temporary_demand = demand:sul_cocoa_oversupply
-		remove_temporary_demand = demand:sul_coffee_oversupply
-		remove_temporary_demand = demand:sul_fiber_crops_oversupply
-		remove_temporary_demand = demand:sul_ivory_oversupply
-		remove_temporary_demand = demand:sul_lumber_oversupply
-		remove_temporary_demand = demand:sul_salt_oversupply
-		remove_temporary_demand = demand:sul_medicaments_oversupply
-		remove_temporary_demand = demand:sul_gems_oversupply
-		remove_temporary_demand = demand:sul_pearls_oversupply
-		remove_temporary_demand = demand:sul_amber_oversupply
-		remove_temporary_demand = demand:sul_saltpeter_oversupply
-		remove_temporary_demand = demand:sul_alum_oversupply
-		remove_temporary_demand = demand:sul_wine_oversupply
-		remove_temporary_demand = demand:sul_elephants_oversupply
-		remove_temporary_demand = demand:sul_marble_oversupply
-		remove_temporary_demand = demand:sul_mercury_oversupply
-		remove_temporary_demand = demand:sul_saffron_oversupply
-		remove_temporary_demand = demand:sul_pepper_oversupply
-		remove_temporary_demand = demand:sul_cloves_oversupply
-		remove_temporary_demand = demand:sul_chili_oversupply
-		remove_temporary_demand = demand:sul_cotton_oversupply
-		remove_temporary_demand = demand:sul_sugar_oversupply
-		remove_temporary_demand = demand:sul_tobacco_oversupply
-		remove_temporary_demand = demand:sul_tar_oversupply
-		remove_temporary_demand = demand:sul_porcelain_oversupply
-		remove_temporary_demand = demand:sul_naval_supplies_oversupply
-		remove_temporary_demand = demand:sul_firearms_oversupply
-		remove_temporary_demand = demand:sul_cannons_oversupply
-		remove_temporary_demand = demand:sul_weaponry_oversupply
-		remove_temporary_demand = demand:sul_glass_oversupply
-		remove_temporary_demand = demand:sul_steel_oversupply
-		remove_temporary_demand = demand:sul_cloth_oversupply
-		remove_temporary_demand = demand:sul_fine_cloth_oversupply
-		remove_temporary_demand = demand:sul_liquor_oversupply
-		remove_temporary_demand = demand:sul_beer_oversupply
-		remove_temporary_demand = demand:sul_paper_oversupply
-		remove_temporary_demand = demand:sul_books_oversupply
-		remove_temporary_demand = demand:sul_jewelry_oversupply
-		remove_temporary_demand = demand:sul_leather_oversupply
-		remove_temporary_demand = demand:sul_tools_oversupply
-		remove_temporary_demand = demand:sul_masonry_oversupply
-		remove_temporary_demand = demand:sul_lacquerware_oversupply
-		remove_temporary_demand = demand:sul_pottery_oversupply
-		remove_temporary_demand = demand:sul_furniture_oversupply
-		remove_temporary_demand = demand:sul_wool_oversupply
-		remove_temporary_demand = demand:sul_wild_game_oversupply
-		remove_temporary_demand = demand:sul_fur_oversupply
-		remove_temporary_demand = demand:sul_fish_oversupply
-		remove_temporary_demand = demand:sul_wheat_oversupply
-		remove_temporary_demand = demand:sul_maize_oversupply
-		remove_temporary_demand = demand:sul_rice_oversupply
-		remove_temporary_demand = demand:sul_millet_oversupply
-		remove_temporary_demand = demand:sul_legumes_oversupply
-		remove_temporary_demand = demand:sul_potato_oversupply
-		remove_temporary_demand = demand:sul_livestock_oversupply
-		remove_temporary_demand = demand:sul_olives_oversupply
-		remove_temporary_demand = demand:sul_fruit_oversupply
-		remove_temporary_demand = demand:sul_beeswax_oversupply
-		remove_temporary_demand = demand:sul_slaves_goods_oversupply
-		remove_temporary_demand = demand:sul_provisions_oversupply
-
-		# Per-good logic (compressed via $GOOD$ substitution — 75 calls, one
-		# scripted_effect body, implements the full HIGH/LOW branch switch).
-		sul_passthrough_per_good = { GOOD = horses }
-		sul_passthrough_per_good = { GOOD = clay }
-		sul_passthrough_per_good = { GOOD = sand }
-		sul_passthrough_per_good = { GOOD = coal }
-		sul_passthrough_per_good = { GOOD = iron }
-		sul_passthrough_per_good = { GOOD = copper }
-		sul_passthrough_per_good = { GOOD = goods_gold }
-		sul_passthrough_per_good = { GOOD = silver }
-		sul_passthrough_per_good = { GOOD = stone }
-		sul_passthrough_per_good = { GOOD = tin }
-		sul_passthrough_per_good = { GOOD = lead }
-		sul_passthrough_per_good = { GOOD = silk }
-		sul_passthrough_per_good = { GOOD = dyes }
-		sul_passthrough_per_good = { GOOD = incense }
-		sul_passthrough_per_good = { GOOD = tea }
-		sul_passthrough_per_good = { GOOD = cocoa }
-		sul_passthrough_per_good = { GOOD = coffee }
-		sul_passthrough_per_good = { GOOD = fiber_crops }
-		sul_passthrough_per_good = { GOOD = ivory }
-		sul_passthrough_per_good = { GOOD = lumber }
-		sul_passthrough_per_good = { GOOD = salt }
-		sul_passthrough_per_good = { GOOD = medicaments }
-		sul_passthrough_per_good = { GOOD = gems }
-		sul_passthrough_per_good = { GOOD = pearls }
-		sul_passthrough_per_good = { GOOD = amber }
-		sul_passthrough_per_good = { GOOD = saltpeter }
-		sul_passthrough_per_good = { GOOD = alum }
-		sul_passthrough_per_good = { GOOD = wine }
-		sul_passthrough_per_good = { GOOD = elephants }
-		sul_passthrough_per_good = { GOOD = marble }
-		sul_passthrough_per_good = { GOOD = mercury }
-		sul_passthrough_per_good = { GOOD = saffron }
-		sul_passthrough_per_good = { GOOD = pepper }
-		sul_passthrough_per_good = { GOOD = cloves }
-		sul_passthrough_per_good = { GOOD = chili }
-		sul_passthrough_per_good = { GOOD = cotton }
-		sul_passthrough_per_good = { GOOD = sugar }
-		sul_passthrough_per_good = { GOOD = tobacco }
-		sul_passthrough_per_good = { GOOD = tar }
-		sul_passthrough_per_good = { GOOD = porcelain }
-		sul_passthrough_per_good = { GOOD = naval_supplies }
-		sul_passthrough_per_good = { GOOD = firearms }
-		sul_passthrough_per_good = { GOOD = cannons }
-		sul_passthrough_per_good = { GOOD = weaponry }
-		sul_passthrough_per_good = { GOOD = glass }
-		sul_passthrough_per_good = { GOOD = steel }
-		sul_passthrough_per_good = { GOOD = cloth }
-		sul_passthrough_per_good = { GOOD = fine_cloth }
-		sul_passthrough_per_good = { GOOD = liquor }
-		sul_passthrough_per_good = { GOOD = beer }
-		sul_passthrough_per_good = { GOOD = paper }
-		sul_passthrough_per_good = { GOOD = books }
-		sul_passthrough_per_good = { GOOD = jewelry }
-		sul_passthrough_per_good = { GOOD = leather }
-		sul_passthrough_per_good = { GOOD = tools }
-		sul_passthrough_per_good = { GOOD = masonry }
-		sul_passthrough_per_good = { GOOD = lacquerware }
-		sul_passthrough_per_good = { GOOD = pottery }
-		sul_passthrough_per_good = { GOOD = furniture }
-		sul_passthrough_per_good = { GOOD = wool }
-		sul_passthrough_per_good = { GOOD = wild_game }
-		sul_passthrough_per_good = { GOOD = fur }
-		sul_passthrough_per_good = { GOOD = fish }
-		sul_passthrough_per_good = { GOOD = wheat }
-		sul_passthrough_per_good = { GOOD = maize }
-		sul_passthrough_per_good = { GOOD = rice }
-		sul_passthrough_per_good = { GOOD = millet }
-		sul_passthrough_per_good = { GOOD = legumes }
-		sul_passthrough_per_good = { GOOD = potato }
-		sul_passthrough_per_good = { GOOD = livestock }
-		sul_passthrough_per_good = { GOOD = olives }
-		sul_passthrough_per_good = { GOOD = fruit }
-		sul_passthrough_per_good = { GOOD = beeswax }
-		sul_passthrough_per_good = { GOOD = slaves_goods }
-		sul_passthrough_per_good = { GOOD = provisions }
-	}
-}
-
-# Per-good passthrough logic, compressed via $GOOD$ substitution.
-# One body serves all 75 goods, called 75 times from sul_passthrough_apply.
-# This is the one place where we can compress the workshop mod's per-good
-# switch unrolling — everything else (templates, buildings) is data and
-# must be declared per-good.
-#
-# Called from market scope with scope:current_market saved.
-
-sul_passthrough_per_good = {
-	goods:$GOOD$ = { save_scope_as = current_good }
-
-	scope:current_market = {
-		# HIGH branch: fill ratio is above 5%.
-		# Apply negative _stockpile demand to push price down.
-		# If the warehouse exists and supply is low, also apply the paired
-		# _oversupply demand to cancel the warehouse's +0.03 output at the
-		# flow layer (workshop mod's "warehouse trick").
+		# ---- Market cache rebuild (when flagged) ----
 		if = {
-			limit = { sul_passthrough_fill_ratio > 0.05 }
+			limit = { local_var:sul_pt_rebuild_cache = 1 }
+			sul_market_cache_update = yes
 
-			add_temporary_demand = {
-				type = demand:sul_$GOOD$_stockpile
-				scale = sul_passthrough_supply_effect
-				months = 1
+			location = { clear_variable_map = sul_market_prices }
+
+			every_goods = {
+				save_temporary_scope_as = current_good
+
+				scope:current_market.location = {
+					add_to_variable_map = {
+						name = sul_market_prices
+						key = scope:current_good
+						value = "scope:current_good.price_in_market(scope:current_market)"
+					}
+				}
 			}
+		}
 
+		# ---- Remove only previously-applied demands ----
+		location = {
 			if = {
-				limit = {
-					location = { has_building = building_type:sul_$GOOD$_warehouse }
-					goods_supply_in_market = { goods = scope:current_good value < 1 }
+				limit = { has_variable_list = sul_pt_active }
+				every_in_list = {
+					variable = sul_pt_active
+					scope:current_market = {
+						remove_temporary_demand = "global_variable_map(sul_pt_stockpile_demands|prev)"
+						remove_temporary_demand = "global_variable_map(sul_pt_oversupply_demands|prev)"
+					}
 				}
-
-				add_temporary_demand = {
-					type = demand:sul_$GOOD$_oversupply
-					scale = sul_passthrough_warehouse_correction
-					months = 1
-				}
+				clear_variable_list = sul_pt_active
 			}
 		}
 
-		# LOW branch: fill ratio is below 4.9% AND this good is actually
-		# relevant in this market (has meaningful demand or is a critical
-		# resource). Apply negative _stockpile demand with inverse scale
-		# to push price up, and inject real supply via add_goods_supply to
-		# prevent starvation/shortage cascades.
-		else_if = {
-			limit = {
-				sul_passthrough_fill_ratio < 0.049
-				OR = {
-					scope:current_good = { is_demanded_in_market_by_pops = scope:current_market }
-					scope:current_good = {
-						is_demanded_in_market_by_buildings = scope:current_market
+		# ---- Evaluate all goods, apply demands, track active ----
+		set_local_variable = {
+			name = sul_pt_cap
+			value = location.sul_passthrough_local_capacity
+		}
+
+		every_goods = {
+			limit = { is_key_in_global_variable_map = { name = sul_pt_stockpile_demands target = this } }
+			save_scope_as = current_good
+
+			scope:current_market = {
+				set_local_variable = {
+					name = sul_pt_fill
+					value = {
+						value = "stockpile_in_market(scope:current_good)"
+						divide = local_var:sul_pt_cap
 					}
-					scope:current_good = {
-						is_demanded_in_market_by_constructions = scope:current_market
+				}
+
+				if = {
+					limit = { local_var:sul_pt_fill > 0.05 }
+
+					add_temporary_demand = {
+						type = "global_variable_map(sul_pt_stockpile_demands|scope:current_good)"
+						scale = sul_passthrough_supply_effect
+						months = 1
 					}
 
-					scope:current_good = goods:goods_gold
-					scope:current_good = goods:silver
-					scope:current_good = goods:copper
-					scope:current_good = goods:lumber
-					scope:current_good = goods:masonry
+					location = { add_to_variable_list = { name = sul_pt_active target = scope:current_good } }
+
+					if = {
+						limit = {
+							location = { has_building = "global_variable_map(sul_pt_warehouses|scope:current_good)" }
+							goods_supply_in_market = { goods = scope:current_good value < 1 }
+						}
+
+						add_temporary_demand = {
+							type = "global_variable_map(sul_pt_oversupply_demands|scope:current_good)"
+							scale = sul_passthrough_warehouse_correction
+							months = 1
+						}
+					}
+				}
+
+				else_if = {
+					limit = {
+						local_var:sul_pt_fill < 0.049
+						OR = {
+							scope:current_good = { is_demanded_in_market_by_pops = scope:current_market }
+							scope:current_good = { is_demanded_in_market_by_buildings = scope:current_market }
+							scope:current_good = { is_demanded_in_market_by_constructions = scope:current_market }
+							scope:current_good = goods:goods_gold
+							scope:current_good = goods:silver
+							scope:current_good = goods:copper
+							scope:current_good = goods:lumber
+							scope:current_good = goods:masonry
+						}
+					}
+
+					add_temporary_demand = {
+						type = "global_variable_map(sul_pt_stockpile_demands|scope:current_good)"
+						scale = sul_passthrough_low_supply_effect
+						months = 1
+					}
+
+					add_goods_supply = {
+						goods = scope:current_good
+						amount = sul_passthrough_low_stockpile_effect
+					}
+
+					location = { add_to_variable_list = { name = sul_pt_active target = scope:current_good } }
 				}
 			}
-
-			add_temporary_demand = {
-				type = demand:sul_$GOOD$_stockpile
-				scale = sul_passthrough_low_supply_effect
-				months = 1
-			}
-
-			add_goods_supply = {
-				goods = scope:current_good
-				amount = sul_passthrough_low_stockpile_effect
-			}
 		}
+	}
+
+	# Stamp cache after loop completes
+	if = {
+		limit = { local_var:sul_pt_rebuild_cache = 1 }
+		set_global_variable = { name = sul_market_demand_cached value = 1 }
 	}
 }

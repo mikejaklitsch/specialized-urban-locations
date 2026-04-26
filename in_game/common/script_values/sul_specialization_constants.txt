@@ -1,7 +1,10 @@
 ﻿# Total monthly development: local + global (location scope)
 sul_total_monthly_development = {
 	value = modifier:local_monthly_development
-	add = owner.modifier:global_monthly_development
+	if = {
+		limit = { exists = owner }
+		add = owner.modifier:global_monthly_development
+	}
 }
 
 # Debug: expose create_market_utility for tooltip inspection (location scope)
@@ -463,14 +466,13 @@ sul_commercial_finished_composite = {
 }
 
 # Trade profit per good: total_goods_value_traded / total_goods_traded.
-# Market scope. Average price per unit traded — high means the market
-# moves valuable goods. Normalized to 0-10 scale (divide by 2, clamp).
-
-sul_trade_profit_per_good = {
+# Market scope. Trade value per capita — measures commercial activity
+# relative to market size. Scales naturally across eras.
+sul_trade_value_per_capita = {
 	value = total_goods_value_traded
-	divide = { value = total_goods_traded min = 1 }
-	divide = 2
-	max = 10
+	divide = { value = market_population min = 1 }
+	multiply = 20
+	max = 15
 }
 
 # ════════════════════════════════════════════════════════════════════
@@ -543,13 +545,8 @@ sul_attractiveness_mining = {
 		limit = { sul_has_mining_resources = yes }
 		add = sul_raw_material_price_premium
 	}
-	# Finished goods demand (cached)
-	market ?= {
-		if = {
-			limit = { is_key_in_global_variable_map = { name = sul_mining_finished_composite target = this } }
-			add = "global_variable_map(sul_mining_finished_composite|this)"
-		}
-	}
+	# Finished goods demand (inline)
+	market ?= { add = sul_mining_finished_composite }
 	# Diversity
 	add = owner.sul_mining_diversity
 }
@@ -589,13 +586,8 @@ sul_attractiveness_farming = {
 		limit = { sul_has_farming_resources = yes }
 		add = sul_raw_material_price_premium
 	}
-	# Finished goods demand (cached)
-	market ?= {
-		if = {
-			limit = { is_key_in_global_variable_map = { name = sul_farming_finished_composite target = this } }
-			add = "global_variable_map(sul_farming_finished_composite|this)"
-		}
-	}
+	# Finished goods demand (inline)
+	market ?= { add = sul_farming_finished_composite }
 	# Food price
 	market ?= {
 		add = sul_farming_food_price_bonus
@@ -631,13 +623,8 @@ sul_attractiveness_woodland = {
 		limit = { sul_has_woodland_resources = yes }
 		add = sul_raw_material_price_premium
 	}
-	# Finished goods demand (cached)
-	market ?= {
-		if = {
-			limit = { is_key_in_global_variable_map = { name = sul_woodland_finished_composite target = this } }
-			add = "global_variable_map(sul_woodland_finished_composite|this)"
-		}
-	}
+	# Finished goods demand (inline)
+	market ?= { add = sul_woodland_finished_composite }
 	# Diversity
 	add = owner.sul_woodland_diversity
 }
@@ -670,13 +657,8 @@ sul_attractiveness_gathering = {
 		limit = { sul_has_gathering_resources = yes }
 		add = sul_raw_material_price_premium
 	}
-	# Finished goods demand (cached)
-	market ?= {
-		if = {
-			limit = { is_key_in_global_variable_map = { name = sul_gathering_finished_composite target = this } }
-			add = "global_variable_map(sul_gathering_finished_composite|this)"
-		}
-	}
+	# Finished goods demand (inline)
+	market ?= { add = sul_gathering_finished_composite }
 	# Food price
 	market ?= {
 		add = sul_gathering_food_price_bonus
@@ -692,18 +674,11 @@ sul_attractiveness_commercial = {
 		subtract = 50
 		divide = 2
 	}
-	# Trade profit per good (cached)
+	# Trade value per capita (cached)
 	market ?= {
 		if = {
-			limit = { is_key_in_global_variable_map = { name = sul_trade_profit target = this } }
-			add = "global_variable_map(sul_trade_profit|this)"
-		}
-	}
-	# Trade spread (cached)
-	market ?= {
-		if = {
-			limit = { is_key_in_global_variable_map = { name = sul_trade_spread target = this } }
-			add = "global_variable_map(sul_trade_spread|this)"
+			limit = { is_key_in_global_variable_map = { name = sul_trade_value_per_capita target = this } }
+			add = "global_variable_map(sul_trade_value_per_capita|this)"
 		}
 	}
 	# Market access deficit
@@ -713,13 +688,8 @@ sul_attractiveness_commercial = {
 		multiply = 5
 		max = 5
 	}
-	# Finished goods demand (cached)
-	market ?= {
-		if = {
-			limit = { is_key_in_global_variable_map = { name = sul_commercial_finished_composite target = this } }
-			add = "global_variable_map(sul_commercial_finished_composite|this)"
-		}
-	}
+	# Finished goods demand (inline)
+	market ?= { add = sul_commercial_finished_composite }
 	# Government
 	owner = {
 		if = {
@@ -817,13 +787,6 @@ sul_respec_score = {
 # Per-good price deviation: |price/base - 1| × base.
 # Goods scope; reads price via scope:current_market.
 
-sul_goods_price_deviation = {
-	value = "price_in_market(scope:current_market)"
-	divide = "default_price(this)"
-	subtract = 1
-	abs = yes
-	multiply = "default_price(this)"
-}
 
 # Used by GUI pie chart and building category bar. Location scope.
 # Reads engine-accumulated modifier totals — no manual building list needed.

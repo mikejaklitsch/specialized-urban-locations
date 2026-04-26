@@ -22,18 +22,31 @@ sul_ai_respecialize = {
 			limit = { exists = scope:target }
 			add = scope:target.modifier:local_build_buildings_cost
 			add = scope:target.modifier:local_build_new_buildings_cost
+			if = {
+				limit = { scope:target = { modifier:sul_is_town_rank_tier = yes } }
+				add = 1
+			}
+			if = {
+				limit = { scope:target = { modifier:sul_is_city_rank_tier = yes } }
+				add = 2
+			}
 		}
 	}
 	should_execute_price = no
 
 	ai_tick = monthly
-	ai_tick_frequency = 120
+	ai_tick_frequency = {
+		value = 120
+		divide = { value = num_locations divide = 50 min = 1 }
+		min = 12
+		max = 120
+	}
 
 	ai_prerequisite = {
 		is_real_country = yes
 		current_year >= 1338
 		num_loans = 0
-		gold >= 50
+		gold >= 200
 		monthly_balance >= 0
 	}
 
@@ -61,10 +74,18 @@ sul_ai_respecialize = {
 		}
 
 		enabled = {
-
 			NOT = { has_location_modifier = sul_recently_respecialized }
 			controller = owner
+			market_access >= 0.3
+			local_control >= 0.3
 		}
+
+		pre_evaluation_sort_value = {
+			value = local_control
+			multiply = 100
+			subtract = location_tax_base
+		}
+		pre_evaluation_number_to_evaluate_fully = 15
 	}
 
 	effect = {

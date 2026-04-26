@@ -1,0 +1,97 @@
+namespace = sul_economy
+
+# Player monthly: wages + EPBM in single event
+sul_economy.0 = {
+	type = country_event
+	hidden = yes
+	title = "sul_economy.0"
+
+	trigger = {
+		is_ai = no
+		is_real_country = yes
+		has_variable = sul_spending_nobles
+	}
+
+	immediate = {
+		sul_accumulate_wages = yes
+		sul_estate_wages_pay_all = yes
+
+		if = {
+			limit = { has_global_variable = sul_epbm_version }
+			sul_epbm_collect_maintenance = yes
+		}
+	}
+}
+
+# AI monthly: wage payment + EPBM charge in single event
+sul_economy.1 = {
+	type = country_event
+	hidden = yes
+	title = "sul_economy.1"
+
+	trigger = {
+		is_ai = yes
+		is_real_country = yes
+	}
+
+	immediate = {
+		if = {
+			limit = { has_variable = sul_monthly_wages_nobles }
+			sul_estate_wages_pay_all = yes
+		}
+
+		if = {
+			limit = {
+				has_global_variable = sul_epbm_version
+				has_variable = sul_epbm_pay_nobles
+			}
+			sul_epbm_charge_estates = yes
+		}
+	}
+}
+
+# Yearly: wage recalc + AI accumulate + EPBM AI recalc + decade rebuild
+sul_economy.2 = {
+	type = country_event
+	hidden = yes
+	title = "sul_economy.2"
+
+	trigger = { is_real_country = yes }
+
+	immediate = {
+		every_owned_location = { sul_calculate_location_wages = yes }
+
+		if = {
+			limit = {
+				is_ai = yes
+				has_variable = sul_spending_nobles
+			}
+			sul_accumulate_wages = yes
+		}
+
+		if = {
+			limit = {
+				has_global_variable = sul_epbm_version
+				is_ai = yes
+			}
+			sul_epbm_calculate_maintenance = yes
+		}
+
+		if = {
+			limit = { has_global_variable = sul_epbm_version }
+
+			if = {
+				limit = {
+					has_variable = sul_epbm_rebuild_counter
+					var:sul_epbm_rebuild_counter >= 9
+				}
+				sul_epbm_structural_rebuild = yes
+				set_variable = { name = sul_epbm_rebuild_counter value = 0 }
+			}
+			else_if = {
+				limit = { has_variable = sul_epbm_rebuild_counter }
+				change_variable = { name = sul_epbm_rebuild_counter add = 1 }
+			}
+		}
+	}
+}

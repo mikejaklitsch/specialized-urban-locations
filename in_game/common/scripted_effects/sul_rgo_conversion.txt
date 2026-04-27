@@ -12,8 +12,10 @@
 #                                     spawns RGO building instead of vanilla
 #                                     RGO. (Name fixed by engine - do NOT
 #                                     rename, this is a vanilla override.)
+#   sul_rebuild_rgo_delayed         - location: trigger 1-day delayed rebuild
+#                                     (on_destroyed callback wrapper)
 #   sul_rebuild_rgo_if_empty        - location: rebuild 1 RGO level if all
-#                                     destroyed (on_destroyed callback)
+#                                     destroyed (direct call)
 #   sul_construct_rgo_building      - location: construct one RGO level
 #                                     (used by scripted GUI button)
 #   sul_trim_rgo_levels             - location: trim RGO levels to current
@@ -94,8 +96,16 @@ REPLACE:cc_setup_new_town = {
 	}
 }
 
-# Rebuilds 1 RGO level if all were destroyed (e.g. bankruptcy). Location scope.
+# Triggers a 1-day delayed rebuild check. Location scope.
 # Called from on_destroyed callback on RGO buildings.
+# Delay lets the engine finish cleanup before we check levels.
+
+sul_rebuild_rgo_delayed = {
+	trigger_event_silently = { id = sul_rgo_pulse.2 days = 1 }
+}
+
+# Rebuilds 1 RGO level if all were destroyed (e.g. bankruptcy). Location scope.
+# Legacy: kept for direct calls outside on_destroyed context.
 
 sul_rebuild_rgo_if_empty = {
 	if = {

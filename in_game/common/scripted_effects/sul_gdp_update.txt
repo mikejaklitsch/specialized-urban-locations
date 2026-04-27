@@ -23,33 +23,15 @@
 @sul_enfranchisement_min = 0.1
 @sul_enfranchisement_max = 1.0
 
-# Per-estate enrichment offsets (added to engine's estate_enrichment modifier)
-@sul_enrichment_offset_nobles = 0.30
-@sul_enrichment_offset_clergy = 0.25
-@sul_enrichment_offset_burghers = 0.20
-@sul_enrichment_offset_commoners = 0.10
+# Demand model denominator: A + B × WPP (must match sul_pop_demand_wpp.txt)
+@sul_denom_A = 1.0
+@sul_denom_B = 1.0
 
 # -----------------------------------------------------------------------------
 # SINGLE LOCATION UPDATE (location scope)
 # -----------------------------------------------------------------------------
 
 sul_update_location_wpp = {
-	# Ensure spending rates exist on owner (first call may precede monthly pulse)
-	owner ?= {
-		if = {
-			limit = {
-				NOT = {
-					has_variable = sul_spending_nobles
-				}
-			}
-
-			set_variable = { name = sul_spending_nobles value = 1 }
-			set_variable = { name = sul_spending_clergy value = 1 }
-			set_variable = { name = sul_spending_burghers value = 1 }
-			set_variable = { name = sul_spending_commoners value = 1 }
-		}
-	}
-
 	# 1. Per-pop-type wage bills (pop × rate × market_access)
 	set_variable = {
 		name = sul_wage_bill_nobles
@@ -173,7 +155,6 @@ sul_update_location_wpp = {
 				divide = { value = num_pop_type:nobles min = 0.001 }
 			}
 
-			multiply = owner.var:sul_spending_nobles
 			add = var:sul_wages_nobles
 		}
 	}
@@ -183,7 +164,6 @@ sul_update_location_wpp = {
 		value = {
 			value = local_var:sul_tax_wealth_base
 			multiply = @sul_power_weight_clergy
-			multiply = owner.var:sul_spending_clergy
 			add = var:sul_wages_clergy
 		}
 	}
@@ -193,7 +173,6 @@ sul_update_location_wpp = {
 		value = {
 			value = local_var:sul_tax_wealth_base
 			multiply = @sul_power_weight_burghers
-			multiply = owner.var:sul_spending_burghers
 			add = var:sul_wages_burghers
 		}
 	}
@@ -205,7 +184,6 @@ sul_update_location_wpp = {
 		value = {
 			value = local_var:sul_tax_wealth_base
 			multiply = var:sul_enfranchisement
-			multiply = owner.var:sul_spending_commoners
 		}
 	}
 	set_local_variable = {
@@ -221,11 +199,16 @@ sul_update_location_wpp = {
 		value = { value = local_var:sul_commoner_tax_share add = var:sul_wages_peasants }
 	}
 
-	# 8. Write WPP to variable map
+	# 8. Write WPP + demand base to variable maps
 	add_to_variable_map = {
 		name = sul_wealth_per_pop
 		key = pop_type:nobles
 		value = local_var:sul_noble_wpp
+	}
+	add_to_variable_map = {
+		name = sul_demand_base
+		key = pop_type:nobles
+		value = { value = local_var:sul_noble_wpp divide = { value = @sul_denom_A add = { value = local_var:sul_noble_wpp multiply = @sul_denom_B } } }
 	}
 	add_to_variable_map = {
 		name = sul_wealth_per_pop
@@ -233,9 +216,19 @@ sul_update_location_wpp = {
 		value = local_var:sul_clergy_wpp
 	}
 	add_to_variable_map = {
+		name = sul_demand_base
+		key = pop_type:clergy
+		value = { value = local_var:sul_clergy_wpp divide = { value = @sul_denom_A add = { value = local_var:sul_clergy_wpp multiply = @sul_denom_B } } }
+	}
+	add_to_variable_map = {
 		name = sul_wealth_per_pop
 		key = pop_type:burghers
 		value = local_var:sul_burgher_wpp
+	}
+	add_to_variable_map = {
+		name = sul_demand_base
+		key = pop_type:burghers
+		value = { value = local_var:sul_burgher_wpp divide = { value = @sul_denom_A add = { value = local_var:sul_burgher_wpp multiply = @sul_denom_B } } }
 	}
 	add_to_variable_map = {
 		name = sul_wealth_per_pop
@@ -243,14 +236,29 @@ sul_update_location_wpp = {
 		value = local_var:sul_soldier_wpp
 	}
 	add_to_variable_map = {
+		name = sul_demand_base
+		key = pop_type:soldiers
+		value = { value = local_var:sul_soldier_wpp divide = { value = @sul_denom_A add = { value = local_var:sul_soldier_wpp multiply = @sul_denom_B } } }
+	}
+	add_to_variable_map = {
 		name = sul_wealth_per_pop
 		key = pop_type:laborers
 		value = local_var:sul_laborer_wpp
 	}
 	add_to_variable_map = {
+		name = sul_demand_base
+		key = pop_type:laborers
+		value = { value = local_var:sul_laborer_wpp divide = { value = @sul_denom_A add = { value = local_var:sul_laborer_wpp multiply = @sul_denom_B } } }
+	}
+	add_to_variable_map = {
 		name = sul_wealth_per_pop
 		key = pop_type:peasants
 		value = local_var:sul_peasant_wpp
+	}
+	add_to_variable_map = {
+		name = sul_demand_base
+		key = pop_type:peasants
+		value = { value = local_var:sul_peasant_wpp divide = { value = @sul_denom_A add = { value = local_var:sul_peasant_wpp multiply = @sul_denom_B } } }
 	}
 }
 
@@ -382,6 +390,16 @@ sul_init_zero_wpp = {
 		key = pop_type:tribesmen
 		value = 0
 	}
+	add_to_variable_map = {
+		name = sul_demand_base
+		key = pop_type:slaves
+		value = 0
+	}
+	add_to_variable_map = {
+		name = sul_demand_base
+		key = pop_type:tribesmen
+		value = 0
+	}
 }
 
 # -----------------------------------------------------------------------------
@@ -499,19 +517,19 @@ sul_update_country_economy = {
 
 	set_variable = {
 		name = sul_monthly_wages_nobles
-		value = { value = local_var:sul_noble_wages multiply = var:sul_spending_nobles }
+		value = local_var:sul_noble_wages
 	}
 	set_variable = {
 		name = sul_monthly_wages_clergy
-		value = { value = local_var:sul_clergy_wages multiply = var:sul_spending_clergy }
+		value = local_var:sul_clergy_wages
 	}
 	set_variable = {
 		name = sul_monthly_wages_burghers
-		value = { value = local_var:sul_burgher_wages multiply = var:sul_spending_burghers }
+		value = local_var:sul_burgher_wages
 	}
 	set_variable = {
 		name = sul_monthly_wages_peasants
-		value = { value = local_var:sul_commoner_wages multiply = var:sul_spending_commoners }
+		value = local_var:sul_commoner_wages
 	}
 
 	set_variable = { name = sul_monthly_wages_dhimmi value = 0 }
@@ -556,19 +574,19 @@ sul_accumulate_wages = {
 
 	set_variable = {
 		name = sul_monthly_wages_nobles
-		value = { value = local_var:sul_noble_wages multiply = var:sul_spending_nobles }
+		value = local_var:sul_noble_wages
 	}
 	set_variable = {
 		name = sul_monthly_wages_clergy
-		value = { value = local_var:sul_clergy_wages multiply = var:sul_spending_clergy }
+		value = local_var:sul_clergy_wages
 	}
 	set_variable = {
 		name = sul_monthly_wages_burghers
-		value = { value = local_var:sul_burgher_wages multiply = var:sul_spending_burghers }
+		value = local_var:sul_burgher_wages
 	}
 	set_variable = {
 		name = sul_monthly_wages_peasants
-		value = { value = local_var:sul_commoner_wages multiply = var:sul_spending_commoners }
+		value = local_var:sul_commoner_wages
 	}
 
 	set_variable = { name = sul_monthly_wages_dhimmi value = 0 }

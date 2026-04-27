@@ -1,0 +1,34 @@
+# Root = location. scope:winner = new owner.
+sul_on_location_colonized = {
+	if = {
+		limit = { has_location_modifier = sul_unowned_dev_decay }
+		remove_location_modifier = sul_unowned_dev_decay
+	}
+
+	sul_calculate_location_wages = yes
+
+	if = {
+		limit = {
+			exists = raw_material
+			modifier:sul_rgo_size > 0
+			sul_location_rgo_building_level <= 0
+			OR = {
+				NOR = {
+					raw_material = goods:iron
+					raw_material = goods:coal
+				}
+				owner = { has_advance = iron_working }
+			}
+		}
+
+		change_building_level_in_location = {
+			building = "global_variable_map(sul_rgo_map|raw_material)"
+			value = 1
+		}
+	}
+}
+
+# Root = location. scope:loser = former owner.
+sul_on_location_decolonized = {
+	add_location_modifier = { modifier = sul_unowned_dev_decay }
+}

@@ -1,12 +1,12 @@
-﻿# Pop wealth-per-pop reader + tier gates.
+﻿# Pop wealth-per-pop reader + demand tier values.
 #
 # sul_read_wpp returns the cached wealth-per-pop value for the current pop
 # scope (read via prev.pop_type from a location-scoped script value).
-# sul_read_tier_* returns max(0, wpp - threshold) for one tier.
-# sul_demand_* is the same gate × budget pressure (used by pop_demands.txt
-# in a single multiply rather than read_tier × budget_pressure separately).
+# sul_read_tier_* returns max(0, wpp - threshold) for one tier (tooltip use).
+# sul_demand_* returns the continuous percentage demand for each tier,
+# using a cached demand base (WPP / denominator) from the monthly GDP update.
 #
-# Tier thresholds must match TIER_THRESHOLD in tools/demand_calculator.py.
+# Tier thresholds are retained for tooltip script values only.
 
 @sul_tier_threshold_necessity = 0
 @sul_tier_threshold_basic = 0.05
@@ -63,46 +63,85 @@ sul_read_tier_exotic = {
 	min = 0
 }
 
-# Combined tier gate × budget pressure (single multiply in pop_demands)
+# Continuous percentage demand model.
+#
+# Each tier's demand = WPP × weight / (A + B × WPP) × budget_pressure
+# Constant-weight tiers (necessity/basic/common) saturate at high WPP.
+# Growth-weight tiers (upper/luxury/exotic) scale with WPP² → linear at high WPP.
+#
+# Budget fills to 100% at every WPP level by construction.
+#
+# Tuning (set in tools/demand_calculator.py):
+#   POOR_SHARES  — budget split at zero wealth (constant tiers, must sum to 1)
+#   RICH_SHARES  — budget split at high wealth (growth tiers, must sum to 1)
+#   CROSSOVER_WPP — WPP where constant and growth tiers each get 50%
+#
+# @macros derived: w_tier = share × crossover (constant) or share (growth)
+#                  A = crossover, B = 1
+
+@sul_denom_A = 1.0
+@sul_denom_B = 1.0
+
+@sul_w_necessity = 0.55
+@sul_w_basic = 0.30
+@sul_w_common = 0.15
+@sul_w_upper = 0.45
+@sul_w_luxury = 0.35
+@sul_w_exotic = 0.20
+
+sul_read_demand_base = {
+	value = 0
+	if = {
+		limit = {
+			has_variable_map = sul_demand_base
+			is_key_in_variable_map = { name = sul_demand_base target = prev.pop_type }
+		}
+
+		add = "variable_map(sul_demand_base|prev.pop_type)"
+	}
+}
+
+# Constant-weight tiers: demand = (WPP / denom) × weight × bp
+# Saturates at w / B as WPP → ∞
 
 sul_demand_necessity = {
-	value = sul_read_wpp
-	subtract = @sul_tier_threshold_necessity
-	min = 0
+	value = sul_read_demand_base
+	multiply = @sul_w_necessity
 	multiply = sul_budget_pressure
 }
 
 sul_demand_basic = {
-	value = sul_read_wpp
-	subtract = @sul_tier_threshold_basic
-	min = 0
+	value = sul_read_demand_base
+	multiply = @sul_w_basic
 	multiply = sul_budget_pressure
 }
 
 sul_demand_common = {
-	value = sul_read_wpp
-	subtract = @sul_tier_threshold_common
-	min = 0
+	value = sul_read_demand_base
+	multiply = @sul_w_common
 	multiply = sul_budget_pressure
 }
 
+# Growth-weight tiers: demand = (WPP / denom) × WPP × weight × bp
+# Grows linearly as WPP → ∞
+
 sul_demand_upper = {
-	value = sul_read_wpp
-	subtract = @sul_tier_threshold_upper
-	min = 0
+	value = sul_read_demand_base
+	multiply = sul_read_wpp
+	multiply = @sul_w_upper
 	multiply = sul_budget_pressure
 }
 
 sul_demand_luxury = {
-	value = sul_read_wpp
-	subtract = @sul_tier_threshold_luxury
-	min = 0
+	value = sul_read_demand_base
+	multiply = sul_read_wpp
+	multiply = @sul_w_luxury
 	multiply = sul_budget_pressure
 }
 
 sul_demand_exotic = {
-	value = sul_read_wpp
-	subtract = @sul_tier_threshold_exotic
-	min = 0
+	value = sul_read_demand_base
+	multiply = sul_read_wpp
+	multiply = @sul_w_exotic
 	multiply = sul_budget_pressure
 }

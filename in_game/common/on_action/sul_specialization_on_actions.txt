@@ -163,67 +163,26 @@ sul_on_raw_material_changed = {
 	}
 }
 
-# Conquered market center: fire event if conqueror's market already
-# has strong access nearby (neighbor with >= 90% market access owned by winner)
-# root = location, scope:loser, scope:winner
-
-sul_on_market_conquered = {
-	trigger = {
-		is_market_center = yes
-		any_neighbor_location = {
-			market_access >= 0.90
-			market.location.owner = scope:winner
-		}
-	}
-
-	effect = {
-		save_scope_as = target
-		random_neighbor_location = {
-			limit = {
-				market_access >= 0.90
-				market.location.owner = scope:winner
-			}
-			market = { save_scope_as = winner_market }
-		}
-		scope:winner = {
-			trigger_event_non_silently = sul.100
-		}
-	}
-}
-
 # Owner changed: seed RGO for new colonies that have none
 # root = location, scope:loser, scope:winner
 
 sul_on_location_changed_owner = {
 	effect = {
 		if = {
+			limit = { exists = scope:winner NOT = { exists = scope:loser } }
+			sul_on_location_colonized = yes
+		}
+		else_if = {
+			limit = { exists = scope:loser NOT = { exists = scope:winner } }
+			sul_on_location_decolonized = yes
+		}
+
+		if = {
 			limit = { exists = raw_material modifier:sul_rgo_size > 0 }
 
-			# GUI cache - idempotent, set on every owner change so the new
-			# owner sees the right building_type.
 			set_variable = {
 				name = sul_rgo_building_type
 				value = "global_variable_map(sul_rgo_map|raw_material)"
-			}
-
-			# Seed 1 RGO level if location has none (new colony / capture-with-empty-RGO)
-			# iron_working gates iron + coal extraction
-			if = {
-				limit = {
-					sul_location_rgo_building_level <= 0
-					OR = {
-						NOR = {
-							raw_material = goods:iron
-							raw_material = goods:coal
-						}
-						owner = { has_advance = iron_working }
-					}
-				}
-
-				change_building_level_in_location = {
-					building = "global_variable_map(sul_rgo_map|raw_material)"
-					value = 1
-				}
 			}
 		}
 	}

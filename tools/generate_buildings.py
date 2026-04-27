@@ -241,15 +241,11 @@ def load_production_methods():
 
 
 def load_building_unlocks():
-    building_unlock_file = VANILLA_ADVANCE_DIR / "1_building_unlocks.txt"
-    traditions_file = VANILLA_ADVANCE_DIR / "0_age_of_traditions.txt"
-    if not building_unlock_file.exists():
+    if not VANILLA_ADVANCE_DIR.is_dir():
         return {}
 
     advance_data = {}
-    for f in [traditions_file, building_unlock_file]:
-        if not f.exists():
-            continue
+    for f in sorted(VANILLA_ADVANCE_DIR.glob("*.txt")):
         text = f.read_text(encoding="utf-8-sig")
         for m in re.finditer(r"^([a-z_][a-z0-9_]*)\s*=\s*\{", text, re.MULTILINE):
             name = m.group(1)
@@ -528,6 +524,36 @@ def classify_building(bldg, pm_goods, flag_to_specs):
     """
     body = bldg.body
     fields = bldg.fields
+
+    # Step 0: RGO buildings are gated by can_build_RGO (raw_material check),
+    # never by production flags — classify as universal.
+    if "can_build_RGO" in body:
+        tier_source = bldg.vanilla_fields if bldg.vanilla_fields else fields
+        old_flags = get_old_rank_flags(tier_source)
+        if not old_flags:
+            custom_tiers = _tiers_from_custom_ranks(fields)
+            if custom_tiers:
+                old_flags = {
+                    "rural_settlement": "rural" in custom_tiers,
+                    "town": "town" in custom_tiers,
+                    "city": "city" in custom_tiers,
+                }
+        new_ranks = compute_new_rank_flags("universal", None, old_flags)
+        tiers = []
+        if any(r.endswith("_rural") for r in new_ranks):
+            tiers.append("rural")
+        if any(r.endswith("_town") for r in new_ranks):
+            tiers.append("town")
+        if any(r.endswith("_city") for r in new_ranks):
+            tiers.append("city")
+        return BuildingClass(
+            classification="universal",
+            specs=None,
+            production_flags=[],
+            has_spec_trigger=False,
+            new_ranks=new_ranks,
+            tiers=tiers,
+        )
 
     # Step 1: Produced goods → production flags
     produced_goods = get_building_produced_goods(body, pm_goods)

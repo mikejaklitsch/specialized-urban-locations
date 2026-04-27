@@ -24,8 +24,10 @@ sul_rural_granary_max_level = {
 	add = { value = development multiply = 0.05 }
 }
 
-# Extraction vs Production caps — baseline from existing building cap + tension modifier
-# Extraction buildings squeeze production cap, production buildings squeeze extraction cap
+# Extraction vs Production caps.
+# Development is zero-sum: high dev expands production caps and squeezes extraction,
+# low dev does the reverse. Creates feedback: building production → dev rises →
+# more production capacity. Building extraction → dev falls → more extraction capacity.
 
 sul_extraction_max_level = {
 	value = rural_building_cap
@@ -50,6 +52,12 @@ REPLACE:guild_max_level = {
 		desc = "BUILDING_LEVEL_DEVELOPMENT"
 		value = development
 		multiply = 0.1
+	}
+	add = {
+		desc = "URBANIZATION_SQUEEZE"
+		value = 100
+		subtract = development
+		multiply = -0.05
 	}
 	add = {
 		desc = "BUILDING_LEVEL_POPULATION"
@@ -160,6 +168,12 @@ REPLACE:workshop_max_level = {
 		multiply = 0.25
 	}
 	add = {
+		desc = "URBANIZATION_SQUEEZE"
+		value = 100
+		subtract = development
+		multiply = -0.05
+	}
+	add = {
 		desc = "BUILDING_LEVEL_POPULATION"
 		value = population
 		multiply = 0.05
@@ -258,6 +272,12 @@ REPLACE:manufactory_max_level = {
 		desc = "BUILDING_LEVEL_DEVELOPMENT"
 		value = development
 		multiply = 0.5
+	}
+	add = {
+		desc = "URBANIZATION_SQUEEZE"
+		value = 100
+		subtract = development
+		multiply = -0.05
 	}
 	add = {
 		desc = "BUILDING_LEVEL_POPULATION"
@@ -360,6 +380,12 @@ REPLACE:mills_max_level = {
 		multiply = 1
 	}
 	add = {
+		desc = "URBANIZATION_SQUEEZE"
+		value = 100
+		subtract = development
+		multiply = -0.05
+	}
+	add = {
 		desc = "BUILDING_LEVEL_POPULATION"
 		value = population
 		multiply = 0.25
@@ -458,6 +484,12 @@ REPLACE:market_max_level = {
 		desc = "BUILDING_LEVEL_DEVELOPMENT"
 		value = development
 		multiply = 0.1
+	}
+	add = {
+		desc = "URBANIZATION_SQUEEZE"
+		value = 100
+		subtract = development
+		multiply = -0.05
 	}
 	add = {
 		desc = "BUILDING_LEVEL_POPULATION"
@@ -597,9 +629,15 @@ REPLACE:market_max_level = {
 REPLACE:rural_building_cap = {
 	add = { desc = "BUILDING_LEVEL_BASE" value = 1 }
 	add = {
-		desc = "BUILDING_LEVEL_DEVELOPMENT"
-		value = development
+		desc = "BUILDING_LEVEL_LOW_DEVELOPMENT"
+		value = 100
+		subtract = development
 		multiply = 0.1
+	}
+	add = {
+		desc = "URBANIZATION_SQUEEZE"
+		value = development
+		multiply = -0.05
 	}
 	add = {
 		desc = "BUILDING_LEVEL_RGO_MAX"

@@ -6,11 +6,11 @@ Demand System Calculator for Wages and Provisions Demand Overhaul
 Computes universal demand_add values for EU5 pop goods.
 
 FORMULA:
-  demand_add = GOODS_BUDGET_SHARE × tier_weight / price × source_factor / weighted_in_cat
+  demand_add = GOODS_BUDGET_SHARE / price × source_factor / weighted_in_cat
 
   All pop types get the same demand_add (uniform { all = value }).
   Pop-type differentiation comes from the WPP system at runtime.
-  tier_weight baked into demand_add; threshold checked in pop_demands.txt.
+  Tier allocation handled by continuous percentage model (no tier_weight in demand_add).
 
 USAGE:
   python demand_calculator.py                # Full report
@@ -45,17 +45,24 @@ CAT_ORDER = ["necessity", "basic", "common", "upper", "luxury", "exotic"]
 GOODS_BUDGET_SHARE = 0.65  # 65% of wealth goes to goods demand, rest to estate activities
 RAW_GOODS_FACTOR = 0.75 # Raw goods get 75% of produced goods demand (25% dampening)
 
-# Ramped threshold model: pop_demand = tier_weight × max(0, wpp - threshold)
-# tier_weight baked into demand_add, threshold checked in pop_demands.txt.
-# No monthly tier computation needed — all evaluation in engine's pop demand cycle.
-TIER_WEIGHT = {
-    "necessity": 0.30,
-    "basic":     0.25,
-    "common":    0.20,
-    "upper":     0.12,
-    "luxury":    0.08,
-    "exotic":    0.05,
+# Continuous percentage demand model.
+# Runtime handles tier allocation via WPP × weight / (A + B×WPP).
+# demand_add distributes WITHIN each tier by 1/price, no tier_weight baked in.
+#
+# Config: set budget share at extremes of wealth, plus crossover point.
+POOR_SHARES = {
+    "necessity": 0.55,
+    "basic":     0.30,
+    "common":    0.15,
 }
+RICH_SHARES = {
+    "upper":     0.45,
+    "luxury":    0.35,
+    "exotic":    0.20,
+}
+CROSSOVER_WPP = 1.0
+
+# Tier thresholds retained for tooltip script values (sul_read_tier_*) only.
 TIER_THRESHOLD = {
     "necessity": 0,
     "basic":     0.05,
@@ -93,49 +100,37 @@ POP_TYPES = [
 # ═══════════════════════════════════════════════════════════════════════════
 
 GOODS = [
-    # ─── NECESSITIES ─────────────────────────────────────────────────────
-    {"name": "cloth", "category": "necessity", "source": "produced"},
-    {"name": "pottery", "category": "necessity", "source": "produced"},
+    # ─── NECESSITY (6) — bare survival ───────────────────────────────────
     {"name": "provisions", "category": "necessity", "source": "produced", "price": 2.4,
      "extra_fields": {"category": "produced", "color": "goods_provisions",
                        "default_market_price": 2.4, "transport_cost": 1.0},
      "set_food": 0.0001},
-
-    # ─── FOOD ────────────────────────────────────────────────────────────
-    {"name": "wheat", "category": "necessity", "source": "raw"},
-    {"name": "rice", "category": "necessity", "source": "raw"},
-    {"name": "maize", "category": "necessity", "source": "raw"},
-    {"name": "millet", "category": "necessity", "source": "raw"},
-    {"name": "potato", "category": "necessity", "source": "raw"},
-    {"name": "fish", "category": "necessity", "source": "raw"},
-    {"name": "legumes", "category": "necessity", "source": "raw"},
-    {"name": "olives", "category": "necessity", "source": "raw"},
-    {"name": "fruit", "category": "necessity", "source": "raw"},
-    {"name": "livestock", "category": "necessity", "source": "raw"},
-    {"name": "wild_game", "category": "necessity", "source": "raw"},
-
-    # ─── BASIC ───────────────────────────────────────────────────────────
-    {"name": "beer", "category": "basic", "source": "produced"},
-    {"name": "salt", "category": "basic", "source": "raw"},
-    {"name": "coal", "category": "basic", "source": "raw"},
-    {"name": "beeswax", "category": "basic", "source": "raw"},
-
-    # ─── COMMON ──────────────────────────────────────────────────────────
-    {"name": "furniture", "category": "common", "source": "produced"},
-    {"name": "leather", "category": "common", "source": "produced"},
-    {"name": "glass", "category": "common", "source": "produced"},
-    {"name": "paper", "category": "common", "source": "produced"},
+    {"name": "cloth", "category": "necessity", "source": "produced"},
+    {"name": "pottery", "category": "necessity", "source": "produced"},
     {"name": "medicaments", "category": "necessity", "source": "raw"},
-    {"name": "weaponry", "category": "common", "source": "produced"},
-    {"name": "liquor", "category": "common", "source": "produced"},
-    {"name": "horses", "category": "common", "source": "raw"},
+    {"name": "salt", "category": "necessity", "source": "raw"},
+    {"name": "coal", "category": "necessity", "source": "raw"},
 
-    # ─── UPPER ───────────────────────────────────────────────────────────
-    {"name": "fine_cloth", "category": "upper", "source": "produced"},
-    {"name": "silk", "category": "upper", "source": "raw"},
-    {"name": "books", "category": "upper", "source": "produced"},
-    {"name": "wine", "category": "common", "source": "raw"},
+    # ─── BASIC (7) — daily household ─────────────────────────────────────
+    {"name": "beer", "category": "basic", "source": "produced"},
+    {"name": "wine", "category": "basic", "source": "raw"},
+    {"name": "liquor", "category": "basic", "source": "produced"},
+    {"name": "beeswax", "category": "basic", "source": "raw"},
+    {"name": "leather", "category": "basic", "source": "produced"},
+    {"name": "furniture", "category": "basic", "source": "produced"},
+    {"name": "paper", "category": "basic", "source": "produced"},
+
+    # ─── COMMON (5) — quality of life ────────────────────────────────────
+    {"name": "glass", "category": "common", "source": "produced"},
     {"name": "fur", "category": "common", "source": "raw"},
+    {"name": "horses", "category": "common", "source": "raw"},
+    {"name": "weaponry", "category": "common", "source": "produced"},
+    {"name": "incense", "category": "common", "source": "raw"},
+
+    # ─── UPPER (9) — aspirational ────────────────────────────────────────
+    {"name": "fine_cloth", "category": "upper", "source": "produced"},
+    {"name": "books", "category": "upper", "source": "produced"},
+    {"name": "porcelain", "category": "upper", "source": "produced"},
     {"name": "tea", "category": "upper", "source": "raw"},
     {"name": "coffee", "category": "upper", "source": "raw"},
     {"name": "cocoa", "category": "upper", "source": "raw"},
@@ -143,24 +138,19 @@ GOODS = [
     {"name": "tobacco", "category": "upper", "source": "raw"},
     {"name": "amber", "category": "upper", "source": "raw"},
 
-    # ─── LUXURIES ────────────────────────────────────────────────────────
+    # ─── LUXURY (5) — wealth display ────────────────────────────────────
     {"name": "jewelry", "category": "luxury", "source": "produced"},
-    {"name": "porcelain", "category": "upper", "source": "produced"},
     {"name": "pearls", "category": "luxury", "source": "raw"},
     {"name": "ivory", "category": "luxury", "source": "raw"},
-    {"name": "silver", "category": "luxury", "source": "raw"},
-    {"name": "goods_gold", "category": "luxury", "source": "raw"},
     {"name": "gems", "category": "luxury", "source": "raw"},
     {"name": "marble", "category": "luxury", "source": "raw"},
-    {"name": "elephants", "category": "luxury", "source": "raw"},
 
-    # ─── EXOTIC ─────────────────────────────────────────────────────────
+    # ─── EXOTIC (5) — rare trade goods ───────────────────────────────────
     {"name": "lacquerware", "category": "exotic", "source": "produced"},
     {"name": "pepper", "category": "exotic", "source": "raw"},
     {"name": "cloves", "category": "exotic", "source": "raw"},
     {"name": "saffron", "category": "exotic", "source": "raw"},
     {"name": "chili", "category": "exotic", "source": "raw"},
-    {"name": "incense", "category": "upper", "source": "raw"},
 ]
 
 
@@ -333,9 +323,9 @@ def get_food_goods(vanilla_data):
 def compute():
     """Compute demand values for all goods. Returns list of result dicts.
 
-    Formula: demand_add = GOODS_BUDGET_SHARE × tier_weight × source_factor / price / weighted_in_cat
+    Formula: demand_add = GOODS_BUDGET_SHARE × source_factor / price / weighted_in_cat
     Where weighted_in_cat = Σ(source_factor) for all goods in the category.
-    tier_weight baked into demand_add; pop_demand = max(0, wpp - threshold) at runtime.
+    Tier allocation handled at runtime by the continuous percentage model.
     """
     cat_weighted = {}
     for g in GOODS:
@@ -353,10 +343,9 @@ def compute():
         cat = g["category"]
         price = g["price"]
         weighted_in_cat = cat_weighted.get(cat, 1)
-        tier_weight = TIER_WEIGHT.get(cat, 0.10)
 
         source_factor = RAW_GOODS_FACTOR if g["source"] == "raw" else 1.0
-        base = GOODS_BUDGET_SHARE * tier_weight / price * source_factor / weighted_in_cat
+        base = GOODS_BUDGET_SHARE / price * source_factor / weighted_in_cat
         demand_add = {"all": base}
 
         results.append({
@@ -430,7 +419,7 @@ def generate_pdx(results):
     lines = [
         "# WPDO: Merged goods overrides",
         "# Generated by demand_calculator.py",
-        f"# Formula: demand_add = {GOODS_BUDGET_SHARE} \u00d7 tier_weight / price \u00d7 source_factor / weighted_in_cat",
+        f"# Formula: demand_add = {GOODS_BUDGET_SHARE} / price \u00d7 source_factor / weighted_in_cat",
         "",
     ]
 
@@ -570,18 +559,54 @@ def _section(title):
     print(f"{'=' * w}")
 
 
+def compute_macros():
+    """Compute the @macro values for the script files."""
+    A = CROSSOVER_WPP
+    B = 1.0
+    macros = {"A": A, "B": B}
+    for cat, share in POOR_SHARES.items():
+        macros[cat] = share * CROSSOVER_WPP
+    for cat, share in RICH_SHARES.items():
+        macros[cat] = share
+    return macros
+
+
 def print_config():
     _section("CONFIGURATION")
 
-    print(f"\n  Formula: demand_add = {GOODS_BUDGET_SHARE} × tier_weight / price × source_factor / weighted_in_cat")
+    print(f"\n  Formula: demand_add = {GOODS_BUDGET_SHARE} / price × source_factor / weighted_in_cat")
+    print(f"  Tier allocation at runtime: WPP × weight / (A + B×WPP)")
 
-    print(f"\n  Tier weights and thresholds:")
-    print(f"  {'Category':<12s} {'Weight':>8s} {'Threshold':>10s}")
-    print(f"  {'-' * 12} {'-' * 8} {'-' * 10}")
+    print(f"\n  Poor-pop shares (constant tiers, WPP → 0):")
+    for cat, share in POOR_SHARES.items():
+        print(f"    {cat:<12s} {share:>6.0%}")
+    print(f"\n  Rich-pop shares (growth tiers, WPP → ∞):")
+    for cat, share in RICH_SHARES.items():
+        print(f"    {cat:<12s} {share:>6.0%}")
+    print(f"\n  Crossover WPP: {CROSSOVER_WPP}")
+
+    macros = compute_macros()
+    print(f"\n  Derived @macros:")
+    print(f"    @sul_denom_A = {macros['A']}")
+    print(f"    @sul_denom_B = {macros['B']}")
     for cat in CAT_ORDER:
-        w = TIER_WEIGHT[cat]
-        t = TIER_THRESHOLD[cat]
-        print(f"  {cat:<12s} {w:>8.2f} {t:>10.1f}")
+        if cat in macros:
+            print(f"    @sul_w_{cat} = {macros[cat]}")
+
+    print(f"\n  Budget shares at sample WPP values:")
+    print(f"  {'WPP':>6s}  {'nec':>5s} {'bas':>5s} {'com':>5s} {'upp':>5s} {'lux':>5s} {'exo':>5s}  {'fill':>5s}")
+    print(f"  {'-'*6}  {'-'*5} {'-'*5} {'-'*5} {'-'*5} {'-'*5} {'-'*5}  {'-'*5}")
+    for wpp in [0.1, 0.5, 1.0, 2.0, 5.0, 10.0, 50.0]:
+        denom = macros["A"] + macros["B"] * wpp
+        shares = {}
+        for cat in CAT_ORDER:
+            w = macros.get(cat, 0)
+            if cat in POOR_SHARES:
+                shares[cat] = w / denom
+            else:
+                shares[cat] = w * wpp / denom
+        total = sum(shares.values())
+        print(f"  {wpp:>6.1f}  {shares['necessity']:>5.1%} {shares['basic']:>5.1%} {shares['common']:>5.1%} {shares['upper']:>5.1%} {shares['luxury']:>5.1%} {shares['exotic']:>5.1%}  {total:>5.1%}")
 
 
 def print_demands(results):

@@ -1,15 +1,8 @@
 ﻿# Economy / GDP / wage on_actions registered in sul_hardcoded.txt.
 
-# Enrichment offsets are duplicated from sul_gdp_update.txt because @macros
-# are file-scoped in PDX script. Keep both files in sync if these change.
-@sul_enrichment_offset_nobles = 0.30
-@sul_enrichment_offset_clergy = 0.25
-@sul_enrichment_offset_burghers = 0.20
-@sul_enrichment_offset_commoners = 0.10
-
-# Economy bootstrap on game start. Seeds the budget pressure and spending
-# rate variables that the monthly economy update assumes already exist,
-# then runs one full pass so day 1 has correct values rather than zeros.
+# Economy bootstrap on game start. Seeds the budget pressure variables
+# that the monthly economy update assumes already exist, then runs one
+# full pass so day 1 has correct values rather than zeros.
 
 sul_initialize_economy = {
 	effect = {
@@ -18,57 +11,10 @@ sul_initialize_economy = {
 		every_country = {
 			limit = { is_real_country = yes sul_is_valid_location_owner = yes }
 
-			# Neutral pressure (1 = neutral) before economy update so the
-			# first sul_update_country_economy doesn't multiply by undefined.
 			set_variable = { name = sul_budget_pressure_nobles value = 1 }
 			set_variable = { name = sul_budget_pressure_clergy value = 1 }
 			set_variable = { name = sul_budget_pressure_burghers value = 1 }
 			set_variable = { name = sul_budget_pressure_peasants value = 1 }
-
-			set_variable = {
-				name = sul_spending_nobles
-
-				value = {
-					value = 1
-					subtract = modifier:estate_enrichment
-					subtract = @sul_enrichment_offset_nobles
-					min = 0
-					max = 1
-				}
-			}
-			set_variable = {
-				name = sul_spending_clergy
-
-				value = {
-					value = 1
-					subtract = modifier:estate_enrichment
-					subtract = @sul_enrichment_offset_clergy
-					min = 0
-					max = 1
-				}
-			}
-			set_variable = {
-				name = sul_spending_burghers
-
-				value = {
-					value = 1
-					subtract = modifier:estate_enrichment
-					subtract = @sul_enrichment_offset_burghers
-					min = 0
-					max = 1
-				}
-			}
-			set_variable = {
-				name = sul_spending_commoners
-
-				value = {
-					value = 1
-					subtract = modifier:estate_enrichment
-					subtract = @sul_enrichment_offset_commoners
-					min = 0
-					max = 1
-				}
-			}
 
 			every_owned_location = { sul_init_zero_wpp = yes }
 
@@ -106,70 +52,10 @@ sul_batch_location_update = {
 	}
 }
 
-# Enrichment reduces estate spending: rate = 1 - (engine enrichment + sul offset)
-# Stored once per country, read by WPP update (location scope) and wage payment.
-
-sul_update_spending_rates = {
-	trigger = { is_real_country = yes }
-
-	effect = {
-		set_variable = {
-			name = sul_spending_nobles
-
-			value = {
-				value = 1
-				subtract = modifier:estate_enrichment
-				subtract = @sul_enrichment_offset_nobles
-				min = 0
-				max = 1
-			}
-		}
-		set_variable = {
-			name = sul_spending_clergy
-
-			value = {
-				value = 1
-				subtract = modifier:estate_enrichment
-				subtract = @sul_enrichment_offset_clergy
-				min = 0
-				max = 1
-			}
-		}
-		set_variable = {
-			name = sul_spending_burghers
-
-			value = {
-				value = 1
-				subtract = modifier:estate_enrichment
-				subtract = @sul_enrichment_offset_burghers
-				min = 0
-				max = 1
-			}
-		}
-		set_variable = {
-			name = sul_spending_commoners
-
-			value = {
-				value = 1
-				subtract = modifier:estate_enrichment
-				subtract = @sul_enrichment_offset_commoners
-				min = 0
-				max = 1
-			}
-		}
-	}
-}
-
-# Player wage path: accumulate + pay every month (no batching delay).
-# Skips countries formed mid-game that haven't had their first spending-rate
-# init yet - checking nobles is enough because all 4 sul_spending_* vars are
-# always set together.
-
 sul_player_wage_update = {
 	trigger = {
 		is_ai = no
 		is_real_country = yes
-		has_variable = sul_spending_nobles
 	}
 
 	effect = {
@@ -185,7 +71,6 @@ sul_ai_yearly_wage_accumulate = {
 	trigger = {
 		is_ai = yes
 		is_real_country = yes
-		has_variable = sul_spending_nobles
 	}
 
 	effect = {

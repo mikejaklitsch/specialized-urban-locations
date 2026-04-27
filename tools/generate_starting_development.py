@@ -49,9 +49,17 @@ POP_PRESSURE = {
 MARKET_CENTER_BONUS = 0
 
 RANK_BONUS = {
-    "commercial_rural": 10,   # +0.10 monthly dev / 0.01 decay
-    "commercial_town": 25,    # +0.25 monthly dev / 0.01 decay
-    "commercial_city": 50,    # +0.50 monthly dev / 0.01 decay
+    "mining_town": 10,         # +0.10 monthly dev / 0.01 decay
+    "mining_city": 25,         # +0.25 monthly dev / 0.01 decay
+    "farming_town": 10,
+    "farming_city": 25,
+    "gathering_town": 10,
+    "gathering_city": 25,
+    "woodland_town": 10,
+    "woodland_city": 25,
+    "commercial_rural": 10,
+    "commercial_town": 25,
+    "commercial_city": 50,     # +0.50 monthly dev / 0.01 decay
 }
 
 # Government type global_monthly_development (must match sul_gov_type_adjustments.txt)

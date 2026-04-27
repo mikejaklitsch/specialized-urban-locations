@@ -10,7 +10,6 @@
 
 REPLACE:clay_pit = {
 	icon = sul_rgo_clay # PLACEHOLDER ICON TODO
-	increase_per_level_cost = 0.1
 	is_foreign = no
 	max_levels = sul_extraction_max_level
 	pop_type = laborers
@@ -49,7 +48,7 @@ REPLACE:clay_pit = {
 	modifier = {
 		local_clay_output_modifier = 0.005
 		sul_is_extraction_building = yes
-		local_monthly_development = -0.01
+		local_monthly_development = -0.005
 		sul_extraction_size = 1
 		local_population_growth = 0.00015
 	}
@@ -65,7 +64,6 @@ REPLACE:clay_pit = {
 
 REPLACE:salt_collector = {
 	icon = sul_rgo_salt # PLACEHOLDER ICON TODO
-	increase_per_level_cost = 0.1
 	is_foreign = no
 	pop_type = laborers
 	max_levels = sul_extraction_max_level
@@ -98,7 +96,7 @@ REPLACE:salt_collector = {
 	modifier = {
 		local_salt_output_modifier = 0.005
 		sul_is_extraction_building = yes
-		local_monthly_development = -0.01
+		local_monthly_development = -0.005
 		sul_extraction_size = 1
 		local_population_growth = 0.00015
 	}
@@ -118,7 +116,6 @@ REPLACE:salt_collector = {
 
 REPLACE:sand_pit = {
 	icon = sul_rgo_sand # PLACEHOLDER ICON TODO
-	increase_per_level_cost = 0.1
 	is_foreign = no
 	max_levels = sul_extraction_max_level
 	pop_type = laborers
@@ -155,7 +152,7 @@ REPLACE:sand_pit = {
 	modifier = {
 		local_sand_output_modifier = 0.005
 		sul_is_extraction_building = yes
-		local_monthly_development = -0.01
+		local_monthly_development = -0.005
 		sul_extraction_size = 1
 		local_population_growth = 0.00015
 	}
@@ -170,7 +167,6 @@ REPLACE:sand_pit = {
 # @sul-diff: ~~~~+ 8cd9
 
 REPLACE:glass_guild = {
-	increase_per_level_cost = 0.25
 	is_foreign = no
 	pop_type = burghers
 	max_levels = sul_production_max_level
@@ -196,6 +192,8 @@ REPLACE:glass_guild = {
 			modifier:sul_allows_glass_production = yes
 		}
 	}
+
+	remove_if = { NOT = { location = { modifier:sul_allows_glass_production = yes } } }
 
 	build_time = guild_build_time
 
@@ -230,7 +228,7 @@ REPLACE:glass_guild = {
 	modifier = {
 		local_glass_output_modifier = 0.005
 		sul_is_production_building = yes
-		local_monthly_development = 0.01
+		local_monthly_development = 0.0025
 		sul_production_size = 1
 	}
 
@@ -278,7 +276,7 @@ REPLACE:sheep_farms = {
 
 	modifier = {
 		sul_is_extraction_building = yes
-		local_monthly_development = -0.01
+		local_monthly_development = -0.005
 		sul_extraction_size = 1
 		local_population_growth = 0.00015
 	}
@@ -297,7 +295,6 @@ REPLACE:sheep_farms = {
 # @sul-diff: ~~~++ 8cd9
 
 REPLACE:saltpeter_guild = {
-	increase_per_level_cost = 0.25
 	is_foreign = no
 	pop_type = burghers
 	max_levels = sul_extraction_max_level
@@ -329,6 +326,8 @@ REPLACE:saltpeter_guild = {
 		}
 	}
 
+	remove_if = { NOT = { location = { modifier:sul_allows_saltpeter_production = yes } } }
+
 	unique_production_methods = {
 		sul_saltpeter_guild_demands = {
 			pottery = 0.2
@@ -346,7 +345,7 @@ REPLACE:saltpeter_guild = {
 	modifier = {
 		local_saltpeter_output_modifier = 0.005
 		sul_is_extraction_building = yes
-		local_monthly_development = -0.01
+		local_monthly_development = -0.005
 		sul_extraction_size = 1
 		local_population_growth = 0.00015
 	}
@@ -361,7 +360,6 @@ REPLACE:saltpeter_guild = {
 # @sul-diff: ~~+++ 8cd9
 
 REPLACE:glass_workshop = {
-	increase_per_level_cost = 0.25
 	is_foreign = no
 	pop_type = burghers
 	max_levels = sul_production_max_level
@@ -414,13 +412,12 @@ REPLACE:glass_workshop = {
 	modifier = {
 		local_glass_output_modifier = 0.005
 		sul_is_production_building = yes
-		local_monthly_development = 0.01
+		local_monthly_development = 0.0025
 		sul_production_size = 1
 	}
 }
 
 INJECT:glassworks = {
-	increase_per_level_cost = 0.25
 
 	location_potential = {
 		OR = {
@@ -428,12 +425,14 @@ INJECT:glassworks = {
 		}
 	}
 
+	remove_if = { NOT = { location = { modifier:sul_allows_glass_production = yes } } }
+
 	max_levels = sul_production_max_level
 
 	modifier = {
 		local_glass_output_modifier = 0.005
 		sul_is_production_building = yes
-		local_monthly_development = 0.01
+		local_monthly_development = 0.0025
 		sul_production_size = 1
 	}
 
@@ -447,7 +446,6 @@ INJECT:glassworks = {
 
 INJECT:glass_mill = {
 	pop_type = burghers
-	increase_per_level_cost = 0.25
 
 	location_potential = {
 		OR = {
@@ -455,12 +453,14 @@ INJECT:glass_mill = {
 		}
 	}
 
+	remove_if = { NOT = { location = { modifier:sul_allows_glass_production = yes } } }
+
 	max_levels = sul_production_max_level
 
 	modifier = {
 		local_glass_output_modifier = 0.005
 		sul_is_production_building = yes
-		local_monthly_development = 0.01
+		local_monthly_development = 0.0025
 		sul_production_size = 1
 	}
 
@@ -473,7 +473,6 @@ INJECT:glass_mill = {
 }
 
 INJECT:porcelain_guild = {
-	increase_per_level_cost = 0.25
 
 	location_potential = {
 		OR = {
@@ -481,12 +480,14 @@ INJECT:porcelain_guild = {
 		}
 	}
 
+	remove_if = { NOT = { location = { modifier:sul_allows_porcelain_production = yes } } }
+
 	max_levels = sul_production_max_level
 
 	modifier = {
 		local_porcelain_output_modifier = 0.005
 		sul_is_production_building = yes
-		local_monthly_development = 0.01
+		local_monthly_development = 0.0025
 		sul_production_size = 1
 	}
 
@@ -499,7 +500,6 @@ INJECT:porcelain_guild = {
 }
 
 INJECT:porcelain_manufactory = {
-	increase_per_level_cost = 0.25
 
 	location_potential = {
 		OR = {
@@ -507,12 +507,14 @@ INJECT:porcelain_manufactory = {
 		}
 	}
 
+	remove_if = { NOT = { location = { modifier:sul_allows_porcelain_production = yes } } }
+
 	max_levels = sul_production_max_level
 
 	modifier = {
 		local_porcelain_output_modifier = 0.005
 		sul_is_production_building = yes
-		local_monthly_development = 0.01
+		local_monthly_development = 0.0025
 		sul_production_size = 1
 	}
 
@@ -525,7 +527,6 @@ INJECT:porcelain_manufactory = {
 }
 
 INJECT:pottery_guild = {
-	increase_per_level_cost = 0.25
 
 	location_potential = {
 		OR = {
@@ -533,12 +534,14 @@ INJECT:pottery_guild = {
 		}
 	}
 
+	remove_if = { NOT = { location = { modifier:sul_allows_pottery_production = yes } } }
+
 	max_levels = sul_production_max_level
 
 	modifier = {
 		local_pottery_output_modifier = 0.005
 		sul_is_production_building = yes
-		local_monthly_development = 0.01
+		local_monthly_development = 0.0025
 		sul_production_size = 1
 	}
 
@@ -551,7 +554,6 @@ INJECT:pottery_guild = {
 }
 
 INJECT:pottery_workshop = {
-	increase_per_level_cost = 0.25
 
 	location_potential = {
 		OR = {
@@ -559,12 +561,14 @@ INJECT:pottery_workshop = {
 		}
 	}
 
+	remove_if = { NOT = { location = { modifier:sul_allows_pottery_production = yes } } }
+
 	max_levels = sul_production_max_level
 
 	modifier = {
 		local_pottery_output_modifier = 0.005
 		sul_is_production_building = yes
-		local_monthly_development = 0.01
+		local_monthly_development = 0.0025
 		sul_production_size = 1
 	}
 
@@ -577,7 +581,6 @@ INJECT:pottery_workshop = {
 }
 
 INJECT:pottery_manufactory = {
-	increase_per_level_cost = 0.25
 
 	location_potential = {
 		OR = {
@@ -585,12 +588,14 @@ INJECT:pottery_manufactory = {
 		}
 	}
 
+	remove_if = { NOT = { location = { modifier:sul_allows_pottery_production = yes } } }
+
 	max_levels = sul_production_max_level
 
 	modifier = {
 		local_pottery_output_modifier = 0.005
 		sul_is_production_building = yes
-		local_monthly_development = 0.01
+		local_monthly_development = 0.0025
 		sul_production_size = 1
 	}
 
@@ -604,7 +609,6 @@ INJECT:pottery_manufactory = {
 
 INJECT:pottery_mill = {
 	pop_type = burghers
-	increase_per_level_cost = 0.25
 
 	location_potential = {
 		OR = {
@@ -612,12 +616,14 @@ INJECT:pottery_mill = {
 		}
 	}
 
+	remove_if = { NOT = { location = { modifier:sul_allows_pottery_production = yes } } }
+
 	max_levels = sul_production_max_level
 
 	modifier = {
 		local_pottery_output_modifier = 0.005
 		sul_is_production_building = yes
-		local_monthly_development = 0.01
+		local_monthly_development = 0.0025
 		sul_production_size = 1
 	}
 
@@ -630,7 +636,6 @@ INJECT:pottery_mill = {
 }
 
 INJECT:apothecary = {
-	increase_per_level_cost = 0.25
 
 	location_potential = {
 		OR = {
@@ -638,12 +643,14 @@ INJECT:apothecary = {
 		}
 	}
 
+	remove_if = { NOT = { location = { modifier:sul_allows_apothecary_production = yes } } }
+
 	max_levels = sul_extraction_max_level
 
 	modifier = {
 		local_medicaments_output_modifier = 0.005
 		sul_is_extraction_building = yes
-		local_monthly_development = -0.01
+		local_monthly_development = -0.005
 		sul_extraction_size = 1
 		local_population_growth = 0.00015
 	}
@@ -657,7 +664,6 @@ INJECT:apothecary = {
 }
 
 INJECT:saltpeter_workshop = {
-	increase_per_level_cost = 0.25
 
 	location_potential = {
 		OR = {
@@ -665,12 +671,14 @@ INJECT:saltpeter_workshop = {
 		}
 	}
 
+	remove_if = { NOT = { location = { modifier:sul_allows_saltpeter_production = yes } } }
+
 	max_levels = sul_extraction_max_level
 
 	modifier = {
 		local_saltpeter_output_modifier = 0.005
 		sul_is_extraction_building = yes
-		local_monthly_development = -0.01
+		local_monthly_development = -0.005
 		sul_extraction_size = 1
 		local_population_growth = 0.00015
 	}
@@ -684,7 +692,6 @@ INJECT:saltpeter_workshop = {
 }
 
 INJECT:putrefaction_works = {
-	increase_per_level_cost = 0.25
 
 	location_potential = {
 		OR = {
@@ -692,12 +699,14 @@ INJECT:putrefaction_works = {
 		}
 	}
 
+	remove_if = { NOT = { location = { modifier:sul_allows_saltpeter_production = yes } } }
+
 	max_levels = sul_extraction_max_level
 
 	modifier = {
 		local_saltpeter_output_modifier = 0.005
 		sul_is_extraction_building = yes
-		local_monthly_development = -0.01
+		local_monthly_development = -0.005
 		sul_extraction_size = 1
 		local_population_growth = 0.00015
 	}
@@ -712,7 +721,6 @@ INJECT:putrefaction_works = {
 
 INJECT:putrefaction_mill = {
 	pop_type = burghers
-	increase_per_level_cost = 0.25
 
 	location_potential = {
 		OR = {
@@ -720,12 +728,14 @@ INJECT:putrefaction_mill = {
 		}
 	}
 
+	remove_if = { NOT = { location = { modifier:sul_allows_saltpeter_production = yes } } }
+
 	max_levels = sul_extraction_max_level
 
 	modifier = {
 		local_saltpeter_output_modifier = 0.005
 		sul_is_extraction_building = yes
-		local_monthly_development = -0.01
+		local_monthly_development = -0.005
 		sul_extraction_size = 1
 		local_population_growth = 0.00015
 	}
@@ -739,7 +749,6 @@ INJECT:putrefaction_mill = {
 }
 
 sul_rural_glassmaker = {
-	increase_per_level_cost = 0.1
 	is_foreign = no
 	pop_type = laborers
 	max_levels = sul_production_max_level
@@ -769,6 +778,8 @@ sul_rural_glassmaker = {
 		}
 	}
 
+	remove_if = { NOT = { location = { modifier:sul_allows_glass_production = yes } } }
+
 	build_time = rural_build_time
 
 	possible_production_methods = { sul_rural_glass_from_sand }
@@ -778,13 +789,12 @@ sul_rural_glassmaker = {
 	modifier = {
 		local_glass_output_modifier = 0.005
 		sul_is_production_building = yes
-		local_monthly_development = 0.01
+		local_monthly_development = 0.0025
 		sul_production_size = 1
 	}
 }
 
 sul_rural_potter = {
-	increase_per_level_cost = 0.1
 	is_foreign = no
 	pop_type = laborers
 	max_levels = sul_production_max_level
@@ -814,6 +824,8 @@ sul_rural_potter = {
 		}
 	}
 
+	remove_if = { NOT = { location = { modifier:sul_allows_pottery_production = yes } } }
+
 	build_time = rural_build_time
 
 	possible_production_methods = { sul_rural_clay_pottery }
@@ -823,13 +835,12 @@ sul_rural_potter = {
 	modifier = {
 		local_pottery_output_modifier = 0.005
 		sul_is_production_building = yes
-		local_monthly_development = 0.01
+		local_monthly_development = 0.0025
 		sul_production_size = 1
 	}
 }
 
 sul_rural_herbalist = {
-	increase_per_level_cost = 0.1
 	is_foreign = no
 	pop_type = laborers
 	max_levels = sul_extraction_max_level
@@ -857,6 +868,8 @@ sul_rural_herbalist = {
 		}
 	}
 
+	remove_if = { NOT = { location = { modifier:sul_allows_apothecary_production = yes } } }
+
 	build_time = rural_build_time
 
 	possible_production_methods = { sul_rural_herbal_remedies }
@@ -866,7 +879,7 @@ sul_rural_herbalist = {
 	modifier = {
 		local_medicaments_output_modifier = 0.005
 		sul_is_extraction_building = yes
-		local_monthly_development = -0.01
+		local_monthly_development = -0.005
 		sul_extraction_size = 1
 		local_population_growth = 0.00015
 	}

@@ -96,11 +96,8 @@ sul_minting_rebasement_progress = {
 
 # ---- AI Debasement Target ----
 # Continuous formula: positive = debase, negative = rebase.
-# target = (stress + loans) × dampener - penalty
-#   stress   = -3 × monthly_balance / tax_base
-#   loans    = 0.04 × num_loans
-#   dampener = max(0, 1 - 0.3 × inflation)
-#   penalty  = 3 × min(inflation, 0.10)
+# Debase urgency scales with minting slider — no point debasing if barely minting.
+# target = [(stress + loans) × dampener × slider] - penalty
 
 sul_minting_ai_debasement_target = {
 	value = 0
@@ -121,9 +118,12 @@ sul_minting_ai_debasement_target = {
 			subtract = { value = inflation multiply = 0.3 }
 			min = 0
 		}
+
+		# Scale by minting slider: debasement only helps if the mint is running
+		multiply = slider_minting_value
 	}
 
-	# Inflation penalty: steep up to 10%, capped
+	# Inflation penalty: not scaled by slider (existing inflation hurts regardless)
 	subtract = { value = inflation max = 0.10 multiply = 3 }
 
 	min = -2.0

@@ -1,4 +1,5 @@
 ﻿
+
 template TGS_DebasementTooltip {
 	ContextualTooltipType = {
 		blockoverride "title_text" { text = "TGS_DEBASEMENT_HEADER" }
@@ -210,42 +211,15 @@ template TGS_InflationDemandTooltip {
 				blockoverride "text" { text = "[EconomyView.GetInefficientMintingInfo]" }
 			}
 
-			# ---- Price-Based Inflation Scaling ----
+			# ---- How Inflation Scales ----
 			TooltipListBase = {
 				TooltipTableHeader = {
-					blockoverride "tableheader_text" { text = "TGS_MINTING_INFLATION_HEADER" }
+					blockoverride "tableheader_text" { text = "TGS_INFLATION_HOW_HEADER" }
 				}
 
 				TooltipListRowContent = {
 					vbox = {
 						layoutpolicy_horizontal = expanding
-
-						TooltipManualTableField = {
-							text_single = { text = "TGS_MINT_REAL_COIN_VALUE" }
-							expand = {  }
-
-							text_single = {
-								raw_text = "[Player.MakeScope.ScriptValue('sul_minting_mint_output_value')|2]@income!"
-							}
-						}
-
-						TooltipManualTableField = {
-							text_single = { text = "TGS_MINT_MARKET_COST_LABEL" }
-							expand = {  }
-
-							text_single = {
-								raw_text = "[Player.MakeScope.Var('sul_minting_market_cost').GetValue|2]@income!"
-							}
-						}
-
-						TooltipManualTableField = {
-							text_single = { text = "TGS_INFLATION_MINT_EFFICIENCY_LABEL" }
-							expand = {  }
-
-							text_single = {
-								raw_text = "#bold ×[Player.MakeScope.ScriptValue('sul_minting_real_minting_scalar')|2]#!"
-							}
-						}
 
 						TooltipManualTableField = {
 							text_single = { text = "TGS_INFLATION_BASE_LABEL" }
@@ -262,33 +236,14 @@ template TGS_InflationDemandTooltip {
 								raw_text = "[Player.MakeScope.ScriptValue('sul_minting_vanilla_minting_inflation')|2=%]@inflation!"
 							}
 						}
-
-						TooltipManualTableField = {
-							text_single = { text = "TGS_INFLATION_ADJUSTMENT_LABEL" }
-							expand = {  }
-
-							text_single = {
-								visible = "[GreaterThan_float(FixedPointToFloat(Player.MakeScope.ScriptValue('sul_minting_inflation_adjustment')), '(float)0')]"
-								default_format = "#color_red"
-								raw_text = "#bold [Player.MakeScope.ScriptValue('sul_minting_inflation_adjustment')|2=%]@inflation!#!"
-							}
-
-							text_single = {
-								visible = "[Not(GreaterThan_float(FixedPointToFloat(Player.MakeScope.ScriptValue('sul_minting_inflation_adjustment')), '(float)0'))]"
-								default_format = "#color_green"
-								raw_text = "#bold [Player.MakeScope.ScriptValue('sul_minting_inflation_adjustment')|2=%]@inflation!#!"
-							}
-						}
 					}
 				}
 			}
 
-			# ---- Debasement Distrust (conditional) ----
+			# ---- Inflation Scalar Breakdown ----
 			TooltipListBase = {
-				visible = "[GreaterThan_float(FixedPointToFloat(Player.MakeScope.ScriptValue('sul_minting_debasement_level_value')), '(float)0')]"
-
 				TooltipTableHeader = {
-					blockoverride "tableheader_text" { text = "TGS_DEBASEMENT_DISTRUST_HEADER" }
+					blockoverride "tableheader_text" { text = "TGS_INFLATION_SCALAR_HEADER" }
 				}
 
 				TooltipListRowContent = {
@@ -296,22 +251,70 @@ template TGS_InflationDemandTooltip {
 						layoutpolicy_horizontal = expanding
 
 						TooltipManualTableField = {
-							text_single = { text = "TGS_DEBASEMENT_LEVEL_LABEL" }
+							text_single = { text = "TGS_MINT_REAL_COIN_VALUE" }
 							expand = {  }
 
 							text_single = {
-								default_format = "#color_red"
-								raw_text = "+[Player.MakeScope.ScriptValue('sul_minting_debasement_level_value')|0%]"
+								raw_text = "[Player.MakeScope.ScriptValue('sul_minting_mint_output_value')|2]@income!"
 							}
 						}
 
 						TooltipManualTableField = {
-							text_single = { text = "TGS_DEBASEMENT_INFLATION_LABEL" }
+							visible = "[GreaterThan_float(FixedPointToFloat(Player.MakeScope.ScriptValue('sul_minting_debasement_level_value')), '(float)0')]"
+							text_single = { text = "TGS_GRESHAM_PENALTY_LABEL" }
 							expand = {  }
 
 							text_single = {
 								default_format = "#color_red"
-								raw_text = "#bold [Player.MakeScope.ScriptValue('sul_minting_debasement_inflation_effect')|2=%]@inflation!#!"
+								raw_text = "×[Player.MakeScope.ScriptValue('sul_minting_debasement_inflation_penalty')|1] ([sul_minting_currency_debasement|e])"
+							}
+						}
+
+						TooltipManualTableField = {
+							text_single = { text = "TGS_MINT_MARKET_COST_LABEL" }
+							expand = {  }
+
+							text_single = {
+								raw_text = "-[Player.MakeScope.Var('sul_minting_market_cost').GetValue|2]@income!"
+							}
+						}
+
+						TooltipManualTableField = {
+							text_single = { text = "TGS_INFLATION_SCALAR_LABEL" }
+							expand = {  }
+
+							text_single = {
+								raw_text = "#bold ×[Player.MakeScope.ScriptValue('sul_minting_inflation_scalar')|2]#!"
+							}
+						}
+					}
+				}
+			}
+
+			# ---- Net Effect ----
+			TooltipListBase = {
+				TooltipTableHeader = {
+					blockoverride "tableheader_text" { text = "TGS_INFLATION_NET_HEADER" }
+				}
+
+				TooltipListRowContent = {
+					vbox = {
+						layoutpolicy_horizontal = expanding
+
+						TooltipManualTableField = {
+							text_single = { text = "TGS_INFLATION_ADJUSTMENT_LABEL" }
+							expand = {  }
+
+							text_single = {
+								visible = "[GreaterThan_float(FixedPointToFloat(Player.MakeScope.ScriptValue('sul_minting_unified_inflation_adjustment')), '(float)0')]"
+								default_format = "#color_red"
+								raw_text = "#bold [Player.MakeScope.ScriptValue('sul_minting_unified_inflation_adjustment')|2=%]@inflation!#!"
+							}
+
+							text_single = {
+								visible = "[Not(GreaterThan_float(FixedPointToFloat(Player.MakeScope.ScriptValue('sul_minting_unified_inflation_adjustment')), '(float)0'))]"
+								default_format = "#color_green"
+								raw_text = "#bold [Player.MakeScope.ScriptValue('sul_minting_unified_inflation_adjustment')|2=%]@inflation!#!"
 							}
 						}
 					}
@@ -393,7 +396,25 @@ template MintingMaitenanceTooltip {
 							expand = {  }
 
 							text_single = {
-								raw_text = "[Player.MakeScope.ScriptValue('sul_minting_mint_liquidity_value')|+2%]"
+								raw_text = "[Player.MakeScope.ScriptValue('sul_minting_mint_monetization_value')|+2%]"
+							}
+
+							tooltipwidget = {
+								ContextualTooltipType = {
+									blockoverride "title_text" { text = "TGS_MONETIZATION_HEADER" }
+									blockoverride "title_icon" {
+										icon = {
+											using = tooltip_title_icon_size
+											texture = "gfx/interface/icons/flat_icons/balance/minting_coins.dds"
+										}
+									}
+									blockoverride "concept_link" { text = "[sul_minting_mint_monetization|e]" }
+									blockoverride "tooltip_content" {
+										TooltipStringPairList = {
+											textcontext = "[Player.GetDescriptionFor('sul_minting_monetization')]"
+										}
+									}
+								}
 							}
 						}
 

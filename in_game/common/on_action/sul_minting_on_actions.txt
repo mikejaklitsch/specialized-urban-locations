@@ -109,7 +109,7 @@ sul_minting_monthly_update = {
 		if = {
 			limit = { is_ai = yes }
 
-			# First tick: apply minting modifier (yearly handles subsequent)
+			# First tick: apply minting modifier
 			if = {
 				limit = { has_variable = sul_minting_first_month_tick }
 
@@ -119,14 +119,9 @@ sul_minting_monthly_update = {
 					mode = replace
 					size = sul_minting_ai_minting_size
 				}
-
-				# change_country_modifier_size = {
-				# 	modifier = sul_minting_ai_minting
-				# 	value = sul_minting_ai_minting_size
-				# }
 			}
 
-			# Inflation: adjustment + debasement + rebasement deflation
+			# Inflation: unified adjustment includes debasement + Gresham penalty
 			add_country_modifier = {
 				modifier = sul_minting_ai_inflation
 				days = -1
@@ -134,12 +129,7 @@ sul_minting_monthly_update = {
 				size = sul_minting_ai_inflation_size
 			}
 
-			# change_country_modifier_size = {
-			# 	modifier = sul_minting_ai_inflation
-			# 	value = sul_minting_ai_inflation_size
-			# }
-
-			# Rebasement cost (separate modifier, only when active)
+			# Rebasement cost (unchanged)
 			if = {
 				limit = {
 					has_variable = sul_minting_rebasement_level
@@ -151,11 +141,7 @@ sul_minting_monthly_update = {
 					modifier = sul_minting_ai_rebasement
 					days = -1
 					mode = replace
-				}
-
-				change_country_modifier_size = {
-					modifier = sul_minting_ai_rebasement
-					value = sul_minting_ai_rebasement_size
+					size = sul_minting_ai_rebasement_size
 				}
 			}
 			else = { remove_country_modifier = sul_minting_ai_rebasement }

@@ -1,15 +1,10 @@
-﻿# Complacency rework — REPLACE of vanilla complacency_impact.
+﻿# Complacency — "bread and circuses."
 #
-# Removed: potential_trigger (effects always scale now), global_monthly_prosperity = 0.01
-# Changed: estate_enrichment 0.2 → 0.25, pop_join_rebel_threshold 0.1 → 0.2
+# scales_with = complacency × 0.01 (magnitudes = effect at complacency 100).
 #
-# scales_with = complacency × 0.01, so magnitudes below read as
-# "effect at full complacency (100)".
-#
-# Direction of effects:
-#   Positives: comfort and safety (pop growth, prestige, cheap art).
-#   Negatives: fragility and stagnation (military softness, institutional
-#   decay, estate dysfunction, economic bloat, rebellion sensitivity).
+# Enticing: pop growth, prosperity, prestige, demand. People thrive.
+# Poison: production drops, military decays, institutions stagnate,
+# building costs rise, estates bloat.
 
 REPLACE:complacency_impact = {
 	scales_with = {
@@ -18,40 +13,43 @@ REPLACE:complacency_impact = {
 	}
 
 	# --- PP drag (coupling layer) ---
-	# -2 PP per complacency point.
 	power_projection = -100
 
-	# --- Vanilla effects (preserved) ---
+	# --- Enticing: comfort and demand (what your people want) ---
+
+	global_population_growth = 0.005
+	global_monthly_prosperity = 0.01
+	monthly_prestige = 0.005
+	hire_artist_cost_modifier = -0.5
+	global_pop_food_consumption = 0.25		# +25% demand at full complacency
+
+	# --- Poison: stagnation and institutional decay ---
+
+	global_production_efficiency = -0.10
+
+	research_speed_modifier = -0.5
+	country_cabinet_efficiency = -0.5
+	global_institution_growth_modifier = -0.5
+	embrace_institution_cost_modifier = 5.0
+
+	# --- Poison: military softness ---
 
 	army_tradition_decay = 0.01
 	navy_tradition_decay = 0.01
-	estate_enrichment = 0.25
-	research_speed_modifier = -0.5
-	country_cabinet_efficiency = -0.5
-	global_monthly_prosperity = 0.01
-
-	# --- Positives (comfort and safety) ---
-
-	monthly_prestige = 0.005
-	global_monthly_development = 0.003
-	global_population_growth = 0.005
-	hire_artist_cost_modifier = -0.5
-
-	# --- Negatives (fragility and stagnation) ---
-
-	monthly_rebel_growth = 0.01
-	global_migration_speed_modifier = -0.003
-	global_institution_growth_modifier = -0.5
-	embrace_institution_cost_modifier = 5.0
 	global_manpower_modifier = -0.3
 	global_sailors_modifier = -0.3
 	land_morale_modifier = -0.25
 	naval_morale_modifier = -0.25
 	discipline = -0.10
+
+	# --- Poison: economic bloat and fragility ---
+
 	global_build_buildings_cost = 0.002
 	court_spending_cost = 0.10
 	diplomatic_capacity = -2.0
 	add_accepted_culture_cost_modifier = 1.0
 	declaring_war_cost_modifier = 1.0
+	monthly_rebel_growth = 0.01
+	global_migration_speed_modifier = -0.003
 	pop_join_rebel_threshold = 0.2
 }

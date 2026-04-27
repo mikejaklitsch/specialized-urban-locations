@@ -215,12 +215,12 @@ def format_value(value, mod_info):
 def script_value_format(mod_info, mod_name=''):
     """Return the GUI format code for a script value display."""
     is_pct = mod_info.get('percent', False)
-    if mod_name == 'local_monthly_literacy':
-        return '|+=4%'
+    already_pct = mod_info.get('already_percent', False)
+    if already_pct:
+        return '|+=4'
     if is_pct:
         return '|+=2%'
-    else:
-        return '|+=2'
+    return '|+=2'
 
 
 def gui_color(mod_info):
@@ -269,19 +269,22 @@ def generate_script_values(extraction, production, mod_types, base_values):
 def format_static_value(value, mod_info, mod_name):
     """Format a precomputed value using the same rules as the engine format code."""
     is_pct = mod_info.get('percent', False)
-    decimals = 4 if mod_name == 'local_monthly_literacy' else 2
+    already_pct = mod_info.get('already_percent', False)
+    decimals = 4 if already_pct else 2
     sign = '+' if value >= 0 else ''
+    if already_pct:
+        return f'{sign}{value:.{decimals}f}%'
     if is_pct:
         return f'{sign}{value * 100:.{decimals}f}%'
-    else:
-        return f'{sign}{value:.{decimals}f}'
+    return f'{sign}{value:.{decimals}f}'
 
 
 def format_script_ref(mod_name, mod_info):
     """Build a script value reference string with engine format code."""
     sv_name = f'sul_dev_tt_{mod_name.replace("local_", "")}'
     fmt = script_value_format(mod_info, mod_name)
-    return f"[Location.MakeScope.ScriptValue('{sv_name}'){fmt}]"
+    suffix = '%' if mod_info.get('already_percent', False) else ''
+    return f"[Location.MakeScope.ScriptValue('{sv_name}'){fmt}]{suffix}"
 
 
 def compute_color(value, mod_info):
@@ -293,15 +296,34 @@ def compute_color(value, mod_info):
         return '#color_green' if value >= 0 else '#color_red'
 
 
-def generate_row(mod, color, value_display, indent):
-    """Single unified row generator. No branching."""
+def generate_row(mod, color, value_display, indent, dynamic_color=False):
+    """Single unified row generator.
+
+    dynamic_color: emit two overlapping value texts with visibility toggled by sign.
+    """
     icon = get_icon(mod)
+    if not dynamic_color:
+        return (
+            f'{indent}TooltipManualTableField = {{\n'
+            f'{indent}\ticon = {{ size = {{ 28 28 }} texture = "{icon}" }}\n'
+            f'{indent}\ttext_single = {{ fontsize = 15 text = "MODIFIER_TYPE_NAME_{mod}" }}\n'
+            f'{indent}\texpand = {{}}\n'
+            f'{indent}\ttext_single = {{ fontsize = 15 default_format = "{color}" raw_text = "{value_display}" }}\n'
+            f'{indent}}}'
+        )
+    sv_name = f'sul_dev_tt_{mod.replace("local_", "")}'
+    is_bad = color == '#color_red'
+    pos_color = '#color_red' if is_bad else '#color_green'
+    neg_color = '#color_green' if is_bad else '#color_red'
+    ge_zero = f"[Not(LessThan_CFixedPoint(Location.MakeScope.ScriptValue('{sv_name}'), '(CFixedPoint)0'))]"
+    lt_zero = f"[LessThan_CFixedPoint(Location.MakeScope.ScriptValue('{sv_name}'), '(CFixedPoint)0')]"
     return (
         f'{indent}TooltipManualTableField = {{\n'
         f'{indent}\ticon = {{ size = {{ 28 28 }} texture = "{icon}" }}\n'
         f'{indent}\ttext_single = {{ fontsize = 15 text = "MODIFIER_TYPE_NAME_{mod}" }}\n'
         f'{indent}\texpand = {{}}\n'
-        f'{indent}\ttext_single = {{ fontsize = 15 default_format = "{color}" raw_text = "{value_display}" }}\n'
+        f'{indent}\ttext_single = {{ visible = "{ge_zero}" fontsize = 15 default_format = "{pos_color}" raw_text = "{value_display}" }}\n'
+        f'{indent}\ttext_single = {{ visible = "{lt_zero}" fontsize = 15 default_format = "{neg_color}" raw_text = "{value_display}" }}\n'
         f'{indent}}}'
     )
 
@@ -363,13 +385,14 @@ def inject_into_gui(gui_path, extraction, production, mod_types, base_values):
         if dev_level == 'current':
             value_display = format_script_ref(mod, info)
             color = gui_color(info)
+            return generate_row(mod, color, value_display, indent, dynamic_color=True)
         else:
             value = base_val + dev_level * dev_per_point
             if abs(value) < 0.00001:
                 return None
             value_display = format_static_value(value, info, mod)
             color = compute_color(value, info)
-        return generate_row(mod, color, value_display, indent)
+            return generate_row(mod, color, value_display, indent)
 
     def generate_grouped_rows(dev_level, indent):
         """Generate location/extraction/production row groups for a dev level."""

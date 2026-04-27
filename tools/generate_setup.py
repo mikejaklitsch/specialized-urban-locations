@@ -669,15 +669,23 @@ def emit_cities_override(out_path, header, loc_entries, bm_lines,
         spec = all_loc_specs.get(loc_name)
         emitted.add(loc_name)
 
-        if spec and rank:
-            tier = RANK_SUFFIX.get(rank, "rural")
+        if spec:
+            tier = RANK_SUFFIX.get(rank, "rural") if rank else "rural"
             custom_rank = f"{spec}_{tier}"
             line = entry["raw"]
-            line = re.sub(
-                r"rank\s*=\s*[a-z_][a-z0-9_]*",
-                f"rank = {custom_rank}",
-                line,
-            )
+            if rank:
+                line = re.sub(
+                    r"rank\s*=\s*[a-z_][a-z0-9_]*",
+                    f"rank = {custom_rank}",
+                    line,
+                )
+            else:
+                line = re.sub(
+                    r"\}",
+                    f"rank = {custom_rank} }}",
+                    line,
+                    count=1,
+                )
             if old_setup:
                 profile = loc_profiles.get(loc_name, "default")
                 prof_name = f"{old_setup}_{spec}_{profile}"

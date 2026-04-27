@@ -1,26 +1,26 @@
-measles = {
+typhus = {
+
+	monthly_resistance_reduction = 0.001
 
 	monthly_spawn_chance = {
-		value = 0.1
+		if = {
+			limit = {
+				disease_is_active = scope:disease
+			}
+			value = 0
+		}
+		else = {
+			value = 0.5
+		}
 	}
 
 	spawn = {
 		random_ownable_location = {
 			limit = {
 				population > 1
-				trigger_if = {
-					limit = {
-						situation:great_pestilence = {
-							situation_is_active = no
-							situation_has_ended = no
-						}
-					}
-					OR = {
-						continent = continent:asia
-						continent = continent:europe
-						continent = continent:africa
-						continent = continent:oceania
-					}
+				any_unit_in_location = {
+					is_army = yes
+					owner = { at_war = yes }
 				}
 			}
 			spawn_disease = {
@@ -31,23 +31,27 @@ measles = {
 		}
 	}
 
-	monthly_resistance_reduction = 0.002
-
 	r0 = {
 		if = {
 			limit = {
 				modifier:sul_is_rural_settlement_rank_tier = yes
 			}
-			value = { 10 15 }
+			value = { 1.2 1.8 }
 		}
 		else_if = {
 			limit = {
 				modifier:sul_is_town_rank_tier = yes
 			}
-			value = { 12 18 }
+			value = { 1.8 2.5 }
 		}
 		else = {
-			value = { 18 20 }
+			value = { 2.5 3.5 }
+		}
+		if = {
+			limit = {
+				prosperity < 0
+			}
+			multiply = 3
 		}
 		if = {
 			limit = {
@@ -69,61 +73,80 @@ measles = {
 		}
 	}
 
-	calc_interval_days = { 20 24 }
+	calc_interval_days = { 24 36 }
 
 	location_stagnation_chance = {
+		# Very aggressive distance falloff — typhus stays local
 		if = {
 			limit = {
 				"disease_presence(scope:disease)" > 0.05
 			}
 			value = "distance_to_squared(scope:disease.origin)"
-			multiply = 0.0006
 			multiply = 0.005
+			multiply = 0.025
 		}
 		else = {
 			value = "distance_to_squared(scope:disease.origin)"
-			multiply = 0.00006
+			multiply = 0.0005
 		}
 		if = {
 			limit = {
-				"disease_resistance(scope:disease)" > 0.8
+				"disease_resistance(scope:disease)" > 0.7
 			}
 			add = {
 				value = "disease_resistance(scope:disease)"
-				subtract = 0.6
+				subtract = 0.5
 			}
 		}
 		if = {
 			limit = {
-				"disease_resistance(scope:disease)" > 0.95
+				"disease_resistance(scope:disease)" > 0.9
 			}
-			add = 0.15
+			add = 0.2
+		}
+	}
+
+	sub_unit_stagnation_chance = {
+		value = 0.5
+		subtract = {
+			value = "disease_presence(scope:disease)"
+			multiply = 0.5
 		}
 	}
 
 	percentage_to_meet_their_fate_on_calc = {
-		value = 0.25
+		value = 0.35
 	}
 
 	location_modifier = {
+		potential_trigger = {
+			disease_presence = {
+				disease = scope:disease
+				value >= 0.2
+			}
+			NOT = { disease_has_stagnated = scope:disease }
+		}
+		local_forced_attrition = 5
+		local_prosperity_decay = 0.1
 	}
 
 	mortality_rate = {
-		0.02 0.04
+		0.15 0.50
 	}
 
 	character_mortality_chance = {
-		value = 0.05
+		value = 0.06
 		multiply = "disease_presence(scope:disease)"
 	}
 
 	on_spread_to_country = {
+		trigger_event_non_silently = diseases.1
 	}
 
 	map_color = {
 		lerp = {
-			min_color = rgb { 244 187 119 }
-			max_color = rgb { 252 136 0 }
+			min_color = rgb { 211 157 128 }
+			max_color = rgb { 129 47 3 }
 			factor = "disease_presence(scope:disease)"
 		}
 	}
@@ -135,5 +158,15 @@ measles = {
 			}
 			value = rgb { 100 120 188 }
 		}
+	}
+
+	specific_pop_type_effect = {
+		pop_type = nobles multiplier = 0.3
+	}
+	specific_pop_type_effect = {
+		pop_type = clergy multiplier = 0.1
+	}
+	specific_pop_type_effect = {
+		pop_type = burghers multiplier = 0.5
 	}
 }

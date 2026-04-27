@@ -27,25 +27,62 @@ sul_minting_target_value = {
 	}
 }
 
+# ---- Base Monetization ----
+# Derived from the economy: wages capture domestic monetary circulation,
+# trade share captures commercial activity.
+
+sul_minting_monetization_base = {
+	value = 0
+	if = {
+		limit = { has_variable = sul_monthly_wages_nobles }
+		add = var:sul_monthly_wages_nobles
+	}
+	if = {
+		limit = { has_variable = sul_monthly_wages_clergy }
+		add = var:sul_monthly_wages_clergy
+	}
+	if = {
+		limit = { has_variable = sul_monthly_wages_burghers }
+		add = var:sul_monthly_wages_burghers
+	}
+	if = {
+		limit = { has_variable = sul_monthly_wages_peasants }
+		add = var:sul_monthly_wages_peasants
+	}
+	divide = {
+		value = total_population
+		min = 1
+	}
+}
+
+sul_minting_trade_monetization_value = {
+	value = monthly_trade_income
+	divide = {
+		value = monthly_income_trade_and_tax
+		min = 1
+	}
+	min = 0
+}
+
 # ---- Market Cost ----
 # All consumers now read var:sul_minting_market_cost (cached monthly/yearly).
 # The 70-block live computation has been removed for performance.
 
 # ---- Coin Value Chain ----
 
-# Liquidity premium: face value of coins above raw metal content.
+# Monetization premium: face value of coins above raw metal content.
 # Base 100%, modified by the same sources as minting_inflation_threshold.
 
-sul_minting_mint_liquidity_value = {
-	value = modifier:sul_minting_liquidity
+sul_minting_mint_monetization_value = {
+	value = modifier:sul_minting_monetization
 }
 
-# Face value before debasement: target_value × (1 + liquidity)
+# Face value before debasement: target_value × (1 + monetization)
 
 sul_minting_mint_output_value = {
 	value = sul_minting_target_value
 
-	multiply = { value = 1 add = sul_minting_mint_liquidity_value }
+	multiply = { value = 1 add = sul_minting_mint_monetization_value }
 }
 
 # Face value after debasement: output × (1 + d)
@@ -141,40 +178,10 @@ sul_minting_modifier_scalar = {
 	add = sul_minting_cached_minting_efficiency
 }
 
-# ---- Real Efficiency (excludes debasement) ----
-# Used for inflation scaling — inflation should reflect honest goods value,
-# not the inflated face value from debasement.
-
-sul_minting_real_efficiency_from_cached_cost = {
-	value = sul_minting_mint_output_value
-	subtract = var:sul_minting_market_cost
-	divide = @sul_minting_vanilla_rate
-	subtract = 1
-	min = @sul_minting_efficiency_floor
-}
-
-sul_minting_cached_real_efficiency = {
-	value = 0
-	if = {
-		limit = { is_ai = yes }
-		if = {
-			limit = { has_variable = sul_minting_real_minting_efficiency }
-			add = var:sul_minting_real_minting_efficiency
-		}
-	}
-	else = { add = sul_minting_real_efficiency_from_cached_cost }
-}
-
-sul_minting_real_minting_scalar = {
-	value = 1
-	add = sul_minting_cached_real_efficiency
-	min = 0
-}
-
 # ---- Inflation Adjustment ----
-# Scales ALL minting inflation (vanilla + debasement) by real efficiency.
-# Only the value actually added to the economy should cause inflation.
-# correction = (vanilla + debasement) × (real_scalar - 1)
+# Unified inflation formula: income uses (1+d), inflation uses (1 + penalty×d)
+# where penalty = 2×(1+inflation) — Gresham's Law: debasement is 2× as
+# inflationary as legitimate monetization, worsening with accumulated inflation.
 
 sul_minting_vanilla_minting_inflation = {
 	value = 0
@@ -190,37 +197,49 @@ sul_minting_vanilla_minting_inflation = {
 	}
 }
 
-sul_minting_inflation_adjustment = {
-	value = sul_minting_vanilla_minting_inflation
+# ---- Debasement Inflation Penalty (Gresham's Law) ----
+# Each point of debasement is 2x as inflationary as legitimate monetization,
+# worsening with accumulated inflation. Confidence erosion accelerates.
 
-	if = {
-		limit = {
-			has_variable = sul_minting_debasement_level
-			var:sul_minting_debasement_level > 0
-		}
-
-		add = sul_minting_debasement_inflation_effect
-	}
-
-	multiply = { value = sul_minting_real_minting_scalar subtract = 1 min = -1 }
+sul_minting_debasement_inflation_penalty = {
+	value = 2
+	multiply = { value = 1 add = inflation }
 }
 
-# ---- Total Minting Inflation ----
-# (vanilla + debasement) × real_scalar
+# Inflation-weighted face value: uses heavier debasement multiplier.
+# Income uses (1+d), inflation uses (1 + penalty×d).
+
+sul_minting_inflation_output_value = {
+	value = sul_minting_mint_output_value
+	multiply = {
+		value = 1
+		if = {
+			limit = { has_variable = sul_minting_debasement_level }
+			add = {
+				value = var:sul_minting_debasement_level
+				multiply = sul_minting_debasement_inflation_penalty
+			}
+		}
+	}
+}
+
+sul_minting_inflation_scalar = {
+	value = sul_minting_inflation_output_value
+	subtract = var:sul_minting_market_cost
+	divide = @sul_minting_vanilla_rate
+	min = 0
+}
+
+sul_minting_unified_inflation_adjustment = {
+	value = sul_minting_vanilla_minting_inflation
+	multiply = { value = sul_minting_inflation_scalar subtract = 1 }
+}
+
+# Display value: total minting inflation = vanilla × inflation_scalar
 
 sul_minting_total_minting_inflation = {
 	value = sul_minting_vanilla_minting_inflation
-
-	if = {
-		limit = {
-			has_variable = sul_minting_debasement_level
-			var:sul_minting_debasement_level > 0
-		}
-
-		add = sul_minting_debasement_inflation_effect
-	}
-
-	multiply = sul_minting_real_minting_scalar
+	multiply = sul_minting_inflation_scalar
 }
 
 # ---- AI Modifier Sizes ----
@@ -232,16 +251,7 @@ sul_minting_ai_minting_size = {
 }
 
 sul_minting_ai_inflation_size = {
-	value = sul_minting_inflation_adjustment
-
-	if = {
-		limit = {
-			has_variable = sul_minting_debasement_level
-			var:sul_minting_debasement_level > 0
-		}
-
-		add = sul_minting_debasement_inflation_effect
-	}
+	value = sul_minting_unified_inflation_adjustment
 
 	if = {
 		limit = {
@@ -256,5 +266,4 @@ sul_minting_ai_inflation_size = {
 
 sul_minting_ai_rebasement_size = {
 	value = sul_minting_rebasement_cost
-	subtract = 1
 }

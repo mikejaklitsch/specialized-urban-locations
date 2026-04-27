@@ -1,85 +1,11 @@
-﻿# Power Projection — scale layer + structural drag layer.
+﻿# Power Projection — unified scale layer + structural drag layer.
 #
-# SCALE LAYER: one sul_power_projection_impact auto_modifier holding every
-#   effect that scales with PP (benefits, complacency coupling, PP costs).
+# One REPLACE:power_projection holds all PP-scaling effects. Engine multiplies
+# coefficients by signed PP, so negative PP reverses everything automatically.
+# Clamped [-200, 200]. Comments show effect at PP +200.
 #
-# STRUCTURAL DRAG LAYER: separate auto_modifiers that *write* power_projection
-#   from country state.
-#
-# Sign rule: positive PP always improves the player's situation. Coefficients
-# below are placeholders — tune by feel during testing.
-
-# ============================================================================
-# Scale layer — single auto_modifier scaling with power_projection. Follows
-# vanilla's _impact pattern (war_exhaustion_impact scales_with war_exhaustion).
-# Prefixed sul_ because we add it; INJECT into the vanilla power_projection
-# block fails (self-referential name collision).
-#
-# Holds every effect that scales with PP:
-#   - projection benefits (assimilation, conversion, war score, subjects…)
-#   - complacency coupling (PP builds complacency)
-#   - PP cost layer (stability drain, estate resentment, civic drag)
-# ============================================================================
-
-# Positive PP effects — applies when PP > 0, capped at +200.
-
-sul_projection_positive = {
-	potential_trigger = { power_projection > 0 }
-	scales_with = {
-		value = power_projection
-		max = 200
-	}
-
-	subject_loyalty = 0.25                                   # +50
-	global_pop_assimilation_speed_modifier = 0.005           # +100%
-	global_pop_conversion_speed_modifier = 0.005             # +100%
-	global_distance_from_capital_speed_propagation = 0.0025  # +50%
-	global_war_score_cost = -0.0025                          # -50%
-	diplomatic_annexation_cost = -0.0025                     # -50%
-	antagonism_taking_land_giving_modifier = -0.005          # -100%
-	sul_trade_maintenance_efficiency = 0.00125               # +25%
-	monthly_complacency = 0.0015                             # +0.3/mo
-	stability_decay = -0.00005                                # -1%
-	global_estate_target_satisfaction = -0.001               # -20%
-	global_estate_power = -0.0025                            # -50%
-	levy_recovery_modifier = 0.01                            # +200%
-	global_levy_size_modifier = 0.01                         # +200%
-	global_integration_speed_modifier = 0.005                # +100%
-	settle_country_cost_modifier = -0.0025                   # -50%
-	casus_belli_creation_speed_modifier = 0.0025             # +50%
-	aggressiveness_modifier = 0.025                          # +5
-	control_importance_modifier = -0.025                     # -5
-	gold_importance_modifier = -0.025                        # -5
-}
-
-# Negative PP effects — applies when PP < 0, capped at -200.
-
-sul_projection_negative = {
-	potential_trigger = { power_projection < 0 }
-	scales_with = {
-		value = power_projection
-		min = -200
-	}
-
-	subject_loyalty = 0.25                                   # -50
-	global_pop_assimilation_speed_modifier = 0.005           # -100%
-	global_pop_conversion_speed_modifier = 0.005             # -100%
-	global_distance_from_capital_speed_propagation = 0.0025  # -50%
-	global_war_score_cost = -0.0025                          # +50%
-	diplomatic_annexation_cost = -0.0025                     # +50%
-	antagonism_taking_land_giving_modifier = -0.005          # +100%
-	sul_trade_maintenance_efficiency = 0.00125               # -25%
-	monthly_complacency = 0.0015                             # -0.3/mo
-	stability_decay = 0.0001                                  # -2%
-	global_estate_target_satisfaction = -0.001               # +20%
-	global_estate_power = -0.0025                            # +50%
-	global_integration_speed_modifier = 0.005                # -100%
-	settle_country_cost_modifier = -0.0025                   # +50%
-	casus_belli_creation_speed_modifier = 0.0025             # -50%
-	aggressiveness_modifier = 0.025                          # -5
-	control_importance_modifier = -0.025                     # +5
-	gold_importance_modifier = -0.025                        # +5
-}
+# Drag layer: separate auto_modifiers WRITE power_projection from country
+# state (control, culture, religion, diplomacy, rank).
 
 # ============================================================================
 # Structural drag layer
@@ -120,9 +46,42 @@ sul_projection_rank = {
 	power_projection = 1
 }
 
-# Removed: global_integration_speed_modifier = 0.01 — handled via sul_projection_positive.
 REPLACE:power_projection = {
-	scales_with = power_projection
+	scales_with = {
+		value = power_projection
+		min = -200
+		max = 200
+	}
+
+	# --- Projection benefits (positive PP = advantage) ---
+	subject_loyalty = 0.25                                   # +50
+	global_pop_assimilation_speed_modifier = 0.005           # +100%
+	global_pop_conversion_speed_modifier = 0.005             # +100%
+	global_distance_from_capital_speed_propagation = 0.0025  # +50%
+	global_war_score_cost = -0.0025                          # -50%
+	diplomatic_annexation_cost = -0.0025                     # -50%
+	antagonism_taking_land_giving_modifier = -0.005          # -100%
+	sul_trade_maintenance_efficiency = 0.00125               # +25%
+	global_integration_speed_modifier = 0.005                # +100%
+	settle_country_cost_modifier = -0.0025                   # -50%
+	casus_belli_creation_speed_modifier = 0.0025             # +50%
+
+	# --- Military ---
+	levy_recovery_modifier = 0.01                            # +200%
+	global_levy_size_modifier = 0.01                         # +200%
+
+	# --- Complacency coupling (PP builds complacency) ---
+	monthly_complacency = 0.0015                             # +0.3/mo
+
+	# --- PP cost layer (stability, estates, civic drag) ---
+	stability_decay = -0.00005                               # -1%
+	global_estate_target_satisfaction = -0.001               # -20%
+	global_estate_power = -0.0025                            # -50%
+
+	# --- AI behavior ---
+	aggressiveness_modifier = 0.025                          # +5
+	control_importance_modifier = -0.025                     # -5
+	gold_importance_modifier = -0.025                        # -5
 }
 
 # Stability → PP. Vanilla scales_with = stability × 0.01.

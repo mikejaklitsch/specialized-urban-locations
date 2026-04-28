@@ -11,7 +11,7 @@ Organized by subsystem. **Update this document when adding, removing, or renamin
 1. `sul_rgo_init` — populate `sul_rgo_map` (goods → building_type)
 2. `sul_rgo_removal_start` — remove vanilla RGO buildings
 3. `sul_initialize_all` — full specialization rebuild, set `sul_version` global variable
-4. `sul_initialize_economy` — seed spending rates + budget pressure, run first economy update
+4. `sul_initialize_economy` — seed capital returns + budget pressure + GDP init, run first economy update
 5. `sul_war_on_game_start` — initialize war momentum for countries already at war
 
 ### Monthly Country Pulse
@@ -27,6 +27,7 @@ Organized by subsystem. **Update this document when adding, removing, or renamin
 
 ### Yearly Country Pulse
 - `sul_ai_yearly_wage_accumulate` — accumulate wages (AI only, paid next month)
+- `sul_gdp_yearly_update` — per-location GDP + asset share for capital returns
 - `sul_cleanup_dead_units` — remove dead unit references
 - `sul_yearly_rgo_trim` — cap RGO levels
 - `sul_minting_yearly_update` — AI minting price cache + minting modifier refresh
@@ -171,29 +172,36 @@ Set and consumed within a single `sul_distribute_*_buildings` call. Not persiste
 | Variable | Updated | Read By | Purpose |
 |----------|---------|---------|---------|
 | `sul_local_wages` | weather_monthly_pulse (AI batch) | wage accumulation, tooltips | Population x wage rates x market_access |
-| `sul_total_weighted` | (same) | WPP denominator | Weighted estate power sum |
-| `sul_local_gdp` | (same) | WPP base, tooltips | tax_base/control + wages |
-| `sul_enfranchisement` | (same) | noble/commoner WPP split | Peasant enfranchisement (0.1-1.0) |
-| `sul_wealth_per_pop` | (same) | `sul_read_wpp`, pop_demands | Variable map: pop_type → WPP |
-| `sul_last_update` | (same) | batch scheduling | Year of last WPP update |
+| `sul_local_gdp` | (same) | tooltips | Sum of WPP x pop counts per location |
+| `sul_asset_share` | yearly (sul_gdp_yearly_update) | WPP capital returns | Location's fraction of national GDP |
+| `sul_local_gdp_output` | yearly (sul_gdp_yearly_update) | asset share computation | Location building profit proxy |
+| `sul_wealth_per_pop` | monthly | `sul_read_wpp`, pop_demands | Variable map: pop_type → WPP |
+| `sul_demand_base` | monthly | `sul_read_demand_base`, demand tiers | Variable map: pop_type → WPP/(A+B*WPP) |
+| `sul_last_update` | monthly (AI batch) | batch scheduling | Year of last WPP update |
 
-### Country Variables — Spending Rates (monthly refresh)
+### Country Variables — Capital Returns (monthly, set by `sul_compute_budget_pressure`)
 | Variable | Init | Updated By | Read By | Formula |
 |----------|------|------------|---------|---------|
-| `sul_spending_nobles` | `sul_initialize_economy` | `sul_update_spending_rates` | WPP, wage payment | 1 - enrichment - 0.30, clamped 0-1 |
-| `sul_spending_clergy` | (same) | (same) | (same) | 1 - enrichment - 0.25 |
-| `sul_spending_burghers` | (same) | (same) | (same) | 1 - enrichment - 0.20 |
-| `sul_spending_commoners` | (same) | (same) | (same) | 1 - enrichment - 0.10 |
+| `sul_return_nobles` | seeded to 0 | `sul_compute_budget_pressure` | `sul_update_location_wpp` | (gold / country_pop) x (gold / (gold + 50 x income)) |
+| `sul_return_clergy` | (same) | (same) | (same) | (same) |
+| `sul_return_burghers` | (same) | (same) | (same) | (same) |
+| `sul_flat_wealth_commoner` | seeded to 0 | (same) | (same) | (gold / (gold + 100 x income)) x 0.5 |
+| `sul_country_pop_nobles` | seeded to 1 | location accumulation | capital returns | Country-wide noble pop count |
+| `sul_country_pop_clergy` | (same) | (same) | (same) | Country-wide clergy pop count |
+| `sul_country_pop_burghers` | (same) | (same) | (same) | Country-wide burgher pop count |
 
-All 4 are always set together. Guard: `has_variable = sul_spending_nobles`
-
-### Country Variables — Budget Pressure (monthly, post-WPP)
+### Country Variables — Budget Pressure (monthly, set by `sul_compute_budget_pressure`)
 | Variable | Init | Updated By | Read By | Formula |
 |----------|------|------------|---------|---------|
 | `sul_budget_pressure_nobles` | seeded to 1 | `sul_compute_budget_pressure` | `sul_demand_*` script values | max(1, 1 + (estate_gold - 1000) x 0.00025) |
 | `sul_budget_pressure_clergy` | (same) | (same) | (same) | (same) |
 | `sul_budget_pressure_burghers` | (same) | (same) | (same) | (same) |
-| `sul_budget_pressure_peasants` | (same) | (same) | (same) | (same) |
+| `sul_budget_pressure_peasants` | (same) | (same) | (same) | 1 + gold / (gold + 11 x income), min 1 |
+
+### Country Variables — GDP (yearly)
+| Variable | Init | Updated By | Read By | Formula |
+|----------|------|------------|---------|---------|
+| `sul_national_gdp` | sul_gdp_init | `sul_gdp_yearly_update` (yearly) | asset share computation | Sum of all location building profits |
 
 ### Country Variables — Accumulated Wages (monthly player / yearly AI)
 | Variable | Set By | Read By | Purpose |
@@ -208,13 +216,25 @@ All 4 are always set together. Guard: `has_variable = sul_spending_nobles`
 
 ### Economy Data Flow
 ```
-pop counts + wage rates → sul_local_wages (per location)
-                        → sul_total_weighted
-tax_base + wages        → sul_local_gdp
-gdp / weighted          → WPP base → per-estate WPP → sul_wealth_per_pop map
-                                                     → sul_demand_* script values → pop_demands
-estate gold             → sul_budget_pressure_* → demand multiplier
-location wages          → sul_accumulate_wages → sul_monthly_wages_* → sul_estate_wages_pay_all → estate gold
+YEARLY (sul_gdp_yearly_update):
+  location_net_building_profit → sul_local_gdp_output → sul_national_gdp
+  local/national               → sul_asset_share
+
+MONTHLY (country-level, sul_compute_budget_pressure):
+  estate_gold / country_pops × return_rate → sul_return_<upper_estate>
+  estate_gold / (gold + k × income) × scale → sul_flat_wealth_commoner
+  estate_gold thresholds                    → sul_budget_pressure_*
+
+MONTHLY (per-location, sul_update_location_wpp):
+  Upper WPP = base_wage + return × asset_share × power_share
+  Commoner WPP = base_wage × modifiers + flat_wealth
+  WPP → sul_wealth_per_pop map → sul_demand_* → pop_demands
+  WPP → sul_demand_base map → demand tier formulas
+
+MONTHLY (wage flow):
+  pop counts × wage rates → sul_local_wages → sul_accumulate_wages
+  → sul_monthly_wages_* → sul_estate_wages_pay_all → estate gold
+  → sul_estate_wage_transfer (upper → commoner, enfranchisement-scaled)
 ```
 
 ---

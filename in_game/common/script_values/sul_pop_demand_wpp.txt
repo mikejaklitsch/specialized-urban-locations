@@ -67,7 +67,8 @@ sul_read_tier_exotic = {
 #
 # Each tier's demand = WPP × weight / (A + B × WPP) × budget_pressure
 # Constant-weight tiers (necessity/basic/common) saturate at high WPP.
-# Growth-weight tiers (upper/luxury/exotic) scale with WPP² → linear at high WPP.
+# Growth-weight tiers (upper/luxury/exotic/enrichment) scale with WPP² → linear at high WPP.
+# Enrichment captures savings — income not spent on goods, paid to estates as gold.
 #
 # Budget fills to 100% at every WPP level by construction.
 #
@@ -85,9 +86,10 @@ sul_read_tier_exotic = {
 @sul_w_necessity = 0.55
 @sul_w_basic = 0.30
 @sul_w_common = 0.15
-@sul_w_upper = 0.45
-@sul_w_luxury = 0.35
-@sul_w_exotic = 0.20
+@sul_w_upper = 0.21
+@sul_w_luxury = 0.16
+@sul_w_exotic = 0.10
+@sul_w_enrichment = 0.53
 
 sul_read_demand_base = {
 	value = 0
@@ -144,4 +146,13 @@ sul_demand_exotic = {
 	multiply = sul_read_wpp
 	multiply = @sul_w_exotic
 	multiply = sul_budget_pressure
+}
+
+# Enrichment: savings tier. Grows with WPP² like other growth tiers but
+# flows to estates as gold income rather than generating goods demand.
+# ~50% of budget at WPP=15, near zero at low WPP.
+sul_demand_enrichment = {
+	value = sul_read_demand_base
+	multiply = sul_read_wpp
+	multiply = @sul_w_enrichment
 }

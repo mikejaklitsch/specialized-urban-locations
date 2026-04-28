@@ -230,6 +230,7 @@ def _parse_pm_file(filepath):
             continue
         pm = {
             'goods': OrderedDict(),
+            'output_goods': OrderedDict(),
             'no_upkeep': 'no_upkeep' in block and block['no_upkeep'] == 'yes',
             'has_output': 'produced' in block or 'output' in block,
             'has_potential': 'potential' in block,
@@ -240,6 +241,17 @@ def _parse_pm_file(filepath):
                     pm['goods'][k] = float(v)
                 except ValueError:
                     pass
+        # Extract output good: 'produced = <good_name>' + 'output = <quantity>'
+        produced = block.get('produced')
+        output_qty = block.get('output')
+        if isinstance(produced, str) and produced not in ('yes', 'no'):
+            qty = 1.0
+            if isinstance(output_qty, str):
+                try:
+                    qty = float(output_qty)
+                except ValueError:
+                    pass
+            pm['output_goods'][produced] = qty
         pms[name] = pm
     return pms
 
@@ -271,14 +283,27 @@ def _parse_building_block(bname, block, source_file):
         for pm_name, pm_block in upm.items():
             if isinstance(pm_block, dict):
                 goods = OrderedDict()
+                output_goods = OrderedDict()
                 for k, v in pm_block.items():
                     if k not in PM_META_KEYS and isinstance(v, str):
                         try:
                             goods[k] = float(v)
                         except ValueError:
                             pass
+                # Extract output good from inline PM
+                produced = pm_block.get('produced')
+                output_qty = pm_block.get('output')
+                if isinstance(produced, str) and produced not in ('yes', 'no'):
+                    qty = 1.0
+                    if isinstance(output_qty, str):
+                        try:
+                            qty = float(output_qty)
+                        except ValueError:
+                            pass
+                    output_goods[produced] = qty
                 b['unique_pms'][pm_name] = {
                     'goods': goods,
+                    'output_goods': output_goods,
                     'has_output': 'produced' in pm_block or 'output' in pm_block,
                     'no_upkeep': pm_block.get('no_upkeep') == 'yes',
                     'is_maintenance': pm_block.get('category') == 'building_maintenance',
@@ -345,14 +370,26 @@ def _apply_inject(building, inject_block):
             for pm_name, pm_block in v.items():
                 if isinstance(pm_block, dict):
                     goods = OrderedDict()
+                    output_goods = OrderedDict()
                     for gk, gv in pm_block.items():
                         if gk not in PM_META_KEYS and isinstance(gv, str):
                             try:
                                 goods[gk] = float(gv)
                             except ValueError:
                                 pass
+                    produced = pm_block.get('produced')
+                    output_qty = pm_block.get('output')
+                    if isinstance(produced, str) and produced not in ('yes', 'no'):
+                        qty = 1.0
+                        if isinstance(output_qty, str):
+                            try:
+                                qty = float(output_qty)
+                            except ValueError:
+                                pass
+                        output_goods[produced] = qty
                     building['unique_pms'][pm_name] = {
                         'goods': goods,
+                        'output_goods': output_goods,
                         'has_output': 'produced' in pm_block or 'output' in pm_block,
                         'no_upkeep': pm_block.get('no_upkeep') == 'yes',
                         'is_maintenance': pm_block.get('category') == 'building_maintenance',
@@ -482,6 +519,146 @@ def classify(buildings, pms, exclusions):
 
 
 # ─────────────────────────────────────────────
+# GDP classification: buildings that produce goods
+# ─────────────────────────────────────────────
+
+def classify_gdp(buildings, pms):
+    """
+    Identify all buildings that produce output goods (for GDP tracking).
+    No exclusions — every building that produces goods contributes to GDP.
+
+    Returns:
+      gdp_buildings: dict of building_name -> set(output_good_names)
+      all_output_goods: sorted list of unique output goods across all buildings
+    """
+    gdp_buildings = {}
+    all_goods = set()
+
+    for bname, b in buildings.items():
+        bldg_goods = set()
+
+        # Check external PMs for output goods
+        for pm_name in b['possible_pms']:
+            if pm_name not in pms:
+                continue
+            pm = pms[pm_name]
+            if pm.get('output_goods'):
+                bldg_goods.update(pm['output_goods'].keys())
+
+        # Check inline PMs for output goods
+        for pm_name, pm_data in b['unique_pms'].items():
+            if pm_data.get('output_goods'):
+                bldg_goods.update(pm_data['output_goods'].keys())
+
+        if bldg_goods:
+            gdp_buildings[bname] = bldg_goods
+            all_goods.update(bldg_goods)
+
+    all_output_goods = sorted(all_goods)
+    return gdp_buildings, all_output_goods
+
+
+# ─────────────────────────────────────────────
+# GDP code generation
+# ─────────────────────────────────────────────
+
+def generate_gdp_effects(gdp_buildings, all_output_goods, buildings):
+    """
+    Generate sul_gdp_generated_effects.txt containing:
+    1. Per-good record_built / record_destroyed effects (location scope)
+    2. Dispatch effects for on_built/on_destroyed hooks (building scope)
+    3. Init dispatch effect (building scope, game start scan)
+    4. Yearly per-location GDP computation (location scope)
+    """
+    lines = [
+        "# Auto-generated by tools/generate_building_hooks.py",
+        "# GDP tracking: per-good production map + yearly output computation.",
+        "# sul_local_goods variable map on each location tracks which goods are",
+        "# produced there, keyed by goods:<name> with refcount values. The yearly",
+        "# computation iterates all known output goods to sum goods_output x price.",
+        "",
+    ]
+
+    # ── Part 1: Per-good record effects (location scope) ──
+    for good in all_output_goods:
+        lines.append(f"# Location scope: increment sul_local_goods refcount for {good}")
+        lines.append(f"sul_gdp_record_{good}_built = {{")
+        lines.append(f"\tif = {{")
+        lines.append(f"\t\tlimit = {{")
+        lines.append(f"\t\t\thas_variable_map = sul_local_goods")
+        lines.append(f"\t\t\tis_key_in_variable_map = {{ name = sul_local_goods target = goods:{good} }}")
+        lines.append(f"\t\t}}")
+        lines.append(f'\t\tset_local_variable = {{ name = sul_gdp_count value = {{ value = "variable_map(sul_local_goods|goods:{good})" add = 1 }} }}')
+        lines.append(f"\t\tadd_to_variable_map = {{ name = sul_local_goods key = goods:{good} value = local_var:sul_gdp_count }}")
+        lines.append(f"\t}}")
+        lines.append(f"\telse = {{")
+        lines.append(f"\t\tadd_to_variable_map = {{ name = sul_local_goods key = goods:{good} value = 1 }}")
+        lines.append(f"\t}}")
+        lines.append("}")
+        lines.append("")
+
+        lines.append(f"# Location scope: decrement sul_local_goods refcount for {good}")
+        lines.append(f"sul_gdp_record_{good}_destroyed = {{")
+        lines.append(f"\tif = {{")
+        lines.append(f"\t\tlimit = {{")
+        lines.append(f"\t\t\thas_variable_map = sul_local_goods")
+        lines.append(f"\t\t\tis_key_in_variable_map = {{ name = sul_local_goods target = goods:{good} }}")
+        lines.append(f"\t\t}}")
+        lines.append(f'\t\tset_local_variable = {{ name = sul_gdp_count value = {{ value = "variable_map(sul_local_goods|goods:{good})" subtract = 1 }} }}')
+        lines.append(f"\t\tadd_to_variable_map = {{ name = sul_local_goods key = goods:{good} value = local_var:sul_gdp_count }}")
+        lines.append(f"\t}}")
+        lines.append("}")
+        lines.append("")
+
+    # ── Part 2: Dispatch effects (building scope -> location scope) ──
+    # Collect all goods that any building can produce, per building
+    # The dispatch checks building_produced_goods for each possible output good
+
+    # on_built/on_destroyed and init all run in building scope.
+    # Scope into location to reach the sul_local_goods variable map.
+    lines.append("# Building scope (on_built): scope into location for map writes")
+    lines.append("sul_gdp_on_building_built = {")
+    lines.append("\tsave_temporary_scope_as = sul_gdp_bldg")
+    lines.append("\tlocation = {")
+    for good in all_output_goods:
+        lines.append(f"\t\tif = {{")
+        lines.append(f"\t\t\tlimit = {{ scope:sul_gdp_bldg = {{ building_produced_goods = goods:{good} }} }}")
+        lines.append(f"\t\t\tsul_gdp_record_{good}_built = yes")
+        lines.append(f"\t\t}}")
+    lines.append("\t}")
+    lines.append("}")
+    lines.append("")
+
+    lines.append("# Building scope (on_destroyed): scope into location for map writes")
+    lines.append("sul_gdp_on_building_destroyed = {")
+    lines.append("\tsave_temporary_scope_as = sul_gdp_bldg")
+    lines.append("\tlocation = {")
+    for good in all_output_goods:
+        lines.append(f"\t\tif = {{")
+        lines.append(f"\t\t\tlimit = {{ scope:sul_gdp_bldg = {{ building_produced_goods = goods:{good} }} }}")
+        lines.append(f"\t\t\tsul_gdp_record_{good}_destroyed = yes")
+        lines.append(f"\t\t}}")
+    lines.append("\t}")
+    lines.append("}")
+    lines.append("")
+
+    lines.append("# Building scope (every_buildings_in_location at game start)")
+    lines.append("sul_gdp_init_building = {")
+    lines.append("\tsave_temporary_scope_as = sul_gdp_bldg")
+    lines.append("\tlocation = {")
+    for good in all_output_goods:
+        lines.append(f"\t\tif = {{")
+        lines.append(f"\t\t\tlimit = {{ scope:sul_gdp_bldg = {{ building_produced_goods = goods:{good} }} }}")
+        lines.append(f"\t\t\tsul_gdp_record_{good}_built = yes")
+        lines.append(f"\t\t}}")
+    lines.append("\t}")
+    lines.append("}")
+    lines.append("")
+
+    return "\n".join(lines)
+
+
+# ─────────────────────────────────────────────
 # Read raw building text for REPLACE blocks
 # ─────────────────────────────────────────────
 
@@ -489,35 +666,42 @@ def read_raw_building_text(filepath, building_name):
     """
     Extract the raw text of a building definition from a file.
     Returns the text between building_name = { ... } including braces.
+    Also handles REPLACE:building_name and INJECT:building_name prefixes,
+    stripping the directive prefix from the returned text.
     """
     text = filepath.read_text(encoding="utf-8-sig")
     text = strip_bom(text)
 
-    pattern = re.compile(r'^(' + re.escape(building_name) + r')\s*=\s*\{', re.MULTILINE)
-    match = pattern.search(text)
-    if not match:
-        return None
-
-    start = match.start()
-    brace_start = text.index('{', match.start())
-    depth = 0
-    i = brace_start
-    while i < len(text):
-        if text[i] == '{':
-            depth += 1
-        elif text[i] == '}':
-            depth -= 1
-            if depth == 0:
-                return text[start:i+1]
-        i += 1
+    # Try bare name first, then REPLACE:name, then INJECT:name
+    for prefix in ('', 'REPLACE:', 'INJECT:'):
+        full_name = prefix + building_name
+        pattern = re.compile(r'^(' + re.escape(full_name) + r')\s*=\s*\{', re.MULTILINE)
+        match = pattern.search(text)
+        if match:
+            brace_start = text.index('{', match.start())
+            depth = 0
+            i = brace_start
+            while i < len(text):
+                if text[i] == '{':
+                    depth += 1
+                elif text[i] == '}':
+                    depth -= 1
+                    if depth == 0:
+                        raw = text[match.start():i+1]
+                        # Strip REPLACE:/INJECT: prefix so callers get bare definition
+                        if prefix:
+                            raw = raw[len(prefix):]
+                        return raw
+                i += 1
     return None
 
 
-def inject_on_built_hook(raw_text, building_name):
+def inject_on_built_hook(raw_text, building_name, gdp_tracked=False):
     """
     For REPLACE buildings: insert our list-management hook into existing on_built,
     and add on_destroyed if it doesn't exist.
     Also renames inline unique_production_methods PM names to avoid duplicates.
+    If gdp_tracked, also adds GDP dispatch hooks.
     Returns modified building text.
     """
     list_name = _p('buildings')
@@ -529,6 +713,9 @@ def inject_on_built_hook(raw_text, building_name):
         f"\n\t\tlocation = {{ remove_list_variable = {{ name = {list_name} target = prev }} }}"
         f"\n\t\t{_p('on_building_destroyed')} = yes"
     )
+    if gdp_tracked:
+        add_code += f"\n\t\tsul_gdp_on_building_built = yes"
+        remove_code += f"\n\t\tsul_gdp_on_building_destroyed = yes"
 
     # Rename inline PM names to avoid duplicate PM name errors
     upm_pattern = re.compile(r'unique_production_methods\s*=\s*\{')
@@ -554,7 +741,9 @@ def inject_on_built_hook(raw_text, building_name):
             name = m.group(2)
             if name in ('unique_production_methods', 'category', 'potential', 'no_upkeep'):
                 return m.group(0)
-            return f"{m.group(1)}{_p(name)}{m.group(3)}"
+            # Strip any existing prefix layers to prevent stacking across runs
+            stripped = re.sub(r'^(' + re.escape(PREFIX) + r'_)+', '', name)
+            return f"{m.group(1)}{_p(stripped)}{m.group(3)}"
         new_upm_block = pm_def_pattern.sub(rename_pm, upm_block)
         raw_text = raw_text[:upm_match.start()] + new_upm_block + raw_text[upm_end:]
 
@@ -608,16 +797,21 @@ def inject_on_built_hook(raw_text, building_name):
 # We match the functional lines, not comments.
 def _strip_epbm_injected_lines(text):
     """
-    Remove all PREFIX-injected hook code from file text. Idempotent.
+    Remove all PREFIX-injected hook code and GDP hook code from file text. Idempotent.
     Handles both inline injections (inside existing on_built/on_destroyed)
     and whole-block injections (on_built/on_destroyed added by the generator).
     Uses the current PREFIX to identify injected lines.
+    Also strips sul_gdp_on_building_built/destroyed lines.
     """
     built_marker = _p('on_building_built')
     destroyed_marker = _p('on_building_destroyed')
+    gdp_built_marker = 'sul_gdp_on_building_built'
+    gdp_destroyed_marker = 'sul_gdp_on_building_destroyed'
     list_name = _p('buildings')
 
-    if built_marker not in text and destroyed_marker not in text:
+    has_epbm = built_marker in text or destroyed_marker in text
+    has_gdp = gdp_built_marker in text or gdp_destroyed_marker in text
+    if not has_epbm and not has_gdp:
         return text
 
     lines = text.split('\n')
@@ -644,8 +838,11 @@ def _strip_epbm_injected_lines(text):
                 i = j + 1
                 continue
 
-        # Skip standalone marker lines
+        # Skip standalone marker lines (EPBM and GDP)
         if stripped == f'{built_marker} = yes' or stripped == f'{destroyed_marker} = yes':
+            i += 1
+            continue
+        if stripped == f'{gdp_built_marker} = yes' or stripped == f'{gdp_destroyed_marker} = yes':
             i += 1
             continue
 
@@ -695,9 +892,9 @@ def _find_building_bounds(text, building_name):
     return None
 
 
-def _inject_hook_into_building_text(building_text, has_on_built, has_on_destroyed):
+def _inject_hook_into_building_text(building_text, has_on_built, has_on_destroyed, gdp_tracked=False):
     """
-    Inject EPBM hooks into a single building's text.
+    Inject EPBM hooks (and optionally GDP hooks) into a single building's text.
     If the building already has on_built/on_destroyed, inject inside them.
     If not, add new blocks before the building's closing brace.
     Returns modified building text.
@@ -711,6 +908,9 @@ def _inject_hook_into_building_text(building_text, has_on_built, has_on_destroye
         f"\t\tlocation = {{ remove_list_variable = {{ name = {list_name} target = prev }} }}\n"
         f"\t\t{_p('on_building_destroyed')} = yes\n"
     )
+    if gdp_tracked:
+        add_code_lines += f"\t\tsul_gdp_on_building_built = yes\n"
+        remove_code_lines += f"\t\tsul_gdp_on_building_destroyed = yes\n"
 
     text = building_text
 
@@ -763,15 +963,18 @@ def _inject_hook_into_building_text(building_text, has_on_built, has_on_destroye
     return text
 
 
-def apply_in_place(qualifying, buildings, mod_dir):
+def apply_in_place(qualifying, buildings, mod_dir, gdp_buildings=None):
     """
     In-place mode: modify mod building files directly.
     For each qualifying non-foreign building whose source file is in the mod
     directory, inject EPBM hooks. Buildings from vanilla-only files are skipped
     (they go into INJECT/REPLACE output instead).
+    If gdp_buildings is provided, also adds GDP hooks for buildings that produce goods.
     Returns (modified_file_count, vanilla_only_buildings) where vanilla_only_buildings
     is a list of (bname, pm_name, pm_source, is_foreign, estate) for buildings not in mod files.
     """
+    if gdp_buildings is None:
+        gdp_buildings = {}
     mod_bt_dir = mod_dir / "common" / "building_types"
 
     # Group qualifying buildings by source file, separating mod vs vanilla
@@ -839,7 +1042,8 @@ def apply_in_place(qualifying, buildings, mod_dir):
             has_on_built = 'on_built' in block
             has_on_destroyed = 'on_destroyed' in block
 
-            modified = _inject_hook_into_building_text(building_text, has_on_built, has_on_destroyed)
+            is_gdp = bname in gdp_buildings
+            modified = _inject_hook_into_building_text(building_text, has_on_built, has_on_destroyed, gdp_tracked=is_gdp)
             text = text[:start] + modified + text[end:]
 
         if text != original:
@@ -857,13 +1061,18 @@ def apply_in_place(qualifying, buildings, mod_dir):
 # Code generation (default mode)
 # ─────────────────────────────────────────────
 
-def generate_inject(qualifying, buildings):
+def generate_inject(qualifying, buildings, gdp_buildings=None):
     """Generate epbm_generated_inject.txt (INJECT blocks for buildings without on_built)."""
+    if gdp_buildings is None:
+        gdp_buildings = {}
     lines = [
         "# Auto-generated by tools/generate_building_hooks.py",
         "# INJECT blocks: manage location tracking list on build/destroy",
         "",
     ]
+
+    # Track which buildings already got INJECT blocks from EPBM
+    injected_buildings = set()
 
     for bname, pm_name, _, is_foreign, _estate in sorted(qualifying, key=lambda x: x[0]):
         b = buildings[bname]
@@ -873,15 +1082,48 @@ def generate_inject(qualifying, buildings):
             continue
 
         list_name = _p('buildings')
+        is_gdp = bname in gdp_buildings
         lines.append(f"# {bname} uses {pm_name}")
         lines.append(f"INJECT:{bname} = {{")
         lines.append(f"\ton_built = {{")
         lines.append(f"\t\tlocation = {{ add_to_variable_list = {{ name = {list_name} target = prev }} }}")
         lines.append(f"\t\t{_p('on_building_built')} = yes")
+        if is_gdp:
+            lines.append(f"\t\tsul_gdp_on_building_built = yes")
         lines.append(f"\t}}")
         lines.append(f"\ton_destroyed = {{")
         lines.append(f"\t\tlocation = {{ remove_list_variable = {{ name = {list_name} target = prev }} }}")
         lines.append(f"\t\t{_p('on_building_destroyed')} = yes")
+        if is_gdp:
+            lines.append(f"\t\tsul_gdp_on_building_destroyed = yes")
+        lines.append(f"\t}}")
+        lines.append("}")
+        lines.append("")
+        injected_buildings.add(bname)
+
+    # GDP-only INJECT blocks: buildings that produce goods but are excluded from
+    # EPBM (or have no maintenance PM). They still need on_built/on_destroyed
+    # hooks to maintain the sul_local_goods variable map.
+    for bname in sorted(gdp_buildings.keys()):
+        if bname in injected_buildings:
+            continue
+        b = buildings.get(bname)
+        if b is None or b['is_foreign']:
+            continue
+        if b['has_on_built'] or b['has_on_destroyed']:
+            continue
+        # Check if already handled by REPLACE (has existing hooks from EPBM)
+        epbm_handled = any(bn == bname for bn, _, _, fg, _ in qualifying if not fg)
+        if epbm_handled:
+            continue
+        goods_str = ", ".join(sorted(gdp_buildings[bname]))
+        lines.append(f"# {bname} produces {goods_str} (GDP-only)")
+        lines.append(f"INJECT:{bname} = {{")
+        lines.append(f"\ton_built = {{")
+        lines.append(f"\t\tsul_gdp_on_building_built = yes")
+        lines.append(f"\t}}")
+        lines.append(f"\ton_destroyed = {{")
+        lines.append(f"\t\tsul_gdp_on_building_destroyed = yes")
         lines.append(f"\t}}")
         lines.append("}")
         lines.append("")
@@ -889,13 +1131,18 @@ def generate_inject(qualifying, buildings):
     return "\n".join(lines)
 
 
-def generate_replace(qualifying, buildings):
+def generate_replace(qualifying, buildings, gdp_buildings=None):
     """Generate epbm_generated_replace.txt (REPLACE blocks for buildings with existing on_built)."""
+    if gdp_buildings is None:
+        gdp_buildings = {}
     lines = [
         "# Auto-generated by tools/generate_building_hooks.py",
         "# REPLACE blocks for buildings with existing on_built/on_destroyed hooks",
         "",
     ]
+
+    # Track which buildings already got REPLACE blocks from EPBM
+    replaced_buildings = set()
 
     for bname, pm_name, _, is_foreign, _estate in sorted(qualifying, key=lambda x: x[0]):
         b = buildings[bname]
@@ -910,12 +1157,98 @@ def generate_replace(qualifying, buildings):
             lines.append("")
             continue
 
-        modified = inject_on_built_hook(raw, bname)
+        is_gdp = bname in gdp_buildings
+        modified = inject_on_built_hook(raw, bname, gdp_tracked=is_gdp)
         lines.append(f"# {bname} uses {pm_name} (REPLACE due to existing on_built)")
+        lines.append(f"REPLACE:{modified}")
+        lines.append("")
+        replaced_buildings.add(bname)
+
+    # GDP-only REPLACE blocks: buildings that produce goods and have existing
+    # on_built/on_destroyed but are not EPBM-tracked
+    for bname in sorted(gdp_buildings.keys()):
+        if bname in replaced_buildings:
+            continue
+        b = buildings.get(bname)
+        if b is None or b['is_foreign']:
+            continue
+        if not b['has_on_built'] and not b['has_on_destroyed']:
+            continue
+        # Skip if handled by EPBM qualifying (would be in replaced_buildings)
+        epbm_handled = any(bn == bname for bn, _, _, fg, _ in qualifying if not fg)
+        if epbm_handled:
+            continue
+
+        raw = read_raw_building_text(b['file'], bname)
+        if raw is None:
+            lines.append(f"# WARNING: Could not extract raw text for {bname}")
+            lines.append("")
+            continue
+
+        goods_str = ", ".join(sorted(gdp_buildings[bname]))
+        # For GDP-only REPLACE, we inject GDP hooks but not EPBM list management
+        modified = _inject_gdp_only_replace(raw, bname)
+        lines.append(f"# {bname} produces {goods_str} (GDP-only REPLACE)")
         lines.append(f"REPLACE:{modified}")
         lines.append("")
 
     return "\n".join(lines)
+
+
+def _inject_gdp_only_replace(raw_text, building_name):
+    """
+    For GDP-only REPLACE buildings: insert GDP hooks into existing on_built/on_destroyed.
+    If on_built/on_destroyed don't exist, creates new blocks.
+    Does NOT add EPBM list management hooks.
+    """
+    add_code = "\n\t\tsul_gdp_on_building_built = yes"
+    remove_code = "\n\t\tsul_gdp_on_building_destroyed = yes"
+
+    # Handle on_built
+    on_built_pattern = re.compile(r'(on_built\s*=\s*\{)')
+    match = on_built_pattern.search(raw_text)
+    if match:
+        brace_start = match.end() - 1
+        depth = 0
+        i = brace_start
+        while i < len(raw_text):
+            if raw_text[i] == '{':
+                depth += 1
+            elif raw_text[i] == '}':
+                depth -= 1
+                if depth == 0:
+                    raw_text = raw_text[:i] + add_code + "\n\t" + raw_text[i:]
+                    break
+            i += 1
+    else:
+        # No on_built exists — add a new block before the building's closing brace
+        last_brace = raw_text.rindex('}')
+        on_built = f"\n\ton_built = {{{add_code}\n\t}}"
+        raw_text = raw_text[:last_brace] + on_built + "\n" + raw_text[last_brace:]
+
+    # Handle on_destroyed
+    if 'on_destroyed' not in raw_text:
+        last_brace = raw_text.rindex('}')
+        on_destroyed = f"\n\ton_destroyed = {{{remove_code}\n\t}}"
+        raw_text = raw_text[:last_brace] + on_destroyed + "\n" + raw_text[last_brace:]
+    else:
+        on_destroyed_pattern = re.compile(r'(on_destroyed\s*=\s*\{)')
+        match = on_destroyed_pattern.search(raw_text)
+        if match:
+            brace_start = match.end() - 1
+            depth = 0
+            i = brace_start
+            while i < len(raw_text):
+                if raw_text[i] == '{':
+                    depth += 1
+                elif raw_text[i] == '}':
+                    depth -= 1
+                    if depth == 0:
+                        raw_text = raw_text[:i] + remove_code + "\n\t" + raw_text[i:]
+                        break
+                i += 1
+
+    return raw_text
 
 
 def generate_io_definitions(all_pm_goods):
@@ -1233,11 +1566,17 @@ Examples:
     buildings = parse_all_buildings(vanilla_dir, mod_dir)
     print(f"  Found {len(buildings)} buildings")
 
-    # Classify
-    print("\nClassifying qualifying buildings...")
+    # Classify EPBM
+    print("\nClassifying qualifying buildings (EPBM)...")
     qualifying, all_pm_goods = classify(buildings, pms, exclusions)
     print(f"  Qualifying buildings: {len(qualifying)}")
     print(f"  Unique PM goods profiles: {len(all_pm_goods)}")
+
+    # Classify GDP (all buildings with output goods, no exclusions)
+    print("\nClassifying GDP-tracked buildings...")
+    gdp_buildings, all_output_goods = classify_gdp(buildings, pms)
+    print(f"  GDP-tracked buildings: {len(gdp_buildings)}")
+    print(f"  Unique output goods: {len(all_output_goods)} ({', '.join(all_output_goods)})")
 
     pm_to_buildings = {}
     for bname, pm_name, _, _, _ in qualifying:
@@ -1268,7 +1607,7 @@ Examples:
     # Generate building hooks
     if in_place:
         print(f"\nIn-place mode: modifying mod building files...")
-        modified, vanilla_only = apply_in_place(qualifying, buildings, mod_dir)
+        modified, vanilla_only = apply_in_place(qualifying, buildings, mod_dir, gdp_buildings=gdp_buildings)
         print(f"  Modified {modified} file(s)")
 
         # Generate INJECT/REPLACE for buildings from vanilla-only files
@@ -1277,12 +1616,12 @@ Examples:
             out_buildings.mkdir(parents=True, exist_ok=True)
 
             print(f"\nGenerating INJECT/REPLACE for {len(vanilla_only)} vanilla-only building(s)...")
-            inject_code = generate_inject(vanilla_only, buildings)
+            inject_code = generate_inject(vanilla_only, buildings, gdp_buildings=gdp_buildings)
             out_path = out_buildings / f"{PREFIX}_generated_inject.txt"
             out_path.write_text(inject_code, encoding="utf-8-sig")
             print(f"  Wrote {out_path.relative_to(output_dir)}")
 
-            replace_code = generate_replace(vanilla_only, buildings)
+            replace_code = generate_replace(vanilla_only, buildings, gdp_buildings=gdp_buildings)
             out_path = out_buildings / f"{PREFIX}_generated_replace.txt"
             out_path.write_text(replace_code, encoding="utf-8-sig")
             print(f"  Wrote {out_path.relative_to(output_dir)}")
@@ -1291,12 +1630,12 @@ Examples:
         print(f"\nGenerating INJECT/REPLACE files to {output_dir}...")
 
         out_buildings.mkdir(parents=True, exist_ok=True)
-        inject_code = generate_inject(qualifying, buildings)
+        inject_code = generate_inject(qualifying, buildings, gdp_buildings=gdp_buildings)
         out_path = out_buildings / f"{PREFIX}_generated_inject.txt"
         out_path.write_text(inject_code, encoding="utf-8-sig")
         print(f"  Wrote {out_path.relative_to(output_dir)}")
 
-        replace_code = generate_replace(qualifying, buildings)
+        replace_code = generate_replace(qualifying, buildings, gdp_buildings=gdp_buildings)
         out_path = out_buildings / f"{PREFIX}_generated_replace.txt"
         out_path.write_text(replace_code, encoding="utf-8-sig")
         print(f"  Wrote {out_path.relative_to(output_dir)}")
@@ -1327,6 +1666,14 @@ Examples:
     out_path.write_text(loc, encoding="utf-8")
     print(f"  Wrote {out_path.relative_to(output_dir)}")
 
+    # Generate GDP effects
+    if all_output_goods:
+        print(f"\nGenerating GDP effects ({len(all_output_goods)} output goods)...")
+        gdp_code = generate_gdp_effects(gdp_buildings, all_output_goods, buildings)
+        out_path = out_effects / "sul_gdp_generated_effects.txt"
+        out_path.write_text(gdp_code, encoding="utf-8-sig")
+        print(f"  Wrote {out_path.relative_to(output_dir)}")
+
     # Summary
     print("\n=== Summary ===")
     print(f"Mode: {'in-place' if in_place else 'default (INJECT/REPLACE)'}")
@@ -1345,6 +1692,10 @@ Examples:
     for goods in all_pm_goods.values():
         all_goods.update(goods.keys())
     print(f"Distinct maintenance goods: {len(all_goods)} ({', '.join(sorted(all_goods))})")
+
+    gdp_only_count = sum(1 for b in gdp_buildings if b not in {q[0] for q in qualifying})
+    print(f"GDP-tracked buildings: {len(gdp_buildings)} ({gdp_only_count} GDP-only)")
+    print(f"Unique output goods: {len(all_output_goods)} ({', '.join(all_output_goods)})")
 
     print("\n=== PM to Buildings Mapping ===")
     for pm_name in sorted(all_pm_goods.keys()):

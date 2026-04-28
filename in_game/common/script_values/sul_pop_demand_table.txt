@@ -1,388 +1,265 @@
-﻿# Per pop-type per tier breakdown values for the GUI budget tooltip.
-# Returns max(0, wpp - threshold) × num_pops. The GUI then multiplies by
-# demand_add (from the sul_da_* map) to get per-good quantity.
+# Per pop-type per tier breakdown values for the GUI budget tooltip.
 #
-# Evaluated on tooltip hover only - this 36-value table never runs in the
-# economy hot path. The hot path uses sul_demand_* (in sul_pop_demand_wpp.txt)
-# called from pop_demands.txt.
+# Each value = demand_base × weight × num_pops (constant tiers) or
+# demand_base × WPP × weight × num_pops (growth tiers).
 #
-# Tier thresholds redeclared here because @constants are file-local.
+# These match the continuous percentage model in sul_pop_demand_wpp.txt
+# exactly — constant-weight tiers saturate, growth-weight tiers scale
+# with WPP. The result is the location's total demand for that
+# pop type at that tier, before per-good splitting.
+#
+# Evaluated on tooltip hover only — never in the economy hot path.
 
-@sul_tier_threshold_necessity = 0
-@sul_tier_threshold_basic = 0.05
-@sul_tier_threshold_common = 0.12
-@sul_tier_threshold_upper = 0.25
-@sul_tier_threshold_luxury = 0.5
-@sul_tier_threshold_exotic = 1.5
+# Tier weights (must match sul_pop_demand_wpp.txt)
+@sul_w_necessity = 0.55
+@sul_w_basic = 0.30
+@sul_w_common = 0.15
+@sul_w_upper = 0.45
+@sul_w_luxury = 0.35
+@sul_w_exotic = 0.20
 
 # --- NOBLES ---
 
 sul_nobles_necessity = {
-	value = {
-		value = "variable_map(sul_wealth_per_pop|pop_type:nobles)"
-		subtract = @sul_tier_threshold_necessity
-		min = 0
-	}
-
+	value = "variable_map(sul_demand_base|pop_type:nobles)"
+	multiply = @sul_w_necessity
 	multiply = num_pop_type:nobles
 }
 
 sul_nobles_basic = {
-	value = {
-		value = "variable_map(sul_wealth_per_pop|pop_type:nobles)"
-		subtract = @sul_tier_threshold_basic
-		min = 0
-	}
-
+	value = "variable_map(sul_demand_base|pop_type:nobles)"
+	multiply = @sul_w_basic
 	multiply = num_pop_type:nobles
 }
 
 sul_nobles_common = {
-	value = {
-		value = "variable_map(sul_wealth_per_pop|pop_type:nobles)"
-		subtract = @sul_tier_threshold_common
-		min = 0
-	}
-
+	value = "variable_map(sul_demand_base|pop_type:nobles)"
+	multiply = @sul_w_common
 	multiply = num_pop_type:nobles
 }
 
 sul_nobles_upper = {
-	value = {
-		value = "variable_map(sul_wealth_per_pop|pop_type:nobles)"
-		subtract = @sul_tier_threshold_upper
-		min = 0
-	}
-
+	value = "variable_map(sul_demand_base|pop_type:nobles)"
+	multiply = "variable_map(sul_wealth_per_pop|pop_type:nobles)"
+	multiply = @sul_w_upper
 	multiply = num_pop_type:nobles
 }
 
 sul_nobles_luxury = {
-	value = {
-		value = "variable_map(sul_wealth_per_pop|pop_type:nobles)"
-		subtract = @sul_tier_threshold_luxury
-		min = 0
-	}
-
+	value = "variable_map(sul_demand_base|pop_type:nobles)"
+	multiply = "variable_map(sul_wealth_per_pop|pop_type:nobles)"
+	multiply = @sul_w_luxury
 	multiply = num_pop_type:nobles
 }
 
 sul_nobles_exotic = {
-	value = {
-		value = "variable_map(sul_wealth_per_pop|pop_type:nobles)"
-		subtract = @sul_tier_threshold_exotic
-		min = 0
-	}
-
+	value = "variable_map(sul_demand_base|pop_type:nobles)"
+	multiply = "variable_map(sul_wealth_per_pop|pop_type:nobles)"
+	multiply = @sul_w_exotic
 	multiply = num_pop_type:nobles
 }
 
 # --- CLERGY ---
 
 sul_clergy_necessity = {
-	value = {
-		value = "variable_map(sul_wealth_per_pop|pop_type:clergy)"
-		subtract = @sul_tier_threshold_necessity
-		min = 0
-	}
-
+	value = "variable_map(sul_demand_base|pop_type:clergy)"
+	multiply = @sul_w_necessity
 	multiply = num_pop_type:clergy
 }
 
 sul_clergy_basic = {
-	value = {
-		value = "variable_map(sul_wealth_per_pop|pop_type:clergy)"
-		subtract = @sul_tier_threshold_basic
-		min = 0
-	}
-
+	value = "variable_map(sul_demand_base|pop_type:clergy)"
+	multiply = @sul_w_basic
 	multiply = num_pop_type:clergy
 }
 
 sul_clergy_common = {
-	value = {
-		value = "variable_map(sul_wealth_per_pop|pop_type:clergy)"
-		subtract = @sul_tier_threshold_common
-		min = 0
-	}
-
+	value = "variable_map(sul_demand_base|pop_type:clergy)"
+	multiply = @sul_w_common
 	multiply = num_pop_type:clergy
 }
 
 sul_clergy_upper = {
-	value = {
-		value = "variable_map(sul_wealth_per_pop|pop_type:clergy)"
-		subtract = @sul_tier_threshold_upper
-		min = 0
-	}
-
+	value = "variable_map(sul_demand_base|pop_type:clergy)"
+	multiply = "variable_map(sul_wealth_per_pop|pop_type:clergy)"
+	multiply = @sul_w_upper
 	multiply = num_pop_type:clergy
 }
 
 sul_clergy_luxury = {
-	value = {
-		value = "variable_map(sul_wealth_per_pop|pop_type:clergy)"
-		subtract = @sul_tier_threshold_luxury
-		min = 0
-	}
-
+	value = "variable_map(sul_demand_base|pop_type:clergy)"
+	multiply = "variable_map(sul_wealth_per_pop|pop_type:clergy)"
+	multiply = @sul_w_luxury
 	multiply = num_pop_type:clergy
 }
 
 sul_clergy_exotic = {
-	value = {
-		value = "variable_map(sul_wealth_per_pop|pop_type:clergy)"
-		subtract = @sul_tier_threshold_exotic
-		min = 0
-	}
-
+	value = "variable_map(sul_demand_base|pop_type:clergy)"
+	multiply = "variable_map(sul_wealth_per_pop|pop_type:clergy)"
+	multiply = @sul_w_exotic
 	multiply = num_pop_type:clergy
 }
 
 # --- BURGHERS ---
 
 sul_burghers_necessity = {
-	value = {
-		value = "variable_map(sul_wealth_per_pop|pop_type:burghers)"
-		subtract = @sul_tier_threshold_necessity
-		min = 0
-	}
-
+	value = "variable_map(sul_demand_base|pop_type:burghers)"
+	multiply = @sul_w_necessity
 	multiply = num_pop_type:burghers
 }
 
 sul_burghers_basic = {
-	value = {
-		value = "variable_map(sul_wealth_per_pop|pop_type:burghers)"
-		subtract = @sul_tier_threshold_basic
-		min = 0
-	}
-
+	value = "variable_map(sul_demand_base|pop_type:burghers)"
+	multiply = @sul_w_basic
 	multiply = num_pop_type:burghers
 }
 
 sul_burghers_common = {
-	value = {
-		value = "variable_map(sul_wealth_per_pop|pop_type:burghers)"
-		subtract = @sul_tier_threshold_common
-		min = 0
-	}
-
+	value = "variable_map(sul_demand_base|pop_type:burghers)"
+	multiply = @sul_w_common
 	multiply = num_pop_type:burghers
 }
 
 sul_burghers_upper = {
-	value = {
-		value = "variable_map(sul_wealth_per_pop|pop_type:burghers)"
-		subtract = @sul_tier_threshold_upper
-		min = 0
-	}
-
+	value = "variable_map(sul_demand_base|pop_type:burghers)"
+	multiply = "variable_map(sul_wealth_per_pop|pop_type:burghers)"
+	multiply = @sul_w_upper
 	multiply = num_pop_type:burghers
 }
 
 sul_burghers_luxury = {
-	value = {
-		value = "variable_map(sul_wealth_per_pop|pop_type:burghers)"
-		subtract = @sul_tier_threshold_luxury
-		min = 0
-	}
-
+	value = "variable_map(sul_demand_base|pop_type:burghers)"
+	multiply = "variable_map(sul_wealth_per_pop|pop_type:burghers)"
+	multiply = @sul_w_luxury
 	multiply = num_pop_type:burghers
 }
 
 sul_burghers_exotic = {
-	value = {
-		value = "variable_map(sul_wealth_per_pop|pop_type:burghers)"
-		subtract = @sul_tier_threshold_exotic
-		min = 0
-	}
-
+	value = "variable_map(sul_demand_base|pop_type:burghers)"
+	multiply = "variable_map(sul_wealth_per_pop|pop_type:burghers)"
+	multiply = @sul_w_exotic
 	multiply = num_pop_type:burghers
 }
 
-# --- SOLDIERS (share wpp_commoners with laborers & peasants) ---
+# --- SOLDIERS ---
 
 sul_soldiers_necessity = {
-	value = {
-		value = "variable_map(sul_wealth_per_pop|pop_type:soldiers)"
-		subtract = @sul_tier_threshold_necessity
-		min = 0
-	}
-
+	value = "variable_map(sul_demand_base|pop_type:soldiers)"
+	multiply = @sul_w_necessity
 	multiply = num_pop_type:soldiers
 }
 
 sul_soldiers_basic = {
-	value = {
-		value = "variable_map(sul_wealth_per_pop|pop_type:soldiers)"
-		subtract = @sul_tier_threshold_basic
-		min = 0
-	}
-
+	value = "variable_map(sul_demand_base|pop_type:soldiers)"
+	multiply = @sul_w_basic
 	multiply = num_pop_type:soldiers
 }
 
 sul_soldiers_common = {
-	value = {
-		value = "variable_map(sul_wealth_per_pop|pop_type:soldiers)"
-		subtract = @sul_tier_threshold_common
-		min = 0
-	}
-
+	value = "variable_map(sul_demand_base|pop_type:soldiers)"
+	multiply = @sul_w_common
 	multiply = num_pop_type:soldiers
 }
 
 sul_soldiers_upper = {
-	value = {
-		value = "variable_map(sul_wealth_per_pop|pop_type:soldiers)"
-		subtract = @sul_tier_threshold_upper
-		min = 0
-	}
-
+	value = "variable_map(sul_demand_base|pop_type:soldiers)"
+	multiply = "variable_map(sul_wealth_per_pop|pop_type:soldiers)"
+	multiply = @sul_w_upper
 	multiply = num_pop_type:soldiers
 }
 
 sul_soldiers_luxury = {
-	value = {
-		value = "variable_map(sul_wealth_per_pop|pop_type:soldiers)"
-		subtract = @sul_tier_threshold_luxury
-		min = 0
-	}
-
+	value = "variable_map(sul_demand_base|pop_type:soldiers)"
+	multiply = "variable_map(sul_wealth_per_pop|pop_type:soldiers)"
+	multiply = @sul_w_luxury
 	multiply = num_pop_type:soldiers
 }
 
 sul_soldiers_exotic = {
-	value = {
-		value = "variable_map(sul_wealth_per_pop|pop_type:soldiers)"
-		subtract = @sul_tier_threshold_exotic
-		min = 0
-	}
-
+	value = "variable_map(sul_demand_base|pop_type:soldiers)"
+	multiply = "variable_map(sul_wealth_per_pop|pop_type:soldiers)"
+	multiply = @sul_w_exotic
 	multiply = num_pop_type:soldiers
 }
 
-# --- LABORERS (share wpp_commoners with soldiers & peasants) ---
+# --- LABORERS ---
 
 sul_laborers_necessity = {
-	value = {
-		value = "variable_map(sul_wealth_per_pop|pop_type:laborers)"
-		subtract = @sul_tier_threshold_necessity
-		min = 0
-	}
-
+	value = "variable_map(sul_demand_base|pop_type:laborers)"
+	multiply = @sul_w_necessity
 	multiply = num_pop_type:laborers
 }
 
 sul_laborers_basic = {
-	value = {
-		value = "variable_map(sul_wealth_per_pop|pop_type:laborers)"
-		subtract = @sul_tier_threshold_basic
-		min = 0
-	}
-
+	value = "variable_map(sul_demand_base|pop_type:laborers)"
+	multiply = @sul_w_basic
 	multiply = num_pop_type:laborers
 }
 
 sul_laborers_common = {
-	value = {
-		value = "variable_map(sul_wealth_per_pop|pop_type:laborers)"
-		subtract = @sul_tier_threshold_common
-		min = 0
-	}
-
+	value = "variable_map(sul_demand_base|pop_type:laborers)"
+	multiply = @sul_w_common
 	multiply = num_pop_type:laborers
 }
 
 sul_laborers_upper = {
-	value = {
-		value = "variable_map(sul_wealth_per_pop|pop_type:laborers)"
-		subtract = @sul_tier_threshold_upper
-		min = 0
-	}
-
+	value = "variable_map(sul_demand_base|pop_type:laborers)"
+	multiply = "variable_map(sul_wealth_per_pop|pop_type:laborers)"
+	multiply = @sul_w_upper
 	multiply = num_pop_type:laborers
 }
 
 sul_laborers_luxury = {
-	value = {
-		value = "variable_map(sul_wealth_per_pop|pop_type:laborers)"
-		subtract = @sul_tier_threshold_luxury
-		min = 0
-	}
-
+	value = "variable_map(sul_demand_base|pop_type:laborers)"
+	multiply = "variable_map(sul_wealth_per_pop|pop_type:laborers)"
+	multiply = @sul_w_luxury
 	multiply = num_pop_type:laborers
 }
 
 sul_laborers_exotic = {
-	value = {
-		value = "variable_map(sul_wealth_per_pop|pop_type:laborers)"
-		subtract = @sul_tier_threshold_exotic
-		min = 0
-	}
-
+	value = "variable_map(sul_demand_base|pop_type:laborers)"
+	multiply = "variable_map(sul_wealth_per_pop|pop_type:laborers)"
+	multiply = @sul_w_exotic
 	multiply = num_pop_type:laborers
 }
 
-# --- PEASANTS (share wpp_commoners with soldiers & laborers) ---
+# --- PEASANTS ---
 
 sul_peasants_necessity = {
-	value = {
-		value = "variable_map(sul_wealth_per_pop|pop_type:peasants)"
-		subtract = @sul_tier_threshold_necessity
-		min = 0
-	}
-
+	value = "variable_map(sul_demand_base|pop_type:peasants)"
+	multiply = @sul_w_necessity
 	multiply = num_pop_type:peasants
 }
 
 sul_peasants_basic = {
-	value = {
-		value = "variable_map(sul_wealth_per_pop|pop_type:peasants)"
-		subtract = @sul_tier_threshold_basic
-		min = 0
-	}
-
+	value = "variable_map(sul_demand_base|pop_type:peasants)"
+	multiply = @sul_w_basic
 	multiply = num_pop_type:peasants
 }
 
 sul_peasants_common = {
-	value = {
-		value = "variable_map(sul_wealth_per_pop|pop_type:peasants)"
-		subtract = @sul_tier_threshold_common
-		min = 0
-	}
-
+	value = "variable_map(sul_demand_base|pop_type:peasants)"
+	multiply = @sul_w_common
 	multiply = num_pop_type:peasants
 }
 
 sul_peasants_upper = {
-	value = {
-		value = "variable_map(sul_wealth_per_pop|pop_type:peasants)"
-		subtract = @sul_tier_threshold_upper
-		min = 0
-	}
-
+	value = "variable_map(sul_demand_base|pop_type:peasants)"
+	multiply = "variable_map(sul_wealth_per_pop|pop_type:peasants)"
+	multiply = @sul_w_upper
 	multiply = num_pop_type:peasants
 }
 
 sul_peasants_luxury = {
-	value = {
-		value = "variable_map(sul_wealth_per_pop|pop_type:peasants)"
-		subtract = @sul_tier_threshold_luxury
-		min = 0
-	}
-
+	value = "variable_map(sul_demand_base|pop_type:peasants)"
+	multiply = "variable_map(sul_wealth_per_pop|pop_type:peasants)"
+	multiply = @sul_w_luxury
 	multiply = num_pop_type:peasants
 }
 
 sul_peasants_exotic = {
-	value = {
-		value = "variable_map(sul_wealth_per_pop|pop_type:peasants)"
-		subtract = @sul_tier_threshold_exotic
-		min = 0
-	}
-
+	value = "variable_map(sul_demand_base|pop_type:peasants)"
+	multiply = "variable_map(sul_wealth_per_pop|pop_type:peasants)"
+	multiply = @sul_w_exotic
 	multiply = num_pop_type:peasants
 }

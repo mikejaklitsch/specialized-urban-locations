@@ -56,9 +56,10 @@ POOR_SHARES = {
     "common":    0.15,
 }
 RICH_SHARES = {
-    "upper":     0.45,
-    "luxury":    0.35,
-    "exotic":    0.20,
+    "upper":      0.21,
+    "luxury":     0.16,
+    "exotic":     0.10,
+    "enrichment": 0.53,
 }
 CROSSOVER_WPP = 1.0
 
@@ -646,8 +647,8 @@ def _gen_pop_subtip(pop, display, results):
 
     blocks = []
     for tier in CAT_ORDER:
-        map_name = f"pdo_da_{tier}"
-        sv_name = f"pdo_{pop}_{tier}"
+        map_name = f"sul_da_{tier}"
+        sv_name = f"sul_{pop}_{tier}"
         label = tier_labels[tier]
         vis = f"GreaterThan_CFixedPoint(Location.MakeScope.ScriptValue('{sv_name}'), '(CFixedPoint)0')"
 
@@ -698,96 +699,195 @@ def _gen_pop_subtip(pop, display, results):
 
 
 def generate_gui_tooltip(results):
-    """Generate the complete PDO budget tooltip section for the GUI file."""
+    """Generate the Pop Demand Budget tooltip for the GUI file.
+
+    Columns: Pop Type | Wages | Returns | WPP
+    Wages and Returns get hover breakdowns. WPP gets the per-tier demand breakdown.
+    Upper estates (nobles/clergy/burghers) show capital returns.
+    Commoners (soldiers/laborers/peasants) show flat wealth supplement.
+    """
     pop_display = {
         "nobles": "Nobles", "clergy": "Clergy", "burghers": "Burghers",
         "soldiers": "Soldiers", "laborers": "Laborers", "peasants": "Peasants",
     }
-    pop_share_sv = {
-        "nobles": "pdo_noble_share_pct", "clergy": "pdo_clergy_share_pct",
-        "burghers": "pdo_burgher_share_pct", "soldiers": "pdo_soldier_share_pct",
-        "laborers": "pdo_laborer_share_pct", "peasants": "pdo_peasant_share_pct",
+    # Script value names for each column
+    pop_wage_sv = {
+        "nobles": "sul_noble_wage_rate", "clergy": "sul_clergy_wage_rate",
+        "burghers": "sul_burgher_wage_rate", "soldiers": "sul_soldier_wage_rate",
+        "laborers": "sul_laborer_wage_rate", "peasants": "sul_peasant_wage_rate",
     }
-    pop_rw_sv = {
-        "nobles": "pdo_noble_rents_wages", "clergy": "pdo_clergy_rents_wages",
-        "burghers": "pdo_burgher_rents_wages", "soldiers": "pdo_soldier_rents_wages",
-        "laborers": "pdo_laborer_rents_wages", "peasants": "pdo_peasant_rents_wages",
+    pop_return_sv = {
+        "nobles": "sul_noble_capital_return", "clergy": "sul_clergy_capital_return",
+        "burghers": "sul_burgher_capital_return",
+        "soldiers": "sul_commoner_flat_wealth", "laborers": "sul_commoner_flat_wealth",
+        "peasants": "sul_commoner_flat_wealth",
     }
-    pop_tax_sv = {
-        "nobles": "pdo_noble_tax_income", "clergy": "pdo_clergy_tax_income",
-        "burghers": "pdo_burgher_tax_income", "soldiers": "pdo_soldier_tax_income",
-        "laborers": "pdo_laborer_tax_income", "peasants": "pdo_peasant_tax_income",
+    pop_wpp_sv = {
+        "nobles": "sul_noble_demand_per_pop", "clergy": "sul_clergy_demand_per_pop",
+        "burghers": "sul_burgher_demand_per_pop", "soldiers": "sul_soldier_demand_per_pop",
+        "laborers": "sul_laborer_demand_per_pop", "peasants": "sul_peasant_demand_per_pop",
+    }
+    # Wage breakdown script values (base, global mod, local mod)
+    pop_base_wage_sv = {
+        "nobles": "sul_noble_base_wage", "clergy": "sul_clergy_base_wage",
+        "burghers": "sul_burgher_base_wage", "soldiers": "sul_soldier_base_wage",
+        "laborers": "sul_laborer_base_wage", "peasants": "sul_peasant_base_wage",
+    }
+    pop_global_mod_sv = {
+        "nobles": "sul_noble_global_wage_modifier", "clergy": "sul_clergy_global_wage_modifier",
+        "burghers": "sul_burgher_global_wage_modifier", "soldiers": "sul_soldier_global_wage_modifier",
+        "laborers": "sul_laborer_global_wage_modifier", "peasants": "sul_peasant_global_wage_modifier",
+    }
+    pop_local_mod_sv = {
+        "nobles": "sul_noble_local_wage_modifier", "clergy": "sul_clergy_local_wage_modifier",
+        "burghers": "sul_burgher_local_wage_modifier", "soldiers": "sul_soldier_local_wage_modifier",
+        "laborers": "sul_laborer_local_wage_modifier", "peasants": "sul_peasant_local_wage_modifier",
+    }
+    pop_global_mod_key = {
+        "nobles": "sul_global_nobles_wages_modifier", "clergy": "sul_global_clergy_wages_modifier",
+        "burghers": "sul_global_burghers_wages_modifier", "soldiers": "sul_global_soldiers_wages_modifier",
+        "laborers": "sul_global_laborers_wages_modifier", "peasants": "sul_global_peasants_wages_modifier",
+    }
+    # Upper vs commoner distinction
+    upper_pops = {"nobles", "clergy", "burghers"}
+
+    # Enrichment script value map: pop type → enrichment SV name
+    pop_enrichment_sv = {
+        "nobles": "sul_noble_enrichment_per_pop",
+        "clergy": "sul_clergy_enrichment_per_pop",
+        "burghers": "sul_burgher_enrichment_per_pop",
+        "soldiers": "sul_commoner_enrichment_per_pop",
+        "laborers": "sul_commoner_enrichment_per_pop",
+        "peasants": "sul_commoner_enrichment_per_pop",
+    }
+    pop_enrichment_rate_sv = {
+        "nobles": "sul_noble_enrichment_rate_display",
+        "clergy": "sul_clergy_enrichment_rate_display",
+        "burghers": "sul_burgher_enrichment_rate_display",
+        "soldiers": "sul_commoner_enrichment_rate_display",
+        "laborers": "sul_commoner_enrichment_rate_display",
+        "peasants": "sul_commoner_enrichment_rate_display",
     }
 
     lines = []
-    lines.append('\t### PDO: POP DEMAND BUDGET')
+    lines.append('\t### WPDO: POP DEMAND BUDGET')
     lines.append('')
     lines.append("\tTooltipListBase = {")
-    lines.append("\t\tvisible = \"[Location.MakeScope.GetVariable('pdo_local_gdp').IsSet]\"")
+    lines.append("\t\tvisible = \"[Location.MakeScope.GetVariable('sul_local_gdp').IsSet]\"")
     lines.append("\t\tmax_update_rate = 30")
     lines.append("")
-    lines.append('\t\tTooltipTableHeader = { blockoverride "tableheader_text" { raw_text = "#T Pop Demand Budget#!" } }')
+    lines.append('\t\tTooltipTableHeader = { blockoverride "tableheader_text" { raw_text = "#T Pop Demand Per Pop#!" } }')
     lines.append("")
-    lines.append("\t\tTooltipListRowContent = {")
 
-    # Header row with hover tooltips
-    lines.append("\t\t\t# Header row")
+    # Enrichment section at top
+    lines.append("\t\tTooltipListRowContent = {")
     lines.append('\t\t\tTooltipManualTableField = {')
     lines.append('\t\t\t\tblockoverride "field_content" {')
+    lines.append('\t\t\t\t\ttext_multi = { layoutpolicy_horizontal = expanding max_width = 420 raw_text = "#low Demand per pop represents the purchasing power of every 1,000 people. Wages are drawn from a shared pool distributed by political power. A fraction of income is saved as #bold Enrichment#! — wealth flowing to estate treasuries.#!" }')
+    lines.append('\t\t\t\t}')
+    lines.append('\t\t\t}')
+    lines.append("\t\t}")
+    lines.append("")
+
+    lines.append("\t\tTooltipListRowContent = {")
+
+    # Header row
+    lines.append("\t\t\tTooltipManualTableField = {")
+    lines.append('\t\t\t\tblockoverride "field_content" {')
     lines.append('\t\t\t\t\ttext_single = { layoutpolicy_horizontal = expanding margin_left = 5 raw_text = "#T Pop Type#!" }')
-    lines.append('\t\t\t\t\ttext_single = { min_width = 80 max_width = 80 align = right raw_text = "#T Share#!" tooltip = "Percentage of this location\'s wealth controlled by this pop type, based on estate power." }')
-    lines.append('\t\t\t\t\ttext_single = { min_width = 80 max_width = 80 align = right raw_text = "#T Tax Base#!" tooltip = "Income from the location\'s tax base, distributed by wealth share." }')
-    lines.append('\t\t\t\t\ttext_single = { min_width = 80 max_width = 80 align = right raw_text = "#T Wages#!" tooltip = "Imputed wage income added to GDP based on pop type and population." }')
-    lines.append('\t\t\t\t\ttext_single = { min_width = 80 max_width = 80 align = right raw_text = "#T Budget#!" tooltip = "Total income allocated to goods demand (Tax Base + Wages)." }')
+    lines.append('\t\t\t\t\ttext_single = { min_width = 70 max_width = 70 align = right raw_text = "#T Wages#!" }')
+    lines.append('\t\t\t\t\ttext_single = { min_width = 70 max_width = 70 align = right raw_text = "#T Returns#!" }')
+    lines.append('\t\t\t\t\ttext_single = { min_width = 70 max_width = 70 align = right raw_text = "#T Savings#!" }')
+    lines.append('\t\t\t\t\ttext_single = { min_width = 70 max_width = 70 align = right raw_text = "#T WPP#!" }')
     lines.append('\t\t\t\t}')
     lines.append('\t\t\t}')
 
     for pop in GUI_POP_TYPES:
         display = pop_display[pop]
-        share_sv = pop_share_sv[pop]
-        rw_sv = pop_rw_sv[pop]
-        tax_sv = pop_tax_sv[pop]
+        wage_sv = pop_wage_sv[pop]
+        return_sv = pop_return_sv[pop]
+        wpp_sv = pop_wpp_sv[pop]
+        base_sv = pop_base_wage_sv[pop]
+        gmod_sv = pop_global_mod_sv[pop]
+        lmod_sv = pop_local_mod_sv[pop]
+        gmod_key = pop_global_mod_key[pop]
+        is_upper = pop in upper_pops
         subtip = _gen_pop_subtip(pop, display, results)
 
         lines.append(f"")
         lines.append(f"\t\t\t# {display}")
         lines.append(f"\t\t\tTooltipManualTableField = {{")
-        lines.append(f"\t\t\t\tvisible = \"[GreaterThan_CFixedPoint(Location.MakeScope.ScriptValue('{share_sv}'), '(CFixedPoint)0')]\"")
-        lines.append(f"")
+        lines.append(f"\t\t\t\tvisible = \"[GreaterThan_CFixedPoint(Location.MakeScope.ScriptValue('{wpp_sv}'), '(CFixedPoint)0.0001')]\"")
         lines.append(f'\t\t\t\tblockoverride "field_content" {{')
         lines.append(f"\t\t\t\t\ticon = {{ size = {{ 20 20 }} texture = \"[GetGraphicalCultureTextureForPopType(GetPopTypeByName('{pop}'))]\" }}")
         lines.append(f'\t\t\t\t\ttext_single = {{ layoutpolicy_horizontal = expanding margin_left = 5 raw_text = "{display}" }}')
-        lines.append(f"\t\t\t\t\ttext_single = {{ min_width = 80 max_width = 80 align = right raw_text = \"[Location.MakeScope.ScriptValue('{share_sv}')|0]%\" }}")
-        lines.append(f"\t\t\t\t\ttext_single = {{ min_width = 80 max_width = 80 align = right raw_text = \"[Location.MakeScope.ScriptValue('{tax_sv}')|2]@gold!\" }}")
-        lines.append(f"\t\t\t\t\ttext_single = {{ min_width = 80 max_width = 80 align = right raw_text = \"[Subtract_CFixedPoint(Location.MakeScope.ScriptValue('{rw_sv}'), Location.MakeScope.ScriptValue('{tax_sv}'))|2]@gold!\" }}")
+
+        # Wages column: shows share of location wage pool captured by this estate
+        pop_power_sv_w = {"nobles": "sul_noble_power_share", "clergy": "sul_clergy_power_share", "burghers": "sul_burgher_power_share"}.get(pop, "sul_commoner_power_share")
         lines.append(f"\t\t\t\t\ttext_single = {{")
-        lines.append(f"\t\t\t\t\t\tmin_width = 80")
-        lines.append(f"\t\t\t\t\t\tmax_width = 80")
-        lines.append(f"\t\t\t\t\t\talign = right")
-        lines.append(f"\t\t\t\t\t\traw_text = \"[Location.MakeScope.ScriptValue('{rw_sv}')|2]@gold!\"")
+        lines.append(f"\t\t\t\t\t\tmin_width = 70 max_width = 70 align = right")
+        lines.append(f"\t\t\t\t\t\traw_text = \"[Location.MakeScope.ScriptValue('{wage_sv}')|2]@gold!\"")
+        lines.append(f"\t\t\t\t\t\ttooltipwidget = {{")
+        lines.append(f"\t\t\t\t\t\t\tContextualTooltipType = {{")
+        lines.append(f'\t\t\t\t\t\t\t\tblockoverride "tooltip_title" {{ ContextualTooltipHeader = {{ blockoverride "title_text" {{ raw_text = "{display} Wages" }} }} }}')
+        lines.append(f'\t\t\t\t\t\t\t\tblockoverride "tooltip_content" {{')
+        lines.append(f"\t\t\t\t\t\t\t\t\tTooltipListBase = {{")
+        lines.append(f'\t\t\t\t\t\t\t\t\t\tTooltipManualTableField = {{ blockoverride "field_content" {{ text_single = {{ layoutpolicy_horizontal = expanding raw_text = "Location Wage Pool" }} text_single = {{ align = right min_width = 100 raw_text = "[Location.MakeScope.ScriptValue(\'sul_wage_pool_total\')|2]@gold!" }} }} }}')
+        lines.append(f'\t\t\t\t\t\t\t\t\t\tTooltipManualTableField = {{ blockoverride "field_content" {{ text_single = {{ layoutpolicy_horizontal = expanding raw_text = "Estate Power" }} text_single = {{ align = right min_width = 100 raw_text = "[Multiply_CFixedPoint(Location.MakeScope.ScriptValue(\'{pop_power_sv_w}\'), \'(CFixedPoint)100\')|0]%" }} }} }}')
+        if not is_upper:
+            bill_pct_sv = f"sul_{pop}_bill_pct"
+            lines.append(f'\t\t\t\t\t\t\t\t\t\tTooltipManualTableField = {{ blockoverride "field_content" {{ text_single = {{ layoutpolicy_horizontal = expanding raw_text = "Wage Bill Share" }} text_single = {{ align = right min_width = 100 raw_text = "[Multiply_CFixedPoint(Location.MakeScope.ScriptValue(\'{bill_pct_sv}\'), \'(CFixedPoint)100\')|0]%" }} }} }}')
+        lines.append(f"\t\t\t\t\t\t\t\t\t}}")
+        lines.append(f"\t\t\t\t\t\t\t\t}}")
+        lines.append(f"\t\t\t\t\t\t\t}}")
+        lines.append(f"\t\t\t\t\t\t}}")
+        lines.append(f"\t\t\t\t\t}}")
+
+        # Returns column: capital returns for upper estates, flat wealth for commoners
+        pop_power_sv_r = {"nobles": "sul_noble_power_share", "clergy": "sul_clergy_power_share", "burghers": "sul_burgher_power_share"}.get(pop)
+        lines.append(f"\t\t\t\t\ttext_single = {{")
+        lines.append(f"\t\t\t\t\t\tmin_width = 70 max_width = 70 align = right")
+        lines.append(f"\t\t\t\t\t\traw_text = \"[Location.MakeScope.ScriptValue('{return_sv}')|2]@gold!\"")
+        if is_upper:
+            lines.append(f"\t\t\t\t\t\ttooltipwidget = {{")
+            lines.append(f"\t\t\t\t\t\t\tContextualTooltipType = {{")
+            lines.append(f'\t\t\t\t\t\t\t\tblockoverride "tooltip_title" {{ ContextualTooltipHeader = {{ blockoverride "title_text" {{ raw_text = "{display} Capital Returns" }} }} }}')
+            lines.append(f'\t\t\t\t\t\t\t\tblockoverride "tooltip_content" {{')
+            lines.append(f"\t\t\t\t\t\t\t\t\tTooltipListBase = {{")
+            lines.append(f'\t\t\t\t\t\t\t\t\t\tTooltipManualTableField = {{ blockoverride "field_content" {{ text_single = {{ layoutpolicy_horizontal = expanding raw_text = "Estate Return Rate" }} text_single = {{ align = right min_width = 100 raw_text = "[Location.MakeScope.ScriptValue(\'{return_sv}\')|2]@gold!" }} }} }}')
+            lines.append(f'\t\t\t\t\t\t\t\t\t\tTooltipManualTableField = {{ blockoverride "field_content" {{ text_single = {{ layoutpolicy_horizontal = expanding raw_text = "Asset Share" }} text_single = {{ align = right min_width = 100 raw_text = "[Location.MakeScope.ScriptValue(\'sul_asset_share_pct\')|0]%" }} }} }}')
+            lines.append(f'\t\t\t\t\t\t\t\t\t\tTooltipManualTableField = {{ blockoverride "field_content" {{ text_single = {{ layoutpolicy_horizontal = expanding raw_text = "Political Power" }} text_single = {{ align = right min_width = 100 raw_text = "[Multiply_CFixedPoint(Location.MakeScope.ScriptValue(\'{pop_power_sv_r}\'), \'(CFixedPoint)100\')|0]%" }} }} }}')
+            lines.append(f"\t\t\t\t\t\t\t\t\t}}")
+            lines.append(f"\t\t\t\t\t\t\t\t}}")
+            lines.append(f"\t\t\t\t\t\t\t}}")
+            lines.append(f"\t\t\t\t\t\t}}")
+        lines.append(f"\t\t\t\t\t}}")
+
+        # Savings column: enrichment flowing to estate treasury
+        enrichment_sv = pop_enrichment_sv[pop]
+        enr_rate_sv = pop_enrichment_rate_sv[pop]
+        lines.append(f"\t\t\t\t\ttext_single = {{")
+        lines.append(f"\t\t\t\t\t\tmin_width = 70 max_width = 70 align = right")
+        lines.append(f"\t\t\t\t\t\traw_text = \"[Location.MakeScope.ScriptValue('{enrichment_sv}')|2]@gold!\"")
+        lines.append(f"\t\t\t\t\t\ttooltipwidget = {{")
+        lines.append(f"\t\t\t\t\t\t\tContextualTooltipType = {{")
+        lines.append(f'\t\t\t\t\t\t\t\tblockoverride "tooltip_title" {{ ContextualTooltipHeader = {{ blockoverride "title_text" {{ raw_text = "{display} Enrichment" }} }} }}')
+        lines.append(f'\t\t\t\t\t\t\t\tblockoverride "tooltip_content" {{')
+        lines.append(f"\t\t\t\t\t\t\t\t\tTooltipListBase = {{")
+        lines.append(f'\t\t\t\t\t\t\t\t\t\tTooltipManualTableField = {{ blockoverride "field_content" {{ text_single = {{ layoutpolicy_horizontal = expanding raw_text = "Enrichment Rate" }} text_single = {{ align = right min_width = 100 raw_text = "[Multiply_CFixedPoint(Location.MakeScope.ScriptValue(\'{enr_rate_sv}\'), \'(CFixedPoint)100\')|0]%" }} }} }}')
+        lines.append(f"\t\t\t\t\t\t\t\t\t}}")
+        lines.append(f"\t\t\t\t\t\t\t\t}}")
+        lines.append(f"\t\t\t\t\t\t\t}}")
+        lines.append(f"\t\t\t\t\t\t}}")
+        lines.append(f"\t\t\t\t\t}}")
+
+        # WPP column with demand breakdown tooltip
+        lines.append(f"\t\t\t\t\ttext_single = {{")
+        lines.append(f"\t\t\t\t\t\tmin_width = 70 max_width = 70 align = right")
+        lines.append(f"\t\t\t\t\t\traw_text = \"[Location.MakeScope.ScriptValue('{wpp_sv}')|2]@gold!\"")
         lines.append(subtip)
         lines.append(f"\t\t\t\t\t}}")
-        lines.append(f"\t\t\t\t}}")
-        lines.append(f"\t\t\t}}")
 
-    # Estate-only rows (dhimmi, cossacks, tribes) — visible when share > 0
-    estate_rows = [
-        ("Dhimmi", "pdo_dhimmi_share_pct", "pdo_dhimmi_tax_income", "pdo_dhimmi_rents_wages"),
-        ("Cossacks", "pdo_cossacks_share_pct", "pdo_cossacks_tax_income", "pdo_cossacks_rents_wages"),
-        ("Tribes", "pdo_tribes_share_pct", "pdo_tribes_tax_income", "pdo_tribes_rents_wages"),
-    ]
-    for display, share_sv, tax_sv, rw_sv in estate_rows:
-        lines.append(f"")
-        lines.append(f"\t\t\t# {display}")
-        lines.append(f"\t\t\tTooltipManualTableField = {{")
-        lines.append(f"\t\t\t\tvisible = \"[GreaterThan_CFixedPoint(Location.MakeScope.ScriptValue('{share_sv}'), '(CFixedPoint)0')]\"")
-        lines.append(f"")
-        lines.append(f'\t\t\t\tblockoverride "field_content" {{')
-        lines.append(f'\t\t\t\t\ttext_single = {{ layoutpolicy_horizontal = expanding layoutpolicy_horizontal = expanding margin_left = 5 raw_text = "{display}" }}')
-        lines.append(f"\t\t\t\t\ttext_single = {{ min_width = 80 max_width = 80 align = right raw_text = \"[Location.MakeScope.ScriptValue('{share_sv}')|0]%\" }}")
-        lines.append(f"\t\t\t\t\ttext_single = {{ min_width = 80 max_width = 80 align = right raw_text = \"[Location.MakeScope.ScriptValue('{tax_sv}')|2]@gold!\" }}")
-        lines.append(f"\t\t\t\t\ttext_single = {{ min_width = 80 max_width = 80 align = right raw_text = \"[Subtract_CFixedPoint(Location.MakeScope.ScriptValue('{rw_sv}'), Location.MakeScope.ScriptValue('{tax_sv}'))|2]@gold!\" }}")
-        lines.append(f"\t\t\t\t\ttext_single = {{ min_width = 80 max_width = 80 align = right raw_text = \"[Location.MakeScope.ScriptValue('{rw_sv}')|2]@gold!\" }}")
         lines.append(f"\t\t\t\t}}")
         lines.append(f"\t\t\t}}")
 
@@ -798,7 +898,7 @@ def generate_gui_tooltip(results):
 
 
 def generate_demand_init(results):
-    """Generate pdo_demand_init.txt scripted effect.
+    """Generate sul_demand_init.txt scripted effect.
 
     Creates 6 variable maps on the location (one per tier), each mapping
     goods to their demand_add constant. Called once during init.
@@ -808,9 +908,9 @@ def generate_demand_init(results):
         "# Generated by demand_calculator.py --cache",
         "# Static demand_add maps for GUI tooltip iteration.",
         "# 6 maps (one per tier), each keyed by goods, value = demand_add.",
-        "# Called once per location during pdo_initialize_all.",
+        "# Called once per location during sul_initialize_all.",
         "",
-        "pdo_init_demand_maps = {",
+        "sul_init_demand_maps = {",
     ]
 
     # Group by category
@@ -829,7 +929,7 @@ def generate_demand_init(results):
         lines.append(f"\t# {cat}")
         for r in goods_in_cat:
             da_str = _fmt(r["demand_add"]["all"])
-            lines.append(f"\tadd_to_global_variable_map = {{ name = pdo_da_{cat} key = goods:{r['name']} value = {da_str} }}")
+            lines.append(f"\tadd_to_global_variable_map = {{ name = sul_da_{cat} key = goods:{r['name']} value = {da_str} }}")
         lines.append("")
 
     lines.append("}")
@@ -844,7 +944,7 @@ def write_demand_init(results):
     script_dir = os.path.dirname(os.path.abspath(__file__))
     mod_dir = os.path.dirname(script_dir)
     out_path = os.path.join(mod_dir, "in_game", "common", "scripted_effects",
-                            "pdo_demand_init.txt")
+                            "sul_demand_init.txt")
     os.makedirs(os.path.dirname(out_path), exist_ok=True)
     with open(out_path, "w", encoding="utf-8-sig") as f:
         f.write(content)
@@ -861,10 +961,10 @@ def write_gui(results):
     gui_path = os.path.join(mod_dir, "in_game", "gui", "shared",
                             "aaa_sul_location_tooltips.gui")
 
-    with open(gui_path, encoding="utf-8") as f:
+    with open(gui_path, encoding="utf-8-sig") as f:
         content = f.read()
 
-    marker = "### PDO: POP DEMAND BUDGET"
+    marker = "### WPDO: POP DEMAND BUDGET"
     idx = content.find(marker)
     if idx < 0:
         print(f"  ERROR: marker '{marker}' not found in {gui_path}", file=sys.stderr)
@@ -901,11 +1001,11 @@ def main():
     parser.add_argument("--pdx", action="store_true",
                         help="Output PDX REPLACE blocks to stdout")
     parser.add_argument("--write", action="store_true",
-                        help="Write PDX output to pdo_goods_overrides.txt")
+                        help="Write PDX output to sul_goods_overrides.txt")
     parser.add_argument("--gui", action="store_true",
                         help="Write generated GUI tooltip to aaa_sul_location_tooltips.gui")
     parser.add_argument("--cache", action="store_true",
-                        help="Write demand init scripted effect (pdo_demand_init.txt)")
+                        help="Write demand init scripted effect (sul_demand_init.txt)")
     parser.add_argument("--vanilla-dir", metavar="DIR",
                         help="Override vanilla goods directory path")
     args = parser.parse_args()

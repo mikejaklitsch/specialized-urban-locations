@@ -372,22 +372,6 @@ sul_rural_granary_price_cost_modifier = {
 	game_data = { category = country }
 }
 
-# Replaces engine-internal local_max_rgo_size accumulation with a custom
-# accumulator that script_values can read via modifier:sul_rgo_size.
-# Necessary because vanilla local_max_rgo_size is not script-readable.
-
-sul_rgo_size = {
-	decimals = 3
-
-	game_data = { category = location }
-}
-
-sul_rgo_size_modifier = {
-	percent = yes
-
-	game_data = { category = location }
-}
-
 # Display-only category tags so players can identify a building's role.
 
 sul_is_extraction_building = {
@@ -408,9 +392,9 @@ sul_is_rgo_building = {
 	game_data = { category = location }
 }
 
-# Extraction vs production tension: each extraction building level adds
-# +0.25 extraction and -0.25 production; each production level inverses.
-# This forces locations to specialize one direction or the other.
+# Extraction building level accumulator — each extraction-category building
+# contributes 1 per level. Read by RGO cap formula as the extraction
+# investment multiplier.
 
 sul_extraction_size = {
 	decimals = 3
@@ -418,28 +402,13 @@ sul_extraction_size = {
 	game_data = { category = location }
 }
 
+# Production building level accumulator — each production-category building
+# contributes 1 per level. Read by GUI pie chart.
+
 sul_production_size = {
 	decimals = 3
 
 	game_data = { category = location }
-}
-
-global_sul_rgo_size = {
-	decimals = 3
-
-	game_data = { category = country }
-}
-
-global_sul_rgo_size_in_rural = {
-	decimals = 3
-
-	game_data = { category = country }
-}
-
-global_sul_rgo_size_in_non_rural = {
-	decimals = 3
-
-	game_data = { category = country }
 }
 
 # Reframes vanilla merchant_maintenance_cost (linear, lower=better) as a

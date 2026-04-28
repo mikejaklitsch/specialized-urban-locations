@@ -1,13 +1,8 @@
-﻿# RGO building level / output / max-level math.
+# RGO building level / output / max-level math.
 #
-# sul_location_rgo_building_level reads var:sul_rgo_building_type which is
-# set during game start init on each location and refreshed on owner /
-# raw-material change. Without that variable, building_type lookups would
-# need a per-good if-chain.
-#
-# sul_rgo_max_level_base mirrors the sul_rgo_size static modifier
-# contributions but as an explicit script value with desc lines so the
-# tooltip can show each contribution separately.
+# RGO cap = (base + population) × raw material output × extraction investment.
+# Uses save_temporary_value_as pattern (from MnT) so every multiplier
+# shows as a tooltipped additive line instead of a blank multiply.
 
 employment_size_RGO = 1
 
@@ -15,7 +10,6 @@ build_time_RGO = 365
 
 sul_rgo_output_per_level = {
 	value = raw_material_output
-
 	divide = { value = sul_location_rgo_building_level min = 1 }
 }
 
@@ -38,59 +32,79 @@ sul_location_max_rgo_building_level_rounded = {
 	min = 1
 }
 
-# Starting level when an RGO is first created: 1 minimum + 1 per 50 pops.
-
 rgo_building_level = {
 	value = 1
-
 	add = { value = population divide = 50 }
-
 	floor = yes
 }
 
 sul_rgo_max_level_base = {
-	# Local flat: base(2) + dev(0.1) + pop(0.04) + farmland(0.5) + rural(4) + granary(0.05/lvl)
-	add = { desc = "SUL_RGO_LEVEL_FLAT" value = modifier:sul_rgo_size }
+	save_temporary_value_as = { name = rgo_base value = 0 }
 
-	# Country flat: advances, laws, privileges, religion, societal values
+	# Base
+	save_temporary_value_as = {
+		name = rgo_base
+		value = { value = scope:rgo_base add = 3 }
+	}
+	add = { desc = "BUILDING_LEVEL_BASE" value = 3 }
+
+	# Population
+	save_temporary_value_as = {
+		name = rgo_base
+		value = {
+			value = scope:rgo_base
+			add = { value = population multiply = 0.005 }
+		}
+	}
+	add = { desc = "BUILDING_LEVEL_POPULATION" value = population multiply = 0.005 }
+
+	# Snapshot base+pop before multiplicative scaling
+	save_temporary_value_as = {
+		name = rgo_scaled
+		value = scope:rgo_base
+	}
+
+	# Raw material output bonus (multiplicative, displayed as additive)
 	if = {
-		limit = { has_owner = yes }
-
+		limit = { modifier:local_raw_material_output != 0 }
+		save_temporary_value_as = {
+			name = rgo_scaled
+			value = {
+				value = scope:rgo_base
+				multiply = { value = 1 add = modifier:local_raw_material_output }
+			}
+		}
 		add = {
-			desc = "SUL_RGO_LEVEL_COUNTRY"
-			value = owner.modifier:global_sul_rgo_size
+			desc = "SUL_RAW_MATERIAL_OUTPUT"
+			value = scope:rgo_base
+			multiply = modifier:local_raw_material_output
 		}
-
-		if = {
-			limit = { modifier:sul_is_rural_settlement_rank_tier = yes }
-
-			add = {
-				desc = "SUL_RGO_LEVEL_RURAL"
-				value = owner.modifier:global_sul_rgo_size_in_rural
+	}
+	if = {
+		limit = { has_owner = yes owner = { modifier:global_raw_material_output != 0 } }
+		save_temporary_value_as = {
+			name = rgo_scaled
+			value = {
+				value = scope:rgo_scaled
+				add = {
+					value = scope:rgo_base
+					multiply = owner.modifier:global_raw_material_output
+				}
 			}
 		}
-
-		if = {
-			limit = { is_town_or_city = yes }
-
-			add = {
-				desc = "SUL_RGO_LEVEL_URBAN"
-				value = owner.modifier:global_sul_rgo_size_in_non_rural
-			}
+		add = {
+			desc = "SUL_RAW_MATERIAL_OUTPUT_GLOBAL"
+			value = scope:rgo_base
+			multiply = owner.modifier:global_raw_material_output
 		}
 	}
 
-	# Specialization tier bonus
-	if = {
-		limit = { sul_has_any_specialization = yes }
-		if = {
-			limit = { modifier:sul_is_city_rank_tier = yes }
-			add = { desc = "SUL_RGO_LEVEL_SPEC_CITY" value = 10 }
-		}
-		else_if = {
-			limit = { is_town_or_city = yes }
-			add = { desc = "SUL_RGO_LEVEL_SPEC_TOWN" value = 5 }
-		}
-		else = { add = { desc = "SUL_RGO_LEVEL_SPEC_RURAL" value = 3 } }
+	# Extraction investment (multiplicative, displayed as additive)
+	# Each extraction building level adds modifier:sul_extraction_size = 1.
+	# At 0 extraction: total zeroes out. At 1: unchanged. At N: ×N.
+	add = {
+		desc = "SUL_EXTRACTION_INVESTMENT"
+		value = scope:rgo_scaled
+		multiply = { value = modifier:sul_extraction_size subtract = 1 }
 	}
 }

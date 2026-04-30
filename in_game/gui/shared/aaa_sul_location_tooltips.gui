@@ -1479,3 +1479,133 @@
 		}
 	}
 }
+
+template sul_wealth_bar_tooltip {
+	ContextualTooltipType = {
+		blockoverride "title_icon" {
+			icon = {
+				using = tooltip_title_icon_size
+				texture = "[GetConceptTexture('wealth')]"
+			}
+		}
+		blockoverride "title_text" {
+			raw_text = "#T [sul_location_assets|E]#!"
+		}
+		blockoverride "concept_link" {
+			text = "[sul_location_assets|e]"
+		}
+		blockoverride "tooltip_content" {
+			hbox = {
+				layoutpolicy_horizontal = expanding
+				spacing = 10
+
+				widget = {
+					size = { 100 100 }
+					using = marker_bg_circle
+
+					piechart = {
+						parentanchor = center
+						size = { 90% 90% }
+						using = piechart_angles
+						pieslice = {
+							texture = "gfx/interface/pie_charts/pie_chart_alpha_80.dds"
+							value = "[FixedPointToFloat(LocationView.GetLocation.MakeScope.ScriptValue('sul_wealth_share_nobles'))]"
+							color = { 0.33 0.49 0.80 1 }
+							tooltip = "sul_wealth_slice_nobles"
+						}
+						pieslice = {
+							texture = "gfx/interface/pie_charts/pie_chart_alpha_80.dds"
+							value = "[FixedPointToFloat(LocationView.GetLocation.MakeScope.ScriptValue('sul_wealth_share_clergy'))]"
+							color = { 0.78 0.82 0.90 1 }
+							tooltip = "sul_wealth_slice_clergy"
+						}
+						pieslice = {
+							texture = "gfx/interface/pie_charts/pie_chart_alpha_80.dds"
+							value = "[FixedPointToFloat(LocationView.GetLocation.MakeScope.ScriptValue('sul_wealth_share_burghers'))]"
+							color = { 0.79 0.55 0.10 1 }
+							tooltip = "sul_wealth_slice_burghers"
+						}
+						pieslice = {
+							texture = "gfx/interface/pie_charts/pie_chart_alpha_80.dds"
+							value = "[FixedPointToFloat(LocationView.GetLocation.MakeScope.ScriptValue('sul_wealth_share_peasants'))]"
+							color = { 0.37 0.47 0.26 1 }
+							tooltip = "sul_wealth_slice_commoners"
+						}
+						pieslice = {
+							texture = "gfx/interface/pie_charts/pie_chart_alpha_80.dds"
+							value = "[FixedPointToFloat(LocationView.GetLocation.MakeScope.ScriptValue('sul_wealth_share_crown'))]"
+							color = { 0.54 0.36 0.80 1 }
+							tooltip = "sul_wealth_slice_crown"
+						}
+						icon = {
+							parentanchor = center
+							size = { 55% 55% }
+							texture = "[GetConceptTexture('wealth')]"
+						}
+					}
+				}
+
+				vbox = {
+					spacing = 5
+					TooltipListBase = {
+						TooltipListRowContent = {
+							TooltipManualTableField = { blockoverride "field_content" {
+								text_single = { raw_text = "[sul_location_assets|e]" }
+								expand = {}
+								text_single = { raw_text = "[LocationView.GetLocation.MakeScope.ScriptValue('sul_wealth_total')|1] [wealth_icon]" }
+							} }
+							TooltipManualTableField = { blockoverride "field_content" {
+								text_single = { raw_text = "Monthly" }
+								expand = {}
+								text_single = { raw_text = "#green [LocationView.GetLocation.MakeScope.ScriptValue('sul_wealth_delta_total')|+=1]#! [wealth_icon]" }
+							} }
+							TooltipManualTableField = { blockoverride "field_content" {
+								text_single = { raw_text = "Potential" }
+								expand = {}
+								text_single = { raw_text = "[LocationView.GetLocation.MakeScope.ScriptValue('sul_wealth_target_total')|1] [wealth_icon]" }
+							} }
+						}
+					}
+				}
+			}
+
+			TooltipListColumnContent = {
+				datamodel = "[LocationView.GetLocation.GetOwner.GetGovernment.GetEstates]"
+
+				TooltipTableColumn = {
+					blockoverride "column_title" {  }
+					blockoverride "column_title_text" { text = "[estates|e]" }
+					blockoverride "column_title_right" { expand = {  } }
+
+					blockoverride "field_left" {
+						visible = "[Estate.ExistsForCountry]"
+						icon = {
+							size = { 10 20 }
+							texture = "gfx/interface/component_tiles/bookmark_white.dds"
+							tintcolor = "[Estate.GetType.GetMapColor]"
+						}
+					}
+					blockoverride "field_text" {
+						default_format = "#subtle_name"
+						align = left|nobaseline
+						raw_text = "[Estate.GetName]"
+					}
+					blockoverride "field_right" { expand = {  } }
+				}
+
+				TooltipTableColumn = {
+					blockoverride "column_title" {  }
+					blockoverride "column_title_left" { expand = {  } }
+					blockoverride "column_title_text" { raw_text = "#T Assets#!" }
+
+					blockoverride "field_left" { expand = {  } visible = "[Estate.ExistsForCountry]" }
+					blockoverride "field_text" {
+						align = right|nobaseline
+						raw_text = "[LocationView.GetLocation.MakeScope.ScriptValue('sul_estate_asset_value')|1] (#green [LocationView.GetLocation.MakeScope.ScriptValue('sul_estate_asset_delta')|+=1]#!)"
+					}
+					blockoverride "field_right" { expand = {  } }
+				}
+			}
+		}
+	}
+}

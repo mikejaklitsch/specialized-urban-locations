@@ -15,13 +15,6 @@ sul_initialize_economy = {
 			set_variable = { name = sul_budget_pressure_clergy value = 1 }
 			set_variable = { name = sul_budget_pressure_burghers value = 1 }
 			set_variable = { name = sul_budget_pressure_peasants value = 1 }
-
-			# Capital returns and commoner wealth start at zero until first budget
-			# pressure computation runs with real estate gold data
-			set_variable = { name = sul_return_nobles value = 0 }
-			set_variable = { name = sul_return_clergy value = 0 }
-			set_variable = { name = sul_return_burghers value = 0 }
-			set_variable = { name = sul_flat_wealth_commoner value = 0 }
 			set_variable = { name = sul_country_pop_nobles value = 1 }
 			set_variable = { name = sul_country_pop_clergy value = 1 }
 			set_variable = { name = sul_country_pop_burghers value = 1 }
@@ -33,6 +26,11 @@ sul_initialize_economy = {
 
 			sul_gdp_init = yes
 			sul_update_country_economy = yes
+
+			# Seed location wealth at equilibrium (gold cached after enrichment in sul_update_country_economy)
+			every_owned_location = {
+				sul_wealth_seed_location = yes
+			}
 
 			# Convert vanilla efficiency sources to merchant_maintenance_cost on day 1.
 			sul_trade_maintenance_apply = yes
@@ -70,7 +68,7 @@ sul_player_wage_update = {
 	}
 
 	effect = {
-		sul_accumulate_wages = yes
+		sul_monthly_location_pass = yes
 		sul_estate_wages_pay_all = yes
 	}
 }
@@ -85,7 +83,7 @@ sul_ai_yearly_wage_accumulate = {
 	}
 
 	effect = {
-		sul_accumulate_wages = yes
+		sul_monthly_location_pass = yes
 	}
 }
 
@@ -111,6 +109,16 @@ sul_yearly_wage_recalc = {
 
 	effect = {
 		every_owned_location = { sul_calculate_location_wages = yes }
+	}
+}
+
+# Location scope. One-time wealth extraction when a location is occupied.
+sul_wealth_on_location_occupied = {
+	effect = {
+		if = {
+			limit = { has_variable = sul_noble_assets }
+			sul_wealth_loot_location = yes
+		}
 	}
 }
 

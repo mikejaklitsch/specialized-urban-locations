@@ -3537,13 +3537,35 @@ lateralview = {
 					}
 				}
 
+				# WEALTH BAR
+				widget = {
+					parentanchor = right|vcenter
+					position = { -48 0 }
+					size = { 22 202 }
+					visible = "[And(LocationView.GetLocation.HasOwner, LocationView.GetLocation.MakeScope.GetVariable('sul_noble_assets').IsSet)]"
+
+					tooltipwidget = {
+						using = sul_wealth_bar_tooltip
+					}
+
+					using = bg_paper_card
+					using = bg_cabinet_card_frame
+
+					progressbar = {
+						parentanchor = center
+						size = { 12 192 }
+						using = progress_bar_goldish
+						value = "[LocationView.GetLocation.MakeScope.ScriptValue('sul_wealth_fill_ratio')]"
+						direction = vertical
+					}
+				}
+
 				# SPECIALIZATION BUTTONS OVERLAY
 				widget = {
 					parentanchor = right|vcenter
 					position = { -5 0 }
-					size = { 46 240 }
-					# Only visible for player-owned locations
-					visible = "[LocationView.GetLocation.GetOwner.IsPlayer]"
+					size = { 46 202 }
+					visible = "[LocationView.GetLocation.HasOwner]"
 
 					vbox = {
 						spacing = 3
@@ -3590,15 +3612,6 @@ lateralview = {
 									using = sul_concept_texture_mining_button
 								}
 							}
-							textbox = {
-								visible = "[GetVariableSystem.Exists('sul_debug')]"
-								parentanchor = right|bottom
-								position = { 26 2 }
-								autoresize = yes
-								fontsize = 11
-								tooltip = "sul_debug_mining_tooltip"
-								text = "[LocationView.GetLocation.MakeScope.ScriptValue('sul_debug_net_mining')|+=1]"
-							}
 						}
 
 						# Farming button
@@ -3639,15 +3652,6 @@ lateralview = {
 									size = { 24 24 }
 									using = sul_concept_texture_farming_button
 								}
-							}
-							textbox = {
-								visible = "[GetVariableSystem.Exists('sul_debug')]"
-								parentanchor = right|bottom
-								position = { 26 2 }
-								autoresize = yes
-								fontsize = 11
-								tooltip = "sul_debug_farming_tooltip"
-								text = "[LocationView.GetLocation.MakeScope.ScriptValue('sul_debug_net_farming')|+=1]"
 							}
 						}
 
@@ -3690,15 +3694,6 @@ lateralview = {
 									using = sul_concept_texture_woodland_button
 								}
 							}
-							textbox = {
-								visible = "[GetVariableSystem.Exists('sul_debug')]"
-								parentanchor = right|bottom
-								position = { 26 2 }
-								autoresize = yes
-								fontsize = 11
-								tooltip = "sul_debug_woodland_tooltip"
-								text = "[LocationView.GetLocation.MakeScope.ScriptValue('sul_debug_net_woodland')|+=1]"
-							}
 						}
 
 						# Gathering button
@@ -3739,15 +3734,6 @@ lateralview = {
 									size = { 24 24 }
 									using = sul_concept_texture_gathering_button
 								}
-							}
-							textbox = {
-								visible = "[GetVariableSystem.Exists('sul_debug')]"
-								parentanchor = right|bottom
-								position = { 26 2 }
-								autoresize = yes
-								fontsize = 11
-								tooltip = "sul_debug_gathering_tooltip"
-								text = "[LocationView.GetLocation.MakeScope.ScriptValue('sul_debug_net_gathering')|+=1]"
 							}
 						}
 
@@ -3790,31 +3776,8 @@ lateralview = {
 									using = sul_concept_texture_commercial_button
 								}
 							}
-							textbox = {
-								visible = "[GetVariableSystem.Exists('sul_debug')]"
-								parentanchor = right|bottom
-								position = { 26 2 }
-								autoresize = yes
-								fontsize = 11
-								tooltip = "sul_debug_commercial_tooltip"
-								text = "[LocationView.GetLocation.MakeScope.ScriptValue('sul_debug_net_commercial')|+=1]"
-							}
 						}
 
-						# Debug toggle
-						button = {
-							size = { 36 18 }
-							using = bg_paper_card
-							onclick = "[GetVariableSystem.Toggle('sul_debug')]"
-							down = "[GetVariableSystem.Exists('sul_debug')]"
-							textbox = {
-								parentanchor = center
-								autoresize = yes
-								fontsize = 10
-								raw_text = "AI"
-								align = center
-							}
-						}
 					}
 				}
 			}

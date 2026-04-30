@@ -1,0 +1,252 @@
+# Location Wealth Debug — location scope.
+# Country-scope values (national power, estate gold) cached monthly
+# by sul_monthly_location_pass into owner vars.
+
+# --- RAW LOCAL ESTATE POWER (location scope, live) ---
+
+sul_dbg_local_power_nobles = { value = "local_estate_power(estate_type:nobles_estate)" }
+sul_dbg_local_power_clergy = { value = "local_estate_power(estate_type:clergy_estate)" }
+sul_dbg_local_power_burghers = { value = "local_estate_power(estate_type:burghers_estate)" }
+sul_dbg_local_power_peasants = { value = "local_estate_power(estate_type:peasants_estate)" }
+
+sul_dbg_local_power_crown = {
+	value = "local_estate_power(estate_type:nobles_estate)"
+	add = "local_estate_power(estate_type:clergy_estate)"
+	add = "local_estate_power(estate_type:burghers_estate)"
+	add = "local_estate_power(estate_type:peasants_estate)"
+}
+
+# --- NATIONAL ESTATE POWER (cached country vars) ---
+
+sul_dbg_national_power_nobles = { value = owner.var:sul_nobles_estate_raw_power }
+sul_dbg_national_power_clergy = { value = owner.var:sul_clergy_estate_raw_power }
+sul_dbg_national_power_burghers = { value = owner.var:sul_burghers_estate_raw_power }
+sul_dbg_national_power_peasants = { value = owner.var:sul_peasants_estate_raw_power }
+sul_dbg_national_power_crown = { value = owner.var:sul_crown_estate_raw_power }
+
+# --- FRACTION OF NATIONAL POWER (local / cached national) ---
+
+sul_dbg_fraction_nobles = {
+	value = "local_estate_power(estate_type:nobles_estate)"
+	divide = { value = owner.var:sul_nobles_estate_raw_power min = 0.001 }
+}
+
+sul_dbg_fraction_clergy = {
+	value = "local_estate_power(estate_type:clergy_estate)"
+	divide = { value = owner.var:sul_clergy_estate_raw_power min = 0.001 }
+}
+
+sul_dbg_fraction_burghers = {
+	value = "local_estate_power(estate_type:burghers_estate)"
+	divide = { value = owner.var:sul_burghers_estate_raw_power min = 0.001 }
+}
+
+sul_dbg_fraction_peasants = {
+	value = "local_estate_power(estate_type:peasants_estate)"
+	divide = { value = owner.var:sul_peasants_estate_raw_power min = 0.001 }
+}
+
+sul_dbg_fraction_crown = {
+	value = sul_dbg_local_power_crown
+	divide = { value = owner.var:sul_crown_estate_raw_power min = 0.001 }
+}
+
+# --- AGGREGATE POLITICAL POWER FRACTION (for comparison) ---
+
+sul_dbg_aggregate_political_fraction = {
+	value = local_political_power_fraction
+}
+
+# --- ESTATE GOLD (cached for upper estates, live for crown) ---
+
+sul_dbg_gold_nobles = { value = owner.var:sul_nobles_estate_gold }
+sul_dbg_gold_clergy = { value = owner.var:sul_clergy_estate_gold }
+sul_dbg_gold_burghers = { value = owner.var:sul_burghers_estate_gold }
+sul_dbg_gold_peasants = { value = owner.var:sul_peasants_estate_gold }
+sul_dbg_gold_crown = { value = owner.gold }
+
+# --- IMPLIED WEALTH TARGET (fraction × gold) ---
+
+sul_dbg_target_nobles = {
+	value = sul_dbg_fraction_nobles
+	multiply = owner.var:sul_nobles_estate_gold
+}
+
+sul_dbg_target_clergy = {
+	value = sul_dbg_fraction_clergy
+	multiply = owner.var:sul_clergy_estate_gold
+}
+
+sul_dbg_target_burghers = {
+	value = sul_dbg_fraction_burghers
+	multiply = owner.var:sul_burghers_estate_gold
+}
+
+sul_dbg_target_peasants = {
+	value = sul_dbg_fraction_peasants
+	multiply = owner.var:sul_peasants_estate_gold
+}
+
+sul_dbg_target_crown = {
+	value = sul_dbg_fraction_crown
+	multiply = owner.gold
+}
+
+# --- DISPLAY HELPERS (× 100 for percentage display) ---
+
+sul_dbg_fraction_nobles_pct = { value = sul_dbg_fraction_nobles multiply = 100 }
+sul_dbg_fraction_clergy_pct = { value = sul_dbg_fraction_clergy multiply = 100 }
+sul_dbg_fraction_burghers_pct = { value = sul_dbg_fraction_burghers multiply = 100 }
+sul_dbg_fraction_peasants_pct = { value = sul_dbg_fraction_peasants multiply = 100 }
+sul_dbg_fraction_crown_pct = { value = sul_dbg_fraction_crown multiply = 100 }
+sul_dbg_aggregate_political_pct = { value = sul_dbg_aggregate_political_fraction multiply = 100 }
+
+# --- PER-ESTATE ASSET VALUE (estate scope, maps estate_type → location asset var) ---
+
+sul_estate_asset_value = {
+	value = 0
+	if = { limit = { estate_type = estate_type:nobles_estate } add = location.var:sul_noble_assets }
+	else_if = { limit = { estate_type = estate_type:clergy_estate } add = location.var:sul_clergy_assets }
+	else_if = { limit = { estate_type = estate_type:burghers_estate } add = location.var:sul_burgher_assets }
+	else_if = { limit = { estate_type = estate_type:peasants_estate } add = location.var:sul_peasant_assets }
+	else_if = { limit = { estate_type = estate_type:crown_estate } add = location.var:sul_crown_assets }
+}
+
+sul_estate_asset_delta = {
+	value = 0
+	if = { limit = { estate_type = estate_type:nobles_estate } add = location.sul_wealth_delta_nobles }
+	else_if = { limit = { estate_type = estate_type:clergy_estate } add = location.sul_wealth_delta_clergy }
+	else_if = { limit = { estate_type = estate_type:burghers_estate } add = location.sul_wealth_delta_burghers }
+	else_if = { limit = { estate_type = estate_type:peasants_estate } add = location.sul_wealth_delta_peasants }
+	else_if = { limit = { estate_type = estate_type:crown_estate } add = location.sul_wealth_delta_crown }
+}
+
+sul_estate_asset_share = {
+	value = 0
+	if = { limit = { estate_type = estate_type:nobles_estate } add = location.sul_wealth_share_nobles }
+	else_if = { limit = { estate_type = estate_type:clergy_estate } add = location.sul_wealth_share_clergy }
+	else_if = { limit = { estate_type = estate_type:burghers_estate } add = location.sul_wealth_share_burghers }
+	else_if = { limit = { estate_type = estate_type:peasants_estate } add = location.sul_wealth_share_peasants }
+	else_if = { limit = { estate_type = estate_type:crown_estate } add = location.sul_wealth_share_crown }
+}
+
+# --- PIE CHART SHARES (estate assets / total, 0-1 for pieslice value) ---
+
+sul_wealth_share_nobles = { value = var:sul_noble_assets divide = sul_wealth_total }
+sul_wealth_share_clergy = { value = var:sul_clergy_assets divide = sul_wealth_total }
+sul_wealth_share_burghers = { value = var:sul_burgher_assets divide = sul_wealth_total }
+sul_wealth_share_peasants = { value = var:sul_peasant_assets divide = sul_wealth_total }
+sul_wealth_share_crown = { value = var:sul_crown_assets divide = sul_wealth_total }
+
+# --- MONTHLY DELTA (target - current) × rate ---
+
+@sul_wealth_converge_rate_display = 0.025
+
+sul_wealth_delta_nobles = {
+	value = sul_dbg_target_nobles
+	subtract = var:sul_noble_assets
+	multiply = @sul_wealth_converge_rate_display
+}
+
+sul_wealth_delta_clergy = {
+	value = sul_dbg_target_clergy
+	subtract = var:sul_clergy_assets
+	multiply = @sul_wealth_converge_rate_display
+}
+
+sul_wealth_delta_burghers = {
+	value = sul_dbg_target_burghers
+	subtract = var:sul_burgher_assets
+	multiply = @sul_wealth_converge_rate_display
+}
+
+sul_wealth_delta_peasants = {
+	value = sul_dbg_target_peasants
+	subtract = var:sul_peasant_assets
+	multiply = @sul_wealth_converge_rate_display
+}
+
+sul_wealth_delta_crown = {
+	value = sul_dbg_target_crown
+	subtract = var:sul_crown_assets
+	multiply = @sul_wealth_converge_rate_display
+}
+
+sul_wealth_delta_total = {
+	value = sul_wealth_delta_nobles
+	add = sul_wealth_delta_clergy
+	add = sul_wealth_delta_burghers
+	add = sul_wealth_delta_peasants
+	add = sul_wealth_delta_crown
+}
+
+# --- WEALTH BAR (location scope) ---
+# Total assets and target for fill ratio.
+
+sul_wealth_total = {
+	value = var:sul_noble_assets
+	add = var:sul_clergy_assets
+	add = var:sul_burgher_assets
+	add = var:sul_peasant_assets
+	add = var:sul_crown_assets
+	min = 0.001
+}
+
+sul_wealth_target_total = {
+	value = sul_dbg_target_nobles
+	add = sul_dbg_target_clergy
+	add = sul_dbg_target_burghers
+	add = sul_dbg_target_peasants
+	add = sul_dbg_target_crown
+	min = 0.001
+}
+
+# Fill ratio 0-1, capped at 1
+sul_wealth_fill_ratio = {
+	value = sul_wealth_total
+	divide = sul_wealth_target_total
+	multiply = 100
+	min = 0
+	max = 100
+}
+
+# Per-estate bar section height in pixels (240px total)
+sul_wealth_bar_nobles = {
+	value = var:sul_noble_assets
+	divide = sul_wealth_total
+	multiply = sul_wealth_fill_ratio
+	multiply = 202
+	min = 0
+}
+
+sul_wealth_bar_clergy = {
+	value = var:sul_clergy_assets
+	divide = sul_wealth_total
+	multiply = sul_wealth_fill_ratio
+	multiply = 202
+	min = 0
+}
+
+sul_wealth_bar_burghers = {
+	value = var:sul_burgher_assets
+	divide = sul_wealth_total
+	multiply = sul_wealth_fill_ratio
+	multiply = 202
+	min = 0
+}
+
+sul_wealth_bar_peasants = {
+	value = var:sul_peasant_assets
+	divide = sul_wealth_total
+	multiply = sul_wealth_fill_ratio
+	multiply = 202
+	min = 0
+}
+
+sul_wealth_bar_crown = {
+	value = var:sul_crown_assets
+	divide = sul_wealth_total
+	multiply = sul_wealth_fill_ratio
+	multiply = 202
+	min = 0
+}

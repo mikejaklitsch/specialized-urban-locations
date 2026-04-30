@@ -11,27 +11,30 @@ Organized by subsystem. **Update this document when adding, removing, or renamin
 1. `sul_rgo_init` — populate `sul_rgo_map` (goods → building_type)
 2. `sul_rgo_removal_start` — remove vanilla RGO buildings
 3. `sul_initialize_all` — full specialization rebuild, set `sul_version` global variable
-4. `sul_initialize_economy` — seed capital returns + budget pressure + GDP init, run first economy update
+4. `sul_initialize_economy` — seed capital returns + budget pressure + GDP init + wealth accumulation, run first economy update
 5. `sul_war_on_game_start` — initialize war momentum for countries already at war
 
 ### Monthly Country Pulse
-1. `sul_clear_market_cache` / `sul_refresh_market_cache` — invalidate + repopulate market cache
-2. `sul_update_spending_rates` — recalculate 4 spending vars per country
-3. `sul_player_wage_update` — accumulate + pay wages (player only)
-4. `sul_ai_monthly_wage_payment` — pay previously accumulated wages (AI only)
-5. `sul_trade_maintenance_apply_action` — convert summed efficiency to merchant_maintenance_cost
-6. `sul_minting_monthly_update` — minting price cache, debasement, AI minting modifiers
-7. `sul_war_monthly_pulse` — war momentum update (countries at war only)
-8. `sul_projection_monthly_update` — recompute subject-strength drag, decay conquest debt
-9. `sul_epbm_player_monthly` / `sul_epbm_ai_monthly_charge` — EPBM maintenance charging
+Sequential on_actions first, then parallelized events via `sul_monthly_country_pulse`.
+
+**Sequential (sul_hardcoded.txt):**
+1. `sul_projection_monthly` — recompute subject-strength drag, decay conquest debt
+
+**Parallel events (sul_parallel_on_actions.txt → sul_monthly_country_pulse):**
+- `sul_economy.0` (player) — `sul_monthly_location_pass` + pay wages + EPBM collect
+- `sul_economy.1` (AI) — pay previously accumulated wages + EPBM charge
+- `sul_trade_maint.0` — convert summed efficiency to merchant_maintenance_cost
+- `sul_minting_pulse.0` — minting price cache, debasement, AI minting modifiers
+- `sul_war_pulse.0` — war momentum update (countries at war only)
+- `sul_war_pulse.1` — war rebellions
 
 ### Yearly Country Pulse
-- `sul_ai_yearly_wage_accumulate` — accumulate wages (AI only, paid next month)
-- `sul_gdp_yearly_update` — per-location GDP + asset share for capital returns
-- `sul_cleanup_dead_units` — remove dead unit references
-- `sul_yearly_rgo_trim` — cap RGO levels
-- `sul_minting_yearly_update` — AI minting price cache + minting modifier refresh
-- `sul_epbm_ai_yearly_recalc` / `sul_epbm_decade_rebuild` — EPBM AI recalc + safety rebuild
+Parallelized events via `sul_yearly_country_pulse`.
+- `sul_economy.2` — wage rate recalc + AI `sul_monthly_location_pass` + EPBM AI recalc + decade rebuild
+- `sul_economy.3` — GDP yearly: per-location output + asset shares for capital returns
+- `sul_rgo_pulse.0` — RGO trim
+- `sul_rgo_pulse.1` — cleanup dead units
+- `sul_minting_pulse.1` — AI minting price cache + minting modifier refresh
 
 ### Weather Monthly Pulse (every month, scopeless)
 All version checks live here because the pulse fires once globally (no per-country race, so no reentrance guard needed). Each check compares a `sul_X_version` global variable against its matching `sul_X_version_value` script_value (defined in `main_menu/common/script_values/sul_versions.txt`) and re-runs full init on mismatch.
@@ -168,27 +171,26 @@ Set and consumed within a single `sul_distribute_*_buildings` call. Not persiste
 
 ## 4. Economy / GDP / Wages
 
-### Location Variables (refreshed by `sul_update_location_wpp`)
+### Location Variables — WPP (refreshed by `sul_update_location_wpp`)
 | Variable | Updated | Read By | Purpose |
 |----------|---------|---------|---------|
 | `sul_local_wages` | weather_monthly_pulse (AI batch) | wage accumulation, tooltips | Population x wage rates x market_access |
 | `sul_local_gdp` | (same) | tooltips | Sum of WPP x pop counts per location |
-| `sul_asset_share` | yearly (sul_gdp_yearly_update) | WPP capital returns | Location's fraction of national GDP |
-| `sul_local_gdp_output` | yearly (sul_gdp_yearly_update) | asset share computation | Location building profit proxy |
+| `sul_local_gdp_output` | yearly (sul_gdp_yearly_update) | national GDP computation | Location building profit proxy |
 | `sul_wealth_per_pop` | monthly | `sul_read_wpp`, pop_demands | Variable map: pop_type → WPP |
 | `sul_demand_base` | monthly | `sul_read_demand_base`, demand tiers | Variable map: pop_type → WPP/(A+B*WPP) |
 | `sul_last_update` | monthly (AI batch) | batch scheduling | Year of last WPP update |
 
-### Country Variables — Capital Returns (monthly, set by `sul_compute_budget_pressure`)
-| Variable | Init | Updated By | Read By | Formula |
-|----------|------|------------|---------|---------|
-| `sul_return_nobles` | seeded to 0 | `sul_compute_budget_pressure` | `sul_update_location_wpp` | (gold / country_pop) x (gold / (gold + 50 x income)) |
-| `sul_return_clergy` | (same) | (same) | (same) | (same) |
-| `sul_return_burghers` | (same) | (same) | (same) | (same) |
-| `sul_flat_wealth_commoner` | seeded to 0 | (same) | (same) | (gold / (gold + 100 x income)) x 0.5 |
-| `sul_country_pop_nobles` | seeded to 1 | location accumulation | capital returns | Country-wide noble pop count |
-| `sul_country_pop_clergy` | (same) | (same) | (same) | Country-wide clergy pop count |
-| `sul_country_pop_burghers` | (same) | (same) | (same) | Country-wide burgher pop count |
+### Location Variables — Wealth Assets (seeded on init, monthly convergence)
+Per-location physical wealth stocks. Seeded at equilibrium by `sul_wealth_seed_location`, converge monthly via `sul_location_converge_wealth`. Capital returns = assets × 2% / local pops.
+
+| Variable | Set By | Read By | Purpose |
+|----------|--------|---------|---------|
+| `sul_noble_assets` | `sul_wealth_seed_location`, `sul_location_converge_wealth` | WPP capital returns, wealth bar tooltip | Noble physical wealth at this location |
+| `sul_clergy_assets` | (same) | (same) | Clergy physical wealth |
+| `sul_burgher_assets` | (same) | (same) | Burgher physical wealth |
+| `sul_peasant_assets` | (same) | (same) | Peasant physical wealth |
+| `sul_crown_assets` | (same) | (same) | Crown treasury allocated to this location |
 
 ### Country Variables — Budget Pressure (monthly, set by `sul_compute_budget_pressure`)
 | Variable | Init | Updated By | Read By | Formula |
@@ -196,17 +198,20 @@ Set and consumed within a single `sul_distribute_*_buildings` call. Not persiste
 | `sul_budget_pressure_nobles` | seeded to 1 | `sul_compute_budget_pressure` | `sul_demand_*` script values | max(1, 1 + (estate_gold - 1000) x 0.00025) |
 | `sul_budget_pressure_clergy` | (same) | (same) | (same) | (same) |
 | `sul_budget_pressure_burghers` | (same) | (same) | (same) | (same) |
-| `sul_budget_pressure_peasants` | (same) | (same) | (same) | 1 + gold / (gold + 11 x income), min 1 |
+| `sul_budget_pressure_peasants` | (same) | (same) | (same) | (same) |
+| `sul_country_pop_nobles` | seeded to 1 | `sul_monthly_location_pass` | WPP per-pop division | Country-wide noble pop count |
+| `sul_country_pop_clergy` | (same) | (same) | (same) | Country-wide clergy pop count |
+| `sul_country_pop_burghers` | (same) | (same) | (same) | Country-wide burgher pop count |
 
 ### Country Variables — GDP (yearly)
 | Variable | Init | Updated By | Read By | Formula |
 |----------|------|------------|---------|---------|
-| `sul_national_gdp` | sul_gdp_init | `sul_gdp_yearly_update` (yearly) | asset share computation | Sum of all location building profits |
+| `sul_national_gdp` | sul_gdp_init | `sul_gdp_yearly_update` (yearly) | tooltips | Sum of all location building profits |
 
 ### Country Variables — Accumulated Wages (monthly player / yearly AI)
 | Variable | Set By | Read By | Purpose |
 |----------|--------|---------|---------|
-| `sul_monthly_wages_nobles` | `sul_accumulate_wages` / `sul_update_country_economy` | `sul_estate_wages_pay_all` | Noble estate payment |
+| `sul_monthly_wages_nobles` | `sul_monthly_location_pass` / `sul_update_country_economy` | `sul_estate_wages_pay_all` | Noble estate payment |
 | `sul_monthly_wages_clergy` | (same) | (same) | Clergy estate payment |
 | `sul_monthly_wages_burghers` | (same) | (same) | Burgher estate payment |
 | `sul_monthly_wages_peasants` | (same) | (same) | Peasant estate payment |
@@ -214,27 +219,66 @@ Set and consumed within a single `sul_distribute_*_buildings` call. Not persiste
 | `sul_monthly_wages_cossacks` | (same, always 0) | (same) | Placeholder |
 | `sul_monthly_wages_tribes` | (same, always 0) | (same) | Placeholder |
 
+### Country Variables — Location Wealth Accumulators (monthly player / yearly AI)
+Accumulated by `sul_monthly_location_pass` / `sul_update_country_economy`. Raw power is summed from `local_estate_power` across all owned locations. `_prev` vars hold last month's totals for use as convergence denominators. Estate gold is a country-scope cache of the engine's complex `estate_gold` formula, cached AFTER enrichment payments.
+
+| Variable | Set By | Read By | Purpose |
+|----------|--------|---------|---------|
+| `sul_nobles_estate_raw_power` | `sul_monthly_location_pass` / `sul_update_country_economy` | wealth debug panel | Sum of local_estate_power(nobles) across all locations |
+| `sul_clergy_estate_raw_power` | (same) | (same) | Sum of local_estate_power(clergy) across all locations |
+| `sul_burghers_estate_raw_power` | (same) | (same) | Sum of local_estate_power(burghers) across all locations |
+| `sul_peasants_estate_raw_power` | (same) | (same) | Sum of local_estate_power(peasants) across all locations |
+| `sul_crown_estate_raw_power` | (same, derived) | (same) | Sum of all estate raw power (nobles + clergy + burghers + peasants) |
+| `sul_prev_nobles_raw_power` | saved before zeroing | `sul_location_converge_wealth` | Last month's denominator for convergence fraction |
+| `sul_prev_clergy_raw_power` | (same) | (same) | (same) |
+| `sul_prev_burghers_raw_power` | (same) | (same) | (same) |
+| `sul_prev_peasants_raw_power` | (same) | (same) | (same) |
+| `sul_prev_crown_raw_power` | (same) | (same) | (same) |
+| `sul_nobles_estate_gold` | (same) | wealth convergence, debug panel | Cached estate_gold for nobles |
+| `sul_clergy_estate_gold` | (same) | (same) | Cached estate_gold for clergy |
+| `sul_burghers_estate_gold` | (same) | (same) | Cached estate_gold for burghers |
+| `sul_peasants_estate_gold` | (same, null-safe) | (same) | Cached estate_gold for peasants |
+
+### Custom Modifier Types — Economy
+Registered in `main_menu/common/modifier_type_definitions/sul_modifier_types.txt`. These are INJECT-able hooks — any advance, privilege, law, or static modifier can source them to modify the enrichment pipeline.
+
+| Modifier | Category | Base Value | Purpose |
+|----------|----------|------------|---------|
+| `sul_nobles_enrichment_rate` | country (percent) | 1.0 (via `country_base_values`) | Multiplier on noble enrichment (savings tier). INJECT via advances/privileges to shift noble savings rate. |
+| `sul_clergy_enrichment_rate` | country (percent) | 1.0 | Same for clergy |
+| `sul_burghers_enrichment_rate` | country (percent) | 1.0 | Same for burghers |
+| `sul_commoners_enrichment_rate` | country (percent) | 1.0 | Same for commoners (soldiers + laborers + peasants) |
+| `sul_looting_efficiency` | country (percent) | 0 (unsourced) | Shifts loot split from destroyed toward kept. Higher = more gold to occupier. |
+
 ### Economy Data Flow
 ```
 YEARLY (sul_gdp_yearly_update):
   location_net_building_profit → sul_local_gdp_output → sul_national_gdp
-  local/national               → sul_asset_share
 
 MONTHLY (country-level, sul_compute_budget_pressure):
-  estate_gold / country_pops × return_rate → sul_return_<upper_estate>
-  estate_gold / (gold + k × income) × scale → sul_flat_wealth_commoner
-  estate_gold thresholds                    → sul_budget_pressure_*
+  estate_gold thresholds → sul_budget_pressure_*
 
 MONTHLY (per-location, sul_update_location_wpp):
-  Upper WPP = base_wage + return × asset_share × power_share
-  Commoner WPP = base_wage × modifiers + flat_wealth
+  Upper WPP = wage_pool × power_share / pops + assets × 2% / pops
+  Commoner WPP = commoner_pool × bill_share / pops + peasant_assets × 2% / pops
   WPP → sul_wealth_per_pop map → sul_demand_* → pop_demands
   WPP → sul_demand_base map → demand tier formulas
+  Enrichment = demand_base × WPP × 0.53 × enrichment_rate → paid to estates
 
-MONTHLY (wage flow):
-  pop counts × wage rates → sul_local_wages → sul_accumulate_wages
-  → sul_monthly_wages_* → sul_estate_wages_pay_all → estate gold
-  → sul_estate_wage_transfer (upper → commoner, enfranchisement-scaled)
+MONTHLY (sul_monthly_location_pass — single every_owned_location loop):
+  Convergence: assets drift toward (local_power / prev_national_power × estate_gold) at 1%/month
+               occupied locations drain 2%/month instead
+  Accumulate:  local_estate_power per location → sul_*_estate_raw_power
+  Wages:       cached wage bills → sul_monthly_wages_* → sul_estate_wages_pay_all
+               → estate gold → sul_estate_wage_transfer (enfranchisement-scaled)
+  Post-loop:   estate_gold cached after enrichment payments
+
+ON_LOCATION_OCCUPIED (sul_wealth_loot_location):
+  Extract 25% of all assets. Split: (1 - 50% + looting_efficiency) kept by controller.
+
+INIT (sul_initialize_economy):
+  sul_update_country_economy → accumulate raw power + cache gold after enrichment
+  → sul_wealth_seed_location: assets = (local_power / national_power) × estate_gold
 ```
 
 ---
@@ -630,60 +674,130 @@ PP is the central slowdown lever for conquest and integration; complacency
 is its long-run counterweight. The two are coupled both ways so sustained
 high PP breeds complacency, and complacency in turn drags PP back down.
 
+### Architecture: Monthly Accumulator
+
+Country-scope variable `var:sul_power_projection` (-100 to 100) replaces the
+engine's `power_projection` as the authoritative PP value. All PP sources
+write to the custom modifier type `monthly_sul_power_projection`. A monthly
+scripted effect reads `modifier:monthly_sul_power_projection`, applies
+percentage decay (base 5%, doubled at complacency 100), and writes the
+result to `var:sul_power_projection`.
+
+Every PP source feeds through one of two channels:
+- `monthly_sul_power_projection` — growth/contribution
+- Decay — percentage pull toward zero (complacency-scaled)
+
+Auto_modifiers are reserved for dynamic ratios that have no native modifier
+hook (control/pop, culture acceptance, religion, diplomacy). All other sources
+(ranks, advances, reforms, static modifiers) apply `monthly_sul_power_projection`
+directly through native game mechanisms (INJECT into rank_modifier, advance
+modifier blocks, etc.).
+
+### Vanilla Bridge (`sul_projection_vanilla_bridge`)
+
+Separate auto_modifier that writes vanilla `power_projection = 1` scaled by
+`var:sul_power_projection`. Keeps hardcoded engine systems (AI weighting,
+war score, subject interactions) working. Split from `sul_power_projection_impact`
+so vanilla PP never leaks into the player-facing effects tooltip.
+
+Vanilla's `REPLACE:power_projection` auto_modifier is emptied (no effects).
+Vanilla PP sources are cancelled via INJECTs (negative `power_projection`
+values net to zero).
+
 ### Scale Layer (`sul_power_projection_impact`)
 
-One auto_modifier scales_with `power_projection` and holds every effect
-proportional to current PP — benefits, complacency coupling, and the PP
-cost package. Defined fresh (not INJECT on vanilla) because INJECTing into
-vanilla's `power_projection` block hits a self-referential name collision.
+One auto_modifier scales_with `sul_power_projection_value` (reads
+`var:sul_power_projection`) and holds every effect proportional to current PP.
 
 | Modifier | Coefficient (per PP) | Category |
 |---|---|---|
-| `global_pop_assimilation_speed_modifier` | +0.005 | benefit |
-| `global_pop_conversion_speed_modifier` | +0.005 | benefit |
-| `global_war_score_cost` | -0.003 | benefit |
-| `global_distance_from_capital_speed_propagation` | +0.005 | benefit |
 | `subject_loyalty` | +0.5 | benefit |
-| `diplomatic_annexation_cost` | -0.003 | benefit |
-| `antagonism_taking_land_giving_modifier` | -0.005 | benefit |
-| `levy_recovery_modifier` | +0.02 | benefit |
-| `global_levy_size_modifier` | +0.0025 | benefit |
-| `monthly_complacency` | +0.0015 | **coupling** (negative PP drains complacency) |
-| `stability_decay` | +0.001 | **PP cost** (mobilization strains the state) |
-| `global_estate_target_satisfaction` | -0.001 | **PP cost** (estates resent projection) |
-| `trade_efficiency` | -0.0005 | **PP cost** (commercial friction) |
-| `global_urban_build_buildings_cost` | +0.002 | **PP cost** (bureaucratic overhead) |
-| `global_migration_speed_modifier` | -0.001 | **PP cost** (migration outflow) |
-
-Coefficients are placeholders pending playtest.
+| `global_pop_assimilation_speed_modifier` | +0.01 | benefit |
+| `global_pop_conversion_speed_modifier` | +0.01 | benefit |
+| `global_distance_from_capital_speed_propagation` | +0.005 | benefit |
+| `global_war_score_cost` | -0.005 | benefit |
+| `diplomatic_annexation_cost` | -0.005 | benefit |
+| `antagonism_taking_land_giving_modifier` | -0.01 | benefit |
+| `sul_trade_maintenance_efficiency` | +0.0025 | benefit |
+| `global_integration_speed_modifier` | +0.01 | benefit |
+| `settle_country_cost_modifier` | -0.005 | benefit |
+| `casus_belli_creation_speed_modifier` | +0.005 | benefit |
+| `levy_recovery_modifier` | +0.02 | military |
+| `global_levy_size_modifier` | +0.02 | military |
+| `monthly_complacency` | +0.003 | **coupling** (negative PP drains complacency) |
+| `stability_decay` | -0.0001 | **PP cost** |
+| `global_estate_target_satisfaction` | -0.002 | **PP cost** |
+| `global_estate_power` | -0.005 | **PP cost** |
+| `aggressiveness_modifier` | +0.05 | AI behavior |
+| `control_importance_modifier` | -0.05 | AI behavior |
+| `gold_importance_modifier` | -0.05 | AI behavior |
 
 ### Gate Layer
 
 REPLACE on `enforce_culture` and `enforce_religion` country interactions.
 Vanilla bodies reproduced verbatim with one extra trigger appended to
-`select_trigger.enabled`: `scope:actor.power_projection >= power_projection`.
+`select_trigger.enabled`: `scope:actor.var:sul_power_projection >= var:sul_power_projection`.
 Action is visible but disabled until the overlord out-projects the subject.
 
-### Structural Drag Layer
+### Monthly Contribution Sources
 
-Nine auto_modifiers write PP from country state. Each scales off a signed
-script_value so the coefficient stays positive on the auto_modifier side.
+All sources write to `monthly_sul_power_projection`. Organized by mechanism:
+
+**Auto_modifiers (dynamic ratios, no native hook):**
 
 | Auto modifier | Source script_value | Coefficient | Effect |
 |---|---|---|---|
-| `sul_projection_drag_control` | `sul_projection_control_drag` | 25 | -25 PP at zero control |
-| `sul_projection_drag_culture` | `sul_projection_culture_drag` | 25 | -25 PP at zero accepted-culture pop |
-| `sul_projection_drag_religion` | `sul_projection_religion_drag` | 25 | -25 PP at zero same-religion pop (captures heretics and heathens together) |
-| `sul_projection_drag_stability` | `sul_projection_stability_drag` | 0.1 | ±10 PP at stability ±100 |
-| `sul_projection_drag_subjects` | `sul_projection_subject_drag` | 50 | -50 PP per multiple of overlord strength in weighted subjects. Linear, no cap. |
-| `sul_projection_drag_size` | `sul_projection_size_drag` | -0.05 | -1 PP per 20 locations (coefficient flips the positive location count to negative PP) |
-| `sul_projection_rank` | `sul_projection_rank_value` | 1 | +5 duchy / +10 kingdom / +15 empire |
-| `sul_projection_army` | `sul_projection_regular_army_ratio` | 10 | +10 PP per multiple of expected regular army (excludes levies) |
-| `sul_projection_navy` | `navy_size_percentage` | 10 | +10 PP per multiple of expected navy (vanilla script_value) |
+| `sul_projection_drag_control` | `sul_projection_control_drag` | 0.5 | -0.5/mo at zero control |
+| `sul_projection_drag_culture` | `sul_projection_culture_drag` | 0.25 | -0.25/mo at zero accepted-culture pop |
+| `sul_projection_drag_religion` | `sul_projection_religion_drag` | 0.2 | -0.2/mo at zero same-religion pop |
+| `sul_projection_drag_diplomacy` | `sul_projection_diplo_usage_ratio` | -0.5 | -0.5/mo at full diplomatic overextension |
 
-Control/culture/religion/stability/size drags compute inline in the
-script_value — no country variables, no monthly maintenance. Subject drag
-requires iteration and so caches a variable.
+**Vanilla auto_modifier INJECTs (scaling engine values):**
+
+| Vanilla auto_modifier | Coefficient | Notes |
+|---|---|---|
+| `stability_impact` | 0.1 | |
+| `prestige` | 0.1 | |
+| `num_locations_impact` | -0.001 | |
+| `regular_army_size` | 0.005 | |
+| `regular_navy_size` | 0.005 | |
+| `num_advances_impact` | 0.01 | Also cancels vanilla `power_projection = -1` |
+
+**Country rank INJECTs (in_game/common/country_ranks/):**
+
+| Rank | Monthly PP |
+|---|---|
+| Duchy | 0.1 |
+| Kingdom | 0.2 |
+| Empire | 0.3 |
+
+**Static modifier INJECTs (main_menu/common/static_modifiers/):**
+
+| Source | Monthly PP | Tier |
+|---|---|---|
+| `is_subject` | -0.1 | minor |
+| `ruler_mil` | 0.02 | per-point |
+| `is_great_power` | 0.25 | major |
+| `supremacy_over_rival_modifier` | 0.25 | major |
+| `country_art` | 1.0 | scaling (×art share) |
+| Vanilla 10PP sources (7 nation-specific) | 0.25 | major |
+| Vanilla 5PP sources (5 nation-specific) | 0.1 | minor |
+
+**Advance INJECTs:**
+
+| Source | Monthly PP |
+|---|---|
+| `power_projection_advance_1` | 0.25 |
+| `power_projection_advance_2` through `_6` | 0.1 each |
+
+**Other sources:**
+
+| Source | File | Monthly PP |
+|---|---|---|
+| `legacy_of_osman` reform | sul_reform_adjustments.txt | 0.5 |
+| `french_centralized_monarchy` reform | sul_reform_adjustments.txt | 0.1 |
+| `outward_vs_inward` societal value | sul_societal_value_adjustments.txt | 0.1 |
+| `decline_of_majapahit` disaster | sul_projection_disaster_mirrors.txt | -0.25 |
 
 ### Complacency Coupling
 
@@ -691,8 +805,8 @@ Two-way feedback. PP builds complacency via the scale layer above;
 complacency drags PP back via `INJECT:complacency_impact`. Vanilla's
 `scales_with = complacency × 0.01` applies to every entry we inject.
 
-**Complacency → PP** (in `INJECT:complacency_impact`)
-- `power_projection = -200` → -2 PP per complacency point
+**Complacency → PP** (in `REPLACE:complacency_impact`)
+- `sul_power_projection = -100` → -1 PP per complacency point
 
 **Vanilla complacency_impact extensions** (same INJECT)
 
@@ -738,8 +852,8 @@ blocks inserted between `stat_prestige` and `stat_diplo`:
 - `stat_complacency` — `Country.GetCurrencyValue('complacency')` + delta row
   using `GetModifierValue('monthly_complacency')`; reuses vanilla
   `ComplacencyResourceTooltip`.
-- `stat_power_projection` — `Country.GetPowerProjection|1` (no currency-API
-  delta getter available); reuses vanilla `power_projection_tooltip`.
+- `stat_power_projection` — `Country.MakeScope.ScriptValue('sul_power_projection_display')|1`
+  (reads custom modifier accumulator); reuses overridden `power_projection_tooltip`.
 
 Patch fragility: copying 2495 lines of vanilla means a Paradox edit to
 `hud_topbar.gui` breaks us silently. On patch days, grep for
@@ -756,6 +870,8 @@ top of fresh vanilla.
 ### Effects (sul_projection_effects.txt)
 | Effect | Purpose |
 |---|---|
+| `sul_projection_monthly_update` | Reads `modifier:monthly_sul_power_projection`, applies decay (5% base, scaled by complacency), writes to `var:sul_power_projection`. Clamps to -100/100. |
+| `sul_projection_init_variable` | One-time init: sets `var:sul_power_projection = 0` if missing. |
 | `sul_projection_recompute_subject_drag` | Sums `country_strength × sul_projection_subject_type_weight` across subjects, divides by overlord `country_strength` (min 1), negates, clamps to min -6. Also populates `sul_projection_weight_map` and `sul_projection_contribution_map` for tooltip display. |
 
 ### Script Values (sul_projection_values.txt)
@@ -764,10 +880,10 @@ top of fresh vanilla.
 | `sul_projection_control_drag` | `(total_control_scaled_population / total_population) - 1` |
 | `sul_projection_culture_drag` | `(total_accepted_culture_population / total_population) - 1` |
 | `sul_projection_religion_drag` | `religion_percentage_in_country(root.religion) - 1` |
-| `sul_projection_stability_drag` | `stability` |
-| `sul_projection_size_drag` | `num_locations` |
-| `sul_projection_regular_army_ratio` | `regular_army_size / max(1, expected_army_size)` |
-| `sul_projection_rank_value` | 5 duchy / 10 kingdom / 15 empire |
+| `sul_projection_diplo_usage_ratio` | `used_diplomatic_capacity / total_diplomatic_capacity` (0–1) |
+| `sul_power_projection_value` | Reads `var:sul_power_projection`. Used by scale layer and vanilla bridge. |
+| `sul_power_projection_display` | GUI alias for `var:sul_power_projection`. |
+| `sul_power_projection_monthly_delta` | Net monthly change (contributions + decay) for top bar delta display. |
 | `sul_projection_subject_type_weight` | Per-subject-type scalar. Tuned per type: tributary 0.1, colonial 0.25, dominion 0.5, fiefdom/uc_bey/tusi 0.75, vassal/conquistador/hanseatic 1.0, appanage 1.25, march -0.25 (adds PP), secessionist/state_bank/trade_company 0.25, samanta 1.0. |
 | `sul_projection_subject_drag` | Safe wrapper around `var:sul_projection_subject_drag_value` (0 when variable missing). |
 
@@ -780,7 +896,8 @@ top of fresh vanilla.
 ### Files
 | Path | Purpose |
 |---|---|
-| `in_game/common/auto_modifiers/sul_projection_country.txt` | Unified scale layer + 9 structural drag auto_modifiers |
+| `main_menu/common/modifier_type_definitions/sul_modifier_types.txt` | Defines `sul_power_projection` custom modifier type |
+| `in_game/common/auto_modifiers/sul_projection_country.txt` | Scale layer (`sul_power_projection_impact`) + 5 structural drag auto_modifiers + vanilla INJECT mirrors |
 | `in_game/common/auto_modifiers/sul_complacency_country.txt` | `INJECT:complacency_impact` — PP drag + wellbeing/atrophy package |
 | `in_game/common/auto_modifiers/sul_war_auto_modifiers.txt` | `INJECT:war_exhaustion_impact` — stability decay + complacency drain |
 | `in_game/common/script_values/sul_projection_values.txt` | Drag formulas, rank/army ratios, subject type weights |
@@ -789,7 +906,10 @@ top of fresh vanilla.
 | `in_game/common/country_interactions/sul_projection_subject_gates.txt` | REPLACE `enforce_culture` / `enforce_religion` with PP gate |
 | `in_game/gui/hud_topbar.gui` | Full vanilla override adding `stat_complacency` + `stat_power_projection` |
 | `in_game/gui/shared/aaa_sul_power_projection_tooltip.gui` | Override vanilla PP tooltip with scrollable subject breakdown |
-| `main_menu/localization/english/sul_projection_l_english.yml` | `AUTO_MODIFIER_NAME_*` strings, tooltip labels |
+| `in_game/common/advances/sul_projection_advance_mirrors.txt` | Mirror 6 vanilla PP advances to `sul_power_projection` |
+| `in_game/common/disasters/sul_projection_disaster_mirrors.txt` | Mirror vanilla disaster PP to `sul_power_projection` |
+| `main_menu/common/static_modifiers/sul_projection_vanilla_injects.txt` | Custom PP sources + mirror 13 vanilla static modifier PP sources |
+| `main_menu/localization/english/sul_projection_l_english.yml` | `MODIFIER_TYPE_NAME_*`, `AUTO_MODIFIER_NAME_*` strings, tooltip labels |
 
 ### Known Gaps
 - **Subject type weights** — tuned but may need further balancing.

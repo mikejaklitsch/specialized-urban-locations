@@ -11,10 +11,10 @@ Organized by subsystem. **Update this document when adding, removing, or renamin
 1. `sul_rgo_init` — populate `sul_rgo_map` (goods → building_type)
 2. `sul_rgo_removal_start` — remove vanilla RGO buildings
 3. `sul_initialize_all` — full specialization rebuild, set `sul_version` global variable
-4. `sul_initialize_economy` — seed budget pressure + GDP init + first economy update (no wealth seeding — deferred to end)
+4. `sul_initialize_economy` — seed budget pressure + GDP init + first economy update. Runs `sul_update_location_wpp` per location, but minority return_per_pop variables (`sul_dhimmi_return_per_pop`, `sul_cossacks_return_per_pop`) are left at 0 because wealth hasn't been seeded yet — step 7 bootstraps them.
 5. `sul_war_on_game_start` — initialize war momentum for countries already at war
 6. ... (other subsystem inits: integration, minting, EPBM, migration)
-7. `sul_wealth_seed_all` — seed location wealth at equilibrium (last, so all gold-spending inits have finished)
+7. `sul_wealth_seed_all` — seed location wealth at equilibrium (last, so all gold-spending inits have finished). Also computes minority return_per_pop via `sul_compute_minority_returns` — the call in step 4's WPP pass produces 0 because wealth doesn't exist yet.
 
 ### Monthly Country Pulse
 Sequential on_actions first, then parallelized events via `sul_monthly_country_pulse`.
@@ -220,9 +220,9 @@ Per-location physical wealth stocks. Seeded at equilibrium by `sul_wealth_seed_l
 | | `estate_type:tribes_estate` | `var:sul_wealth_tribes` | (same, conditional) |
 | `sul_estate_targets` | `estate_type:nobles_estate` | `var:sul_wealth_target_nobles` | `sul_wealth_target_total`, `sul_wealth_delta_nobles`, tooltip |
 | | (same pattern for all estates) | | |
-| `sul_dhimmi_return_per_pop` | `sul_update_location_wpp` | demand tooltip (planned) | Per-pop capital return for dhimmi minority pops |
+| `sul_dhimmi_return_per_pop` | `sul_compute_minority_returns` (called by `sul_update_location_wpp` + `sul_wealth_seed_location`) | `sul_noble_dhimmi_return` et al. (tooltip script values), demand WPP | Per-pop capital return for dhimmi minority pops |
 | `sul_cossacks_return_per_pop` | (same) | (same) | Per-pop capital return for cossack minority pops |
-| `sul_enrichment_dhimmi` | `sul_update_location_wpp` | `sul_update_country_economy` | Per-location dhimmi enrichment (accumulated → paid to estate) |
+| `sul_enrichment_dhimmi` | `sul_compute_minority_returns` | `sul_update_country_economy` | Per-location dhimmi enrichment (accumulated → paid to estate) |
 | `sul_enrichment_cossacks` | (same) | (same) | Per-location cossack enrichment |
 
 ### Country Variables — Budget Pressure (monthly, set by `sul_compute_budget_pressure`)
@@ -345,11 +345,13 @@ ON_LOCATION_OCCUPIED (sul_wealth_loot_location):
   Extract 25% of all 8 estate assets. Conditional estates guarded by has_variable.
   Split: (1 - 50% + looting_efficiency) kept by controller.
 
-INIT (sul_initialize_economy):
+INIT (sul_initialize_economy → sul_wealth_seed_all):
   sul_update_country_economy → accumulate raw power + enrichment
     → pay enrichment to all 7 estates (dhimmi/cossacks conditional)
     → cache enrichment rates + estate gold after payments
+    → sul_update_location_wpp → sul_compute_minority_returns: produces 0 (wealth doesn't exist yet)
   → sul_wealth_seed_location: assets = (local_power / national_power) × estate_gold
+    → sul_compute_minority_returns: now produces real values (wealth just created)
 ```
 
 ---
@@ -613,14 +615,15 @@ Conquered locations integrate faster when they're below population capacity
 and slower when they're over it. Originally the standalone "Population Based
 Integration" mod, integrated under the `sul_integration_` prefix.
 
-### Quadratic Capacity Bonus
+### Linear Population Bonus
 A scripted location modifier `sul_integration_capacity_bonus` is applied to
-each tracked conquered location with `size = 2.5 × (1 - pop/cap)²`. The
-modifier value is `local_integration_speed_modifier = 1.0`, so size *is* the
-applied integration speed bonus. Result:
-- 0% filled → +250%
-- 50% filled → +63%
-- 100% filled → 0% (modifier removed)
+each tracked conquered location with population below 100 (i.e. 100,000 people).
+`size = (100 - population) / 100`, clamped to 0–1. The modifier value is
+`local_integration_speed_modifier = 1.0`, so size *is* the applied integration
+speed bonus. Result:
+- 0 pop → +100%
+- 50k pop → +50%
+- 100k+ pop → 0% (modifier removed)
 
 ### Diplomatic Reputation Bonus
 `sul_integration_diplo_rep_annexation` is an auto_modifier that grants

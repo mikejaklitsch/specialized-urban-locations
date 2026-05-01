@@ -1,4 +1,4 @@
-# RGO building level / output / max-level math.
+﻿# RGO building level / output / max-level math.
 #
 # RGO cap = (base + population) × raw material output × extraction investment.
 # Uses save_temporary_value_as pattern (from MnT) so every multiplier
@@ -10,6 +10,7 @@ build_time_RGO = 365
 
 sul_rgo_output_per_level = {
 	value = raw_material_output
+
 	divide = { value = sul_location_rgo_building_level min = 1 }
 }
 
@@ -34,7 +35,9 @@ sul_location_max_rgo_building_level_rounded = {
 
 rgo_building_level = {
 	value = 1
+
 	add = { value = population divide = 50 }
+
 	floor = yes
 }
 
@@ -46,34 +49,41 @@ sul_rgo_max_level_base = {
 		name = rgo_base
 		value = { value = scope:rgo_base add = 3 }
 	}
+
 	add = { desc = "BUILDING_LEVEL_BASE" value = 3 }
 
 	# Population
 	save_temporary_value_as = {
 		name = rgo_base
+
 		value = {
 			value = scope:rgo_base
 			add = { value = population multiply = 0.005 }
 		}
 	}
-	add = { desc = "BUILDING_LEVEL_POPULATION" value = population multiply = 0.005 }
+
+	add = {
+		desc = "BUILDING_LEVEL_POPULATION"
+		value = population
+		multiply = 0.005
+	}
 
 	# Snapshot base+pop before multiplicative scaling
-	save_temporary_value_as = {
-		name = rgo_scaled
-		value = scope:rgo_base
-	}
+	save_temporary_value_as = { name = rgo_scaled value = scope:rgo_base }
 
 	# Raw material output bonus (multiplicative, displayed as additive)
 	if = {
 		limit = { modifier:local_raw_material_output != 0 }
+
 		save_temporary_value_as = {
 			name = rgo_scaled
+
 			value = {
 				value = scope:rgo_base
 				multiply = { value = 1 add = modifier:local_raw_material_output }
 			}
 		}
+
 		add = {
 			desc = "SUL_RAW_MATERIAL_OUTPUT"
 			value = scope:rgo_base
@@ -82,16 +92,20 @@ sul_rgo_max_level_base = {
 	}
 	if = {
 		limit = { has_owner = yes owner = { modifier:global_raw_material_output != 0 } }
+
 		save_temporary_value_as = {
 			name = rgo_scaled
+
 			value = {
 				value = scope:rgo_scaled
+
 				add = {
 					value = scope:rgo_base
 					multiply = owner.modifier:global_raw_material_output
 				}
 			}
 		}
+
 		add = {
 			desc = "SUL_RAW_MATERIAL_OUTPUT_GLOBAL"
 			value = scope:rgo_base

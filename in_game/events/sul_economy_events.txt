@@ -1,6 +1,8 @@
+﻿
 namespace = sul_economy
 
 # Player monthly: wages + EPBM in single event
+
 sul_economy.0 = {
 	type = country_event
 	hidden = yes
@@ -24,15 +26,13 @@ sul_economy.0 = {
 }
 
 # AI monthly: wage payment + EPBM charge in single event
+
 sul_economy.1 = {
 	type = country_event
 	hidden = yes
 	title = "sul_economy.1"
 
-	trigger = {
-		is_ai = yes
-		is_real_country = yes
-	}
+	trigger = { is_ai = yes is_real_country = yes }
 
 	immediate = {
 		if = {
@@ -45,12 +45,14 @@ sul_economy.1 = {
 				has_global_variable = sul_epbm_version
 				has_variable = sul_epbm_pay_nobles
 			}
+
 			sul_epbm_charge_estates = yes
 		}
 	}
 }
 
 # Yearly: wage recalc + AI accumulate + EPBM AI recalc + decade rebuild
+
 sul_economy.2 = {
 	type = country_event
 	hidden = yes
@@ -62,18 +64,12 @@ sul_economy.2 = {
 		every_owned_location = { sul_calculate_location_wages = yes }
 
 		if = {
-			limit = {
-				is_ai = yes
-				has_variable = sul_budget_pressure_nobles
-			}
+			limit = { is_ai = yes has_variable = sul_budget_pressure_nobles }
 			sul_monthly_location_pass = yes
 		}
 
 		if = {
-			limit = {
-				has_global_variable = sul_epbm_version
-				is_ai = yes
-			}
+			limit = { has_global_variable = sul_epbm_version is_ai = yes }
 			sul_epbm_calculate_maintenance = yes
 		}
 
@@ -85,6 +81,7 @@ sul_economy.2 = {
 					has_variable = sul_epbm_rebuild_counter
 					var:sul_epbm_rebuild_counter >= 9
 				}
+
 				sul_epbm_structural_rebuild = yes
 				set_variable = { name = sul_epbm_rebuild_counter value = 0 }
 			}
@@ -97,6 +94,7 @@ sul_economy.2 = {
 }
 
 # Yearly GDP: compute per-location output and asset shares for capital returns
+
 sul_economy.3 = {
 	type = country_event
 	hidden = yes
@@ -104,7 +102,5 @@ sul_economy.3 = {
 
 	trigger = { is_real_country = yes }
 
-	immediate = {
-		sul_gdp_yearly_update = yes
-	}
+	immediate = { sul_gdp_yearly_update = yes }
 }

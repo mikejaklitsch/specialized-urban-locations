@@ -1,4 +1,4 @@
-# Demand Tooltip Per Pop — location scope.
+﻿# Demand Tooltip Per Pop — location scope.
 # Shows per-pop-type breakdown: base wages, capital returns (upper class),
 # flat wealth (commoners), total WPP.
 
@@ -7,82 +7,228 @@
 
 sul_noble_wage_rate = {
 	value = 0
-	if = { limit = { num_pop_type:nobles > 0 }
-		add = { value = var:sul_local_wages multiply = "local_relative_estate_power(estate_type:nobles_estate)" divide = num_pop_type:nobles }
+	if = {
+		limit = { num_pop_type:nobles > 0 }
+
+		add = {
+			value = var:sul_local_wages
+			multiply = "local_relative_estate_power(estate_type:nobles_estate)"
+			divide = num_pop_type:nobles
+		}
 	}
 }
 
 sul_clergy_wage_rate = {
 	value = 0
-	if = { limit = { num_pop_type:clergy > 0 }
-		add = { value = var:sul_local_wages multiply = "local_relative_estate_power(estate_type:clergy_estate)" divide = num_pop_type:clergy }
+	if = {
+		limit = { num_pop_type:clergy > 0 }
+
+		add = {
+			value = var:sul_local_wages
+			multiply = "local_relative_estate_power(estate_type:clergy_estate)"
+			divide = num_pop_type:clergy
+		}
 	}
 }
 
 sul_burgher_wage_rate = {
 	value = 0
-	if = { limit = { num_pop_type:burghers > 0 }
-		add = { value = var:sul_local_wages multiply = "local_relative_estate_power(estate_type:burghers_estate)" divide = num_pop_type:burghers }
+	if = {
+		limit = { num_pop_type:burghers > 0 }
+
+		add = {
+			value = var:sul_local_wages
+			multiply = "local_relative_estate_power(estate_type:burghers_estate)"
+			divide = num_pop_type:burghers
+		}
 	}
 }
 
 sul_soldier_wage_rate = {
 	value = 0
-	if = { limit = { num_pop_type:soldiers > 0 }
-		add = { value = var:sul_local_wages multiply = "local_relative_estate_power(estate_type:peasants_estate)" multiply = { value = var:sul_wage_bill_soldiers divide = { value = var:sul_wage_bill_soldiers add = var:sul_wage_bill_laborers add = var:sul_wage_bill_peasants min = 0.001 } } divide = num_pop_type:soldiers }
+	if = {
+		limit = { num_pop_type:soldiers > 0 }
+
+		add = {
+			value = var:sul_local_wages
+			multiply = "local_relative_estate_power(estate_type:peasants_estate)"
+
+			multiply = {
+				value = var:sul_wage_bill_soldiers
+
+				divide = {
+					value = var:sul_wage_bill_soldiers
+					add = var:sul_wage_bill_laborers
+					add = var:sul_wage_bill_peasants
+					min = 0.001
+				}
+			}
+
+			divide = num_pop_type:soldiers
+		}
 	}
 }
 
 sul_laborer_wage_rate = {
 	value = 0
-	if = { limit = { num_pop_type:laborers > 0 }
-		add = { value = var:sul_local_wages multiply = "local_relative_estate_power(estate_type:peasants_estate)" multiply = { value = var:sul_wage_bill_laborers divide = { value = var:sul_wage_bill_soldiers add = var:sul_wage_bill_laborers add = var:sul_wage_bill_peasants min = 0.001 } } divide = num_pop_type:laborers }
+	if = {
+		limit = { num_pop_type:laborers > 0 }
+
+		add = {
+			value = var:sul_local_wages
+			multiply = "local_relative_estate_power(estate_type:peasants_estate)"
+
+			multiply = {
+				value = var:sul_wage_bill_laborers
+
+				divide = {
+					value = var:sul_wage_bill_soldiers
+					add = var:sul_wage_bill_laborers
+					add = var:sul_wage_bill_peasants
+					min = 0.001
+				}
+			}
+
+			divide = num_pop_type:laborers
+		}
 	}
 }
 
 sul_peasant_wage_rate = {
 	value = 0
-	if = { limit = { num_pop_type:peasants > 0 }
-		add = { value = var:sul_local_wages multiply = "local_relative_estate_power(estate_type:peasants_estate)" multiply = { value = var:sul_wage_bill_peasants divide = { value = var:sul_wage_bill_soldiers add = var:sul_wage_bill_laborers add = var:sul_wage_bill_peasants min = 0.001 } } divide = num_pop_type:peasants }
+	if = {
+		limit = { num_pop_type:peasants > 0 }
+
+		add = {
+			value = var:sul_local_wages
+			multiply = "local_relative_estate_power(estate_type:peasants_estate)"
+
+			multiply = {
+				value = var:sul_wage_bill_peasants
+
+				divide = {
+					value = var:sul_wage_bill_soldiers
+					add = var:sul_wage_bill_laborers
+					add = var:sul_wage_bill_peasants
+					min = 0.001
+				}
+			}
+
+			divide = num_pop_type:peasants
+		}
 	}
 }
 
 # --- WAGE BREAKDOWN (read live on hover, not cached) ---
 
-sul_noble_base_wage = { value = owner.modifier:sul_nobles_base_wages }
-sul_noble_global_wage_modifier = { value = owner.modifier:sul_global_nobles_wages_modifier }
-sul_noble_local_wage_modifier = { value = modifier:sul_local_nobles_wages_modifier }
-sul_noble_total_wage_modifier = { value = owner.modifier:sul_global_nobles_wages_modifier add = modifier:sul_local_nobles_wages_modifier }
+sul_noble_base_wage = {
+	value = owner.modifier:sul_nobles_base_wages
+}
 
-sul_clergy_base_wage = { value = owner.modifier:sul_clergy_base_wages }
-sul_clergy_global_wage_modifier = { value = owner.modifier:sul_global_clergy_wages_modifier }
-sul_clergy_local_wage_modifier = { value = modifier:sul_local_clergy_wages_modifier }
-sul_clergy_total_wage_modifier = { value = owner.modifier:sul_global_clergy_wages_modifier add = modifier:sul_local_clergy_wages_modifier }
+sul_noble_global_wage_modifier = {
+	value = owner.modifier:sul_global_nobles_wages_modifier
+}
 
-sul_burgher_base_wage = { value = owner.modifier:sul_burghers_base_wages }
-sul_burgher_global_wage_modifier = { value = owner.modifier:sul_global_burghers_wages_modifier }
-sul_burgher_local_wage_modifier = { value = modifier:sul_local_burghers_wages_modifier }
-sul_burgher_total_wage_modifier = { value = owner.modifier:sul_global_burghers_wages_modifier add = modifier:sul_local_burghers_wages_modifier }
+sul_noble_local_wage_modifier = {
+	value = modifier:sul_local_nobles_wages_modifier
+}
 
-sul_soldier_base_wage = { value = owner.modifier:sul_soldiers_base_wages }
-sul_soldier_global_wage_modifier = { value = owner.modifier:sul_global_soldiers_wages_modifier }
-sul_soldier_local_wage_modifier = { value = modifier:sul_local_soldiers_wages_modifier }
-sul_soldier_total_wage_modifier = { value = owner.modifier:sul_global_soldiers_wages_modifier add = modifier:sul_local_soldiers_wages_modifier }
+sul_noble_total_wage_modifier = {
+	value = owner.modifier:sul_global_nobles_wages_modifier
+	add = modifier:sul_local_nobles_wages_modifier
+}
 
-sul_laborer_base_wage = { value = owner.modifier:sul_laborers_base_wages }
-sul_laborer_global_wage_modifier = { value = owner.modifier:sul_global_laborers_wages_modifier }
-sul_laborer_local_wage_modifier = { value = modifier:sul_local_laborers_wages_modifier }
-sul_laborer_total_wage_modifier = { value = owner.modifier:sul_global_laborers_wages_modifier add = modifier:sul_local_laborers_wages_modifier }
+sul_clergy_base_wage = {
+	value = owner.modifier:sul_clergy_base_wages
+}
 
-sul_peasant_base_wage = { value = owner.modifier:sul_peasants_base_wages }
-sul_peasant_global_wage_modifier = { value = owner.modifier:sul_global_peasants_wages_modifier }
-sul_peasant_local_wage_modifier = { value = modifier:sul_local_peasants_wages_modifier }
-sul_peasant_total_wage_modifier = { value = owner.modifier:sul_global_peasants_wages_modifier add = modifier:sul_local_peasants_wages_modifier }
+sul_clergy_global_wage_modifier = {
+	value = owner.modifier:sul_global_clergy_wages_modifier
+}
+
+sul_clergy_local_wage_modifier = {
+	value = modifier:sul_local_clergy_wages_modifier
+}
+
+sul_clergy_total_wage_modifier = {
+	value = owner.modifier:sul_global_clergy_wages_modifier
+	add = modifier:sul_local_clergy_wages_modifier
+}
+
+sul_burgher_base_wage = {
+	value = owner.modifier:sul_burghers_base_wages
+}
+
+sul_burgher_global_wage_modifier = {
+	value = owner.modifier:sul_global_burghers_wages_modifier
+}
+
+sul_burgher_local_wage_modifier = {
+	value = modifier:sul_local_burghers_wages_modifier
+}
+
+sul_burgher_total_wage_modifier = {
+	value = owner.modifier:sul_global_burghers_wages_modifier
+	add = modifier:sul_local_burghers_wages_modifier
+}
+
+sul_soldier_base_wage = {
+	value = owner.modifier:sul_soldiers_base_wages
+}
+
+sul_soldier_global_wage_modifier = {
+	value = owner.modifier:sul_global_soldiers_wages_modifier
+}
+
+sul_soldier_local_wage_modifier = {
+	value = modifier:sul_local_soldiers_wages_modifier
+}
+
+sul_soldier_total_wage_modifier = {
+	value = owner.modifier:sul_global_soldiers_wages_modifier
+	add = modifier:sul_local_soldiers_wages_modifier
+}
+
+sul_laborer_base_wage = {
+	value = owner.modifier:sul_laborers_base_wages
+}
+
+sul_laborer_global_wage_modifier = {
+	value = owner.modifier:sul_global_laborers_wages_modifier
+}
+
+sul_laborer_local_wage_modifier = {
+	value = modifier:sul_local_laborers_wages_modifier
+}
+
+sul_laborer_total_wage_modifier = {
+	value = owner.modifier:sul_global_laborers_wages_modifier
+	add = modifier:sul_local_laborers_wages_modifier
+}
+
+sul_peasant_base_wage = {
+	value = owner.modifier:sul_peasants_base_wages
+}
+
+sul_peasant_global_wage_modifier = {
+	value = owner.modifier:sul_global_peasants_wages_modifier
+}
+
+sul_peasant_local_wage_modifier = {
+	value = modifier:sul_local_peasants_wages_modifier
+}
+
+sul_peasant_total_wage_modifier = {
+	value = owner.modifier:sul_global_peasants_wages_modifier
+	add = modifier:sul_local_peasants_wages_modifier
+}
 
 # --- POP CAPACITY WAGE FACTOR (for tooltip display) ---
 # (0.5 - pop%) × 2 × scale — positive = scarce labor, negative = surplus
 
-sul_noble_pop_cap_wage = { value = 0 }
+sul_noble_pop_cap_wage = {
+	value = 0
+}
 
 sul_clergy_pop_cap_wage = {
 	value = 0.5
@@ -152,11 +298,17 @@ sul_noble_demand_per_pop = {
 	value = 0
 	if = {
 		limit = { num_pop_type:nobles > 0 }
+
 		add = {
 			value = var:sul_local_wages
 			multiply = "local_relative_estate_power(estate_type:nobles_estate)"
 			divide = num_pop_type:nobles
-			add = { value = "variable_map(sul_estate_assets|estate_type:nobles_estate)" multiply = @sul_return_rate divide = { value = num_pop_type:nobles min = 0.001 } }
+
+			add = {
+				value = "variable_map(sul_estate_assets|estate_type:nobles_estate)"
+				multiply = @sul_return_rate
+				divide = { value = num_pop_type:nobles min = 0.001 }
+			}
 		}
 	}
 }
@@ -165,11 +317,17 @@ sul_clergy_demand_per_pop = {
 	value = 0
 	if = {
 		limit = { num_pop_type:clergy > 0 }
+
 		add = {
 			value = var:sul_local_wages
 			multiply = "local_relative_estate_power(estate_type:clergy_estate)"
 			divide = num_pop_type:clergy
-			add = { value = "variable_map(sul_estate_assets|estate_type:clergy_estate)" multiply = @sul_return_rate divide = { value = num_pop_type:clergy min = 0.001 } }
+
+			add = {
+				value = "variable_map(sul_estate_assets|estate_type:clergy_estate)"
+				multiply = @sul_return_rate
+				divide = { value = num_pop_type:clergy min = 0.001 }
+			}
 		}
 	}
 }
@@ -178,11 +336,17 @@ sul_burgher_demand_per_pop = {
 	value = 0
 	if = {
 		limit = { num_pop_type:burghers > 0 }
+
 		add = {
 			value = var:sul_local_wages
 			multiply = "local_relative_estate_power(estate_type:burghers_estate)"
 			divide = num_pop_type:burghers
-			add = { value = "variable_map(sul_estate_assets|estate_type:burghers_estate)" multiply = @sul_return_rate divide = { value = num_pop_type:burghers min = 0.001 } }
+
+			add = {
+				value = "variable_map(sul_estate_assets|estate_type:burghers_estate)"
+				multiply = @sul_return_rate
+				divide = { value = num_pop_type:burghers min = 0.001 }
+			}
 		}
 	}
 }
@@ -191,12 +355,29 @@ sul_soldier_demand_per_pop = {
 	value = 0
 	if = {
 		limit = { num_pop_type:soldiers > 0 }
+
 		add = {
 			value = var:sul_local_wages
 			multiply = "local_relative_estate_power(estate_type:peasants_estate)"
-			multiply = { value = var:sul_wage_bill_soldiers divide = { value = var:sul_wage_bill_soldiers add = var:sul_wage_bill_laborers add = var:sul_wage_bill_peasants min = 0.001 } }
+
+			multiply = {
+				value = var:sul_wage_bill_soldiers
+
+				divide = {
+					value = var:sul_wage_bill_soldiers
+					add = var:sul_wage_bill_laborers
+					add = var:sul_wage_bill_peasants
+					min = 0.001
+				}
+			}
+
 			divide = num_pop_type:soldiers
-			add = { value = "variable_map(sul_estate_assets|estate_type:peasants_estate)" multiply = @sul_return_rate divide = { value = num_pop_type:soldiers min = 0.001 } }
+
+			add = {
+				value = "variable_map(sul_estate_assets|estate_type:peasants_estate)"
+				multiply = @sul_return_rate
+				divide = { value = num_pop_type:soldiers min = 0.001 }
+			}
 		}
 	}
 }
@@ -205,12 +386,29 @@ sul_laborer_demand_per_pop = {
 	value = 0
 	if = {
 		limit = { num_pop_type:laborers > 0 }
+
 		add = {
 			value = var:sul_local_wages
 			multiply = "local_relative_estate_power(estate_type:peasants_estate)"
-			multiply = { value = var:sul_wage_bill_laborers divide = { value = var:sul_wage_bill_soldiers add = var:sul_wage_bill_laborers add = var:sul_wage_bill_peasants min = 0.001 } }
+
+			multiply = {
+				value = var:sul_wage_bill_laborers
+
+				divide = {
+					value = var:sul_wage_bill_soldiers
+					add = var:sul_wage_bill_laborers
+					add = var:sul_wage_bill_peasants
+					min = 0.001
+				}
+			}
+
 			divide = num_pop_type:laborers
-			add = { value = "variable_map(sul_estate_assets|estate_type:peasants_estate)" multiply = @sul_return_rate divide = { value = num_pop_type:laborers min = 0.001 } }
+
+			add = {
+				value = "variable_map(sul_estate_assets|estate_type:peasants_estate)"
+				multiply = @sul_return_rate
+				divide = { value = num_pop_type:laborers min = 0.001 }
+			}
 		}
 	}
 }
@@ -219,12 +417,29 @@ sul_peasant_demand_per_pop = {
 	value = 0
 	if = {
 		limit = { num_pop_type:peasants > 0 }
+
 		add = {
 			value = var:sul_local_wages
 			multiply = "local_relative_estate_power(estate_type:peasants_estate)"
-			multiply = { value = var:sul_wage_bill_peasants divide = { value = var:sul_wage_bill_soldiers add = var:sul_wage_bill_laborers add = var:sul_wage_bill_peasants min = 0.001 } }
+
+			multiply = {
+				value = var:sul_wage_bill_peasants
+
+				divide = {
+					value = var:sul_wage_bill_soldiers
+					add = var:sul_wage_bill_laborers
+					add = var:sul_wage_bill_peasants
+					min = 0.001
+				}
+			}
+
 			divide = num_pop_type:peasants
-			add = { value = "variable_map(sul_estate_assets|estate_type:peasants_estate)" multiply = @sul_return_rate divide = { value = num_pop_type:peasants min = 0.001 } }
+
+			add = {
+				value = "variable_map(sul_estate_assets|estate_type:peasants_estate)"
+				multiply = @sul_return_rate
+				divide = { value = num_pop_type:peasants min = 0.001 }
+			}
 		}
 	}
 }
@@ -233,75 +448,106 @@ sul_tribesmen_demand_per_pop = {
 	value = 0
 	if = {
 		limit = { num_pop_type:tribesmen > 0 }
+
 		add = {
 			value = var:sul_local_wages
 			multiply = "local_relative_estate_power(estate_type:tribes_estate)"
 			divide = { value = num_pop_type:tribesmen min = 0.001 }
-			add = { value = "variable_map(sul_estate_assets|estate_type:tribes_estate)" multiply = @sul_return_rate divide = { value = num_pop_type:tribesmen min = 0.001 } }
+
+			add = {
+				value = "variable_map(sul_estate_assets|estate_type:tribes_estate)"
+				multiply = @sul_return_rate
+				divide = { value = num_pop_type:tribesmen min = 0.001 }
+			}
 		}
 	}
 }
 
 sul_tribesmen_wage_rate = {
 	value = 0
-	if = { limit = { num_pop_type:tribesmen > 0 }
-		add = { value = var:sul_local_wages multiply = "local_relative_estate_power(estate_type:tribes_estate)" divide = num_pop_type:tribesmen }
+	if = {
+		limit = { num_pop_type:tribesmen > 0 }
+
+		add = {
+			value = var:sul_local_wages
+			multiply = "local_relative_estate_power(estate_type:tribes_estate)"
+			divide = num_pop_type:tribesmen
+		}
 	}
 }
 
 sul_tribesmen_capital_return = {
 	value = 0
-	if = { limit = { has_variable = sul_wealth_tribes }
-		add = { value = "variable_map(sul_estate_assets|estate_type:tribes_estate)" multiply = @sul_return_rate divide = { value = num_pop_type:tribesmen min = 0.001 } }
+	if = {
+		limit = { has_variable = sul_wealth_tribes }
+
+		add = {
+			value = "variable_map(sul_estate_assets|estate_type:tribes_estate)"
+			multiply = @sul_return_rate
+			divide = { value = num_pop_type:tribesmen min = 0.001 }
+		}
 	}
 }
 
-sul_tribesmen_power_share = { value = "local_relative_estate_power(estate_type:tribes_estate)" }
+sul_tribesmen_power_share = {
+	value = "local_relative_estate_power(estate_type:tribes_estate)"
+}
 
 # --- ENRICHMENT PER POP (savings tier, live-computed) ---
 
-@sul_w_enrichment = 0.53
+@sul_enrichment_weight = 0.53
 
 sul_noble_enrichment_per_pop = {
 	value = 0
-	if = { limit = { num_pop_type:nobles > 0 }
+	if = {
+		limit = { num_pop_type:nobles > 0 }
+
 		add = {
 			value = "variable_map(sul_demand_base|pop_type:nobles)"
 			multiply = "variable_map(sul_wealth_per_pop|pop_type:nobles)"
-			multiply = @sul_w_enrichment
+			multiply = @sul_enrichment_weight
 			multiply = owner.var:sul_enrich_rate_nobles
 		}
 	}
 }
+
 sul_clergy_enrichment_per_pop = {
 	value = 0
-	if = { limit = { num_pop_type:clergy > 0 }
+	if = {
+		limit = { num_pop_type:clergy > 0 }
+
 		add = {
 			value = "variable_map(sul_demand_base|pop_type:clergy)"
 			multiply = "variable_map(sul_wealth_per_pop|pop_type:clergy)"
-			multiply = @sul_w_enrichment
+			multiply = @sul_enrichment_weight
 			multiply = owner.var:sul_enrich_rate_clergy
 		}
 	}
 }
+
 sul_burgher_enrichment_per_pop = {
 	value = 0
-	if = { limit = { num_pop_type:burghers > 0 }
+	if = {
+		limit = { num_pop_type:burghers > 0 }
+
 		add = {
 			value = "variable_map(sul_demand_base|pop_type:burghers)"
 			multiply = "variable_map(sul_wealth_per_pop|pop_type:burghers)"
-			multiply = @sul_w_enrichment
+			multiply = @sul_enrichment_weight
 			multiply = owner.var:sul_enrich_rate_burghers
 		}
 	}
 }
+
 sul_commoner_enrichment_per_pop = {
 	value = 0
-	if = { limit = { num_pop_type:peasants > 0 }
+	if = {
+		limit = { num_pop_type:peasants > 0 }
+
 		add = {
 			value = "variable_map(sul_demand_base|pop_type:peasants)"
 			multiply = "variable_map(sul_wealth_per_pop|pop_type:peasants)"
-			multiply = @sul_w_enrichment
+			multiply = @sul_enrichment_weight
 			multiply = owner.var:sul_enrich_rate_commoners
 		}
 	}
@@ -309,60 +555,107 @@ sul_commoner_enrichment_per_pop = {
 
 sul_tribesmen_enrichment_per_pop = {
 	value = 0
-	if = { limit = { num_pop_type:tribesmen > 0 }
+	if = {
+		limit = { num_pop_type:tribesmen > 0 }
+
 		add = {
 			value = "variable_map(sul_demand_base|pop_type:tribesmen)"
 			multiply = "variable_map(sul_wealth_per_pop|pop_type:tribesmen)"
-			multiply = @sul_w_enrichment
+			multiply = @sul_enrichment_weight
 			multiply = owner.var:sul_enrich_rate_tribesmen
 		}
 	}
 }
 
 # Enrichment rate modifiers (for tooltip hover)
-sul_noble_enrichment_rate_display = { value = owner.modifier:sul_nobles_enrichment_rate }
-sul_clergy_enrichment_rate_display = { value = owner.modifier:sul_clergy_enrichment_rate }
-sul_burgher_enrichment_rate_display = { value = owner.modifier:sul_burghers_enrichment_rate }
-sul_commoner_enrichment_rate_display = { value = owner.modifier:sul_commoners_enrichment_rate }
-sul_tribesmen_enrichment_rate_display = { value = owner.modifier:sul_tribesmen_enrichment_rate }
+
+sul_noble_enrichment_rate_display = {
+	value = owner.modifier:sul_nobles_enrichment_rate
+}
+
+sul_clergy_enrichment_rate_display = {
+	value = owner.modifier:sul_clergy_enrichment_rate
+}
+
+sul_burgher_enrichment_rate_display = {
+	value = owner.modifier:sul_burghers_enrichment_rate
+}
+
+sul_commoner_enrichment_rate_display = {
+	value = owner.modifier:sul_commoners_enrichment_rate
+}
+
+sul_tribesmen_enrichment_rate_display = {
+	value = owner.modifier:sul_tribesmen_enrichment_rate
+}
 
 # --- WAGE BREAKDOWN COMPONENTS (for tooltip hover) ---
 
-sul_wage_pool_total = { value = var:sul_local_wages }
+sul_wage_pool_total = {
+	value = var:sul_local_wages
+}
 
-sul_commoner_power_share = { value = "local_relative_estate_power(estate_type:peasants_estate)" }
+sul_commoner_power_share = {
+	value = "local_relative_estate_power(estate_type:peasants_estate)"
+}
 
 sul_soldier_bill_pct = {
 	value = var:sul_wage_bill_soldiers
-	divide = { value = var:sul_wage_bill_soldiers add = var:sul_wage_bill_laborers add = var:sul_wage_bill_peasants min = 0.001 }
+
+	divide = {
+		value = var:sul_wage_bill_soldiers
+		add = var:sul_wage_bill_laborers
+		add = var:sul_wage_bill_peasants
+		min = 0.001
+	}
 }
+
 sul_laborer_bill_pct = {
 	value = var:sul_wage_bill_laborers
-	divide = { value = var:sul_wage_bill_soldiers add = var:sul_wage_bill_laborers add = var:sul_wage_bill_peasants min = 0.001 }
+
+	divide = {
+		value = var:sul_wage_bill_soldiers
+		add = var:sul_wage_bill_laborers
+		add = var:sul_wage_bill_peasants
+		min = 0.001
+	}
 }
+
 sul_peasant_bill_pct = {
 	value = var:sul_wage_bill_peasants
-	divide = { value = var:sul_wage_bill_soldiers add = var:sul_wage_bill_laborers add = var:sul_wage_bill_peasants min = 0.001 }
+
+	divide = {
+		value = var:sul_wage_bill_soldiers
+		add = var:sul_wage_bill_laborers
+		add = var:sul_wage_bill_peasants
+		min = 0.001
+	}
 }
-sul_peasants_bill_pct = { value = sul_peasant_bill_pct }
+
+sul_peasants_bill_pct = {
+	value = sul_peasant_bill_pct
+}
 
 # --- CAPITAL RETURNS PER POP (from local assets × 2%) ---
 
 sul_noble_capital_return = {
 	value = "variable_map(sul_estate_assets|estate_type:nobles_estate)"
 	multiply = @sul_return_rate
+
 	divide = { value = num_pop_type:nobles min = 0.001 }
 }
 
 sul_clergy_capital_return = {
 	value = "variable_map(sul_estate_assets|estate_type:clergy_estate)"
 	multiply = @sul_return_rate
+
 	divide = { value = num_pop_type:clergy min = 0.001 }
 }
 
 sul_burgher_capital_return = {
 	value = "variable_map(sul_estate_assets|estate_type:burghers_estate)"
 	multiply = @sul_return_rate
+
 	divide = { value = num_pop_type:burghers min = 0.001 }
 }
 
@@ -373,42 +666,132 @@ sul_commoner_capital_return = {
 
 # --- POLITICAL POWER SHARE (for wage distribution tooltip) ---
 
-sul_noble_power_share = { value = "local_relative_estate_power(estate_type:nobles_estate)" }
-sul_clergy_power_share = { value = "local_relative_estate_power(estate_type:clergy_estate)" }
-sul_burgher_power_share = { value = "local_relative_estate_power(estate_type:burghers_estate)" }
+sul_noble_power_share = {
+	value = "local_relative_estate_power(estate_type:nobles_estate)"
+}
+
+sul_clergy_power_share = {
+	value = "local_relative_estate_power(estate_type:clergy_estate)"
+}
+
+sul_burgher_power_share = {
+	value = "local_relative_estate_power(estate_type:burghers_estate)"
+}
 
 # --- MINORITY RETURNS (distributed by power share for tooltip display) ---
 
-sul_noble_dhimmi_return = { value = var:sul_dhimmi_return_per_pop multiply = "local_relative_estate_power(estate_type:nobles_estate)" }
-sul_clergy_dhimmi_return = { value = var:sul_dhimmi_return_per_pop multiply = "local_relative_estate_power(estate_type:clergy_estate)" }
-sul_burgher_dhimmi_return = { value = var:sul_dhimmi_return_per_pop multiply = "local_relative_estate_power(estate_type:burghers_estate)" }
-sul_commoner_dhimmi_return = { value = var:sul_dhimmi_return_per_pop multiply = "local_relative_estate_power(estate_type:peasants_estate)" }
-sul_tribesmen_dhimmi_return = { value = var:sul_dhimmi_return_per_pop multiply = "local_relative_estate_power(estate_type:tribes_estate)" }
-sul_tribesmen_cossacks_return = { value = var:sul_cossacks_return_per_pop multiply = "local_relative_estate_power(estate_type:tribes_estate)" }
+sul_noble_dhimmi_return = {
+	value = var:sul_dhimmi_return_per_pop
+	multiply = "local_relative_estate_power(estate_type:nobles_estate)"
+}
+
+sul_clergy_dhimmi_return = {
+	value = var:sul_dhimmi_return_per_pop
+	multiply = "local_relative_estate_power(estate_type:clergy_estate)"
+}
+
+sul_burgher_dhimmi_return = {
+	value = var:sul_dhimmi_return_per_pop
+	multiply = "local_relative_estate_power(estate_type:burghers_estate)"
+}
+
+sul_commoner_dhimmi_return = {
+	value = var:sul_dhimmi_return_per_pop
+	multiply = "local_relative_estate_power(estate_type:peasants_estate)"
+}
+
+sul_tribesmen_dhimmi_return = {
+	value = var:sul_dhimmi_return_per_pop
+	multiply = "local_relative_estate_power(estate_type:tribes_estate)"
+}
+
+sul_tribesmen_cossacks_return = {
+	value = var:sul_cossacks_return_per_pop
+	multiply = "local_relative_estate_power(estate_type:tribes_estate)"
+}
 
 # --- TOTAL RETURNS (estate + minority, for tooltip summary line) ---
 
-sul_noble_total_return = { value = sul_noble_capital_return add = sul_noble_dhimmi_return }
-sul_clergy_total_return = { value = sul_clergy_capital_return add = sul_clergy_dhimmi_return }
-sul_burgher_total_return = { value = sul_burgher_capital_return add = sul_burgher_dhimmi_return }
-sul_commoner_total_return = { value = sul_commoner_flat_wealth add = sul_commoner_dhimmi_return }
-sul_tribesmen_total_return = { value = sul_tribesmen_capital_return add = sul_tribesmen_dhimmi_return add = sul_tribesmen_cossacks_return }
+sul_noble_total_return = {
+	value = sul_noble_capital_return
+	add = sul_noble_dhimmi_return
+}
+
+sul_clergy_total_return = {
+	value = sul_clergy_capital_return
+	add = sul_clergy_dhimmi_return
+}
+
+sul_burgher_total_return = {
+	value = sul_burgher_capital_return
+	add = sul_burgher_dhimmi_return
+}
+
+sul_commoner_total_return = {
+	value = sul_commoner_flat_wealth
+	add = sul_commoner_dhimmi_return
+}
+
+sul_tribesmen_total_return = {
+	value = sul_tribesmen_capital_return
+	add = sul_tribesmen_dhimmi_return
+	add = sul_tribesmen_cossacks_return
+}
 
 # --- ENRICHMENT DISPLAY (rate breakdown for tooltip) ---
 
-sul_estate_enrichment_display = { value = owner.modifier:estate_enrichment }
+sul_estate_enrichment_display = {
+	value = owner.modifier:estate_enrichment
+}
 
-sul_noble_enrichment_combined = { value = 1 add = owner.modifier:estate_enrichment multiply = { value = 1 add = owner.modifier:sul_nobles_enrichment_rate } }
-sul_clergy_enrichment_combined = { value = 1 add = owner.modifier:estate_enrichment multiply = { value = 1 add = owner.modifier:sul_clergy_enrichment_rate } }
-sul_burgher_enrichment_combined = { value = 1 add = owner.modifier:estate_enrichment multiply = { value = 1 add = owner.modifier:sul_burghers_enrichment_rate } }
-sul_commoner_enrichment_combined = { value = 1 add = owner.modifier:estate_enrichment multiply = { value = 1 add = owner.modifier:sul_commoners_enrichment_rate } }
-sul_tribesmen_enrichment_combined = { value = 1 add = owner.modifier:estate_enrichment multiply = { value = 1 add = owner.modifier:sul_tribesmen_enrichment_rate } }
+sul_noble_enrichment_combined = {
+	value = 1
+	add = owner.modifier:estate_enrichment
+
+	multiply = { value = 1 add = owner.modifier:sul_nobles_enrichment_rate }
+}
+
+sul_clergy_enrichment_combined = {
+	value = 1
+	add = owner.modifier:estate_enrichment
+
+	multiply = { value = 1 add = owner.modifier:sul_clergy_enrichment_rate }
+}
+
+sul_burgher_enrichment_combined = {
+	value = 1
+	add = owner.modifier:estate_enrichment
+
+	multiply = { value = 1 add = owner.modifier:sul_burghers_enrichment_rate }
+}
+
+sul_commoner_enrichment_combined = {
+	value = 1
+	add = owner.modifier:estate_enrichment
+
+	multiply = { value = 1 add = owner.modifier:sul_commoners_enrichment_rate }
+}
+
+sul_tribesmen_enrichment_combined = {
+	value = 1
+	add = owner.modifier:estate_enrichment
+
+	multiply = { value = 1 add = owner.modifier:sul_tribesmen_enrichment_rate }
+}
 
 # --- WAGE POOL BREAKDOWN (per-type contribution to wage pool, for nested tooltip) ---
 
-sul_wage_bill_soldiers_display = { value = var:sul_wage_bill_soldiers }
-sul_wage_bill_laborers_display = { value = var:sul_wage_bill_laborers }
-sul_wage_bill_peasants_display = { value = var:sul_wage_bill_peasants }
+sul_wage_bill_soldiers_display = {
+	value = var:sul_wage_bill_soldiers
+}
+
+sul_wage_bill_laborers_display = {
+	value = var:sul_wage_bill_laborers
+}
+
+sul_wage_bill_peasants_display = {
+	value = var:sul_wage_bill_peasants
+}
 
 # --- COMMONER FLAT WEALTH (now reads from local peasant assets) ---
 
@@ -419,60 +802,183 @@ sul_commoner_flat_wealth = {
 
 # --- LEGACY ALIASES (referenced by GUI — kept to prevent errors) ---
 
-sul_noble_per_capita = { value = sul_noble_demand_per_pop }
-sul_clergy_per_capita = { value = sul_clergy_demand_per_pop }
-sul_burgher_per_capita = { value = sul_burgher_demand_per_pop }
-sul_commoner_per_capita = { value = sul_peasant_demand_per_pop }
+sul_noble_per_capita = {
+	value = sul_noble_demand_per_pop
+}
+
+sul_clergy_per_capita = {
+	value = sul_clergy_demand_per_pop
+}
+
+sul_burgher_per_capita = {
+	value = sul_burgher_demand_per_pop
+}
+
+sul_commoner_per_capita = {
+	value = sul_peasant_demand_per_pop
+}
 
 # Legacy share values — return 0 since the power-weight model is gone.
 # GUI references will show 0 until updated.
-sul_noble_share_pct = { value = 0 }
-sul_clergy_share_pct = { value = 0 }
-sul_burgher_share_pct = { value = 0 }
-sul_soldier_share_pct = { value = 0 }
-sul_laborer_share_pct = { value = 0 }
-sul_peasant_share_pct = { value = 0 }
+
+sul_noble_share_pct = {
+	value = 0
+}
+
+sul_clergy_share_pct = {
+	value = 0
+}
+
+sul_burgher_share_pct = {
+	value = 0
+}
+
+sul_soldier_share_pct = {
+	value = 0
+}
+
+sul_laborer_share_pct = {
+	value = 0
+}
+
+sul_peasant_share_pct = {
+	value = 0
+}
 
 # Legacy tax values — return 0 since tax base distribution is gone.
-sul_noble_tax_per_pop = { value = 0 }
-sul_clergy_tax_per_pop = { value = 0 }
-sul_burgher_tax_per_pop = { value = 0 }
-sul_soldier_tax_per_pop = { value = 0 }
-sul_laborer_tax_per_pop = { value = 0 }
-sul_peasant_tax_per_pop = { value = 0 }
 
-sul_noble_effective_share = { value = 0 }
-sul_clergy_effective_share = { value = 0 }
-sul_burgher_effective_share = { value = 0 }
-sul_commoner_effective_share = { value = 0 }
+sul_noble_tax_per_pop = {
+	value = 0
+}
 
-sul_noble_tax_income = { value = 0 }
-sul_clergy_tax_income = { value = 0 }
-sul_burgher_tax_income = { value = 0 }
-sul_soldier_tax_income = { value = 0 }
-sul_laborer_tax_income = { value = 0 }
-sul_peasant_tax_income = { value = 0 }
+sul_clergy_tax_per_pop = {
+	value = 0
+}
 
-sul_noble_rents_wages = { value = sul_noble_demand_per_pop }
-sul_clergy_rents_wages = { value = sul_clergy_demand_per_pop }
-sul_burgher_rents_wages = { value = sul_burgher_demand_per_pop }
-sul_soldier_rents_wages = { value = sul_soldier_demand_per_pop }
-sul_laborer_rents_wages = { value = sul_laborer_demand_per_pop }
-sul_peasant_rents_wages = { value = sul_peasant_demand_per_pop }
+sul_burgher_tax_per_pop = {
+	value = 0
+}
+
+sul_soldier_tax_per_pop = {
+	value = 0
+}
+
+sul_laborer_tax_per_pop = {
+	value = 0
+}
+
+sul_peasant_tax_per_pop = {
+	value = 0
+}
+
+sul_noble_effective_share = {
+	value = 0
+}
+
+sul_clergy_effective_share = {
+	value = 0
+}
+
+sul_burgher_effective_share = {
+	value = 0
+}
+
+sul_commoner_effective_share = {
+	value = 0
+}
+
+sul_noble_tax_income = {
+	value = 0
+}
+
+sul_clergy_tax_income = {
+	value = 0
+}
+
+sul_burgher_tax_income = {
+	value = 0
+}
+
+sul_soldier_tax_income = {
+	value = 0
+}
+
+sul_laborer_tax_income = {
+	value = 0
+}
+
+sul_peasant_tax_income = {
+	value = 0
+}
+
+sul_noble_rents_wages = {
+	value = sul_noble_demand_per_pop
+}
+
+sul_clergy_rents_wages = {
+	value = sul_clergy_demand_per_pop
+}
+
+sul_burgher_rents_wages = {
+	value = sul_burgher_demand_per_pop
+}
+
+sul_soldier_rents_wages = {
+	value = sul_soldier_demand_per_pop
+}
+
+sul_laborer_rents_wages = {
+	value = sul_laborer_demand_per_pop
+}
+
+sul_peasant_rents_wages = {
+	value = sul_peasant_demand_per_pop
+}
 
 # --- DHIMMI / COSSACKS / TRIBES (zero) ---
 
-sul_dhimmi_share_pct = { value = 0 }
-sul_dhimmi_tax_income = { value = 0 }
-sul_dhimmi_rents_wages = { value = 0 }
-sul_cossacks_share_pct = { value = 0 }
-sul_cossacks_tax_income = { value = 0 }
-sul_cossacks_rents_wages = { value = 0 }
-sul_tribes_share_pct = { value = 0 }
-sul_tribes_tax_income = { value = 0 }
-sul_tribes_rents_wages = { value = 0 }
+sul_dhimmi_share_pct = {
+	value = 0
+}
+
+sul_dhimmi_tax_income = {
+	value = 0
+}
+
+sul_dhimmi_rents_wages = {
+	value = 0
+}
+
+sul_cossacks_share_pct = {
+	value = 0
+}
+
+sul_cossacks_tax_income = {
+	value = 0
+}
+
+sul_cossacks_rents_wages = {
+	value = 0
+}
+
+sul_tribes_share_pct = {
+	value = 0
+}
+
+sul_tribes_tax_income = {
+	value = 0
+}
+
+sul_tribes_rents_wages = {
+	value = 0
+}
 
 # --- Debug helpers ---
 
-sul_debug_loc_pop = { value = population }
-sul_debug_num_locations = { value = num_locations }
+sul_debug_loc_pop = {
+	value = population
+}
+
+sul_debug_num_locations = {
+	value = num_locations
+}

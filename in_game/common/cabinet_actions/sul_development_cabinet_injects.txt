@@ -12,10 +12,7 @@ REPLACE:develop_province = {
 
 	allow = {
 		any_province = {
-			any_location_in_province = {
-				integration_level = core
-				count = all
-			}
+			any_location_in_province = { integration_level = core count = all }
 		}
 	}
 
@@ -25,57 +22,43 @@ REPLACE:develop_province = {
 		target_flag = target
 		name = "develop_province_select_province"
 		none_available_msg_key = "develop_province_no_provinces"
-		column = {
-			data = name
-		}
-		column = {
-			data = development
-		}
-		column = {
-			data = population
-		}
+		column = { data = name }
+		column = { data = development }
+		column = { data = population }
+
 		visible = {
-			NOT = { cabinet_already_performing_same_task_on_target = { cabinet_action = develop_province interaction_target = target } }
-		}
-		enabled = {
-			any_location_in_province = {
-				integration_level = core
-				count = all
+			NOT = {
+				cabinet_already_performing_same_task_on_target = {
+					cabinet_action = develop_province
+					interaction_target = target
+				}
 			}
 		}
+
+		enabled = {
+			any_location_in_province = { integration_level = core count = all }
+		}
+
 		map_color = {
 			lerp = {
 				min_color = define:NMapColors|MAP_COLOR_LOW
 				max_color = define:NMapColors|MAP_COLOR_HIGH
-				factor = {
-					value = development
-					divide = 100
-				}
+				factor = { value = development divide = 100 }
 			}
 		}
 	}
 
 	# Removed: local_monthly_development = 0.0025
-	location_modifier = {
-		local_monthly_development_modifier = 0.05
-	}
+	location_modifier = { local_monthly_development_modifier = 0.05 }
 
-	progress = {
-		scope:target = {
-			value = province_average_development
-		}
-	}
+	progress = { scope:target = { value = province_average_development } }
 
-	map_marker = {
-		show_for_owner = yes
-	}
+	map_marker = { show_for_owner = yes }
 
 	ai_will_do = {
 		add = {
 			if = {
-				limit = {
-					scope:actor = { is_subject = no }
-				}
+				limit = { scope:actor = { is_subject = no } }
 				value = -1000
 			}
 		}
@@ -86,19 +69,15 @@ REPLACE:aid_constantinople = {
 	ability = adm
 	allow_multiple = no
 	icon = develop_province
+
 	potential = {
 		has_variable = byz_unlocked_constantinople_cabinet_action
-		location:constantinople = {
-			is_capital = yes
-			owner = root
-		}
+		location:constantinople = { is_capital = yes owner = root }
 	}
+
 	allow = {
 		has_variable = byz_unlocked_constantinople_cabinet_action
-		location:constantinople = {
-			is_capital = yes
-			owner = root
-		}
+		location:constantinople = { is_capital = yes owner = root }
 	}
 
 	select_trigger = {
@@ -107,20 +86,10 @@ REPLACE:aid_constantinople = {
 		target_flag = target
 		name = "byz_aid_constantinople_action_select_province"
 		none_available_msg_key = "byz_aid_constantinople_action_no_provinces"
-		column = {
-			data = name
-		}
-		column = {
-			data = primary_culture_percentage
-		}
-		column = {
-			data = population
-		}
-		visible = {
-			any_location_in_province = {
-				is_capital = yes
-			}
-		}
+		column = { data = name }
+		column = { data = primary_culture_percentage }
+		column = { data = population }
+		visible = { any_location_in_province = { is_capital = yes } }
 	}
 
 	# Removed: local_monthly_development = 0.005
@@ -149,12 +118,9 @@ REPLACE:swe_slash_and_burn_new_farms = {
 		target_flag = target
 		name = "swe_slash_and_burn_new_farms_select_province"
 		none_available_msg_key = "swe_slash_and_burn_new_farms_no_provinces"
-		column = {
-			data = name
-		}
-		column = {
-			data = population
-		}
+		column = { data = name }
+		column = { data = population }
+
 		visible = {
 			province_average_development < 20
 			population < 10
@@ -162,11 +128,18 @@ REPLACE:swe_slash_and_burn_new_farms = {
 				area = area:finland_area
 				area = area:norrland_area
 			}
+
 			province_definition != province_definition:finland_province
 			province_definition != province_definition:nyland_province
 
-			NOT = { cabinet_already_performing_same_task_on_target = { cabinet_action = swe_slash_and_burn_new_farms interaction_target = target } }
+			NOT = {
+				cabinet_already_performing_same_task_on_target = {
+					cabinet_action = swe_slash_and_burn_new_farms
+					interaction_target = target
+				}
+			}
 		}
+
 		map_color = {
 			lerp = {
 				min_color = define:NMapColors|MAP_COLOR_LOW
@@ -176,11 +149,7 @@ REPLACE:swe_slash_and_burn_new_farms = {
 		}
 	}
 
-	is_finished = {
-		scope:target ?= {
-			population > 15
-		}
-	}
+	is_finished = { scope:target ?= { population > 15 } }
 
 	# Removed: local_monthly_development = 0.01
 	location_modifier = {
@@ -189,7 +158,5 @@ REPLACE:swe_slash_and_burn_new_farms = {
 		local_migration_attraction = 0.25
 	}
 
-	map_marker = {
-		show_for_owner = yes
-	}
+	map_marker = { show_for_owner = yes }
 }

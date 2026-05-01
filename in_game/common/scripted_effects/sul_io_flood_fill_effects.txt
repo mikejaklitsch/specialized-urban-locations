@@ -19,6 +19,7 @@
 #   scope:sul_io_ff_country has variable lists sul_io_ff_frontier and sul_io_ff_candidates populated
 # Parameter: $IO$
 # --------------------------------------------------
+
 sul_io_flood_fill_bfs = {
 	scope:sul_io_ff_country = {
 		set_variable = { name = sul_io_ff_changed value = 1 }
@@ -41,13 +42,19 @@ sul_io_flood_fill_bfs = {
 
 					save_scope_as = sul_io_ff_hit
 
-					$IO$ = {
-						add_location_to_international_organization = scope:sul_io_ff_hit
-					}
+					$IO$ = { add_location_to_international_organization = scope:sul_io_ff_hit }
 
 					scope:sul_io_ff_country = {
-						remove_list_variable = { name = sul_io_ff_candidates target = scope:sul_io_ff_hit }
-						add_to_variable_list = { name = sul_io_ff_next_frontier target = scope:sul_io_ff_hit }
+						remove_list_variable = {
+							name = sul_io_ff_candidates
+							target = scope:sul_io_ff_hit
+						}
+
+						add_to_variable_list = {
+							name = sul_io_ff_next_frontier
+							target = scope:sul_io_ff_hit
+						}
+
 						change_variable = { name = sul_io_ff_changed add = 1 }
 					}
 				}
@@ -55,13 +62,19 @@ sul_io_flood_fill_bfs = {
 
 			# Swap: next_frontier → frontier
 			clear_variable_list = sul_io_ff_frontier
+
 			every_in_list = {
 				variable = sul_io_ff_next_frontier
 				save_scope_as = sul_io_ff_swap
+
 				scope:sul_io_ff_country = {
-					add_to_variable_list = { name = sul_io_ff_frontier target = scope:sul_io_ff_swap }
+					add_to_variable_list = {
+						name = sul_io_ff_frontier
+						target = scope:sul_io_ff_swap
+					}
 				}
 			}
+
 			clear_variable_list = sul_io_ff_next_frontier
 		}
 
@@ -74,16 +87,19 @@ sul_io_flood_fill_bfs = {
 }
 
 # Ensures the country is a member of the IO before BFS begins
+
 sul_io_flood_fill_ensure_membership = {
 	scope:sul_io_ff_country = {
 		if = {
 			limit = {
-				NOT = { is_member_of_international_organization = $IO$ }
+				NOT = {
+					is_member_of_international_organization = $IO$
+				}
+
 				country_can_join_international_organization = $IO$
 			}
-			$IO$ = {
-				add_country_to_international_organization = scope:sul_io_ff_country
-			}
+
+			$IO$ = { add_country_to_international_organization = scope:sul_io_ff_country }
 		}
 	}
 }
@@ -93,26 +109,33 @@ sul_io_flood_fill_ensure_membership = {
 # --------------------------------------------------
 # Scope: country
 # --------------------------------------------------
+
 sul_add_all_eligible_to_io = {
 	save_scope_as = sul_io_ff_country
 
 	sul_io_flood_fill_ensure_membership = { IO = $IO$ }
 
 	every_owned_location = {
-		limit = {
-			sul_io_flood_fill_can_add_location = { IO = $IO$ }
-		}
+		limit = { sul_io_flood_fill_can_add_location = { IO = $IO$ } }
 		save_scope_as = sul_io_ff_loc
+
 		scope:sul_io_ff_country = {
-			add_to_variable_list = { name = sul_io_ff_candidates target = scope:sul_io_ff_loc }
+			add_to_variable_list = {
+				name = sul_io_ff_candidates
+				target = scope:sul_io_ff_loc
+			}
 		}
 	}
 
 	$IO$ = {
 		every_international_organization_owned_location = {
 			save_scope_as = sul_io_ff_loc
+
 			scope:sul_io_ff_country = {
-				add_to_variable_list = { name = sul_io_ff_frontier target = scope:sul_io_ff_loc }
+				add_to_variable_list = {
+					name = sul_io_ff_frontier
+					target = scope:sul_io_ff_loc
+				}
 			}
 		}
 	}
@@ -125,6 +148,7 @@ sul_add_all_eligible_to_io = {
 # --------------------------------------------------
 # Scope: location
 # --------------------------------------------------
+
 sul_expand_io_from_location = {
 	owner = { save_scope_as = sul_io_ff_country }
 
@@ -132,28 +156,35 @@ sul_expand_io_from_location = {
 
 	if = {
 		limit = {
-			NOT = { is_owned_by_international_organization = $IO$ }
+			NOT = {
+				is_owned_by_international_organization = $IO$
+			}
 		}
-		$IO$ = {
-			add_location_to_international_organization = prev
-		}
+
+		$IO$ = { add_location_to_international_organization = prev }
 	}
 
 	owner = {
 		every_owned_location = {
-			limit = {
-				sul_io_flood_fill_can_add_location = { IO = $IO$ }
-			}
+			limit = { sul_io_flood_fill_can_add_location = { IO = $IO$ } }
 			save_scope_as = sul_io_ff_loc
+
 			scope:sul_io_ff_country = {
-				add_to_variable_list = { name = sul_io_ff_candidates target = scope:sul_io_ff_loc }
+				add_to_variable_list = {
+					name = sul_io_ff_candidates
+					target = scope:sul_io_ff_loc
+				}
 			}
 		}
 	}
 
 	save_scope_as = sul_io_ff_loc
+
 	scope:sul_io_ff_country = {
-		add_to_variable_list = { name = sul_io_ff_frontier target = scope:sul_io_ff_loc }
+		add_to_variable_list = {
+			name = sul_io_ff_frontier
+			target = scope:sul_io_ff_loc
+		}
 	}
 
 	sul_io_flood_fill_bfs = { IO = $IO$ }
@@ -164,6 +195,7 @@ sul_expand_io_from_location = {
 # --------------------------------------------------
 # Scope: location (any location in the target province)
 # --------------------------------------------------
+
 sul_add_province_to_io = {
 	owner = { save_scope_as = sul_io_ff_country }
 
@@ -171,22 +203,26 @@ sul_add_province_to_io = {
 
 	province = {
 		every_location_in_province = {
-			limit = {
-				sul_io_flood_fill_can_add_location = { IO = $IO$ }
-			}
+			limit = { sul_io_flood_fill_can_add_location = { IO = $IO$ } }
 			save_scope_as = sul_io_ff_loc
+
 			scope:sul_io_ff_country = {
-				add_to_variable_list = { name = sul_io_ff_candidates target = scope:sul_io_ff_loc }
+				add_to_variable_list = {
+					name = sul_io_ff_candidates
+					target = scope:sul_io_ff_loc
+				}
 			}
 		}
 
 		every_location_in_province = {
-			limit = {
-				is_owned_by_international_organization = $IO$
-			}
+			limit = { is_owned_by_international_organization = $IO$ }
 			save_scope_as = sul_io_ff_loc
+
 			scope:sul_io_ff_country = {
-				add_to_variable_list = { name = sul_io_ff_frontier target = scope:sul_io_ff_loc }
+				add_to_variable_list = {
+					name = sul_io_ff_frontier
+					target = scope:sul_io_ff_loc
+				}
 			}
 		}
 	}

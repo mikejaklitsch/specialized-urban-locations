@@ -13,7 +13,6 @@ on_game_start = {
 		sul_rgo_removal_start
 		sul_rank_setup
 		sul_initialize_all
-		sul_initialize_economy
 		sul_war_on_game_start
 		sul_integration_on_game_start
 		sul_refresh_market_cache
@@ -21,6 +20,19 @@ on_game_start = {
 		sul_epbm_initialize_all
 		sul_migration_on_game_start
 		sul_set_unowned_development
+	}
+}
+
+# Economy init deferred to after-lobby: on_game_start fires during
+# partial country init, so modifier reads (e.g. enrichment rates from
+# sul_compute_budget_pressure) return none. CMF's after-lobby hook
+# fires once countries are fully initialized.
+# Order: economy pass (produces national power + estate gold) → wealth
+# seed (needs those) → WPP recompute (fills in capital returns).
+
+on_game_start_after_lobby = {
+	on_actions = {
+		sul_initialize_economy
 		sul_wealth_seed_all
 		sul_init_recompute_wpp
 	}
@@ -50,10 +62,7 @@ on_location_changed_owner = {
 }
 
 monthly_country_pulse = {
-	on_actions = {
-		sul_projection_monthly
-		sul_monthly_country_pulse
-	}
+	on_actions = { sul_projection_monthly sul_monthly_country_pulse }
 }
 
 yearly_country_pulse = {

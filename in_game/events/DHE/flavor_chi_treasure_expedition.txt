@@ -2,47 +2,51 @@
 namespace = flavor_chi
 
 # Scripted Trigger to determine what nations should be informed about Treasure Voyages, put into major_trigger
-scripted_trigger possibly_impacted_by_treasure_voyages = {
+scripted_trigger
+
+possibly_impacted_by_treasure_voyages = {
 	capital ?= {
 		OR = {
 			sub_continent = sub_continent:south_asia
 			sub_continent = sub_continent:east_asia
 			sub_continent = sub_continent:south_east_asia
 			sub_continent = sub_continent:middle_east
-		}	
+		}
 	}
 }
 
 # Changes the amount of cargo held by the expedition
-scripted_effect change_amount_of_treasure_voyage = {
+scripted_effect
+
+change_amount_of_treasure_voyage = {
 	custom_description = {
 		text = change_amount_of_treasure_voyage_tt
 		value = $value$
+
 		scope:expedition_initiator = {
-			change_variable = {
-				name = chinese_treasure_voyage_cargo
-				add = $value$
-			}
+			change_variable = { name = chinese_treasure_voyage_cargo add = $value$ }
 		}
 	}
 }
 
 # Gives gold to the expedition to be converted to prestige at the end
-scripted_effect give_gold_to_expedition = {
+scripted_effect
+
+give_gold_to_expedition = {
 	custom_description = {
 		text = give_gold_to_expedition
 		value = $value$
+
 		scope:expedition_initiator = {
-			change_variable = {
-				name = gifts_received
-				add = $value$
-			}
+			change_variable = { name = gifts_received add = $value$ }
 		}
 	}
 }
 
 # Turns the character into the Expedition Leader
-scripted_effect make_into_expedition_leader = {
+scripted_effect
+
+make_into_expedition_leader = {
 	set_variable = {
 		name = chinese_expedition_expedition_leader
 		value = $target$
@@ -50,10 +54,7 @@ scripted_effect make_into_expedition_leader = {
 
 	$target$ = {
 		set_variable = is_chinese_expedition_expedition_leader
-		add_character_modifier = {
-			modifier = chi_leading_expedition
-			years = -1
-		}
+		add_character_modifier = { modifier = chi_leading_expedition years = -1 }
 	}
 }
 
@@ -64,16 +65,18 @@ scripted_effect make_into_expedition_leader = {
 # deviation - represents the fleet deviating from a port towards a port
 # deviation_return - represents the fleet returning from the port visit back to the main route
 # port_stay - fleet is currently stationed in a port
-scripted_effect change_expedition_state = {
+scripted_effect
+
+change_expedition_state = {
 	clear_chinese_expedition_status_variables = yes
 
-	set_variable = {
-		name = chinese_expedition_status_var_$status$
-	}
+	set_variable = { name = chinese_expedition_status_var_$status$ }
 }
 
 # Effect to clear existing expedition variables, prevents cases where two could be set by a mistake
-scripted_effect clear_chinese_expedition_status_variables = {
+scripted_effect
+
+clear_chinese_expedition_status_variables = {
 	remove_variable = chinese_expedition_status_var_port_stay
 	remove_variable = chinese_expedition_status_var_deviation
 	remove_variable = chinese_expedition_status_var_deviation_return
@@ -82,58 +85,46 @@ scripted_effect clear_chinese_expedition_status_variables = {
 }
 
 # Check for checking the current state of the treasure voyage
-scripted_trigger expedition_status = {
+scripted_trigger
+
+expedition_status = {
 	has_variable = chinese_expedition_status_var_$status$
 }
 
 # Scripted effect that determines the checks and behavior of the movement tick based on the current state
-scripted_effect chinese_expedition_status_change = {
-	global_var:chinese_treasure_voyage_running = { save_scope_as = expedition_initiator } #Reset the first country's scope in case it's been lost
+scripted_effect
+
+chinese_expedition_status_change = {
+	global_var:chinese_treasure_voyage_running = { save_scope_as = expedition_initiator } # Reset the first country's scope in case it's been lost
 	if = {
-		limit = {
-			expedition_status = { status = travel_to }
-		}
-		change_variable = {
-			name = remaining_locations
-			subtract = 1
-		}
+		limit = { expedition_status = { status = travel_to } }
+		change_variable = { name = remaining_locations subtract = 1 }
 		chinese_expedition_status_travel_to = yes
 	}
 	else_if = {
-		limit = {
-			expedition_status = { status = travel_from }
-		}
-		change_variable = {
-			name = remaining_locations
-			subtract = 1
-		}
+		limit = { expedition_status = { status = travel_from } }
+		change_variable = { name = remaining_locations subtract = 1 }
 		chinese_expedition_status_travel_from = yes
 	}
 	else_if = {
-		limit = {
-			expedition_status = { status = deviation }
-		}
+		limit = { expedition_status = { status = deviation } }
 		chinese_expedition_status_deviation = yes
 	}
 	else_if = {
-		limit = {
-			expedition_status = { status = deviation_return }
-		}
+		limit = { expedition_status = { status = deviation_return } }
 		chinese_expedition_status_deviation_return = yes
 	}
 	else_if = {
-		limit = {
-			expedition_status = { status = port_stay }
-		}
+		limit = { expedition_status = { status = port_stay } }
 		chinese_expedition_status_port_stay = yes
 	}
-	else = {
-		error_log = "Invalid Chinese Expedition Status"
-	}
+	else = { error_log = "Invalid Chinese Expedition Status" }
 }
 
 # Helper scripted effect that sets scope for localisation for flavor_chi.2004 and adds port to a visited port list
-scripted_effect visit_port = {
+scripted_effect
+
+visit_port = {
 	scope:expedition_initiator = {
 		add_to_variable_list = {
 			name = visited_ports
@@ -142,7 +133,9 @@ scripted_effect visit_port = {
 		if = {
 			limit = {
 				OR = {
-					NOT = { has_variable_list = visited_countries }
+					NOT = {
+						has_variable_list = visited_countries
+					}
 					NOT = {
 						is_target_in_variable_list = {
 							name = visited_countries
@@ -151,24 +144,27 @@ scripted_effect visit_port = {
 					}
 				}
 			}
+
 			add_to_variable_list = {
 				name = visited_countries
 				target = var:chinese_treasure_fleet_location.owner
 			}
 		}
 	}
+
 	scope:expedition_initiator.var:chinese_treasure_fleet_location ?= {
 		var:chinese_expedition_route_deviation_return = {
 			save_scope_as = coastal_sea_tile
 		}
-		owner ?= {
-			trigger_event_non_silently = { id = flavor_chi.2004 }
-		}
+
+		owner ?= { trigger_event_non_silently = { id = flavor_chi.2004 } }
 	}
 }
 
 # Scripted effect for changing the route of the expedition back to China
-scripted_effect chinese_expedition_set_expedition_to_return = {
+scripted_effect
+
+chinese_expedition_set_expedition_to_return = {
 	every_in_list = {
 		variable = route_to_target_expedition_list
 		if = {
@@ -176,55 +172,49 @@ scripted_effect chinese_expedition_set_expedition_to_return = {
 			remove_variable = chinese_treasure_next_location
 		}
 	}
-	set_variable = {
-		name = remaining_locations
-		value = 0
-	}
+
+	set_variable = { name = remaining_locations value = 0 }
+
 	clear_variable_list = route_to_target_expedition_list
+
 	find_route = {
 		start = scope:expedition_initiator.var:chinese_treasure_fleet_location
-		end = {
-			this = scope:expedition_initiator.var:chinese_treasure_start_location
-		}
-		limit = {
-			is_land = no
-		}
+		end = { this = scope:expedition_initiator.var:chinese_treasure_start_location }
+		limit = { is_land = no }
+
 		weight = {
 			value = scope:distance
-			if = {
-				limit = {
-					is_coastal = yes
-				}
-				multiply = 0.75
-			}
+			if = { limit = { is_coastal = yes } multiply = 0.75 }
 			if = {
 				limit = {
 					any_neighbor_location = {
 						scope:expedition_initiator = {
 							is_target_in_variable_list = {
 								name = list_of_discovered_locations
-								target = PREV
+								target = prev
 							}
 						}
 					}
 				}
+
 				multiply = 2 # Try to heavily bias the route to still be pretty optimal route while being quite different than the original one
 			}
 		}
+
 		movement_cost = yes
+
 		effect = {
 			save_route_to_the_target_effect = {
 				variable_name = chinese_treasure_next_location
 			}
+
 			scope:expedition_initiator = {
 				add_to_variable_list = {
 					name = route_to_target_expedition_list
-					target = PREV
+					target = prev
 				}
-				change_variable = {
-					name = remaining_locations
-					add = 1
-				}
+
+				change_variable = { name = remaining_locations add = 1 }
 			}
 		}
 	}
@@ -240,26 +230,30 @@ scripted_effect chinese_expedition_set_expedition_to_return = {
 
 # Scripted trigger for condition that ports must fulfill in order to be visited
 
-scripted_trigger is_port_valid_for_stay = {
+scripted_trigger
+
+is_port_valid_for_stay = {
 	is_port = yes
 	has_owner = yes
+
 	owner ?= {
-		NOT = { has_variable = visited_by_expedition }
+		NOT = {
+			has_variable = visited_by_expedition
+		}
 		NOR = {
 			this = scope:expedition_initiator
 			is_subject_or_below_of = scope:expedition_initiator
 		}
-		in_civil_war = no #To avoid weird things happening
+
+		in_civil_war = no # To avoid weird things happening
 	}
+
 	# No location in province definition has been visited before
 	NOT = {
 		province_definition = {
 			any_location_in_province_definition = {
 				scope:expedition_initiator = {
-					is_target_in_variable_list = {
-						name = visited_ports
-						target = PREV
-					}
+					is_target_in_variable_list = { name = visited_ports target = prev }
 				}
 			}
 		}
@@ -272,17 +266,19 @@ scripted_trigger is_port_valid_for_stay = {
 }
 
 # Script effects for setting the variables to the visited country when visiting
-scripted_effect set_visiting_variables = {
+scripted_effect
+
+set_visiting_variables = {
 	if = {
 		limit = {
-			NOT = { has_variable = visited_by_expedition }
+			NOT = {
+				has_variable = visited_by_expedition
+			}
 		}
-		set_variable = { name = visited_by_expedition years = 50 } #Giving it time limit in case the port changes hands before the expedition returns and the variable is not able to be cleared at the end
+
+		set_variable = { name = visited_by_expedition years = 50 } # Giving it time limit in case the port changes hands before the expedition returns and the variable is not able to be cleared at the end
 	}
-	set_variable = {
-		name = chinese_expedition_opinion
-		value = 0
-	}
+	set_variable = { name = chinese_expedition_opinion value = 0 }
 	set_variable = {
 		name = being_visited_by_expedition_from
 		value = scope:expedition_initiator
@@ -293,55 +289,55 @@ scripted_effect set_visiting_variables = {
 # Scripted effects for behavior of the expedition depending on the current state
 
 # For when the expedition is traveling from China to target destination.
-scripted_effect chinese_expedition_status_travel_to = {
+scripted_effect
+
+chinese_expedition_status_travel_to = {
 	if = {
-		limit = {
-			var:chinese_treasure_voyage_cargo ?= 0
-		}
+		limit = { var:chinese_treasure_voyage_cargo ?= 0 }
 		chinese_expedition_set_expedition_to_return = yes
+
 		scope:expedition_initiator = {
-			trigger_event_non_silently = {
-				id = flavor_chi.2022
-			}
+			trigger_event_non_silently = { id = flavor_chi.2022 }
 		}
 	}
 	else_if = {
 		limit = {
 			scope:expedition_initiator.var:chinese_treasure_fleet_location ?= var:chinese_treasure_target_location
 		}
+
 		chinese_expedition_set_expedition_to_return = yes
 	}
 	else_if = {
 		limit = {
 			scope:expedition_initiator.var:chinese_treasure_voyage_cargo ?= { this > 0 }
+
 			scope:expedition_initiator.var:chinese_treasure_fleet_location ?= {
-				NOT =  { has_variable = visited_a_port }
-				any_neighbor_location = {
-					is_port_valid_for_stay = yes
+				NOT = {
+					has_variable = visited_a_port
 				}
+				any_neighbor_location = { is_port_valid_for_stay = yes }
 			}
 		}
+
 		scope:expedition_initiator.var:chinese_treasure_fleet_location ?= {
 			set_variable = visited_a_port
+
 			random_neighbor_location = {
-				limit = {
-					is_port_valid_for_stay = yes
-				}
+				limit = { is_port_valid_for_stay = yes }
+
 				weight = {
 					factor = 1
-					modifier = {
-						add = {
-							value = development
-							multiply = development
-						}
-					}
+					modifier = { add = { value = development multiply = development } }
 				}
+
 				save_scope_as = target_stop
+
 				set_variable = {
 					name = chinese_expedition_route_deviation_return
-					value = PREV
+					value = prev
 				}
 			}
+
 			set_variable = {
 				name = chinese_expedition_route_deviation
 				value = scope:target_stop
@@ -351,13 +347,11 @@ scripted_effect chinese_expedition_status_travel_to = {
 		change_expedition_state = { status = deviation }
 
 		chinese_treasure_sail_to = {
-			to = scope:target_stop #This will be land, but the fleet needs to "move" there to be able to discover it
+			to = scope:target_stop # This will be land, but the fleet needs to "move" there to be able to discover it
 		}
 	}
 	else = {
-		trigger_event_non_silently = {
-			on_action = chinese_expedition_movement_events
-		}
+		trigger_event_non_silently = { on_action = chinese_expedition_movement_events }
 
 		chinese_treasure_sail_to = {
 			to = scope:expedition_initiator.var:chinese_treasure_fleet_location.var:chinese_treasure_next_location
@@ -366,7 +360,9 @@ scripted_effect chinese_expedition_status_travel_to = {
 }
 
 # For when the expedition is traveling from target destination to China.
-scripted_effect chinese_expedition_status_travel_from = {
+scripted_effect
+
+chinese_expedition_status_travel_from = {
 	if = {
 		limit = {
 			scope:expedition_initiator ?= {
@@ -374,14 +370,11 @@ scripted_effect chinese_expedition_status_travel_from = {
 				var:chinese_treasure_fleet_location ?= var:chinese_treasure_start_location
 			}
 		}
-		trigger_event_non_silently = {
-			id = flavor_chi.2008
-		}
+
+		trigger_event_non_silently = { id = flavor_chi.2008 }
 	}
 	else = {
-		trigger_event_non_silently = {
-			on_action = chinese_expedition_movement_events
-		}
+		trigger_event_non_silently = { on_action = chinese_expedition_movement_events }
 
 		chinese_treasure_sail_to = {
 			to = scope:expedition_initiator.var:chinese_treasure_fleet_location.var:chinese_treasure_next_location
@@ -390,21 +383,23 @@ scripted_effect chinese_expedition_status_travel_from = {
 }
 
 # For when the expedition is traveling to a port
-scripted_effect chinese_expedition_status_deviation = {
+scripted_effect
+
+chinese_expedition_status_deviation = {
 	if = {
 		limit = {
 			scope:expedition_initiator.var:chinese_treasure_fleet_location ?= {
-				NOT = { has_variable = chinese_expedition_route_deviation } # The fleet has reached the destined port (i.e. its location doesn't have anywhere to deviate to).
+				NOT = {
+					has_variable = chinese_expedition_route_deviation
+				} # The fleet has reached the destined port (i.e. its location doesn't have anywhere to deviate to).
 			}
 		}
-		change_expedition_state = {
-			status = port_stay
-		}
-		
-		
+
+		change_expedition_state = { status = port_stay }
+
 		visit_port = yes
 	}
-	else = { #Otherwise, continue sailing towards the port
+	else = { # Otherwise, continue sailing towards the port
 		chinese_treasure_sail_to = {
 			to = scope:expedition_initiator.var:chinese_treasure_fleet_location.var:chinese_expedition_route_deviation
 		}
@@ -412,38 +407,35 @@ scripted_effect chinese_expedition_status_deviation = {
 }
 
 # For when the expedition is staying in a port
-scripted_effect chinese_expedition_status_port_stay = {
-	change_expedition_state = {
-		status = deviation_return
-	}
+scripted_effect
+
+chinese_expedition_status_port_stay = {
+	change_expedition_state = { status = deviation_return }
+
 	chinese_treasure_sail_to = {
 		to = scope:expedition_initiator.var:chinese_treasure_fleet_location.var:chinese_expedition_route_deviation_return
 	}
 }
 
 # For when the expedition is traveling back from a port
-scripted_effect chinese_expedition_status_deviation_return = {
+scripted_effect
+
+chinese_expedition_status_deviation_return = {
 	if = {
 		limit = {
 			scope:expedition_initiator.var:chinese_treasure_fleet_location ?= {
-				NOT = { has_variable = chinese_expedition_route_deviation_return } # The fleet has returned back to the sea tile where it came from, continue sailing (i.e. the location doesn't have anywhere to return to anymore)
+				NOT = {
+					has_variable = chinese_expedition_route_deviation_return
+				} # The fleet has returned back to the sea tile where it came from, continue sailing (i.e. the location doesn't have anywhere to return to anymore)
 			}
 		}
 
 		if = {
-			limit = {
-				has_variable = return_journey
-			}
-			change_expedition_state = {
-				status = travel_from
-			}
+			limit = { has_variable = return_journey }
+			change_expedition_state = { status = travel_from }
 		}
-		else = {
-			change_expedition_state = {
-				status = travel_to
-			}
-		}
-			
+		else = { change_expedition_state = { status = travel_to } }
+
 		chinese_treasure_sail_to = {
 			to = scope:expedition_initiator.var:chinese_treasure_fleet_location.var:chinese_treasure_next_location
 		}
@@ -457,44 +449,47 @@ scripted_effect chinese_expedition_status_deviation_return = {
 
 # Scripted effect for firing a set of events from the chinese_expedition_event_pulse on_action.
 # Counts the current amount of events fired and forces the fleet to depart after 6 of them have been fired.
-scripted_effect visitation_event_pulse = {
+scripted_effect
+
+visitation_event_pulse = {
 	hidden_effect = {
 		if = {
 			limit = {
-				NOT = { has_variable = visitation_event_count }
-			}
-			set_variable = {
-				name = visitation_event_count  
-				value = 0
+				NOT = {
+					has_variable = visitation_event_count
+				}
 			}
 
-			#Reset the visiting variables in case something weird has happened
+			set_variable = { name = visitation_event_count value = 0 }
+
+			# Reset the visiting variables in case something weird has happened
 			if = {
 				limit = {
 					OR = {
-						NOT = { has_variable = visited_by_expedition }
-						NOT = { has_variable = chinese_expedition_opinion }
-						NOT = { has_variable = being_visited_by_expedition_from }
+						NOT = {
+							has_variable = visited_by_expedition
+						}
+						NOT = {
+							has_variable = chinese_expedition_opinion
+						}
+						NOT = {
+							has_variable = being_visited_by_expedition_from
+						}
 					}
 				}
+
 				set_visiting_variables = yes
 			}
 		}
 
 		if = {
-			limit = {
-				var:visitation_event_count >= 6
-			}
+			limit = { var:visitation_event_count >= 6 }
 			remove_variable = visitation_event_count
-			trigger_event_non_silently = {
-				id = flavor_chi.2007
-			}
+			trigger_event_non_silently = { id = flavor_chi.2007 }
 		}
 		else = {
-			change_variable = {
-				name = visitation_event_count
-				add = 1
-			}
+			change_variable = { name = visitation_event_count add = 1 }
+
 			trigger_event_silently = {
 				on_action = chinese_expedition_event_pulse
 				days = 15
@@ -505,73 +500,53 @@ scripted_effect visitation_event_pulse = {
 
 # Scripted effect for firing a set of events after the Treasure Voyage has returned.
 # The scripted effect is put into the after = { } of each event, which makes the chain continue firing relevant events until the pool is exhausted
-scripted_effect fire_post_expedition_events = {
+scripted_effect
+
+fire_post_expedition_events = {
 	if = {
-		limit = {
-			has_variable = envoy_event
-		}
+		limit = { has_variable = envoy_event }
 		remove_variable = envoy_event
 		trigger_event_silently = flavor_chi.2009
 	}
 	else_if = {
-		limit = {
-			has_variable = exploration_event
-		}
+		limit = { has_variable = exploration_event }
 		remove_variable = exploration_event
 		trigger_event_silently = flavor_chi.2011
 	}
-	
+
 	else_if = {
-		limit = {
-			has_variable = gift_event
-		}
+		limit = { has_variable = gift_event }
 		remove_variable = gift_event
 		trigger_event_silently = flavor_chi.2020
 	}
 	else_if = {
-		limit = {
-			has_variable = exceptional_gift_giraffe
-		}
+		limit = { has_variable = exceptional_gift_giraffe }
 		remove_variable = exceptional_gift_giraffe
 		trigger_event_silently = flavor_chi.2012
 	}
 	else_if = {
-		limit = {
-			has_variable = exceptional_gift_persian_blue
-		}
+		limit = { has_variable = exceptional_gift_persian_blue }
 		remove_variable = exceptional_gift_persian_blue
 		trigger_event_silently = flavor_chi.2013
 	}
 	else_if = {
-		limit = {
-			has_variable = exceptional_gift_cloves
-		}
+		limit = { has_variable = exceptional_gift_cloves }
 		remove_variable = exceptional_gift_cloves
 		trigger_event_silently = flavor_chi.2014
 	}
 	else_if = {
 		limit = {
-			any_in_list = {
-				variable = characters_on_board
-				has_variable = chi_extradited
-			}
+			any_in_list = { variable = characters_on_board has_variable = chi_extradited }
 		}
+
 		random_in_list = {
 			variable = characters_on_board
-			limit = {
-				has_variable = chi_extradited
-			}
+			limit = { has_variable = chi_extradited }
 			save_scope_as = extradited_character
-			ROOT = {
-				remove_list_variable = {
-					name = characters_on_board
-					target = PREV
-				}
-			}
+			root = { remove_list_variable = { name = characters_on_board target = prev } }
 		}
-		trigger_event_silently = {
-			id = flavor_chi.2015
-		}
+
+		trigger_event_silently = { id = flavor_chi.2015 }
 	}
 	else_if = {
 		limit = {
@@ -580,12 +555,9 @@ scripted_effect fire_post_expedition_events = {
 				character:chi_chen_zuyi ?= this
 			}
 		}
-		character:chi_chen_zuyi = {
-			save_scope_as = executed_character
-		}
-		trigger_event_silently = {
-			id = flavor_chi.2016
-		}
+
+		character:chi_chen_zuyi = { save_scope_as = executed_character }
+		trigger_event_silently = { id = flavor_chi.2016 }
 	}
 	else_if = {
 		limit = {
@@ -594,38 +566,32 @@ scripted_effect fire_post_expedition_events = {
 				has_variable = chi_defiant_ruler
 			}
 		}
+
 		random_in_list = {
 			variable = characters_on_board
-			limit = {
-				has_variable = chi_defiant_ruler
-			}
+			limit = { has_variable = chi_defiant_ruler }
 			save_scope_as = loser_character
-			ROOT = {
-				remove_list_variable = {
-					name = characters_on_board
-					target = PREV
-				}
-			}
+			root = { remove_list_variable = { name = characters_on_board target = prev } }
 		}
-		trigger_event_silently = {
-			id = flavor_chi.2017
-		}
+
+		trigger_event_silently = { id = flavor_chi.2017 }
 	}
-	else = {
-		trigger_event_non_silently = {
-			id = flavor_chi.2010
-		}
-	}
+	else = { trigger_event_non_silently = { id = flavor_chi.2010 } }
 }
 
-scripted_effect if_possible_make_tributary = {
+scripted_effect
+
+if_possible_make_tributary = {
 	if = {
 		limit = {
 			exists = international_organization:middle_kingdom
-			NOT = { is_member_of_international_organization = international_organization:middle_kingdom }
+			NOT = {
+				is_member_of_international_organization = international_organization:middle_kingdom
+			}
 		}
+
 		international_organization:middle_kingdom = {
-			add_country_to_international_organization = ROOT
+			add_country_to_international_organization = root
 		}
 	}
 }
@@ -634,19 +600,21 @@ scripted_effect if_possible_make_tributary = {
 # Exceptional Gifts are special gifts that nations can grant to the expedition that fire a special event for China at the end
 ########
 
-scripted_trigger exceptional_gift_cloves_trigger = {
-	capital ?= {
-		area = area:moluccas_area
-	}
+scripted_trigger
+
+exceptional_gift_cloves_trigger = {
+	capital ?= { area = area:moluccas_area }
 }
 
-scripted_trigger exceptional_gift_giraffe_trigger = {
-	capital ?= {
-		region = region:swahili_coast_region
-	}
+scripted_trigger
+
+exceptional_gift_giraffe_trigger = {
+	capital ?= { region = region:swahili_coast_region }
 }
 
-scripted_trigger exceptional_gift_persian_blue_trigger = {
+scripted_trigger
+
+exceptional_gift_persian_blue_trigger = {
 	capital ?= {
 		OR = {
 			region = region:arabia_region
@@ -655,43 +623,44 @@ scripted_trigger exceptional_gift_persian_blue_trigger = {
 	}
 }
 
-scripted_effect give_exceptional_gift = {
+scripted_effect
+
+give_exceptional_gift = {
 	if = {
-		limit = {
-			exceptional_gift_cloves_trigger = yes
-		}
+		limit = { exceptional_gift_cloves_trigger = yes }
+
 		custom_tooltip = {
 			text = chi_we_will_gift_cloves
 			scope:expedition_initiator = { set_variable = exceptional_gift_cloves }
 		}
 	}
 	else_if = {
-		limit = {
-			exceptional_gift_giraffe_trigger = yes
-		}
+		limit = { exceptional_gift_giraffe_trigger = yes }
+
 		custom_tooltip = {
 			text = chi_we_will_gift_giraffe
 			scope:expedition_initiator = { set_variable = exceptional_gift_giraffe }
 		}
 	}
 	else_if = {
-		limit = {
-			exceptional_gift_persian_blue_trigger = yes
-		}
+		limit = { exceptional_gift_persian_blue_trigger = yes }
+
 		custom_tooltip = {
 			text = chi_we_will_gift_persian_blue
 			scope:expedition_initiator = { set_variable = exceptional_gift_persian_blue }
 		}
 	}
-	else = {
-		error_log = "Unreachable script reached in give_exceptional_gift"
-	}
+	else = { error_log = "Unreachable script reached in give_exceptional_gift" }
 }
+
 #######
 # Fired at the start of every event about the expedition
-scripted_effect set_chinese_expedition_scopes = {
+scripted_effect
+
+set_chinese_expedition_scopes = {
 	global_var:chinese_treasure_voyage_running = {
 		save_scope_as = expedition_initiator
+
 		var:chinese_expedition_expedition_leader ?= {
 			save_scope_as = character_expedition_leader_target
 		}
@@ -699,12 +668,14 @@ scripted_effect set_chinese_expedition_scopes = {
 }
 
 # Start of Voyaging Era
+
 flavor_chi.2000 = {
 	type = country_event
 	title = flavor_chi.2000.title
 	desc = flavor_chi.2000.desc
 
 	fire_only_once = yes
+
 	dynamic_historical_event = {
 		tag = CHI
 		from = 1400.1.1
@@ -713,31 +684,30 @@ flavor_chi.2000 = {
 	}
 
 	major = yes
-	major_trigger = {
-		possibly_impacted_by_treasure_voyages = yes
-	}
+	major_trigger = { possibly_impacted_by_treasure_voyages = yes }
 
-	illustration_tags = {
-		10 = exterior
-		10 = happy
-	}
+	illustration_tags = { 10 = exterior 10 = happy }
 
 	trigger = {
-		is_leader_of_international_organization = international_organization:middle_kingdom	
+		is_leader_of_international_organization = international_organization:middle_kingdom
 		character:chi_zheng_he ?= { owner ?= root }
 	}
 
 	immediate = {
-		event_illustration_estate_effect = { foreground = estate_type:burghers_estate background = estate_type:burghers_estate }
+		event_illustration_estate_effect = {
+			foreground = estate_type:burghers_estate
+			background = estate_type:burghers_estate
+		}
 	}
 
 	option = {
 		name = flavor_chi.2000.a
-		
+
 		change_societal_value = {
 			type = land_vs_naval
 			value = societal_value_move_to_right
 		}
+
 		enable_treasure_voyages = yes
 	}
 
@@ -752,60 +722,57 @@ flavor_chi.2000 = {
 }
 
 # End of Voyaging Era
+
 flavor_chi.2001 = {
 	type = country_event
 	title = flavor_chi.2001.title
 	desc = flavor_chi.2001.desc
 
 	major = yes
-	major_trigger = {
-		possibly_impacted_by_treasure_voyages = yes
-	}
+	major_trigger = { possibly_impacted_by_treasure_voyages = yes }
 
-	illustration_tags = {
-		10 = interior
-		10 = regular
-	}
+	illustration_tags = { 10 = interior 10 = regular }
 
 	immediate = {
-		event_illustration_estate_effect = { foreground = estate_type:nobles_estate background = estate_type:nobles_estate }
+		event_illustration_estate_effect = {
+			foreground = estate_type:nobles_estate
+			background = estate_type:nobles_estate
+		}
 	}
 
 	option = {
 		name = flavor_chi.2001.a
-		
+
 		change_societal_value = {
 			type = land_vs_naval
 			value = societal_value_move_to_left
 		}
+
 		disable_treasure_voyages = yes
 	}
 }
 
 # Start of a Voyage - calculate route
+
 flavor_chi.2002 = {
 	hide_portraits = yes
 	type = country_event
 	title = flavor_chi.2002.title
 	desc = flavor_chi.2002.desc
 
-	illustration_tags = {
-		10 = exterior
-		10 = regular
-	}
+	illustration_tags = { 10 = exterior 10 = regular }
 
 	major = yes
-	major_trigger = {
-		possibly_impacted_by_treasure_voyages = yes
-	}
+	major_trigger = { possibly_impacted_by_treasure_voyages = yes }
 
 	immediate = {
-		event_illustration_poptype_effect = { foreground = pop_type:soldiers background = pop_type:soldiers }
-
-		set_global_variable = {
-			name = chinese_treasure_voyage_running
-			value = ROOT
+		event_illustration_poptype_effect = {
+			foreground = pop_type:soldiers
+			background = pop_type:soldiers
 		}
+
+		set_global_variable = { name = chinese_treasure_voyage_running value = root }
+
 		random_port_in_country = {
 			limit = {
 				OR = {
@@ -814,8 +781,10 @@ flavor_chi.2002 = {
 					dominant_culture ?= { is_primary_or_accepted_in = root }
 				}
 			}
+
 			save_scope_as = start_location
 		}
+
 		set_variable = {
 			name = chinese_treasure_voyage_cargo
 			value = scope:target_value
@@ -832,14 +801,8 @@ flavor_chi.2002 = {
 			name = chinese_treasure_start_location
 			value = scope:start_location
 		}
-		set_variable = {
-			name = gifts_received
-			value = 0
-		}
-		set_variable = {
-			name = remaining_locations
-			value = 0
-		}
+		set_variable = { name = gifts_received value = 0 }
+		set_variable = { name = remaining_locations value = 0 }
 
 		make_into_expedition_leader = { target = scope:target_character }
 
@@ -850,46 +813,41 @@ flavor_chi.2002 = {
 		var:chinese_treasure_target_area = {
 			random_location_in_area = {
 				limit = { is_coastal = yes }
-				ROOT = {
-					set_variable = {
-						name = chinese_treasure_target_location
-						value = PREV
-					}
+
+				root = {
+					set_variable = { name = chinese_treasure_target_location value = prev }
 				}
 			}
 		}
 
 		find_route = {
 			start = var:chinese_treasure_fleet_location
+
 			end = {
 				this = scope:expedition_initiator.var:chinese_treasure_target_location
 			}
-			limit = {
-				is_land = no
-			}
+
+			limit = { is_land = no }
+
 			weight = {
 				value = scope:distance
-				if = {
-					limit = {
-						is_coastal = yes
-					}
-					multiply = 0.75
-				}
+				if = { limit = { is_coastal = yes } multiply = 0.75 }
 			}
+
 			movement_cost = yes
+
 			effect = {
 				save_route_to_the_target_effect = {
 					variable_name = chinese_treasure_next_location
 				}
+
 				scope:expedition_initiator = {
 					add_to_variable_list = {
 						name = route_to_target_expedition_list
-						target = PREV
+						target = prev
 					}
-					change_variable = {
-						name = remaining_locations
-						add = 1
-					}					
+
+					change_variable = { name = remaining_locations add = 1 }
 				}
 			}
 		}
@@ -899,12 +857,9 @@ flavor_chi.2002 = {
 
 	option = {
 		name = flavor_chi.2002.a
-		
+
 		custom_tooltip = chinese_treasure_expeditions_send_tooltip
-		add_gold = {
-			value = var:chinese_treasure_voyage_cargo
-			multiply = -1
-		}
+		add_gold = { value = var:chinese_treasure_voyage_cargo multiply = -1 }
 	}
 
 	after = {
@@ -917,6 +872,7 @@ flavor_chi.2002 = {
 }
 
 # Process tick for the expedition - try to do a stop over at a random port
+
 flavor_chi.2003 = {
 	type = country_event
 	title = flavor_chi.2003.title
@@ -927,6 +883,7 @@ flavor_chi.2003 = {
 	immediate = {
 		if = {
 			limit = { exists = scope:next_tile }
+
 			set_variable = {
 				name = chinese_treasure_fleet_location
 				value = scope:next_tile
@@ -935,15 +892,16 @@ flavor_chi.2003 = {
 		else_if = { # Failsafe for if the next_tile scope fails to pass when visited country is annexed
 			limit = {
 				has_variable = chinese_treasure_fleet_location
+
 				var:chinese_treasure_fleet_location = {
 					has_variable = chinese_expedition_route_deviation_return
 				}
 			}
+
 			var:chinese_treasure_fleet_location = {
-				var:chinese_expedition_route_deviation_return = {
-					save_scope_as = next_tile
-				}
+				var:chinese_expedition_route_deviation_return = { save_scope_as = next_tile }
 			}
+
 			set_variable = {
 				name = chinese_treasure_fleet_location
 				value = scope:next_tile
@@ -955,16 +913,13 @@ flavor_chi.2003 = {
 		chinese_expedition_status_change = yes
 	}
 
-	option = {
-		name = flavor_chi.2003.a
-		
-	}
+	option = { name = flavor_chi.2003.a }
 
-	after = {
-	}
+	after = {  }
 }
 
 # Arrival of the Expedition
+
 flavor_chi.2004 = {
 	type = country_event
 	title = flavor_chi.2004.title
@@ -973,30 +928,29 @@ flavor_chi.2004 = {
 	immediate = {
 		set_chinese_expedition_scopes = yes
 		if = {
-			limit = {
-				is_ai = no
+			limit = { is_ai = no }
+
+			event_illustration_poptype_background_effect = {
+				background = pop_type:nobles
 			}
-			event_illustration_poptype_background_effect = { background = pop_type:nobles }
+
 			scope:expedition_initiator = {
-				event_illustration_poptype_foreground_effect = { foreground = pop_type:soldiers }
+				event_illustration_poptype_foreground_effect = {
+					foreground = pop_type:soldiers
+				}
 			}
 		}
-		
+
 		chinese_expedition_calculate_gift_for_this = yes
 		set_visiting_variables = yes
 	}
 
-	illustration_tags = {
-		10 = exterior
-		10 = regular
-	}
+	illustration_tags = { 10 = exterior 10 = regular }
 
 	option = {
 		name = flavor_chi.2004.a
-		
-		add_gold = {
-			value = var:gift_value
-		}
+
+		add_gold = { value = var:gift_value }
 
 		scope:expedition_initiator = {
 			change_variable = {
@@ -1010,10 +964,7 @@ flavor_chi.2004 = {
 
 	after = {
 		remove_variable = gift_value
-		trigger_event_non_silently = {
-			id = flavor_chi.2005
-			days = 7
-		}
+		trigger_event_non_silently = { id = flavor_chi.2005 days = 7 }
 	}
 }
 
@@ -1022,20 +973,21 @@ flavor_chi.2005 = {
 	title = flavor_chi.2005.title
 	desc = flavor_chi.2005.desc
 
-	illustration_tags = {
-		10 = interior
-		10 = armed
-	}
+	illustration_tags = { 10 = interior 10 = armed }
 
 	immediate = {
 		set_chinese_expedition_scopes = yes
 		if = {
-			limit = {
-				is_ai = no
+			limit = { is_ai = no }
+
+			event_illustration_estate_background_effect = {
+				background = estate_type:nobles_estate
 			}
-			event_illustration_estate_background_effect = { background = estate_type:nobles_estate }
+
 			scope:expedition_initiator = {
-				event_illustration_estate_foreground_effect = { foreground = estate_type:nobles_estate }
+				event_illustration_estate_foreground_effect = {
+					foreground = estate_type:nobles_estate
+				}
 			}
 		}
 	}
@@ -1045,18 +997,15 @@ flavor_chi.2005 = {
 
 		ai_chance = {
 			factor = 100
+
 			modifier = {
-				factor = {
-					value = 1
-					multiply = chinese_expedition_positive_ai_weight
-				}
+				factor = { value = 1 multiply = chinese_expedition_positive_ai_weight }
 			}
 		}
-		
+
 		if = {
-			limit = {
-				has_societal_value = societal_value_type:sinicized_vs_unsinicized
-			}
+			limit = { has_societal_value = societal_value_type:sinicized_vs_unsinicized }
+
 			change_societal_value = {
 				type = sinicized_vs_unsinicized
 				value = societal_value_large_move_to_left
@@ -1071,26 +1020,21 @@ flavor_chi.2005 = {
 
 		ai_chance = {
 			factor = 100
+
 			modifier = {
-				factor = {
-					value = 1
-					multiply = chinese_expedition_very_negative_ai_weight
-				}
+				factor = { value = 1 multiply = chinese_expedition_very_negative_ai_weight }
 			}
 		}
-		
+
 		decrease_opinion_of_expedition_greatly = yes
+
 		add_opinion_mutual_effect = {
 			modifier = chi_refused_tributary_status
 			target = scope:expedition_initiator
 		}
 	}
 
-	after = {
-		trigger_event_silently = {
-			id = flavor_chi.2006
-		}
-	}
+	after = { trigger_event_silently = { id = flavor_chi.2006 } }
 }
 
 flavor_chi.2006 = {
@@ -1098,23 +1042,23 @@ flavor_chi.2006 = {
 	title = flavor_chi.2006.title
 	desc = flavor_chi.2006.desc
 
-	illustration_tags = {
-		10 = exterior
-		10 = regular
-	}
+	illustration_tags = { 10 = exterior 10 = regular }
 
 	immediate = {
 		set_chinese_expedition_scopes = yes
 		if = {
-			limit = {
-				is_ai = no
+			limit = { is_ai = no }
+
+			event_illustration_poptype_background_effect = {
+				background = pop_type:nobles
 			}
-			event_illustration_poptype_background_effect = { background = pop_type:nobles }
+
 			scope:expedition_initiator = {
-				event_illustration_poptype_foreground_effect = { foreground = pop_type:soldiers }
+				event_illustration_poptype_foreground_effect = {
+					foreground = pop_type:soldiers
+				}
 			}
 		}
-		
 	}
 
 	option = {
@@ -1122,20 +1066,18 @@ flavor_chi.2006 = {
 
 		ai_chance = {
 			factor = 100
+
 			modifier = {
-				factor = {
-					value = 1
-					multiply = chinese_expedition_positive_ai_weight
-				}
+				factor = { value = 1 multiply = chinese_expedition_positive_ai_weight }
 			}
 		}
-		
-		change_gold_effect = { scale = -3 }
+
+		change_gold_effect = {
+			scale = -3
+		}
+
 		scope:expedition_initiator = {
-			add_opinion = {
-				modifier = chi_gifts_from_subject
-				target = ROOT
-			}
+			add_opinion = { modifier = chi_gifts_from_subject target = root }
 		}
 
 		increase_opinion_of_expedition = yes
@@ -1143,7 +1085,7 @@ flavor_chi.2006 = {
 
 	option = {
 		name = flavor_chi.2006.gift
-		
+
 		trigger = {
 			OR = {
 				exceptional_gift_cloves_trigger = yes
@@ -1154,21 +1096,16 @@ flavor_chi.2006 = {
 
 		ai_chance = {
 			factor = 100
+
 			modifier = {
-				factor = {
-					value = 1
-					multiply = chinese_expedition_very_positive_ai_weight
-				}
+				factor = { value = 1 multiply = chinese_expedition_very_positive_ai_weight }
 			}
 		}
 
 		scope:expedition_initiator = {
-			add_opinion = {
-				modifier = chi_gifts_from_subject
-				target = ROOT
-				scale = 3
-			}
+			add_opinion = { modifier = chi_gifts_from_subject target = root scale = 3 }
 		}
+
 		give_exceptional_gift = yes
 
 		increase_opinion_of_expedition_greatly = yes
@@ -1179,20 +1116,16 @@ flavor_chi.2006 = {
 
 		ai_chance = {
 			factor = 100
+
 			modifier = {
-				factor = {
-					value = 1
-					multiply = chinese_expedition_neutral_ai_weight
-				}
+				factor = { value = 1 multiply = chinese_expedition_neutral_ai_weight }
 			}
 		}
-		
+
 		add_prestige = prestige_severe_penalty
 	}
 
-	after = {
-		visitation_event_pulse = yes
-	}
+	after = { visitation_event_pulse = yes }
 }
 
 flavor_chi.2007 = {
@@ -1203,49 +1136,46 @@ flavor_chi.2007 = {
 	immediate = {
 		set_chinese_expedition_scopes = yes
 		if = {
-			limit = {
-				is_ai = no
+			limit = { is_ai = no }
+
+			event_illustration_estate_background_effect = {
+				background = estate_type:nobles_estate
 			}
-			event_illustration_estate_background_effect = { background = estate_type:nobles_estate }
+
 			scope:expedition_initiator = {
-				event_illustration_estate_foreground_effect = { foreground = estate_type:nobles_estate }
+				event_illustration_estate_foreground_effect = {
+					foreground = estate_type:nobles_estate
+				}
 			}
 		}
-		
 	}
 
-	illustration_tags = {
-		10 = exterior
-		10 = happy
-	}
+	illustration_tags = { 10 = exterior 10 = happy }
 
-	option = {
-		name = flavor_chi.2007.a
-		
-		chinese_treasure_depart_from_port = yes
-	}
+	option = { name = flavor_chi.2007.a chinese_treasure_depart_from_port = yes }
 }
 
 # Return of the Expedition
+
 flavor_chi.2008 = {
 	type = country_event
 	title = flavor_chi.2008.title
 	desc = flavor_chi.2008.desc
 
-	illustration_tags = {
-		10 = exterior
-		10 = happy
-	}
+	illustration_tags = { 10 = exterior 10 = happy }
 
 	immediate = {
 		set_chinese_expedition_scopes = yes
-		event_illustration_estate_effect = { foreground = estate_type:nobles_estate background = estate_type:nobles_estate }
-		
+
+		event_illustration_estate_effect = {
+			foreground = estate_type:nobles_estate
+			background = estate_type:nobles_estate
+		}
 	}
 
 	option = {
 		name = flavor_chi.2008.a
-		
+
 		var:chinese_expedition_expedition_leader = {
 			remove_character_modifier = chi_leading_expedition
 		}
@@ -1255,30 +1185,28 @@ flavor_chi.2008 = {
 		if = {
 			limit = {
 				has_variable_list = nations_to_make_tributary
-				variable_list_size = {
-					name = nations_to_make_tributary
-					value > 0
-				}
+				variable_list_size = { name = nations_to_make_tributary value > 0 }
 			}
+
 			set_variable = envoy_event
 		}
 		if = {
-			limit = {
-				exists = var:gifts_received
-				var:gifts_received > 0
-			}
+			limit = { exists = var:gifts_received var:gifts_received > 0 }
 			set_variable = gift_event
 		}
 		if = {
 			limit = {
 				any_in_list = {
 					variable = list_of_discovered_locations
-					scope:expedition_initiator = { 
-						NOT = { has_discovered = PREV } 
+
+					scope:expedition_initiator = {
+						NOT = {
+							has_discovered = prev
+						}
 					}
 				}
-
 			}
+
 			set_variable = exploration_event
 		}
 
@@ -1287,29 +1215,32 @@ flavor_chi.2008 = {
 }
 
 # Envoys
+
 flavor_chi.2009 = {
 	type = country_event
 	title = flavor_chi.2009.title
 	desc = flavor_chi.2009.desc
 
 	immediate = {
-		event_illustration_estate_effect = { foreground = estate_type:nobles_estate background = estate_type:nobles_estate }
+		event_illustration_estate_effect = {
+			foreground = estate_type:nobles_estate
+			background = estate_type:nobles_estate
+		}
+
 		set_chinese_expedition_scopes = yes
 	}
 
-	illustration_tags = {
-		10 = interior
-		10 = happy
-	}
+	illustration_tags = { 10 = interior 10 = happy }
 
 	option = {
 		name = flavor_chi.2009.a
-		
+
 		every_in_list = {
 			variable = nations_to_make_tributary
+
 			show_as_tooltip = {
 				international_organization:middle_kingdom = {
-					add_country_to_international_organization = PREV
+					add_country_to_international_organization = prev
 				}
 			}
 		}
@@ -1320,44 +1251,37 @@ flavor_chi.2009 = {
 		}
 	}
 
-	after = {
-		fire_post_expedition_events = yes
-	}
+	after = { fire_post_expedition_events = yes }
 }
 
 # Expedition End
+
 flavor_chi.2010 = {
 	type = country_event
 	title = flavor_chi.2010.title
 	desc = flavor_chi.2010.desc
 
 	major = yes
-	major_trigger = {
-		possibly_impacted_by_treasure_voyages = yes
-	}
+	major_trigger = { possibly_impacted_by_treasure_voyages = yes }
 
-	illustration_tags = {
-		10 = interior
-		10 = regular
-	}
+	illustration_tags = { 10 = interior 10 = regular }
 
 	immediate = {
 		set_chinese_expedition_scopes = yes
-		event_illustration_estate_effect = { foreground = estate_type:nobles_estate background = estate_type:nobles_estate }
-		
+
+		event_illustration_estate_effect = {
+			foreground = estate_type:nobles_estate
+			background = estate_type:nobles_estate
+		}
 	}
 
 	option = {
 		name = flavor_chi.2010.a
-		
+
 		add_prestige = prestige_mild_bonus
 		if = {
-			limit = {
-				var:chinese_treasure_voyage_cargo > 0
-			}
-			add_gold = {
-				value = var:chinese_treasure_voyage_cargo
-			}
+			limit = { var:chinese_treasure_voyage_cargo > 0 }
+			add_gold = { value = var:chinese_treasure_voyage_cargo }
 		}
 	}
 
@@ -1371,6 +1295,7 @@ flavor_chi.2010 = {
 		}
 		every_in_list = {
 			variable = visited_ports
+
 			owner ?= {
 				if = {
 					limit = { has_variable = visited_by_expedition }
@@ -1378,6 +1303,7 @@ flavor_chi.2010 = {
 				}
 			}
 		}
+
 		remove_global_variable = chinese_treasure_voyage_running
 		remove_variable = chinese_treasure_voyage_cargo
 		remove_variable = chinese_treasure_target_area
@@ -1400,86 +1326,79 @@ flavor_chi.2010 = {
 }
 
 # Exploration: New Sea Tiles / Routes Discovered
+
 flavor_chi.2011 = {
 	type = country_event
 	title = flavor_chi.2011.title
 	desc = flavor_chi.2011.desc
 
 	immediate = {
-		event_illustration_estate_effect = { foreground = estate_type:nobles_estate background = estate_type:nobles_estate }
+		event_illustration_estate_effect = {
+			foreground = estate_type:nobles_estate
+			background = estate_type:nobles_estate
+		}
+
 		set_chinese_expedition_scopes = yes
 	}
 
-	illustration_tags = {
-        10 = happy
-        10 = interior
-    }
+	illustration_tags = { 10 = happy 10 = interior }
 
 	option = {
 		name = flavor_chi.2011.a
-		
+
 		every_in_list = {
 			variable = list_of_discovered_locations
+
 			limit = {
-				NOT = { 
-					ROOT = {
-						has_discovered = PREV 
-					}
+				NOT = {
+					root = { has_discovered = prev }
 				}
 			}
-			discover_location = ROOT
+
+			discover_location = root
 		}
 	}
 
-	after = {
-		fire_post_expedition_events = yes
-	}
+	after = { fire_post_expedition_events = yes }
 }
 
 # Exceptional Gift: Giraffe
+
 flavor_chi.2012 = {
 	type = country_event
 	title = flavor_chi.2012.title
 	desc = flavor_chi.2012.desc
 
 	immediate = {
-		event_illustration_estate_effect = { foreground = estate_type:nobles_estate background = estate_type:nobles_estate }
+		event_illustration_estate_effect = {
+			foreground = estate_type:nobles_estate
+			background = estate_type:nobles_estate
+		}
+
 		set_chinese_expedition_scopes = yes
 	}
 
-	illustration_tags = {
-        10 = happy
-        10 = interior
-    }
+	illustration_tags = { 10 = happy 10 = interior }
 
 	option = {
 		name = flavor_chi.2012.a
-		
+
 		add_prestige = prestige_extreme_bonus
-		add_country_modifier = {
-			mode = add
-			modifier = chi_giraffe_qilin
-			years = 5
-		}
+		add_country_modifier = { mode = add modifier = chi_giraffe_qilin years = 5 }
 	}
 
 	option = {
 		name = flavor_chi.2012.b
-		
+
 		add_prestige = prestige_extreme_bonus
-		add_country_modifier = {
-			mode = add
-			modifier = chi_giraffe
-			years = 5
-		}
+		add_country_modifier = { mode = add modifier = chi_giraffe years = 5 }
 	}
 
-	after = {
-		fire_post_expedition_events = yes
-	}
+	after = { fire_post_expedition_events = yes }
 }
 
 # Exceptional Gift: Persian Blue Dye
+
 flavor_chi.2013 = {
 	type = country_event
 	title = flavor_chi.2013.title
@@ -1487,32 +1406,27 @@ flavor_chi.2013 = {
 
 	image = "gfx/interface/icons/trade_goods/illustrations/icon_goods_dyes.dds"
 
-	immediate = {
-		set_chinese_expedition_scopes = yes
-	}
+	immediate = { set_chinese_expedition_scopes = yes }
 
 	option = {
 		name = flavor_chi.2013.a
-		
+
 		add_country_modifier = {
 			mode = add
 			modifier = chi_persian_blue_pottery
 			years = 5
 		}
+
 		capital.market = {
-			add_goods_supply = {
-				amount = market_goods_severe_gain
-				goods = goods:dyes
-			}
+			add_goods_supply = { amount = market_goods_severe_gain goods = goods:dyes }
 		}
 	}
 
-	after = {
-		fire_post_expedition_events = yes
-	}
+	after = { fire_post_expedition_events = yes }
 }
 
 # Exceptional Gift: Cloves
+
 flavor_chi.2014 = {
 	type = country_event
 	title = flavor_chi.2014.title
@@ -1520,46 +1434,38 @@ flavor_chi.2014 = {
 
 	image = "gfx/interface/icons/trade_goods/illustrations/icon_goods_cloves.dds"
 
-	immediate = {
-		set_chinese_expedition_scopes = yes
-	}
+	immediate = { set_chinese_expedition_scopes = yes }
 
 	option = {
 		name = flavor_chi.2014.a
-		
+
 		capital.market = {
-			add_goods_supply = {
-				amount = market_goods_severe_gain
-				goods = goods:cloves
-			}
+			add_goods_supply = { amount = market_goods_severe_gain goods = goods:cloves }
 		}
 
-		add_country_modifier = {
-			mode = add
-			modifier = chi_cloves
-			years = 5
-		}
+		add_country_modifier = { mode = add modifier = chi_cloves years = 5 }
 	}
 
-	after = {
-		fire_post_expedition_events = yes
-	}
+	after = { fire_post_expedition_events = yes }
 }
 
 # Extradited Character
+
 flavor_chi.2015 = {
 	type = country_event
 	title = flavor_chi.2015.title
 	desc = flavor_chi.2015.desc
 
-	illustration_tags = {
-        10 = angry
-        10 = exterior
-    }
+	illustration_tags = { 10 = angry 10 = exterior }
 
 	immediate = {
-		event_illustration_estate_effect = { foreground = estate_type:nobles_estate background = estate_type:nobles_estate }
+		event_illustration_estate_effect = {
+			foreground = estate_type:nobles_estate
+			background = estate_type:nobles_estate
+		}
+
 		set_chinese_expedition_scopes = yes
+
 		scope:extradited_character.var:chi_extradited = {
 			save_scope_as = asylum_country
 		}
@@ -1567,11 +1473,9 @@ flavor_chi.2015 = {
 
 	option = {
 		name = flavor_chi.2015.a
-		
-		kill_character = {
-			target = scope:extradited_character
-			reason = beheading
-		}
+
+		kill_character = { target = scope:extradited_character reason = beheading }
+
 		add_country_modifier = {
 			mode = replace
 			modifier = chi_cruel_punishment
@@ -1581,11 +1485,9 @@ flavor_chi.2015 = {
 
 	option = {
 		name = flavor_chi.2015.b
-		
-		kill_character = {
-			target = scope:extradited_character
-			reason = strangling
-		}
+
+		kill_character = { target = scope:extradited_character reason = strangling }
+
 		add_country_modifier = {
 			mode = replace
 			modifier = chi_cruel_punishment
@@ -1596,11 +1498,9 @@ flavor_chi.2015 = {
 
 	option = {
 		name = flavor_chi.2015.c
-		
-		kill_character = {
-			target = scope:extradited_character
-			reason = slicing
-		}
+
+		kill_character = { target = scope:extradited_character reason = slicing }
+
 		add_country_modifier = {
 			mode = replace
 			modifier = chi_cruel_punishment
@@ -1611,83 +1511,74 @@ flavor_chi.2015 = {
 
 	option = {
 		name = flavor_chi.2015.d
-	
+
 		add_government_power = government_power_extreme_penalty
 	}
+
 	after = {
-		scope:extradited_character ?= {
-			remove_variable = chi_extradited
-		}
+		scope:extradited_character ?= { remove_variable = chi_extradited }
 		fire_post_expedition_events = yes
 	}
 }
 
 # Execution of Chen Zuyi
+
 flavor_chi.2016 = {
 	type = country_event
 	title = flavor_chi.2016.title
 	desc = flavor_chi.2016.desc
 
-	illustration_tags = {
-        10 = regular
-        10 = exterior
-    }
+	illustration_tags = { 10 = regular 10 = exterior }
 
 	immediate = {
-		event_illustration_poptype_effect = { foreground = pop_type:soldiers background = pop_type:soldiers }
+		event_illustration_poptype_effect = {
+			foreground = pop_type:soldiers
+			background = pop_type:soldiers
+		}
+
 		set_chinese_expedition_scopes = yes
 	}
 
 	option = {
 		name = flavor_chi.2016.a
 
-		kill_character = {
-			target = scope:executed_character
-			reason = slicing
-		}
+		kill_character = { target = scope:executed_character reason = slicing }
 		add_government_power = government_power_extreme_bonus
 		add_prestige = prestige_severe_bonus
 	}
 }
 
 # War Prisoner
+
 flavor_chi.2017 = {
 	type = country_event
 	title = flavor_chi.2017.title
 	desc = flavor_chi.2017.desc
 
 	immediate = {
-		event_illustration_estate_effect = { foreground = estate_type:nobles_estate background = estate_type:nobles_estate }
-		set_chinese_expedition_scopes = yes
-		scope:loser_character.var:chi_defiant_ruler = {
-			save_scope_as = loser_country
+		event_illustration_estate_effect = {
+			foreground = estate_type:nobles_estate
+			background = estate_type:nobles_estate
 		}
+
+		set_chinese_expedition_scopes = yes
+		scope:loser_character.var:chi_defiant_ruler = { save_scope_as = loser_country }
 	}
 
-	illustration_tags = {
-        10 = angry
-        10 = exterior
-    }
+	illustration_tags = { 10 = angry 10 = exterior }
 
 	option = {
 		name = flavor_chi.2017.a
-	
-		kill_character = {
-			target = scope:loser_character
-			reason = beheading
-		}
 
-		trigger_event_non_silently = {
-			id = flavor_chi.2018
-		}
+		kill_character = { target = scope:loser_character reason = beheading }
+
+		trigger_event_non_silently = { id = flavor_chi.2018 }
 	}
 
 	option = {
 		name = flavor_chi.2017.b
-		
-		scope:loser_country = {
-			set_new_ruler = scope:loser_character
-		}
+
+		scope:loser_country = { set_new_ruler = scope:loser_character }
 
 		add_country_modifier = {
 			mode = replace
@@ -1698,22 +1589,24 @@ flavor_chi.2017 = {
 		fire_post_expedition_events = yes
 	}
 
-	after = {
-		scope:loser_character = {
-			remove_variable = chi_defiant_ruler
-		}
-	}
+	after = { scope:loser_character = { remove_variable = chi_defiant_ruler } }
 }
 
 # Country Under Temporary Rule
+
 flavor_chi.2018 = {
 	type = country_event
 	title = flavor_chi.2018.title
 	desc = flavor_chi.2018.desc
 
 	immediate = {
-		event_illustration_estate_effect = { foreground = estate_type:nobles_estate background = estate_type:nobles_estate }
+		event_illustration_estate_effect = {
+			foreground = estate_type:nobles_estate
+			background = estate_type:nobles_estate
+		}
+
 		set_chinese_expedition_scopes = yes
+
 		create_character = {
 			estate = estate_type:nobles_estate
 			culture = ROOT.culture
@@ -1724,14 +1617,11 @@ flavor_chi.2018 = {
 		}
 	}
 
-	illustration_tags = {
-        10 = angry
-        10 = interior
-    }
+	illustration_tags = { 10 = angry 10 = interior }
 
 	option = {
 		name = flavor_chi.2018.a
-		
+
 		scope:loser_country = {
 			show_as_tooltip = {
 				set_new_ruler = scope:target_character_for_viceroyalty
@@ -1741,102 +1631,95 @@ flavor_chi.2018 = {
 					modifier = chi_chinese_rule
 					years = 15
 				}
+
 				if_possible_make_tributary = yes
 			}
 
-			trigger_event_non_silently = {
-				id = flavor_chi.2019
-			}
+			trigger_event_non_silently = { id = flavor_chi.2019 }
 		}
 
-		culture = {
-			add_cultural_influence = cultural_influence_mild_bonus
-		}
+		culture = { add_cultural_influence = cultural_influence_mild_bonus }
 	}
 
 	option = {
 		name = flavor_chi.2018.b
-		
+
 		hidden_effect = {
-			kill_character_silently = {
-				target = scope:target_character_for_viceroyalty
-			}
+			kill_character_silently = { target = scope:target_character_for_viceroyalty }
 		}
 	}
 
-	after = {
-		fire_post_expedition_events = yes
-	}
+	after = { fire_post_expedition_events = yes }
 }
 
 # Viceroy Appointed
+
 flavor_chi.2019 = {
 	type = country_event
 	title = flavor_chi.2019.title
 	desc = flavor_chi.2019.desc
 
-	illustration_tags = {
-        10 = angry
-        10 = interior
-    }
+	illustration_tags = { 10 = angry 10 = interior }
 
 	immediate = {
-		event_illustration_estate_effect = { foreground = estate_type:nobles_estate background = estate_type:nobles_estate }
+		event_illustration_estate_effect = {
+			foreground = estate_type:nobles_estate
+			background = estate_type:nobles_estate
+		}
+
 		set_chinese_expedition_scopes = yes
 	}
 
 	option = {
 		name = flavor_chi.2019.a
-		
+
 		scope:target_character_for_viceroyalty = { move_country = root }
 		set_new_ruler = scope:target_character_for_viceroyalty
+
 		add_country_modifier = {
 			mode = replace
 			modifier = chi_chinese_rule
 			years = 15
 		}
+
 		if_possible_make_tributary = yes
 	}
 }
 
 # Gifts Received
+
 flavor_chi.2020 = {
 	type = country_event
 	title = flavor_chi.2020.title
 	desc = flavor_chi.2020.desc
 
-	illustration_tags = {
-        10 = happy
-        10 = exterior
-    }
+	illustration_tags = { 10 = happy 10 = exterior }
 
 	immediate = {
-		event_illustration_estate_effect = { foreground = estate_type:nobles_estate background = estate_type:nobles_estate }
+		event_illustration_estate_effect = {
+			foreground = estate_type:nobles_estate
+			background = estate_type:nobles_estate
+		}
+
 		set_chinese_expedition_scopes = yes
 	}
 
 	option = {
 		name = flavor_chi.2020.a
-		
+
 		custom_tooltip = chi_gift_received_count
-		add_prestige = {
-			value = var:gifts_received
-			divide = 100
-		}
+		add_prestige = { value = var:gifts_received divide = 100 }
 	}
 
-	after = {
-		fire_post_expedition_events = yes
-	}
+	after = { fire_post_expedition_events = yes }
 }
 
 # Expedition Leader Death, Character Replaced
+
 flavor_chi.2021 = {
 	type = country_event
 	title = flavor_chi.2021.title
 	desc = flavor_chi.2021.desc
-
-	
 
 	immediate = {
 		set_chinese_expedition_scopes = yes
@@ -1856,30 +1739,32 @@ flavor_chi.2021 = {
 
 	option = {
 		name = flavor_chi.2021.a
-		
+
 		custom_tooltip = chi_new_expedition_leader
 	}
 }
 
 # Expeditions Runs out of Cargo
+
 flavor_chi.2022 = {
 	type = country_event
 	title = flavor_chi.2022.title
 	desc = flavor_chi.2022.desc
 
-	illustration_tags = {
-        10 = regular
-        10 = interior
-    }
+	illustration_tags = { 10 = regular 10 = interior }
 
 	immediate = {
-		event_illustration_estate_effect = { foreground = estate_type:nobles_estate background = estate_type:nobles_estate }
+		event_illustration_estate_effect = {
+			foreground = estate_type:nobles_estate
+			background = estate_type:nobles_estate
+		}
+
 		set_chinese_expedition_scopes = yes
 	}
 
 	option = {
 		name = flavor_chi.2022.a
-		
+
 		add_prestige = prestige_severe_penalty
 		custom_tooltip = chi_expedition_is_returning_to_china
 	}
@@ -1890,6 +1775,7 @@ flavor_chi.2022 = {
 ########
 
 # Fleet Caught in a Storm!
+
 flavor_chi.2100 = {
 	type = country_event
 	title = flavor_chi.2100.title
@@ -1897,28 +1783,31 @@ flavor_chi.2100 = {
 
 	trigger = {
 		scope:expedition_initiator ?= {
-			var:chinese_treasure_fleet_location ?= {
-				topography = deep_ocean
-			}
+			var:chinese_treasure_fleet_location ?= { topography = deep_ocean }
 		}
 	}
 
-	illustration_tags = {
-        10 = regular
-        10 = interior
-    }
+	illustration_tags = { 10 = regular 10 = interior }
 
 	immediate = {
-		event_illustration_estate_effect = { foreground = estate_type:nobles_estate background = estate_type:nobles_estate }
+		event_illustration_estate_effect = {
+			foreground = estate_type:nobles_estate
+			background = estate_type:nobles_estate
+		}
+
 		set_chinese_expedition_scopes = yes
+
 		set_local_variable = {
 			name = cargo_lost
+
 			value = {
 				value = var:chinese_treasure_voyage_cargo
 				multiply = { 0.05 0.25 }
 				multiply = -1
+
 				multiply = {
 					value = 1
+
 					subtract = {
 						value = scope:expedition_initiator.var:chinese_expedition_expedition_leader.mil
 						divide = 100
@@ -1935,14 +1824,13 @@ flavor_chi.2100 = {
 
 	option = {
 		name = flavor_chi.2100.a
-		
-		change_amount_of_treasure_voyage = {
-			value = local_var:cargo_lost
-		}
+
+		change_amount_of_treasure_voyage = { value = local_var:cargo_lost }
 	}
 }
 
 # Fleet Meets a Pirate Fleet
+
 flavor_chi.2101 = {
 	type = country_event
 	title = flavor_chi.2101.title
@@ -1954,22 +1842,27 @@ flavor_chi.2101 = {
 		}
 	}
 
-	illustration_tags = {
-        10 = regular
-        10 = interior
-    }
+	illustration_tags = { 10 = regular 10 = interior }
 
 	immediate = {
-		event_illustration_estate_effect = { foreground = estate_type:nobles_estate background = estate_type:nobles_estate }
+		event_illustration_estate_effect = {
+			foreground = estate_type:nobles_estate
+			background = estate_type:nobles_estate
+		}
+
 		set_chinese_expedition_scopes = yes
+
 		set_local_variable = {
 			name = cargo_lost
+
 			value = {
 				value = var:chinese_treasure_voyage_cargo
 				multiply = { 0.1 0.2 }
 				multiply = -1
+
 				multiply = {
 					value = 1
+
 					subtract = {
 						value = scope:expedition_initiator.var:chinese_expedition_expedition_leader.mil
 						divide = 100
@@ -1988,11 +1881,16 @@ flavor_chi.2101 = {
 				every_neighbor_location = {
 					if = {
 						limit = {
-							owner ?= { 
-								NOT = { this = ROOT }
-								NOT = { has_reform = government_reform:pirate_brethren_reform }
+							owner ?= {
+								NOT = {
+									this = root
+								}
+								NOT = {
+									has_reform = government_reform:pirate_brethren_reform
+								}
 							}
 						}
+
 						owner = { add_to_list = list_of_grateful_countries }
 					}
 				}
@@ -2002,29 +1900,25 @@ flavor_chi.2101 = {
 
 	option = {
 		name = flavor_chi.2101.a
-		
-		change_amount_of_treasure_voyage = {
-			value = local_var:cargo_lost
-		}
+
+		change_amount_of_treasure_voyage = { value = local_var:cargo_lost }
 		add_prestige = prestige_mild_bonus
 
 		ordered_in_list = {
 			list = list_of_grateful_countries
 			order_by = total_population
 			max = 6
-			add_opinion = {
-				modifier = chi_grateful_for_pirate_defeat
-				target = ROOT
-			}
+			add_opinion = { modifier = chi_grateful_for_pirate_defeat target = root }
 		}
 	}
 }
 
 #######
-# Chinese Expedition: Events that happen during a fleet stay 
+# Chinese Expedition: Events that happen during a fleet stay
 #######
 
 # Seeking an Interpreter
+
 flavor_chi.2200 = {
 	type = country_event
 	title = flavor_chi.2200.title
@@ -2034,30 +1928,28 @@ flavor_chi.2200 = {
 		culture.language != scope:expedition_initiator.culture.language
 		NOT = {
 			culture_group:chinese_group = {
-				any_culture_in_culture_group = {
-					language = root.culture.language
-				}
+				any_culture_in_culture_group = { language = root.culture.language }
 			}
 		}
 	}
 
-	illustration_tags = {
-        10 = regular
-        10 = interior
-    }
+	illustration_tags = { 10 = regular 10 = interior }
 
 	immediate = {
 		set_chinese_expedition_scopes = yes
 		if = {
-			limit = {
-				is_ai = no
+			limit = { is_ai = no }
+
+			event_illustration_estate_background_effect = {
+				background = estate_type:nobles_estate
 			}
-			event_illustration_estate_background_effect = { background = estate_type:nobles_estate }
+
 			scope:expedition_initiator = {
-				event_illustration_estate_foreground_effect = { foreground = estate_type:nobles_estate }
+				event_illustration_estate_foreground_effect = {
+					foreground = estate_type:nobles_estate
+				}
 			}
 		}
-		
 	}
 
 	option = {
@@ -2065,21 +1957,16 @@ flavor_chi.2200 = {
 
 		ai_chance = {
 			factor = 100
+
 			modifier = {
-				factor = {
-					value = 1
-					multiply = chinese_expedition_positive_ai_weight
-				}
+				factor = { value = 1 multiply = chinese_expedition_positive_ai_weight }
 			}
 		}
-		
+
 		increase_opinion_of_expedition = yes
 
 		add_government_power = government_power_mild_penalty
-		add_gold = {
-			value = yearly_gold
-			multiply = -0.1
-		}
+		add_gold = { value = yearly_gold multiply = -0.1 }
 	}
 
 	option = {
@@ -2087,45 +1974,42 @@ flavor_chi.2200 = {
 
 		ai_chance = {
 			factor = 100
+
 			modifier = {
-				factor = {
-					value = 1
-					multiply = chinese_expedition_neutral_ai_weight
-				}
+				factor = { value = 1 multiply = chinese_expedition_neutral_ai_weight }
 			}
 		}
 
 		add_diplomats = diplomats_weak_bonus
 	}
 
-	after = {
-		visitation_event_pulse = yes
-	}
+	after = { visitation_event_pulse = yes }
 }
 
 # Sharing Maps
+
 flavor_chi.2201 = {
 	type = country_event
 	title = flavor_chi.2201.title
 	desc = flavor_chi.2201.desc
 
-	illustration_tags = {
-        10 = regular
-        10 = interior
-    }
+	illustration_tags = { 10 = regular 10 = interior }
 
 	immediate = {
 		set_chinese_expedition_scopes = yes
 		if = {
-			limit = {
-				is_ai = no
+			limit = { is_ai = no }
+
+			event_illustration_estate_background_effect = {
+				background = estate_type:nobles_estate
 			}
-			event_illustration_estate_background_effect = { background = estate_type:nobles_estate }
+
 			scope:expedition_initiator = {
-				event_illustration_estate_foreground_effect = { foreground = estate_type:nobles_estate }
+				event_illustration_estate_foreground_effect = {
+					foreground = estate_type:nobles_estate
+				}
 			}
 		}
-		
 	}
 
 	option = {
@@ -2133,14 +2017,12 @@ flavor_chi.2201 = {
 
 		ai_chance = {
 			factor = 100
+
 			modifier = {
-				factor = {
-					value = 1
-					multiply = chinese_expedition_positive_ai_weight
-				}
+				factor = { value = 1 multiply = chinese_expedition_positive_ai_weight }
 			}
 		}
-		
+
 		increase_opinion_of_expedition = yes
 		add_navy_tradition = navy_tradition_severe_penalty
 	}
@@ -2150,36 +2032,35 @@ flavor_chi.2201 = {
 
 		ai_chance = {
 			factor = 100
+
 			modifier = {
-				factor = {
-					value = 1
-					multiply = chinese_expedition_neutral_ai_weight
-				}
+				factor = { value = 1 multiply = chinese_expedition_neutral_ai_weight }
 			}
 		}
-		
+
 		add_navy_tradition = navy_tradition_weak_bonus
 	}
-	
-	after = {
-		visitation_event_pulse = yes
-	}
+
+	after = { visitation_event_pulse = yes }
 }
 
 # Burgher Exploitation
+
 flavor_chi.2202 = {
 	type = country_event
 	title = flavor_chi.2202.title
 	desc = flavor_chi.2202.desc
-	
-	illustration_tags = {
-        10 = angry
-        10 = exterior
-    }
+
+	illustration_tags = { 10 = angry 10 = exterior }
 
 	immediate = {
-		event_illustration_estate_effect = { foreground = estate_type:burghers_estate background = estate_type:burghers_estate }
+		event_illustration_estate_effect = {
+			foreground = estate_type:burghers_estate
+			background = estate_type:burghers_estate
+		}
+
 		set_chinese_expedition_scopes = yes
+
 		scope:expedition_initiator.var:chinese_treasure_fleet_location ?= {
 			save_scope_as = fleet_loc
 		}
@@ -2190,22 +2071,19 @@ flavor_chi.2202 = {
 
 		ai_chance = {
 			factor = 100
+
 			modifier = {
-				factor = {
-					value = 1
-					multiply = chinese_expedition_neutral_ai_weight
-				}
+				factor = { value = 1 multiply = chinese_expedition_neutral_ai_weight }
 			}
 		}
-		
+
 		add_estate_satisfaction = {
 			type = estate_type:burghers_estate
 			value = estate_satisfaction_extreme_penalty
 		}
 		if = {
-			limit = {
-				current_age_or_later = { age = age_4_reformation }
-			}
+			limit = { current_age_or_later = { age = age_4_reformation } }
+
 			change_societal_value = {
 				type = mercantilism_vs_free_trade
 				value = societal_value_move_to_left
@@ -2218,36 +2096,34 @@ flavor_chi.2202 = {
 
 		ai_chance = {
 			factor = 100
+
 			modifier = {
-				factor = {
-					value = 1
-					multiply = chinese_expedition_negative_ai_weight
-				}
+				factor = { value = 1 multiply = chinese_expedition_negative_ai_weight }
 			}
 		}
-		
+
 		decrease_opinion_of_expedition = yes
 		add_stability = stability_weak_bonus
 	}
-	
-	after = {
-		visitation_event_pulse = yes
-	}
+
+	after = { visitation_event_pulse = yes }
 }
 
 # Noble Discontent
+
 flavor_chi.2203 = {
 	type = country_event
 	title = flavor_chi.2203.title
 	desc = flavor_chi.2203.desc
 
-	illustration_tags = {
-        10 = regular
-        10 = interior
-    }
+	illustration_tags = { 10 = regular 10 = interior }
 
 	immediate = {
-		event_illustration_estate_effect = { foreground = estate_type:nobles_estate background = estate_type:nobles_estate }
+		event_illustration_estate_effect = {
+			foreground = estate_type:nobles_estate
+			background = estate_type:nobles_estate
+		}
+
 		set_chinese_expedition_scopes = yes
 	}
 
@@ -2256,14 +2132,12 @@ flavor_chi.2203 = {
 
 		ai_chance = {
 			factor = 100
+
 			modifier = {
-				factor = {
-					value = 1
-					multiply = chinese_expedition_negative_ai_weight
-				}
+				factor = { value = 1 multiply = chinese_expedition_negative_ai_weight }
 			}
 		}
-		
+
 		add_prestige = prestige_severe_bonus
 		decrease_opinion_of_expedition = yes
 	}
@@ -2273,30 +2147,28 @@ flavor_chi.2203 = {
 
 		ai_chance = {
 			factor = 100
+
 			modifier = {
-				factor = {
-					value = 1
-					multiply = chinese_expedition_neutral_ai_weight
-				}
+				factor = { value = 1 multiply = chinese_expedition_neutral_ai_weight }
 			}
 		}
-		
+
 		change_societal_value = {
 			type = outward_vs_inward
 			value = societal_value_move_to_left
 		}
+
 		add_estate_satisfaction = {
 			type = estate_type:nobles_estate
 			value = estate_satisfaction_extreme_penalty
 		}
 	}
-	
-	after = {
-		visitation_event_pulse = yes
-	}
+
+	after = { visitation_event_pulse = yes }
 }
 
 # Conflict with the Clergy
+
 flavor_chi.2204 = {
 	type = country_event
 	title = flavor_chi.2204.title
@@ -2307,13 +2179,14 @@ flavor_chi.2204 = {
 		scope:expedition_initiator.var:chinese_expedition_expedition_leader.religion != root.religion
 	}
 
-	illustration_tags = {
-        10 = angry
-        10 = exterior
-    }
+	illustration_tags = { 10 = angry 10 = exterior }
 
 	immediate = {
-		event_illustration_poptype_effect = { foreground = pop_type:clergy background = pop_type:soldiers }
+		event_illustration_poptype_effect = {
+			foreground = pop_type:clergy
+			background = pop_type:soldiers
+		}
+
 		set_chinese_expedition_scopes = yes
 	}
 
@@ -2322,15 +2195,14 @@ flavor_chi.2204 = {
 
 		ai_chance = {
 			factor = 100
+
 			modifier = {
-				factor = {
-					value = 1
-					multiply = chinese_expedition_negative_ai_weight
-				}
+				factor = { value = 1 multiply = chinese_expedition_negative_ai_weight }
 			}
 		}
-		
+
 		decrease_opinion_of_expedition = yes
+
 		change_societal_value = {
 			type = spiritualist_vs_humanist
 			value = societal_value_move_to_left
@@ -2342,53 +2214,50 @@ flavor_chi.2204 = {
 
 		ai_chance = {
 			factor = 100
+
 			modifier = {
-				factor = {
-					value = 1
-					multiply = chinese_expedition_neutral_ai_weight
-				}
+				factor = { value = 1 multiply = chinese_expedition_neutral_ai_weight }
 			}
 		}
-		
+
 		add_estate_satisfaction = {
 			type = estate_type:clergy_estate
 			value = estate_satisfaction_extreme_penalty
 		}
 	}
-	
-	after = {
-		visitation_event_pulse = yes
-	}
+
+	after = { visitation_event_pulse = yes }
 }
 
 # Extradition Demand
+
 flavor_chi.2205 = {
 	type = country_event
 	title = flavor_chi.2205.title
 	desc = flavor_chi.2205.desc
 
-	illustration_tags = {
-        10 = angry
-        10 = exterior
-    }
+	illustration_tags = { 10 = angry 10 = exterior }
 
 	immediate = {
 		set_chinese_expedition_scopes = yes
 		if = {
-			limit = {
-				is_ai = no
+			limit = { is_ai = no }
+
+			event_illustration_poptype_background_effect = {
+				background = pop_type:soldiers
 			}
-			event_illustration_poptype_background_effect = { background = pop_type:soldiers }
+
 			scope:expedition_initiator = {
-				event_illustration_poptype_foreground_effect = { foreground = pop_type:nobles }
+				event_illustration_poptype_foreground_effect = {
+					foreground = pop_type:nobles
+				}
 			}
-		}		
-		
+		}
+
 		random_character = {
 			limit = {
-				culture = {
-					has_culture_group = culture_group:chinese_group
-				}
+				culture = { has_culture_group = culture_group:chinese_group }
+
 				birth_location ?= {
 					OR = {
 						region = region:west_china_region
@@ -2397,12 +2266,16 @@ flavor_chi.2205 = {
 					}
 				}
 			}
+
 			save_scope_as = target_escapee
 		}
 		if = {
 			limit = {
-				NOT = { exists = scope:target_escapee }
+				NOT = {
+					exists = scope:target_escapee
+				}
 			}
+
 			scope:expedition_initiator = {
 				random_owned_location = {
 					limit = {
@@ -2412,9 +2285,11 @@ flavor_chi.2205 = {
 							region = region:south_china_region
 						}
 					}
+
 					save_scope_as = target_location
 				}
 			}
+
 			create_character = {
 				estate = estate_type:burghers_estate
 				birth_location = scope:target_location
@@ -2431,20 +2306,15 @@ flavor_chi.2205 = {
 
 		ai_chance = {
 			factor = 100
+
 			modifier = {
-				factor = {
-					value = 1
-					multiply = chinese_expedition_neutral_ai_weight
-				}
+				factor = { value = 1 multiply = chinese_expedition_neutral_ai_weight }
 			}
 		}
-		
+
 		scope:target_escapee = {
 			move_to_expedition = yes
-			set_variable = {
-				name = chi_extradited
-				value = ROOT
-			}
+			set_variable = { name = chi_extradited value = root }
 		}
 
 		add_government_power = government_power_mild_penalty
@@ -2455,15 +2325,14 @@ flavor_chi.2205 = {
 
 		ai_chance = {
 			factor = 100
+
 			modifier = {
-				factor = {
-					value = 1
-					multiply = chinese_expedition_negative_ai_weight
-				}
+				factor = { value = 1 multiply = chinese_expedition_negative_ai_weight }
 			}
 		}
-	
+
 		decrease_opinion_of_expedition = yes
+
 		scope:target_escapee = {
 			add_character_modifier = {
 				mode = replace
@@ -2472,59 +2341,50 @@ flavor_chi.2205 = {
 			}
 		}
 	}
-	
-	after = {
-		visitation_event_pulse = yes
-	}
+
+	after = { visitation_event_pulse = yes }
 }
 
 # Military Drills
+
 flavor_chi.2206 = {
 	type = country_event
 	title = flavor_chi.2206.title
 	desc = flavor_chi.2206.desc
 
-	trigger = {
-		any_army = {
-			count >= 1
-		}
-	}
+	trigger = { any_army = { count >= 1 } }
 
-	illustration_tags = {
-        10 = regular
-        10 = exterior
-    }
+	illustration_tags = { 10 = regular 10 = exterior }
 
 	immediate = {
 		set_chinese_expedition_scopes = yes
 		if = {
-			limit = {
-				is_ai = no
+			limit = { is_ai = no }
+
+			event_illustration_poptype_background_effect = {
+				background = pop_type:soldiers
 			}
-			event_illustration_poptype_background_effect = { background = pop_type:soldiers }
+
 			scope:expedition_initiator = {
-				event_illustration_poptype_foreground_effect = { foreground = pop_type:soldiers }
+				event_illustration_poptype_foreground_effect = {
+					foreground = pop_type:soldiers
+				}
 			}
 		}
-		
+
 		if = {
 			limit = {
 				exists = scope:expedition_initiator
-				scope:expedition_initiator = {
-					has_variable = chinese_treasure_fleet_location
-				}
+				scope:expedition_initiator = { has_variable = chinese_treasure_fleet_location }
 			}
+
 			ordered_army = {
 				order_by = "unit_location.distance_to(scope:expedition_initiator.var:chinese_treasure_fleet_location)"
 				max = 1
 				save_scope_as = target_unit
 			}
 		}
-		else = {
-			random_army = {
-				save_scope_as = target_unit
-			}
-		}
+		else = { random_army = { save_scope_as = target_unit } }
 	}
 
 	option = {
@@ -2532,21 +2392,18 @@ flavor_chi.2206 = {
 
 		ai_chance = {
 			factor = 100
+
 			modifier = {
-				factor = {
-					value = 1
-					multiply = chinese_expedition_positive_ai_weight
-				}
+				factor = { value = 1 multiply = chinese_expedition_positive_ai_weight }
 			}
 		}
-		
+
 		increase_opinion_of_expedition = yes
 		add_army_tradition = army_tradition_mild_bonus
+
 		scope:target_unit = {
 			damage_unit_morale_percent = 0.5
-			every_sub_unit = {
-				add_subunit_experience = subunit_experience_severe_bonus
-			}
+			every_sub_unit = { add_subunit_experience = subunit_experience_severe_bonus }
 		}
 	}
 
@@ -2555,26 +2412,21 @@ flavor_chi.2206 = {
 
 		ai_chance = {
 			factor = 100
+
 			modifier = {
-				factor = {
-					value = 1
-					multiply = chinese_expedition_neutral_ai_weight
-				}
+				factor = { value = 1 multiply = chinese_expedition_neutral_ai_weight }
 			}
 		}
-		
+
 		add_prestige = prestige_weak_bonus
-		ruler_or_heir_if_regent = {
-			add_mil = 5
-		}
+		ruler_or_heir_if_regent = { add_mil = 5 }
 	}
-	
-	after = {
-		visitation_event_pulse = yes
-	}
+
+	after = { visitation_event_pulse = yes }
 }
 
 # War with Unaffiliated Party
+
 flavor_chi.2207 = {
 	hide_portraits = yes
 	type = country_event
@@ -2582,34 +2434,32 @@ flavor_chi.2207 = {
 	desc = flavor_chi.2207.desc
 
 	trigger = {
-		any_enemy_war_leader = {
-			"opinion(scope:expedition_initiator)" < 0
-		}
+		any_enemy_war_leader = { "opinion(scope:expedition_initiator)" < 0 }
 	}
 
-	illustration_tags = {
-        10 = regular
-        10 = exterior
-    }
+	illustration_tags = { 10 = regular 10 = exterior }
 
 	immediate = {
 		set_chinese_expedition_scopes = yes
 		if = {
-			limit = {
-				is_ai = no
+			limit = { is_ai = no }
+
+			event_illustration_poptype_background_effect = {
+				background = pop_type:soldiers
 			}
-			event_illustration_poptype_background_effect = { background = pop_type:soldiers }
+
 			scope:expedition_initiator = {
-				event_illustration_poptype_foreground_effect = { foreground = pop_type:soldiers }
+				event_illustration_poptype_foreground_effect = {
+					foreground = pop_type:soldiers
+				}
 			}
 		}
-		
+
 		random_enemy_war_leader = {
-			limit = {
-				"opinion(scope:expedition_initiator)" < 0
-			}
+			limit = { "opinion(scope:expedition_initiator)" < 0 }
 			save_scope_as = target_country
 		}
+
 		save_scope_as = from
 	}
 
@@ -2618,26 +2468,20 @@ flavor_chi.2207 = {
 		if = {
 			limit = {
 				exists = scope:expedition_initiator
-				scope:expedition_initiator = {
-					has_variable = chinese_treasure_fleet_location
-				}
+				scope:expedition_initiator = { has_variable = chinese_treasure_fleet_location }
 			}
+
 			create_mercenary = {
 				name = chi_sailor_company
 				home = scope:expedition_initiator.var:chinese_treasure_fleet_location
-				categories = {
-					army_infantry = 5
-				}
+				categories = { army_infantry = 5 }
 				cost_multiplier = 0.5
 				save_scope_as = target_mercenary
 			}
 
 			hire_mercenary = scope:target_mercenary
 		}
-		else = {
-			add_yearly_manpower = 1
-		}
-
+		else = { add_yearly_manpower = 1 }
 
 		scope:target_country = {
 			show_as_tooltip = {
@@ -2646,15 +2490,14 @@ flavor_chi.2207 = {
 					modifier = chi_joined_against_us
 				}
 			}
-			trigger_event_non_silently = {
-				id = flavor_chi.2208
-			}
+
+			trigger_event_non_silently = { id = flavor_chi.2208 }
 		}
 	}
 
 	option = {
 		name = flavor_chi.2207.b
-	
+
 		add_prestige = prestige_mild_bonus
 		add_government_power = government_power_mild_bonus
 		visitation_event_pulse = yes
@@ -2662,81 +2505,76 @@ flavor_chi.2207 = {
 }
 
 # Chinese Support on Opposite Side
+
 flavor_chi.2208 = {
 	type = country_event
 	title = flavor_chi.2208.title
 	desc = flavor_chi.2208.desc
 
-	illustration_tags = {
-        10 = angry
-        10 = interior
-    }
+	illustration_tags = { 10 = angry 10 = interior }
 
 	immediate = {
 		set_chinese_expedition_scopes = yes
 		if = {
-			limit = {
-				is_ai = no
-			}
+			limit = { is_ai = no }
+
 			scope:from = {
-				event_illustration_estate_background_effect = { background = estate_type:nobles_estate }
+				event_illustration_estate_background_effect = {
+					background = estate_type:nobles_estate
+				}
 			}
+
 			scope:expedition_initiator = {
-				event_illustration_estate_foreground_effect = { foreground = estate_type:nobles_estate }
+				event_illustration_estate_foreground_effect = {
+					foreground = estate_type:nobles_estate
+				}
 			}
-		}		
-		
+		}
 	}
 
 	option = {
 		name = flavor_chi.2208.a
-		
-		scope:from = {
-			show_as_tooltip = {
-				hire_mercenary = scope:target_mercenary
-			}
-		}
+
+		scope:from = { show_as_tooltip = { hire_mercenary = scope:target_mercenary } }
+
 		add_opinion = {
 			target = scope:expedition_initiator
 			modifier = chi_joined_against_us
 		}
 	}
-	
-	after = {
-		scope:from = {
-			visitation_event_pulse = yes
-		}
-	}
+
+	after = { scope:from = { visitation_event_pulse = yes } }
 }
 
 # Request to Construct Mosque
+
 flavor_chi.2209 = {
 	type = country_event
 	title = flavor_chi.2209.title
 	desc = flavor_chi.2209.desc
 
-
 	trigger = {
 		scope:expedition_initiator.var:chinese_expedition_expedition_leader.religion = religion:sunni
 	}
 
-	illustration_tags = {
-        10 = regular
-        10 = interior
-    }
+	illustration_tags = { 10 = regular 10 = interior }
 
 	immediate = {
 		set_chinese_expedition_scopes = yes
 		if = {
-			limit = {
-				is_ai = no
+			limit = { is_ai = no }
+
+			event_illustration_estate_background_effect = {
+				background = estate_type:nobles_estate
 			}
-			event_illustration_estate_background_effect = { background = estate_type:nobles_estate }
+
 			scope:expedition_initiator = {
-				event_illustration_estate_foreground_effect = { foreground = estate_type:nobles_estate }
+				event_illustration_estate_foreground_effect = {
+					foreground = estate_type:nobles_estate
+				}
 			}
 		}
-		
+
 		var:chinese_expedition_expedition_leader.religion = {
 			save_scope_as = target_religion
 		}
@@ -2747,14 +2585,12 @@ flavor_chi.2209 = {
 
 		ai_chance = {
 			factor = 100
+
 			modifier = {
-				factor = {
-					value = 1
-					multiply = chinese_expedition_neutral_ai_weight
-				}
+				factor = { value = 1 multiply = chinese_expedition_neutral_ai_weight }
 			}
 		}
-		
+
 		scope:expedition_initiator.var:chinese_treasure_fleet_location ?= {
 			construct_building = {
 				building_type = building_type:temple
@@ -2774,23 +2610,20 @@ flavor_chi.2209 = {
 
 		ai_chance = {
 			factor = 100
+
 			modifier = {
-				factor = {
-					value = 1
-					multiply = chinese_expedition_negative_ai_weight
-				}
+				factor = { value = 1 multiply = chinese_expedition_negative_ai_weight }
 			}
 		}
-		
+
 		decrease_opinion_of_expedition = yes
 	}
 
-	after = {
-		visitation_event_pulse = yes
-	}
+	after = { visitation_event_pulse = yes }
 }
 
-# Chinese Diaspora in Port   
+# Chinese Diaspora in Port
+
 flavor_chi.2210 = {
 	type = country_event
 	title = flavor_chi.2210.title
@@ -2798,31 +2631,27 @@ flavor_chi.2210 = {
 
 	trigger = {
 		scope:expedition_initiator.var:chinese_treasure_fleet_location ?= {
-			any_pop = {
-				culture = {
-					has_culture_group = culture_group:chinese_group
-				}
-			}
+			any_pop = { culture = { has_culture_group = culture_group:chinese_group } }
 		}
 	}
 
-	illustration_tags = {
-        10 = happy
-        10 = exterior
-    }
+	illustration_tags = { 10 = happy 10 = exterior }
 
 	immediate = {
 		set_chinese_expedition_scopes = yes
 		if = {
-			limit = {
-				is_ai = no
+			limit = { is_ai = no }
+
+			event_illustration_estate_background_effect = {
+				background = estate_type:burghers_estate
 			}
-			event_illustration_estate_background_effect = { background = estate_type:burghers_estate }
+
 			scope:expedition_initiator = {
-				event_illustration_estate_foreground_effect = { foreground = estate_type:burghers_estate }
+				event_illustration_estate_foreground_effect = {
+					foreground = estate_type:burghers_estate
+				}
 			}
 		}
-		
 	}
 
 	option = {
@@ -2830,31 +2659,21 @@ flavor_chi.2210 = {
 
 		ai_chance = {
 			factor = 100
+
 			modifier = {
-				factor = {
-					value = 1
-					multiply = chinese_expedition_neutral_ai_weight
-				}
+				factor = { value = 1 multiply = chinese_expedition_neutral_ai_weight }
 			}
 		}
-	
+
 		scope:expedition_initiator.var:chinese_treasure_fleet_location ?= {
 			every_pop = {
-				limit  = {
-					culture = {
-						has_culture_group = culture_group:chinese_group
-					}
-				}
+				limit = { culture = { has_culture_group = culture_group:chinese_group } }
 				add_pop_satisfaction = pop_satisfaction_extreme_bonus
-				add_pop_size = {
-					value = pop_size
-					multiply = 0.05
-				}
+				add_pop_size = { value = pop_size multiply = 0.05 }
 			}
 		}
-		culture = {
-			add_cultural_influence = cultural_influence_mild_penalty
-		}
+
+		culture = { add_cultural_influence = cultural_influence_mild_penalty }
 	}
 
 	option = {
@@ -2862,46 +2681,43 @@ flavor_chi.2210 = {
 
 		ai_chance = {
 			factor = 100
+
 			modifier = {
-				factor = {
-					value = 1
-					multiply = chinese_expedition_negative_ai_weight
-				}
+				factor = { value = 1 multiply = chinese_expedition_negative_ai_weight }
 			}
 		}
-	
+
 		decrease_opinion_of_expedition = yes
 		add_government_power = government_power_mild_bonus
 	}
-	
-	after = {
-		visitation_event_pulse = yes
-	}
+
+	after = { visitation_event_pulse = yes }
 }
 
 # Sailors Settle Down
+
 flavor_chi.2211 = {
 	type = country_event
 	title = flavor_chi.2211.title
 	desc = flavor_chi.2211.desc
 
-	illustration_tags = {
-        10 = regular
-        10 = exterior
-    }
+	illustration_tags = { 10 = regular 10 = exterior }
 
 	immediate = {
 		set_chinese_expedition_scopes = yes
 		if = {
-			limit = {
-				is_ai = no
+			limit = { is_ai = no }
+
+			event_illustration_poptype_background_effect = {
+				background = pop_type:soldiers
 			}
-			event_illustration_poptype_background_effect = { background = pop_type:soldiers }
+
 			scope:expedition_initiator = {
-				event_illustration_poptype_foreground_effect = { foreground = pop_type:soldiers }
+				event_illustration_poptype_foreground_effect = {
+					foreground = pop_type:soldiers
+				}
 			}
 		}
-		
 	}
 
 	option = {
@@ -2914,8 +2730,9 @@ flavor_chi.2211 = {
 					this != var:chinese_treasure_fleet_location.province_definition
 				}
 			}
+
 			add_migration = {
-				owner = ROOT
+				owner = root
 				from = scope:expedition_initiator.province_definition
 				to = scope:expedition_initiator.var:chinese_treasure_fleet_location.province_definition
 				type = pop_type:burghers
@@ -2925,47 +2742,44 @@ flavor_chi.2211 = {
 		}
 		else_if = {
 			limit = { exists = scope:expedition_initiator }
+
 			random_pop = {
 				limit = { pop_type = pop_type:burghers }
-				add_pop_size = {
-					value = 0.3
-				}
+				add_pop_size = { value = 0.3 }
 			}
 		}
 	}
-	
-	after = {
-		visitation_event_pulse = yes
-	}
+
+	after = { visitation_event_pulse = yes }
 }
 
 # China Wishes to Intervene on Our Side
+
 flavor_chi.2212 = {
 	type = country_event
 	title = flavor_chi.2212.title
 	desc = flavor_chi.2212.desc
 
-	trigger = {
-		in_civil_war = yes
-	}
+	trigger = { in_civil_war = yes }
 
-	illustration_tags = {
-        10 = regular
-        10 = exterior
-    }
+	illustration_tags = { 10 = regular 10 = exterior }
 
 	immediate = {
 		set_chinese_expedition_scopes = yes
 		if = {
-			limit = {
-				is_ai = no
+			limit = { is_ai = no }
+
+			event_illustration_poptype_background_effect = {
+				background = pop_type:soldiers
 			}
-			event_illustration_poptype_background_effect = { background = pop_type:soldiers }
+
 			scope:expedition_initiator = {
-				event_illustration_poptype_foreground_effect = { foreground = pop_type:soldiers }
+				event_illustration_poptype_foreground_effect = {
+					foreground = pop_type:soldiers
+				}
 			}
-		}		
-		
+		}
+
 		save_scope_as = country_at_war_with
 	}
 
@@ -2974,23 +2788,15 @@ flavor_chi.2212 = {
 
 		ai_chance = {
 			factor = 100
+
 			modifier = {
-				factor = {
-					value = 1
-					multiply = chinese_expedition_neutral_ai_weight
-				}
+				factor = { value = 1 multiply = chinese_expedition_neutral_ai_weight }
 			}
 		}
-		
+
 		every_war = {
-			limit = {
-				is_civil_war_for = ROOT
-			}
-			attacker_leader = {
-				trigger_event_non_silently = {
-					id = flavor_chi.2213
-				}
-			}
+			limit = { is_civil_war_for = root }
+			attacker_leader = { trigger_event_non_silently = { id = flavor_chi.2213 } }
 		}
 
 		add_manpower = { 0.5 1.5 }
@@ -3007,54 +2813,50 @@ flavor_chi.2212 = {
 
 		ai_chance = {
 			factor = 100
+
 			modifier = {
-				factor = {
-					value = 1
-					multiply = chinese_expedition_negative_ai_weight
-				}
+				factor = { value = 1 multiply = chinese_expedition_negative_ai_weight }
 			}
 		}
-		
+
 		add_prestige = prestige_mild_bonus
 		decrease_opinion_of_expedition = yes
 	}
 
-	after = {
-		visitation_event_pulse = yes
-	}
+	after = { visitation_event_pulse = yes }
 }
 
 # China Intervenes on Opposite Side!
+
 flavor_chi.2213 = {
 	type = country_event
 	title = flavor_chi.2213.title
 	desc = flavor_chi.2213.desc
 
-	illustration_tags = {
-        10 = armed
-        10 = exterior
-    }
+	illustration_tags = { 10 = armed 10 = exterior }
 
 	immediate = {
 		set_chinese_expedition_scopes = yes
 		if = {
-			limit = {
-				is_ai = no
+			limit = { is_ai = no }
+
+			event_illustration_poptype_background_effect = {
+				background = pop_type:nobles
 			}
-			event_illustration_poptype_background_effect = { background = pop_type:nobles }
+
 			scope:expedition_initiator = {
-				event_illustration_poptype_foreground_effect = { foreground = pop_type:soldiers }
+				event_illustration_poptype_foreground_effect = {
+					foreground = pop_type:soldiers
+				}
 			}
-		}		
-		
-		"war_with_country(scope:country_at_war_with)" = {
-			save_scope_as = target_war
 		}
+
+		"war_with_country(scope:country_at_war_with)" = { save_scope_as = target_war }
 	}
 
 	option = {
 		name = flavor_chi.2213.a
-		
+
 		add_opinion_mutual_effect = {
 			modifier = chi_supported_civil_war_enemy
 			target = scope:expedition_initiator
@@ -3063,6 +2865,7 @@ flavor_chi.2213 = {
 }
 
 # China angered by our ways - low opinion, pirate government, hostility.
+
 flavor_chi.2214 = {
 	type = country_event
 	title = flavor_chi.2214.title
@@ -3073,29 +2876,27 @@ flavor_chi.2214 = {
 		var:chinese_expedition_opinion <= -75
 	}
 
-	illustration_tags = {
-        10 = angry
-        10 = interior
-    }
+	illustration_tags = { 10 = angry 10 = interior }
 
 	immediate = {
 		set_chinese_expedition_scopes = yes
 		if = {
-			limit = {
-				is_ai = no
+			limit = { is_ai = no }
+
+			event_illustration_estate_background_effect = {
+				background = estate_type:nobles_estate
 			}
-			event_illustration_estate_background_effect = { background = estate_type:nobles_estate }
+
 			scope:expedition_initiator = {
-				event_illustration_estate_foreground_effect = { foreground = estate_type:nobles_estate }
+				event_illustration_estate_foreground_effect = {
+					foreground = estate_type:nobles_estate
+				}
 			}
 		}
-		
+
 		set_local_variable = {
 			name = bribe_amount
-			value = {
-				value = monthly_income_trade_and_tax
-				multiply = 3
-			}
+			value = { value = monthly_income_trade_and_tax multiply = 3 }
 		}
 	}
 
@@ -3104,17 +2905,13 @@ flavor_chi.2214 = {
 
 		ai_chance = {
 			factor = 100
+
 			modifier = {
-				factor = {
-					value = 1
-					multiply = chinese_expedition_positive_ai_weight
-				}
+				factor = { value = 1 multiply = chinese_expedition_positive_ai_weight }
 			}
 		}
-		
-		give_gold_to_expedition = {
-			value = local_var:bribe_amount
-		}
+
+		give_gold_to_expedition = { value = local_var:bribe_amount }
 
 		increase_opinion_of_expedition = yes
 	}
@@ -3124,68 +2921,61 @@ flavor_chi.2214 = {
 
 		ai_chance = {
 			factor = 100
+
 			modifier = {
-				factor = {
-					value = 1
-					multiply = chinese_expedition_very_negative_ai_weight
-				}
+				factor = { value = 1 multiply = chinese_expedition_very_negative_ai_weight }
 			}
 		}
-		
+
 		custom_tooltip = chi_neighboring_nations_might_get_cb_on_us
+
 		scope:expedition_initiator = {
-			add_to_variable_list = {
-				name = potential_enemy_list
-				target = ROOT
-			}
+			add_to_variable_list = { name = potential_enemy_list target = root }
 		}
+
 		chinese_treasure_depart_from_port = yes
 	}
-	
-	after = {
-		visitation_event_pulse = yes
-	}
+
+	after = { visitation_event_pulse = yes }
 }
 
 # Chinese War Support Against Nearby Target
+
 flavor_chi.2215 = {
 	type = country_event
 	title = flavor_chi.2215.title
 	desc = flavor_chi.2215.desc
 
 	trigger = {
-		scope:expedition_initiator ?= {
-			has_variable_list = potential_enemy_list
-		}
+		scope:expedition_initiator ?= { has_variable_list = potential_enemy_list }
+
 		any_neighbor_country = {
 			scope:expedition_initiator = {
-				is_target_in_variable_list = {
-					name = potential_enemy_list
-					target = PREV
-				}
+				is_target_in_variable_list = { name = potential_enemy_list target = prev }
 			}
 		}
 	}
 
-	illustration_tags = {
-        10 = regular
-        10 = interior
-    }
+	illustration_tags = { 10 = regular 10 = interior }
 
 	immediate = {
-		event_illustration_estate_effect = { foreground = estate_type:nobles_estate background = estate_type:nobles_estate }
+		event_illustration_estate_effect = {
+			foreground = estate_type:nobles_estate
+			background = estate_type:nobles_estate
+		}
+
 		set_chinese_expedition_scopes = yes
+
 		random_neighbor_country = {
 			limit = {
 				scope:expedition_initiator = {
-					is_target_in_variable_list = {
-						name = potential_enemy_list
-						target = PREV
-					}
+					is_target_in_variable_list = { name = potential_enemy_list target = prev }
 				}
 			}
+
 			save_scope_as = target_country
 		}
+
 		scope:expedition_initiator.var:chinese_treasure_fleet_location ?= {
 			save_scope_as = target_location
 		}
@@ -3196,15 +2986,14 @@ flavor_chi.2215 = {
 
 		ai_chance = {
 			factor = 100
+
 			modifier = {
-				factor = {
-					value = 1
-					multiply = chinese_expedition_very_positive_ai_weight
-				}
+				factor = { value = 1 multiply = chinese_expedition_very_positive_ai_weight }
 			}
 		}
-		
+
 		leave_all_wars_with = scope:target_country
+
 		declare_war_with_cb = {
 			target = scope:target_country
 			type = casus_belli:cb_insulted_us
@@ -3224,50 +3013,49 @@ flavor_chi.2215 = {
 
 		ai_chance = {
 			factor = 100
+
 			modifier = {
-				factor = {
-					value = 1
-					multiply = chinese_expedition_neutral_ai_weight
-				}
+				factor = { value = 1 multiply = chinese_expedition_neutral_ai_weight }
 			}
 		}
-	
+
 		change_societal_value = {
 			type = belligerent_vs_conciliatory
 			value = societal_value_minor_move_to_right
 		}
 	}
-	
-	after = {
-		visitation_event_pulse = yes
-	}
+
+	after = { visitation_event_pulse = yes }
 }
 
 # Underwhelming Tribute Quality
+
 flavor_chi.2216 = {
 	type = country_event
 	title = flavor_chi.2216.title
 	desc = flavor_chi.2216.desc
 
-	illustration_tags = {
-        10 = angry
-        10 = interior
-    }
+	illustration_tags = { 10 = angry 10 = interior }
 
 	immediate = {
 		set_chinese_expedition_scopes = yes
 		if = {
-			limit = {
-				is_ai = no
+			limit = { is_ai = no }
+
+			event_illustration_estate_background_effect = {
+				background = estate_type:nobles_estate
 			}
-			event_illustration_estate_background_effect = { background = estate_type:nobles_estate }
+
 			scope:expedition_initiator = {
-				event_illustration_estate_foreground_effect = { foreground = estate_type:nobles_estate }
+				event_illustration_estate_foreground_effect = {
+					foreground = estate_type:nobles_estate
+				}
 			}
-		}		
-		
+		}
+
 		set_local_variable = {
 			name = tribute_cost
+
 			value = {
 				value = monthly_income_trade_and_tax
 				multiply = { 3 6 }
@@ -3280,17 +3068,13 @@ flavor_chi.2216 = {
 
 		ai_chance = {
 			factor = 100
+
 			modifier = {
-				factor = {
-					value = 1
-					multiply = chinese_expedition_neutral_ai_weight
-				}
+				factor = { value = 1 multiply = chinese_expedition_neutral_ai_weight }
 			}
 		}
-		
-		give_gold_to_expedition = {
-			value = local_var:tribute_cost
-		}
+
+		give_gold_to_expedition = { value = local_var:tribute_cost }
 	}
 
 	option = {
@@ -3298,51 +3082,50 @@ flavor_chi.2216 = {
 
 		ai_chance = {
 			factor = 100
+
 			modifier = {
-				factor = {
-					value = 1
-					multiply = chinese_expedition_negative_ai_weight
-				}
+				factor = { value = 1 multiply = chinese_expedition_negative_ai_weight }
 			}
 		}
-		
+
 		decrease_opinion_of_expedition = yes
 	}
-	
-	after = {
-		visitation_event_pulse = yes
-	}
+
+	after = { visitation_event_pulse = yes }
 }
 
 # Scandal at the Court
+
 flavor_chi.2217 = {
 	type = country_event
 	title = flavor_chi.2217.title
 	desc = flavor_chi.2217.desc
 
-	trigger = {
-		has_ruler = yes
-	}
+	trigger = { has_ruler = yes }
 
-	illustration_tags = {
-        10 = angry
-        10 = interior
-    }
+	illustration_tags = { 10 = angry 10 = interior }
 
 	immediate = {
 		set_chinese_expedition_scopes = yes
 		if = {
-			limit = {
-				is_ai = no
+			limit = { is_ai = no }
+
+			event_illustration_estate_background_effect = {
+				background = estate_type:nobles_estate
 			}
-			event_illustration_estate_background_effect = { background = estate_type:nobles_estate }
+
 			scope:expedition_initiator = {
-				event_illustration_estate_foreground_effect = { foreground = estate_type:nobles_estate }
+				event_illustration_estate_foreground_effect = {
+					foreground = estate_type:nobles_estate
+				}
 			}
 		}
+
 		set_chinese_expedition_scopes = yes
+
 		set_local_variable = {
 			name = tribute_cost
+
 			value = {
 				value = monthly_income_trade_and_tax
 				multiply = { 1 2 }
@@ -3355,14 +3138,12 @@ flavor_chi.2217 = {
 
 		ai_chance = {
 			factor = 100
+
 			modifier = {
-				factor = {
-					value = 1
-					multiply = chinese_expedition_neutral_ai_weight
-				}
+				factor = { value = 1 multiply = chinese_expedition_neutral_ai_weight }
 			}
 		}
-		
+
 		add_government_power = government_power_extreme_penalty
 	}
 
@@ -3371,19 +3152,15 @@ flavor_chi.2217 = {
 
 		ai_chance = {
 			factor = 100
+
 			modifier = {
-				factor = {
-					value = 1
-					multiply = chinese_expedition_positive_ai_weight
-				}
+				factor = { value = 1 multiply = chinese_expedition_positive_ai_weight }
 			}
 		}
-		
+
 		add_government_power = government_power_extreme_penalty
 		add_prestige = prestige_mild_penalty
-		give_gold_to_expedition = {
-			value = local_var:tribute_cost
-		}
+		give_gold_to_expedition = { value = local_var:tribute_cost }
 		increase_opinion_of_expedition = yes
 	}
 
@@ -3392,35 +3169,33 @@ flavor_chi.2217 = {
 
 		ai_chance = {
 			factor = 100
+
 			modifier = {
-				factor = {
-					value = 1
-					multiply = chinese_expedition_negative_ai_weight
-				}
+				factor = { value = 1 multiply = chinese_expedition_negative_ai_weight }
 			}
 		}
-		
+
 		decrease_opinion_of_expedition = yes
 	}
-	
-	after = {
-		visitation_event_pulse = yes
-	}
+
+	after = { visitation_event_pulse = yes }
 }
 
 # Good Treatment
+
 flavor_chi.2218 = {
 	type = country_event
 	title = flavor_chi.2218.title
 	desc = flavor_chi.2218.desc
 
-	illustration_tags = {
-        10 = happy
-        10 = interior
-    }
+	illustration_tags = { 10 = happy 10 = interior }
 
 	immediate = {
-		event_illustration_estate_effect = { foreground = estate_type:nobles_estate background = estate_type:nobles_estate }
+		event_illustration_estate_effect = {
+			foreground = estate_type:nobles_estate
+			background = estate_type:nobles_estate
+		}
+
 		set_chinese_expedition_scopes = yes
 	}
 
@@ -3429,14 +3204,12 @@ flavor_chi.2218 = {
 
 		ai_chance = {
 			factor = 100
+
 			modifier = {
-				factor = {
-					value = 1
-					multiply = chinese_expedition_positive_ai_weight
-				}
+				factor = { value = 1 multiply = chinese_expedition_positive_ai_weight }
 			}
 		}
-		
+
 		increase_opinion_of_expedition = yes
 	}
 
@@ -3445,18 +3218,14 @@ flavor_chi.2218 = {
 
 		ai_chance = {
 			factor = 100
+
 			modifier = {
-				factor = {
-					value = 1
-					multiply = chinese_expedition_neutral_ai_weight
-				}
+				factor = { value = 1 multiply = chinese_expedition_neutral_ai_weight }
 			}
 		}
-		
+
 		add_prestige = prestige_weak_bonus
 	}
-	
-	after = {
-		visitation_event_pulse = yes
-	}
+
+	after = { visitation_event_pulse = yes }
 }

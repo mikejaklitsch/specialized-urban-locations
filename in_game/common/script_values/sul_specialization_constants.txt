@@ -1,4 +1,5 @@
 ﻿# Total monthly development: local + global (location scope)
+
 sul_total_monthly_development = {
 	value = modifier:local_monthly_development
 	if = {
@@ -8,6 +9,7 @@ sul_total_monthly_development = {
 }
 
 # Debug: expose create_market_utility for tooltip inspection (location scope)
+
 sul_debug_market_utility = {
 	value = "owner.create_market_utility(this)"
 }
@@ -468,9 +470,12 @@ sul_commercial_finished_composite = {
 # Trade profit per good: total_goods_value_traded / total_goods_traded.
 # Market scope. Trade value per capita — measures commercial activity
 # relative to market size. Scales naturally across eras.
+
 sul_trade_value_per_capita = {
 	value = total_goods_value_traded
+
 	divide = { value = market_population min = 1 }
+
 	multiply = 20
 	max = 15
 }
@@ -514,6 +519,7 @@ sul_raw_material_price_premium = {
 		limit = { sul_raw_material_market_price >= sul_raw_material_base_price }
 		add = sul_raw_material_price_delta
 	}
+
 	# Below base: dampened negative signal
 	else = {
 		add = {
@@ -528,25 +534,28 @@ sul_raw_material_price_premium = {
 sul_attractiveness_mining = {
 	# Ineligible: hard block
 	if = {
-		limit = { NOT = { has_variable = sul_can_mine } }
+		limit = {
+			NOT = {
+				has_variable = sul_can_mine
+			}
+		}
+
 		add = -10000
 	}
+
 	# Terrain
-	if = {
-		limit = { topography = wetlands }
-		add = 3
-	}
-	else_if = {
-		limit = { topography = mountains }
-		add = 2
-	}
+	if = { limit = { topography = wetlands } add = 3 }
+	else_if = { limit = { topography = mountains } add = 2 }
+
 	# Raw material pull (only if mining resource)
 	if = {
 		limit = { sul_has_mining_resources = yes }
 		add = sul_raw_material_price_premium
 	}
+
 	# Finished goods demand (inline)
 	market ?= { add = sul_mining_finished_composite }
+
 	# Diversity
 	add = owner.sul_mining_diversity
 }
@@ -554,44 +563,50 @@ sul_attractiveness_mining = {
 sul_attractiveness_farming = {
 	# Ineligible: hard block
 	if = {
-		limit = { NOT = { has_variable = sul_can_farm } }
+		limit = {
+			NOT = {
+				has_variable = sul_can_farm
+			}
+		}
+
 		add = -10000
 	}
+
 	# Terrain
-	if = {
-		limit = { vegetation = farmland }
-		add = 4
-	}
+	if = { limit = { vegetation = farmland } add = 4 }
 	else_if = {
 		limit = { topography = flatland vegetation = grasslands }
 		add = 2
 	}
-	else_if = {
-		limit = { vegetation = grasslands }
-		add = 1
-	}
-	if = {
-		limit = { has_river = yes }
-		add = 1
-	}
+	else_if = { limit = { vegetation = grasslands } add = 1 }
+	if = { limit = { has_river = yes } add = 1 }
+
 	# Government
 	owner = {
 		if = {
-			limit = { OR = { government_type = government_type:tribe government_type = government_type:steppe_horde } }
+			limit = {
+				OR = {
+					government_type = government_type:tribe
+					government_type = government_type:steppe_horde
+				}
+			}
+
 			add = 2
 		}
 	}
+
 	# Raw material pull (only if farming resource)
 	if = {
 		limit = { sul_has_farming_resources = yes }
 		add = sul_raw_material_price_premium
 	}
+
 	# Finished goods demand (inline)
 	market ?= { add = sul_farming_finished_composite }
+
 	# Food price
-	market ?= {
-		add = sul_farming_food_price_bonus
-	}
+	market ?= { add = sul_farming_food_price_bonus }
+
 	# Diversity
 	add = owner.sul_farming_diversity
 }
@@ -599,32 +614,60 @@ sul_attractiveness_farming = {
 sul_attractiveness_woodland = {
 	# Ineligible: hard block
 	if = {
-		limit = { NOT = { has_variable = sul_can_woodland } }
+		limit = {
+			NOT = {
+				has_variable = sul_can_woodland
+			}
+		}
+
 		add = -10000
 	}
+
 	# Terrain
 	if = {
-		limit = { OR = { vegetation = forest vegetation = woods } }
+		limit = {
+			OR = {
+				vegetation = forest
+				vegetation = woods
+			}
+		}
+
 		add = 4
 	}
 	if = {
-		limit = { OR = { topography = hills topography = plateau } }
+		limit = {
+			OR = {
+				topography = hills
+				topography = plateau
+			}
+		}
+
 		add = 1
 	}
+
 	# Government
 	owner = {
 		if = {
-			limit = { OR = { government_type = government_type:tribe government_type = government_type:steppe_horde } }
+			limit = {
+				OR = {
+					government_type = government_type:tribe
+					government_type = government_type:steppe_horde
+				}
+			}
+
 			add = 2
 		}
 	}
+
 	# Raw material pull (only if woodland resource)
 	if = {
 		limit = { sul_has_woodland_resources = yes }
 		add = sul_raw_material_price_premium
 	}
+
 	# Finished goods demand (inline)
 	market ?= { add = sul_woodland_finished_composite }
+
 	# Diversity
 	add = owner.sul_woodland_diversity
 }
@@ -632,71 +675,75 @@ sul_attractiveness_woodland = {
 sul_attractiveness_gathering = {
 	# Ineligible: hard block
 	if = {
-		limit = { NOT = { has_variable = sul_can_gather } }
+		limit = {
+			NOT = {
+				has_variable = sul_can_gather
+			}
+		}
+
 		add = -10000
 	}
+
 	# Terrain
+	if = { limit = { is_coastal = yes } add = 2 }
+	if = { limit = { has_river = yes } add = 3 }
+	if = { limit = { is_adjacent_to_lake = yes } add = 2 }
 	if = {
-		limit = { is_coastal = yes }
-		add = 2
-	}
-	if = {
-		limit = { has_river = yes }
-		add = 3
-	}
-	if = {
-		limit = { is_adjacent_to_lake = yes }
-		add = 2
-	}
-	if = {
-		limit = { OR = { vegetation = forest vegetation = woods } }
+		limit = {
+			OR = {
+				vegetation = forest
+				vegetation = woods
+			}
+		}
+
 		add = 1
 	}
+
 	# Raw material pull (only if gathering resource)
 	if = {
 		limit = { sul_has_gathering_resources = yes }
 		add = sul_raw_material_price_premium
 	}
+
 	# Finished goods demand (inline)
 	market ?= { add = sul_gathering_finished_composite }
+
 	# Food price
-	market ?= {
-		add = sul_gathering_food_price_bonus
-	}
+	market ?= { add = sul_gathering_food_price_bonus }
+
 	# Diversity
 	add = owner.sul_gathering_diversity
 }
 
 sul_attractiveness_commercial = {
 	# Development pull: high-dev locations want commerce, extraction centers don't
-	add = {
-		value = development
-		subtract = 50
-		divide = 2
-	}
+	add = { value = development subtract = 50 divide = 2 }
+
 	# Trade value per capita (cached)
 	market ?= {
 		if = {
-			limit = { is_key_in_global_variable_map = { name = sul_trade_value_per_capita target = this } }
+			limit = {
+				is_key_in_global_variable_map = {
+					name = sul_trade_value_per_capita
+					target = this
+				}
+			}
+
 			add = "global_variable_map(sul_trade_value_per_capita|this)"
 		}
 	}
+
 	# Market access deficit
-	add = {
-		value = 1
-		subtract = market_access
-		multiply = 5
-		max = 5
-	}
+	add = { value = 1 subtract = market_access multiply = 5 max = 5 }
+
 	# Finished goods demand (inline)
 	market ?= { add = sul_commercial_finished_composite }
+
 	# Government
 	owner = {
-		if = {
-			limit = { government_type = government_type:republic }
-			add = 3
-		}
+		if = { limit = { government_type = government_type:republic } add = 3 }
 	}
+
 	# Diversity
 	add = owner.sul_commercial_diversity
 }
@@ -736,19 +783,11 @@ sul_cost_of_leaving = {
 	value = sul_current_attractiveness
 	multiply = 1.5
 	# Building levels (more buildings = more to lose)
-	add = {
-		value = total_building_levels
-		multiply = 0.25
-	}
+	add = { value = total_building_levels multiply = 0.25 }
+
 	# Rank inertia
-	if = {
-		limit = { modifier:sul_is_town_rank_tier = yes }
-		add = 5
-	}
-	else_if = {
-		limit = { modifier:sul_is_city_rank_tier = yes }
-		add = 10
-	}
+	if = { limit = { modifier:sul_is_town_rank_tier = yes } add = 5 }
+	else_if = { limit = { modifier:sul_is_city_rank_tier = yes } add = 10 }
 }
 
 # ── Best alternative attractiveness (location scope) ──
@@ -757,28 +796,54 @@ sul_cost_of_leaving = {
 sul_best_alternative = {
 	value = -1000
 	if = {
-		limit = { NOT = { sul_has_mining_specialization = yes } }
+		limit = {
+			NOT = {
+				sul_has_mining_specialization = yes
+			}
+		}
+
 		min = sul_attractiveness_mining
 	}
 	if = {
-		limit = { NOT = { sul_has_farming_specialization = yes } }
+		limit = {
+			NOT = {
+				sul_has_farming_specialization = yes
+			}
+		}
+
 		min = sul_attractiveness_farming
 	}
 	if = {
-		limit = { NOT = { sul_has_woodland_specialization = yes } }
+		limit = {
+			NOT = {
+				sul_has_woodland_specialization = yes
+			}
+		}
+
 		min = sul_attractiveness_woodland
 	}
 	if = {
-		limit = { NOT = { sul_has_gathering_specialization = yes } }
+		limit = {
+			NOT = {
+				sul_has_gathering_specialization = yes
+			}
+		}
+
 		min = sul_attractiveness_gathering
 	}
 	if = {
-		limit = { NOT = { sul_has_commercial_specialization = yes } }
+		limit = {
+			NOT = {
+				sul_has_commercial_specialization = yes
+			}
+		}
+
 		min = sul_attractiveness_commercial
 	}
 }
 
 # Net respec score: best alternative minus cost of staying. Positive = should switch.
+
 sul_respec_score = {
 	value = sul_best_alternative
 	subtract = sul_cost_of_leaving
@@ -786,7 +851,6 @@ sul_respec_score = {
 
 # Per-good price deviation: |price/base - 1| × base.
 # Goods scope; reads price via scope:current_market.
-
 
 # Used by GUI pie chart. Location scope.
 # Sums building levels by building category via iterator.
@@ -799,6 +863,7 @@ sul_extraction_building_levels = {
 				building_category = sul_local_rgo_category
 			}
 		}
+
 		add = building_level
 	}
 }
@@ -819,17 +884,20 @@ sul_other_building_levels = {
 
 sul_extraction_ratio = {
 	value = sul_extraction_building_levels
+
 	divide = { value = total_building_levels min = 1 }
 }
 
 sul_production_ratio = {
 	value = sul_production_building_levels
+
 	divide = { value = total_building_levels min = 1 }
 }
 
 # Development equilibrium estimate for map mode.
 # Spring: +0.50 base, -0.01 per dev point. 1 dev per 0.01 monthly_development.
 # Equilibrium: dev_eq = flat_monthly_dev / 0.01
+
 sul_development_equilibrium = {
 	# Equilibrium = dev level where total monthly_development = 0
 	# monthly_dev = local + global + (-0.01 * dev)
@@ -839,6 +907,7 @@ sul_development_equilibrium = {
 		limit = { exists = owner }
 		add = owner.modifier:global_monthly_development
 	}
+
 	divide = 0.01
 	add = development
 	min = 0
@@ -846,6 +915,7 @@ sul_development_equilibrium = {
 }
 
 # Normalized 0-1 factor for map mode color interpolation
+
 sul_development_factor = {
 	value = development
 	divide = 100
@@ -859,4 +929,3 @@ sul_development_equilibrium_factor = {
 # ─────────────────────────────────────────────────────────────────────────────
 # Development tradeoff tooltip values moved to sul_dev_tooltip_values.txt
 # Generated by tools/generate_dev_tooltip.py
-

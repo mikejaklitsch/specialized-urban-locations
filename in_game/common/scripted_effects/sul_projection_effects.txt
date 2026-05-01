@@ -1,4 +1,4 @@
-# Power Projection — monthly update.
+﻿# Power Projection — monthly update.
 # Reads monthly_sul_power_projection modifier accumulator, applies percentage
 # decay (base rate scaled by complacency), writes to var:sul_power_projection.
 
@@ -7,6 +7,7 @@
 sul_projection_monthly_update = {
 	set_variable = {
 		name = sul_power_projection
+
 		value = {
 			value = var:sul_power_projection
 
@@ -14,13 +15,7 @@ sul_projection_monthly_update = {
 			subtract = {
 				value = var:sul_power_projection
 				multiply = @sul_pp_base_decay
-				multiply = {
-					value = 1
-					add = {
-						value = complacency
-						multiply = 0.01
-					}
-				}
+				multiply = { value = 1 add = { value = complacency multiply = 0.01 } }
 			}
 
 			# Monthly contributions from all sources
@@ -34,7 +29,12 @@ sul_projection_monthly_update = {
 
 sul_projection_init_variable = {
 	if = {
-		limit = { NOT = { has_variable = sul_power_projection } }
+		limit = {
+			NOT = {
+				has_variable = sul_power_projection
+			}
+		}
+
 		set_variable = { name = sul_power_projection value = 0 }
 	}
 }

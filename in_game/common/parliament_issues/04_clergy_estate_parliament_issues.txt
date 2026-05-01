@@ -5,7 +5,7 @@ sponsor_a_confucian_academy = {
 
 	modifier_when_in_debate = {
 		research_speed_modifier = 0.05
-		monthly_towards_innovative = societal_value_huge_monthly_move #moves value by 3 over the duration
+		monthly_towards_innovative = societal_value_huge_monthly_move # moves value by 3 over the duration
 	}
 
 	allow = {
@@ -14,9 +14,13 @@ sponsor_a_confucian_academy = {
 			parliament_type = parliament_type:autocratic_parliament
 			parliament_type = parliament_type:constitutional_parliament
 		}
+
 		has_advance = confucian_academy_advance
+
 		any_owned_location = {
-			NOT = { has_building = building_type:confucian_academy }
+			NOT = {
+				has_building = building_type:confucian_academy
+			}
 			OR = {
 				modifier:sul_is_town_rank_tier = yes
 				modifier:sul_is_city_rank_tier = yes
@@ -26,76 +30,72 @@ sponsor_a_confucian_academy = {
 
 	chance = {
 		add = 1
+
 		add = {
-			if = {
-				limit = {
-					societal_value:traditionalist_vs_innovative > 30
-				}
-				value = 2
-			}
+			if = { limit = { societal_value:traditionalist_vs_innovative > 30 } value = 2 }
 		}
 		add = {
 			if = {
-				limit = {
-					total_effective_building_levels:confucian_academy < 1
-				}
+				limit = { total_effective_building_levels:confucian_academy < 1 }
 				value = 4
 			}
 		}
+
 		multiply = {
 			if = {
-				limit = {
-					societal_value:traditionalist_vs_innovative < 0
-				}
+				limit = { societal_value:traditionalist_vs_innovative < 0 }
 				value = 0.5
 			}
 			else = {
-				value = 1	#We need that else or otherwise the whole chance is multiplied with 0
+				value = 1	# We need that else or otherwise the whole chance is multiplied with 0
 			}
 		}
 	}
-	
+
 	on_debate_passed = {
 		ordered_owned_location = {
 			order_by = {
 				value = population
-				if = {
-					limit = { modifier:sul_is_city_rank_tier = yes  }
-					multiply = 5
-				}
+				if = { limit = { modifier:sul_is_city_rank_tier = yes } multiply = 5 }
 			}
+
 			max = 1
+
 			limit = {
-				NOT = { has_building = building_type:confucian_academy }
+				NOT = {
+					has_building = building_type:confucian_academy
+				}
 				OR = {
 					modifier:sul_is_town_rank_tier = yes
 					modifier:sul_is_city_rank_tier = yes
 				}
 			}
+
 			construct_building = {
 				building_type = building_type:confucian_academy
 				cost_multiplier = 0.5
 				cost_multiplier_reason = "game_concept_parliament_issue"
 			}
-			
 		}
 	}
-	on_debate_failed = {
-		parliament_debate_failed_effect = yes
-	}
+
+	on_debate_failed = { parliament_debate_failed_effect = yes }
 }
 
 sponsor_a_cathedral = {
 	estate = clergy_estate
 
 	modifier_when_in_debate = {
-		monthly_towards_spiritualist = societal_value_huge_monthly_move #moves value by 3 over the duration
+		monthly_towards_spiritualist = societal_value_huge_monthly_move # moves value by 3 over the duration
 	}
 
 	allow = {
 		has_advance = cathedral_advance
+
 		any_owned_location = {
-			NOT = { has_building = building_type:cathedral }
+			NOT = {
+				has_building = building_type:cathedral
+			}
 			OR = {
 				modifier:sul_is_town_rank_tier = yes
 				modifier:sul_is_city_rank_tier = yes
@@ -105,66 +105,52 @@ sponsor_a_cathedral = {
 
 	chance = {
 		add = 1
+
 		add = {
-			if = {
-				limit = {
-					societal_value:spiritualist_vs_humanist < -30
-				}
-				value = 2
-			}
+			if = { limit = { societal_value:spiritualist_vs_humanist < -30 } value = 2 }
 		}
-		
+
 		add = {
-			if = {
-				limit = {
-					total_effective_building_levels:cathedral < 1
-				}
-				value = 4
-			}
+			if = { limit = { total_effective_building_levels:cathedral < 1 } value = 4 }
 		}
+
 		multiply = {
-			if = {
-				limit = {
-					societal_value:spiritualist_vs_humanist > 30
-				}
-				value = 0.5
-			}
+			if = { limit = { societal_value:spiritualist_vs_humanist > 30 } value = 0.5 }
 			else = {
-				value = 1	#We need that else or otherwise the whole chance is multiplied with 0
+				value = 1	# We need that else or otherwise the whole chance is multiplied with 0
 			}
 		}
 	}
-	
+
 	on_debate_passed = {
 		ordered_owned_location = {
 			order_by = {
 				value = population
-				if = {
-					limit = { modifier:sul_is_city_rank_tier = yes  }
-					multiply = 5
-				}
+				if = { limit = { modifier:sul_is_city_rank_tier = yes } multiply = 5 }
 			}
+
 			max = 1
+
 			limit = {
-				NOT = { has_building = building_type:cathedral }
+				NOT = {
+					has_building = building_type:cathedral
+				}
 				OR = {
 					modifier:sul_is_town_rank_tier = yes
 					modifier:sul_is_city_rank_tier = yes
 				}
 			}
+
 			construct_building = {
 				building_type = building_type:cathedral
 				cost_multiplier = 0.5
 				cost_multiplier_reason = "game_concept_parliament_issue"
 			}
-			
 		}
 	}
-	on_debate_failed = {
-		parliament_debate_failed_effect = yes
-	}
-}
 
+	on_debate_failed = { parliament_debate_failed_effect = yes }
+}
 
 expand_forestry_operations = {
 	estate = clergy_estate
@@ -176,59 +162,48 @@ expand_forestry_operations = {
 
 	allow = {
 		any_owned_location = {
-			raw_material = {
-				goods_method = forestry
-			}
+			raw_material = { goods_method = forestry }
 			is_full_expanded_rgo = no
 		}
 	}
 
 	chance = {
 		add = 1
+
 		add = {
 			if = {
-				limit = {
-					societal_value:capital_economy_vs_traditional_economy > 30
-				}
+				limit = { societal_value:capital_economy_vs_traditional_economy > 30 }
 				value = 2
 			}
 		}
+
 		multiply = {
 			if = {
-				limit = {
-					societal_value:capital_economy_vs_traditional_economy < -60
-				}
+				limit = { societal_value:capital_economy_vs_traditional_economy < -60 }
 				value = 0.5
 			}
 			else = {
-				value = 1	#We need that else or otherwise the whole chance is multiplied with 0
+				value = 1	# We need that else or otherwise the whole chance is multiplied with 0
 			}
 		}
 	}
-	
+
 	on_debate_passed = {
 		ordered_owned_location = {
 			limit = {
-                raw_material = {
-                    goods_method = forestry
-                }
+				raw_material = { goods_method = forestry }
 				is_full_expanded_rgo = no
 			}
+
 			order_by = population
-			max = {
-				value = num_provinces
-				multiply = 0.05
-				add = 1
-			}
+			max = { value = num_provinces multiply = 0.05 add = 1 }
 			check_range_bounds = no
 			change_max_raw_material_workers = 1
 			change_prosperity = prosperity_mild_bonus
 		}
 	}
 
-	on_debate_failed = {
-		parliament_debate_failed_effect = yes
-	}
+	on_debate_failed = { parliament_debate_failed_effect = yes }
 }
 
 support_clergy_cabinet = {
@@ -248,10 +223,7 @@ support_clergy_cabinet = {
 			parliament_type = parliament_type:autocratic_parliament
 			parliament_type = parliament_type:constitutional_parliament
 		}
-		any_character = {
-			in_cabinet = yes
-			has_estate = estate_type:clergy_estate
-		}
+		any_character = { in_cabinet = yes has_estate = estate_type:clergy_estate }
 		NOR = {
 			current_age = age_4_reformation
 			current_age = age_5_absolutism
@@ -261,44 +233,34 @@ support_clergy_cabinet = {
 
 	chance = {
 		add = 1
+
 		add = {
-			if = {
-				limit = {
-					has_advance = government_size_renaissance
-				}
-				value = 2
-			}
+			if = { limit = { has_advance = government_size_renaissance } value = 2 }
 		}
+
 		multiply = {
-			if = {
-				limit = {
-					societal_value:spiritualist_vs_humanist > 0
-				}
-				value = 0.5
-			}
+			if = { limit = { societal_value:spiritualist_vs_humanist > 0 } value = 0.5 }
 			else = {
-				value = 1	#We need that else or otherwise the whole chance is multiplied with 0
+				value = 1	# We need that else or otherwise the whole chance is multiplied with 0
 			}
 		}
 	}
-	
+
 	on_debate_passed = {
 		random_cabinet_character = {
-			limit = {
-				has_estate = estate_type:clergy_estate
-			}
+			limit = { has_estate = estate_type:clergy_estate }
 			add_adm = 5
 			add_dip = 5
 			add_mil = 5
 		}
+
 		change_societal_value = {
 			type = spiritualist_vs_humanist
 			value = societal_value_move_to_left
 		}
 	}
-	on_debate_failed = {
-		parliament_debate_failed_effect = yes
-	}
+
+	on_debate_failed = { parliament_debate_failed_effect = yes }
 }
 
 promote_state_religion = {
@@ -315,57 +277,44 @@ promote_state_religion = {
 
 	chance = {
 		add = 1
+
 		add = {
-			if = {
-				limit = {
-					religious_unity <= 0.5
-				}
-				value = 2
-			}
+			if = { limit = { religious_unity <= 0.5 } value = 2 }
 		}
+
 		multiply = {
-			if = {
-				limit = {
-					religious_unity >= 0.8
-				}
-				value = 0.5
-			}
+			if = { limit = { religious_unity >= 0.8 } value = 0.5 }
 			else = {
-				value = 1	#We need that else or otherwise the whole chance is multiplied with 0
+				value = 1	# We need that else or otherwise the whole chance is multiplied with 0
 			}
 		}
-		
 	}
-	
+
 	on_debate_passed = {
 		add_country_modifier = {
 			modifier = missionary_zeal
 			years = 10
 			mode = add_and_extend
 		}
+
 		ordered_pop = {
 			limit = {
 				religion != root.religion
 				NOT = {
 					pop_type = pop_type:slaves
 				}
+
 				is_not_protected_from_conversion = yes
 			}
-			order_by = {
-				value = pop_size
-				multiply = location.proximity
-			}
+
+			order_by = { value = pop_size multiply = location.proximity }
 			max = 1
 			check_range_bounds = no
-			split_pop = {
-				fraction = { 0.1 0.3 }
-				religion = root.religion
-			}
+			split_pop = { fraction = { 0.1 0.3 } religion = root.religion }
 		}
 	}
-	on_debate_failed = {
-		parliament_debate_failed_effect = yes
-	}
+
+	on_debate_failed = { parliament_debate_failed_effect = yes }
 }
 
 expand_diplomatic_corps_religion = {
@@ -381,26 +330,32 @@ expand_diplomatic_corps_religion = {
 			current_age = age_4_reformation
 			current_age = age_5_absolutism
 		}
-        root.religion = {
-            any_country_in_religion = {
-                NOT = { has_target_casus_belli_on_us = ROOT }
-                NOT = { is_subject_of = ROOT }
-                NOT = { is_rival_of = ROOT }
-                NOT = { is_enemy_of = ROOT }
-				NOT = { this = ROOT }
-            }
-        }
+		root.religion = {
+			any_country_in_religion = {
+				NOT = {
+					has_target_casus_belli_on_us = root
+				}
+				NOT = {
+					is_subject_of = root
+				}
+				NOT = {
+					is_rival_of = root
+				}
+				NOT = {
+					is_enemy_of = root
+				}
+				NOT = {
+					this = root
+				}
+			}
+		}
 	}
 
 	chance = {
 		add = 1
+
 		add = {
-			if = {
-				limit = {
-					num_of_diplomats <= 2
-				}
-				value = 2
-			}
+			if = { limit = { num_of_diplomats <= 2 } value = 2 }
 		}
 		add = {
 			if = {
@@ -410,65 +365,52 @@ expand_diplomatic_corps_religion = {
 				}
 			}
 		}
+
 		multiply = {
-			if = {
-				limit = {
-					num_of_diplomats >= 3
-				}
-				value = 0.5
-			}
+			if = { limit = { num_of_diplomats >= 3 } value = 0.5 }
 			else = {
-				value = 1	#We need that else or otherwise the whole chance is multiplied with 0
+				value = 1	# We need that else or otherwise the whole chance is multiplied with 0
 			}
 		}
 	}
 
 	on_debate_passed = {
 		add_diplomats = 5
-        root.religion = {
-            ordered_country_in_religion = {
-                limit = {
-                    NOT = {
-                        has_target_casus_belli_on_us = ROOT
-                    }
-                    NOT = {
-                        is_subject_of = ROOT
-                    }
-                    NOT = {
-                        is_rival_of = ROOT
-                    }
-                    NOT = {
-                        is_enemy_of = ROOT
-                    }
-					NOT = { this = ROOT }
-                }
-                max = 3
-                check_range_bounds = no
-                order_by = {
-                    value = expected_army_size
-                    multiply = 1
-                }
-                add_opinion = {
-                    target =  ROOT
-                    modifier = careful_diplomatic_manouvering
-                }
-            }
-        }
+
+		root.religion = {
+			ordered_country_in_religion = {
+				limit = {
+					NOT = {
+						has_target_casus_belli_on_us = root
+					}
+					NOT = {
+						is_subject_of = root
+					}
+					NOT = {
+						is_rival_of = root
+					}
+					NOT = {
+						is_enemy_of = root
+					}
+					NOT = {
+						this = root
+					}
+				}
+
+				max = 3
+				check_range_bounds = no
+				order_by = { value = expected_army_size multiply = 1 }
+				add_opinion = { target = root modifier = careful_diplomatic_manouvering }
+			}
+		}
 	}
-	
-	on_debate_failed = {
-		parliament_debate_failed_effect = yes
-	}
+
+	on_debate_failed = { parliament_debate_failed_effect = yes }
 
 	wants_this_parliament_issue_bias = {
 		if = {
-			limit = { 
-				has_reform = government_reform:anatolian_beylik
-			}
-			add = {
-				desc = "Aggressive anatolians"
-				value = -1000
-			}
+			limit = { has_reform = government_reform:anatolian_beylik }
+			add = { desc = "Aggressive anatolians" value = -1000 }
 		}
 	}
 }
@@ -486,27 +428,24 @@ promote_clergy_member = {
 
 	chance = {
 		add = 1
+
 		add = {
 			if = {
-				limit = {
-					has_estate_privilege = estate_privilege:clergy_in_administration
-				}
+				limit = { has_estate_privilege = estate_privilege:clergy_in_administration }
 				value = 2
 			}
 		}
 		add = {
 			if = {
-				limit = {
-					has_estate_privilege = estate_privilege:clergy_religious_state
-				}
+				limit = { has_estate_privilege = estate_privilege:clergy_religious_state }
 				value = 2
 			}
 		}
-		
 	}
-	
+
 	on_debate_passed = {
 		custom_tooltip = promote_clergy_member_passed.tt
+
 		hidden_effect = {
 			create_character = {
 				estate = estate_type:clergy_estate
@@ -515,12 +454,9 @@ promote_clergy_member = {
 				mil = { 10 50 }
 			}
 		}
-		
 	}
 
-	on_debate_failed = {
-		parliament_debate_failed_effect = yes
-	}
+	on_debate_failed = { parliament_debate_failed_effect = yes }
 }
 
 support_religious_art = {
@@ -528,7 +464,7 @@ support_religious_art = {
 
 	modifier_when_in_debate = {
 		cultural_tradition_modifier = 0.33
-		monthly_towards_spiritualist = societal_value_huge_monthly_move #moves value by 3 over the duration
+		monthly_towards_spiritualist = societal_value_huge_monthly_move # moves value by 3 over the duration
 	}
 
 	allow = {
@@ -540,27 +476,19 @@ support_religious_art = {
 
 	chance = {
 		add = 1
+
 		add = {
-			if = {
-				limit = {
-					has_advance = patron_of_art
-				}
-				value = 2
-			}
+			if = { limit = { has_advance = patron_of_art } value = 2 }
 		}
+
 		multiply = {
-			if = {
-				limit = {
-					societal_value:spiritualist_vs_humanist > 0
-				}
-				value = 0.5
-			}
+			if = { limit = { societal_value:spiritualist_vs_humanist > 0 } value = 0.5 }
 			else = {
-				value = 1	#We need that else or otherwise the whole chance is multiplied with 0
+				value = 1	# We need that else or otherwise the whole chance is multiplied with 0
 			}
 		}
 	}
-	
+
 	on_debate_passed = {
 		random_list = {
 			1 = {
@@ -585,15 +513,14 @@ support_religious_art = {
 				}
 			}
 		}
-		
+
 		change_societal_value = {
 			type = spiritualist_vs_humanist
 			value = societal_value_move_to_left
 		}
 	}
-	on_debate_failed = {
-		parliament_debate_failed_effect = yes
-	}
+
+	on_debate_failed = { parliament_debate_failed_effect = yes }
 }
 
 support_religious_education = {
@@ -601,7 +528,7 @@ support_religious_education = {
 
 	modifier_when_in_debate = {
 		global_monthly_literacy = 0.05
-		monthly_towards_innovative = societal_value_huge_monthly_move #moves value by 3 over the duration
+		monthly_towards_innovative = societal_value_huge_monthly_move # moves value by 3 over the duration
 	}
 
 	allow = {
@@ -612,27 +539,20 @@ support_religious_education = {
 			parliament_type = parliament_type:plc_parliament
 			parliament_type = parliament_type:autocratic_parliament
 		}
+
 		government_type = government_type:theocracy
 	}
 
 	chance = {
 		add = 1
+
 		add = {
-			if = {
-				limit = {
-					has_advance = educated_bureaucrats
-				}
-				value = 2
-			}
+			if = { limit = { has_advance = educated_bureaucrats } value = 2 }
 		}
 		add = {
-			if = {
-				limit = {
-					has_policy = pursuit_of_knowledge_policy
-				}
-				value = 2
-			}
+			if = { limit = { has_policy = pursuit_of_knowledge_policy } value = 2 }
 		}
+
 		multiply = {
 			if = {
 				limit = {
@@ -643,17 +563,19 @@ support_religious_education = {
 						}
 					}
 				}
+
 				value = 0.5
 			}
 			else = {
-				value = 1	#We need that else or otherwise the whole chance is multiplied with 0
+				value = 1	# We need that else or otherwise the whole chance is multiplied with 0
 			}
 		}
 	}
-	
+
 	on_debate_passed = {
 		add_research_progress = research_progress_mild_bonus
 		custom_tooltip = support_religious_education_passed.tt
+
 		hidden_effect = {
 			every_pop = {
 				limit = {
@@ -664,65 +586,58 @@ support_religious_education = {
 						pop_type = pop_type:peasants
 					}
 				}
+
 				add_pop_satisfaction = pop_satisfaction_mild_bonus
 			}
 		}
 	}
-	on_debate_failed = {
-		parliament_debate_failed_effect = yes
-	}
+
+	on_debate_failed = { parliament_debate_failed_effect = yes }
 }
 
 improve_relations_with_the_faith = {
 	estate = clergy_estate
 
-	modifier_when_in_debate = {
-		monthly_diplomats = 0.2
-	}
+	modifier_when_in_debate = { monthly_diplomats = 0.2 }
 
 	allow = {
-		root.religion = {
-			has_religious_influence = yes
-		}
+		root.religion = { has_religious_influence = yes }
 		OR = {
 			current_age = age_1_traditions
 			current_age = age_2_renaissance
 			current_age = age_3_discovery
 			current_age = age_4_reformation
 		}
-
 	}
 
 	chance = {
 		add = 1
+
 		add = {
 			if = {
 				limit = {
-					situation:western_schism = {
-						situation_is_active = yes
-					}
+					situation:western_schism = { situation_is_active = yes }
 					religion = religion:catholic
 				}
+
 				value = 2
 			}
 		}
 		add = {
 			if = {
 				limit = {
-					situation:reformation = {
-						situation_is_active = yes
-					}
+					situation:reformation = { situation_is_active = yes }
 					religion.group = religion_group:christian
 				}
+
 				value = 2
 			}
 		}
 	}
-	
+
 	on_debate_passed = {
 		add_religious_influence = religious_influence_extreme_bonus
 	}
-	on_debate_failed = {
-		parliament_debate_failed_effect = yes
-	}
+
+	on_debate_failed = { parliament_debate_failed_effect = yes }
 }

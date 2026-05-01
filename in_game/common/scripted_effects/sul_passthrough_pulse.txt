@@ -23,14 +23,23 @@ sul_passthrough_apply = {
 		limit = {
 			has_global_variable = sul_market_demand_cached
 			has_global_variable = sul_cache_month
-			NOT = { global_var:sul_cache_month = current_month }
+			NOT = {
+				global_var:sul_cache_month = current_month
+			}
 		}
+
 		remove_global_variable = sul_market_demand_cached
 	}
 	set_global_variable = { name = sul_cache_month value = current_month }
+
 	set_local_variable = { name = sul_pt_rebuild_cache value = 0 }
 	if = {
-		limit = { NOT = { has_global_variable = sul_market_demand_cached } }
+		limit = {
+			NOT = {
+				has_global_variable = sul_market_demand_cached
+			}
+		}
+
 		set_local_variable = { name = sul_pt_rebuild_cache value = 1 }
 	}
 
@@ -62,13 +71,16 @@ sul_passthrough_apply = {
 		location = {
 			if = {
 				limit = { has_variable_list = sul_pt_active }
+
 				every_in_list = {
 					variable = sul_pt_active
+
 					scope:current_market = {
 						remove_temporary_demand = "global_variable_map(sul_pt_stockpile_demands|prev)"
 						remove_temporary_demand = "global_variable_map(sul_pt_oversupply_demands|prev)"
 					}
 				}
+
 				clear_variable_list = sul_pt_active
 			}
 		}
@@ -80,12 +92,19 @@ sul_passthrough_apply = {
 		}
 
 		every_goods = {
-			limit = { is_key_in_global_variable_map = { name = sul_pt_stockpile_demands target = this } }
+			limit = {
+				is_key_in_global_variable_map = {
+					name = sul_pt_stockpile_demands
+					target = this
+				}
+			}
+
 			save_scope_as = current_good
 
 			scope:current_market = {
 				set_local_variable = {
 					name = sul_pt_fill
+
 					value = {
 						value = "stockpile_in_market(scope:current_good)"
 						divide = local_var:sul_pt_cap
@@ -101,11 +120,16 @@ sul_passthrough_apply = {
 						months = 1
 					}
 
-					location = { add_to_variable_list = { name = sul_pt_active target = scope:current_good } }
+					location = {
+						add_to_variable_list = { name = sul_pt_active target = scope:current_good }
+					}
 
 					if = {
 						limit = {
-							location = { has_building = "global_variable_map(sul_pt_warehouses|scope:current_good)" }
+							location = {
+								has_building = "global_variable_map(sul_pt_warehouses|scope:current_good)"
+							}
+
 							goods_supply_in_market = { goods = scope:current_good value < 1 }
 						}
 
@@ -122,8 +146,13 @@ sul_passthrough_apply = {
 						local_var:sul_pt_fill < 0.049
 						OR = {
 							scope:current_good = { is_demanded_in_market_by_pops = scope:current_market }
-							scope:current_good = { is_demanded_in_market_by_buildings = scope:current_market }
-							scope:current_good = { is_demanded_in_market_by_constructions = scope:current_market }
+							scope:current_good = {
+								is_demanded_in_market_by_buildings = scope:current_market
+							}
+							scope:current_good = {
+								is_demanded_in_market_by_constructions = scope:current_market
+							}
+
 							scope:current_good = goods:goods_gold
 							scope:current_good = goods:silver
 							scope:current_good = goods:copper
@@ -143,7 +172,9 @@ sul_passthrough_apply = {
 						amount = sul_passthrough_low_stockpile_effect
 					}
 
-					location = { add_to_variable_list = { name = sul_pt_active target = scope:current_good } }
+					location = {
+						add_to_variable_list = { name = sul_pt_active target = scope:current_good }
+					}
 				}
 			}
 		}

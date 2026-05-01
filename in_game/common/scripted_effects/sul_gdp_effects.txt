@@ -1,4 +1,4 @@
-# GDP yearly computation — country scope.
+﻿# GDP yearly computation — country scope.
 #
 # Gross output per location = sum of (goods_output × market_price) for each
 # good tracked in the sul_local_goods variable map. Building hooks maintain
@@ -12,6 +12,7 @@
 
 sul_gdp_compute_location = {
 	save_scope_as = sul_gdp_loc
+
 	set_variable = { name = sul_local_gdp_output value = 0 }
 
 	if = {
@@ -24,6 +25,7 @@ sul_gdp_compute_location = {
 			scope:sul_gdp_loc = {
 				change_variable = {
 					name = sul_local_gdp_output
+
 					add = {
 						value = "goods_output(scope:sul_gdp_good)"
 						multiply = "scope:sul_gdp_good.price_in_market(scope:sul_gdp_loc.market)"
@@ -46,7 +48,10 @@ sul_gdp_yearly_update = {
 		sul_gdp_compute_location = yes
 
 		owner ?= {
-			change_variable = { name = sul_national_gdp add = prev.var:sul_local_gdp_output }
+			change_variable = {
+				name = sul_national_gdp
+				add = prev.var:sul_local_gdp_output
+			}
 		}
 	}
 
@@ -58,22 +63,11 @@ sul_gdp_yearly_update = {
 	every_owned_location = {
 		set_variable = {
 			name = sul_asset_share
+
 			value = {
 				value = var:sul_local_gdp_output
 				divide = owner.var:sul_national_gdp
 			}
-		}
-	}
-
-	# --- DEBUG: GDP summary ---
-	if = {
-		limit = { OR = { tag = ENG tag = FRA tag = VEN } }
-		set_local_variable = { name = d_natgdp value = var:sul_national_gdp }
-		error_log = "::SUL_GDP::[GetCurrentYear]:[SCOPE.GetTag]:natGDP=[SCOPE.GetLocalVariable('d_natgdp').GetValue]"
-		capital = {
-			set_local_variable = { name = d_locgdp value = var:sul_local_gdp_output }
-			set_local_variable = { name = d_asset value = var:sul_asset_share }
-			error_log = "::SUL_GDP_CAP::[GetCurrentYear]:locGDP=[SCOPE.GetLocalVariable('d_locgdp').GetValue]:asset=[SCOPE.GetLocalVariable('d_asset').GetValue]"
 		}
 	}
 }
@@ -84,16 +78,8 @@ sul_gdp_yearly_update = {
 
 sul_gdp_init = {
 	every_owned_location = {
-		every_buildings_in_location = {
-			sul_gdp_init_building = yes
-		}
+		every_buildings_in_location = { sul_gdp_init_building = yes }
 	}
-	sul_gdp_yearly_update = yes
 
-	# --- DEBUG: init confirmation ---
-	if = {
-		limit = { OR = { tag = ENG tag = FRA tag = VEN } }
-		set_local_variable = { name = d_natgdp value = var:sul_national_gdp }
-		error_log = "::SUL_GDP_INIT::[GetCurrentYear]:[SCOPE.GetTag]:natGDP=[SCOPE.GetLocalVariable('d_natgdp').GetValue]"
-	}
+	sul_gdp_yearly_update = yes
 }

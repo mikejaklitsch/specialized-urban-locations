@@ -16,6 +16,7 @@ sul_ai_respecialize = {
 	}
 
 	price = price:sul_respec_price
+
 	price_modifier = {
 		add = scope:actor.modifier:global_build_buildings_cost
 		if = {
@@ -32,9 +33,11 @@ sul_ai_respecialize = {
 			}
 		}
 	}
+
 	should_execute_price = no
 
 	ai_tick = monthly
+
 	ai_tick_frequency = {
 		value = 120
 		divide = { value = num_locations divide = 50 min = 1 }
@@ -54,10 +57,7 @@ sul_ai_respecialize = {
 		if = {
 			limit = { exists = scope:target }
 
-			add = {
-				desc = "respec_score"
-				value = scope:target.sul_respec_score
-			}
+			add = { desc = "respec_score" value = scope:target.sul_respec_score }
 		}
 	}
 
@@ -70,11 +70,18 @@ sul_ai_respecialize = {
 		visible = {
 			exists = owner
 			owner = scope:actor
-			OR = { modifier:sul_is_rural_settlement_rank_tier = yes modifier:sul_is_town_rank_tier = yes modifier:sul_is_city_rank_tier = yes }
+			OR = {
+				modifier:sul_is_rural_settlement_rank_tier = yes
+				modifier:sul_is_town_rank_tier = yes
+				modifier:sul_is_city_rank_tier = yes
+			}
 		}
 
 		enabled = {
-			NOT = { has_location_modifier = sul_recently_respecialized }
+			NOT = {
+				has_location_modifier = sul_recently_respecialized
+			}
+
 			controller = owner
 			market_access >= 0.3
 			local_control >= 0.3
@@ -85,12 +92,14 @@ sul_ai_respecialize = {
 			multiply = 100
 			subtract = location_tax_base
 		}
+
 		pre_evaluation_number_to_evaluate_fully = 15
 	}
 
 	effect = {
 		if = {
 			limit = { exists = scope:target }
+
 			scope:target = {
 				# Tournament: find best eligible non-current spec
 				set_local_variable = { name = best value = -1000 }
@@ -99,9 +108,13 @@ sul_ai_respecialize = {
 				# Mining
 				if = {
 					limit = {
-						NOT = { sul_has_mining_specialization = yes }
+						NOT = {
+							sul_has_mining_specialization = yes
+						}
+
 						sul_can_specialize_mining = yes
 					}
+
 					set_local_variable = { name = score value = sul_attractiveness_mining }
 					if = {
 						limit = { local_var:score > local_var:best }
@@ -113,9 +126,13 @@ sul_ai_respecialize = {
 				# Farming
 				if = {
 					limit = {
-						NOT = { sul_has_farming_specialization = yes }
+						NOT = {
+							sul_has_farming_specialization = yes
+						}
+
 						sul_can_specialize_farming = yes
 					}
+
 					set_local_variable = { name = score value = sul_attractiveness_farming }
 					if = {
 						limit = { local_var:score > local_var:best }
@@ -127,9 +144,13 @@ sul_ai_respecialize = {
 				# Woodland
 				if = {
 					limit = {
-						NOT = { sul_has_woodland_specialization = yes }
+						NOT = {
+							sul_has_woodland_specialization = yes
+						}
+
 						sul_can_specialize_woodland = yes
 					}
+
 					set_local_variable = { name = score value = sul_attractiveness_woodland }
 					if = {
 						limit = { local_var:score > local_var:best }
@@ -141,9 +162,13 @@ sul_ai_respecialize = {
 				# Gathering
 				if = {
 					limit = {
-						NOT = { sul_has_gathering_specialization = yes }
+						NOT = {
+							sul_has_gathering_specialization = yes
+						}
+
 						sul_can_specialize_gathering = yes
 					}
+
 					set_local_variable = { name = score value = sul_attractiveness_gathering }
 					if = {
 						limit = { local_var:score > local_var:best }
@@ -155,8 +180,11 @@ sul_ai_respecialize = {
 				# Commercial
 				if = {
 					limit = {
-						NOT = { sul_has_commercial_specialization = yes }
+						NOT = {
+							sul_has_commercial_specialization = yes
+						}
 					}
+
 					set_local_variable = { name = score value = sul_attractiveness_commercial }
 					if = {
 						limit = { local_var:score > local_var:best }

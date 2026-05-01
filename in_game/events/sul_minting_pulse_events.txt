@@ -1,6 +1,8 @@
-﻿namespace = sul_minting_pulse
+﻿
+namespace = sul_minting_pulse
 
 # Minting monthly (uses price_in_market() directly, no shared cache)
+
 sul_minting_pulse.0 = {
 	type = country_event
 	hidden = yes
@@ -10,7 +12,12 @@ sul_minting_pulse.0 = {
 
 	immediate = {
 		if = {
-			limit = { NOT = { has_variable = sul_minting_debasement_level } }
+			limit = {
+				NOT = {
+					has_variable = sul_minting_debasement_level
+				}
+			}
+
 			sul_minting_initialize_country = yes
 			set_variable = { name = sul_minting_first_month_tick value = yes days = 35 }
 		}
@@ -22,6 +29,7 @@ sul_minting_pulse.0 = {
 					has_variable = sul_minting_first_month_tick
 				}
 			}
+
 			sul_minting_update_price_cache = yes
 		}
 
@@ -31,6 +39,7 @@ sul_minting_pulse.0 = {
 				var:sul_minting_rebasement_level > 0
 				inflation = 0
 			}
+
 			set_variable = { name = sul_minting_rebasement_level value = 0 }
 		}
 
@@ -39,6 +48,7 @@ sul_minting_pulse.0 = {
 
 			if = {
 				limit = { has_variable = sul_minting_first_month_tick }
+
 				add_country_modifier = {
 					modifier = sul_minting_ai_minting
 					days = -1
@@ -60,11 +70,13 @@ sul_minting_pulse.0 = {
 					var:sul_minting_rebasement_level > 0
 					inflation > 0
 				}
+
 				add_country_modifier = {
 					modifier = sul_minting_ai_rebasement
 					days = -1
 					mode = replace
 				}
+
 				change_country_modifier_size = {
 					modifier = sul_minting_ai_rebasement
 					value = sul_minting_ai_rebasement_size
@@ -76,6 +88,7 @@ sul_minting_pulse.0 = {
 }
 
 # Minting yearly: AI price cache refresh
+
 sul_minting_pulse.1 = {
 	type = country_event
 	hidden = yes

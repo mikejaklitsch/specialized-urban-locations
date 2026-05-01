@@ -86,10 +86,10 @@ sul_read_tier_exotic = {
 #   CROSSOVER_WPP — WPP where constant and growth tiers each get 50%
 #
 # @macros derived: w_tier = share × crossover (constant) or share (growth)
-#                  A = crossover, B = 1
+#                  intercept = crossover, slope = 1
 
-@sul_denom_A = 1.0
-@sul_denom_B = 1.0
+@sul_demand_intercept = 1.0
+@sul_demand_slope = 1.0
 
 @sul_w_necessity = 0.55
 @sul_w_basic = 0.30
@@ -97,7 +97,7 @@ sul_read_tier_exotic = {
 @sul_w_upper = 0.21
 @sul_w_luxury = 0.16
 @sul_w_exotic = 0.10
-@sul_w_enrichment = 0.53
+@sul_enrichment_weight = 0.53
 
 sul_read_demand_base = {
 	value = 0
@@ -159,8 +159,9 @@ sul_demand_exotic = {
 # Enrichment: savings tier. Grows with WPP² like other growth tiers but
 # flows to estates as gold income rather than generating goods demand.
 # ~50% of budget at WPP=15, near zero at low WPP.
+
 sul_demand_enrichment = {
 	value = sul_read_demand_base
 	multiply = sul_read_wpp
-	multiply = @sul_w_enrichment
+	multiply = @sul_enrichment_weight
 }

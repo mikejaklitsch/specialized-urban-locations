@@ -1,3 +1,4 @@
+﻿
 template BuildingType_tooltip {
 	ContextualTooltipType = {
 		tooltipmeta = {
@@ -12,25 +13,19 @@ template BuildingType_tooltip {
 			}
 		}
 
-		blockoverride "title_text" {
-			block "building_type_tooltip_title" {
-				text = "[BuildingType.GetNameWithNoTooltip]"
-			}
-		}
+		blockoverride "title_text" { block "building_type_tooltip_title" { text = "[BuildingType.GetNameWithNoTooltip]" } }
 
 		blockoverride "concept_link" {
 			text = "[building_type|e] | [BuildingType.GetCategory.GetName]"
 		}
 
 		blockoverride "title_button" {
-			icon =  {
+			icon = {
 				using = tooltip_title_icon_size
 				texture = "[GetAgeIcon(BuildingType.GetAge)]"
 				# size = { 32 32 }
 				datacontext = "[BuildingType.GetAge]"
-				tooltipwidget = {
-					using = Age_tooltip
-				}
+				tooltipwidget = { using = Age_tooltip }
 			}
 		}
 
@@ -39,16 +34,17 @@ template BuildingType_tooltip {
 
 			TooltipStatsBar = {
 				datacontext = "[BuildingType]"
+
 				blockoverride "items" {
 					TooltipStatBarIconTextItem = { # EMPLOYMENT
 						visible = yes
+
 						blockoverride "item_icon" {
 							size = { 31 31 }
 							texture = "[GetGraphicalCultureTextureForPopType(BuildingType.GetPopType)]"
 						}
-						blockoverride "item_text" {
-							text = "[BuildingType.GetEmploymentSize]"
-						}
+						blockoverride "item_text" { text = "[BuildingType.GetEmploymentSize]" }
+
 						tooltipwidget = {
 							SimpleContextualTooltipType = {
 								blockoverride "title_icon" {
@@ -57,9 +53,7 @@ template BuildingType_tooltip {
 										texture = "[GetGraphicalCultureTextureForPopType(BuildingType.GetPopType)]"
 									}
 								}
-								blockoverride "concept_link" {
-									text = "[employed|e]"
-								}
+								blockoverride "concept_link" { text = "[employed|e]" }
 
 								textcontext = "BUILDING_TYPE_EMPLOYMENT"
 							}
@@ -68,24 +62,26 @@ template BuildingType_tooltip {
 
 					TooltipStatBarItem = { # CATEGORY
 						visible = yes
+
 						blockoverride "item_content" {
 							icon = {
-								size = {22 31}
+								size = { 22 31 }
 								texture = "[GetBuildingCategoryIcon(BuildingType.GetCategory)]"
 							}
 						}
+
 						datacontext = "[BuildingType.GetCategory]"
-						tooltipwidget = {
-							using = BuildingCategory_tooltip
-						}
+						tooltipwidget = { using = BuildingCategory_tooltip }
 					}
 
 					TooltipStatBarItem = { # SPECIAL BUILDING
 						visible = "[BuildingType.IsSpecialBuilding]"
+
 						blockoverride "item_content" {
 							icon = {
 								size = { 30 30 }
 								texture = "gfx/interface/icons/buildings/_default.dds"
+
 								icon = {
 									position = { -2 0 }
 									size = { 35 35 }
@@ -98,6 +94,7 @@ template BuildingType_tooltip {
 											icon = {
 												size = { 37 37 }
 												texture = "gfx/interface/icons/buildings/_default.dds"
+
 												icon = {
 													using = tooltip_title_icon_size
 													position = { -2 0 }
@@ -106,15 +103,9 @@ template BuildingType_tooltip {
 											}
 										}
 
-										blockoverride "title_text" {
-											text = "SPECIAL_BUILDING"
-										}
+										blockoverride "title_text" { text = "SPECIAL_BUILDING" }
 										blockoverride "tooltip_content" {
-											TooltipTextBlock = {
-												blockoverride "text" {
-													text = "SPECIAL_BUILDING_DESC"
-												}
-											}
+											TooltipTextBlock = { blockoverride "text" { text = "SPECIAL_BUILDING_DESC" } }
 										}
 									}
 								}
@@ -141,6 +132,7 @@ template BuildingType_tooltip {
 										texture = "gfx/interface/icons/bluearrow.dds"
 									}
 								}
+
 								textcontext = "BUILDING_TYPE_MULTI_LEVEL"
 							}
 						}
@@ -148,6 +140,7 @@ template BuildingType_tooltip {
 
 					TooltipStatBarItem = { # ADVANCE
 						visible = "[BuildingType.NeedsAdvance]"
+
 						blockoverride "item_content" {
 							hbox = {
 								datamodel = "[BuildingType.GetUnlocks]"
@@ -156,9 +149,8 @@ template BuildingType_tooltip {
 									widget = {
 										size = { 31 31 }
 										using = background_advance
-										tooltipwidget = {
-											using = AdvanceDefinition_tooltip
-										}
+										tooltipwidget = { using = AdvanceDefinition_tooltip }
+
 										icon = {
 											parentanchor = center
 											size = { 31 31 }
@@ -172,10 +164,12 @@ template BuildingType_tooltip {
 
 					TooltipStatBarItem = { # ESTATE BUILDING
 						visible = "[BuildingType.OnlyEstatesCanBuild]"
+
 						blockoverride "item_content" {
 							size = { 31 31 }
 							texture = "[GetEstateIcon(BuildingType.GetEligibleEstate)]"
 						}
+
 						tooltipwidget = {
 							SimpleContextualTooltipType = {
 								blockoverride "title_icon" {
@@ -184,9 +178,7 @@ template BuildingType_tooltip {
 										texture = "[GetEstateIcon(BuildingType.GetEligibleEstate)]"
 									}
 								}
-								blockoverride "concept_link" {
-									text = "[estate|e]"
-								}
+								blockoverride "concept_link" { text = "[estate|e]" }
 
 								textcontext = "BUILDING_TYPE_ONLY_ESTATE"
 							}
@@ -199,18 +191,16 @@ template BuildingType_tooltip {
 				blockoverride "icon" {
 					tooltipwidget = {
 						SimpleContextualTooltipType = {
-								blockoverride "title_icon" {
-									icon = {
-										using = tooltip_title_icon_size
-										texture = "gfx/interface/icons/unit_actions/build_to_navy.dds"
-									}
+							blockoverride "title_icon" {
+								icon = {
+									using = tooltip_title_icon_size
+									texture = "gfx/interface/icons/unit_actions/build_to_navy.dds"
 								}
+							}
 
-								blockoverride "concept_link" {
-									text = "[building|e]"
-								}
+							blockoverride "concept_link" { text = "[building|e]" }
 
-								textcontext = "BTYPE_REQUIREMENTS"
+							textcontext = "BTYPE_REQUIREMENTS"
 						}
 					}
 
@@ -221,7 +211,7 @@ template BuildingType_tooltip {
 				}
 
 				blockoverride "items" {
-					icon = { #capital
+					icon = { # capital
 						size = { 27 27 }
 						datacontext = "[BuildingType]"
 						visible = "[BuildingType.BuildOnlyInCapital]"
@@ -235,9 +225,7 @@ template BuildingType_tooltip {
 										texture = "[GetConceptTexture('capital')]"
 									}
 								}
-								blockoverride "concept_link" {
-									text = "[capital|e]"
-								}
+								blockoverride "concept_link" { text = "[capital|e]" }
 
 								textcontext = "BUILDING_TYPE_ONLY_IN_CAPITAL"
 							}
@@ -258,9 +246,7 @@ template BuildingType_tooltip {
 										texture = "[GetConceptTexture('foreign_building')]"
 									}
 								}
-								blockoverride "concept_link" {
-									text = "[foreign|e]"
-								}
+								blockoverride "concept_link" { text = "[foreign|e]" }
 
 								textcontext = "[BuildingType.GetForeignRequirments]"
 							}
@@ -273,6 +259,7 @@ template BuildingType_tooltip {
 						datacontext = "[BuildingType]"
 						visible = "[BuildingType.CanBuildInLocationRank('mining_city')]"
 						texture = "gfx/interface/mapitems/mining_city.dds"
+
 						tooltipwidget = {
 							SimpleContextualTooltipType = {
 								blockoverride "title_icon" {
@@ -281,9 +268,7 @@ template BuildingType_tooltip {
 										texture = "gfx/interface/mapitems/mining_city.dds"
 									}
 								}
-								blockoverride "concept_link" {
-									text = "[location_rank|e]"
-								}
+								blockoverride "concept_link" { text = "[location_rank|e]" }
 								textcontext = "SUL_BUILDING_TYPE_IN_MINING_CITY"
 							}
 						}
@@ -293,6 +278,7 @@ template BuildingType_tooltip {
 						datacontext = "[BuildingType]"
 						visible = "[BuildingType.CanBuildInLocationRank('mining_town')]"
 						texture = "gfx/interface/mapitems/mining_town.dds"
+
 						tooltipwidget = {
 							SimpleContextualTooltipType = {
 								blockoverride "title_icon" {
@@ -301,9 +287,7 @@ template BuildingType_tooltip {
 										texture = "gfx/interface/mapitems/mining_town.dds"
 									}
 								}
-								blockoverride "concept_link" {
-									text = "[location_rank|e]"
-								}
+								blockoverride "concept_link" { text = "[location_rank|e]" }
 								textcontext = "SUL_BUILDING_TYPE_IN_MINING_TOWN"
 							}
 						}
@@ -313,6 +297,7 @@ template BuildingType_tooltip {
 						datacontext = "[BuildingType]"
 						visible = "[BuildingType.CanBuildInLocationRank('mining_rural')]"
 						texture = "gfx/interface/mapitems/mining_rural.dds"
+
 						tooltipwidget = {
 							SimpleContextualTooltipType = {
 								blockoverride "title_icon" {
@@ -321,9 +306,7 @@ template BuildingType_tooltip {
 										texture = "gfx/interface/mapitems/mining_rural.dds"
 									}
 								}
-								blockoverride "concept_link" {
-									text = "[location_rank|e]"
-								}
+								blockoverride "concept_link" { text = "[location_rank|e]" }
 								textcontext = "SUL_BUILDING_TYPE_IN_MINING_RURAL"
 							}
 						}
@@ -335,6 +318,7 @@ template BuildingType_tooltip {
 						datacontext = "[BuildingType]"
 						visible = "[BuildingType.CanBuildInLocationRank('farming_city')]"
 						texture = "gfx/interface/mapitems/farming_city.dds"
+
 						tooltipwidget = {
 							SimpleContextualTooltipType = {
 								blockoverride "title_icon" {
@@ -343,9 +327,7 @@ template BuildingType_tooltip {
 										texture = "gfx/interface/mapitems/farming_city.dds"
 									}
 								}
-								blockoverride "concept_link" {
-									text = "[location_rank|e]"
-								}
+								blockoverride "concept_link" { text = "[location_rank|e]" }
 								textcontext = "SUL_BUILDING_TYPE_IN_FARMING_CITY"
 							}
 						}
@@ -355,6 +337,7 @@ template BuildingType_tooltip {
 						datacontext = "[BuildingType]"
 						visible = "[BuildingType.CanBuildInLocationRank('farming_town')]"
 						texture = "gfx/interface/mapitems/farming_town.dds"
+
 						tooltipwidget = {
 							SimpleContextualTooltipType = {
 								blockoverride "title_icon" {
@@ -363,9 +346,7 @@ template BuildingType_tooltip {
 										texture = "gfx/interface/mapitems/farming_town.dds"
 									}
 								}
-								blockoverride "concept_link" {
-									text = "[location_rank|e]"
-								}
+								blockoverride "concept_link" { text = "[location_rank|e]" }
 								textcontext = "SUL_BUILDING_TYPE_IN_FARMING_TOWN"
 							}
 						}
@@ -375,6 +356,7 @@ template BuildingType_tooltip {
 						datacontext = "[BuildingType]"
 						visible = "[BuildingType.CanBuildInLocationRank('farming_rural')]"
 						texture = "gfx/interface/mapitems/farming_rural.dds"
+
 						tooltipwidget = {
 							SimpleContextualTooltipType = {
 								blockoverride "title_icon" {
@@ -383,9 +365,7 @@ template BuildingType_tooltip {
 										texture = "gfx/interface/mapitems/farming_rural.dds"
 									}
 								}
-								blockoverride "concept_link" {
-									text = "[location_rank|e]"
-								}
+								blockoverride "concept_link" { text = "[location_rank|e]" }
 								textcontext = "SUL_BUILDING_TYPE_IN_FARMING_RURAL"
 							}
 						}
@@ -397,6 +377,7 @@ template BuildingType_tooltip {
 						datacontext = "[BuildingType]"
 						visible = "[BuildingType.CanBuildInLocationRank('gathering_city')]"
 						texture = "gfx/interface/mapitems/gathering_city.dds"
+
 						tooltipwidget = {
 							SimpleContextualTooltipType = {
 								blockoverride "title_icon" {
@@ -405,9 +386,7 @@ template BuildingType_tooltip {
 										texture = "gfx/interface/mapitems/gathering_city.dds"
 									}
 								}
-								blockoverride "concept_link" {
-									text = "[location_rank|e]"
-								}
+								blockoverride "concept_link" { text = "[location_rank|e]" }
 								textcontext = "SUL_BUILDING_TYPE_IN_GATHERING_CITY"
 							}
 						}
@@ -417,6 +396,7 @@ template BuildingType_tooltip {
 						datacontext = "[BuildingType]"
 						visible = "[BuildingType.CanBuildInLocationRank('gathering_town')]"
 						texture = "gfx/interface/mapitems/gathering_town.dds"
+
 						tooltipwidget = {
 							SimpleContextualTooltipType = {
 								blockoverride "title_icon" {
@@ -425,9 +405,7 @@ template BuildingType_tooltip {
 										texture = "gfx/interface/mapitems/gathering_town.dds"
 									}
 								}
-								blockoverride "concept_link" {
-									text = "[location_rank|e]"
-								}
+								blockoverride "concept_link" { text = "[location_rank|e]" }
 								textcontext = "SUL_BUILDING_TYPE_IN_GATHERING_TOWN"
 							}
 						}
@@ -437,6 +415,7 @@ template BuildingType_tooltip {
 						datacontext = "[BuildingType]"
 						visible = "[BuildingType.CanBuildInLocationRank('gathering_rural')]"
 						texture = "gfx/interface/mapitems/gathering_rural.dds"
+
 						tooltipwidget = {
 							SimpleContextualTooltipType = {
 								blockoverride "title_icon" {
@@ -445,9 +424,7 @@ template BuildingType_tooltip {
 										texture = "gfx/interface/mapitems/gathering_rural.dds"
 									}
 								}
-								blockoverride "concept_link" {
-									text = "[location_rank|e]"
-								}
+								blockoverride "concept_link" { text = "[location_rank|e]" }
 								textcontext = "SUL_BUILDING_TYPE_IN_GATHERING_RURAL"
 							}
 						}
@@ -459,6 +436,7 @@ template BuildingType_tooltip {
 						datacontext = "[BuildingType]"
 						visible = "[BuildingType.CanBuildInLocationRank('woodland_city')]"
 						texture = "gfx/interface/mapitems/woodland_city.dds"
+
 						tooltipwidget = {
 							SimpleContextualTooltipType = {
 								blockoverride "title_icon" {
@@ -467,9 +445,7 @@ template BuildingType_tooltip {
 										texture = "gfx/interface/mapitems/woodland_city.dds"
 									}
 								}
-								blockoverride "concept_link" {
-									text = "[location_rank|e]"
-								}
+								blockoverride "concept_link" { text = "[location_rank|e]" }
 								textcontext = "SUL_BUILDING_TYPE_IN_WOODLAND_CITY"
 							}
 						}
@@ -479,6 +455,7 @@ template BuildingType_tooltip {
 						datacontext = "[BuildingType]"
 						visible = "[BuildingType.CanBuildInLocationRank('woodland_town')]"
 						texture = "gfx/interface/mapitems/woodland_town.dds"
+
 						tooltipwidget = {
 							SimpleContextualTooltipType = {
 								blockoverride "title_icon" {
@@ -487,9 +464,7 @@ template BuildingType_tooltip {
 										texture = "gfx/interface/mapitems/woodland_town.dds"
 									}
 								}
-								blockoverride "concept_link" {
-									text = "[location_rank|e]"
-								}
+								blockoverride "concept_link" { text = "[location_rank|e]" }
 								textcontext = "SUL_BUILDING_TYPE_IN_WOODLAND_TOWN"
 							}
 						}
@@ -499,6 +474,7 @@ template BuildingType_tooltip {
 						datacontext = "[BuildingType]"
 						visible = "[BuildingType.CanBuildInLocationRank('woodland_rural')]"
 						texture = "gfx/interface/mapitems/woodland_rural.dds"
+
 						tooltipwidget = {
 							SimpleContextualTooltipType = {
 								blockoverride "title_icon" {
@@ -507,9 +483,7 @@ template BuildingType_tooltip {
 										texture = "gfx/interface/mapitems/woodland_rural.dds"
 									}
 								}
-								blockoverride "concept_link" {
-									text = "[location_rank|e]"
-								}
+								blockoverride "concept_link" { text = "[location_rank|e]" }
 								textcontext = "SUL_BUILDING_TYPE_IN_WOODLAND_RURAL"
 							}
 						}
@@ -521,6 +495,7 @@ template BuildingType_tooltip {
 						datacontext = "[BuildingType]"
 						visible = "[BuildingType.CanBuildInLocationRank('commercial_city')]"
 						texture = "gfx/interface/mapitems/commercial_city.dds"
+
 						tooltipwidget = {
 							SimpleContextualTooltipType = {
 								blockoverride "title_icon" {
@@ -529,9 +504,7 @@ template BuildingType_tooltip {
 										texture = "gfx/interface/mapitems/commercial_city.dds"
 									}
 								}
-								blockoverride "concept_link" {
-									text = "[location_rank|e]"
-								}
+								blockoverride "concept_link" { text = "[location_rank|e]" }
 								textcontext = "SUL_BUILDING_TYPE_IN_COMMERCIAL_CITY"
 							}
 						}
@@ -541,6 +514,7 @@ template BuildingType_tooltip {
 						datacontext = "[BuildingType]"
 						visible = "[BuildingType.CanBuildInLocationRank('commercial_town')]"
 						texture = "gfx/interface/mapitems/commercial_town.dds"
+
 						tooltipwidget = {
 							SimpleContextualTooltipType = {
 								blockoverride "title_icon" {
@@ -549,9 +523,7 @@ template BuildingType_tooltip {
 										texture = "gfx/interface/mapitems/commercial_town.dds"
 									}
 								}
-								blockoverride "concept_link" {
-									text = "[location_rank|e]"
-								}
+								blockoverride "concept_link" { text = "[location_rank|e]" }
 								textcontext = "SUL_BUILDING_TYPE_IN_COMMERCIAL_TOWN"
 							}
 						}
@@ -561,6 +533,7 @@ template BuildingType_tooltip {
 						datacontext = "[BuildingType]"
 						visible = "[BuildingType.CanBuildInLocationRank('commercial_rural')]"
 						texture = "gfx/interface/mapitems/commercial_rural.dds"
+
 						tooltipwidget = {
 							SimpleContextualTooltipType = {
 								blockoverride "title_icon" {
@@ -569,9 +542,7 @@ template BuildingType_tooltip {
 										texture = "gfx/interface/mapitems/commercial_rural.dds"
 									}
 								}
-								blockoverride "concept_link" {
-									text = "[location_rank|e]"
-								}
+								blockoverride "concept_link" { text = "[location_rank|e]" }
 								textcontext = "SUL_BUILDING_TYPE_IN_COMMERCIAL_RURAL"
 							}
 						}
@@ -598,7 +569,6 @@ template BuildingType_tooltip {
 				}
 			}
 
-
 			TooltipStringPairList = {
 				visible = "[Not(StringIsEmpty(BuildingType.GetModifierInfo))]"
 				textcontext = "[BuildingType.GetModifierInfo]"
@@ -606,6 +576,7 @@ template BuildingType_tooltip {
 
 			TooltipContentSection = {
 				datamodel = "[BuildingType.GetPossibleProductionMethods]"
+
 				item = {
 					vbox = {
 						layoutpolicy_horizontal = expanding
@@ -613,16 +584,12 @@ template BuildingType_tooltip {
 
 						TooltipTableHeader = {
 							visible = "[GreaterThan_int32(GetDataModelSize(BuildingType.GetPossibleProductionMethods), '(int32)1')]"
-							blockoverride "tableheader_text" {
-								text = "[PossibleProductionMethods.GetName|W]"
-							}
+							blockoverride "tableheader_text" { text = "[PossibleProductionMethods.GetName|W]" }
 						}
 
 						TooltipTableHeader = {
 							visible = "[Not(GreaterThan_int32(GetDataModelSize(BuildingType.GetPossibleProductionMethods), '(int32)1'))]"
-							blockoverride "tableheader_text" {
-								text = "[BuildingType.GetProductionMethodsLabel|W]"
-							}
+							blockoverride "tableheader_text" { text = "[BuildingType.GetProductionMethodsLabel|W]" }
 						}
 
 						vbox = {
@@ -632,9 +599,7 @@ template BuildingType_tooltip {
 
 							item = {
 								using = production_method_simple
-								blockoverride "tooltip" {
-									tooltipwidget = { using = ProductionMethod_tooltip }
-								}
+								blockoverride "tooltip" { tooltipwidget = { using = ProductionMethod_tooltip } }
 							}
 						}
 					}
@@ -642,47 +607,37 @@ template BuildingType_tooltip {
 			}
 
 			TooltipScrolledStringPairList = {
-				block "building_type_tooltip_missing_input" {
-					visible = no
-				}
-				blockoverride "textblock_background_tint"  {
-					modify_texture = {
-						using = color_red_texture
-					}
-				}
+				block "building_type_tooltip_missing_input" { visible = no }
+				blockoverride "textblock_background_tint" { modify_texture = { using = color_red_texture } }
 				blockoverride "block_scrollarea" { maximumsize = { -1 120 } }
 			}
 
 			TooltipContentSection = {
 				visible = "[BuildingType.HasUpgradeChain]"
-				background = {
-					using = color_turquoise_texture
-					alpha = 0.2
-				}
+				background = { using = color_turquoise_texture alpha = 0.2 }
 
 				TooltipTableHeader = {
-					blockoverride "tableheader_text" {
-						text = "BUILDING_UPGRADE_PATHS"
-						default_format = "#W"
-					}
+					blockoverride "tableheader_text" { text = "BUILDING_UPGRADE_PATHS" default_format = "#W" }
 				}
 
 				hbox = {
 					margin_bottom = 5
+
 					hbox = {
 						datamodel = "[BuildingType.GetMakesObsoleteChain]"
+
 						item = {
 							hbox = {
 								hbox = {
 									spacing = 5
+
 									icon = {
 										size = { 31 31 }
 										texture = "[GetAgeIcon(BuildingType.GetAge)]"
 										datacontext = "[BuildingType.GetAge]"
-										tooltipwidget = {
-											using = Age_tooltip
-										}
+										tooltipwidget = { using = Age_tooltip }
 									}
+
 									widget = {
 										size = { 58 58 }
 										tooltip = "[BuildingType.GetName]"
@@ -690,11 +645,8 @@ template BuildingType_tooltip {
 
 										background = {
 											using = bg_round_corners_alt_texture
-											margin = {-1 -1}
-											modify_texture = {
-												color = "[BuildingType.GetPopType.GetColor]"
-												alpha = 0.8
-											}
+											margin = { -1 -1 }
+											modify_texture = { color = "[BuildingType.GetPopType.GetColor]" alpha = 0.8 }
 											modify_texture = {
 												using = overlay_cloth_texture
 												blend_mode = overlay
@@ -706,33 +658,27 @@ template BuildingType_tooltip {
 											size = { 85% 85% }
 											parentanchor = center
 											texture = "[GetBuildingIcon(BuildingType.Self)]"
+
 											glow = {
 												name = "drop_shadow"
 												glow_radius = 2
-												color = {0.0 0.0 0.0 1.0}
+												color = { 0.0 0.0 0.0 1.0 }
 												alpha = 0.6
 											}
 										}
 
-										card_header_button_04 = {
-											size = { 100% 100% }
-											enabled = no
-										}
+										card_header_button_04 = { size = { 100% 100% } enabled = no }
 									}
 								}
 
 								vbox = {
 									spacing = 5
-									widget = {
-										size = { 31 31 }
-									}
+									widget = { size = { 31 31 } }
+
 									icon = {
 										size = { 20 20 }
 										texture = "gfx/interface/buttons/flats/button_simple.dds"
-										modify_texture = {
-											using = color_bone_texture
-											blend_mode = normal
-										}
+										modify_texture = { using = color_bone_texture blend_mode = normal }
 									}
 								}
 							}
@@ -741,13 +687,12 @@ template BuildingType_tooltip {
 
 					hbox = {
 						spacing = 5
+
 						icon = {
 							size = { 31 31 }
 							texture = "[GetAgeIcon(BuildingType.GetAge)]"
 							datacontext = "[BuildingType.GetAge]"
-							tooltipwidget = {
-								using = Age_tooltip
-							}
+							tooltipwidget = { using = Age_tooltip }
 						}
 
 						widget = {
@@ -758,11 +703,8 @@ template BuildingType_tooltip {
 
 							background = {
 								using = bg_round_corners_alt_texture
-								margin = {-1 -1}
-								modify_texture = {
-									color = "[BuildingType.GetPopType.GetColor]"
-									alpha = 0.8
-								}
+								margin = { -1 -1 }
+								modify_texture = { color = "[BuildingType.GetPopType.GetColor]" alpha = 0.8 }
 								modify_texture = {
 									using = overlay_cloth_texture
 									blend_mode = overlay
@@ -774,6 +716,7 @@ template BuildingType_tooltip {
 								size = { 85% 85% }
 								parentanchor = center
 								texture = "[GetBuildingIcon(BuildingType.Self)]"
+
 								glow = {
 									glow_radius = 4
 									color = { 1.0 0.85 0.55 1.0 }
@@ -781,40 +724,36 @@ template BuildingType_tooltip {
 								}
 							}
 
-							card_header_button_04 = {
-								size = { 100% 100% }
-							}
+							card_header_button_04 = { size = { 100% 100% } }
 						}
 					}
 
 					hbox = {
 						datamodel = "[BuildingType.GetReplacedByChain]"
+
 						item = {
 							hbox = {
-
 								widget = {
 									size = { 30 20 }
+
 									icon = {
 										parentanchor = center
 										size = { 20 20 }
 										texture = "gfx/interface/buttons/flats/button_simple.dds"
-										modify_texture = {
-											using = color_bone_texture
-											blend_mode = normal
-										}
+										modify_texture = { using = color_bone_texture blend_mode = normal }
 									}
 								}
 
 								hbox = {
 									spacing = 5
+
 									icon = {
 										size = { 31 31 }
 										texture = "[GetAgeIcon(BuildingType.GetAge)]"
 										datacontext = "[BuildingType.GetAge]"
-										tooltipwidget = {
-											using = Age_tooltip
-										}
+										tooltipwidget = { using = Age_tooltip }
 									}
+
 									widget = {
 										size = { 58 58 }
 										tooltip = "[BuildingType.GetName]"
@@ -822,11 +761,8 @@ template BuildingType_tooltip {
 
 										background = {
 											using = bg_round_corners_alt_texture
-											margin = {-1 -1}
-											modify_texture = {
-												color = "[BuildingType.GetPopType.GetColor]"
-												alpha = 0.8
-											}
+											margin = { -1 -1 }
+											modify_texture = { color = "[BuildingType.GetPopType.GetColor]" alpha = 0.8 }
 											modify_texture = {
 												using = overlay_cloth_texture
 												blend_mode = overlay
@@ -838,18 +774,16 @@ template BuildingType_tooltip {
 											size = { 85% 85% }
 											parentanchor = center
 											texture = "[GetBuildingIcon(BuildingType.Self)]"
+
 											glow = {
 												name = "drop_shadow"
 												glow_radius = 2
-												color = {0.0 0.0 0.0 1.0}
+												color = { 0.0 0.0 0.0 1.0 }
 												alpha = 0.6
 											}
 										}
 
-										card_header_button_04 = {
-											size = { 100% 100% }
-											enabled = no
-										}
+										card_header_button_04 = { size = { 100% 100% } enabled = no }
 									}
 								}
 							}
@@ -866,16 +800,12 @@ template BuildingType_tooltip {
 				}
 			}
 
-			TooltipStringPairList = { # cost and time
-				textcontext = "[BuildingType.GetBuildCostAndTime]"
-			}
+			TooltipStringPairList = { textcontext = "[BuildingType.GetBuildCostAndTime]" }
 
-			block "building_type_tooltip_extra"{}
+			block "building_type_tooltip_extra" {  }
 
 			TooltipFlavorTextBlock = {
-				blockoverride "text" {
-					text = "[BuildingType.GetFlavorText]"
-				}
+				blockoverride "text" { text = "[BuildingType.GetFlavorText]" }
 			}
 		}
 	}

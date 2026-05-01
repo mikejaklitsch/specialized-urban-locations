@@ -4,6 +4,7 @@ namespace = random_event
 ########################
 # Comet Sighted
 ########################
+
 random_event.1 = {
 	type = country_event
 
@@ -11,96 +12,91 @@ random_event.1 = {
 	desc = random_event.1.desc
 
 	trigger = {
-		NOT = { has_advance = comets }
+		NOT = {
+			has_advance = comets
+		}
 	}
 
 	image = "gfx/interface/illustrations/event/backgrounds/special/comet_sighted.dds"
-
-
-
-
 
 	option = {
 		name = random_event.1.a
 		add_stability = stability_mild_penalty
 
-		if = {
-			limit = {
-				has_doom = yes
-			}
-			add_doom = doom_extreme_penalty
-		}
+		if = { limit = { has_doom = yes } add_doom = doom_extreme_penalty }
 	}
 }
 
 ########################
 # Gift to the State
 ########################
+
 random_event.2 = {
 	type = country_event
 
 	title = random_event.2.title
 	desc = random_event.2.desc
-	illustration_tags = {
-		10 = happy 
-		10 = interior
-	}
+
+	illustration_tags = { 10 = happy 10 = interior }
 
 	trigger = {
 		stability >= 0
 		country_has_estate = estate_type:nobles_estate
 		country_has_estate = estate_type:burghers_estate
 	}
-	
+
 	immediate = {
-		event_illustration_estate_effect = { foreground = estate_type:nobles_estate background = estate_type:burghers_estate }
+		event_illustration_estate_effect = {
+			foreground = estate_type:nobles_estate
+			background = estate_type:burghers_estate
+		}
 	}
 
 	option = {
 		name = random_event.2.a
-		change_gold_effect = { scale = 3 }
+
+		change_gold_effect = {
+			scale = 3
+		}
 	}
 
-	option = {
-		name = random_event.2.b
-		add_prestige = prestige_mild_bonus
-	}
+	option = { name = random_event.2.b add_prestige = prestige_mild_bonus }
 }
-
 
 #################################
 # Temporary Insanity for Monarch
 #################################
+
 random_event.3 = {
 	type = country_event
 
 	title = random_event.3.title
 	desc = random_event.3.desc
-	illustration_tags = {
-		10 = angry
-		10 = interior
-	}
+
+	illustration_tags = { 10 = angry 10 = interior }
+
 	immediate = {
 		event_illustration_estate_effect = {
-    		foreground = estate_type:nobles_estate
-    		background = estate_type:burghers_estate
+			foreground = estate_type:nobles_estate
+			background = estate_type:burghers_estate
 		}
+
 		ruler = { save_scope_as = target_ruler }
 	}
+
 	trigger = {
 		has_ruler = yes
-		ruler = { 
+
+		ruler = {
 			owner = root
-			is_adult = yes 
-			NOR = { 
-				has_character_modifier = temporary_insanity_adm 
+			is_adult = yes
+			NOR = {
+				has_character_modifier = temporary_insanity_adm
 				has_character_modifier = temporary_insanity_dip
 				has_character_modifier = temporary_insanity_mil
 			}
 		}
 	}
-	
-
 
 	option = {
 		name = random_event.3.a
@@ -112,6 +108,7 @@ random_event.3 = {
 				mode = add_and_extend
 			}
 		}
+
 		add_stability = stability_mild_penalty
 	}
 
@@ -125,6 +122,7 @@ random_event.3 = {
 				mode = add_and_extend
 			}
 		}
+
 		add_stability = stability_mild_penalty
 	}
 
@@ -138,48 +136,44 @@ random_event.3 = {
 				mode = add_and_extend
 			}
 		}
+
 		add_stability = stability_mild_penalty
 	}
 }
 
-
 ########################
 # Waves of Obscurantism
 ########################
+
 random_event.4 = {
 	type = country_event
 
 	title = random_event.4.title
 	desc = random_event.4.desc
-	illustration_tags = {
-		10 = regular
-		10 = interior
-	}
+
+	illustration_tags = { 10 = regular 10 = interior }
+
 	immediate = {
 		event_illustration_estate_effect = {
-    		foreground = estate_type:burghers_estate
-    		background = estate_type:clergy_estate
+			foreground = estate_type:burghers_estate
+			background = estate_type:clergy_estate
 		}
 	}
+
 	trigger = {
 		has_ruler = yes
-		NOT = { has_embraced_institution = institution:enlightenment }
+		NOT = {
+			has_embraced_institution = institution:enlightenment
+		}
 	}
-
-
 
 	option = {
 		name = random_event.4.a
 		add_research_progress = research_progress_mild_bonus
 		add_stability = stability_weak_penalty
 
-		ai_will_select = { 
-			if = {
-				limit = {
-					stability < 5				
-				}
-				value = 0 
-			}
+		ai_will_select = {
+			if = { limit = { stability < 5 } value = 0 }
 		}
 	}
 
@@ -190,49 +184,60 @@ random_event.4 = {
 	}
 }
 
-
 ########################
 # Excellent Minister
 ########################
+
 random_event.5 = {
 	type = country_event
 
 	title = random_event.5.title
 	desc = random_event.5.desc
-	illustration_tags = {
-		10 = happy
-		10 = interior
-	}
+
+	illustration_tags = { 10 = happy 10 = interior }
+
 	immediate = {
 		event_illustration_estate_effect = {
-    		foreground = estate_type:burghers_estate
-    		background = estate_type:burghers_estate
+			foreground = estate_type:burghers_estate
+			background = estate_type:burghers_estate
 		}
+
 		random_cabinet_character = {
 			limit = {
-				OR= { adm >= 60 mil >= 60 dip >= 60 }
-				NOT = { has_character_modifier = excellent_minister }
+				OR = {
+					adm >= 60
+					mil >= 60
+					dip >= 60
+				}
+				NOT = {
+					has_character_modifier = excellent_minister
+				}
 			}
+
 			save_scope_as = minister
 		}
-		ruler = {save_scope_as = target_ruler}
+
+		ruler = { save_scope_as = target_ruler }
 	}
-	
+
 	trigger = {
 		has_ruler = yes
+
 		any_cabinet_character = {
 			OR = {
 				adm >= 60
 				mil >= 60
 				dip >= 60
 			}
-			NOT = { has_character_modifier = excellent_minister }
+			NOT = {
+				has_character_modifier = excellent_minister
+			}
 		}
 	}
-	
 
 	option = {
 		name = random_event.5.a
+
 		scope:minister = {
 			add_character_modifier = {
 				modifier = excellent_minister
@@ -242,30 +247,25 @@ random_event.5 = {
 		}
 	}
 
-	option = {
-		name = random_event.5.b
-		add_prestige = prestige_mild_bonus
-	}
+	option = { name = random_event.5.b add_prestige = prestige_mild_bonus }
 }
-
 
 ########################
 # Scandal at the Court
 ########################
+
 random_event.6 = {
 	type = country_event
 
 	title = random_event.6.title
 	desc = random_event.6.desc
-	illustration_tags = {
-		10 = angry
-		10 = exterior
-	
-	}
+
+	illustration_tags = { 10 = angry 10 = exterior }
 
 	trigger = {
 		government_type = government_type:monarchy
 		has_ruler = yes
+
 		ruler ?= {
 			any_child = {
 				is_female = yes
@@ -274,62 +274,61 @@ random_event.6 = {
 				is_alive = yes
 			}
 		}
+
 		country_has_estate = estate_type:nobles_estate
 	}
-	
+
 	immediate = {
 		ruler = {
 			random_child = {
-				limit = {
-					is_female = yes
-					is_married = no
-					is_adult = yes
-					is_alive = yes
-				}
+				limit = { is_female = yes is_married = no is_adult = yes is_alive = yes }
 				save_scope_as = princess
 			}
+
 			save_scope_as = target_ruler
 		}
+
 		event_illustration_government_estate_effect = yes
 	}
-	
-	option = {
-		name = random_event.6.a
-		add_prestige = prestige_mild_penalty
-	}
+
+	option = { name = random_event.6.a add_prestige = prestige_mild_penalty }
 
 	option = {
 		name = random_event.6.b
-		change_gold_effect = { scale = -5 }
+
+		change_gold_effect = {
+			scale = -5
+		}
 	}
 }
-
 
 ########################
 # Exceptional Year
 ########################
+
 random_event.7 = {
 	type = country_event
 
 	title = random_event.7.title
 	desc = random_event.7.desc
-	illustration_tags = {
-		10 = happy
-		10 = exterior
-	}
-	
+
+	illustration_tags = { 10 = happy 10 = exterior }
+
 	immediate = {
-		event_illustration_poptype_effect = { foreground = pop_type:burghers   background = pop_type:burghers }
+		event_illustration_poptype_effect = {
+			foreground = pop_type:burghers
+			background = pop_type:burghers
+		}
 	}
 
-	option = {
-		name = random_event.7.a
-		add_stability = stability_mild_bonus
-	}
+	option = { name = random_event.7.a add_stability = stability_mild_bonus }
 
 	option = {
 		name = random_event.7.b
-		change_gold_effect = { scale = 4 }
+
+		change_gold_effect = {
+			scale = 4
+		}
 	}
 	option = {
 		name = random_event.7.c
@@ -337,77 +336,75 @@ random_event.7 = {
 	}
 }
 
-
 ########################
 # Diplomatic move
 ########################
+
 random_event.8 = {
 	type = country_event
 
 	title = random_event.8.title
 	desc = random_event.8.desc
-	illustration_tags = {
-		10 = regular	
-		10 = interior
-	}
+
+	illustration_tags = { 10 = regular 10 = interior }
 
 	trigger = {
-		
 		any_neighbor_country = {
 			NOT = {
-				has_opinion = { target = root modifier = opinion_diplomatic_move }  
+				has_opinion = { target = root modifier = opinion_diplomatic_move }
 			}
 		}
 	}
-	
-	immediate = {
-		event_illustration_government_estate_effect = yes
-	}
 
-	option = {
-		name = random_event.8.a
-		add_diplomats = 2
-	}
+	immediate = { event_illustration_government_estate_effect = yes }
+
+	option = { name = random_event.8.a add_diplomats = 2 }
 
 	option = {
 		name = random_event.8.b
+
 		custom_tooltip = {
 			text = random_event.8.tt
+
 			every_neighbor_country = {
 				limit = {
-					NOT = { has_opinion = { target = root modifier = opinion_diplomatic_move } }
+					NOT = {
+						has_opinion = { target = root modifier = opinion_diplomatic_move }
+					}
 				}
+
 				add_opinion = { target = root modifier = opinion_diplomatic_move }
 			}
 		}
 	}
 }
 
-
 ########################
 # Excellent Diplomacy
 ########################
+
 random_event.9 = {
 	type = country_event
 
 	title = random_event.9.title
 	desc = random_event.9.desc
-	illustration_tags = {
-		10 = happy
-		10 = interior
-	}
+
+	illustration_tags = { 10 = happy 10 = interior }
 
 	trigger = {
-		NOT = { has_country_modifier = appeased_estates }
-		NOT = { has_country_modifier = excellent_diplomacy }
+		NOT = {
+			has_country_modifier = appeased_estates
+		}
+		NOT = {
+			has_country_modifier = excellent_diplomacy
+		}
 	}
 
-	immediate = {
-		event_illustration_government_estate_effect = yes
-	}
+	immediate = { event_illustration_government_estate_effect = yes }
 
 	option = {
 		name = random_event.9.a
+
 		add_country_modifier = {
 			modifier = appeased_estates
 			years = 5
@@ -417,6 +414,7 @@ random_event.9 = {
 
 	option = {
 		name = random_event.9.b
+
 		add_country_modifier = {
 			modifier = excellent_diplomacy
 			years = 5
@@ -424,7 +422,6 @@ random_event.9 = {
 		}
 	}
 }
-
 
 ###########################
 # Good government policies
@@ -435,37 +432,31 @@ random_event.10 = {
 
 	title = random_event.10.title
 	desc = random_event.10.desc
-	illustration_tags = {
-		10 = happy
-		10 = exterior
-	}
+
+	illustration_tags = { 10 = happy 10 = exterior }
+
 	immediate = {
-			event_illustration_estate_effect = {
-    		foreground = estate_type:peasants_estate
-    		background = estate_type:nobles_estate
+		event_illustration_estate_effect = {
+			foreground = estate_type:peasants_estate
+			background = estate_type:nobles_estate
 		}
 	}
+
 	trigger = {
 		country_has_estate = estate_type:nobles_estate
 		country_has_estate = estate_type:peasants_estate
 	}
 
-
-
-	option = {
-		name = random_event.10.a
-		add_stability = stability_mild_bonus
-	}
-	option = {
-		name = random_event.10.b
-		add_legitimacy = legitimacy_mild_bonus
-	}
+	option = { name = random_event.10.a add_stability = stability_mild_bonus }
+	option = { name = random_event.10.b add_legitimacy = legitimacy_mild_bonus }
 	option = {
 		name = random_event.10.c
-		change_gold_effect = { scale = 2 }
+
+		change_gold_effect = {
+			scale = 2
+		}
 	}
 }
-
 
 ###########################
 # Poor government policies
@@ -476,33 +467,25 @@ random_event.11 = {
 
 	title = random_event.11.title
 	desc = random_event.11.desc
-	illustration_tags = {
-		10 = angry
-		10 = interior
-	}
 
-	trigger = {
-		country_has_estate = estate_type:nobles_estate
-	}
+	illustration_tags = { 10 = angry 10 = interior }
 
-	immediate = {
-		event_illustration_government_estate_effect = yes
-	}
+	trigger = { country_has_estate = estate_type:nobles_estate }
+
+	immediate = { event_illustration_government_estate_effect = yes }
 
 	option = {
 		name = random_event.11.a
-		add_estate_satisfaction = { 
+
+		add_estate_satisfaction = {
 			type = estate_type:nobles_estate
 			value = estate_satisfaction_mild_penalty
 		}
+
 		ai_will_select = { value = 0 }
 	}
-	option = {
-		name = random_event.11.b
-		add_prestige = prestige_weak_penalty
-	}
+	option = { name = random_event.11.b add_prestige = prestige_weak_penalty }
 }
-
 
 ###########################
 # Unhappyness among the Clergy
@@ -513,10 +496,8 @@ random_event.12 = {
 
 	title = random_event.12.title
 	desc = random_event.12.desc
-	illustration_tags = {
-		10 = angry
-		10 = interior
-	}
+
+	illustration_tags = { 10 = angry 10 = interior }
 
 	trigger = {
 		has_ruler = yes
@@ -525,23 +506,24 @@ random_event.12 = {
 	}
 
 	immediate = {
-		event_illustration_estate_effect = { foreground = estate_type:clergy_estate background = estate_type:clergy_estate }
-		ruler = {save_scope_as = target_ruler}
+		event_illustration_estate_effect = {
+			foreground = estate_type:clergy_estate
+			background = estate_type:clergy_estate
+		}
+
+		ruler = { save_scope_as = target_ruler }
 	}
 
 	option = {
 		name = random_event.12.a
-		add_estate_satisfaction = { 
+
+		add_estate_satisfaction = {
 			type = estate_type:clergy_estate
 			value = estate_satisfaction_mild_penalty
 		}
 	}
-	option = {
-		name = random_event.12.b
-		add_prestige = prestige_weak_penalty
-	}
+	option = { name = random_event.12.b add_prestige = prestige_weak_penalty }
 }
-
 
 ###################################
 # Unhappyness among the Burghers
@@ -552,10 +534,8 @@ random_event.13 = {
 
 	title = random_event.13.title
 	desc = random_event.13.desc
-	illustration_tags = {
-		10 = angry
-		10 = exterior
-	}
+
+	illustration_tags = { 10 = angry 10 = exterior }
 
 	trigger = {
 		country_has_estate = estate_type:burghers_estate
@@ -563,23 +543,22 @@ random_event.13 = {
 	}
 
 	immediate = {
-		event_illustration_estate_effect = { foreground = estate_type:burghers_estate background = estate_type:burghers_estate }
+		event_illustration_estate_effect = {
+			foreground = estate_type:burghers_estate
+			background = estate_type:burghers_estate
+		}
 	}
 
 	option = {
 		name = random_event.13.a
-		add_estate_satisfaction = { 
+
+		add_estate_satisfaction = {
 			type = estate_type:burghers_estate
 			value = estate_satisfaction_mild_penalty
 		}
 	}
-	option = {
-		name = random_event.13.b
-		add_prestige = prestige_weak_penalty
-	}
+	option = { name = random_event.13.b add_prestige = prestige_weak_penalty }
 }
-
-
 
 ###################################
 # Unhappyness among the Peasants
@@ -590,34 +569,38 @@ random_event.14 = {
 
 	title = random_event.14.title
 	desc = random_event.14.desc
-	illustration_tags = {
-		10 = angry
-		10 = exterior
-	}
+
+	illustration_tags = { 10 = angry 10 = exterior }
 
 	trigger = {
-		country_has_estate = estate_type:peasants_estate 
+		country_has_estate = estate_type:peasants_estate
 		estate_tax_base:peasants_estate > 1.0
 	}
 
 	immediate = {
-		event_illustration_estate_effect = { foreground = estate_type:peasants_estate background = estate_type:peasants_estate }
+		event_illustration_estate_effect = {
+			foreground = estate_type:peasants_estate
+			background = estate_type:peasants_estate
+		}
 	}
 
 	option = {
 		name = random_event.14.a
-		add_estate_satisfaction = { type = estate_type:peasants_estate
+
+		add_estate_satisfaction = {
+			type = estate_type:peasants_estate
 			value = estate_satisfaction_mild_penalty
 		}
 	}
 	option = {
 		name = random_event.14.b
 		add_prestige = prestige_weak_penalty
-		change_gold_effect = { scale = -2 }
+
+		change_gold_effect = {
+			scale = -2
+		}
 	}
 }
-
-
 
 ###################################
 # Unhappyness among the Merchants
@@ -628,24 +611,28 @@ random_event.15 = {
 
 	title = random_event.15.title
 	desc = random_event.15.desc
-	illustration_tags = {
-		10 = angry
-		10 = exterior
-	}
+
+	illustration_tags = { 10 = angry 10 = exterior }
 
 	trigger = {
 		country_has_estate = estate_type:burghers_estate
 		estate_tax_base:burghers_estate > 1.0
 		has_markets = yes
-		NOT = { has_country_modifier = reduced_trade_investments }
+		NOT = {
+			has_country_modifier = reduced_trade_investments
+		}
 	}
 
 	immediate = {
-		event_illustration_estate_effect = { foreground = estate_type:burghers_estate background = estate_type:burghers_estate }
+		event_illustration_estate_effect = {
+			foreground = estate_type:burghers_estate
+			background = estate_type:burghers_estate
+		}
 	}
 
 	option = {
 		name = random_event.15.a
+
 		add_country_modifier = {
 			modifier = reduced_trade_investments
 			years = 2
@@ -654,14 +641,13 @@ random_event.15 = {
 	}
 	option = {
 		name = random_event.15.b
-		add_estate_satisfaction = { 
+
+		add_estate_satisfaction = {
 			type = estate_type:burghers_estate
 			value = estate_satisfaction_mild_penalty
 		}
 	}
 }
-
-
 
 ###################################
 # Political Crisis
@@ -672,19 +658,19 @@ random_event.16 = {
 
 	title = random_event.16.title
 	desc = random_event.16.desc
-	illustration_tags = {
-		10 = angry
-		10 = interior
-	}
-	
+
+	illustration_tags = { 10 = angry 10 = interior }
+
 	trigger = {
 		has_ruler = yes
-		NOT = { has_country_modifier = passive_in_political_crisis }
+		NOT = {
+			has_country_modifier = passive_in_political_crisis
+		}
 	}
 
 	immediate = {
 		event_illustration_government_estate_effect = yes
-		ruler = {save_scope_as = target_ruler}
+		ruler = { save_scope_as = target_ruler }
 	}
 
 	option = {
@@ -702,12 +688,10 @@ random_event.16 = {
 		name = random_event.16.b
 
 		ai_will_select = { value = 1 }
-		
+
 		add_prestige = prestige_weak_penalty
 	}
 }
-
-
 
 ###################################
 # Corruption
@@ -718,29 +702,27 @@ random_event.17 = {
 
 	title = random_event.17.title
 	desc = random_event.17.desc
-	illustration_tags = {
-		10 = angry
-		10 = interior
-	}
+
+	illustration_tags = { 10 = angry 10 = interior }
+
 	immediate = {
 		event_illustration_estate_effect = {
-    		foreground = estate_type:peasants_estate
-    		background = estate_type:burghers_estate
+			foreground = estate_type:peasants_estate
+			background = estate_type:burghers_estate
 		}
 	}
 
 	trigger = {
-		NOT = { has_country_modifier = ignoring_corrupt_institutions }
+		NOT = {
+			has_country_modifier = ignoring_corrupt_institutions
+		}
 	}
 
-
-	option = {
-		name = random_event.17.a
-		add_stability = stability_mild_penalty
-	}
+	option = { name = random_event.17.a add_stability = stability_mild_penalty }
 	option = {
 		name = random_event.17.b
 		add_prestige = prestige_weak_penalty
+
 		add_country_modifier = {
 			modifier = ignoring_corrupt_institutions
 			years = 5
@@ -749,19 +731,17 @@ random_event.17 = {
 	}
 }
 
-
 ########################
 # Diplomatic Insult
 ########################
+
 random_event.18 = {
 	type = country_event
 
 	title = random_event.18.title
 	desc = random_event.18.desc
-	illustration_tags = {
-		
-		10 = interior
-	}
+
+	illustration_tags = { 10 = interior }
 
 	trigger = {
 		has_ruler = yes
@@ -773,13 +753,20 @@ random_event.18 = {
 			is_subject = no
 			exists = capital
 			capital.continent ?= root.capital.continent
-			NOT = { has_casus_belli_on = root }
-			NOT = { has_opinion = { target = root modifier = opinion_good_relations } }
+			NOT = {
+				has_casus_belli_on = root
+			}
+			NOT = {
+				has_opinion = { target = root modifier = opinion_good_relations }
+			}
+
 			has_ruler = yes
-			NOT = { ruler = root.ruler }
+			NOT = {
+				ruler = root.ruler
+			}
 		}
 	}
-	
+
 	immediate = {
 		random_neighbor_country = {
 			limit = {
@@ -787,20 +774,29 @@ random_event.18 = {
 				is_subject = no
 				exists = capital
 				capital.continent ?= root.capital.continent
-				NOT = { has_casus_belli_on = root }
-				NOT = { has_opinion = { target = root modifier = opinion_good_relations } }
+				NOT = {
+					has_casus_belli_on = root
+				}
+				NOT = {
+					has_opinion = { target = root modifier = opinion_good_relations }
+				}
+
 				has_ruler = yes
-				NOT = { ruler = root.ruler }
+				NOT = {
+					ruler = root.ruler
+				}
 			}
+
 			save_scope_as = insulted_party
-			ruler = {save_scope_as = angry_ruler}
+			ruler = { save_scope_as = angry_ruler }
 		}
-		ruler = {save_scope_as = target_ruler}
-		
+
+		ruler = { save_scope_as = target_ruler }
 	}
-	
+
 	option = {
 		name = random_event.18.a
+
 		scope:insulted_party = {
 			add_casus_belli = { target = root type = casus_belli:cb_insulted_us }
 		}
@@ -809,42 +805,48 @@ random_event.18 = {
 	option = {
 		name = random_event.18.b
 		add_legitimacy = legitimacy_mild_penalty
+
 		scope:insulted_party = {
 			add_opinion = { target = root modifier = opinion_good_relations }
 		}
+
 		ai_will_select = { value = 0 }
 	}
 }
 
-
-
 ########################
 # Nobles
 ########################
+
 random_event.19 = {
 	type = country_event
 
 	title = random_event.19.title
 	desc = random_event.19.desc
-	illustration_tags = {
-		10 = angry
-		10 = interior
-	}
-	
+
+	illustration_tags = { 10 = angry 10 = interior }
+
 	trigger = {
 		has_ruler = yes
 		country_has_estate = estate_type:nobles_estate
 		"estate_power(estate_type:nobles_estate)" > 0
-		NOT = { has_country_modifier = nobles_priviledged }
+		NOT = {
+			has_country_modifier = nobles_priviledged
+		}
 	}
 
 	immediate = {
-		ruler = {save_scope_as = target_ruler}
-		event_illustration_estate_effect = { foreground = estate_type:nobles_estate background = estate_type:nobles_estate }
+		ruler = { save_scope_as = target_ruler }
+
+		event_illustration_estate_effect = {
+			foreground = estate_type:nobles_estate
+			background = estate_type:nobles_estate
+		}
 	}
 
 	option = {
 		name = random_event.19.a
+
 		add_country_modifier = {
 			modifier = nobles_priviledged
 			years = 5
@@ -854,114 +856,134 @@ random_event.19 = {
 
 	option = {
 		name = random_event.19.b
-		add_estate_satisfaction = { type = estate_type:nobles_estate
+
+		add_estate_satisfaction = {
+			type = estate_type:nobles_estate
 			value = estate_satisfaction_extreme_penalty
 		}
 	}
 }
 
-
 ##########################
 # Saints Perform Miracles
 ##########################
+
 random_event.20 = {
 	type = country_event
 
 	title = random_event.20.title
 	desc = random_event.20.desc
-	illustration_tags = {
-		10 = happy
-		10 = exterior
-	}
+
+	illustration_tags = { 10 = happy 10 = exterior }
 
 	trigger = {
 		country_has_estate = estate_type:clergy_estate
 		religion = religion:catholic
 	}
-	
+
 	immediate = {
-		event_illustration_estate_effect = { foreground = estate_type:peasants_estate background = estate_type:peasants_estate }
+		event_illustration_estate_effect = {
+			foreground = estate_type:peasants_estate
+			background = estate_type:peasants_estate
+		}
 	}
 
-	option = {
-		name = random_event.20.a
-		add_stability = stability_mild_bonus
-	}
+	option = { name = random_event.20.a add_stability = stability_mild_bonus }
 
 	option = {
 		name = random_event.20.b
-		add_estate_satisfaction = { type = estate_type:clergy_estate
+
+		add_estate_satisfaction = {
+			type = estate_type:clergy_estate
 			value = estate_satisfaction_extreme_bonus
 		}
 	}
 }
 
-
-
-
 #################################
 # Nobles ally with foreign power
 #################################
+
 random_event.21 = {
 	type = country_event
 
 	title = random_event.21.title
 	desc = random_event.21.desc
-	illustration_tags = {
-		10 = angry
-		10 = interior
-	}
+
+	illustration_tags = { 10 = angry 10 = interior }
 
 	trigger = {
 		country_has_estate = estate_type:nobles_estate
+
 		any_neighbor_country = {
-			NOT = { is_allied_with = { target = root } }
-			NOT = { is_subject_of = root }
-			NOT = { in_union_with = root }
-			NOT = { has_opinion = { target = root modifier = broke_alliance_with_nobles } }
+			NOT = {
+				is_allied_with = { target = root }
+			}
+			NOT = {
+				is_subject_of = root
+			}
+			NOT = {
+				in_union_with = root
+			}
+			NOT = {
+				has_opinion = { target = root modifier = broke_alliance_with_nobles }
+			}
 		}
 	}
 
 	immediate = {
 		random_neighbor_country = {
 			limit = {
-				NOT = { is_allied_with = { target = root } }
-				NOT = { is_subject_of = root }
-				NOT = { in_union_with = root }
-				NOT = { has_opinion = { target = root modifier = broke_alliance_with_nobles } }
+				NOT = {
+					is_allied_with = { target = root }
+				}
+				NOT = {
+					is_subject_of = root
+				}
+				NOT = {
+					in_union_with = root
+				}
+				NOT = {
+					has_opinion = { target = root modifier = broke_alliance_with_nobles }
+				}
 			}
+
 			save_scope_as = noble_ally_target
 		}
-		event_illustration_estate_effect = { foreground = estate_type:nobles_estate background = estate_type:nobles_estate }
+
+		event_illustration_estate_effect = {
+			foreground = estate_type:nobles_estate
+			background = estate_type:nobles_estate
+		}
 	}
 
 	option = {
 		name = random_event.21.a
-		add_estate_satisfaction = { type = estate_type:nobles_estate
+
+		add_estate_satisfaction = {
+			type = estate_type:nobles_estate
 			value = estate_satisfaction_mild_penalty
 		}
-		scope:noble_ally_target= {	add_opinion = { target = root modifier = broke_alliance_with_nobles } }
+
+		scope:noble_ally_target = {
+			add_opinion = { target = root modifier = broke_alliance_with_nobles }
+		}
 	}
 
-	option = {
-		name = random_event.21.b
-		add_legitimacy = legitimacy_mild_penalty
-	}
+	option = { name = random_event.21.b add_legitimacy = legitimacy_mild_penalty }
 }
-
 
 ############################################
 # Cessation of Church Functions to Nobility
 ############################################
+
 random_event.22 = {
 	type = country_event
 
 	title = random_event.22.title
 	desc = random_event.22.desc
-	illustration_tags = {
-		10 = happy
-		10 = exterior
-	}
+
+	illustration_tags = { 10 = happy 10 = exterior }
 
 	trigger = {
 		country_has_estate = estate_type:clergy_estate
@@ -972,44 +994,43 @@ random_event.22 = {
 	}
 
 	immediate = {
-		event_illustration_estate_effect = { foreground = estate_type:nobles_estate background = estate_type:nobles_estate }
+		event_illustration_estate_effect = {
+			foreground = estate_type:nobles_estate
+			background = estate_type:nobles_estate
+		}
+
 		ruler = { save_scope_as = target_ruler }
 	}
 
 	option = {
 		name = random_event.22.a
-		add_gold = {
-			value = root.estate_tax_base:clergy_estate
-			multiply = 6
-		}
+		add_gold = { value = root.estate_tax_base:clergy_estate multiply = 6 }
 
-		add_estate_satisfaction = { type = estate_type:nobles_estate
+		add_estate_satisfaction = {
+			type = estate_type:nobles_estate
 			value = estate_satisfaction_mild_bonus
 		}
+
 		add_gold_to_estate = {
 			estate_type = estate_type:nobles_estate
-			value = {
-				value = root.estate_tax_base:clergy_estate
-				multiply = 6
-			}
+			value = { value = root.estate_tax_base:clergy_estate multiply = 6 }
 		}
 
-		add_estate_satisfaction = { 
+		add_estate_satisfaction = {
 			type = estate_type:clergy_estate
 			value = estate_satisfaction_extreme_penalty
 		}
+
 		add_gold_to_estate = {
 			estate_type = estate_type:clergy_estate
-			value = {
-				value = root.estate_tax_base:clergy_estate
-				multiply = -12
-			}
+			value = { value = root.estate_tax_base:clergy_estate multiply = -12 }
 		}
 	}
 
 	option = {
 		name = random_event.22.b
 		add_stability = stability_mild_bonus
+
 		add_estate_satisfaction = {
 			type = estate_type:nobles_estate
 			value = estate_satisfaction_weak_penalty
@@ -1021,21 +1042,23 @@ random_event.22 = {
 	}
 }
 
-
 ############################################
 # Sale of offices
 ############################################
+
 random_event.23 = {
 	type = country_event
 
 	title = random_event.23.title
 	desc = random_event.23.desc
-	illustration_tags = {
-		10 = happy
-		10 = interior
-	}
+
+	illustration_tags = { 10 = happy 10 = interior }
+
 	immediate = {
-		event_illustration_estate_effect = { foreground = estate_type:burghers_estate background = estate_type:burghers_estate }
+		event_illustration_estate_effect = {
+			foreground = estate_type:burghers_estate
+			background = estate_type:burghers_estate
+		}
 	}
 
 	trigger = {
@@ -1043,13 +1066,18 @@ random_event.23 = {
 			is_during_bankruptcy = yes
 			num_loans > 20
 		}
-		NOT = { has_country_modifier = reduced_taxes_off }
+		NOT = {
+			has_country_modifier = reduced_taxes_off
+		}
 	}
-
 
 	option = {
 		name = random_event.23.a
-		change_gold_effect = { scale = 12 }
+
+		change_gold_effect = {
+			scale = 12
+		}
+
 		add_country_modifier = {
 			modifier = reduced_taxes_off
 			years = 3
@@ -1057,74 +1085,75 @@ random_event.23 = {
 		}
 	}
 
-	option = {
-		name = random_event.23.b
-		add_prestige = prestige_weak_bonus
-	}
+	option = { name = random_event.23.b add_prestige = prestige_weak_bonus }
 }
-
-
 
 ############################################
 # Nobles demand increased pensions
 ############################################
+
 random_event.24 = {
 	type = country_event
 
 	title = random_event.24.title
 	desc = random_event.24.desc
-	illustration_tags = {
-		10 = angry
-		10 = interior
-	}
-	
-	trigger = {
-		has_ruler = yes
-		country_has_estate = estate_type:nobles_estate
-	}
-	
+
+	illustration_tags = { 10 = angry 10 = interior }
+
+	trigger = { has_ruler = yes country_has_estate = estate_type:nobles_estate }
+
 	immediate = {
 		ruler = { save_scope_as = target_ruler }
-		event_illustration_estate_effect = { foreground = estate_type:nobles_estate background = estate_type:nobles_estate }
+
+		event_illustration_estate_effect = {
+			foreground = estate_type:nobles_estate
+			background = estate_type:nobles_estate
+		}
 	}
 
 	option = {
 		name = random_event.24.a
-		change_gold_effect = { scale = -2 }
-		add_estate_satisfaction = { type = estate_type:nobles_estate
+
+		change_gold_effect = {
+			scale = -2
+		}
+
+		add_estate_satisfaction = {
+			type = estate_type:nobles_estate
 			value = estate_satisfaction_weak_bonus
 		}
 	}
 
 	option = {
 		name = random_event.24.b
-		add_estate_satisfaction = { type = estate_type:nobles_estate
+
+		add_estate_satisfaction = {
+			type = estate_type:nobles_estate
 			value = estate_satisfaction_mild_penalty
 		}
 	}
 }
 
-
-
 ############################################
 # Grant export licences
 ############################################
+
 random_event.25 = {
 	type = country_event
 
 	title = random_event.25.title
 	desc = random_event.25.desc
-	illustration_tags = {
-		10 = happy
-		10 = interior
-	}
+
+	illustration_tags = { 10 = happy 10 = interior }
 
 	trigger = {
 		has_ruler = yes
 		country_has_estate = estate_type:nobles_estate
 		country_has_estate = estate_type:burghers_estate
 		has_markets = yes
-		NOT = { has_country_modifier = nobles_export_licenses }
+		NOT = {
+			has_country_modifier = nobles_export_licenses
+		}
 		any_market_present_in_country = {
 			any_merchant_in_market = {
 				monthly_income_trade_and_tax < root.monthly_income_trade_and_tax
@@ -1135,18 +1164,22 @@ random_event.25 = {
 	immediate = {
 		random_market_present_in_country = {
 			random_merchant_in_market = {
-				limit = {
-					monthly_income_trade_and_tax < root.monthly_income_trade_and_tax
-				}
+				limit = { monthly_income_trade_and_tax < root.monthly_income_trade_and_tax }
 				save_scope_as = trade_target
 			}
 		}
-		ruler = {save_scope_as = target_ruler}
-		event_illustration_estate_effect = { foreground = estate_type:nobles_estate background = estate_type:nobles_estate }
+
+		ruler = { save_scope_as = target_ruler }
+
+		event_illustration_estate_effect = {
+			foreground = estate_type:nobles_estate
+			background = estate_type:nobles_estate
+		}
 	}
 
 	option = {
 		name = random_event.25.a
+
 		add_country_modifier = {
 			modifier = nobles_export_licenses
 			years = 5
@@ -1156,33 +1189,37 @@ random_event.25 = {
 
 	option = {
 		name = random_event.25.b
-		add_estate_satisfaction = { type = estate_type:nobles_estate
+
+		add_estate_satisfaction = {
+			type = estate_type:nobles_estate
 			value = estate_satisfaction_mild_penalty
 		}
 	}
 }
 
-
-
 ############################################
 # Establish Cantonments
 ############################################
+
 random_event.26 = {
 	type = country_event
 
 	title = random_event.26.title
 	desc = random_event.26.desc
 
-
 	trigger = {
 		OR = {
 			current_age = age_5_absolutism
 			current_age = age_6_revolutions
 		}
+
 		num_locations > 0
+
 		any_province = {
 			any_location_in_province = {
-				NOT = { has_building = building_type:cantonments }
+				NOT = {
+					has_building = building_type:cantonments
+				}
 			}
 		}
 	}
@@ -1191,9 +1228,12 @@ random_event.26 = {
 		random_province = {
 			limit = {
 				any_location_in_province = {
-					NOT = { has_building = building_type:cantonments }
+					NOT = {
+						has_building = building_type:cantonments
+					}
 				}
 			}
+
 			save_scope_as = target_province
 		}
 	}
@@ -1201,6 +1241,7 @@ random_event.26 = {
 	option = {
 		name = random_event.26.a
 		add_gold = -200
+
 		scope:target_province ?= {
 			every_location_in_province = {
 				change_building_level_in_location = {
@@ -1211,37 +1252,36 @@ random_event.26 = {
 		}
 	}
 
-	option = {
-		name = random_event.26.b
-		add_prestige = prestige_weak_penalty
-	}
+	option = { name = random_event.26.b add_prestige = prestige_weak_penalty }
 }
-
-
-
 
 ############################################
 # Nobles demand old rights
 ############################################
+
 random_event.27 = {
 	type = country_event
 
 	title = random_event.27.title
 	desc = random_event.27.desc
-	illustration_tags = {
-		10 = angry
-		10 = interior
-	}
+
+	illustration_tags = { 10 = angry 10 = interior }
 
 	trigger = {
 		has_ruler = yes
 		country_has_estate = estate_type:nobles_estate
-		NOT = { has_estate_privilege = estate_privilege:nobles_land_rights }
+		NOT = {
+			has_estate_privilege = estate_privilege:nobles_land_rights
+		}
 	}
 
 	immediate = {
-		ruler = {save_scope_as = target_ruler}
-		event_illustration_estate_effect = { foreground = estate_type:nobles_estate background = estate_type:nobles_estate }
+		ruler = { save_scope_as = target_ruler }
+
+		event_illustration_estate_effect = {
+			foreground = estate_type:nobles_estate
+			background = estate_type:nobles_estate
+		}
 	}
 
 	option = {
@@ -1251,26 +1291,25 @@ random_event.27 = {
 
 	option = {
 		name = random_event.27.b
-		add_estate_satisfaction = { type = estate_type:nobles_estate
+
+		add_estate_satisfaction = {
+			type = estate_type:nobles_estate
 			value = estate_satisfaction_mild_penalty
 		}
 	}
 }
 
-
-
 ############################################
 # Cities demand old rights
 ############################################
+
 random_event.28 = {
 	type = country_event
 
 	title = random_event.28.title
 	desc = random_event.28.desc
-	illustration_tags = {
-		10 = regular
-		10 = exterior
-	}
+
+	illustration_tags = { 10 = regular 10 = exterior }
 
 	trigger = {
 		country_has_estate = estate_type:burghers_estate
@@ -1278,16 +1317,23 @@ random_event.28 = {
 			sul_count_tier_2 > 1
 			sul_count_tier_3 > 1
 		}
-		NOT = { has_estate_privilege = estate_privilege:formal_guilds }
+		NOT = {
+			has_estate_privilege = estate_privilege:formal_guilds
+		}
 	}
 
 	immediate = {
-		event_illustration_estate_effect = { foreground = estate_type:burghers_estate background = estate_type:burghers_estate }
+		event_illustration_estate_effect = {
+			foreground = estate_type:burghers_estate
+			background = estate_type:burghers_estate
+		}
 	}
 
 	option = {
 		name = random_event.28.a
-		add_estate_satisfaction = { type = estate_type:burghers_estate
+
+		add_estate_satisfaction = {
+			type = estate_type:burghers_estate
 			value = estate_satisfaction_mild_penalty
 		}
 	}
@@ -1301,22 +1347,26 @@ random_event.28 = {
 ############################################
 # Non-enforcement of ordinances
 ############################################
+
 random_event.29 = {
 	type = country_event
 
 	title = random_event.29.title
 	desc = random_event.29.desc
-	illustration_tags = {
-		10 = regular
-		10 = interior
-	}
+
+	illustration_tags = { 10 = regular 10 = interior }
 
 	trigger = {
 		has_ruler = yes
+
 		any_province = {
 			province_average_control < 0.20
-			NOT = { has_province_modifier = allow_local_ordinances }
-			NOT = { has_province_modifier = enforced_local_ordinances }
+			NOT = {
+				has_province_modifier = allow_local_ordinances
+			}
+			NOT = {
+				has_province_modifier = enforced_local_ordinances
+			}
 		}
 	}
 
@@ -1324,17 +1374,24 @@ random_event.29 = {
 		random_province = {
 			limit = {
 				province_average_control < 0.20
-				NOT = { has_province_modifier = allow_local_ordinances }
-				NOT = { has_province_modifier = enforced_local_ordinances }
+				NOT = {
+					has_province_modifier = allow_local_ordinances
+				}
+				NOT = {
+					has_province_modifier = enforced_local_ordinances
+				}
 			}
+
 			save_scope_as = target_province
 		}
+
 		event_illustration_government_estate_effect = yes
-		ruler = {save_scope_as = target_ruler}
+		ruler = { save_scope_as = target_ruler }
 	}
-	
+
 	option = {
 		name = random_event.29.a
+
 		scope:target_province ?= {
 			add_province_modifier = {
 				modifier = allow_local_ordinances
@@ -1342,6 +1399,7 @@ random_event.29 = {
 				mode = add_and_extend
 			}
 		}
+
 		add_legitimacy = legitimacy_mild_penalty
 	}
 
@@ -1355,84 +1413,91 @@ random_event.29 = {
 				mode = add_and_extend
 			}
 		}
-		add_estate_satisfaction = { 
+
+		add_estate_satisfaction = {
 			type = estate_type:nobles_estate
 			value = estate_satisfaction_mild_penalty
 		}
 	}
 }
 
-
-
 ############################################
 # Bourgeoisie request privileges
 ############################################
+
 random_event.30 = {
 	type = country_event
 
 	title = random_event.30.title
 	desc = random_event.30.desc
-	illustration_tags = {
-		10 = regular
-		10 = interior
-	}
+
+	illustration_tags = { 10 = regular 10 = interior }
 
 	trigger = {
 		country_has_estate = estate_type:nobles_estate
 		country_has_estate = estate_type:burghers_estate
 		"estate_power(estate_type:nobles_estate)" > "estate_power(estate_type:burghers_estate)"
-		
+
 		num_possible_estate_privileges:burghers_estate > 0
 	}
 
 	immediate = {
 		"estate(estate_type:burghers_estate)" = {
-			random_possible_privilege = {
-				save_scope_as = target_privilege
-			}
+			random_possible_privilege = { save_scope_as = target_privilege }
 		}
-		event_illustration_estate_effect = { foreground = estate_type:burghers_estate background = estate_type:nobles_estate }
+
+		event_illustration_estate_effect = {
+			foreground = estate_type:burghers_estate
+			background = estate_type:nobles_estate
+		}
 	}
 
 	option = {
 		name = random_event.30.a
-		add_estate_satisfaction = { type = estate_type:burghers_estate
+
+		add_estate_satisfaction = {
+			type = estate_type:burghers_estate
 			value = estate_satisfaction_mild_bonus
 		}
-		add_estate_satisfaction = { type = estate_type:nobles_estate
+		add_estate_satisfaction = {
+			type = estate_type:nobles_estate
 			value = estate_satisfaction_mild_penalty
 		}
+
 		grant_estate_privilege = scope:target_privilege
 	}
 	option = {
 		name = random_event.30.b
-		add_estate_satisfaction = { type = estate_type:burghers_estate
+
+		add_estate_satisfaction = {
+			type = estate_type:burghers_estate
 			value = estate_satisfaction_mild_penalty
 		}
-		add_estate_satisfaction = { type = estate_type:nobles_estate
+		add_estate_satisfaction = {
+			type = estate_type:nobles_estate
 			value = estate_satisfaction_mild_bonus
 		}
 	}
 }
 
-
-
 ############################################
 # Italian Architect available
 ############################################
+
 random_event.31 = {
 	type = country_event
 
 	title = random_event.31.title
 	desc = random_event.31.desc
-	illustration_tags = {
-		10 = exterior
-	}
+
+	illustration_tags = { 10 = exterior }
 
 	trigger = {
 		capital ?= {
 			sub_continent = sub_continent:western_europe
-			NOT = { region = region:italy_region }
+			NOT = {
+				region = region:italy_region
+			}
 		}
 
 		current_age = age_2_renaissance
@@ -1440,8 +1505,9 @@ random_event.31 = {
 	}
 
 	immediate = {
-		
-		event_illustration_estate_background_effect = { background = estate_type:nobles_estate }
+		event_illustration_estate_background_effect = {
+			background = estate_type:nobles_estate
+		}
 
 		create_character = {
 			culture = culture:tuscan
@@ -1449,52 +1515,56 @@ random_event.31 = {
 			trait_category = artist
 			artist_skill = { 0.5 0.85 }
 			artist = architect
-			random_estate_type_trigger = {
-				root = { estate_type_allowed_in_cabinet = {	estate_type = prev } }
-			}
+			random_estate_type_trigger = { root = { estate_type_allowed_in_cabinet = { estate_type = prev } } }
 
 			age = { 25 35 }
 
 			create_in_limbo = yes
 			save_scope_as = italian
 		}
-		
-		ruler_or_regent = { save_scope_as = target_ruler }
 
+		ruler_or_regent = { save_scope_as = target_ruler }
 	}
 
 	option = {
 		name = random_event.31.a
 		scope:italian = { move_country = root }
 		add_gold = -50
-
 	}
 	option = {
 		name = random_event.31.b
 		add_prestige = prestige_weak_penalty
-		hidden_effect = { kill_character_silently = scope:italian }
+
+		hidden_effect = {
+			kill_character_silently = scope:italian
+		}
 	}
 }
 
 ############################################
 # Italian Siege Engineer available
 ############################################
+
 random_event.32 = {
 	type = country_event
 
 	title = random_event.32.title
 	desc = random_event.32.desc
-	illustration_tags = {
-		10 = exterior
-	}
+
+	illustration_tags = { 10 = exterior }
 
 	trigger = {
 		has_ruler = yes
+
 		capital ?= {
 			sub_continent = sub_continent:western_europe
-			NOT = { region = region:italy_region }
+			NOT = {
+				region = region:italy_region
+			}
 		}
-		NOT = { has_country_modifier = italian_siege_engineer }
+		NOT = {
+			has_country_modifier = italian_siege_engineer
+		}
 
 		OR = {
 			current_age = age_2_renaissance
@@ -1504,37 +1574,41 @@ random_event.32 = {
 	}
 
 	immediate = {
-	
-	event_illustration_estate_background_effect = { background = estate_type:nobles_estate }
-	
+		event_illustration_estate_background_effect = {
+			background = estate_type:nobles_estate
+		}
+
 		create_character = {
 			culture = culture:lombard
 			religion = religion:catholic
 			female = no
-			random_estate_type_trigger = {
-				root = { estate_type_allowed_in_cabinet = {	estate_type = prev } }
-			}
+			random_estate_type_trigger = { root = { estate_type_allowed_in_cabinet = { estate_type = prev } } }
 			mil = { 40 90 }
 			age = { 25 45 }
 
 			create_in_limbo = yes
 			save_scope_as = italian
 		}
-		
+
 		ruler = { save_scope_as = target_ruler }
-	
 	}
 
 	option = {
 		name = random_event.32.a
-		change_gold_effect = { scale = -5 }
+
+		change_gold_effect = {
+			scale = -5
+		}
+
 		add_country_modifier = {
 			modifier = italian_siege_engineer
 			years = 20
 			mode = add_and_extend
 		}
+
 		scope:italian = {
 			move_country = root
+
 			add_character_modifier = {
 				modifier = busy_modifier
 				years = 20
@@ -1544,80 +1618,91 @@ random_event.32 = {
 	}
 	option = {
 		name = random_event.32.b
-		change_gold_effect = { scale = -5 }
+
+		change_gold_effect = {
+			scale = -5
+		}
+
 		scope:italian = { move_country = root }
-	}	
+	}
 	option = {
 		name = random_event.32.c
 		add_prestige = prestige_weak_penalty
-		hidden_effect = { kill_character_silently = scope:italian }
+
+		hidden_effect = {
+			kill_character_silently = scope:italian
+		}
 	}
 }
-
-
 
 ############################################
 # Foreign drill instructor available
 ############################################
+
 random_event.33 = {
 	type = country_event
 
 	title = random_event.33.title
 	desc = random_event.33.desc
-	illustration_tags = {
-		10 = interior
-	}
+
+	illustration_tags = { 10 = interior }
 
 	trigger = {
-		capital ?= {
-			continent = continent:europe
-		}
+		capital ?= { continent = continent:europe }
 		current_date > 1500.1.1
+
 		any_known_country = {
 			army_tradition > root.army_tradition
-			capital ?= {
-				continent = continent:europe
-			}
+			capital ?= { continent = continent:europe }
 		}
-		NOT = { has_country_modifier = foreign_drill_instructor}
+		NOT = {
+			has_country_modifier = foreign_drill_instructor
+		}
 	}
 
 	immediate = {
 		random_known_country = {
 			limit = {
 				army_tradition > root.army_tradition
-				capital ?= {
-					continent = continent:europe
-				}
+				capital ?= { continent = continent:europe }
 			}
+
 			save_scope_as = drill_country
 		}
+
 		create_character = {
 			culture = scope:drill_country.culture
 			religion = scope:drill_country.religion
-			random_estate_type_trigger = {
-				root = { estate_type_allowed_in_cabinet = {	estate_type = prev } }
-			}
+			random_estate_type_trigger = { root = { estate_type_allowed_in_cabinet = { estate_type = prev } } }
 			mil = { 60 100 }
 			age = { 30 45 }
 
 			create_in_limbo = yes
 			save_scope_as = drill_instructor
 		}
-		event_illustration_estate_background_effect = { background = estate_type:nobles_estate }
+
+		event_illustration_estate_background_effect = {
+			background = estate_type:nobles_estate
+		}
 	}
 
 	option = {
 		name = random_event.33.a
-		change_gold_effect = { scale = -5 }
+
+		change_gold_effect = {
+			scale = -5
+		}
+
 		add_country_modifier = {
 			modifier = foreign_drill_instructor
 			years = 20
 			mode = add_and_extend
 		}
-		scope:drill_instructor = { 
-			move_country = root 
-			add_character_modifier = { 
+
+		scope:drill_instructor = {
+			move_country = root
+
+			add_character_modifier = {
 				modifier = busy_modifier
 				years = 20
 				mode = add_and_extend
@@ -1626,30 +1711,34 @@ random_event.33 = {
 	}
 	option = {
 		name = random_event.33.b
-		change_gold_effect = { scale = -5 }
+
+		change_gold_effect = {
+			scale = -5
+		}
+
 		scope:drill_instructor = { move_country = root }
 	}
 	option = {
 		name = random_event.33.c
 		add_prestige = prestige_weak_penalty
-		hidden_effect = { kill_character_silently = scope:drill_instructor }
+
+		hidden_effect = {
+			kill_character_silently = scope:drill_instructor
+		}
 	}
 }
-
-
 
 ########################
 # Build a great palace
 ########################
+
 random_event.34 = {
 	type = country_event
 
 	title = random_event.34.title
 	desc = random_event.34.desc
-	illustration_tags = {
-		10 = regular
-		10 = interior
-	}
+
+	illustration_tags = { 10 = regular 10 = interior }
 
 	trigger = {
 		government_type = government_type:monarchy
@@ -1658,77 +1747,82 @@ random_event.34 = {
 			has_great_or_unique_palace = no
 
 			num_civil_constructions < 1
-			NOT = { modifier:sul_is_rural_settlement_rank_tier = yes }
+			NOT = {
+				modifier:sul_is_rural_settlement_rank_tier = yes
+			}
 			market ?= {
 				is_traded_in_market = goods:ivory
 				is_traded_in_market = goods:goods_gold
 				is_traded_in_market = goods:marble
 			}
 		}
+
 		has_ruler = yes
 		country_has_estate = estate_type:nobles_estate
 	}
-	
+
 	immediate = {
 		event_illustration_government_estate_effect = yes
 		ruler = { save_scope_as = target_ruler }
 	}
-	
+
 	option = {
 		name = random_event.34.a
+
 		capital = {
 			construct_building = { building_type = building_type:grand_palace }
 		}
+
 		add_prestige = prestige_weak_bonus
 	}
 
-	option = {
-		name = random_event.34.b
-		add_legitimacy = legitimacy_weak_penalty
-	}
+	option = { name = random_event.34.b add_legitimacy = legitimacy_weak_penalty }
 }
 
 ################################
 # Uncooperative philosopher
 #################################
+
 random_event.35 = {
 	type = country_event
 
 	title = random_event.35.title
 	desc = random_event.35.desc
-	illustration_tags = {
-		10 = angry
-		10 = interior
-	}
+
+	illustration_tags = { 10 = angry 10 = interior }
 
 	trigger = {
 		num_artists > 0
 		current_age = age_2_renaissance
 		religion = religion:catholic
 
-		any_artist = {
-			artist_type = philosopher
-		}
-		
+		any_artist = { artist_type = philosopher }
+
 		has_ruler = yes
 		country_has_estate = estate_type:clergy_estate
 	}
 
 	immediate = {
 		random_artist = {
-			limit = {
-				artist_type = philosopher
-			}
+			limit = { artist_type = philosopher }
 			save_scope_as = philosopher
 		}
-		event_illustration_estate_effect = { foreground = estate_type:clergy_estate background = estate_type:clergy_estate }
-		ruler = { save_scope_as = target_ruler } 
+
+		event_illustration_estate_effect = {
+			foreground = estate_type:clergy_estate
+			background = estate_type:clergy_estate
+		}
+
+		ruler = { save_scope_as = target_ruler }
 	}
 
 	option = {
 		name = random_event.35.a
+
 		trigger = {
-			NOT = { has_policy = no_censorship }
+			NOT = {
+				has_policy = no_censorship
+			}
 		}
 
 		kill_character = {
@@ -1740,56 +1834,63 @@ random_event.35 = {
 
 	option = {
 		name = random_event.35.b
-		add_estate_satisfaction = { type = estate_type:clergy_estate
+
+		add_estate_satisfaction = {
+			type = estate_type:clergy_estate
 			value = estate_satisfaction_mild_penalty
 		}
 	}
-	
+
 	option = {
 		name = random_event.35.c
+
 		trigger = {
 			ruler = { has_trait = cruel }
-			NOT = { has_policy = no_censorship }
+			NOT = {
+				has_policy = no_censorship
+			}
 		}
-		
-		custom_tooltip = {
-			text = random_event.35.c.tt
-		}
-		
+
+		custom_tooltip = { text = random_event.35.c.tt }
+
 		kill_character = {
 			target = scope:philosopher
 			reason = burned_alive
 			killer = ruler
 		}
-		add_estate_satisfaction = { type = estate_type:clergy_estate
+
+		add_estate_satisfaction = {
+			type = estate_type:clergy_estate
 			value = estate_satisfaction_extreme_bonus
 		}
+
 		add_stability = stability_mild_penalty
 	}
 }
 
-
-
 ################################
 # Merchants harrased
 #################################
+
 random_event.36 = {
 	type = country_event
 
 	title = random_event.36.title
 	desc = random_event.36.desc
-	illustration_tags = {
-		10 = angry
-		10 = interior
-	}
+
+	illustration_tags = { 10 = angry 10 = interior }
 
 	trigger = {
 		any_market_with_merchants = {
-			owner ?= { 
+			owner ?= {
 				this != root
-				opinion = { target = root value < 0 } 
-				NOT = { has_opinion = { target = root modifier = complaints_about_merchants } }
-				NOT = { has_opinion = { target = root modifier = merchant_appeasement } }
+				opinion = { target = root value < 0 }
+				NOT = {
+					has_opinion = { target = root modifier = complaints_about_merchants }
+				}
+				NOT = {
+					has_opinion = { target = root modifier = merchant_appeasement }
+				}
 			}
 		}
 	}
@@ -1797,54 +1898,66 @@ random_event.36 = {
 	immediate = {
 		random_market_with_merchants = {
 			limit = {
-				owner ?= { 
+				owner ?= {
 					this != root
-					opinion = { target = root value < 0 } 
-					NOT = { has_opinion = { target = root modifier = complaints_about_merchants } }
-					NOT = { has_opinion = { target = root modifier = merchant_appeasement } }
+					opinion = { target = root value < 0 }
+					NOT = {
+						has_opinion = { target = root modifier = complaints_about_merchants }
+					}
+					NOT = {
+						has_opinion = { target = root modifier = merchant_appeasement }
+					}
 				}
 			}
+
 			save_scope_as = target_market
 			scope:target_market.owner = { save_scope_as = market_owner }
 		}
-		event_illustration_estate_effect = { foreground = estate_type:burghers_estate background = estate_type:burghers_estate }
-	}
 
+		event_illustration_estate_effect = {
+			foreground = estate_type:burghers_estate
+			background = estate_type:burghers_estate
+		}
+	}
 
 	option = {
 		name = random_event.36.a
+
 		scope:market_owner = {
 			add_opinion = { target = root modifier = complaints_about_merchants }
 		}
-		add_estate_satisfaction = { type = estate_type:burghers_estate
+
+		add_estate_satisfaction = {
+			type = estate_type:burghers_estate
 			value = estate_satisfaction_weak_bonus
 		}
 	}
 
 	option = {
 		name = random_event.36.b
+
 		scope:market_owner = {
 			add_opinion = { target = root modifier = merchant_appeasement }
 		}
-		add_estate_satisfaction = { type = estate_type:burghers_estate
+
+		add_estate_satisfaction = {
+			type = estate_type:burghers_estate
 			value = estate_satisfaction_mild_penalty
 		}
 	}
 }
 
-
 ################################
 # Petition for redress
 #################################
+
 random_event.37 = {
 	type = country_event
 
 	title = random_event.37.title
 	desc = random_event.37.desc
-	illustration_tags = {
-		10 = armed
-		10 = exterior
-	}
+
+	illustration_tags = { 10 = armed 10 = exterior }
 
 	trigger = {
 		religion.group = religion_group:christian
@@ -1856,10 +1969,10 @@ random_event.37 = {
 					num_pop_type:nobles > 0
 					num_pop_type:peasants > 0
 					is_capital = no
-				} 
+				}
 			}
 		}
-		
+
 		country_has_estate = estate_type:peasants_estate
 		country_has_estate = estate_type:nobles_estate
 		has_ruler = yes
@@ -1875,184 +1988,231 @@ random_event.37 = {
 						num_pop_type:peasants > 0
 						is_capital = no
 					}
+
 					save_scope_as = uppity_peasants
-				} 
+				}
 			}
 		}
-		event_illustration_estate_effect = { foreground = estate_type:peasants_estate background = estate_type:peasants_estate }
+
+		event_illustration_estate_effect = {
+			foreground = estate_type:peasants_estate
+			background = estate_type:peasants_estate
+		}
+
 		ruler = { save_scope_as = target_ruler }
 	}
 
 	option = {
 		name = random_event.37.a
-		add_estate_satisfaction = { type = estate_type:peasants_estate
+
+		add_estate_satisfaction = {
+			type = estate_type:peasants_estate
 			value = estate_satisfaction_weak_bonus
 		}
-		add_estate_satisfaction = { type = estate_type:nobles_estate
+		add_estate_satisfaction = {
+			type = estate_type:nobles_estate
 			value = estate_satisfaction_mild_penalty
 		}
 	}
 
 	option = {
 		name = random_event.37.b
+
 		custom_tooltip = {
 			text = random_event.37.b.tt
+
 			scope:uppity_peasants = {
 				every_pop = {
-					limit = {
-						owner = root
-						pop_type = pop_type:peasants
-					}
+					limit = { owner = root pop_type = pop_type:peasants }
 					add_pop_satisfaction = pop_satisfaction_severe_penalty
 				}
 			}
 		}
-		
 
-		add_estate_satisfaction = { type = estate_type:nobles_estate
+		add_estate_satisfaction = {
+			type = estate_type:nobles_estate
 			value = estate_satisfaction_weak_bonus
 		}
 	}
 }
 
-
 ################################
 # Grant nobles aid
 #################################
+
 random_event.38 = {
 	type = country_event
 
 	title = random_event.38.title
 	desc = random_event.38.desc
-	illustration_tags = {
-		10 = regular
-		10 = interior
-	}
 
-	trigger = {
-		government_type = government_type:monarchy
-		has_regent = no
-	}
-	
+	illustration_tags = { 10 = regular 10 = interior }
+
+	trigger = { government_type = government_type:monarchy has_regent = no }
+
 	immediate = {
-		event_illustration_estate_effect = { foreground = estate_type:nobles_estate background = estate_type:nobles_estate }
+		event_illustration_estate_effect = {
+			foreground = estate_type:nobles_estate
+			background = estate_type:nobles_estate
+		}
+
 		ruler = { save_scope_as = target_ruler }
 	}
 
 	option = {
 		name = random_event.38.a
-		add_estate_satisfaction = { type = estate_type:nobles_estate
+
+		add_estate_satisfaction = {
+			type = estate_type:nobles_estate
 			value = estate_satisfaction_mild_bonus
 		}
 
-		change_gold_effect = { scale = -3 }
+		change_gold_effect = {
+			scale = -3
+		}
 	}
 
 	option = {
 		name = random_event.38.b
-		add_estate_satisfaction = { type = estate_type:nobles_estate
+
+		add_estate_satisfaction = {
+			type = estate_type:nobles_estate
 			value = estate_satisfaction_mild_penalty
 		}
 	}
 }
 
-
-
 #################################
 # Support for dissidents abroad
 #################################
+
 random_event.39 = {
 	type = country_event
 
 	title = random_event.39.title
 	desc = random_event.39.desc
-	illustration_tags = {
-		10 = armed
-		10 = exterior
-	}
+
+	illustration_tags = { 10 = armed 10 = exterior }
 
 	trigger = {
 		any_neighbor_country = {
-			NOT = { is_allied_with = { target = root } }
-			NOT = { in_union_with = root }
+			NOT = {
+				is_allied_with = { target = root }
+			}
+			NOT = {
+				in_union_with = root
+			}
+
 			is_subject = no
-			NOT = { has_opinion = { target = root modifier = opinion_supports_dissidents } }
+			NOT = {
+				has_opinion = { target = root modifier = opinion_supports_dissidents }
+			}
+
 			has_ruler = yes
 			in_civil_war = no
 		}
+
 		country_has_estate = estate_type:nobles_estate
 	}
 
 	immediate = {
 		random_neighbor_country = {
 			limit = {
-				NOT = { is_allied_with = { target = root } }
-				NOT = { in_union_with = root }
+				NOT = {
+					is_allied_with = { target = root }
+				}
+				NOT = {
+					in_union_with = root
+				}
+
 				is_subject = no
-				NOT = { has_opinion = { target = root modifier = opinion_supports_dissidents } }
+				NOT = {
+					has_opinion = { target = root modifier = opinion_supports_dissidents }
+				}
+
 				has_ruler = yes
 				in_civil_war = no
 			}
+
 			save_scope_as = dissidents
 		}
-		event_illustration_estate_effect = { foreground = estate_type:peasants_estate background = estate_type:peasants_estate }
+
+		event_illustration_estate_effect = {
+			foreground = estate_type:peasants_estate
+			background = estate_type:peasants_estate
+		}
 	}
 
 	option = {
 		name = random_event.39.a
-		add_estate_satisfaction = { type = estate_type:nobles_estate
+
+		add_estate_satisfaction = {
+			type = estate_type:nobles_estate
 			value = estate_satisfaction_weak_bonus
 		}
-		change_gold_effect = { scale = -2 }
 
-		scope:dissidents = { add_opinion = { target = root modifier = opinion_supports_dissidents } }
+		change_gold_effect = {
+			scale = -2
+		}
+
+		scope:dissidents = {
+			add_opinion = { target = root modifier = opinion_supports_dissidents }
+		}
 	}
 
 	option = {
 		name = random_event.39.b
-		add_estate_satisfaction = { type = estate_type:nobles_estate
+
+		add_estate_satisfaction = {
+			type = estate_type:nobles_estate
 			value = estate_satisfaction_mild_penalty
 		}
+
 		add_prestige = prestige_mild_penalty
 	}
 }
 
-
 #################################
 # Foreign trade competition rises
 #################################
+
 random_event.40 = {
 	type = country_event
 
 	title = random_event.40.title
 	desc = random_event.40.desc
-	illustration_tags = {
-		10 = regular
-		10 = interior
-	}
+
+	illustration_tags = { 10 = regular 10 = interior }
 
 	trigger = {
 		any_market_present_in_country = {
 			any_import = {
-				NOT = { owner ?= root }
+				NOT = {
+					owner ?= root
+				}
+
 				count > 3
 			}
 		}
+
 		has_ruler = yes
 		country_has_estate = estate_type:burghers_estate
 	}
 
 	immediate = {
-		event_illustration_estate_effect = { foreground = estate_type:burghers_estate background = estate_type:burghers_estate }
+		event_illustration_estate_effect = {
+			foreground = estate_type:burghers_estate
+			background = estate_type:burghers_estate
+		}
+
 		ruler = { save_scope_as = target_ruler }
 	}
 
 	option = {
 		name = random_event.40.a
 		if = {
-			limit = {
-				current_age_or_later = { age = age_4_reformation }
-			}
+			limit = { current_age_or_later = { age = age_4_reformation } }
+
 			change_societal_value = {
 				type = mercantilism_vs_free_trade
 				value = societal_value_minor_move_to_left
@@ -2064,7 +2224,8 @@ random_event.40 = {
 				value = societal_value_minor_move_to_right
 			}
 		}
-		add_estate_satisfaction = { type = estate_type:burghers_estate
+		add_estate_satisfaction = {
+			type = estate_type:burghers_estate
 			value = estate_satisfaction_mild_bonus
 		}
 	}
@@ -2072,9 +2233,8 @@ random_event.40 = {
 	option = {
 		name = random_event.40.b
 		if = {
-			limit = {
-				current_age_or_later = { age = age_4_reformation }
-			}
+			limit = { current_age_or_later = { age = age_4_reformation } }
+
 			change_societal_value = {
 				type = mercantilism_vs_free_trade
 				value = societal_value_minor_move_to_right
@@ -2086,124 +2246,145 @@ random_event.40 = {
 				value = societal_value_minor_move_to_left
 			}
 		}
-		add_estate_satisfaction = { type = estate_type:burghers_estate
+		add_estate_satisfaction = {
+			type = estate_type:burghers_estate
 			value = estate_satisfaction_mild_penalty
 		}
 	}
 }
 
-
-
 #################################
 # Heretic advisor
 #################################
+
 random_event.41 = {
 	type = country_event
 
 	title = random_event.41.title
 	desc = random_event.41.desc
-	illustration_tags = {
-		10 = angry
-		10 = interior
-	}
+
+	illustration_tags = { 10 = angry 10 = interior }
 
 	trigger = {
 		any_cabinet_character = {
-			NOT = { religion = root.religion }
+			NOT = {
+				religion = root.religion
+			}
+
 			religion.group = root.religion.group
-			religion = { reverse_religious_view = { target = root.religion value <= neutral } }
+
+			religion = {
+				reverse_religious_view = { target = root.religion value <= neutral }
+			}
 		}
+
 		country_has_estate = estate_type:clergy_estate
 		has_ruler = yes
 	}
-	
+
 	immediate = {
 		random_cabinet_character = {
 			limit = {
-				NOT = { religion = root.religion }
+				NOT = {
+					religion = root.religion
+				}
+
 				religion.group = root.religion.group
-				religion = { reverse_religious_view = { target = root.religion value <= neutral } }
+
+				religion = {
+					reverse_religious_view = { target = root.religion value <= neutral }
+				}
 			}
+
 			save_scope_as = minister
 		}
+
 		ruler = { save_scope_as = target_ruler }
-		event_illustration_estate_effect = { foreground = estate_type:clergy_estate background = estate_type:clergy_estate }
+
+		event_illustration_estate_effect = {
+			foreground = estate_type:clergy_estate
+			background = estate_type:clergy_estate
+		}
 	}
-	
+
 	option = {
 		name = random_event.41.a
-		add_estate_satisfaction = { type = estate_type:clergy_estate
+
+		add_estate_satisfaction = {
+			type = estate_type:clergy_estate
 			value = estate_satisfaction_weak_bonus
 		}
+
 		remove_from_cabinet = scope:minister
-		scope:minister = { add_character_modifier = { modifier = banned_from_cabinet years = 10 mode = add_and_extend }	}
+
+		scope:minister = {
+			add_character_modifier = {
+				modifier = banned_from_cabinet
+				years = 10
+				mode = add_and_extend
+			}
+		}
 	}
 
 	option = {
 		name = random_event.41.b
-		add_estate_satisfaction = { type = estate_type:clergy_estate
+
+		add_estate_satisfaction = {
+			type = estate_type:clergy_estate
 			value = estate_satisfaction_mild_penalty
 		}
 	}
 }
 
-
-
 #################################
 # Minister gains power
 #################################
+
 random_event.42 = {
 	type = country_event
 
 	title = random_event.42.title
 	desc = random_event.42.desc
-	illustration_tags = {
-		10 = regular
-		10 = interior
-	}
 
-	trigger = {
-		any_cabinet_character = { dip > 33 }
-		has_ruler = yes
-	}
-	
+	illustration_tags = { 10 = regular 10 = interior }
+
+	trigger = { any_cabinet_character = { dip > 33 } has_ruler = yes }
+
 	immediate = {
-		random_cabinet_character = {
-			limit = {
-				dip > 33
-			}
-			save_scope_as = minister
-		}
+		random_cabinet_character = { limit = { dip > 33 } save_scope_as = minister }
 		event_illustration_government_estate_effect = yes
 		ruler = { save_scope_as = target_ruler }
 	}
-	
+
 	option = {
 		name = random_event.42.a
 		remove_from_cabinet = scope:minister
-		scope:minister = { add_character_modifier = { modifier = banned_from_cabinet years = 5 mode = add_and_extend }	}
+
+		scope:minister = {
+			add_character_modifier = {
+				modifier = banned_from_cabinet
+				years = 5
+				mode = add_and_extend
+			}
+		}
+
 		add_stability = stability_mild_penalty
 	}
 
-	option = {
-		name = random_event.42.b
-		add_legitimacy = legitimacy_mild_penalty
-	}
+	option = { name = random_event.42.b add_legitimacy = legitimacy_mild_penalty }
 }
-
 
 #################################
 # Peasants getting uppity
 #################################
+
 random_event.43 = {
 	type = country_event
 
 	title = random_event.43.title
 	desc = random_event.43.desc
-	illustration_tags = {
-		10 = angry
-		10 = exterior
-	}
+
+	illustration_tags = { 10 = angry 10 = exterior }
 
 	trigger = {
 		societal_value:serfdom_vs_free_subjects < 33
@@ -2211,16 +2392,22 @@ random_event.43 = {
 		country_has_estate = estate_type:peasants_estate
 		country_has_estate = estate_type:nobles_estate
 	}
-	
+
 	immediate = {
-		event_illustration_estate_effect = { foreground = estate_type:peasants_estate background = estate_type:peasants_estate }
+		event_illustration_estate_effect = {
+			foreground = estate_type:peasants_estate
+			background = estate_type:peasants_estate
+		}
 	}
 
 	option = {
 		name = random_event.43.a
-		add_estate_satisfaction = { type = estate_type:peasants_estate
+
+		add_estate_satisfaction = {
+			type = estate_type:peasants_estate
 			value = estate_satisfaction_mild_penalty
 		}
+
 		change_societal_value = {
 			type = serfdom_vs_free_subjects
 			value = societal_value_move_to_left
@@ -2229,9 +2416,12 @@ random_event.43 = {
 
 	option = {
 		name = random_event.43.b
-		add_estate_satisfaction = { type = estate_type:nobles_estate
+
+		add_estate_satisfaction = {
+			type = estate_type:nobles_estate
 			value = estate_satisfaction_mild_penalty
 		}
+
 		change_societal_value = {
 			type = serfdom_vs_free_subjects
 			value = societal_value_minor_move_to_right
@@ -2239,20 +2429,17 @@ random_event.43 = {
 	}
 }
 
-
-
 #################################
 # Corruption in the church
 #################################
+
 random_event.44 = {
 	type = country_event
 
 	title = random_event.44.title
 	desc = random_event.44.desc
-	illustration_tags = {
-		10 = regular
-		10 = interior
-	}
+
+	illustration_tags = { 10 = regular 10 = interior }
 
 	trigger = {
 		religion.group = religion_group:christian
@@ -2261,31 +2448,33 @@ random_event.44 = {
 	}
 
 	immediate = {
-		event_illustration_estate_effect = { foreground = estate_type:clergy_estate background = estate_type:clergy_estate }
+		event_illustration_estate_effect = {
+			foreground = estate_type:clergy_estate
+			background = estate_type:clergy_estate
+		}
 	}
 
 	option = {
 		name = random_event.44.a
-		add_estate_satisfaction = { type = estate_type:clergy_estate
+
+		add_estate_satisfaction = {
+			type = estate_type:clergy_estate
 			value = estate_satisfaction_extreme_penalty
 		}
+
 		add_stability = stability_mild_bonus
 	}
 
 	option = {
 		name = random_event.44.b
 
-		add_gold = {
-			value = root.estate_tax_base:clergy_estate
-			multiply = 6
-		}
+		add_gold = { value = root.estate_tax_base:clergy_estate multiply = 6 }
+
 		add_gold_to_estate = {
 			estate_type = estate_type:clergy_estate
-			value = {
-				value = root.estate_tax_base:clergy_estate
-				multiply = -6
-			}
+			value = { value = root.estate_tax_base:clergy_estate multiply = -6 }
 		}
+
 		add_estate_satisfaction = {
 			type = estate_type:clergy_estate
 			value = estate_satisfaction_weak_bonus
@@ -2293,35 +2482,32 @@ random_event.44 = {
 	}
 }
 
-
-
 #################################
 # Merchant fractures
 #################################
+
 random_event.45 = {
 	type = country_event
 
 	title = random_event.45.title
 	desc = random_event.45.desc
-	illustration_tags = {
-		10 = angry
-		10 = interior
-	}
 
-	trigger = {
-		has_markets = yes
-	}
+	illustration_tags = { 10 = angry 10 = interior }
+
+	trigger = { has_markets = yes }
 
 	immediate = {
-		event_illustration_estate_effect = { foreground = estate_type:burghers_estate background = estate_type:burghers_estate }
+		event_illustration_estate_effect = {
+			foreground = estate_type:burghers_estate
+			background = estate_type:burghers_estate
+		}
 	}
 
 	option = {
 		name = random_event.45.a
 		if = {
-			limit = {
-				current_age_or_later = { age = age_4_reformation }
-			}
+			limit = { current_age_or_later = { age = age_4_reformation } }
+
 			change_societal_value = {
 				type = mercantilism_vs_free_trade
 				value = societal_value_minor_move_to_left
@@ -2329,16 +2515,18 @@ random_event.45 = {
 		}
 		else = {
 			add_stability = stability_weak_bonus
-			change_gold_effect = { scale = -1 }
+
+			change_gold_effect = {
+				scale = -1
+			}
 		}
 	}
 
 	option = {
 		name = random_event.45.b
 		if = {
-			limit = {
-				current_age_or_later = { age = age_4_reformation }
-			}
+			limit = { current_age_or_later = { age = age_4_reformation } }
+
 			change_societal_value = {
 				type = mercantilism_vs_free_trade
 				value = societal_value_minor_move_to_right
@@ -2352,27 +2540,27 @@ random_event.45 = {
 
 	option = {
 		name = random_event.45.c
-		add_estate_satisfaction = { type = estate_type:burghers_estate
+
+		add_estate_satisfaction = {
+			type = estate_type:burghers_estate
 			value = estate_satisfaction_weak_penalty
 		}
+
 		add_prestige = prestige_weak_bonus
 	}
 }
 
-
-
 #################################
 # Naval Traditions Scorned
 #################################
+
 random_event.46 = {
 	type = country_event
 
 	title = random_event.46.title
 	desc = random_event.46.desc
-	illustration_tags = {
-		10 = regular
-		10 = interior
-	}
+
+	illustration_tags = { 10 = regular 10 = interior }
 
 	trigger = {
 		navy_tradition < 25
@@ -2381,9 +2569,7 @@ random_event.46 = {
 		navy_size < root.expected_navy_size
 	}
 
-	immediate = {
-		event_illustration_government_estate_effect = yes
-	}
+	immediate = { event_illustration_government_estate_effect = yes }
 
 	option = {
 		name = random_event.46.a
@@ -2394,24 +2580,25 @@ random_event.46 = {
 	option = {
 		name = random_event.46.b
 		add_navy_tradition = navy_tradition_mild_bonus
-		change_gold_effect = { scale = -3 }
+
+		change_gold_effect = {
+			scale = -3
+		}
 	}
 }
-
 
 #################################
 # Army Traditions Scorned
 #################################
+
 random_event.47 = {
 	type = country_event
 
 	title = random_event.47.title
 	desc = random_event.47.desc
-	illustration_tags = {
-		10 = regular
-		10 = interior
-	}
-	
+
+	illustration_tags = { 10 = regular 10 = interior }
+
 	trigger = {
 		navy_tradition > 40
 		army_tradition < 25
@@ -2419,9 +2606,7 @@ random_event.47 = {
 		army_size < root.expected_army_size
 	}
 
-	immediate = {
-		event_illustration_government_estate_effect = yes
-	}
+	immediate = { event_illustration_government_estate_effect = yes }
 
 	option = {
 		name = random_event.47.a
@@ -2432,36 +2617,35 @@ random_event.47 = {
 	option = {
 		name = random_event.47.b
 		add_army_tradition = army_tradition_mild_bonus
-		change_gold_effect = { scale = -3 }
+
+		change_gold_effect = {
+			scale = -3
+		}
 	}
 }
-
-
 
 #################################
 # Opposing Military Schools
 #################################
+
 random_event.48 = {
 	type = country_event
 
 	title = random_event.48.title
 	desc = random_event.48.desc
-	illustration_tags = {
-		10 = regular
-		10 = interior
-	}	
+
+	illustration_tags = { 10 = regular 10 = interior }
 
 	trigger = {
 		societal_value:offensive_vs_defensive > -50
 		societal_value:offensive_vs_defensive < 50
 	}
 
-	immediate = {
-		event_illustration_government_estate_effect = yes
-	}
+	immediate = { event_illustration_government_estate_effect = yes }
 
 	option = {
 		name = random_event.48.a
+
 		change_societal_value = {
 			type = offensive_vs_defensive
 			value = societal_value_minor_move_to_left
@@ -2470,12 +2654,13 @@ random_event.48 = {
 
 	option = {
 		name = random_event.48.b
+
 		change_societal_value = {
 			type = offensive_vs_defensive
 			value = societal_value_minor_move_to_right
 		}
 	}
-	
+
 	option = {
 		name = random_event.48.c
 		add_army_tradition = army_tradition_mild_bonus
@@ -2483,39 +2668,33 @@ random_event.48 = {
 	}
 }
 
-
 ############################################
 # Exceptional Court Painter
 ############################################
+
 random_event.49 = {
 	type = country_event
 
 	title = random_event.49.title
 	desc = random_event.49.desc
-	illustration_tags = {
-		10 = happy
-		10 = interior
-	}
 
-	trigger = {
-		current_age = age_2_renaissance
-		has_advance = patron_of_art
-	}
+	illustration_tags = { 10 = happy 10 = interior }
+
+	trigger = { current_age = age_2_renaissance has_advance = patron_of_art }
 
 	immediate = {
 		create_character = {
 			trait_category = artist
 			artist = painter
-			random_estate_type_trigger = {
-				root = { estate_type_allowed_in_cabinet = {	estate_type = prev } }
-			}
+			random_estate_type_trigger = { root = { estate_type_allowed_in_cabinet = { estate_type = prev } } }
 			artist_skill = { 0.4 0.7 }
 			culture = root.culture
 			religion = root.religion
 			create_in_limbo = yes
-			
+
 			save_scope_as = the_artist
 		}
+
 		event_illustration_government_estate_effect = yes
 	}
 
@@ -2523,29 +2702,28 @@ random_event.49 = {
 		name = random_event.49.a
 		add_gold = -50
 		scope:the_artist = { move_country = root }
-
 	}
 	option = {
 		name = random_event.49.b
 		add_prestige = prestige_weak_penalty
-		hidden_effect = { kill_character_silently = scope:the_artist }
+
+		hidden_effect = {
+			kill_character_silently = scope:the_artist
+		}
 	}
 }
-
-
 
 ############################################
 # Grand Ball
 ############################################
+
 random_event.50 = {
 	type = country_event
 
 	title = random_event.50.title
 	desc = random_event.50.desc
-	illustration_tags = {
-		10 = happy
-		10 = interior
-	}
+
+	illustration_tags = { 10 = happy 10 = interior }
 
 	trigger = {
 		religion.group = religion_group:christian
@@ -2556,41 +2734,50 @@ random_event.50 = {
 	}
 
 	immediate = {
-		event_illustration_estate_effect = { foreground = estate_type:nobles_estate background = estate_type:nobles_estate }
+		event_illustration_estate_effect = {
+			foreground = estate_type:nobles_estate
+			background = estate_type:nobles_estate
+		}
+
 		ruler = { save_scope_as = target_ruler }
 	}
 
 	option = {
 		name = random_event.50.a
-		change_gold_effect = { scale = -4 }
+
+		change_gold_effect = {
+			scale = -4
+		}
+
 		add_prestige = prestige_weak_bonus
-		add_estate_satisfaction = { type = estate_type:nobles_estate
+
+		add_estate_satisfaction = {
+			type = estate_type:nobles_estate
 			value = estate_satisfaction_mild_bonus
 		}
 	}
 	option = {
 		name = random_event.50.b
-		add_estate_satisfaction = { type = estate_type:nobles_estate
+
+		add_estate_satisfaction = {
+			type = estate_type:nobles_estate
 			value = estate_satisfaction_mild_penalty
 		}
 	}
 }
 
-
-
 ############################################
 # Festivities
 ############################################
+
 random_event.51 = {
 	type = country_event
 
 	title = random_event.51.title
 	desc = random_event.51.desc
-	illustration_tags = {
-		10 = happy
-		10 = exterior
-	}
-	
+
+	illustration_tags = { 10 = happy 10 = exterior }
+
 	trigger = {
 		at_war = no
 		has_ruler = yes
@@ -2600,62 +2787,65 @@ random_event.51 = {
 	}
 
 	immediate = {
-		event_illustration_estate_effect = { foreground = estate_type:peasants_estate background = estate_type:peasants_estate }
+		event_illustration_estate_effect = {
+			foreground = estate_type:peasants_estate
+			background = estate_type:peasants_estate
+		}
+
 		ruler = { save_scope_as = target_ruler }
 	}
 
 	option = {
 		name = random_event.51.a
-		change_gold_effect = { scale = -4 }
+
+		change_gold_effect = {
+			scale = -4
+		}
+
 		add_prestige = prestige_weak_bonus
-		add_estate_satisfaction = { type = estate_type:peasants_estate
+
+		add_estate_satisfaction = {
+			type = estate_type:peasants_estate
 			value = estate_satisfaction_mild_bonus
 		}
 	}
-	option = {
-		name = random_event.51.b
-		add_prestige = prestige_weak_penalty
-	}
+	option = { name = random_event.51.b add_prestige = prestige_weak_penalty }
 }
-
-
-
 
 ############################################
 # Complaints about Bailiff
 ############################################
+
 random_event.52 = {
 	type = country_event
 
 	title = random_event.52.title
 	desc = random_event.52.desc
-	illustration_tags = {
-		10 = angry
-		10 = exterior
-	}
-	
+
+	illustration_tags = { 10 = angry 10 = exterior }
+
 	trigger = {
-		total_effective_building_levels:bailiff  > 0
+		total_effective_building_levels:bailiff > 0
 		country_has_estate = estate_type:peasants_estate
 	}
 
 	immediate = {
 		random_owned_location = {
-			limit = {
-				has_building_with_at_least_one_level = bailiff
-			}
+			limit = { has_building_with_at_least_one_level = bailiff }
 
 			save_scope_as = bailiff_location
 		}
-		event_illustration_estate_effect = { foreground = estate_type:peasants_estate background = estate_type:peasants_estate }
+
+		event_illustration_estate_effect = {
+			foreground = estate_type:peasants_estate
+			background = estate_type:peasants_estate
+		}
 	}
 
-	option = {
-		name = random_event.52.a
-		add_prestige = prestige_weak_penalty
-	}
+	option = { name = random_event.52.a add_prestige = prestige_weak_penalty }
 	option = {
 		name = random_event.52.b
+
 		add_estate_satisfaction = {
 			type = estate_type:peasants_estate
 			value = estate_satisfaction_weak_penalty
@@ -2663,9 +2853,11 @@ random_event.52 = {
 	}
 	option = {
 		name = random_event.52.c
+
 		scope:bailiff_location = {
 			destroy_building = "building(building_type:bailiff|owner)"
 		}
+
 		add_estate_satisfaction = {
 			type = estate_type:nobles_estate
 			value = estate_satisfaction_weak_penalty
@@ -2673,35 +2865,27 @@ random_event.52 = {
 	}
 }
 
-
-
 ############################################
 # Priests are preaching Heresy!
 ############################################
+
 random_event.53 = {
 	type = country_event
 
 	title = random_event.53.title
 	desc = random_event.53.desc
-	illustration_tags = {
-		10 = regular
-		10 = exterior
-	}
-	
+
+	illustration_tags = { 10 = regular 10 = exterior }
+
 	trigger = {
 		religion = religion:catholic
 		country_has_estate = estate_type:clergy_estate
 		estate_satisfaction:clergy_estate < 0.5
-		religion:lutheran = {
-			is_religion_enabled = yes
-		}
+		religion:lutheran = { is_religion_enabled = yes }
 		exists = capital
 		capital = {
 			area = {
-				any_location_in_area = {
-					owner ?= root
-					dominant_religion ?= religion:catholic
-				}
+				any_location_in_area = { owner ?= root dominant_religion ?= religion:catholic }
 			}
 		}
 	}
@@ -2710,60 +2894,50 @@ random_event.53 = {
 		capital = {
 			area = {
 				random_location_in_area = {
-					limit = {
-						owner ?= root
-						dominant_religion ?= religion:catholic
-					}
+					limit = { owner ?= root dominant_religion ?= religion:catholic }
 					save_scope_as = heresy_location
 				}
 			}
 		}
 
-		event_illustration_poptype_effect = { foreground = pop_type:clergy   background = pop_type:clergy }
+		event_illustration_poptype_effect = {
+			foreground = pop_type:clergy
+			background = pop_type:clergy
+		}
 	}
 
 	option = {
 		name = random_event.53.a
+
 		scope:heresy_location = {
 			every_pop = {
-				limit = {
-					religion = religion:catholic
-				}
+				limit = { religion = religion:catholic }
+
 				split_pop = {
-					fraction = { 0.40 0.60 } 
+					fraction = { 0.40 0.60 }
 					religion = religion:lutheran
 				}
 			}
 		}
 	}
-	option = {
-		name = random_event.53.b
-		add_stability = stability_weak_penalty
-	}
+	option = { name = random_event.53.b add_stability = stability_weak_penalty }
 }
-
 
 ############################################
 # Dramatic Currency Revaluation
 ############################################
+
 random_event.54 = {
 	type = country_event
 
 	title = random_event.54.title
 	desc = random_event.54.desc
-	illustration_tags = {
-		10 = regular
-		10 = interior
-	}
-	
-	trigger = {
-		stability > 0
-		inflation > 0.05
-	}
 
-	immediate = {
-		event_illustration_government_estate_effect = yes
-	}
+	illustration_tags = { 10 = regular 10 = interior }
+
+	trigger = { stability > 0 inflation > 0.05 }
+
+	immediate = { event_illustration_government_estate_effect = yes }
 
 	option = {
 		name = random_event.54.a
@@ -2771,27 +2945,21 @@ random_event.54 = {
 		add_prestige = prestige_mild_penalty
 		add_inflation = inflation_severe_bonus
 	}
-	option = {
-		name = random_event.54.b
-		add_inflation = inflation_severe_penalty
-	}
+	option = { name = random_event.54.b add_inflation = inflation_severe_penalty }
 }
-
-
 
 ############################################
 # Decadence
 ############################################
+
 random_event.55 = {
 	type = country_event
 
 	title = random_event.55.title
 	desc = random_event.55.desc
-	illustration_tags = {
-		10 = regular
-		10 = interior
-	}
-	
+
+	illustration_tags = { 10 = regular 10 = interior }
+
 	trigger = {
 		stability > 10
 		at_war = no
@@ -2800,9 +2968,7 @@ random_event.55 = {
 		navy_tradition < 10
 	}
 
-	immediate = {
-		event_illustration_government_estate_effect = yes
-	}
+	immediate = { event_illustration_government_estate_effect = yes }
 
 	option = {
 		name = random_event.55.a
@@ -2819,34 +2985,39 @@ random_event.55 = {
 	}
 }
 
-
-
 ############################################
 # Rush of Colonists
 ############################################
+
 random_event.56 = {
 	type = country_event
 
 	title = random_event.56.title
 	desc = random_event.56.desc
-	illustration_tags = {
-		10 = regular
-		10 = exterior
-	}
-	
+
+	illustration_tags = { 10 = regular 10 = exterior }
+
 	trigger = {
 		has_advance = quest_for_the_new_world
 		has_colonial_charters = yes
-		NOT = { has_country_modifier = colonial_rush }
-		NOT = { has_country_modifier = colonial_benefits }
+		NOT = {
+			has_country_modifier = colonial_rush
+		}
+		NOT = {
+			has_country_modifier = colonial_benefits
+		}
 	}
 
 	immediate = {
-		event_illustration_poptype_effect = { foreground = pop_type:burghers   background = pop_type:burghers }
+		event_illustration_poptype_effect = {
+			foreground = pop_type:burghers
+			background = pop_type:burghers
+		}
 	}
 
 	option = {
 		name = random_event.56.a
+
 		add_country_modifier = {
 			modifier = colonial_rush
 			years = 5
@@ -2855,6 +3026,7 @@ random_event.56 = {
 	}
 	option = {
 		name = random_event.56.b
+
 		add_country_modifier = {
 			modifier = colonial_benefits
 			years = 5
@@ -2872,25 +3044,29 @@ random_event.57 = {
 
 	title = random_event.57.title
 	desc = random_event.57.desc
-	illustration_tags = {
-		10 = regular
-		10 = exterior
-	}
-	
+
+	illustration_tags = { 10 = regular 10 = exterior }
+
 	trigger = {
-		any_market_with_merchants = {
-			count > 2
+		any_market_with_merchants = { count > 2 }
+		NOT = {
+			has_country_modifier = rush_of_merchants
 		}
-		NOT = { has_country_modifier = rush_of_merchants }
-		NOT = { has_country_modifier = merchant_benefits }
+		NOT = {
+			has_country_modifier = merchant_benefits
+		}
 	}
 
 	immediate = {
-		event_illustration_estate_effect = { foreground = estate_type:burghers_estate background = estate_type:burghers_estate }
+		event_illustration_estate_effect = {
+			foreground = estate_type:burghers_estate
+			background = estate_type:burghers_estate
+		}
 	}
 
 	option = {
 		name = random_event.57.a
+
 		add_country_modifier = {
 			modifier = rush_of_merchants
 			years = 5
@@ -2899,6 +3075,7 @@ random_event.57 = {
 	}
 	option = {
 		name = random_event.57.b
+
 		add_country_modifier = {
 			modifier = merchant_benefits
 			years = 5
@@ -2906,7 +3083,6 @@ random_event.57 = {
 		}
 	}
 }
-
 
 ############################################
 # Military Divided!
@@ -2917,22 +3093,19 @@ random_event.58 = {
 
 	title = random_event.58.title
 	desc = random_event.58.desc
-	illustration_tags = {
-		10 = armed
-		10 = exterior
-	}
-	
+
+	illustration_tags = { 10 = armed 10 = exterior }
+
 	trigger = {
 		societal_value:offensive_vs_defensive < 50
 		societal_value:offensive_vs_defensive > -50
 	}
 
-	immediate = {
-		event_illustration_government_estate_effect = yes
-	}
+	immediate = { event_illustration_government_estate_effect = yes }
 
 	option = {
 		name = random_event.58.a
+
 		change_societal_value = {
 			type = offensive_vs_defensive
 			value = societal_value_minor_move_to_right
@@ -2940,13 +3113,13 @@ random_event.58 = {
 	}
 	option = {
 		name = random_event.58.b
+
 		change_societal_value = {
 			type = offensive_vs_defensive
 			value = societal_value_minor_move_to_left
 		}
 	}
 }
-
 
 ############################################
 # Monarch embarrasses the court
@@ -2957,11 +3130,9 @@ random_event.59 = {
 
 	title = random_event.59.title
 	desc = random_event.59.desc
-	illustration_tags = {
-		10 = angry
-		10 = interior
-	}
-	
+
+	illustration_tags = { 10 = angry 10 = interior }
+
 	trigger = {
 		government_type = government_type:monarchy
 		has_ruler = yes
@@ -2991,11 +3162,9 @@ random_event.60 = {
 
 	title = random_event.60.title
 	desc = random_event.60.desc
-	illustration_tags = {
-		10 = regular
-		10 = interior
-	}
-	
+
+	illustration_tags = { 10 = regular 10 = interior }
+
 	trigger = {
 		num_loans < 1
 		at_war = no
@@ -3007,11 +3176,15 @@ random_event.60 = {
 	}
 
 	immediate = {
-		event_illustration_estate_effect = { foreground = estate_type:nobles_estate background = estate_type:nobles_estate }
+		event_illustration_estate_effect = {
+			foreground = estate_type:nobles_estate
+			background = estate_type:nobles_estate
+		}
 	}
 
 	option = {
 		name = random_event.60.a
+
 		add_estate_satisfaction = {
 			type = estate_type:nobles_estate
 			value = estate_satisfaction_extreme_penalty
@@ -3019,72 +3192,64 @@ random_event.60 = {
 	}
 	option = {
 		name = random_event.60.b
-		change_gold_effect = { scale = -6 }
+
+		change_gold_effect = {
+			scale = -6
+		}
 
 		add_gold_to_estate = {
 			estate_type = estate_type:nobles_estate
-			value = {
-				value = root.monthly_income_trade_and_tax
-				multiply = 6
-			}
+			value = { value = root.monthly_income_trade_and_tax multiply = 6 }
 		}
 	}
 }
 
-
-
 ############################################
 # Monetary Reforms
 ############################################
+
 random_event.61 = {
 	type = country_event
 
 	title = random_event.61.title
 	desc = random_event.61.desc
-	illustration_tags = {
-		10 = regular
-		10 = interior
-	}
-	
+
+	illustration_tags = { 10 = regular 10 = interior }
+
 	trigger = {
 		modifier:monthly_inflation > 0
 		inflation > 0.02
-		NOT = { has_country_modifier = monetary_reforms } 
+		NOT = {
+			has_country_modifier = monetary_reforms
+		}
 	}
 
-	immediate = {
-		event_illustration_government_estate_effect = yes
-	}
+	immediate = { event_illustration_government_estate_effect = yes }
 
 	option = {
 		name = random_event.61.a
+
 		add_country_modifier = {
 			modifier = monetary_reforms
 			years = 5
 			mode = add_and_extend
 		}
 	}
-	option = {
-		name = random_event.61.b
-		add_inflation = inflation_mild_penalty
-	}
+	option = { name = random_event.61.b add_inflation = inflation_mild_penalty }
 }
-
-
 
 ############################################
 # The Aftermath of War
 ############################################
+
 random_event.62 = {
 	type = country_event
 
 	title = random_event.62.title
 	desc = random_event.62.desc
-	illustration_tags = {
-		10 = angry
-		10 = exterior
-	}
-	
+
+	illustration_tags = { 10 = angry 10 = exterior }
+
 	trigger = {
 		at_war = no
 		war_exhaustion > 5
@@ -3093,35 +3258,38 @@ random_event.62 = {
 	}
 
 	immediate = {
-		event_illustration_poptype_effect = { foreground = pop_type:nobles   background = pop_type:nobles }
+		event_illustration_poptype_effect = {
+			foreground = pop_type:nobles
+			background = pop_type:nobles
+		}
 	}
 
 	option = {
 		name = random_event.62.a
 		add_war_exhaustion = war_exhaustion_severe_bonus
-		change_gold_effect = { scale = -2 }
 
+		change_gold_effect = {
+			scale = -2
+		}
 	}
 	option = {
 		name = random_event.62.b
 		add_war_exhaustion = war_exhaustion_weak_bonus
-
 	}
 }
 
 ############################################
 # Strong Military Leadership
 ############################################
+
 random_event.63 = {
 	type = country_event
 
 	title = random_event.63.title
 	desc = random_event.63.desc
-	illustration_tags = {
-		10 = armed
-		10 = exterior
-	}
-	
+
+	illustration_tags = { 10 = armed 10 = exterior }
+
 	trigger = {
 		army_tradition > 50
 		at_war = no
@@ -3131,23 +3299,32 @@ random_event.63 = {
 	}
 
 	immediate = {
-		event_illustration_poptype_effect = { foreground = pop_type:nobles   background = pop_type:nobles }
+		event_illustration_poptype_effect = {
+			foreground = pop_type:nobles
+			background = pop_type:nobles
+		}
 	}
 
 	option = {
 		name = random_event.63.a
-		add_estate_satisfaction = { type = estate_type:nobles_estate
+
+		add_estate_satisfaction = {
+			type = estate_type:nobles_estate
 			value = estate_satisfaction_mild_penalty
 		}
 	}
 	option = {
 		name = random_event.63.b
-		add_estate_satisfaction = { type = estate_type:peasants_estate
+
+		add_estate_satisfaction = {
+			type = estate_type:peasants_estate
 			value = estate_satisfaction_weak_penalty
 		}
-		add_estate_satisfaction = { type = estate_type:nobles_estate
+		add_estate_satisfaction = {
+			type = estate_type:nobles_estate
 			value = estate_satisfaction_weak_bonus
 		}
+
 		add_army_tradition = army_tradition_extreme_penalty
 	}
 }
@@ -3155,16 +3332,15 @@ random_event.63 = {
 ############################################
 # The Naval Tradition
 ############################################
+
 random_event.64 = {
 	type = country_event
 
 	title = random_event.64.title
 	desc = random_event.64.desc
-	illustration_tags = {
-		10 = armed
-		10 = exterior
-	}
-	
+
+	illustration_tags = { 10 = armed 10 = exterior }
+
 	trigger = {
 		navy_tradition > 50
 		at_war = no
@@ -3173,45 +3349,53 @@ random_event.64 = {
 	}
 
 	immediate = {
-		event_illustration_poptype_effect = { foreground = pop_type:nobles   background = pop_type:nobles }
+		event_illustration_poptype_effect = {
+			foreground = pop_type:nobles
+			background = pop_type:nobles
+		}
 	}
 
 	option = {
 		name = random_event.64.a
-		add_estate_satisfaction = { type = estate_type:nobles_estate
+
+		add_estate_satisfaction = {
+			type = estate_type:nobles_estate
 			value = estate_satisfaction_mild_penalty
 		}
 	}
 	option = {
 		name = random_event.64.b
-		add_estate_satisfaction = { type = estate_type:peasants_estate
+
+		add_estate_satisfaction = {
+			type = estate_type:peasants_estate
 			value = estate_satisfaction_weak_penalty
 		}
-		add_estate_satisfaction = { type = estate_type:nobles_estate
+		add_estate_satisfaction = {
+			type = estate_type:nobles_estate
 			value = estate_satisfaction_weak_bonus
 		}
+
 		add_navy_tradition = navy_tradition_extreme_penalty
 	}
 }
 
-
 ############################################
 # Sickness of Monarch
 ############################################
+
 random_event.65 = {
 	type = country_event
 
 	title = random_event.65.title
 	desc = random_event.65.desc
-	illustration_tags = {
-		10 = regular
-		10 = interior
-	}
-	
+
+	illustration_tags = { 10 = regular 10 = interior }
+
 	trigger = {
 		has_regent = no
 		government_type = government_type:monarchy
 		has_ruler = yes
+
 		ruler = {
 			age_in_years > 50
 			NOR = {
@@ -3236,7 +3420,8 @@ random_event.65 = {
 
 	option = {
 		name = random_event.65.a
-		trigger = { country_has_estate = estate_type:nobles_estate}
+		trigger = { country_has_estate = estate_type:nobles_estate }
+
 		scope:target_ruler = {
 			add_character_modifier = {
 				modifier = nobles_in_power
@@ -3247,7 +3432,8 @@ random_event.65 = {
 	}
 	option = {
 		name = random_event.65.b
-		trigger = { country_has_estate = estate_type:clergy_estate}
+		trigger = { country_has_estate = estate_type:clergy_estate }
+
 		scope:target_ruler = {
 			add_character_modifier = {
 				modifier = clergy_in_power
@@ -3258,7 +3444,8 @@ random_event.65 = {
 	}
 	option = {
 		name = random_event.65.c
-		trigger = { country_has_estate = estate_type:burghers_estate}
+		trigger = { country_has_estate = estate_type:burghers_estate }
+
 		scope:target_ruler = {
 			add_character_modifier = {
 				modifier = burghers_in_power
@@ -3269,7 +3456,8 @@ random_event.65 = {
 	}
 	option = {
 		name = random_event.65.d
-		trigger = { country_has_estate = estate_type:peasants_estate}
+		trigger = { country_has_estate = estate_type:peasants_estate }
+
 		scope:target_ruler = {
 			add_character_modifier = {
 				modifier = peasants_in_power
@@ -3280,21 +3468,17 @@ random_event.65 = {
 	}
 }
 
-
-
-
 ################################
 # Regional Nobles challenge $COUNTRY$
 #################################
+
 random_event.66 = {
 	type = country_event
 
 	title = random_event.66.title
 	desc = random_event.66.desc
-	illustration_tags = {
-		10 = armed
-		10 = exterior
-	}
+
+	illustration_tags = { 10 = armed 10 = exterior }
 
 	trigger = {
 		exists = capital
@@ -3302,8 +3486,11 @@ random_event.66 = {
 			province_average_control < 0.20
 			region = root.capital.region
 			any_location_in_province = { num_pop_type:nobles > 0 }
-			NOT = { has_province_modifier = local_noble_autonomy }
+			NOT = {
+				has_province_modifier = local_noble_autonomy
+			}
 		}
+
 		estate_satisfaction:nobles_estate < 0.5
 	}
 
@@ -3313,11 +3500,18 @@ random_event.66 = {
 				province_average_control < 0.20
 				region = root.capital.region
 				any_location_in_province = { num_pop_type:nobles > 0 }
-				NOT = { has_province_modifier = local_noble_autonomy }
+				NOT = {
+					has_province_modifier = local_noble_autonomy
+				}
 			}
+
 			save_scope_as = unruly_nobles_province
 		}
-		event_illustration_estate_effect = { foreground = estate_type:nobles_estate background = estate_type:nobles_estate }
+
+		event_illustration_estate_effect = {
+			foreground = estate_type:nobles_estate
+			background = estate_type:nobles_estate
+		}
 	}
 
 	option = {
@@ -3326,21 +3520,21 @@ random_event.66 = {
 		scope:unruly_nobles_province = {
 			every_location_in_province = {
 				random_pop = {
-					limit = {
-						owner = root
-						pop_type = pop_type:nobles
-					}
+					limit = { owner = root pop_type = pop_type:nobles }
 					add_pop_satisfaction = pop_satisfaction_mild_penalty
 				}
 			}
 		}
-		add_estate_satisfaction = { type = estate_type:nobles_estate
+
+		add_estate_satisfaction = {
+			type = estate_type:nobles_estate
 			value = estate_satisfaction_weak_penalty
 		}
 	}
 
 	option = {
 		name = random_event.66.b
+
 		scope:unruly_nobles_province ?= {
 			add_province_modifier = {
 				modifier = local_noble_autonomy
@@ -3348,37 +3542,39 @@ random_event.66 = {
 				mode = add_and_extend
 			}
 		}
-		add_estate_satisfaction = { type = estate_type:nobles_estate
+
+		add_estate_satisfaction = {
+			type = estate_type:nobles_estate
 			value = estate_satisfaction_weak_bonus
 		}
 	}
 }
 
-
 ############################################
 # Clergy condemns philosopher as heretic!
 ############################################
+
 random_event.67 = {
 	type = country_event
 
 	title = random_event.67.title
 	desc = random_event.67.desc
-	illustration_tags = {
-		10 = angry
-		10 = interior
-	}
-	
+
+	illustration_tags = { 10 = angry 10 = interior }
+
 	trigger = {
 		religion = religion:catholic
 		societal_value:traditionalist_vs_innovative < -20
 		country_has_estate = estate_type:clergy_estate
-		any_artist = {
-			artist_type = philosopher
-		}
+		any_artist = { artist_type = philosopher }
 	}
 
 	immediate = {
-		event_illustration_estate_effect = { foreground = estate_type:clergy_estate background = estate_type:clergy_estate }
+		event_illustration_estate_effect = {
+			foreground = estate_type:clergy_estate
+			background = estate_type:clergy_estate
+		}
+
 		random_artist = {
 			limit = { artist_type = philosopher }
 			save_scope_as = natural_philosopher
@@ -3387,47 +3583,50 @@ random_event.67 = {
 
 	option = {
 		name = random_event.67.a
-		add_estate_satisfaction = { type = estate_type:clergy_estate
+
+		add_estate_satisfaction = {
+			type = estate_type:clergy_estate
 			value = estate_satisfaction_mild_bonus
 		}
+
 		change_societal_value = {
 			type = traditionalist_vs_innovative
 			value = societal_value_minor_move_to_left
 		}
-		kill_character = {
-			target = scope:natural_philosopher
-			reason = burned_alive
-		}
+
+		kill_character = { target = scope:natural_philosopher reason = burned_alive }
 	}
 	option = {
 		name = random_event.67.b
-		add_estate_satisfaction = { type = estate_type:clergy_estate
+
+		add_estate_satisfaction = {
+			type = estate_type:clergy_estate
 			value = estate_satisfaction_mild_penalty
 		}
+
 		change_societal_value = {
 			type = traditionalist_vs_innovative
 			value = societal_value_minor_move_to_right
 		}
-		hidden_effect = { scope:natural_philosopher = { move_country = root } }
+
+		hidden_effect = {
+			scope:natural_philosopher = { move_country = root }
+		}
 	}
 }
-
-
-
 
 ############################################
 # Growth of Cities attracts Serfs
 ############################################
+
 random_event.68 = {
 	type = country_event
 
 	title = random_event.68.title
 	desc = random_event.68.desc
-	illustration_tags = {
-		10 = regular
-		10 = exterior
-	}
-	
+
+	illustration_tags = { 10 = regular 10 = exterior }
+
 	trigger = {
 		country_has_estate = estate_type:peasants_estate
 		num_of_non_rural >= 1
@@ -3435,38 +3634,33 @@ random_event.68 = {
 	}
 
 	immediate = {
-		event_illustration_estate_effect = { foreground = estate_type:peasants_estate background = estate_type:peasants_estate }
+		event_illustration_estate_effect = {
+			foreground = estate_type:peasants_estate
+			background = estate_type:peasants_estate
+		}
+
 		ordered_owned_rural_location = {
 			order_by = development
+
 			max = {
 				value = 3
-				add = {
-					value = num_provinces
-					multiply = 0.25
-					ceiling = yes
-				}
+				add = { value = num_provinces multiply = 0.25 ceiling = yes }
 			}
+
 			check_range_bounds = no
 			add_to_list = list_of_rural
 		}
-		random_in_list = {
-			list = list_of_rural
-			save_scope_as = starting_location
-		}
+
+		random_in_list = { list = list_of_rural save_scope_as = starting_location }
+
 		ordered_owned_non_rural_location = {
 			order_by = {
-				#They are more likely to move to the closest urban location
-				#And not across the continent or beyond
-				value = {
-					add = "distance_to_squared(scope:starting_location)"
-					multiply = -1
-				}
-				#More likely to move to non-overpopulated towns and cities
-				#However we don't want them to populate ghost-towns
-				if = {
-					limit = { location_population_percentage <= 0 }
-					divide = 0.75
-				}
+				# They are more likely to move to the closest urban location
+				# And not across the continent or beyond
+				value = { add = "distance_to_squared(scope:starting_location)" multiply = -1 }
+				# More likely to move to non-overpopulated towns and cities
+				# However we don't want them to populate ghost-towns
+				if = { limit = { location_population_percentage <= 0 } divide = 0.75 }
 				else = { divide = location_population_percentage }
 
 				if = {
@@ -3477,21 +3671,15 @@ random_event.68 = {
 
 			max = {
 				value = 3
-				add = {
-					value = num_provinces
-					multiply = 0.25
-					ceiling = yes
-				}
+				add = { value = num_provinces multiply = 0.25 ceiling = yes }
 			}
+
 			check_range_bounds = no
-			
+
 			add_to_list = urban_list_68
 		}
 
-		random_in_list = {
-			list = urban_list_68
-			save_scope_as = target_location
-		}
+		random_in_list = { list = urban_list_68 save_scope_as = target_location }
 	}
 
 	option = {
@@ -3508,17 +3696,13 @@ random_event.68 = {
 			}
 		}
 
-		scope:starting_location = {
-			change_development = development_mild_penalty
-		}
+		scope:starting_location = { change_development = development_mild_penalty }
+
 		scope:target_location = {
 			change_development = development_mild_bonus
 
 			hidden_effect = {
-				set_variable = {
-					name = recently_received_serfs_variable
-					years = 10
-				}
+				set_variable = { name = recently_received_serfs_variable years = 10 }
 			}
 		}
 
@@ -3526,29 +3710,27 @@ random_event.68 = {
 			limit = {
 				scope:starting_location.province = {
 					this != scope:target_location.province
+
 					population > {
 						value = 1
-						add = {
-							value = scope:target_location.province.population
-							multiply = 0.25
-						}
+						add = { value = scope:target_location.province.population multiply = 0.25 }
 					}
 				}
 			}
+
 			add_migration = {
 				owner = root
 				from = scope:starting_location.province_definition
 				to = scope:target_location.province_definition
+
 				amount = {
-					value = {
-						add = scope:target_location.province.population
-						multiply = 0.01
-					}
+					value = { add = scope:target_location.province.population multiply = 0.01 }
 				}
+
 				months = 5
- 			}
+			}
 		}
-		
+
 		change_societal_value = {
 			type = centralization_vs_decentralization
 			value = societal_value_minor_move_to_left
@@ -3557,11 +3739,11 @@ random_event.68 = {
 	option = {
 		name = random_event.68.b
 
-		add_estate_satisfaction = { 
+		add_estate_satisfaction = {
 			type = estate_type:peasants_estate
 			value = estate_satisfaction_mild_penalty
 		}
-		add_estate_satisfaction = { 
+		add_estate_satisfaction = {
 			type = estate_type:nobles_estate
 			value = estate_satisfaction_extreme_bonus
 		}
@@ -3570,10 +3752,12 @@ random_event.68 = {
 			limit = { has_estate_privilege = estate_privilege:peasants_free_peasantry }
 
 			custom_tooltip = following_happens_because_of_peasants_free_peasantry_tt
+
 			change_societal_value = {
 				type = serfdom_vs_free_subjects
 				value = societal_value_minor_move_to_left
 			}
+
 			add_stability = stability_weak_penalty
 		}
 		else = {
@@ -3586,27 +3770,24 @@ random_event.68 = {
 		ai_will_select = {
 			if = {
 				limit = { has_estate_privilege = estate_privilege:peasants_free_peasantry }
-				value = 0 
+				value = 0
 			}
 		}
 	}
 }
 
-
-
 ############################################
 # Rulers reputation tarnished!
 ############################################
+
 random_event.69 = {
 	type = country_event
 
 	title = random_event.69.title
 	desc = random_event.69.desc
-	illustration_tags = {
-		10 = angry
-		10 = interior
-	}
-	
+
+	illustration_tags = { 10 = angry 10 = interior }
+
 	trigger = {
 		has_countries_with_timed_antagonism = yes
 		stability > -40
@@ -3620,6 +3801,7 @@ random_event.69 = {
 
 	option = {
 		name = random_event.69.a
+
 		drop_antagonism_bomb = {
 			target = capital
 			modifier = antagonism_embraced_antagonism
@@ -3627,48 +3809,43 @@ random_event.69 = {
 		}
 	}
 
-	#execute someone for this
+	# execute someone for this
 	option = {
 		name = random_event.69.b
 		add_stability = stability_mild_penalty
-		ai_will_select = {
-			value = 0
-		}
+		ai_will_select = { value = 0 }
 	}
 }
-
-
 
 ############################################
 # Fight the Good Fight!
 ############################################
+
 random_event.70 = {
 	type = country_event
 
 	title = random_event.70.title
 	desc = random_event.70.desc
-	illustration_tags = {
-		10 = armed
-		10 = exterior
-	}
-	
+
+	illustration_tags = { 10 = armed 10 = exterior }
+
 	trigger = {
 		at_war = yes
 		num_rebels <= 0
 		war_exhaustion > 2
-		any_country_at_war_with = {
-			army_size > root.army_size
-		}
+		any_country_at_war_with = { army_size > root.army_size }
 	}
 
 	immediate = {
 		random_country_at_war_with = {
-			limit = {
-				army_size > root.army_size
-			}
+			limit = { army_size > root.army_size }
 			save_scope_as = enemy_country
 		}
-		event_illustration_estate_effect = { foreground = estate_type:peasants_estate background = estate_type:peasants_estate }
+
+		event_illustration_estate_effect = {
+			foreground = estate_type:peasants_estate
+			background = estate_type:peasants_estate
+		}
 	}
 
 	option = {
@@ -3677,21 +3854,18 @@ random_event.70 = {
 	}
 }
 
-
-
 ############################################
 # Improve the Capital
 ############################################
+
 random_event.71 = {
 	type = country_event
 
 	title = random_event.71.title
 	desc = random_event.71.desc
-	illustration_tags = {
-		10 = regular
-		10 = interior
-	}
-	
+
+	illustration_tags = { 10 = regular 10 = interior }
+
 	trigger = {
 		at_war = no
 		capital ?= { development < 100 }
@@ -3708,106 +3882,102 @@ random_event.71 = {
 	option = {
 		name = random_event.71.a
 		capital ?= { change_development = development_weak_bonus }
-		add_manpower = {
-			value = root.monthly_manpower
-			multiply = -3
-		}
+		add_manpower = { value = root.monthly_manpower multiply = -3 }
 	}
 	option = {
 		name = random_event.71.b
 		capital ?= { change_development = development_weak_bonus }
-		change_gold_effect = { scale = -2 }
+
+		change_gold_effect = {
+			scale = -2
+		}
 	}
 }
-
 
 ############################################
 # A Generation of Cowards
 ############################################
+
 random_event.72 = {
 	type = country_event
 
 	title = random_event.72.title
 	desc = random_event.72.desc
-	illustration_tags = {
-		10 = regular
-		10 = exterior
-	}
-	
+
+	illustration_tags = { 10 = regular 10 = exterior }
+
 	trigger = {
 		at_war = no
 		months_since_war > 120
 		manpower > 1
 		manpower_percentage > 0.85
-		NOT = { has_country_modifier = generation_of_cowards }
+		NOT = {
+			has_country_modifier = generation_of_cowards
+		}
 	}
 
 	immediate = {
-		event_illustration_estate_effect = { foreground = estate_type:peasants_estate background = estate_type:peasants_estate }
+		event_illustration_estate_effect = {
+			foreground = estate_type:peasants_estate
+			background = estate_type:peasants_estate
+		}
 	}
 
 	option = {
 		name = random_event.72.a
-		add_manpower = {
-			value = root.max_manpower
-			multiply = -0.1
-		}
+		add_manpower = { value = root.max_manpower multiply = -0.1 }
 	}
 	option = {
 		name = random_event.72.b
+
 		add_country_modifier = {
 			modifier = generation_of_cowards
 			years = 10
 			mode = add_and_extend
 		}
-
 	}
 }
-
-
-
 
 ############################################
 # Generous Merchant Family
 ############################################
+
 random_event.73 = {
 	type = country_event
 
 	title = random_event.73.title
 	desc = random_event.73.desc
-	illustration_tags = {
-		10 = regular
-		10 = interior
-	}
-	
-	trigger = {
-		any_market_with_merchants = {
-			count > 1
-		}
-	}
+
+	illustration_tags = { 10 = regular 10 = interior }
+
+	trigger = { any_market_with_merchants = { count > 1 } }
 
 	immediate = {
 		event_illustration_government_estate_effect = yes
-		
+
 		create_character = {
 			trait_category = artist
 			artist = painter
-			random_estate_type_trigger = {
-				root = { estate_type_allowed_in_cabinet = {	estate_type = prev } }
-			}
+			random_estate_type_trigger = { root = { estate_type_allowed_in_cabinet = { estate_type = prev } } }
 			artist_skill = { 0.5 0.9 }
 			culture = root.culture
 			religion = root.religion
 			create_in_limbo = yes
-			
+
 			save_scope_as = the_artist
 		}
 	}
 
 	option = {
 		name = random_event.73.a
-		change_gold_effect = { scale = 3.0 }
-		hidden_effect = { kill_character_silently = scope:the_artist }
+
+		change_gold_effect = {
+			scale = 3.0
+		}
+
+		hidden_effect = {
+			kill_character_silently = scope:the_artist
+		}
 	}
 	option = {
 		name = random_event.73.b
@@ -3816,51 +3986,59 @@ random_event.73 = {
 	}
 	option = {
 		name = random_event.73.c
-		trigger = {
-			has_ruler = yes
-			ruler = { has_trait = well_connected }
-		}
+		trigger = { has_ruler = yes ruler = { has_trait = well_connected } }
 		add_legitimacy = legitimacy_mild_bonus
-		change_gold_effect = { scale = 1.5 }
+
+		change_gold_effect = {
+			scale = 1.5
+		}
+
 		scope:the_artist = { move_country = root }
 	}
 }
 
-
 ############################################
 # Local fortification expert discovered
 ############################################
+
 random_event.74 = {
 	type = country_event
 
 	title = random_event.74.title
 	desc = random_event.74.desc
-	illustration_tags = {
-		10 = regular
-		10 = interior
-	}
-	
+
+	illustration_tags = { 10 = regular 10 = interior }
+
 	trigger = {
 		any_owned_location = {
 			modifier:fort_level > 0
-			NOT = { has_location_modifier = local_fortress }
+			NOT = {
+				has_location_modifier = local_fortress
+			}
 		}
-		NOT = { has_country_modifier = fortification_expert }
+		NOT = {
+			has_country_modifier = fortification_expert
+		}
 	}
 
 	immediate = {
 		random_owned_location = {
 			limit = {
 				modifier:fort_level > 0
-				NOT = { has_location_modifier = local_fortress }
+				NOT = {
+					has_location_modifier = local_fortress
+				}
 			}
+
 			save_scope_as = fortification
 		}
+
 		event_illustration_government_estate_effect = yes
 	}
 
 	option = {
 		name = random_event.74.a
+
 		add_country_modifier = {
 			modifier = fortification_expert
 			years = 10
@@ -3880,12 +4058,13 @@ random_event.74 = {
 	}
 }
 
-
-
 ############################################
 # Naive Relative
 ############################################
-scripted_trigger random_event_75_character_trigger = {
+
+scripted_trigger
+
+random_event_75_character_trigger = {
 	is_adult = yes
 	is_ruler = no
 	is_close_relative = root.ruler
@@ -3895,34 +4074,32 @@ scripted_trigger random_event_75_character_trigger = {
 		exists = rebel
 	}
 }
+
 random_event.75 = {
 	type = country_event
 
 	title = random_event.75.title
 	desc = random_event.75.desc
-	illustration_tags = {
-		10 = angry
-		10 = interior
-	}
-	
+
+	illustration_tags = { 10 = angry 10 = interior }
+
 	trigger = {
 		government_type = government_type:monarchy
 		has_ruler = yes
-		
-		any_character = {
-			random_event_75_character_trigger = yes
-		}
 
-		NOT = { has_country_modifier = compromised_counter_espionage }
+		any_character = { random_event_75_character_trigger = yes }
+
+		NOT = {
+			has_country_modifier = compromised_counter_espionage
+		}
 	}
 
 	immediate = {
 		random_character = {
-			limit = {
-				random_event_75_character_trigger = yes
-			}
+			limit = { random_event_75_character_trigger = yes }
 			save_scope_as = naive
 		}
+
 		ruler = { save_scope_as = target_ruler }
 		event_illustration_government_estate_effect = yes
 	}
@@ -3934,6 +4111,7 @@ random_event.75 = {
 	}
 	option = {
 		name = random_event.75.b
+
 		add_country_modifier = {
 			modifier = compromised_counter_espionage
 			years = 10
@@ -3942,25 +4120,21 @@ random_event.75 = {
 	}
 }
 
-
 ############################################
 # Smugglers running rampant
 ############################################
+
 random_event.76 = {
 	type = country_event
 
 	title = random_event.76.title
 	desc = random_event.76.desc
-	illustration_tags = {
-		10 = angry
-		10 = exterior
-	}
-	
+
+	illustration_tags = { 10 = angry 10 = exterior }
+
 	trigger = {
 		current_age_or_later = { age = age_4_reformation }
-		any_market_with_merchants = {
-			count > 4
-		}
+		any_market_with_merchants = { count > 4 }
 		societal_value:mercantilism_vs_free_trade < -20
 		NOT = {
 			has_country_modifier = smugglers_dominating
@@ -3968,12 +4142,19 @@ random_event.76 = {
 	}
 
 	immediate = {
-		event_illustration_estate_effect = { foreground = estate_type:burghers_estate background = estate_type:burghers_estate }
+		event_illustration_estate_effect = {
+			foreground = estate_type:burghers_estate
+			background = estate_type:burghers_estate
+		}
 	}
 
 	option = {
 		name = random_event.76.a
-		change_gold_effect = { scale = -2.0 }
+
+		change_gold_effect = {
+			scale = -2.0
+		}
+
 		change_societal_value = {
 			type = mercantilism_vs_free_trade
 			value = societal_value_tiny_move_to_right
@@ -3981,6 +4162,7 @@ random_event.76 = {
 	}
 	option = {
 		name = random_event.76.b
+
 		add_country_modifier = {
 			modifier = smugglers_dominating
 			years = 5
@@ -3989,27 +4171,21 @@ random_event.76 = {
 	}
 }
 
-
 ############################################
 # Printing Press gives Benefits
 ############################################
+
 random_event.77 = {
 	type = country_event
 
 	title = random_event.77.title
 	desc = random_event.77.desc
-	illustration_tags = {
-		10 = happy
-		10 = interior
-	}
-	
-	trigger = {
-		has_embraced_institution = institution:printing_press
-	}
 
-	immediate = {
-		event_illustration_government_estate_effect = yes
-	}
+	illustration_tags = { 10 = happy 10 = interior }
+
+	trigger = { has_embraced_institution = institution:printing_press }
+
+	immediate = { event_illustration_government_estate_effect = yes }
 
 	option = {
 		name = random_event.77.a
@@ -4017,21 +4193,18 @@ random_event.77 = {
 	}
 }
 
-
-
 ############################################
 # Extraordinary Recruiting Policies
 ############################################
+
 random_event.78 = {
 	type = country_event
 
 	title = random_event.78.title
 	desc = random_event.78.desc
-	illustration_tags = {
-		10 = armed
-		10 = exterior
-	}
-	
+
+	illustration_tags = { 10 = armed 10 = exterior }
+
 	trigger = {
 		has_ruler = yes
 		ruler = { mil > 66 }
@@ -4042,80 +4215,65 @@ random_event.78 = {
 	}
 
 	immediate = {
-		event_illustration_estate_effect = { foreground = estate_type:peasants_estate background = estate_type:peasants_estate }
+		event_illustration_estate_effect = {
+			foreground = estate_type:peasants_estate
+			background = estate_type:peasants_estate
+		}
+
 		ruler = { save_scope_as = target_ruler }
 	}
 
 	option = {
 		name = random_event.78.a
-		add_manpower = {
-			value = root.monthly_manpower
-			multiply = 10
-		}
+		add_manpower = { value = root.monthly_manpower multiply = 10 }
 		add_war_exhaustion = war_exhaustion_weak_penalty
-
 	}
 	option = {
 		name = random_event.78.b
-		add_manpower = {
-			value = root.monthly_manpower
-			multiply = 4
-		}
+		add_manpower = { value = root.monthly_manpower multiply = 4 }
 	}
 }
-
-
 
 ########################
 # Great Economic Policy
 ########################
+
 random_event.79 = {
 	type = country_event
 
 	title = random_event.79.title
 	desc = random_event.79.desc
-	illustration_tags = {
-		10 = happy
-		10 = interior
-	}
 
-	trigger = {
-		inflation > 0.02
-		has_ruler = yes
-		ruler = { adm > 66 }
-	}
-	
+	illustration_tags = { 10 = happy 10 = interior }
+
+	trigger = { inflation > 0.02 has_ruler = yes ruler = { adm > 66 } }
+
 	immediate = {
 		event_illustration_government_estate_effect = yes
 		ruler = { save_scope_as = target_ruler }
 	}
-	
-	option = {
-		name = random_event.79.a
-		add_inflation = inflation_weak_bonus
-	}
-}
 
+	option = { name = random_event.79.a add_inflation = inflation_weak_bonus }
+}
 
 ########################
 # A Golden Era for Culture!
 ########################
+
 random_event.80 = {
 	type = country_event
 
 	title = random_event.80.title
 	desc = random_event.80.desc
-	illustration_tags = {
-		10 = happy
-		10 = interior
-	}	
+
+	illustration_tags = { 10 = happy 10 = interior }
 
 	trigger = {
 		at_war = no
 		modifier:has_cultural_maintenance = yes
 		has_ruler = yes
 	}
-	
+
 	immediate = {
 		event_illustration_government_estate_effect = yes
 		ruler ?= { save_scope_as = target_ruler }
@@ -4130,23 +4288,22 @@ random_event.80 = {
 ########################
 # Warriors do not read books
 ########################
+
 random_event.81 = {
 	type = country_event
 
 	title = random_event.81.title
 	desc = random_event.81.desc
-	illustration_tags = {
-		10 = armed
-		10 = exterior
-	}	
 
-	trigger = {
-		at_war = yes
-		modifier:has_cultural_maintenance = yes
-	}
+	illustration_tags = { 10 = armed 10 = exterior }
+
+	trigger = { at_war = yes modifier:has_cultural_maintenance = yes }
 
 	immediate = {
-		event_illustration_estate_effect = { foreground = estate_type:peasants_estate background = estate_type:peasants_estate }
+		event_illustration_estate_effect = {
+			foreground = estate_type:peasants_estate
+			background = estate_type:peasants_estate
+		}
 	}
 
 	option = {
@@ -4155,24 +4312,24 @@ random_event.81 = {
 	}
 }
 
-
 ########################
 # Competent Diplomacy
 ########################
+
 random_event.82 = {
 	type = country_event
 
 	title = random_event.82.title
 	desc = random_event.82.desc
-	illustration_tags = {
-		10 = happy
-		10 = interior
-	}
-	
+
+	illustration_tags = { 10 = happy 10 = interior }
+
 	trigger = {
 		has_ruler = yes
 		ruler = { dip > 66 }
-		NOT = { has_country_modifier = competent_diplomacy }
+		NOT = {
+			has_country_modifier = competent_diplomacy
+		}
 	}
 
 	immediate = {
@@ -4182,6 +4339,7 @@ random_event.82 = {
 
 	option = {
 		name = random_event.82.a
+
 		add_country_modifier = {
 			modifier = competent_diplomacy
 			years = 10
@@ -4193,20 +4351,21 @@ random_event.82 = {
 ########################
 # Incompetent Diplomacy
 ########################
+
 random_event.83 = {
 	type = country_event
 
 	title = random_event.83.title
 	desc = random_event.83.desc
-	illustration_tags = {
-		10 = angry
-		10 = interior
-	}
-	
+
+	illustration_tags = { 10 = angry 10 = interior }
+
 	trigger = {
 		has_ruler = yes
 		ruler = { dip < 50 }
-		NOT = { has_country_modifier = incompetent_diplomacy }
+		NOT = {
+			has_country_modifier = incompetent_diplomacy
+		}
 	}
 
 	immediate = {
@@ -4216,6 +4375,7 @@ random_event.83 = {
 
 	option = {
 		name = random_event.83.a
+
 		add_country_modifier = {
 			modifier = incompetent_diplomacy
 			years = 10
@@ -4224,20 +4384,18 @@ random_event.83 = {
 	}
 }
 
-
 ########################
 # War-Weary Population
 ########################
+
 random_event.84 = {
 	type = country_event
 
 	title = random_event.84.title
 	desc = random_event.84.desc
-	illustration_tags = {
-		10 = armed
-		10 = exterior
-	}
-	
+
+	illustration_tags = { 10 = armed 10 = exterior }
+
 	trigger = {
 		months_since_peace > 60
 		army_tradition > 10
@@ -4247,14 +4405,20 @@ random_event.84 = {
 	}
 
 	immediate = {
-		event_illustration_estate_effect = { foreground = estate_type:peasants_estate background = estate_type:peasants_estate }
+		event_illustration_estate_effect = {
+			foreground = estate_type:peasants_estate
+			background = estate_type:peasants_estate
+		}
+
 		ruler = { save_scope_as = target_ruler }
 	}
 
 	option = {
 		name = random_event.84.a
 		add_war_exhaustion = war_exhaustion_mild_penalty
-		add_estate_satisfaction = { type = estate_type:peasants_estate
+
+		add_estate_satisfaction = {
+			type = estate_type:peasants_estate
 			value = estate_satisfaction_weak_penalty
 		}
 	}
@@ -4264,29 +4428,26 @@ random_event.84 = {
 	}
 }
 
-
-
 ########################
 # There is still hope
 ########################
+
 random_event.85 = {
 	type = country_event
 
 	title = random_event.85.title
 	desc = random_event.85.desc
-	illustration_tags = {
-		10 = armed
-		10 = exterior
-	}
-	
-	trigger = {
-		months_since_peace > 60
-		war_exhaustion > 2
-		has_ruler = yes
-	}
+
+	illustration_tags = { 10 = armed 10 = exterior }
+
+	trigger = { months_since_peace > 60 war_exhaustion > 2 has_ruler = yes }
 
 	immediate = {
-		event_illustration_estate_effect = { foreground = estate_type:peasants_estate background = estate_type:peasants_estate }
+		event_illustration_estate_effect = {
+			foreground = estate_type:peasants_estate
+			background = estate_type:peasants_estate
+		}
+
 		ruler = { save_scope_as = target_ruler }
 	}
 
@@ -4300,109 +4461,90 @@ random_event.85 = {
 	}
 }
 
-
-
 ########################
 # Visit from some shady people
 ########################
+
 random_event.86 = {
 	type = country_event
 
 	title = random_event.86.title
 	desc = random_event.86.desc
-	illustration_tags = {
-		10 = regular
-		10 = interior
-	}
-	
+
+	illustration_tags = { 10 = regular 10 = interior }
+
 	trigger = {
 		any_rival = {
-			root = {
-				spy_network = { target = prev value < 75 }
-			}
+			root = { spy_network = { target = prev value < 75 } }
 		}
 	}
 
-	immediate = {
-		event_illustration_government_estate_effect = yes
-	}
+	immediate = { event_illustration_government_estate_effect = yes }
 
 	option = {
 		name = random_event.86.a
+
 		random_rival = {
-			root = {
-				add_spy_network = { target = prev value = 25 }
-			}
+			root = { add_spy_network = { target = prev value = 25 } }
 		}
 
-		change_gold_effect = { scale = -1 }
-
+		change_gold_effect = {
+			scale = -1
+		}
 	}
-	option = {
-		name = random_event.86.b
-		add_prestige = prestige_weak_bonus
-	}
+	option = { name = random_event.86.b add_prestige = prestige_weak_bonus }
 }
-
-
 
 ########################
 # Merchants Spread Thin
 ########################
+
 random_event.87 = {
 	type = country_event
 
 	title = random_event.87.title
 	desc = random_event.87.desc
-	illustration_tags = {
-		10 = regular
-		10 = interior
-	}
-	
+
+	illustration_tags = { 10 = regular 10 = interior }
+
 	trigger = {
-		NOT = { has_country_modifier = extra_merchant_support }
+		NOT = {
+			has_country_modifier = extra_merchant_support
+		}
 
 		any_market_with_merchants = {
-			location = {
-				continent = continent:europe
-			}
+			location = { continent = continent:europe }
 			NOT = {
-				has_merchant_power = {
-					country = root
-					key = merchants_not_supported
-				}
+				has_merchant_power = { country = root key = merchants_not_supported }
 			}
 		}
 
 		any_market_with_merchants = {
-			location = {
-				continent = continent:asia
-			}
+			location = { continent = continent:asia }
 			NOT = {
-				has_merchant_power = {
-					country = root
-					key = merchants_not_supported
-				}
+				has_merchant_power = { country = root key = merchants_not_supported }
 			}
 		}
 	}
 
 	immediate = {
-		event_illustration_estate_effect = { foreground = estate_type:burghers_estate background = estate_type:burghers_estate }
+		event_illustration_estate_effect = {
+			foreground = estate_type:burghers_estate
+			background = estate_type:burghers_estate
+		}
 	}
 
 	option = {
 		name = random_event.87.a
+
 		random_market_with_merchants = {
 			limit = {
 				location = { continent = continent:asia }
 				NOT = {
-					has_merchant_power = {
-						country = root
-						key = merchants_not_supported
-					}
+					has_merchant_power = { country = root key = merchants_not_supported }
 				}
 			}
+
 			add_merchant_power = {
 				country = root
 				key = merchants_not_supported
@@ -4414,16 +4556,15 @@ random_event.87 = {
 
 	option = {
 		name = random_event.87.b
+
 		random_market_with_merchants = {
 			limit = {
 				location = { continent = continent:europe }
 				NOT = {
-					has_merchant_power = {
-						country = root
-						key = merchants_not_supported
-					}
+					has_merchant_power = { country = root key = merchants_not_supported }
 				}
 			}
+
 			add_merchant_power = {
 				country = root
 				key = merchants_not_supported
@@ -4435,6 +4576,7 @@ random_event.87 = {
 
 	option = {
 		name = random_event.87.c
+
 		add_country_modifier = {
 			modifier = extra_merchant_support
 			years = 10
@@ -4446,42 +4588,41 @@ random_event.87 = {
 ########################
 # Relations Improved
 ########################
+
 random_event.88 = {
 	type = country_event
 
 	title = random_event.88.title
 	desc = random_event.88.desc
-	illustration_tags = {
-		10 = happy
-		10 = interior
-	}
+
+	illustration_tags = { 10 = happy 10 = interior }
 
 	trigger = {
 		any_neighbor_country = {
 			religion = root.religion
-			NOT = { has_opinion = { target = root modifier = opinion_united_in_faith } }
+			NOT = {
+				has_opinion = { target = root modifier = opinion_united_in_faith }
+			}
 		}
 	}
 
 	immediate = {
 		random_neighbor_country = {
-			limit = {
-				religion = root.religion
-			}
+			limit = { religion = root.religion }
 			save_scope_as = neighbour_country
 		}
+
 		event_illustration_government_estate_effect = yes
 	}
 
 	option = {
 		name = random_event.88.a
+
 		scope:neighbour_country = {
 			add_opinion = { target = root modifier = opinion_united_in_faith }
 		}
 	}
 }
-
-
 
 ###########################
 # Sale of Titles
@@ -4492,35 +4633,34 @@ random_event.89 = {
 
 	title = random_event.89.title
 	desc = random_event.89.desc
-	illustration_tags = {
-		10 = regular
-		10 = interior
-	}
-	
-	trigger = {
-		country_has_estate = estate_type:nobles_estate
-	}
-	
-	immediate = {
-		event_illustration_government_estate_effect = yes
-	}
-	
+
+	illustration_tags = { 10 = regular 10 = interior }
+
+	trigger = { country_has_estate = estate_type:nobles_estate }
+
+	immediate = { event_illustration_government_estate_effect = yes }
+
 	option = {
 		name = random_event.89.a
-		change_gold_effect = { scale = 4 }
-		add_estate_satisfaction = { type = estate_type:nobles_estate
+
+		change_gold_effect = {
+			scale = 4
+		}
+
+		add_estate_satisfaction = {
+			type = estate_type:nobles_estate
 			value = estate_satisfaction_severe_penalty
 		}
 	}
 	option = {
 		name = random_event.89.b
-		add_estate_satisfaction = { type = estate_type:nobles_estate
+
+		add_estate_satisfaction = {
+			type = estate_type:nobles_estate
 			value = estate_satisfaction_weak_bonus
 		}
 	}
 }
-
-
 
 ###########################
 # A Traveling Minstrel
@@ -4531,21 +4671,17 @@ random_event.90 = {
 
 	title = random_event.90.title
 	desc = random_event.90.desc
-	illustration_tags = {
-		10 = regular
-		10 = interior
-	}
-	
+
+	illustration_tags = { 10 = regular 10 = interior }
+
 	trigger = {
 		has_ruler = yes
-		ruler = {
-			owner = root
-		}
+		ruler = { owner = root }
 		current_age = age_2_renaissance
 		country_has_estate = estate_type:nobles_estate
 		country_has_estate = estate_type:peasants_estate
 	}
-	
+
 	immediate = {
 		event_illustration_government_estate_effect = yes
 		ruler = { save_scope_as = target_ruler }
@@ -4553,19 +4689,18 @@ random_event.90 = {
 
 	option = {
 		name = random_event.90.a
-		add_estate_satisfaction = { type = estate_type:peasants_estate
-			value = estate_satisfaction_weak_bonus
-		}
-		add_estate_satisfaction = { type = estate_type:nobles_estate
-			value = estate_satisfaction_weak_bonus
-		}
-	}
-	option = {
-		name = random_event.90.b
-		add_legitimacy = legitimacy_weak_bonus
-	}
-}
 
+		add_estate_satisfaction = {
+			type = estate_type:peasants_estate
+			value = estate_satisfaction_weak_bonus
+		}
+		add_estate_satisfaction = {
+			type = estate_type:nobles_estate
+			value = estate_satisfaction_weak_bonus
+		}
+	}
+	option = { name = random_event.90.b add_legitimacy = legitimacy_weak_bonus }
+}
 
 ###########################
 # A Bountiful Harvest
@@ -4576,27 +4711,32 @@ random_event.91 = {
 
 	title = random_event.91.title
 	desc = random_event.91.desc
-	illustration_tags = {
-		10 = happy
-		10 = exterior
-	}
-	
+
+	illustration_tags = { 10 = happy 10 = exterior }
+
 	trigger = {
 		num_locations > 0
 		exists = capital
-		NOT = { country_has_disease = disease:bubonic_plague }
+		NOT = {
+			country_has_disease = disease:bubonic_plague
+		}
 	}
 
 	immediate = {
-		event_illustration_estate_effect = { foreground = estate_type:peasants_estate background = estate_type:peasants_estate }
+		event_illustration_estate_effect = {
+			foreground = estate_type:peasants_estate
+			background = estate_type:peasants_estate
+		}
 	}
 
 	option = {
 		name = random_event.91.a
+
 		capital ?= {
 			area = {
 				every_province_in_area = {
 					limit = { owner ?= root }
+
 					add_province_modifier = {
 						modifier = bountiful_harvest
 						years = 1
@@ -4608,7 +4748,6 @@ random_event.91 = {
 	}
 }
 
-
 ########################################
 # Tensions between nobles and clergy
 #######################################
@@ -4618,11 +4757,9 @@ random_event.92 = {
 
 	title = random_event.92.title
 	desc = random_event.92.desc
-	illustration_tags = {
-		10 = angry
-		10 = interior
-	}
-	
+
+	illustration_tags = { 10 = angry 10 = interior }
+
 	trigger = {
 		government_type = government_type:monarchy
 		religion = religion:catholic
@@ -4640,69 +4777,76 @@ random_event.92 = {
 			limit = { dominant_religion ?= religion:catholic }
 			save_scope_as = bicker
 		}
-		event_illustration_estate_effect = { foreground = estate_type:clergy_estate background = estate_type:nobles_estate }
+
+		event_illustration_estate_effect = {
+			foreground = estate_type:clergy_estate
+			background = estate_type:nobles_estate
+		}
 	}
 
 	option = {
 		name = random_event.92.a
 		add_religious_influence_if_valid = { VALUE = -5 }
-		add_estate_satisfaction = { type = estate_type:clergy_estate
+
+		add_estate_satisfaction = {
+			type = estate_type:clergy_estate
 			value = estate_satisfaction_mild_penalty
 		}
 	}
 	option = {
 		name = random_event.92.b
-		add_estate_satisfaction = { type = estate_type:nobles_estate
+
+		add_estate_satisfaction = {
+			type = estate_type:nobles_estate
 			value = estate_satisfaction_mild_penalty
 		}
 	}
 }
 
-
-
 #################################
 # Disagreeing Advisor
 #################################
+
 random_event.93 = {
 	type = country_event
 
 	title = random_event.93.title
 	desc = random_event.93.desc
-	illustration_tags = {
-		10 = angry
-		10 = interior
-	}
+
+	illustration_tags = { 10 = angry 10 = interior }
 
 	trigger = {
 		has_ruler = yes
 		ruler ?= { has_dynasty = yes }
+
 		any_cabinet_character = {
 			NOT = {
 				dynasty ?= root.ruler.dynasty
 			}
+
 			is_heir = no
 			count > 0
 		}
 	}
-	
+
 	immediate = {
 		random_cabinet_character = {
 			limit = {
 				NOT = {
 					dynasty ?= root.ruler.dynasty
 				}
+
 				is_heir = no
 			}
+
 			save_scope_as = minister
 		}
+
 		event_illustration_government_estate_effect = yes
-		ruler = { save_scope_as = target_ruler } 
+		ruler = { save_scope_as = target_ruler }
 	}
-	
-	option = {
-		name = random_event.93.a
-		add_legitimacy = legitimacy_mild_penalty
-	}
+
+	option = { name = random_event.93.a add_legitimacy = legitimacy_mild_penalty }
 
 	option = {
 		name = random_event.93.b
@@ -4718,15 +4862,14 @@ random_event.93 = {
 ########################
 # Local Noble's Power Grows
 ########################
+
 random_event.94 = {
 	type = country_event
 
 	title = random_event.94.title
 	desc = random_event.94.desc
-	illustration_tags = {
-		10 = regular
-		10 = interior
-	}	
+
+	illustration_tags = { 10 = regular 10 = interior }
 
 	trigger = {
 		total_effective_building_levels:toll_castle > 0
@@ -4736,96 +4879,82 @@ random_event.94 = {
 
 	immediate = {
 		random_owned_location = {
-			limit = {
-				has_building_with_at_least_one_level = toll_castle
-			}
+			limit = { has_building_with_at_least_one_level = toll_castle }
 			save_scope_as = local_noble
 		}
+
 		event_illustration_government_estate_effect = yes
 	}
 
 	option = {
 		name = random_event.94.a
 		add_legitimacy = legitimacy_weak_penalty
-		add_estate_satisfaction = { type = estate_type:nobles_estate
+
+		add_estate_satisfaction = {
+			type = estate_type:nobles_estate
 			value = estate_satisfaction_mild_bonus
 		}
 	}
 	option = {
 		name = random_event.94.b
+
 		scope:local_noble = {
 			destroy_building = "building(building_type:toll_castle|owner)"
 		}
+
 		add_stability = stability_mild_penalty
 	}
 }
 
-
-
-
 #################################
 # Colonial Discovery!
 #################################
+
 random_event.95 = {
 	type = country_event
 
 	title = random_event.95.title
 	desc = random_event.95.desc
-	illustration_tags = {
-		10 = happy
-		10 = exterior
-	}	
+
+	illustration_tags = { 10 = happy 10 = exterior }
 
 	trigger = {
-		any_colonial_charter = {
-			count > 0
-		}
-		capital ?= {
-			market ?= {
-				is_traded_in_market = goods:cocoa
-			}
-		}
+		any_colonial_charter = { count > 0 }
+		capital ?= { market ?= { is_traded_in_market = goods:cocoa } }
 		capital.sub_continent = sub_continent:western_europe
 	}
-	
+
 	immediate = {
-		event_illustration_estate_effect = { foreground = estate_type:burghers_estate background = estate_type:burghers_estate }
+		event_illustration_estate_effect = {
+			foreground = estate_type:burghers_estate
+			background = estate_type:burghers_estate
+		}
 	}
-	
+
 	option = {
 		name = random_event.95.a
 		add_stability = stability_weak_bonus
-		capital.market = {
-			add_goods_supply = {
-				goods = goods:cocoa
-				amount = 10
-			}
-		}
+		capital.market = { add_goods_supply = { goods = goods:cocoa amount = 10 } }
 	}
 
-	option = {
-		name = random_event.95.b
-		add_prestige = prestige_mild_bonus
-	}
+	option = { name = random_event.95.b add_prestige = prestige_mild_bonus }
 }
-
 
 #################################
 # Country Destabilized
 #################################
+
 random_event.96 = {
 	type = country_event
 
 	title = random_event.96.title
 	desc = random_event.96.desc
-	illustration_tags = {
-		10 = angry
-		10 = exterior
-	}
+
+	illustration_tags = { 10 = angry 10 = exterior }
 
 	trigger = {
 		stability > 0
-		
+
 		OR = {
 			estate_satisfaction:nobles_estate < 0.4
 			estate_satisfaction:burghers_estate < 0.4
@@ -4833,74 +4962,62 @@ random_event.96 = {
 			estate_satisfaction:peasants_estate < 0.4
 		}
 	}
-	
+
 	immediate = {
-		event_illustration_estate_effect = { foreground = estate_type:peasants_estate background = estate_type:peasants_estate }
+		event_illustration_estate_effect = {
+			foreground = estate_type:peasants_estate
+			background = estate_type:peasants_estate
+		}
 	}
-	
-	option = {
-		name = random_event.96.a
-		add_stability = stability_mild_penalty
-	}
+
+	option = { name = random_event.96.a add_stability = stability_mild_penalty }
 }
 
 #################################
 # Naval Officers are retiring
 #################################
+
 random_event.97 = {
 	type = country_event
 
 	title = random_event.97.title
 	desc = random_event.97.desc
-	illustration_tags = {
-		10 = regular
-		10 = exterior
-	}
-	
+
+	illustration_tags = { 10 = regular 10 = exterior }
+
 	trigger = {
 		num_of_ports > 0
 		navy_tradition > 10
 		navy_tradition < army_tradition
 	}
-	
-	immediate = {
-		event_illustration_government_estate_effect = yes
-	}
-	
+
+	immediate = { event_illustration_government_estate_effect = yes }
+
 	option = {
 		name = random_event.97.a
 		add_navy_tradition = navy_tradition_mild_penalty
 	}
 }
 
-
 #################################
 # Privateers bring profits
 #################################
+
 random_event.98 = {
 	type = country_event
 
 	title = random_event.98.title
 	desc = random_event.98.desc
-	illustration_tags = {
-		10 = happy
-		10 = interior
-	}
 
-	trigger = {
-		any_privateer_from_country = {
-			count > 0
-		}
-	}
-	
+	illustration_tags = { 10 = happy 10 = interior }
+
+	trigger = { any_privateer_from_country = { count > 0 } }
+
 	immediate = {
 		random_privateer_from_country = {
 			area = {
 				ordered_adjacent_ports_to_area = {
-					limit = {
-						has_owner = yes
-						owner != root
-					}
+					limit = { has_owner = yes owner != root }
 					order_by = location_tax_base
 					max = 1
 					check_range_bounds = no
@@ -4908,9 +5025,10 @@ random_event.98 = {
 				}
 			}
 		}
+
 		event_illustration_government_estate_effect = yes
 	}
-	
+
 	option = {
 		name = random_event.98.a
 
@@ -4923,7 +5041,6 @@ random_event.98 = {
 	}
 }
 
-
 #################################
 # Privateers captured
 #################################
@@ -4933,32 +5050,21 @@ random_event.99 = {
 
 	title = random_event.99.title
 	desc = random_event.99.desc
-	illustration_tags = {
-		10 = happy
-		10 = interior
-	}
+
+	illustration_tags = { 10 = happy 10 = interior }
 
 	trigger = {
-		any_privateer_from_country = {
-			count > 0
-		}
-		root = {
-			any_character = {
-				is_admiral = yes
-			}
-		}
+		any_privateer_from_country = { count > 0 }
+		root = { any_character = { is_admiral = yes } }
 	}
 
-	immediate = {
-		event_illustration_government_estate_effect = yes
-	}
+	immediate = { event_illustration_government_estate_effect = yes }
 
 	option = {
 		name = random_event.99.a
 		add_navy_tradition = navy_tradition_extreme_bonus
 	}
 }
-
 
 #################################
 # Merchant Expedition
@@ -4969,30 +5075,27 @@ random_event.100 = {
 
 	title = random_event.100.title
 	desc = random_event.100.desc
-	illustration_tags = {
-		10 = regular
-		10 = interior
-	}
+
+	illustration_tags = { 10 = regular 10 = interior }
 
 	trigger = {
-		any_market_with_merchants = {
-			count > 3
-		}
+		any_market_with_merchants = { count > 3 }
 		capital ?= { continent = continent:europe }
 		discovered_any_in_americas_trigger = no
 		discovered_route_to_india = yes
 	}
 
 	immediate = {
-		event_illustration_estate_effect = { foreground = estate_type:burghers_estate background = estate_type:burghers_estate }
-		
+		event_illustration_estate_effect = {
+			foreground = estate_type:burghers_estate
+			background = estate_type:burghers_estate
+		}
+
 		create_character = {
 			trait_category = explorer
-			random_estate_type_trigger = {
-				root = { estate_type_allowed_in_cabinet = {	estate_type = prev } }
-			}
+			random_estate_type_trigger = { root = { estate_type_allowed_in_cabinet = { estate_type = prev } } }
 			create_in_limbo = yes
-			
+
 			save_scope_as = india_explorer
 		}
 	}
@@ -5006,16 +5109,14 @@ random_event.100 = {
 
 	option = {
 		name = random_event.100.b
-		add_gold = {
-			value = root.monthly_trade_income
-			multiply = 6
-		}
+		add_gold = { value = root.monthly_trade_income multiply = 6 }
 		add_stability = stability_mild_penalty
-		hidden_effect = { kill_character_silently = scope:india_explorer }
+
+		hidden_effect = {
+			kill_character_silently = scope:india_explorer
+		}
 	}
 }
-
-
 
 #################################
 # Renaissance Prince
@@ -5026,25 +5127,19 @@ random_event.101 = {
 
 	title = random_event.101.title
 	desc = random_event.101.desc
-	illustration_tags = {
-		10 = regular
-		10 = interior
-	}
 
-	trigger = {
-		current_age = age_2_renaissance
-		has_advance = patron_of_art
-	}
-	
+	illustration_tags = { 10 = regular 10 = interior }
+
+	trigger = { current_age = age_2_renaissance has_advance = patron_of_art }
+
 	immediate = {
 		event_illustration_government_estate_effect = yes
+
 		create_character = {
 			trait_category = artist
-			random_estate_type_trigger = {
-				root = { estate_type_allowed_in_cabinet = {	estate_type = prev } }
-			}
+			random_estate_type_trigger = { root = { estate_type_allowed_in_cabinet = { estate_type = prev } } }
 			create_in_limbo = yes
-			
+
 			save_scope_as = ren_artist
 		}
 	}
@@ -5053,17 +5148,21 @@ random_event.101 = {
 		name = random_event.101.a
 		scope:ren_artist = { move_country = root }
 		add_prestige = prestige_mild_bonus
-		change_gold_effect = { scale = -2 }
+
+		change_gold_effect = {
+			scale = -2
+		}
 	}
 
 	option = {
 		name = random_event.101.b
 		add_prestige = prestige_weak_penalty
-		hidden_effect = { kill_character_silently = scope:ren_artist }
+
+		hidden_effect = {
+			kill_character_silently = scope:ren_artist
+		}
 	}
 }
-
-
 
 #################################
 # Naval thought suffering
@@ -5074,10 +5173,8 @@ random_event.102 = {
 
 	title = random_event.102.title
 	desc = random_event.102.desc
-	illustration_tags = {
-		10 = regular
-		10 = interior
-	}
+
+	illustration_tags = { 10 = regular 10 = interior }
 
 	trigger = {
 		societal_value:land_vs_naval < 0
@@ -5085,17 +5182,13 @@ random_event.102 = {
 		navy_tradition > 10
 	}
 
-	immediate = {
-		event_illustration_government_estate_effect = yes
-	}
+	immediate = { event_illustration_government_estate_effect = yes }
 
 	option = {
 		name = random_event.102.a
 		add_navy_tradition = navy_tradition_mild_penalty
 	}
 }
-
-
 
 #################################
 # Reformation of the Army
@@ -5106,22 +5199,16 @@ random_event.103 = {
 
 	title = random_event.103.title
 	desc = random_event.103.desc
-	illustration_tags = {
-		10 = regular
-		10 = interior
-	}
 
-	trigger = {
-		army_tradition > 10
-		societal_value:land_vs_naval < 0
-	}
+	illustration_tags = { 10 = regular 10 = interior }
 
-	immediate = {
-		event_illustration_government_estate_effect = yes
-	}
+	trigger = { army_tradition > 10 societal_value:land_vs_naval < 0 }
+
+	immediate = { event_illustration_government_estate_effect = yes }
 
 	option = {
 		name = random_event.103.a
+
 		change_societal_value = {
 			type = quality_vs_quantity
 			value = societal_value_tiny_move_to_left
@@ -5130,6 +5217,7 @@ random_event.103 = {
 
 	option = {
 		name = random_event.103.b
+
 		change_societal_value = {
 			type = quality_vs_quantity
 			value = societal_value_tiny_move_to_right
@@ -5138,6 +5226,7 @@ random_event.103 = {
 
 	option = {
 		name = random_event.103.c
+
 		change_societal_value = {
 			type = offensive_vs_defensive
 			value = societal_value_tiny_move_to_left
@@ -5146,6 +5235,7 @@ random_event.103 = {
 
 	option = {
 		name = random_event.103.d
+
 		change_societal_value = {
 			type = offensive_vs_defensive
 			value = societal_value_tiny_move_to_right
@@ -5162,33 +5252,26 @@ random_event.104 = {
 
 	title = random_event.104.title
 	desc = random_event.104.desc
-	illustration_tags = {
-		10 = regular
-		10 = interior
-	}
 
-	trigger = {
-		num_of_ports > 5
-	}
-	
-	immediate = {
-		event_illustration_government_estate_effect = yes
-	}
+	illustration_tags = { 10 = regular 10 = interior }
+
+	trigger = { num_of_ports > 5 }
+
+	immediate = { event_illustration_government_estate_effect = yes }
 
 	option = {
 		name = random_event.104.a
 		add_navy_tradition = navy_tradition_mild_bonus
-
 	}
 	option = {
 		name = random_event.104.b
+
 		change_societal_value = {
 			type = land_vs_naval
 			value = societal_value_tiny_move_to_right
 		}
 	}
 }
-
 
 #################################
 # There should be a Stable Government
@@ -5199,32 +5282,21 @@ random_event.105 = {
 
 	title = random_event.105.title
 	desc = random_event.105.desc
-	illustration_tags = {
-		10 = regular
-		10 = interior
-	}
 
-	trigger = {
-		government_type = government_type:republic
-		stability < 10
-	}
-	
-	immediate = {
-		event_illustration_government_estate_effect = yes
-	}
+	illustration_tags = { 10 = regular 10 = interior }
+
+	trigger = { government_type = government_type:republic stability < 10 }
+
+	immediate = { event_illustration_government_estate_effect = yes }
 
 	option = {
 		name = random_event.105.a
 		add_stability = stability_mild_bonus
 		add_republican_tradition = republican_tradition_mild_penalty
 	}
-	
-	option = {
-		name = random_event.105.b
-		add_prestige = prestige_weak_penalty
-	}
-}
 
+	option = { name = random_event.105.b add_prestige = prestige_weak_penalty }
+}
 
 #################################
 # Brilliant Government
@@ -5235,32 +5307,27 @@ random_event.106 = {
 
 	title = random_event.106.title
 	desc = random_event.106.desc
-	illustration_tags = {
-		10 = regular
-		10 = interior
-	}
-	
+
+	illustration_tags = { 10 = regular 10 = interior }
+
 	trigger = {
 		government_type = government_type:republic
 		stability > 10
 		republican_tradition > 90
 		num_loans <= 0
 	}
-	
-	immediate = {
-		event_illustration_government_estate_effect = yes
-	}
+
+	immediate = { event_illustration_government_estate_effect = yes }
 
 	option = {
 		name = random_event.106.a
-		change_gold_effect = { scale = 3 }
-	}
-	option = {
-		name = random_event.106.b
-		add_prestige = prestige_weak_bonus
-	}
-}
 
+		change_gold_effect = {
+			scale = 3
+		}
+	}
+	option = { name = random_event.106.b add_prestige = prestige_weak_bonus }
+}
 
 #################################
 # Influenced elections
@@ -5271,30 +5338,19 @@ random_event.107 = {
 
 	title = random_event.107.title
 	desc = random_event.107.desc
-	illustration_tags = {
-		10 = regular
-		10 = interior
-	}
-	
-	trigger = {
-		government_type = government_type:republic
-	}
 
-	immediate = {
-		event_illustration_government_estate_effect = yes
-	}
+	illustration_tags = { 10 = regular 10 = interior }
 
-	option = {
-		name = random_event.107.a
-		add_stability = stability_mild_penalty
-	}
+	trigger = { government_type = government_type:republic }
+
+	immediate = { event_illustration_government_estate_effect = yes }
+
+	option = { name = random_event.107.a add_stability = stability_mild_penalty }
 	option = {
 		name = random_event.107.b
 		add_republican_tradition = republican_tradition_mild_penalty
 	}
 }
-
-
 
 #################################
 # Representative National Institutions
@@ -5305,24 +5361,28 @@ random_event.108 = {
 
 	title = random_event.108.title
 	desc = random_event.108.desc
-	illustration_tags = {
-		10 = angry
-		10 = exterior
-	}
-	
+
+	illustration_tags = { 10 = angry 10 = exterior }
+
 	trigger = {
 		government_type = government_type:monarchy
 		OR = {
 			current_age = age_5_absolutism
 			current_age = age_6_revolutions
 		}
+
 		has_law = distribution_of_power_law
 		has_parliament = yes
-		NOT = { has_reform = government_reform:national_assemblies }
+		NOT = {
+			has_reform = government_reform:national_assemblies
+		}
 	}
 
 	immediate = {
-		event_illustration_estate_effect = { foreground = estate_type:peasants_estate background = estate_type:peasants_estate }
+		event_illustration_estate_effect = {
+			foreground = estate_type:peasants_estate
+			background = estate_type:peasants_estate
+		}
 	}
 
 	option = {
@@ -5330,7 +5390,6 @@ random_event.108 = {
 		add_legitimacy = legitimacy_weak_penalty
 	}
 }
-
 
 #################################
 # Military Reform
@@ -5340,43 +5399,42 @@ random_event.109 = {
 	type = country_event
 	title = random_event.109.title
 	desc = random_event.109.desc
-	illustration_tags = {
-		10 = regular
-		10 = interior
-	}
-	
+
+	illustration_tags = { 10 = regular 10 = interior }
+
 	trigger = {
 		current_year >= 1500
 		has_ruler = yes
-		ruler ?= {
-			adm >= 80
-			dip >= 80
-			mil >= 80
-		}
+		ruler ?= { adm >= 80 dip >= 80 mil >= 80 }
 	}
 
-	immediate = {
-		event_illustration_government_estate_effect = yes
-	}
+	immediate = { event_illustration_government_estate_effect = yes }
 
 	option = {
 		name = random_event.109.a
 		add_army_tradition = army_tradition_extreme_bonus
-		change_societal_value = { type = land_vs_naval value = societal_value_minor_move_to_left }
+
+		change_societal_value = {
+			type = land_vs_naval
+			value = societal_value_minor_move_to_left
+		}
 	}
 	option = {
 		name = random_event.109.b
 		add_navy_tradition = navy_tradition_extreme_bonus
-		change_societal_value = { type = land_vs_naval value = societal_value_minor_move_to_right }
+
+		change_societal_value = {
+			type = land_vs_naval
+			value = societal_value_minor_move_to_right
+		}
 	}
 	option = {
 		name = random_event.109.c
-		
+
 		add_army_tradition = army_tradition_mild_bonus
 		add_navy_tradition = navy_tradition_mild_bonus
 	}
 }
-
 
 #################################
 # National Bank
@@ -5386,35 +5444,23 @@ random_event.110 = {
 	type = country_event
 	title = random_event.110.title
 	desc = random_event.110.desc
-	illustration_tags = {
-		10 = regular
-		10 = interior
-	}
-	
-	trigger = {
-		ruler ?= {
-			adm >= 64
-		}
-		inflation > 0
-		has_advance = banking_advance
-	}
-	
-	immediate = {
-		event_illustration_government_estate_effect = yes
-	}
 
-	option = {
-		name = random_event.110.a
-		add_inflation = inflation_weak_bonus
-	}
+	illustration_tags = { 10 = regular 10 = interior }
+
+	trigger = { ruler ?= { adm >= 64 } inflation > 0 has_advance = banking_advance }
+
+	immediate = { event_illustration_government_estate_effect = yes }
+
+	option = { name = random_event.110.a add_inflation = inflation_weak_bonus }
 }
-
 
 #################################
 # Caught Red-Hooved
 #################################
 
-random_event.111 = { # Animal Trial (Specific, Sow eats child)
+# Animal Trial (Specific, Sow eats child)
+
+random_event.111 = {
 	type = country_event
 
 	title = random_event.111.t
@@ -5430,7 +5476,11 @@ random_event.111 = { # Animal Trial (Specific, Sow eats child)
 
 	option = { # Carry on (skip event, status quo)
 		name = random_event.111.a
-		change_societal_value = { type = traditionalist_vs_innovative value = societal_value_tiny_move_to_left }
+
+		change_societal_value = {
+			type = traditionalist_vs_innovative
+			value = societal_value_tiny_move_to_left
+		}
 	}
 
 	option = { # They must be stopped, it is a waste of resources
@@ -5438,40 +5488,47 @@ random_event.111 = { # Animal Trial (Specific, Sow eats child)
 
 		add_stability = stability_mild_penalty
 		add_gold = root.monthly_income_trade_and_tax
-		change_societal_value = { type = traditionalist_vs_innovative value = societal_value_minor_move_to_right }
+
+		change_societal_value = {
+			type = traditionalist_vs_innovative
+			value = societal_value_minor_move_to_right
+		}
 	}
 
 	option = { # Let the church handle them instead idk
 		name = random_event.111.c
 
 		add_stability = stability_weak_bonus
-		add_estate_satisfaction = { type = estate_type:clergy_estate
+
+		add_estate_satisfaction = {
+			type = estate_type:clergy_estate
 			value = estate_satisfaction_mild_penalty
 		}
 	}
 }
 
-random_event.112 = { #Poor Copper
+# Poor Copper
+
+random_event.112 = {
 	type = country_event
 
 	title = random_event.112.title
 	desc = random_event.112.desc
-	illustration_tags = {
-		10 = angry
-		10 = interior
-	}
+
+	illustration_tags = { 10 = angry 10 = interior }
 
 	trigger = {
 		country_has_estate = estate_type:burghers_estate
 		country_has_estate = estate_type:peasants_estate
-		any_owned_location ?= {
-			raw_material = goods:copper
-		}
+		any_owned_location ?= { raw_material = goods:copper }
 		produced_in_country:copper > 0
 	}
-	
+
 	immediate = {
-		event_illustration_estate_effect = { foreground = estate_type:burghers_estate background = estate_type:burghers_estate }
+		event_illustration_estate_effect = {
+			foreground = estate_type:burghers_estate
+			background = estate_type:burghers_estate
+		}
 
 		ordered_owned_location = {
 			limit = { raw_material = goods:copper }
@@ -5482,19 +5539,17 @@ random_event.112 = { #Poor Copper
 		}
 	}
 
-	option = { #Side with Merchant
+	option = { # Side with Merchant
 		name = random_event.112.a
-		add_estate_satisfaction = { 
+
+		add_estate_satisfaction = {
 			type = estate_type:burghers_estate
 			value = estate_satisfaction_mild_bonus
 		}
 
 		scope:target_location = {
 			ordered_pop = {
-				limit = { 
-					owner = root
-					pop_type = pop_type:peasants 
-				}
+				limit = { owner = root pop_type = pop_type:peasants }
 				order_by = pop_size
 				max = 1
 				check_range_bounds = no
@@ -5503,29 +5558,29 @@ random_event.112 = { #Poor Copper
 		}
 	}
 
-	option = { #Side with Peasant
+	option = { # Side with Peasant
 		name = random_event.112.b
 
-		add_estate_satisfaction = { 
+		add_estate_satisfaction = {
 			type = estate_type:peasants_estate
 			value = estate_satisfaction_mild_bonus
 		}
 
-		change_societal_value = { 
+		change_societal_value = {
 			type = capital_economy_vs_traditional_economy
 			value = societal_value_minor_move_to_right
 		}
 	}
 
-	option = { #Let them resolve it among themselves
+	option = { # Let them resolve it among themselves
 		name = random_event.112.c
 
-		add_estate_satisfaction = { 
+		add_estate_satisfaction = {
 			type = estate_type:burghers_estate
 			value = estate_satisfaction_weak_penalty
 		}
 
-		add_estate_satisfaction = { 
+		add_estate_satisfaction = {
 			type = estate_type:peasants_estate
 			value = estate_satisfaction_weak_penalty
 		}
@@ -5533,4 +5588,3 @@ random_event.112 = { #Poor Copper
 		add_government_power = government_power_weak_bonus
 	}
 }
-

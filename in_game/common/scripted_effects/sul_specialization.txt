@@ -52,36 +52,51 @@ sul_specialization_rebuild_location = {
 	if = {
 		limit = { sul_has_any_specialization = yes }
 		if = {
-			limit = { NOT = { sul_current_specialization_is_valid = yes } }
+			limit = {
+				NOT = {
+					sul_current_specialization_is_valid = yes
+				}
+			}
+
 			sul_specialization_reassign = yes
 		}
 	}
-	else = {
-		sul_specialization_init_new = yes
-	}
+	else = { sul_specialization_init_new = yes }
 }
 
 # Stubs — rank_modifier handles modifiers natively now.
-sul_specialization_refresh_modifier = { }
-sul_specialization_apply_modifier = { }
-sul_specialization_clear_all_modifiers = { }
+
+sul_specialization_refresh_modifier = {
+}
+
+sul_specialization_apply_modifier = {
+}
+
+sul_specialization_clear_all_modifiers = {
+}
 
 # Bridge: set sul_spec_type from rank boolean modifiers for GUI visibility checks.
 # Call after any rank change.
+
 sul_specialization_update_designation = {
-	if = { limit = { modifier:sul_mining_specialization = yes }
+	if = {
+		limit = { modifier:sul_mining_specialization = yes }
 		set_variable = { name = sul_spec_type value = @sul_mining_type }
 	}
-	else_if = { limit = { modifier:sul_farming_specialization = yes }
+	else_if = {
+		limit = { modifier:sul_farming_specialization = yes }
 		set_variable = { name = sul_spec_type value = @sul_farming_type }
 	}
-	else_if = { limit = { modifier:sul_gathering_specialization = yes }
+	else_if = {
+		limit = { modifier:sul_gathering_specialization = yes }
 		set_variable = { name = sul_spec_type value = @sul_gathering_type }
 	}
-	else_if = { limit = { modifier:sul_woodland_specialization = yes }
+	else_if = {
+		limit = { modifier:sul_woodland_specialization = yes }
 		set_variable = { name = sul_spec_type value = @sul_woodland_type }
 	}
-	else_if = { limit = { modifier:sul_commercial_specialization = yes }
+	else_if = {
+		limit = { modifier:sul_commercial_specialization = yes }
 		set_variable = { name = sul_spec_type value = @sul_commercial_type }
 	}
 }
@@ -98,10 +113,7 @@ sul_specialization_reassign = {
 
 sul_specialization_init_new = {
 	sul_rank_assign_by_resources = yes
-	if = {
-		limit = { exists = owner }
-		sul_specialization_tech_cleanup = yes
-	}
+	if = { limit = { exists = owner } sul_specialization_tech_cleanup = yes }
 }
 
 # root = location. Caches which specializations the location is eligible for.
@@ -180,7 +192,12 @@ sul_specialization_calculate_eligibility = {
 
 sul_specialization_validate = {
 	if = {
-		limit = { NOT = { sul_current_specialization_is_valid = yes } }
+		limit = {
+			NOT = {
+				sul_current_specialization_is_valid = yes
+			}
+		}
+
 		sul_specialization_reassign_or_commercial = yes
 	}
 }
@@ -300,10 +317,14 @@ sul_specialization_destroy_and_penalize = {
 
 	sul_specialization_destroy_non_matching_buildings = yes
 
-	change_variable = { name = sul_respec_destroyed subtract = total_building_levels }
+	change_variable = {
+		name = sul_respec_destroyed
+		subtract = total_building_levels
+	}
 
 	if = {
 		limit = { var:sul_respec_destroyed > 0 }
+
 		add_location_modifier = {
 			modifier = sul_recently_respecialized
 			years = 5
@@ -347,10 +368,7 @@ sul_specialization_destroy_non_matching_buildings = {
 # Sets specialization via change_location_rank, preserving current tier.
 
 sul_rank_assign_by_resources = {
-	if = {
-		limit = { is_market_center = yes }
-		sul_rank_set_commercial = yes
-	}
+	if = { limit = { is_market_center = yes } sul_rank_set_commercial = yes }
 	else_if = {
 		limit = { sul_has_farming_resources = yes }
 		sul_rank_set_farming = yes
@@ -367,12 +385,11 @@ sul_rank_assign_by_resources = {
 		limit = { sul_has_woodland_resources = yes }
 		sul_rank_set_woodland = yes
 	}
-	else = {
-		sul_rank_set_commercial = yes
-	}
+	else = { sul_rank_set_commercial = yes }
 }
 
 # Legacy alias — callers not yet updated to sul_rank_assign_by_resources
+
 sul_specialization_assign_by_resources = {
 	sul_rank_assign_by_resources = yes
 }
@@ -392,41 +409,98 @@ sul_specialization_assign_by_resources = {
 # the spec-mismatch destroy pass, so tech-invalid buildings are cleared first.
 # The setup generator places a universal pool everywhere; this effect prunes
 # the ones the country hasn't unlocked.
+
 sul_specialization_tech_cleanup = {
 	every_buildings_in_location = {
 		limit = {
 			OR = {
 				AND = {
 					building_type = building_type:sul_iron_mine
-					location = { owner ?= { NOT = { has_advance = iron_working } } }
+
+					location = {
+						owner ?= {
+							NOT = {
+								has_advance = iron_working
+							}
+						}
+					}
 				}
 				AND = {
 					building_type = building_type:weapon_guild
-					location = { owner ?= { NOT = { has_advance = weapon_guild_advance } } }
+
+					location = {
+						owner ?= {
+							NOT = {
+								has_advance = weapon_guild_advance
+							}
+						}
+					}
 				}
 				AND = {
 					building_type = building_type:tools_guild
-					location = { owner ?= { NOT = { has_advance = metallurgy } } }
+
+					location = {
+						owner ?= {
+							NOT = {
+								has_advance = metallurgy
+							}
+						}
+					}
 				}
 				AND = {
 					building_type = building_type:porcelain_guild
-					location = { owner ?= { NOT = { has_advance = porcelain_kiln_advance } } }
+
+					location = {
+						owner ?= {
+							NOT = {
+								has_advance = porcelain_kiln_advance
+							}
+						}
+					}
 				}
 				AND = {
 					building_type = building_type:apothecary
-					location = { owner ?= { NOT = { has_advance = apothecary_advance } } }
+
+					location = {
+						owner ?= {
+							NOT = {
+								has_advance = apothecary_advance
+							}
+						}
+					}
 				}
 				AND = {
 					building_type = building_type:lacquerware_guild
-					location = { owner ?= { NOT = { has_advance = lacquerware_guild_advance } } }
+
+					location = {
+						owner ?= {
+							NOT = {
+								has_advance = lacquerware_guild_advance
+							}
+						}
+					}
 				}
 				AND = {
 					building_type = building_type:paper_guild
-					location = { owner ?= { NOT = { has_advance = paper_guild_advance } } }
+
+					location = {
+						owner ?= {
+							NOT = {
+								has_advance = paper_guild_advance
+							}
+						}
+					}
 				}
 				AND = {
 					building_type = building_type:scriptorium
-					location = { owner ?= { NOT = { has_advance = scriptorium_advance } } }
+
+					location = {
+						owner ?= {
+							NOT = {
+								has_advance = scriptorium_advance
+							}
+						}
+					}
 				}
 			}
 		}

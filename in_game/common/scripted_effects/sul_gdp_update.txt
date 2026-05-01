@@ -1,4 +1,4 @@
-# WPP pipeline: capital returns for upper estates, wage-based for commoners.
+﻿# WPP pipeline: capital returns for upper estates, wage-based for commoners.
 #
 # Upper class (nobles, clergy, burghers):
 #   WPP = base_wage + capital_return × asset_share × power_share
@@ -18,10 +18,10 @@
 #   sul_wealth_per_pop    variable map read by pop_demands
 #   sul_demand_base       variable map read by demand tier formulas
 
-# Demand model denominator: A + B × WPP (must match sul_pop_demand_wpp.txt)
-@sul_denom_A = 1.0
-@sul_denom_B = 1.0
-@sul_w_enrichment = 0.53
+# Demand model denominator: intercept + slope × WPP (must match sul_pop_demand_wpp.txt)
+@sul_demand_intercept = 1.0
+@sul_demand_slope = 1.0
+@sul_enrichment_weight = 0.53
 
 # Minority estate per-pop return: assets × return_rate × power_per_pop / local_power
 # power_per_pop inverts to give estimated pop count as denominator
@@ -39,9 +39,15 @@ sul_compute_minority_returns = {
 	set_variable = { name = sul_enrichment_cossacks value = 0 }
 	if = {
 		limit = { has_variable = sul_wealth_dhimmi var:sul_wealth_dhimmi > 0 }
-		set_local_variable = { name = sul_dhimmi_power value = "local_estate_power(estate_type:dhimmi_estate)" }
+
+		set_local_variable = {
+			name = sul_dhimmi_power
+			value = "local_estate_power(estate_type:dhimmi_estate)"
+		}
+
 		set_variable = {
 			name = sul_dhimmi_return_per_pop
+
 			value = {
 				value = var:sul_wealth_dhimmi
 				multiply = @sul_return_rate
@@ -51,21 +57,38 @@ sul_compute_minority_returns = {
 		}
 		set_variable = {
 			name = sul_enrichment_dhimmi
+
 			value = {
 				value = var:sul_dhimmi_return_per_pop
-				divide = { value = @sul_denom_A add = { value = var:sul_dhimmi_return_per_pop multiply = @sul_denom_B } }
+
+				divide = {
+					value = @sul_demand_intercept
+					add = { value = var:sul_dhimmi_return_per_pop multiply = @sul_demand_slope }
+				}
+
 				multiply = var:sul_dhimmi_return_per_pop
-				multiply = @sul_w_enrichment
-				multiply = { value = local_var:sul_dhimmi_power divide = { value = @sul_dhimmi_power_per_pop min = 0.001 } }
+				multiply = @sul_enrichment_weight
+
+				multiply = {
+					value = local_var:sul_dhimmi_power
+					divide = { value = @sul_dhimmi_power_per_pop min = 0.001 }
+				}
+
 				multiply = owner.var:sul_enrich_rate_dhimmi
 			}
 		}
 	}
 	if = {
 		limit = { has_variable = sul_wealth_cossacks var:sul_wealth_cossacks > 0 }
-		set_local_variable = { name = sul_cossacks_power value = "local_estate_power(estate_type:cossacks_estate)" }
+
+		set_local_variable = {
+			name = sul_cossacks_power
+			value = "local_estate_power(estate_type:cossacks_estate)"
+		}
+
 		set_variable = {
 			name = sul_cossacks_return_per_pop
+
 			value = {
 				value = var:sul_wealth_cossacks
 				multiply = @sul_return_rate
@@ -75,12 +98,23 @@ sul_compute_minority_returns = {
 		}
 		set_variable = {
 			name = sul_enrichment_cossacks
+
 			value = {
 				value = var:sul_cossacks_return_per_pop
-				divide = { value = @sul_denom_A add = { value = var:sul_cossacks_return_per_pop multiply = @sul_denom_B } }
+
+				divide = {
+					value = @sul_demand_intercept
+					add = { value = var:sul_cossacks_return_per_pop multiply = @sul_demand_slope }
+				}
+
 				multiply = var:sul_cossacks_return_per_pop
-				multiply = @sul_w_enrichment
-				multiply = { value = local_var:sul_cossacks_power divide = { value = @sul_cossacks_power_per_pop min = 0.001 } }
+				multiply = @sul_enrichment_weight
+
+				multiply = {
+					value = local_var:sul_cossacks_power
+					divide = { value = @sul_cossacks_power_per_pop min = 0.001 }
+				}
+
 				multiply = owner.var:sul_enrich_rate_cossacks
 			}
 		}
@@ -95,32 +129,63 @@ sul_update_location_wpp = {
 	# 1. Per-pop-type wage bills (pop × rate × market_access)
 	set_variable = {
 		name = sul_wage_bill_nobles
-		value = { value = num_pop_type:nobles multiply = var:sul_wages_nobles multiply = market_access }
+
+		value = {
+			value = num_pop_type:nobles
+			multiply = var:sul_wages_nobles
+			multiply = market_access
+		}
 	}
 	set_variable = {
 		name = sul_wage_bill_clergy
-		value = { value = num_pop_type:clergy multiply = var:sul_wages_clergy multiply = market_access }
+
+		value = {
+			value = num_pop_type:clergy
+			multiply = var:sul_wages_clergy
+			multiply = market_access
+		}
 	}
 	set_variable = {
 		name = sul_wage_bill_burghers
-		value = { value = num_pop_type:burghers multiply = var:sul_wages_burghers multiply = market_access }
+
+		value = {
+			value = num_pop_type:burghers
+			multiply = var:sul_wages_burghers
+			multiply = market_access
+		}
 	}
 	set_variable = {
 		name = sul_wage_bill_soldiers
-		value = { value = num_pop_type:soldiers multiply = var:sul_wages_soldiers multiply = market_access }
+
+		value = {
+			value = num_pop_type:soldiers
+			multiply = var:sul_wages_soldiers
+			multiply = market_access
+		}
 	}
 	set_variable = {
 		name = sul_wage_bill_laborers
-		value = { value = num_pop_type:laborers multiply = var:sul_wages_laborers multiply = market_access }
+
+		value = {
+			value = num_pop_type:laborers
+			multiply = var:sul_wages_laborers
+			multiply = market_access
+		}
 	}
 	set_variable = {
 		name = sul_wage_bill_peasants
-		value = { value = num_pop_type:peasants multiply = var:sul_wages_peasants multiply = market_access }
+
+		value = {
+			value = num_pop_type:peasants
+			multiply = var:sul_wages_peasants
+			multiply = market_access
+		}
 	}
 
 	# 2. Total local wages
 	set_variable = {
 		name = sul_local_wages
+
 		value = {
 			value = var:sul_wage_bill_nobles
 			add = var:sul_wage_bill_clergy
@@ -141,68 +206,84 @@ sul_update_location_wpp = {
 	# poisons the entire inline value. Capital returns are additionally
 	# guarded because wealth variables don't exist until sul_wealth_seed_all
 	# runs — a post-seed WPP recompute pass fills them in before month 1.
-	set_local_variable = {
-		name = sul_wage_pool
-		value = var:sul_local_wages
-	}
+	set_local_variable = { name = sul_wage_pool value = var:sul_local_wages }
 
 	set_local_variable = { name = sul_noble_wpp value = 0 }
-	if = { limit = { num_pop_type:nobles > 0 }
+	if = {
+		limit = { num_pop_type:nobles > 0 }
+
 		set_local_variable = {
 			name = sul_noble_wpp
+
 			value = {
 				value = local_var:sul_wage_pool
 				multiply = "local_relative_estate_power(estate_type:nobles_estate)"
 				divide = { value = num_pop_type:nobles min = 0.001 }
-				if = { limit = { has_variable = sul_wealth_nobles }
+				if = {
+					limit = { has_variable = sul_wealth_nobles }
+
 					add = {
 						value = var:sul_wealth_nobles
 						multiply = @sul_return_rate
 						divide = { value = num_pop_type:nobles min = 0.001 }
 					}
 				}
+
 				min = 0
 			}
 		}
 	}
 	set_local_variable = { name = sul_clergy_wpp value = 0 }
-	if = { limit = { num_pop_type:clergy > 0 }
+	if = {
+		limit = { num_pop_type:clergy > 0 }
+
 		set_local_variable = {
 			name = sul_clergy_wpp
+
 			value = {
 				value = local_var:sul_wage_pool
 				multiply = "local_relative_estate_power(estate_type:clergy_estate)"
 				divide = { value = num_pop_type:clergy min = 0.001 }
-				if = { limit = { has_variable = sul_wealth_clergy }
+				if = {
+					limit = { has_variable = sul_wealth_clergy }
+
 					add = {
 						value = var:sul_wealth_clergy
 						multiply = @sul_return_rate
 						divide = { value = num_pop_type:clergy min = 0.001 }
 					}
 				}
+
 				min = 0
 			}
 		}
 	}
 	set_local_variable = { name = sul_burgher_wpp value = 0 }
-	if = { limit = { num_pop_type:burghers > 0 }
+	if = {
+		limit = { num_pop_type:burghers > 0 }
+
 		set_local_variable = {
 			name = sul_burgher_wpp
+
 			value = {
 				value = local_var:sul_wage_pool
 				multiply = "local_relative_estate_power(estate_type:burghers_estate)"
 				divide = { value = num_pop_type:burghers min = 0.001 }
-				if = { limit = { has_variable = sul_wealth_burghers }
+				if = {
+					limit = { has_variable = sul_wealth_burghers }
+
 					add = {
 						value = var:sul_wealth_burghers
 						multiply = @sul_return_rate
 						divide = { value = num_pop_type:burghers min = 0.001 }
 					}
 				}
+
 				min = 0
 			}
 		}
 	}
+
 	# Commoner WPP: peasant estate's share distributed by wage bill.
 	# Each type's share = their wage bill / total commoner bills.
 	# Capital returns from peasant assets shared across all commoner types.
@@ -212,9 +293,18 @@ sul_update_location_wpp = {
 	set_local_variable = { name = sul_soldier_wpp value = 0 }
 	set_local_variable = { name = sul_laborer_wpp value = 0 }
 	set_local_variable = { name = sul_peasant_wpp value = 0 }
-	if = { limit = { OR = { num_pop_type:soldiers > 0 num_pop_type:laborers > 0 num_pop_type:peasants > 0 } }
+	if = {
+		limit = {
+			OR = {
+				num_pop_type:soldiers > 0
+				num_pop_type:laborers > 0
+				num_pop_type:peasants > 0
+			}
+		}
+
 		set_local_variable = {
 			name = sul_commoner_pool
+
 			value = {
 				value = local_var:sul_wage_pool
 				multiply = "local_relative_estate_power(estate_type:peasants_estate)"
@@ -222,6 +312,7 @@ sul_update_location_wpp = {
 		}
 		set_local_variable = {
 			name = sul_commoner_bill_total
+
 			value = {
 				value = var:sul_wage_bill_soldiers
 				add = var:sul_wage_bill_laborers
@@ -229,7 +320,9 @@ sul_update_location_wpp = {
 				min = 0.001
 			}
 		}
-		if = { limit = { has_variable = sul_wealth_peasants }
+		if = {
+			limit = { has_variable = sul_wealth_peasants }
+
 			set_local_variable = {
 				name = sul_commoner_return
 				value = { value = var:sul_wealth_peasants multiply = @sul_return_rate }
@@ -237,40 +330,64 @@ sul_update_location_wpp = {
 		}
 		set_local_variable = {
 			name = sul_soldier_wpp
+
 			value = {
 				value = local_var:sul_commoner_pool
-				multiply = { value = var:sul_wage_bill_soldiers divide = local_var:sul_commoner_bill_total }
+
+				multiply = {
+					value = var:sul_wage_bill_soldiers
+					divide = local_var:sul_commoner_bill_total
+				}
+
 				divide = { value = num_pop_type:soldiers min = 0.001 }
+
 				add = {
 					value = local_var:sul_commoner_return
 					divide = { value = num_pop_type:soldiers min = 0.001 }
 				}
+
 				min = 0
 			}
 		}
 		set_local_variable = {
 			name = sul_laborer_wpp
+
 			value = {
 				value = local_var:sul_commoner_pool
-				multiply = { value = var:sul_wage_bill_laborers divide = local_var:sul_commoner_bill_total }
+
+				multiply = {
+					value = var:sul_wage_bill_laborers
+					divide = local_var:sul_commoner_bill_total
+				}
+
 				divide = { value = num_pop_type:laborers min = 0.001 }
+
 				add = {
 					value = local_var:sul_commoner_return
 					divide = { value = num_pop_type:laborers min = 0.001 }
 				}
+
 				min = 0
 			}
 		}
 		set_local_variable = {
 			name = sul_peasant_wpp
+
 			value = {
 				value = local_var:sul_commoner_pool
-				multiply = { value = var:sul_wage_bill_peasants divide = local_var:sul_commoner_bill_total }
+
+				multiply = {
+					value = var:sul_wage_bill_peasants
+					divide = local_var:sul_commoner_bill_total
+				}
+
 				divide = { value = num_pop_type:peasants min = 0.001 }
+
 				add = {
 					value = local_var:sul_commoner_return
 					divide = { value = num_pop_type:peasants min = 0.001 }
 				}
+
 				min = 0
 			}
 		}
@@ -278,20 +395,26 @@ sul_update_location_wpp = {
 
 	# Tribesmen: own estate, no wage bill, draws from pool via power + capital returns
 	set_local_variable = { name = sul_tribesmen_wpp value = 0 }
-	if = { limit = { num_pop_type:tribesmen > 0 }
+	if = {
+		limit = { num_pop_type:tribesmen > 0 }
+
 		set_local_variable = {
 			name = sul_tribesmen_wpp
+
 			value = {
 				value = local_var:sul_wage_pool
 				multiply = "local_relative_estate_power(estate_type:tribes_estate)"
 				divide = { value = num_pop_type:tribesmen min = 0.001 }
-				if = { limit = { has_variable = sul_wealth_tribes }
+				if = {
+					limit = { has_variable = sul_wealth_tribes }
+
 					add = {
 						value = var:sul_wealth_tribes
 						multiply = @sul_return_rate
 						divide = { value = num_pop_type:tribesmen min = 0.001 }
 					}
 				}
+
 				min = 0
 			}
 		}
@@ -300,6 +423,7 @@ sul_update_location_wpp = {
 	# 8. Local GDP = sum of WPP × pop counts (economic activity measure for tooltips)
 	set_variable = {
 		name = sul_local_gdp
+
 		value = {
 			value = { value = local_var:sul_noble_wpp multiply = num_pop_type:nobles }
 			add = { value = local_var:sul_clergy_wpp multiply = num_pop_type:clergy }
@@ -307,109 +431,239 @@ sul_update_location_wpp = {
 			add = { value = local_var:sul_soldier_wpp multiply = num_pop_type:soldiers }
 			add = { value = local_var:sul_laborer_wpp multiply = num_pop_type:laborers }
 			add = { value = local_var:sul_peasant_wpp multiply = num_pop_type:peasants }
-			add = { value = local_var:sul_tribesmen_wpp multiply = num_pop_type:tribesmen }
+			add = {
+				value = local_var:sul_tribesmen_wpp
+				multiply = num_pop_type:tribesmen
+			}
 		}
-	}
-
-	# --- DEBUG: full WPP breakdown at capital ---
-	if = {
-		limit = { is_capital = yes owner = { OR = { tag = ENG tag = FRA tag = VEN } } }
-		# Political power per estate — the multiplier on capital returns
-		set_local_variable = { name = d_pN value = "local_relative_estate_power(estate_type:nobles_estate)" }
-		set_local_variable = { name = d_pC value = "local_relative_estate_power(estate_type:clergy_estate)" }
-		set_local_variable = { name = d_pB value = "local_relative_estate_power(estate_type:burghers_estate)" }
-		set_local_variable = { name = d_pP value = "local_relative_estate_power(estate_type:peasants_estate)" }
-		# Pop counts at this location
-		set_local_variable = { name = d_nPop value = num_pop_type:nobles }
-		set_local_variable = { name = d_cPop value = num_pop_type:clergy }
-		set_local_variable = { name = d_bPop value = num_pop_type:burghers }
-		set_local_variable = { name = d_sPop value = num_pop_type:soldiers }
-		set_local_variable = { name = d_lPop value = num_pop_type:laborers }
-		set_local_variable = { name = d_pPop value = num_pop_type:peasants }
-		error_log = "::SUL_WPP::[GetCurrentYear]:pwrN=[SCOPE.GetLocalVariable('d_pN').GetValue]:pwrC=[SCOPE.GetLocalVariable('d_pC').GetValue]:pwrB=[SCOPE.GetLocalVariable('d_pB').GetValue]:pwrP=[SCOPE.GetLocalVariable('d_pP').GetValue]"
-		error_log = "::SUL_WPP2::[GetCurrentYear]:nWPP=[SCOPE.GetLocalVariable('sul_noble_wpp').GetValue]:cWPP=[SCOPE.GetLocalVariable('sul_clergy_wpp').GetValue]:bWPP=[SCOPE.GetLocalVariable('sul_burgher_wpp').GetValue]:sWPP=[SCOPE.GetLocalVariable('sul_soldier_wpp').GetValue]:lWPP=[SCOPE.GetLocalVariable('sul_laborer_wpp').GetValue]:pWPP=[SCOPE.GetLocalVariable('sul_peasant_wpp').GetValue]"
-		error_log = "::SUL_WPP3::[GetCurrentYear]:nPop=[SCOPE.GetLocalVariable('d_nPop').GetValue]:cPop=[SCOPE.GetLocalVariable('d_cPop').GetValue]:bPop=[SCOPE.GetLocalVariable('d_bPop').GetValue]:sPop=[SCOPE.GetLocalVariable('d_sPop').GetValue]:lPop=[SCOPE.GetLocalVariable('d_lPop').GetValue]:pPop=[SCOPE.GetLocalVariable('d_pPop').GetValue]"
 	}
 
 	# 8. Compute demand base per pop type: WPP / (A + B × WPP)
 	# add_to_variable_map requires a literal value, not a computed block
-	set_local_variable = { name = sul_db_n value = { value = local_var:sul_noble_wpp divide = { value = @sul_denom_A add = { value = local_var:sul_noble_wpp multiply = @sul_denom_B } } } }
-	set_local_variable = { name = sul_db_c value = { value = local_var:sul_clergy_wpp divide = { value = @sul_denom_A add = { value = local_var:sul_clergy_wpp multiply = @sul_denom_B } } } }
-	set_local_variable = { name = sul_db_b value = { value = local_var:sul_burgher_wpp divide = { value = @sul_denom_A add = { value = local_var:sul_burgher_wpp multiply = @sul_denom_B } } } }
-	set_local_variable = { name = sul_db_s value = { value = local_var:sul_soldier_wpp divide = { value = @sul_denom_A add = { value = local_var:sul_soldier_wpp multiply = @sul_denom_B } } } }
-	set_local_variable = { name = sul_db_l value = { value = local_var:sul_laborer_wpp divide = { value = @sul_denom_A add = { value = local_var:sul_laborer_wpp multiply = @sul_denom_B } } } }
-	set_local_variable = { name = sul_db_p value = { value = local_var:sul_peasant_wpp divide = { value = @sul_denom_A add = { value = local_var:sul_peasant_wpp multiply = @sul_denom_B } } } }
-	set_local_variable = { name = sul_db_t value = { value = local_var:sul_tribesmen_wpp divide = { value = @sul_denom_A add = { value = local_var:sul_tribesmen_wpp multiply = @sul_denom_B } } } }
+	set_local_variable = {
+		name = sul_demand_base_nobles
+
+		value = {
+			value = local_var:sul_noble_wpp
+
+			divide = {
+				value = @sul_demand_intercept
+				add = { value = local_var:sul_noble_wpp multiply = @sul_demand_slope }
+			}
+		}
+	}
+	set_local_variable = {
+		name = sul_demand_base_clergy
+
+		value = {
+			value = local_var:sul_clergy_wpp
+
+			divide = {
+				value = @sul_demand_intercept
+				add = { value = local_var:sul_clergy_wpp multiply = @sul_demand_slope }
+			}
+		}
+	}
+	set_local_variable = {
+		name = sul_demand_base_burghers
+
+		value = {
+			value = local_var:sul_burgher_wpp
+
+			divide = {
+				value = @sul_demand_intercept
+				add = { value = local_var:sul_burgher_wpp multiply = @sul_demand_slope }
+			}
+		}
+	}
+	set_local_variable = {
+		name = sul_demand_base_soldiers
+
+		value = {
+			value = local_var:sul_soldier_wpp
+
+			divide = {
+				value = @sul_demand_intercept
+				add = { value = local_var:sul_soldier_wpp multiply = @sul_demand_slope }
+			}
+		}
+	}
+	set_local_variable = {
+		name = sul_demand_base_laborers
+
+		value = {
+			value = local_var:sul_laborer_wpp
+
+			divide = {
+				value = @sul_demand_intercept
+				add = { value = local_var:sul_laborer_wpp multiply = @sul_demand_slope }
+			}
+		}
+	}
+	set_local_variable = {
+		name = sul_demand_base_peasants
+
+		value = {
+			value = local_var:sul_peasant_wpp
+
+			divide = {
+				value = @sul_demand_intercept
+				add = { value = local_var:sul_peasant_wpp multiply = @sul_demand_slope }
+			}
+		}
+	}
+	set_local_variable = {
+		name = sul_demand_base_tribesmen
+
+		value = {
+			value = local_var:sul_tribesmen_wpp
+
+			divide = {
+				value = @sul_demand_intercept
+				add = { value = local_var:sul_tribesmen_wpp multiply = @sul_demand_slope }
+			}
+		}
+	}
 
 	# 9. Write WPP + demand base to variable maps
-	add_to_variable_map = { name = sul_wealth_per_pop key = pop_type:nobles value = local_var:sul_noble_wpp }
-	add_to_variable_map = { name = sul_demand_base key = pop_type:nobles value = local_var:sul_db_n }
-	add_to_variable_map = { name = sul_wealth_per_pop key = pop_type:clergy value = local_var:sul_clergy_wpp }
-	add_to_variable_map = { name = sul_demand_base key = pop_type:clergy value = local_var:sul_db_c }
-	add_to_variable_map = { name = sul_wealth_per_pop key = pop_type:burghers value = local_var:sul_burgher_wpp }
-	add_to_variable_map = { name = sul_demand_base key = pop_type:burghers value = local_var:sul_db_b }
-	add_to_variable_map = { name = sul_wealth_per_pop key = pop_type:soldiers value = local_var:sul_soldier_wpp }
-	add_to_variable_map = { name = sul_demand_base key = pop_type:soldiers value = local_var:sul_db_s }
-	add_to_variable_map = { name = sul_wealth_per_pop key = pop_type:laborers value = local_var:sul_laborer_wpp }
-	add_to_variable_map = { name = sul_demand_base key = pop_type:laborers value = local_var:sul_db_l }
-	add_to_variable_map = { name = sul_wealth_per_pop key = pop_type:peasants value = local_var:sul_peasant_wpp }
-	add_to_variable_map = { name = sul_demand_base key = pop_type:peasants value = local_var:sul_db_p }
-	add_to_variable_map = { name = sul_wealth_per_pop key = pop_type:tribesmen value = local_var:sul_tribesmen_wpp }
-	add_to_variable_map = { name = sul_demand_base key = pop_type:tribesmen value = local_var:sul_db_t }
-	add_to_variable_map = { name = sul_wealth_per_pop key = pop_type:slaves value = 0 }
-	add_to_variable_map = { name = sul_demand_base key = pop_type:slaves value = 0 }
+	add_to_variable_map = {
+		name = sul_wealth_per_pop
+		key = pop_type:nobles
+		value = local_var:sul_noble_wpp
+	}
+	add_to_variable_map = {
+		name = sul_demand_base
+		key = pop_type:nobles
+		value = local_var:sul_demand_base_nobles
+	}
+	add_to_variable_map = {
+		name = sul_wealth_per_pop
+		key = pop_type:clergy
+		value = local_var:sul_clergy_wpp
+	}
+	add_to_variable_map = {
+		name = sul_demand_base
+		key = pop_type:clergy
+		value = local_var:sul_demand_base_clergy
+	}
+	add_to_variable_map = {
+		name = sul_wealth_per_pop
+		key = pop_type:burghers
+		value = local_var:sul_burgher_wpp
+	}
+	add_to_variable_map = {
+		name = sul_demand_base
+		key = pop_type:burghers
+		value = local_var:sul_demand_base_burghers
+	}
+	add_to_variable_map = {
+		name = sul_wealth_per_pop
+		key = pop_type:soldiers
+		value = local_var:sul_soldier_wpp
+	}
+	add_to_variable_map = {
+		name = sul_demand_base
+		key = pop_type:soldiers
+		value = local_var:sul_demand_base_soldiers
+	}
+	add_to_variable_map = {
+		name = sul_wealth_per_pop
+		key = pop_type:laborers
+		value = local_var:sul_laborer_wpp
+	}
+	add_to_variable_map = {
+		name = sul_demand_base
+		key = pop_type:laborers
+		value = local_var:sul_demand_base_laborers
+	}
+	add_to_variable_map = {
+		name = sul_wealth_per_pop
+		key = pop_type:peasants
+		value = local_var:sul_peasant_wpp
+	}
+	add_to_variable_map = {
+		name = sul_demand_base
+		key = pop_type:peasants
+		value = local_var:sul_demand_base_peasants
+	}
+	add_to_variable_map = {
+		name = sul_wealth_per_pop
+		key = pop_type:tribesmen
+		value = local_var:sul_tribesmen_wpp
+	}
+	add_to_variable_map = {
+		name = sul_demand_base
+		key = pop_type:tribesmen
+		value = local_var:sul_demand_base_tribesmen
+	}
+	add_to_variable_map = {
+		name = sul_wealth_per_pop
+		key = pop_type:slaves
+		value = 0
+	}
+	add_to_variable_map = {
+		name = sul_demand_base
+		key = pop_type:slaves
+		value = 0
+	}
 
 	# 10. Enrichment: savings that flow to estates as gold income.
 	# demand_base × WPP × enrichment_weight × num_pops per estate.
 	set_variable = {
 		name = sul_enrichment_nobles
+
 		value = {
-			value = local_var:sul_db_n
+			value = local_var:sul_demand_base_nobles
 			multiply = local_var:sul_noble_wpp
-			multiply = @sul_w_enrichment
+			multiply = @sul_enrichment_weight
 			multiply = num_pop_type:nobles
 			multiply = owner.var:sul_enrich_rate_nobles
 		}
 	}
 	set_variable = {
 		name = sul_enrichment_clergy
+
 		value = {
-			value = local_var:sul_db_c
+			value = local_var:sul_demand_base_clergy
 			multiply = local_var:sul_clergy_wpp
-			multiply = @sul_w_enrichment
+			multiply = @sul_enrichment_weight
 			multiply = num_pop_type:clergy
 			multiply = owner.var:sul_enrich_rate_clergy
 		}
 	}
 	set_variable = {
 		name = sul_enrichment_burghers
+
 		value = {
-			value = local_var:sul_db_b
+			value = local_var:sul_demand_base_burghers
 			multiply = local_var:sul_burgher_wpp
-			multiply = @sul_w_enrichment
+			multiply = @sul_enrichment_weight
 			multiply = num_pop_type:burghers
 			multiply = owner.var:sul_enrich_rate_burghers
 		}
 	}
 	set_variable = {
 		name = sul_enrichment_commoners
+
 		value = {
-			value = local_var:sul_db_s
+			value = local_var:sul_demand_base_soldiers
 			multiply = local_var:sul_soldier_wpp
-			multiply = @sul_w_enrichment
+			multiply = @sul_enrichment_weight
 			multiply = num_pop_type:soldiers
+
 			add = {
-				value = local_var:sul_db_l
+				value = local_var:sul_demand_base_laborers
 				multiply = local_var:sul_laborer_wpp
-				multiply = @sul_w_enrichment
+				multiply = @sul_enrichment_weight
 				multiply = num_pop_type:laborers
 			}
 			add = {
-				value = local_var:sul_db_p
+				value = local_var:sul_demand_base_peasants
 				multiply = local_var:sul_peasant_wpp
-				multiply = @sul_w_enrichment
+				multiply = @sul_enrichment_weight
 				multiply = num_pop_type:peasants
 			}
+
 			multiply = owner.var:sul_enrich_rate_commoners
 		}
 	}
@@ -417,10 +671,11 @@ sul_update_location_wpp = {
 	# Tribesmen enrichment (own estate)
 	set_variable = {
 		name = sul_enrichment_tribesmen
+
 		value = {
-			value = local_var:sul_db_t
+			value = local_var:sul_demand_base_tribesmen
 			multiply = local_var:sul_tribesmen_wpp
-			multiply = @sul_w_enrichment
+			multiply = @sul_enrichment_weight
 			multiply = num_pop_type:tribesmen
 			multiply = owner.var:sul_enrich_rate_tribesmen
 		}
@@ -428,17 +683,6 @@ sul_update_location_wpp = {
 
 	# 11. Minority estate per-pop returns and enrichment.
 	sul_compute_minority_returns = yes
-	# --- DEBUG: verify map reads back correctly ---
-	if = {
-		limit = { is_capital = yes owner = { OR = { tag = ENG tag = FRA tag = VEN } } }
-		set_local_variable = { name = d_mapN value = "variable_map(sul_wealth_per_pop|pop_type:nobles)" }
-		set_local_variable = { name = d_mapC value = "variable_map(sul_wealth_per_pop|pop_type:clergy)" }
-		set_local_variable = { name = d_mapB value = "variable_map(sul_wealth_per_pop|pop_type:burghers)" }
-		set_local_variable = { name = d_mapS value = "variable_map(sul_wealth_per_pop|pop_type:soldiers)" }
-		set_local_variable = { name = d_mapL value = "variable_map(sul_wealth_per_pop|pop_type:laborers)" }
-		set_local_variable = { name = d_mapP value = "variable_map(sul_wealth_per_pop|pop_type:peasants)" }
-		error_log = "::SUL_MAP::[GetCurrentYear]:mapN=[SCOPE.GetLocalVariable('d_mapN').GetValue]:mapC=[SCOPE.GetLocalVariable('d_mapC').GetValue]:mapB=[SCOPE.GetLocalVariable('d_mapB').GetValue]:mapS=[SCOPE.GetLocalVariable('d_mapS').GetValue]:mapL=[SCOPE.GetLocalVariable('d_mapL').GetValue]:mapP=[SCOPE.GetLocalVariable('d_mapP').GetValue]"
-	}
 }
 
 # -----------------------------------------------------------------------------
@@ -458,6 +702,7 @@ sul_update_location_wpp = {
 sul_calculate_location_wages = {
 	set_local_variable = {
 		name = sul_pop_cap_factor
+
 		value = {
 			value = @sul_pop_cap_midpoint
 			subtract = location_population_percentage
@@ -467,6 +712,7 @@ sul_calculate_location_wages = {
 
 	set_local_variable = {
 		name = sul_enfr_factor
+
 		value = {
 			value = modifier:local_peasant_enfranchisment
 			add = owner.modifier:global_peasant_enfranchisment
@@ -480,42 +726,57 @@ sul_calculate_location_wages = {
 
 	set_variable = {
 		name = sul_wages_nobles
+
 		value = {
 			value = owner.modifier:sul_nobles_base_wages
-			multiply = { value = 1 add = owner.modifier:sul_global_nobles_wages_modifier add = modifier:sul_local_nobles_wages_modifier }
+
+			multiply = {
+				value = 1
+				add = owner.modifier:sul_global_nobles_wages_modifier
+				add = modifier:sul_local_nobles_wages_modifier
+			}
+
 			min = 0
 		}
 	}
 	set_variable = {
 		name = sul_wages_clergy
+
 		value = {
 			value = owner.modifier:sul_clergy_base_wages
+
 			multiply = {
 				value = 1
 				add = owner.modifier:sul_global_clergy_wages_modifier
 				add = modifier:sul_local_clergy_wages_modifier
 				add = { value = local_var:sul_pop_cap_factor multiply = 0.1 }
 			}
+
 			min = 0
 		}
 	}
 	set_variable = {
 		name = sul_wages_burghers
+
 		value = {
 			value = owner.modifier:sul_burghers_base_wages
+
 			multiply = {
 				value = 1
 				add = owner.modifier:sul_global_burghers_wages_modifier
 				add = modifier:sul_local_burghers_wages_modifier
 				add = { value = local_var:sul_pop_cap_factor multiply = 0.25 }
 			}
+
 			min = 0
 		}
 	}
 	set_variable = {
 		name = sul_wages_soldiers
+
 		value = {
 			value = owner.modifier:sul_soldiers_base_wages
+
 			multiply = {
 				value = 1
 				add = owner.modifier:sul_global_soldiers_wages_modifier
@@ -523,13 +784,16 @@ sul_calculate_location_wages = {
 				add = { value = local_var:sul_pop_cap_factor multiply = 0.5 }
 				add = local_var:sul_enfr_factor
 			}
+
 			min = 0
 		}
 	}
 	set_variable = {
 		name = sul_wages_laborers
+
 		value = {
 			value = owner.modifier:sul_laborers_base_wages
+
 			multiply = {
 				value = 1
 				add = owner.modifier:sul_global_laborers_wages_modifier
@@ -537,13 +801,16 @@ sul_calculate_location_wages = {
 				add = { value = local_var:sul_pop_cap_factor multiply = 0.5 }
 				add = local_var:sul_enfr_factor
 			}
+
 			min = 0
 		}
 	}
 	set_variable = {
 		name = sul_wages_peasants
+
 		value = {
 			value = owner.modifier:sul_peasants_base_wages
+
 			multiply = {
 				value = 1
 				add = owner.modifier:sul_global_peasants_wages_modifier
@@ -551,11 +818,11 @@ sul_calculate_location_wages = {
 				add = { value = local_var:sul_pop_cap_factor multiply = 0.5 }
 				add = local_var:sul_enfr_factor
 			}
+
 			min = 0
 		}
 	}
 }
-
 
 # -----------------------------------------------------------------------------
 # BUDGET PRESSURE + CAPITAL RETURNS (country scope)
@@ -576,7 +843,14 @@ sul_compute_budget_pressure = {
 		owner = {
 			set_variable = {
 				name = sul_budget_pressure_nobles
-				value = { value = prev.estate_gold subtract = 1000 multiply = 0.00025 add = 1 min = 1 }
+
+				value = {
+					value = prev.estate_gold
+					subtract = 1000
+					multiply = 0.00025
+					add = 1
+					min = 1
+				}
 			}
 		}
 	}
@@ -585,7 +859,14 @@ sul_compute_budget_pressure = {
 		owner = {
 			set_variable = {
 				name = sul_budget_pressure_clergy
-				value = { value = prev.estate_gold subtract = 1000 multiply = 0.00025 add = 1 min = 1 }
+
+				value = {
+					value = prev.estate_gold
+					subtract = 1000
+					multiply = 0.00025
+					add = 1
+					min = 1
+				}
 			}
 		}
 	}
@@ -594,7 +875,14 @@ sul_compute_budget_pressure = {
 		owner = {
 			set_variable = {
 				name = sul_budget_pressure_burghers
-				value = { value = prev.estate_gold subtract = 1000 multiply = 0.00025 add = 1 min = 1 }
+
+				value = {
+					value = prev.estate_gold
+					subtract = 1000
+					multiply = 0.00025
+					add = 1
+					min = 1
+				}
 			}
 		}
 	}
@@ -603,8 +891,79 @@ sul_compute_budget_pressure = {
 		owner = {
 			set_variable = {
 				name = sul_budget_pressure_peasants
-				value = { value = prev.estate_gold subtract = 1000 multiply = 0.00025 add = 1 min = 1 }
+
+				value = {
+					value = prev.estate_gold
+					subtract = 1000
+					multiply = 0.00025
+					add = 1
+					min = 1
+				}
 			}
+		}
+	}
+
+	# Enrichment rate multipliers: must be cached before the location loop
+	# so sul_update_location_wpp can read them via owner.var:sul_enrich_rate_*.
+	set_local_variable = {
+		name = sul_base_enrich
+		value = { value = 1 add = modifier:estate_enrichment }
+	}
+
+	set_variable = {
+		name = sul_enrich_rate_nobles
+
+		value = {
+			value = local_var:sul_base_enrich
+			multiply = { value = 1 add = modifier:sul_nobles_enrichment_rate }
+		}
+	}
+	set_variable = {
+		name = sul_enrich_rate_clergy
+
+		value = {
+			value = local_var:sul_base_enrich
+			multiply = { value = 1 add = modifier:sul_clergy_enrichment_rate }
+		}
+	}
+	set_variable = {
+		name = sul_enrich_rate_burghers
+
+		value = {
+			value = local_var:sul_base_enrich
+			multiply = { value = 1 add = modifier:sul_burghers_enrichment_rate }
+		}
+	}
+	set_variable = {
+		name = sul_enrich_rate_commoners
+
+		value = {
+			value = local_var:sul_base_enrich
+			multiply = { value = 1 add = modifier:sul_commoners_enrichment_rate }
+		}
+	}
+	set_variable = {
+		name = sul_enrich_rate_tribesmen
+
+		value = {
+			value = local_var:sul_base_enrich
+			multiply = { value = 1 add = modifier:sul_tribesmen_enrichment_rate }
+		}
+	}
+	set_variable = {
+		name = sul_enrich_rate_dhimmi
+
+		value = {
+			value = local_var:sul_base_enrich
+			multiply = { value = 1 add = modifier:sul_dhimmi_enrichment_rate }
+		}
+	}
+	set_variable = {
+		name = sul_enrich_rate_cossacks
+
+		value = {
+			value = local_var:sul_base_enrich
+			multiply = { value = 1 add = modifier:sul_cossacks_enrichment_rate }
 		}
 	}
 }
@@ -617,9 +976,22 @@ sul_compute_budget_pressure = {
 
 sul_update_country_economy = {
 	# Country-wide pop counts for capital returns per-pop calculation
-	set_variable = { name = sul_country_pop_nobles value = { value = "pop_type_population_in_country(pop_type:nobles)" min = 1 } }
-	set_variable = { name = sul_country_pop_clergy value = { value = "pop_type_population_in_country(pop_type:clergy)" min = 1 } }
-	set_variable = { name = sul_country_pop_burghers value = { value = "pop_type_population_in_country(pop_type:burghers)" min = 1 } }
+	set_variable = {
+		name = sul_country_pop_nobles
+		value = { value = "pop_type_population_in_country(pop_type:nobles)" min = 1 }
+	}
+	set_variable = {
+		name = sul_country_pop_clergy
+		value = { value = "pop_type_population_in_country(pop_type:clergy)" min = 1 }
+	}
+	set_variable = {
+		name = sul_country_pop_burghers
+
+		value = {
+			value = "pop_type_population_in_country(pop_type:burghers)"
+			min = 1
+		}
+	}
 
 	# Country-level capital returns and budget pressure (needs pop counts)
 	sul_compute_budget_pressure = yes
@@ -629,6 +1001,7 @@ sul_update_country_economy = {
 	set_local_variable = { name = sul_clergy_wages value = 0 }
 	set_local_variable = { name = sul_burgher_wages value = 0 }
 	set_local_variable = { name = sul_commoner_wages value = 0 }
+
 	# Enrichment accumulators: savings income flowing to each estate
 	set_local_variable = { name = sul_enrich_nobles value = 0 }
 	set_local_variable = { name = sul_enrich_clergy value = 0 }
@@ -637,8 +1010,10 @@ sul_update_country_economy = {
 	set_local_variable = { name = sul_enrich_tribesmen value = 0 }
 	set_local_variable = { name = sul_enrich_dhimmi value = 0 }
 	set_local_variable = { name = sul_enrich_cossacks value = 0 }
+
 	# Power-weighted transfer: commoner wages × enfranchisement × commoner political power
 	set_local_variable = { name = sul_transfer_weighted value = 0 }
+
 	# Wealth: raw estate power + estate gold
 	set_variable = { name = sul_national_power_nobles value = 0 }
 	set_variable = { name = sul_national_power_clergy value = 0 }
@@ -651,18 +1026,45 @@ sul_update_country_economy = {
 	every_owned_location = {
 		# Wealth: accumulate raw estate power (all locations)
 		owner ?= {
-			change_variable = { name = sul_national_power_nobles add = "prev.local_estate_power(estate_type:nobles_estate)" }
-			change_variable = { name = sul_national_power_clergy add = "prev.local_estate_power(estate_type:clergy_estate)" }
-			change_variable = { name = sul_national_power_burghers add = "prev.local_estate_power(estate_type:burghers_estate)" }
-			change_variable = { name = sul_national_power_peasants add = "prev.local_estate_power(estate_type:peasants_estate)" }
-			if = { limit = { country_has_estate = estate_type:dhimmi_estate }
-				change_variable = { name = sul_national_power_dhimmi add = "prev.local_estate_power(estate_type:dhimmi_estate)" }
+			change_variable = {
+				name = sul_national_power_nobles
+				add = "prev.local_estate_power(estate_type:nobles_estate)"
 			}
-			if = { limit = { country_has_estate = estate_type:cossacks_estate }
-				change_variable = { name = sul_national_power_cossacks add = "prev.local_estate_power(estate_type:cossacks_estate)" }
+			change_variable = {
+				name = sul_national_power_clergy
+				add = "prev.local_estate_power(estate_type:clergy_estate)"
 			}
-			if = { limit = { country_has_estate = estate_type:tribes_estate }
-				change_variable = { name = sul_national_power_tribes add = "prev.local_estate_power(estate_type:tribes_estate)" }
+			change_variable = {
+				name = sul_national_power_burghers
+				add = "prev.local_estate_power(estate_type:burghers_estate)"
+			}
+			change_variable = {
+				name = sul_national_power_peasants
+				add = "prev.local_estate_power(estate_type:peasants_estate)"
+			}
+			if = {
+				limit = { country_has_estate = estate_type:dhimmi_estate }
+
+				change_variable = {
+					name = sul_national_power_dhimmi
+					add = "prev.local_estate_power(estate_type:dhimmi_estate)"
+				}
+			}
+			if = {
+				limit = { country_has_estate = estate_type:cossacks_estate }
+
+				change_variable = {
+					name = sul_national_power_cossacks
+					add = "prev.local_estate_power(estate_type:cossacks_estate)"
+				}
+			}
+			if = {
+				limit = { country_has_estate = estate_type:tribes_estate }
+
+				change_variable = {
+					name = sul_national_power_tribes
+					add = "prev.local_estate_power(estate_type:tribes_estate)"
+				}
 			}
 		}
 
@@ -674,38 +1076,74 @@ sul_update_country_economy = {
 				limit = { var:sul_local_wages > 0 }
 
 				owner ?= {
-					change_local_variable = { name = sul_noble_wages add = prev.var:sul_wage_bill_nobles }
-					change_local_variable = { name = sul_clergy_wages add = prev.var:sul_wage_bill_clergy }
-					change_local_variable = { name = sul_burgher_wages add = prev.var:sul_wage_bill_burghers }
+					change_local_variable = {
+						name = sul_noble_wages
+						add = prev.var:sul_wage_bill_nobles
+					}
+					change_local_variable = {
+						name = sul_clergy_wages
+						add = prev.var:sul_wage_bill_clergy
+					}
+					change_local_variable = {
+						name = sul_burgher_wages
+						add = prev.var:sul_wage_bill_burghers
+					}
 					change_local_variable = {
 						name = sul_commoner_wages
+
 						add = {
 							value = prev.var:sul_wage_bill_soldiers
 							add = prev.var:sul_wage_bill_laborers
 							add = prev.var:sul_wage_bill_peasants
 						}
 					}
+
 					# Enrichment: pop savings accumulated per estate
-					change_local_variable = { name = sul_enrich_nobles add = prev.var:sul_enrichment_nobles }
-					change_local_variable = { name = sul_enrich_clergy add = prev.var:sul_enrichment_clergy }
-					change_local_variable = { name = sul_enrich_burghers add = prev.var:sul_enrichment_burghers }
-					change_local_variable = { name = sul_enrich_commoners add = prev.var:sul_enrichment_commoners }
-					change_local_variable = { name = sul_enrich_tribesmen add = prev.var:sul_enrichment_tribesmen }
-					change_local_variable = { name = sul_enrich_dhimmi add = prev.var:sul_enrichment_dhimmi }
-					change_local_variable = { name = sul_enrich_cossacks add = prev.var:sul_enrichment_cossacks }
+					change_local_variable = {
+						name = sul_enrich_nobles
+						add = prev.var:sul_enrichment_nobles
+					}
+					change_local_variable = {
+						name = sul_enrich_clergy
+						add = prev.var:sul_enrichment_clergy
+					}
+					change_local_variable = {
+						name = sul_enrich_burghers
+						add = prev.var:sul_enrichment_burghers
+					}
+					change_local_variable = {
+						name = sul_enrich_commoners
+						add = prev.var:sul_enrichment_commoners
+					}
+					change_local_variable = {
+						name = sul_enrich_tribesmen
+						add = prev.var:sul_enrichment_tribesmen
+					}
+					change_local_variable = {
+						name = sul_enrich_dhimmi
+						add = prev.var:sul_enrichment_dhimmi
+					}
+					change_local_variable = {
+						name = sul_enrich_cossacks
+						add = prev.var:sul_enrichment_cossacks
+					}
+
 					# Enfranchisement × commoner political power
 					change_local_variable = {
 						name = sul_transfer_weighted
+
 						add = {
 							value = prev.var:sul_wage_bill_soldiers
 							add = prev.var:sul_wage_bill_laborers
 							add = prev.var:sul_wage_bill_peasants
+
 							multiply = {
 								value = prev.modifier:local_peasant_enfranchisment
 								add = modifier:global_peasant_enfranchisment
 								min = 0.1
 								max = 1.0
 							}
+
 							multiply = "prev.local_relative_estate_power(estate_type:peasants_estate)"
 						}
 					}
@@ -714,20 +1152,46 @@ sul_update_country_economy = {
 		}
 	}
 
-	set_variable = { name = sul_transfer_weighted_total value = local_var:sul_transfer_weighted }
+	set_variable = {
+		name = sul_transfer_weighted_total
+		value = local_var:sul_transfer_weighted
+	}
 
 	# Wealth: derive crown from estate totals
-	set_variable = { name = sul_national_power_crown value = var:sul_national_power_nobles }
-	change_variable = { name = sul_national_power_crown add = var:sul_national_power_clergy }
-	change_variable = { name = sul_national_power_crown add = var:sul_national_power_burghers }
-	change_variable = { name = sul_national_power_crown add = var:sul_national_power_peasants }
-	change_variable = { name = sul_national_power_crown add = var:sul_national_power_dhimmi }
-	change_variable = { name = sul_national_power_crown add = var:sul_national_power_cossacks }
-	change_variable = { name = sul_national_power_crown add = var:sul_national_power_tribes }
+	set_variable = {
+		name = sul_national_power_crown
+		value = var:sul_national_power_nobles
+	}
+
+	change_variable = {
+		name = sul_national_power_crown
+		add = var:sul_national_power_clergy
+	}
+	change_variable = {
+		name = sul_national_power_crown
+		add = var:sul_national_power_burghers
+	}
+	change_variable = {
+		name = sul_national_power_crown
+		add = var:sul_national_power_peasants
+	}
+	change_variable = {
+		name = sul_national_power_crown
+		add = var:sul_national_power_dhimmi
+	}
+	change_variable = {
+		name = sul_national_power_crown
+		add = var:sul_national_power_cossacks
+	}
+	change_variable = {
+		name = sul_national_power_crown
+		add = var:sul_national_power_tribes
+	}
 
 	# Pay enrichment to estates (savings income)
 	if = {
 		limit = { local_var:sul_enrich_nobles > 0.01 }
+
 		add_gold_to_estate = {
 			estate_type = estate_type:nobles_estate
 			value = { value = local_var:sul_enrich_nobles multiply = -1 }
@@ -735,6 +1199,7 @@ sul_update_country_economy = {
 	}
 	if = {
 		limit = { local_var:sul_enrich_clergy > 0.01 }
+
 		add_gold_to_estate = {
 			estate_type = estate_type:clergy_estate
 			value = { value = local_var:sul_enrich_clergy multiply = -1 }
@@ -742,6 +1207,7 @@ sul_update_country_economy = {
 	}
 	if = {
 		limit = { local_var:sul_enrich_burghers > 0.01 }
+
 		add_gold_to_estate = {
 			estate_type = estate_type:burghers_estate
 			value = { value = local_var:sul_enrich_burghers multiply = -1 }
@@ -749,6 +1215,7 @@ sul_update_country_economy = {
 	}
 	if = {
 		limit = { local_var:sul_enrich_commoners > 0.01 }
+
 		add_gold_to_estate = {
 			estate_type = estate_type:peasants_estate
 			value = { value = local_var:sul_enrich_commoners multiply = -1 }
@@ -756,55 +1223,78 @@ sul_update_country_economy = {
 	}
 	if = {
 		limit = { local_var:sul_enrich_tribesmen > 0.01 }
+
 		add_gold_to_estate = {
 			estate_type = estate_type:tribes_estate
 			value = { value = local_var:sul_enrich_tribesmen multiply = -1 }
 		}
 	}
 	if = {
-		limit = { local_var:sul_enrich_dhimmi > 0.01 country_has_estate = estate_type:dhimmi_estate }
+		limit = {
+			local_var:sul_enrich_dhimmi > 0.01
+			country_has_estate = estate_type:dhimmi_estate
+		}
+
 		add_gold_to_estate = {
 			estate_type = estate_type:dhimmi_estate
 			value = { value = local_var:sul_enrich_dhimmi multiply = -1 }
 		}
 	}
 	if = {
-		limit = { local_var:sul_enrich_cossacks > 0.01 country_has_estate = estate_type:cossacks_estate }
+		limit = {
+			local_var:sul_enrich_cossacks > 0.01
+			country_has_estate = estate_type:cossacks_estate
+		}
+
 		add_gold_to_estate = {
 			estate_type = estate_type:cossacks_estate
 			value = { value = local_var:sul_enrich_cossacks multiply = -1 }
 		}
 	}
 
-	# Cache enrichment multipliers: (1 + estate_enrichment) × (1 + per_estate_rate), once per country
-	set_local_variable = { name = sul_base_enrich value = { value = 1 add = modifier:estate_enrichment } }
-	set_variable = { name = sul_enrich_rate_nobles value = { value = local_var:sul_base_enrich multiply = { value = 1 add = modifier:sul_nobles_enrichment_rate } } }
-	set_variable = { name = sul_enrich_rate_clergy value = { value = local_var:sul_base_enrich multiply = { value = 1 add = modifier:sul_clergy_enrichment_rate } } }
-	set_variable = { name = sul_enrich_rate_burghers value = { value = local_var:sul_base_enrich multiply = { value = 1 add = modifier:sul_burghers_enrichment_rate } } }
-	set_variable = { name = sul_enrich_rate_commoners value = { value = local_var:sul_base_enrich multiply = { value = 1 add = modifier:sul_commoners_enrichment_rate } } }
-	set_variable = { name = sul_enrich_rate_tribesmen value = { value = local_var:sul_base_enrich multiply = { value = 1 add = modifier:sul_tribesmen_enrichment_rate } } }
-	set_variable = { name = sul_enrich_rate_dhimmi value = { value = local_var:sul_base_enrich multiply = { value = 1 add = modifier:sul_dhimmi_enrichment_rate } } }
-	set_variable = { name = sul_enrich_rate_cossacks value = { value = local_var:sul_base_enrich multiply = { value = 1 add = modifier:sul_cossacks_enrichment_rate } } }
-
 	# Cache estate gold after enrichment payments
-	set_variable = { name = sul_estate_gold_nobles value = "estate(estate_type:nobles_estate).estate_gold" }
-	set_variable = { name = sul_estate_gold_clergy value = "estate(estate_type:clergy_estate).estate_gold" }
-	set_variable = { name = sul_estate_gold_burghers value = "estate(estate_type:burghers_estate).estate_gold" }
+	set_variable = {
+		name = sul_estate_gold_nobles
+		value = "estate(estate_type:nobles_estate).estate_gold"
+	}
+	set_variable = {
+		name = sul_estate_gold_clergy
+		value = "estate(estate_type:clergy_estate).estate_gold"
+	}
+	set_variable = {
+		name = sul_estate_gold_burghers
+		value = "estate(estate_type:burghers_estate).estate_gold"
+	}
 	set_variable = { name = sul_estate_gold_peasants value = 0 }
+
 	"estate(estate_type:peasants_estate)" ?= {
-		owner = { set_variable = { name = sul_estate_gold_peasants value = prev.estate_gold } }
+		owner = {
+			set_variable = { name = sul_estate_gold_peasants value = prev.estate_gold }
+		}
 	}
+
 	set_variable = { name = sul_estate_gold_dhimmi value = 0 }
+
 	"estate(estate_type:dhimmi_estate)" ?= {
-		owner = { set_variable = { name = sul_estate_gold_dhimmi value = prev.estate_gold } }
+		owner = {
+			set_variable = { name = sul_estate_gold_dhimmi value = prev.estate_gold }
+		}
 	}
+
 	set_variable = { name = sul_estate_gold_cossacks value = 0 }
+
 	"estate(estate_type:cossacks_estate)" ?= {
-		owner = { set_variable = { name = sul_estate_gold_cossacks value = prev.estate_gold } }
+		owner = {
+			set_variable = { name = sul_estate_gold_cossacks value = prev.estate_gold }
+		}
 	}
+
 	set_variable = { name = sul_estate_gold_tribes value = 0 }
+
 	"estate(estate_type:tribes_estate)" ?= {
-		owner = { set_variable = { name = sul_estate_gold_tribes value = prev.estate_gold } }
+		owner = {
+			set_variable = { name = sul_estate_gold_tribes value = prev.estate_gold }
+		}
 	}
 
 	set_variable = {
@@ -841,80 +1331,232 @@ sul_update_country_economy = {
 # Wealth seeding: initial asset distribution at game start.
 # Sets each location's wealth equal to its convergence target so day-1
 # tooltips show assets = potential. Monthly convergence takes over from here.
+
 sul_wealth_seed_location = {
 	# Accumulate crown power alongside per-estate seeding to avoid
 	# 7 redundant local_estate_power() calls for the crown calculation.
 	set_local_variable = { name = sul_crown_local_power value = 0 }
 
-	set_local_variable = { name = sul_epower value = "local_estate_power(estate_type:nobles_estate)" }
-	change_local_variable = { name = sul_crown_local_power add = local_var:sul_epower }
-	set_variable = { name = sul_wealth_nobles value = local_var:sul_epower }
-	change_variable = { name = sul_wealth_nobles divide = { value = owner.var:sul_national_power_nobles min = 0.001 } }
-	change_variable = { name = sul_wealth_nobles multiply = owner.var:sul_estate_gold_nobles }
+	set_local_variable = {
+		name = sul_estate_power
+		value = "local_estate_power(estate_type:nobles_estate)"
+	}
 
-	set_local_variable = { name = sul_epower value = "local_estate_power(estate_type:clergy_estate)" }
-	change_local_variable = { name = sul_crown_local_power add = local_var:sul_epower }
-	set_variable = { name = sul_wealth_clergy value = local_var:sul_epower }
-	change_variable = { name = sul_wealth_clergy divide = { value = owner.var:sul_national_power_clergy min = 0.001 } }
-	change_variable = { name = sul_wealth_clergy multiply = owner.var:sul_estate_gold_clergy }
+	change_local_variable = {
+		name = sul_crown_local_power
+		add = local_var:sul_estate_power
+	}
 
-	set_local_variable = { name = sul_epower value = "local_estate_power(estate_type:burghers_estate)" }
-	change_local_variable = { name = sul_crown_local_power add = local_var:sul_epower }
-	set_variable = { name = sul_wealth_burghers value = local_var:sul_epower }
-	change_variable = { name = sul_wealth_burghers divide = { value = owner.var:sul_national_power_burghers min = 0.001 } }
-	change_variable = { name = sul_wealth_burghers multiply = owner.var:sul_estate_gold_burghers }
+	set_variable = { name = sul_wealth_nobles value = local_var:sul_estate_power }
 
-	set_local_variable = { name = sul_epower value = "local_estate_power(estate_type:peasants_estate)" }
-	change_local_variable = { name = sul_crown_local_power add = local_var:sul_epower }
-	set_variable = { name = sul_wealth_peasants value = local_var:sul_epower }
-	change_variable = { name = sul_wealth_peasants divide = { value = owner.var:sul_national_power_peasants min = 0.001 } }
-	change_variable = { name = sul_wealth_peasants multiply = owner.var:sul_estate_gold_peasants }
+	change_variable = {
+		name = sul_wealth_nobles
+		divide = { value = owner.var:sul_national_power_nobles min = 0.001 }
+	}
+	change_variable = {
+		name = sul_wealth_nobles
+		multiply = owner.var:sul_estate_gold_nobles
+	}
+
+	set_local_variable = {
+		name = sul_estate_power
+		value = "local_estate_power(estate_type:clergy_estate)"
+	}
+
+	change_local_variable = {
+		name = sul_crown_local_power
+		add = local_var:sul_estate_power
+	}
+
+	set_variable = { name = sul_wealth_clergy value = local_var:sul_estate_power }
+
+	change_variable = {
+		name = sul_wealth_clergy
+		divide = { value = owner.var:sul_national_power_clergy min = 0.001 }
+	}
+	change_variable = {
+		name = sul_wealth_clergy
+		multiply = owner.var:sul_estate_gold_clergy
+	}
+
+	set_local_variable = {
+		name = sul_estate_power
+		value = "local_estate_power(estate_type:burghers_estate)"
+	}
+
+	change_local_variable = {
+		name = sul_crown_local_power
+		add = local_var:sul_estate_power
+	}
+
+	set_variable = {
+		name = sul_wealth_burghers
+		value = local_var:sul_estate_power
+	}
+
+	change_variable = {
+		name = sul_wealth_burghers
+		divide = { value = owner.var:sul_national_power_burghers min = 0.001 }
+	}
+	change_variable = {
+		name = sul_wealth_burghers
+		multiply = owner.var:sul_estate_gold_burghers
+	}
+
+	set_local_variable = {
+		name = sul_estate_power
+		value = "local_estate_power(estate_type:peasants_estate)"
+	}
+
+	change_local_variable = {
+		name = sul_crown_local_power
+		add = local_var:sul_estate_power
+	}
+
+	set_variable = {
+		name = sul_wealth_peasants
+		value = local_var:sul_estate_power
+	}
+
+	change_variable = {
+		name = sul_wealth_peasants
+		divide = { value = owner.var:sul_national_power_peasants min = 0.001 }
+	}
+	change_variable = {
+		name = sul_wealth_peasants
+		multiply = owner.var:sul_estate_gold_peasants
+	}
 
 	if = {
 		limit = { owner = { country_has_estate = estate_type:dhimmi_estate } }
-		set_local_variable = { name = sul_epower value = "local_estate_power(estate_type:dhimmi_estate)" }
-		change_local_variable = { name = sul_crown_local_power add = local_var:sul_epower }
-		set_variable = { name = sul_wealth_dhimmi value = local_var:sul_epower }
-		change_variable = { name = sul_wealth_dhimmi divide = { value = owner.var:sul_national_power_dhimmi min = 0.001 } }
-		change_variable = { name = sul_wealth_dhimmi multiply = owner.var:sul_estate_gold_dhimmi }
+
+		set_local_variable = {
+			name = sul_estate_power
+			value = "local_estate_power(estate_type:dhimmi_estate)"
+		}
+
+		change_local_variable = {
+			name = sul_crown_local_power
+			add = local_var:sul_estate_power
+		}
+
+		set_variable = { name = sul_wealth_dhimmi value = local_var:sul_estate_power }
+
+		change_variable = {
+			name = sul_wealth_dhimmi
+			divide = { value = owner.var:sul_national_power_dhimmi min = 0.001 }
+		}
+		change_variable = {
+			name = sul_wealth_dhimmi
+			multiply = owner.var:sul_estate_gold_dhimmi
+		}
 	}
 	if = {
 		limit = { owner = { country_has_estate = estate_type:cossacks_estate } }
-		set_local_variable = { name = sul_epower value = "local_estate_power(estate_type:cossacks_estate)" }
-		change_local_variable = { name = sul_crown_local_power add = local_var:sul_epower }
-		set_variable = { name = sul_wealth_cossacks value = local_var:sul_epower }
-		change_variable = { name = sul_wealth_cossacks divide = { value = owner.var:sul_national_power_cossacks min = 0.001 } }
-		change_variable = { name = sul_wealth_cossacks multiply = owner.var:sul_estate_gold_cossacks }
+
+		set_local_variable = {
+			name = sul_estate_power
+			value = "local_estate_power(estate_type:cossacks_estate)"
+		}
+
+		change_local_variable = {
+			name = sul_crown_local_power
+			add = local_var:sul_estate_power
+		}
+
+		set_variable = {
+			name = sul_wealth_cossacks
+			value = local_var:sul_estate_power
+		}
+
+		change_variable = {
+			name = sul_wealth_cossacks
+			divide = { value = owner.var:sul_national_power_cossacks min = 0.001 }
+		}
+		change_variable = {
+			name = sul_wealth_cossacks
+			multiply = owner.var:sul_estate_gold_cossacks
+		}
 	}
 	if = {
 		limit = { owner = { country_has_estate = estate_type:tribes_estate } }
-		set_local_variable = { name = sul_epower value = "local_estate_power(estate_type:tribes_estate)" }
-		change_local_variable = { name = sul_crown_local_power add = local_var:sul_epower }
-		set_variable = { name = sul_wealth_tribes value = local_var:sul_epower }
-		change_variable = { name = sul_wealth_tribes divide = { value = owner.var:sul_national_power_tribes min = 0.001 } }
-		change_variable = { name = sul_wealth_tribes multiply = owner.var:sul_estate_gold_tribes }
+
+		set_local_variable = {
+			name = sul_estate_power
+			value = "local_estate_power(estate_type:tribes_estate)"
+		}
+
+		change_local_variable = {
+			name = sul_crown_local_power
+			add = local_var:sul_estate_power
+		}
+
+		set_variable = { name = sul_wealth_tribes value = local_var:sul_estate_power }
+
+		change_variable = {
+			name = sul_wealth_tribes
+			divide = { value = owner.var:sul_national_power_tribes min = 0.001 }
+		}
+		change_variable = {
+			name = sul_wealth_tribes
+			multiply = owner.var:sul_estate_gold_tribes
+		}
 	}
 
 	# Crown wealth uses owner.gold (not estate_gold) because the crown
 	# isn't an estate with its own gold pool — it's the sovereign's liquid reserves.
-	set_variable = { name = sul_wealth_crown value = local_var:sul_crown_local_power }
-	change_variable = { name = sul_wealth_crown divide = { value = owner.var:sul_national_power_crown min = 0.001 } }
+	set_variable = {
+		name = sul_wealth_crown
+		value = local_var:sul_crown_local_power
+	}
+
+	change_variable = {
+		name = sul_wealth_crown
+		divide = { value = owner.var:sul_national_power_crown min = 0.001 }
+	}
 	change_variable = { name = sul_wealth_crown multiply = owner.gold }
 
 	# At seed time, assets = target by definition
-	set_variable = { name = sul_wealth_target_nobles value = var:sul_wealth_nobles }
-	set_variable = { name = sul_wealth_target_clergy value = var:sul_wealth_clergy }
-	set_variable = { name = sul_wealth_target_burghers value = var:sul_wealth_burghers }
-	set_variable = { name = sul_wealth_target_peasants value = var:sul_wealth_peasants }
+	set_variable = {
+		name = sul_wealth_target_nobles
+		value = var:sul_wealth_nobles
+	}
+	set_variable = {
+		name = sul_wealth_target_clergy
+		value = var:sul_wealth_clergy
+	}
+	set_variable = {
+		name = sul_wealth_target_burghers
+		value = var:sul_wealth_burghers
+	}
+	set_variable = {
+		name = sul_wealth_target_peasants
+		value = var:sul_wealth_peasants
+	}
 	set_variable = { name = sul_wealth_target_crown value = var:sul_wealth_crown }
-	if = { limit = { has_variable = sul_wealth_dhimmi }
-		set_variable = { name = sul_wealth_target_dhimmi value = var:sul_wealth_dhimmi }
+	if = {
+		limit = { has_variable = sul_wealth_dhimmi }
+
+		set_variable = {
+			name = sul_wealth_target_dhimmi
+			value = var:sul_wealth_dhimmi
+		}
 	}
-	if = { limit = { has_variable = sul_wealth_cossacks }
-		set_variable = { name = sul_wealth_target_cossacks value = var:sul_wealth_cossacks }
+	if = {
+		limit = { has_variable = sul_wealth_cossacks }
+
+		set_variable = {
+			name = sul_wealth_target_cossacks
+			value = var:sul_wealth_cossacks
+		}
 	}
-	if = { limit = { has_variable = sul_wealth_tribes }
-		set_variable = { name = sul_wealth_target_tribes value = var:sul_wealth_tribes }
+	if = {
+		limit = { has_variable = sul_wealth_tribes }
+
+		set_variable = {
+			name = sul_wealth_target_tribes
+			value = var:sul_wealth_tribes
+		}
 	}
 
 	sul_compute_minority_returns = yes
@@ -925,28 +1567,99 @@ sul_wealth_seed_location = {
 # Single source of truth for GUI: tooltip script values read exclusively
 # from these maps, never from the per-estate variables directly.
 # This decouples the display layer from the computation workspace.
+
 sul_wealth_write_maps = {
-	add_to_variable_map = { name = sul_estate_assets key = estate_type:nobles_estate value = var:sul_wealth_nobles }
-	add_to_variable_map = { name = sul_estate_assets key = estate_type:clergy_estate value = var:sul_wealth_clergy }
-	add_to_variable_map = { name = sul_estate_assets key = estate_type:burghers_estate value = var:sul_wealth_burghers }
-	add_to_variable_map = { name = sul_estate_assets key = estate_type:peasants_estate value = var:sul_wealth_peasants }
-	add_to_variable_map = { name = sul_estate_assets key = estate_type:crown_estate value = var:sul_wealth_crown }
-	add_to_variable_map = { name = sul_estate_targets key = estate_type:nobles_estate value = var:sul_wealth_target_nobles }
-	add_to_variable_map = { name = sul_estate_targets key = estate_type:clergy_estate value = var:sul_wealth_target_clergy }
-	add_to_variable_map = { name = sul_estate_targets key = estate_type:burghers_estate value = var:sul_wealth_target_burghers }
-	add_to_variable_map = { name = sul_estate_targets key = estate_type:peasants_estate value = var:sul_wealth_target_peasants }
-	add_to_variable_map = { name = sul_estate_targets key = estate_type:crown_estate value = var:sul_wealth_target_crown }
-	if = { limit = { has_variable = sul_wealth_dhimmi }
-		add_to_variable_map = { name = sul_estate_assets key = estate_type:dhimmi_estate value = var:sul_wealth_dhimmi }
-		add_to_variable_map = { name = sul_estate_targets key = estate_type:dhimmi_estate value = var:sul_wealth_target_dhimmi }
+	add_to_variable_map = {
+		name = sul_estate_assets
+		key = estate_type:nobles_estate
+		value = var:sul_wealth_nobles
 	}
-	if = { limit = { has_variable = sul_wealth_cossacks }
-		add_to_variable_map = { name = sul_estate_assets key = estate_type:cossacks_estate value = var:sul_wealth_cossacks }
-		add_to_variable_map = { name = sul_estate_targets key = estate_type:cossacks_estate value = var:sul_wealth_target_cossacks }
+	add_to_variable_map = {
+		name = sul_estate_assets
+		key = estate_type:clergy_estate
+		value = var:sul_wealth_clergy
 	}
-	if = { limit = { has_variable = sul_wealth_tribes }
-		add_to_variable_map = { name = sul_estate_assets key = estate_type:tribes_estate value = var:sul_wealth_tribes }
-		add_to_variable_map = { name = sul_estate_targets key = estate_type:tribes_estate value = var:sul_wealth_target_tribes }
+	add_to_variable_map = {
+		name = sul_estate_assets
+		key = estate_type:burghers_estate
+		value = var:sul_wealth_burghers
+	}
+	add_to_variable_map = {
+		name = sul_estate_assets
+		key = estate_type:peasants_estate
+		value = var:sul_wealth_peasants
+	}
+	add_to_variable_map = {
+		name = sul_estate_assets
+		key = estate_type:crown_estate
+		value = var:sul_wealth_crown
+	}
+	add_to_variable_map = {
+		name = sul_estate_targets
+		key = estate_type:nobles_estate
+		value = var:sul_wealth_target_nobles
+	}
+	add_to_variable_map = {
+		name = sul_estate_targets
+		key = estate_type:clergy_estate
+		value = var:sul_wealth_target_clergy
+	}
+	add_to_variable_map = {
+		name = sul_estate_targets
+		key = estate_type:burghers_estate
+		value = var:sul_wealth_target_burghers
+	}
+	add_to_variable_map = {
+		name = sul_estate_targets
+		key = estate_type:peasants_estate
+		value = var:sul_wealth_target_peasants
+	}
+	add_to_variable_map = {
+		name = sul_estate_targets
+		key = estate_type:crown_estate
+		value = var:sul_wealth_target_crown
+	}
+	if = {
+		limit = { has_variable = sul_wealth_dhimmi }
+
+		add_to_variable_map = {
+			name = sul_estate_assets
+			key = estate_type:dhimmi_estate
+			value = var:sul_wealth_dhimmi
+		}
+		add_to_variable_map = {
+			name = sul_estate_targets
+			key = estate_type:dhimmi_estate
+			value = var:sul_wealth_target_dhimmi
+		}
+	}
+	if = {
+		limit = { has_variable = sul_wealth_cossacks }
+
+		add_to_variable_map = {
+			name = sul_estate_assets
+			key = estate_type:cossacks_estate
+			value = var:sul_wealth_cossacks
+		}
+		add_to_variable_map = {
+			name = sul_estate_targets
+			key = estate_type:cossacks_estate
+			value = var:sul_wealth_target_cossacks
+		}
+	}
+	if = {
+		limit = { has_variable = sul_wealth_tribes }
+
+		add_to_variable_map = {
+			name = sul_estate_assets
+			key = estate_type:tribes_estate
+			value = var:sul_wealth_tribes
+		}
+		add_to_variable_map = {
+			name = sul_estate_targets
+			key = estate_type:tribes_estate
+			value = var:sul_wealth_target_tribes
+		}
 	}
 }
 
@@ -955,136 +1668,517 @@ sul_wealth_write_maps = {
 # Prev-month power is used as the denominator to avoid feedback loops
 # from same-tick power changes. During occupation, assets drain but
 # targets freeze — potential is preserved, only access is lost.
+
 sul_location_converge_wealth = {
 	if = {
-		limit = { NOT = { has_variable = sul_wealth_nobles } }
+		limit = {
+			NOT = {
+				has_variable = sul_wealth_nobles
+			}
+		}
+
 		sul_wealth_seed_location = yes
 	}
 
 	if = {
 		limit = { is_occupied = yes }
-		change_variable = { name = sul_wealth_nobles multiply = { value = 1 subtract = @sul_wealth_occupation_drain } }
-		change_variable = { name = sul_wealth_clergy multiply = { value = 1 subtract = @sul_wealth_occupation_drain } }
-		change_variable = { name = sul_wealth_burghers multiply = { value = 1 subtract = @sul_wealth_occupation_drain } }
-		change_variable = { name = sul_wealth_peasants multiply = { value = 1 subtract = @sul_wealth_occupation_drain } }
-		if = { limit = { has_variable = sul_wealth_dhimmi }
-			change_variable = { name = sul_wealth_dhimmi multiply = { value = 1 subtract = @sul_wealth_occupation_drain } }
+
+		change_variable = {
+			name = sul_wealth_nobles
+			multiply = { value = 1 subtract = @sul_wealth_occupation_drain }
 		}
-		if = { limit = { has_variable = sul_wealth_cossacks }
-			change_variable = { name = sul_wealth_cossacks multiply = { value = 1 subtract = @sul_wealth_occupation_drain } }
+		change_variable = {
+			name = sul_wealth_clergy
+			multiply = { value = 1 subtract = @sul_wealth_occupation_drain }
 		}
-		if = { limit = { has_variable = sul_wealth_tribes }
-			change_variable = { name = sul_wealth_tribes multiply = { value = 1 subtract = @sul_wealth_occupation_drain } }
+		change_variable = {
+			name = sul_wealth_burghers
+			multiply = { value = 1 subtract = @sul_wealth_occupation_drain }
 		}
-		change_variable = { name = sul_wealth_crown multiply = { value = 1 subtract = @sul_wealth_occupation_drain } }
+		change_variable = {
+			name = sul_wealth_peasants
+			multiply = { value = 1 subtract = @sul_wealth_occupation_drain }
+		}
+		if = {
+			limit = { has_variable = sul_wealth_dhimmi }
+
+			change_variable = {
+				name = sul_wealth_dhimmi
+				multiply = { value = 1 subtract = @sul_wealth_occupation_drain }
+			}
+		}
+		if = {
+			limit = { has_variable = sul_wealth_cossacks }
+
+			change_variable = {
+				name = sul_wealth_cossacks
+				multiply = { value = 1 subtract = @sul_wealth_occupation_drain }
+			}
+		}
+		if = {
+			limit = { has_variable = sul_wealth_tribes }
+
+			change_variable = {
+				name = sul_wealth_tribes
+				multiply = { value = 1 subtract = @sul_wealth_occupation_drain }
+			}
+		}
+		change_variable = {
+			name = sul_wealth_crown
+			multiply = { value = 1 subtract = @sul_wealth_occupation_drain }
+		}
 	}
 	else = {
 		# Accumulate local power for crown convergence (avoids 7 redundant engine calls)
 		set_local_variable = { name = sul_crown_power value = 0 }
 
 		# Nobles
-		set_local_variable = { name = sul_epower value = "local_estate_power(estate_type:nobles_estate)" }
-		change_local_variable = { name = sul_crown_power add = local_var:sul_epower }
-		set_local_variable = { name = sul_wtarget value = local_var:sul_epower }
-		change_local_variable = { name = sul_wtarget divide = { value = owner.var:sul_national_power_prev_nobles min = 0.001 } }
-		change_local_variable = { name = sul_wtarget multiply = owner.var:sul_estate_gold_nobles }
-		set_variable = { name = sul_wealth_target_nobles value = local_var:sul_wtarget }
-		set_local_variable = { name = sul_wdelta value = { value = local_var:sul_wtarget subtract = var:sul_wealth_nobles multiply = @sul_wealth_converge_rate } }
-		change_variable = { name = sul_wealth_nobles add = local_var:sul_wdelta }
-		if = { limit = { var:sul_wealth_nobles > local_var:sul_wtarget } set_variable = { name = sul_wealth_nobles value = local_var:sul_wtarget } }
-		if = { limit = { var:sul_wealth_nobles < 0 } set_variable = { name = sul_wealth_nobles value = 0 } }
+		set_local_variable = {
+			name = sul_estate_power
+			value = "local_estate_power(estate_type:nobles_estate)"
+		}
+
+		change_local_variable = {
+			name = sul_crown_power
+			add = local_var:sul_estate_power
+		}
+
+		set_local_variable = {
+			name = sul_wealth_target
+			value = local_var:sul_estate_power
+		}
+
+		change_local_variable = {
+			name = sul_wealth_target
+			divide = { value = owner.var:sul_national_power_prev_nobles min = 0.001 }
+		}
+		change_local_variable = {
+			name = sul_wealth_target
+			multiply = owner.var:sul_estate_gold_nobles
+		}
+
+		set_variable = {
+			name = sul_wealth_target_nobles
+			value = local_var:sul_wealth_target
+		}
+
+		set_local_variable = {
+			name = sul_wealth_delta
+
+			value = {
+				value = local_var:sul_wealth_target
+				subtract = var:sul_wealth_nobles
+				multiply = @sul_wealth_converge_rate
+			}
+		}
+
+		change_variable = {
+			name = sul_wealth_nobles
+			add = local_var:sul_wealth_delta
+		}
+		if = {
+			limit = { var:sul_wealth_nobles > local_var:sul_wealth_target }
+
+			set_variable = {
+				name = sul_wealth_nobles
+				value = local_var:sul_wealth_target
+			}
+		}
+		if = {
+			limit = { var:sul_wealth_nobles < 0 }
+			set_variable = { name = sul_wealth_nobles value = 0 }
+		}
 
 		# Clergy
-		set_local_variable = { name = sul_epower value = "local_estate_power(estate_type:clergy_estate)" }
-		change_local_variable = { name = sul_crown_power add = local_var:sul_epower }
-		set_local_variable = { name = sul_wtarget value = local_var:sul_epower }
-		change_local_variable = { name = sul_wtarget divide = { value = owner.var:sul_national_power_prev_clergy min = 0.001 } }
-		change_local_variable = { name = sul_wtarget multiply = owner.var:sul_estate_gold_clergy }
-		set_variable = { name = sul_wealth_target_clergy value = local_var:sul_wtarget }
-		set_local_variable = { name = sul_wdelta value = { value = local_var:sul_wtarget subtract = var:sul_wealth_clergy multiply = @sul_wealth_converge_rate } }
-		change_variable = { name = sul_wealth_clergy add = local_var:sul_wdelta }
-		if = { limit = { var:sul_wealth_clergy > local_var:sul_wtarget } set_variable = { name = sul_wealth_clergy value = local_var:sul_wtarget } }
-		if = { limit = { var:sul_wealth_clergy < 0 } set_variable = { name = sul_wealth_clergy value = 0 } }
+		set_local_variable = {
+			name = sul_estate_power
+			value = "local_estate_power(estate_type:clergy_estate)"
+		}
+
+		change_local_variable = {
+			name = sul_crown_power
+			add = local_var:sul_estate_power
+		}
+
+		set_local_variable = {
+			name = sul_wealth_target
+			value = local_var:sul_estate_power
+		}
+
+		change_local_variable = {
+			name = sul_wealth_target
+			divide = { value = owner.var:sul_national_power_prev_clergy min = 0.001 }
+		}
+		change_local_variable = {
+			name = sul_wealth_target
+			multiply = owner.var:sul_estate_gold_clergy
+		}
+
+		set_variable = {
+			name = sul_wealth_target_clergy
+			value = local_var:sul_wealth_target
+		}
+
+		set_local_variable = {
+			name = sul_wealth_delta
+
+			value = {
+				value = local_var:sul_wealth_target
+				subtract = var:sul_wealth_clergy
+				multiply = @sul_wealth_converge_rate
+			}
+		}
+
+		change_variable = {
+			name = sul_wealth_clergy
+			add = local_var:sul_wealth_delta
+		}
+		if = {
+			limit = { var:sul_wealth_clergy > local_var:sul_wealth_target }
+
+			set_variable = {
+				name = sul_wealth_clergy
+				value = local_var:sul_wealth_target
+			}
+		}
+		if = {
+			limit = { var:sul_wealth_clergy < 0 }
+			set_variable = { name = sul_wealth_clergy value = 0 }
+		}
 
 		# Burghers
-		set_local_variable = { name = sul_epower value = "local_estate_power(estate_type:burghers_estate)" }
-		change_local_variable = { name = sul_crown_power add = local_var:sul_epower }
-		set_local_variable = { name = sul_wtarget value = local_var:sul_epower }
-		change_local_variable = { name = sul_wtarget divide = { value = owner.var:sul_national_power_prev_burghers min = 0.001 } }
-		change_local_variable = { name = sul_wtarget multiply = owner.var:sul_estate_gold_burghers }
-		set_variable = { name = sul_wealth_target_burghers value = local_var:sul_wtarget }
-		set_local_variable = { name = sul_wdelta value = { value = local_var:sul_wtarget subtract = var:sul_wealth_burghers multiply = @sul_wealth_converge_rate } }
-		change_variable = { name = sul_wealth_burghers add = local_var:sul_wdelta }
-		if = { limit = { var:sul_wealth_burghers > local_var:sul_wtarget } set_variable = { name = sul_wealth_burghers value = local_var:sul_wtarget } }
-		if = { limit = { var:sul_wealth_burghers < 0 } set_variable = { name = sul_wealth_burghers value = 0 } }
+		set_local_variable = {
+			name = sul_estate_power
+			value = "local_estate_power(estate_type:burghers_estate)"
+		}
+
+		change_local_variable = {
+			name = sul_crown_power
+			add = local_var:sul_estate_power
+		}
+
+		set_local_variable = {
+			name = sul_wealth_target
+			value = local_var:sul_estate_power
+		}
+
+		change_local_variable = {
+			name = sul_wealth_target
+			divide = { value = owner.var:sul_national_power_prev_burghers min = 0.001 }
+		}
+		change_local_variable = {
+			name = sul_wealth_target
+			multiply = owner.var:sul_estate_gold_burghers
+		}
+
+		set_variable = {
+			name = sul_wealth_target_burghers
+			value = local_var:sul_wealth_target
+		}
+
+		set_local_variable = {
+			name = sul_wealth_delta
+
+			value = {
+				value = local_var:sul_wealth_target
+				subtract = var:sul_wealth_burghers
+				multiply = @sul_wealth_converge_rate
+			}
+		}
+
+		change_variable = {
+			name = sul_wealth_burghers
+			add = local_var:sul_wealth_delta
+		}
+		if = {
+			limit = { var:sul_wealth_burghers > local_var:sul_wealth_target }
+
+			set_variable = {
+				name = sul_wealth_burghers
+				value = local_var:sul_wealth_target
+			}
+		}
+		if = {
+			limit = { var:sul_wealth_burghers < 0 }
+			set_variable = { name = sul_wealth_burghers value = 0 }
+		}
 
 		# Peasants
-		set_local_variable = { name = sul_epower value = "local_estate_power(estate_type:peasants_estate)" }
-		change_local_variable = { name = sul_crown_power add = local_var:sul_epower }
-		set_local_variable = { name = sul_wtarget value = local_var:sul_epower }
-		change_local_variable = { name = sul_wtarget divide = { value = owner.var:sul_national_power_prev_peasants min = 0.001 } }
-		change_local_variable = { name = sul_wtarget multiply = owner.var:sul_estate_gold_peasants }
-		set_variable = { name = sul_wealth_target_peasants value = local_var:sul_wtarget }
-		set_local_variable = { name = sul_wdelta value = { value = local_var:sul_wtarget subtract = var:sul_wealth_peasants multiply = @sul_wealth_converge_rate } }
-		change_variable = { name = sul_wealth_peasants add = local_var:sul_wdelta }
-		if = { limit = { var:sul_wealth_peasants > local_var:sul_wtarget } set_variable = { name = sul_wealth_peasants value = local_var:sul_wtarget } }
-		if = { limit = { var:sul_wealth_peasants < 0 } set_variable = { name = sul_wealth_peasants value = 0 } }
+		set_local_variable = {
+			name = sul_estate_power
+			value = "local_estate_power(estate_type:peasants_estate)"
+		}
+
+		change_local_variable = {
+			name = sul_crown_power
+			add = local_var:sul_estate_power
+		}
+
+		set_local_variable = {
+			name = sul_wealth_target
+			value = local_var:sul_estate_power
+		}
+
+		change_local_variable = {
+			name = sul_wealth_target
+			divide = { value = owner.var:sul_national_power_prev_peasants min = 0.001 }
+		}
+		change_local_variable = {
+			name = sul_wealth_target
+			multiply = owner.var:sul_estate_gold_peasants
+		}
+
+		set_variable = {
+			name = sul_wealth_target_peasants
+			value = local_var:sul_wealth_target
+		}
+
+		set_local_variable = {
+			name = sul_wealth_delta
+
+			value = {
+				value = local_var:sul_wealth_target
+				subtract = var:sul_wealth_peasants
+				multiply = @sul_wealth_converge_rate
+			}
+		}
+
+		change_variable = {
+			name = sul_wealth_peasants
+			add = local_var:sul_wealth_delta
+		}
+		if = {
+			limit = { var:sul_wealth_peasants > local_var:sul_wealth_target }
+
+			set_variable = {
+				name = sul_wealth_peasants
+				value = local_var:sul_wealth_target
+			}
+		}
+		if = {
+			limit = { var:sul_wealth_peasants < 0 }
+			set_variable = { name = sul_wealth_peasants value = 0 }
+		}
 
 		# Dhimmi (conditional)
 		if = {
 			limit = { owner = { country_has_estate = estate_type:dhimmi_estate } }
-			set_local_variable = { name = sul_epower value = "local_estate_power(estate_type:dhimmi_estate)" }
-			change_local_variable = { name = sul_crown_power add = local_var:sul_epower }
-			set_local_variable = { name = sul_wtarget value = local_var:sul_epower }
-			change_local_variable = { name = sul_wtarget divide = { value = owner.var:sul_national_power_prev_dhimmi min = 0.001 } }
-			change_local_variable = { name = sul_wtarget multiply = owner.var:sul_estate_gold_dhimmi }
-			set_variable = { name = sul_wealth_target_dhimmi value = local_var:sul_wtarget }
-			set_local_variable = { name = sul_wdelta value = { value = local_var:sul_wtarget subtract = var:sul_wealth_dhimmi multiply = @sul_wealth_converge_rate } }
-			change_variable = { name = sul_wealth_dhimmi add = local_var:sul_wdelta }
-			if = { limit = { var:sul_wealth_dhimmi > local_var:sul_wtarget } set_variable = { name = sul_wealth_dhimmi value = local_var:sul_wtarget } }
-			if = { limit = { var:sul_wealth_dhimmi < 0 } set_variable = { name = sul_wealth_dhimmi value = 0 } }
+
+			set_local_variable = {
+				name = sul_estate_power
+				value = "local_estate_power(estate_type:dhimmi_estate)"
+			}
+
+			change_local_variable = {
+				name = sul_crown_power
+				add = local_var:sul_estate_power
+			}
+
+			set_local_variable = {
+				name = sul_wealth_target
+				value = local_var:sul_estate_power
+			}
+
+			change_local_variable = {
+				name = sul_wealth_target
+				divide = { value = owner.var:sul_national_power_prev_dhimmi min = 0.001 }
+			}
+			change_local_variable = {
+				name = sul_wealth_target
+				multiply = owner.var:sul_estate_gold_dhimmi
+			}
+
+			set_variable = {
+				name = sul_wealth_target_dhimmi
+				value = local_var:sul_wealth_target
+			}
+
+			set_local_variable = {
+				name = sul_wealth_delta
+
+				value = {
+					value = local_var:sul_wealth_target
+					subtract = var:sul_wealth_dhimmi
+					multiply = @sul_wealth_converge_rate
+				}
+			}
+
+			change_variable = {
+				name = sul_wealth_dhimmi
+				add = local_var:sul_wealth_delta
+			}
+			if = {
+				limit = { var:sul_wealth_dhimmi > local_var:sul_wealth_target }
+
+				set_variable = {
+					name = sul_wealth_dhimmi
+					value = local_var:sul_wealth_target
+				}
+			}
+			if = {
+				limit = { var:sul_wealth_dhimmi < 0 }
+				set_variable = { name = sul_wealth_dhimmi value = 0 }
+			}
 		}
 
 		# Cossacks (conditional)
 		if = {
 			limit = { owner = { country_has_estate = estate_type:cossacks_estate } }
-			set_local_variable = { name = sul_epower value = "local_estate_power(estate_type:cossacks_estate)" }
-			change_local_variable = { name = sul_crown_power add = local_var:sul_epower }
-			set_local_variable = { name = sul_wtarget value = local_var:sul_epower }
-			change_local_variable = { name = sul_wtarget divide = { value = owner.var:sul_national_power_prev_cossacks min = 0.001 } }
-			change_local_variable = { name = sul_wtarget multiply = owner.var:sul_estate_gold_cossacks }
-			set_variable = { name = sul_wealth_target_cossacks value = local_var:sul_wtarget }
-			set_local_variable = { name = sul_wdelta value = { value = local_var:sul_wtarget subtract = var:sul_wealth_cossacks multiply = @sul_wealth_converge_rate } }
-			change_variable = { name = sul_wealth_cossacks add = local_var:sul_wdelta }
-			if = { limit = { var:sul_wealth_cossacks > local_var:sul_wtarget } set_variable = { name = sul_wealth_cossacks value = local_var:sul_wtarget } }
-			if = { limit = { var:sul_wealth_cossacks < 0 } set_variable = { name = sul_wealth_cossacks value = 0 } }
+
+			set_local_variable = {
+				name = sul_estate_power
+				value = "local_estate_power(estate_type:cossacks_estate)"
+			}
+
+			change_local_variable = {
+				name = sul_crown_power
+				add = local_var:sul_estate_power
+			}
+
+			set_local_variable = {
+				name = sul_wealth_target
+				value = local_var:sul_estate_power
+			}
+
+			change_local_variable = {
+				name = sul_wealth_target
+				divide = { value = owner.var:sul_national_power_prev_cossacks min = 0.001 }
+			}
+			change_local_variable = {
+				name = sul_wealth_target
+				multiply = owner.var:sul_estate_gold_cossacks
+			}
+
+			set_variable = {
+				name = sul_wealth_target_cossacks
+				value = local_var:sul_wealth_target
+			}
+
+			set_local_variable = {
+				name = sul_wealth_delta
+
+				value = {
+					value = local_var:sul_wealth_target
+					subtract = var:sul_wealth_cossacks
+					multiply = @sul_wealth_converge_rate
+				}
+			}
+
+			change_variable = {
+				name = sul_wealth_cossacks
+				add = local_var:sul_wealth_delta
+			}
+			if = {
+				limit = { var:sul_wealth_cossacks > local_var:sul_wealth_target }
+
+				set_variable = {
+					name = sul_wealth_cossacks
+					value = local_var:sul_wealth_target
+				}
+			}
+			if = {
+				limit = { var:sul_wealth_cossacks < 0 }
+				set_variable = { name = sul_wealth_cossacks value = 0 }
+			}
 		}
 
 		# Tribes (conditional)
 		if = {
 			limit = { owner = { country_has_estate = estate_type:tribes_estate } }
-			set_local_variable = { name = sul_epower value = "local_estate_power(estate_type:tribes_estate)" }
-			change_local_variable = { name = sul_crown_power add = local_var:sul_epower }
-			set_local_variable = { name = sul_wtarget value = local_var:sul_epower }
-			change_local_variable = { name = sul_wtarget divide = { value = owner.var:sul_national_power_prev_tribes min = 0.001 } }
-			change_local_variable = { name = sul_wtarget multiply = owner.var:sul_estate_gold_tribes }
-			set_variable = { name = sul_wealth_target_tribes value = local_var:sul_wtarget }
-			set_local_variable = { name = sul_wdelta value = { value = local_var:sul_wtarget subtract = var:sul_wealth_tribes multiply = @sul_wealth_converge_rate } }
-			change_variable = { name = sul_wealth_tribes add = local_var:sul_wdelta }
-			if = { limit = { var:sul_wealth_tribes > local_var:sul_wtarget } set_variable = { name = sul_wealth_tribes value = local_var:sul_wtarget } }
-			if = { limit = { var:sul_wealth_tribes < 0 } set_variable = { name = sul_wealth_tribes value = 0 } }
+
+			set_local_variable = {
+				name = sul_estate_power
+				value = "local_estate_power(estate_type:tribes_estate)"
+			}
+
+			change_local_variable = {
+				name = sul_crown_power
+				add = local_var:sul_estate_power
+			}
+
+			set_local_variable = {
+				name = sul_wealth_target
+				value = local_var:sul_estate_power
+			}
+
+			change_local_variable = {
+				name = sul_wealth_target
+				divide = { value = owner.var:sul_national_power_prev_tribes min = 0.001 }
+			}
+			change_local_variable = {
+				name = sul_wealth_target
+				multiply = owner.var:sul_estate_gold_tribes
+			}
+
+			set_variable = {
+				name = sul_wealth_target_tribes
+				value = local_var:sul_wealth_target
+			}
+
+			set_local_variable = {
+				name = sul_wealth_delta
+
+				value = {
+					value = local_var:sul_wealth_target
+					subtract = var:sul_wealth_tribes
+					multiply = @sul_wealth_converge_rate
+				}
+			}
+
+			change_variable = {
+				name = sul_wealth_tribes
+				add = local_var:sul_wealth_delta
+			}
+			if = {
+				limit = { var:sul_wealth_tribes > local_var:sul_wealth_target }
+
+				set_variable = {
+					name = sul_wealth_tribes
+					value = local_var:sul_wealth_target
+				}
+			}
+			if = {
+				limit = { var:sul_wealth_tribes < 0 }
+				set_variable = { name = sul_wealth_tribes value = 0 }
+			}
 		}
 
 		# Crown — reuses accumulated sul_crown_power from above
-		set_local_variable = { name = sul_wtarget value = local_var:sul_crown_power }
-		change_local_variable = { name = sul_wtarget divide = { value = owner.var:sul_national_power_prev_crown min = 0.001 } }
-		change_local_variable = { name = sul_wtarget multiply = owner.gold }
-		set_variable = { name = sul_wealth_target_crown value = local_var:sul_wtarget }
-		set_local_variable = { name = sul_wdelta value = { value = local_var:sul_wtarget subtract = var:sul_wealth_crown multiply = @sul_wealth_converge_rate } }
-		change_variable = { name = sul_wealth_crown add = local_var:sul_wdelta }
-		if = { limit = { var:sul_wealth_crown > local_var:sul_wtarget } set_variable = { name = sul_wealth_crown value = local_var:sul_wtarget } }
-		if = { limit = { var:sul_wealth_crown < 0 } set_variable = { name = sul_wealth_crown value = 0 } }
+		set_local_variable = {
+			name = sul_wealth_target
+			value = local_var:sul_crown_power
+		}
 
+		change_local_variable = {
+			name = sul_wealth_target
+			divide = { value = owner.var:sul_national_power_prev_crown min = 0.001 }
+		}
+		change_local_variable = { name = sul_wealth_target multiply = owner.gold }
+
+		set_variable = {
+			name = sul_wealth_target_crown
+			value = local_var:sul_wealth_target
+		}
+
+		set_local_variable = {
+			name = sul_wealth_delta
+
+			value = {
+				value = local_var:sul_wealth_target
+				subtract = var:sul_wealth_crown
+				multiply = @sul_wealth_converge_rate
+			}
+		}
+
+		change_variable = { name = sul_wealth_crown add = local_var:sul_wealth_delta }
+		if = {
+			limit = { var:sul_wealth_crown > local_var:sul_wealth_target }
+			set_variable = { name = sul_wealth_crown value = local_var:sul_wealth_target }
+		}
+		if = {
+			limit = { var:sul_wealth_crown < 0 }
+			set_variable = { name = sul_wealth_crown value = 0 }
+		}
 	}
 
 	sul_wealth_write_maps = yes
@@ -1097,46 +2191,102 @@ sul_wealth_loot_location = {
 	# Extract a fraction of each asset
 	set_local_variable = { name = sul_loot_total value = 0 }
 
-	set_local_variable = { name = sul_loot value = { value = var:sul_wealth_nobles multiply = @sul_loot_extraction_rate } }
+	set_local_variable = {
+		name = sul_loot
+		value = { value = var:sul_wealth_nobles multiply = @sul_loot_extraction_rate }
+	}
+
 	change_variable = { name = sul_wealth_nobles subtract = local_var:sul_loot }
+
 	change_local_variable = { name = sul_loot_total add = local_var:sul_loot }
 
-	set_local_variable = { name = sul_loot value = { value = var:sul_wealth_clergy multiply = @sul_loot_extraction_rate } }
+	set_local_variable = {
+		name = sul_loot
+		value = { value = var:sul_wealth_clergy multiply = @sul_loot_extraction_rate }
+	}
+
 	change_variable = { name = sul_wealth_clergy subtract = local_var:sul_loot }
+
 	change_local_variable = { name = sul_loot_total add = local_var:sul_loot }
 
-	set_local_variable = { name = sul_loot value = { value = var:sul_wealth_burghers multiply = @sul_loot_extraction_rate } }
+	set_local_variable = {
+		name = sul_loot
+
+		value = {
+			value = var:sul_wealth_burghers
+			multiply = @sul_loot_extraction_rate
+		}
+	}
+
 	change_variable = { name = sul_wealth_burghers subtract = local_var:sul_loot }
+
 	change_local_variable = { name = sul_loot_total add = local_var:sul_loot }
 
-	set_local_variable = { name = sul_loot value = { value = var:sul_wealth_peasants multiply = @sul_loot_extraction_rate } }
+	set_local_variable = {
+		name = sul_loot
+
+		value = {
+			value = var:sul_wealth_peasants
+			multiply = @sul_loot_extraction_rate
+		}
+	}
+
 	change_variable = { name = sul_wealth_peasants subtract = local_var:sul_loot }
+
 	change_local_variable = { name = sul_loot_total add = local_var:sul_loot }
 
-	if = { limit = { has_variable = sul_wealth_dhimmi }
-		set_local_variable = { name = sul_loot value = { value = var:sul_wealth_dhimmi multiply = @sul_loot_extraction_rate } }
+	if = {
+		limit = { has_variable = sul_wealth_dhimmi }
+
+		set_local_variable = {
+			name = sul_loot
+			value = { value = var:sul_wealth_dhimmi multiply = @sul_loot_extraction_rate }
+		}
+
 		change_variable = { name = sul_wealth_dhimmi subtract = local_var:sul_loot }
 		change_local_variable = { name = sul_loot_total add = local_var:sul_loot }
 	}
-	if = { limit = { has_variable = sul_wealth_cossacks }
-		set_local_variable = { name = sul_loot value = { value = var:sul_wealth_cossacks multiply = @sul_loot_extraction_rate } }
+	if = {
+		limit = { has_variable = sul_wealth_cossacks }
+
+		set_local_variable = {
+			name = sul_loot
+
+			value = {
+				value = var:sul_wealth_cossacks
+				multiply = @sul_loot_extraction_rate
+			}
+		}
+
 		change_variable = { name = sul_wealth_cossacks subtract = local_var:sul_loot }
 		change_local_variable = { name = sul_loot_total add = local_var:sul_loot }
 	}
-	if = { limit = { has_variable = sul_wealth_tribes }
-		set_local_variable = { name = sul_loot value = { value = var:sul_wealth_tribes multiply = @sul_loot_extraction_rate } }
+	if = {
+		limit = { has_variable = sul_wealth_tribes }
+
+		set_local_variable = {
+			name = sul_loot
+			value = { value = var:sul_wealth_tribes multiply = @sul_loot_extraction_rate }
+		}
+
 		change_variable = { name = sul_wealth_tribes subtract = local_var:sul_loot }
 		change_local_variable = { name = sul_loot_total add = local_var:sul_loot }
 	}
 
-	set_local_variable = { name = sul_loot value = { value = var:sul_wealth_crown multiply = @sul_loot_extraction_rate } }
+	set_local_variable = {
+		name = sul_loot
+		value = { value = var:sul_wealth_crown multiply = @sul_loot_extraction_rate }
+	}
+
 	change_variable = { name = sul_wealth_crown subtract = local_var:sul_loot }
+
 	change_local_variable = { name = sul_loot_total add = local_var:sul_loot }
 
 	# Crown income = loot × (1 - destroyed_base + looting_efficiency)
 	controller ?= {
 		set_local_variable = {
 			name = sul_loot_kept
+
 			value = {
 				value = 1
 				subtract = @sul_loot_destroyed_base
@@ -1145,6 +2295,7 @@ sul_wealth_loot_location = {
 				max = 1
 			}
 		}
+
 		add_gold = {
 			value = prev.local_var:sul_loot_total
 			multiply = local_var:sul_loot_kept
@@ -1159,9 +2310,22 @@ sul_wealth_loot_location = {
 # Sub-effects handle individual systems. Called monthly for player, yearly for AI.
 
 sul_monthly_location_pass = {
-	set_variable = { name = sul_country_pop_nobles value = { value = "pop_type_population_in_country(pop_type:nobles)" min = 1 } }
-	set_variable = { name = sul_country_pop_clergy value = { value = "pop_type_population_in_country(pop_type:clergy)" min = 1 } }
-	set_variable = { name = sul_country_pop_burghers value = { value = "pop_type_population_in_country(pop_type:burghers)" min = 1 } }
+	set_variable = {
+		name = sul_country_pop_nobles
+		value = { value = "pop_type_population_in_country(pop_type:nobles)" min = 1 }
+	}
+	set_variable = {
+		name = sul_country_pop_clergy
+		value = { value = "pop_type_population_in_country(pop_type:clergy)" min = 1 }
+	}
+	set_variable = {
+		name = sul_country_pop_burghers
+
+		value = {
+			value = "pop_type_population_in_country(pop_type:burghers)"
+			min = 1
+		}
+	}
 
 	# Snapshot current power before zeroing for re-accumulation.
 	# Convergence uses prev-month denominators so that power shifts within
@@ -1170,14 +2334,39 @@ sul_monthly_location_pass = {
 	set_local_variable = { name = sul_clergy_wages value = 0 }
 	set_local_variable = { name = sul_burgher_wages value = 0 }
 	set_local_variable = { name = sul_commoner_wages value = 0 }
-	set_variable = { name = sul_national_power_prev_nobles value = var:sul_national_power_nobles }
-	set_variable = { name = sul_national_power_prev_clergy value = var:sul_national_power_clergy }
-	set_variable = { name = sul_national_power_prev_burghers value = var:sul_national_power_burghers }
-	set_variable = { name = sul_national_power_prev_peasants value = var:sul_national_power_peasants }
-	set_variable = { name = sul_national_power_prev_dhimmi value = var:sul_national_power_dhimmi }
-	set_variable = { name = sul_national_power_prev_cossacks value = var:sul_national_power_cossacks }
-	set_variable = { name = sul_national_power_prev_tribes value = var:sul_national_power_tribes }
-	set_variable = { name = sul_national_power_prev_crown value = var:sul_national_power_crown }
+
+	set_variable = {
+		name = sul_national_power_prev_nobles
+		value = var:sul_national_power_nobles
+	}
+	set_variable = {
+		name = sul_national_power_prev_clergy
+		value = var:sul_national_power_clergy
+	}
+	set_variable = {
+		name = sul_national_power_prev_burghers
+		value = var:sul_national_power_burghers
+	}
+	set_variable = {
+		name = sul_national_power_prev_peasants
+		value = var:sul_national_power_peasants
+	}
+	set_variable = {
+		name = sul_national_power_prev_dhimmi
+		value = var:sul_national_power_dhimmi
+	}
+	set_variable = {
+		name = sul_national_power_prev_cossacks
+		value = var:sul_national_power_cossacks
+	}
+	set_variable = {
+		name = sul_national_power_prev_tribes
+		value = var:sul_national_power_tribes
+	}
+	set_variable = {
+		name = sul_national_power_prev_crown
+		value = var:sul_national_power_crown
+	}
 	set_variable = { name = sul_national_power_nobles value = 0 }
 	set_variable = { name = sul_national_power_clergy value = 0 }
 	set_variable = { name = sul_national_power_burghers value = 0 }
@@ -1186,35 +2375,51 @@ sul_monthly_location_pass = {
 	set_variable = { name = sul_national_power_cossacks value = 0 }
 	set_variable = { name = sul_national_power_tribes value = 0 }
 
-	# Cache enrichment multipliers: (1 + estate_enrichment) × (1 + per_estate_rate), once per country
-	set_local_variable = { name = sul_base_enrich value = { value = 1 add = modifier:estate_enrichment } }
-	set_variable = { name = sul_enrich_rate_nobles value = { value = local_var:sul_base_enrich multiply = { value = 1 add = modifier:sul_nobles_enrichment_rate } } }
-	set_variable = { name = sul_enrich_rate_clergy value = { value = local_var:sul_base_enrich multiply = { value = 1 add = modifier:sul_clergy_enrichment_rate } } }
-	set_variable = { name = sul_enrich_rate_burghers value = { value = local_var:sul_base_enrich multiply = { value = 1 add = modifier:sul_burghers_enrichment_rate } } }
-	set_variable = { name = sul_enrich_rate_commoners value = { value = local_var:sul_base_enrich multiply = { value = 1 add = modifier:sul_commoners_enrichment_rate } } }
-	set_variable = { name = sul_enrich_rate_tribesmen value = { value = local_var:sul_base_enrich multiply = { value = 1 add = modifier:sul_tribesmen_enrichment_rate } } }
-	set_variable = { name = sul_enrich_rate_dhimmi value = { value = local_var:sul_base_enrich multiply = { value = 1 add = modifier:sul_dhimmi_enrichment_rate } } }
-	set_variable = { name = sul_enrich_rate_cossacks value = { value = local_var:sul_base_enrich multiply = { value = 1 add = modifier:sul_cossacks_enrichment_rate } } }
+	sul_compute_budget_pressure = yes
 
 	# Cache estate gold (complex engine formula)
-	set_variable = { name = sul_estate_gold_nobles value = "estate(estate_type:nobles_estate).estate_gold" }
-	set_variable = { name = sul_estate_gold_clergy value = "estate(estate_type:clergy_estate).estate_gold" }
-	set_variable = { name = sul_estate_gold_burghers value = "estate(estate_type:burghers_estate).estate_gold" }
+	set_variable = {
+		name = sul_estate_gold_nobles
+		value = "estate(estate_type:nobles_estate).estate_gold"
+	}
+	set_variable = {
+		name = sul_estate_gold_clergy
+		value = "estate(estate_type:clergy_estate).estate_gold"
+	}
+	set_variable = {
+		name = sul_estate_gold_burghers
+		value = "estate(estate_type:burghers_estate).estate_gold"
+	}
 	set_variable = { name = sul_estate_gold_peasants value = 0 }
+
 	"estate(estate_type:peasants_estate)" ?= {
-		owner = { set_variable = { name = sul_estate_gold_peasants value = prev.estate_gold } }
+		owner = {
+			set_variable = { name = sul_estate_gold_peasants value = prev.estate_gold }
+		}
 	}
+
 	set_variable = { name = sul_estate_gold_dhimmi value = 0 }
+
 	"estate(estate_type:dhimmi_estate)" ?= {
-		owner = { set_variable = { name = sul_estate_gold_dhimmi value = prev.estate_gold } }
+		owner = {
+			set_variable = { name = sul_estate_gold_dhimmi value = prev.estate_gold }
+		}
 	}
+
 	set_variable = { name = sul_estate_gold_cossacks value = 0 }
+
 	"estate(estate_type:cossacks_estate)" ?= {
-		owner = { set_variable = { name = sul_estate_gold_cossacks value = prev.estate_gold } }
+		owner = {
+			set_variable = { name = sul_estate_gold_cossacks value = prev.estate_gold }
+		}
 	}
+
 	set_variable = { name = sul_estate_gold_tribes value = 0 }
+
 	"estate(estate_type:tribes_estate)" ?= {
-		owner = { set_variable = { name = sul_estate_gold_tribes value = prev.estate_gold } }
+		owner = {
+			set_variable = { name = sul_estate_gold_tribes value = prev.estate_gold }
+		}
 	}
 
 	every_owned_location = {
@@ -1222,28 +2427,68 @@ sul_monthly_location_pass = {
 
 		owner ?= {
 			# Wealth: accumulate raw estate power
-			change_variable = { name = sul_national_power_nobles add = "prev.local_estate_power(estate_type:nobles_estate)" }
-			change_variable = { name = sul_national_power_clergy add = "prev.local_estate_power(estate_type:clergy_estate)" }
-			change_variable = { name = sul_national_power_burghers add = "prev.local_estate_power(estate_type:burghers_estate)" }
-			change_variable = { name = sul_national_power_peasants add = "prev.local_estate_power(estate_type:peasants_estate)" }
-			if = { limit = { country_has_estate = estate_type:dhimmi_estate }
-				change_variable = { name = sul_national_power_dhimmi add = "prev.local_estate_power(estate_type:dhimmi_estate)" }
+			change_variable = {
+				name = sul_national_power_nobles
+				add = "prev.local_estate_power(estate_type:nobles_estate)"
 			}
-			if = { limit = { country_has_estate = estate_type:cossacks_estate }
-				change_variable = { name = sul_national_power_cossacks add = "prev.local_estate_power(estate_type:cossacks_estate)" }
+			change_variable = {
+				name = sul_national_power_clergy
+				add = "prev.local_estate_power(estate_type:clergy_estate)"
 			}
-			if = { limit = { country_has_estate = estate_type:tribes_estate }
-				change_variable = { name = sul_national_power_tribes add = "prev.local_estate_power(estate_type:tribes_estate)" }
+			change_variable = {
+				name = sul_national_power_burghers
+				add = "prev.local_estate_power(estate_type:burghers_estate)"
+			}
+			change_variable = {
+				name = sul_national_power_peasants
+				add = "prev.local_estate_power(estate_type:peasants_estate)"
+			}
+			if = {
+				limit = { country_has_estate = estate_type:dhimmi_estate }
+
+				change_variable = {
+					name = sul_national_power_dhimmi
+					add = "prev.local_estate_power(estate_type:dhimmi_estate)"
+				}
+			}
+			if = {
+				limit = { country_has_estate = estate_type:cossacks_estate }
+
+				change_variable = {
+					name = sul_national_power_cossacks
+					add = "prev.local_estate_power(estate_type:cossacks_estate)"
+				}
+			}
+			if = {
+				limit = { country_has_estate = estate_type:tribes_estate }
+
+				change_variable = {
+					name = sul_national_power_tribes
+					add = "prev.local_estate_power(estate_type:tribes_estate)"
+				}
 			}
 
 			# Wages: accumulate cached wage bills
 			if = {
-				limit = { prev = { has_variable = sul_wage_bill_nobles var:sul_local_wages > 0 } }
-				change_local_variable = { name = sul_noble_wages add = prev.var:sul_wage_bill_nobles }
-				change_local_variable = { name = sul_clergy_wages add = prev.var:sul_wage_bill_clergy }
-				change_local_variable = { name = sul_burgher_wages add = prev.var:sul_wage_bill_burghers }
+				limit = {
+					prev = { has_variable = sul_wage_bill_nobles var:sul_local_wages > 0 }
+				}
+
+				change_local_variable = {
+					name = sul_noble_wages
+					add = prev.var:sul_wage_bill_nobles
+				}
+				change_local_variable = {
+					name = sul_clergy_wages
+					add = prev.var:sul_wage_bill_clergy
+				}
+				change_local_variable = {
+					name = sul_burgher_wages
+					add = prev.var:sul_wage_bill_burghers
+				}
 				change_local_variable = {
 					name = sul_commoner_wages
+
 					add = {
 						value = prev.var:sul_wage_bill_soldiers
 						add = prev.var:sul_wage_bill_laborers
@@ -1255,20 +2500,55 @@ sul_monthly_location_pass = {
 	}
 
 	# Wealth: derive crown from estate totals
-	set_variable = { name = sul_national_power_crown value = var:sul_national_power_nobles }
-	change_variable = { name = sul_national_power_crown add = var:sul_national_power_clergy }
-	change_variable = { name = sul_national_power_crown add = var:sul_national_power_burghers }
-	change_variable = { name = sul_national_power_crown add = var:sul_national_power_peasants }
-	change_variable = { name = sul_national_power_crown add = var:sul_national_power_dhimmi }
-	change_variable = { name = sul_national_power_crown add = var:sul_national_power_cossacks }
-	change_variable = { name = sul_national_power_crown add = var:sul_national_power_tribes }
+	set_variable = {
+		name = sul_national_power_crown
+		value = var:sul_national_power_nobles
+	}
+
+	change_variable = {
+		name = sul_national_power_crown
+		add = var:sul_national_power_clergy
+	}
+	change_variable = {
+		name = sul_national_power_crown
+		add = var:sul_national_power_burghers
+	}
+	change_variable = {
+		name = sul_national_power_crown
+		add = var:sul_national_power_peasants
+	}
+	change_variable = {
+		name = sul_national_power_crown
+		add = var:sul_national_power_dhimmi
+	}
+	change_variable = {
+		name = sul_national_power_crown
+		add = var:sul_national_power_cossacks
+	}
+	change_variable = {
+		name = sul_national_power_crown
+		add = var:sul_national_power_tribes
+	}
 
 	# Wages: finalize monthly totals
 	sul_compute_budget_pressure = yes
-	set_variable = { name = sul_monthly_wages_nobles value = local_var:sul_noble_wages }
-	set_variable = { name = sul_monthly_wages_clergy value = local_var:sul_clergy_wages }
-	set_variable = { name = sul_monthly_wages_burghers value = local_var:sul_burgher_wages }
-	set_variable = { name = sul_monthly_wages_peasants value = local_var:sul_commoner_wages }
+
+	set_variable = {
+		name = sul_monthly_wages_nobles
+		value = local_var:sul_noble_wages
+	}
+	set_variable = {
+		name = sul_monthly_wages_clergy
+		value = local_var:sul_clergy_wages
+	}
+	set_variable = {
+		name = sul_monthly_wages_burghers
+		value = local_var:sul_burgher_wages
+	}
+	set_variable = {
+		name = sul_monthly_wages_peasants
+		value = local_var:sul_commoner_wages
+	}
 	set_variable = { name = sul_monthly_wages_dhimmi value = 0 }
 	set_variable = { name = sul_monthly_wages_cossacks value = 0 }
 	set_variable = { name = sul_monthly_wages_tribes value = 0 }

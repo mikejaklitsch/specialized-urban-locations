@@ -788,15 +788,26 @@ sul_respec_score = {
 # Goods scope; reads price via scope:current_market.
 
 
-# Used by GUI pie chart and building category bar. Location scope.
-# Reads engine-accumulated modifier totals — no manual building list needed.
+# Used by GUI pie chart. Location scope.
+# Sums building levels by building category via iterator.
 
 sul_extraction_building_levels = {
-	value = modifier:sul_extraction_size
+	every_buildings_in_location = {
+		limit = {
+			OR = {
+				building_category = sul_extraction_category
+				building_category = sul_local_rgo_category
+			}
+		}
+		add = building_level
+	}
 }
 
 sul_production_building_levels = {
-	value = modifier:sul_production_size
+	every_buildings_in_location = {
+		limit = { building_category = sul_production_category }
+		add = building_level
+	}
 }
 
 sul_other_building_levels = {

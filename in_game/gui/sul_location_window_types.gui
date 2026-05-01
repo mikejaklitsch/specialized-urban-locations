@@ -1345,4 +1345,355 @@ types LocationWindowTypes
 
 		# }
 	}
+
+	type sul_extraction_production_pie = widget {
+		size = { 28 28 }
+
+		piechart = {
+			size = { 28 28 }
+			using = piechart_angles
+
+			pieslice_no_highlight = {
+				texture = "gfx/interface/pie_charts/pie_chart_alpha_80.dds"
+				value = "[FixedPointToFloat(LocationView.GetLocation.MakeScope.ScriptValue('sul_extraction_building_levels'))]"
+				color = { 0.55 0.35 0.15 1 }
+			}
+
+			pieslice_no_highlight = {
+				texture = "gfx/interface/pie_charts/pie_chart_alpha_80.dds"
+				value = "[FixedPointToFloat(LocationView.GetLocation.MakeScope.ScriptValue('sul_production_building_levels'))]"
+				color = { 0.85 0.7 0.15 1 }
+			}
+
+			pieslice_no_highlight = {
+				texture = "gfx/interface/pie_charts/pie_chart_alpha_80.dds"
+				value = "[FixedPointToFloat(LocationView.GetLocation.MakeScope.ScriptValue('sul_other_building_levels'))]"
+				color = { 0.4 0.4 0.4 1 }
+			}
+		}
+
+		# Extraction dominant
+		icon = {
+			size = { 16 16 }
+			parentanchor = center
+			visible = "[GreaterThan_CFixedPoint(LocationView.GetLocation.MakeScope.ScriptValue('sul_extraction_building_levels'), LocationView.GetLocation.MakeScope.ScriptValue('sul_production_building_levels'))]"
+			texture = "gfx/interface/icons/modifier_types/global_raw_material_output.dds"
+
+			tooltipwidget = {
+				ContextualTooltipType = {
+					blockoverride "title_text" {
+						text = "SUL_EXTRACTION_CENTER_TITLE"
+					}
+					blockoverride "title_icon" {
+						ContextualTooltipDefaultIcon = {
+							blockoverride "title_icon_texture" { texture = "gfx/interface/icons/modifier_types/global_raw_material_output.dds" }
+						}
+					}
+					blockoverride "tooltip_content" {
+						TooltipTextBlock = {
+							blockoverride "text" { text = "SUL_EXTRACTION_CENTER_DESC" }
+						}
+						TooltipManualTableField = {
+							text_single = { raw_text = "#color_goldy_yellow Extraction#!" }
+							expand = {}
+							text_single = { raw_text = "[LocationView.GetLocation.MakeScope.ScriptValue('sul_extraction_building_levels')|0] levels" }
+						}
+						TooltipManualTableField = {
+							text_single = { raw_text = "#color_yellow Production#!" }
+							expand = {}
+							text_single = { raw_text = "[LocationView.GetLocation.MakeScope.ScriptValue('sul_production_building_levels')|0] levels" }
+						}
+						TooltipManualTableField = {
+							text_single = { raw_text = "Other" }
+							expand = {}
+							text_single = { raw_text = "[LocationView.GetLocation.MakeScope.ScriptValue('sul_other_building_levels')|0] levels" }
+						}
+					}
+				}
+			}
+		}
+
+		# Production dominant
+		icon = {
+			size = { 16 16 }
+			parentanchor = center
+			visible = "[GreaterThan_CFixedPoint(LocationView.GetLocation.MakeScope.ScriptValue('sul_production_building_levels'), LocationView.GetLocation.MakeScope.ScriptValue('sul_extraction_building_levels'))]"
+			texture = "gfx/interface/icons/modifier_types/global_production_efficiency.dds"
+
+			tooltipwidget = {
+				ContextualTooltipType = {
+					blockoverride "title_text" {
+						text = "SUL_PRODUCTION_CENTER_TITLE"
+					}
+					blockoverride "title_icon" {
+						ContextualTooltipDefaultIcon = {
+							blockoverride "title_icon_texture" { texture = "gfx/interface/icons/modifier_types/global_production_efficiency.dds" }
+						}
+					}
+					blockoverride "tooltip_content" {
+						TooltipTextBlock = {
+							blockoverride "text" { text = "SUL_PRODUCTION_CENTER_DESC" }
+						}
+						TooltipManualTableField = {
+							text_single = { raw_text = "#color_goldy_yellow Extraction#!" }
+							expand = {}
+							text_single = { raw_text = "[LocationView.GetLocation.MakeScope.ScriptValue('sul_extraction_building_levels')|0] levels" }
+						}
+						TooltipManualTableField = {
+							text_single = { raw_text = "#color_yellow Production#!" }
+							expand = {}
+							text_single = { raw_text = "[LocationView.GetLocation.MakeScope.ScriptValue('sul_production_building_levels')|0] levels" }
+						}
+						TooltipManualTableField = {
+							text_single = { raw_text = "Other" }
+							expand = {}
+							text_single = { raw_text = "[LocationView.GetLocation.MakeScope.ScriptValue('sul_other_building_levels')|0] levels" }
+						}
+					}
+				}
+			}
+		}
+	}
+
+	type sul_wealth_bar = widget {
+		parentanchor = right|vcenter
+		position = { -48 0 }
+		size = { 22 202 }
+		visible = "[And(LocationView.GetLocation.HasOwner, LocationView.GetLocation.MakeScope.GetVariable('sul_wealth_nobles').IsSet)]"
+
+		tooltipwidget = {
+			using = sul_wealth_bar_tooltip
+		}
+
+		using = bg_paper_card
+		using = bg_cabinet_card_frame
+
+		progressbar = {
+			parentanchor = center
+			size = { 12 192 }
+			using = progress_bar_goldish
+			value = "[LocationView.GetLocation.MakeScope.ScriptValue('sul_wealth_fill_ratio')]"
+			direction = vertical
+		}
+	}
+
+	type sul_specialization_buttons = widget {
+		parentanchor = right|vcenter
+		position = { -5 0 }
+		size = { 46 202 }
+		visible = "[LocationView.GetLocation.HasOwner]"
+
+		vbox = {
+			spacing = 3
+			margin = { 5 5 }
+			using = bg_paper_card
+			using = bg_cabinet_card_frame
+
+			# Mining button
+			widget = {
+				size = { 36 36 }
+				header_action_button_left = {
+					size = { 36 36 }
+					blockoverride "button_icon_stretch_sprite" {  }
+					blockoverride "header_button_frame_inner" { visible = no }
+					blockoverride "header_button_icon_size" { size = { 24 24 } }
+					blockoverride "header_button_text_layout" {  }
+					blockoverride "icon_texture" { visible = no }
+					title = "sul_designate_mining_specialization"
+					actor = "[GetPlayer]"
+
+					tooltipwidget = {
+						using = action_tooltip_pop_out
+
+						blockoverride "title_icon" {
+							icon = {
+								using = tooltip_title_icon_size
+								using = sul_concept_texture_mining_button
+							}
+						}
+					}
+
+					parameter = {
+						parameter_name = "target"
+						parameter_value = "[LocationView.GetLocation]"
+					}
+
+					left_click_and_hold_action = {
+						action_name = "sul_designate_mining_specialization"
+					}
+
+					icon = {
+						parentanchor = center
+						size = { 24 24 }
+						using = sul_concept_texture_mining_button
+					}
+				}
+			}
+
+			# Farming button
+			widget = {
+				size = { 36 36 }
+				header_action_button_left = {
+					size = { 36 36 }
+					blockoverride "button_icon_stretch_sprite" {  }
+					blockoverride "header_button_frame_inner" { visible = no }
+					blockoverride "header_button_icon_size" { size = { 24 24 } }
+					blockoverride "header_button_text_layout" {  }
+					blockoverride "icon_texture" { visible = no }
+					title = "sul_designate_farming_specialization"
+					actor = "[GetPlayer]"
+
+					tooltipwidget = {
+						using = action_tooltip_pop_out
+
+						blockoverride "title_icon" {
+							icon = {
+								using = tooltip_title_icon_size
+								using = sul_concept_texture_farming_button
+							}
+						}
+					}
+
+					parameter = {
+						parameter_name = "target"
+						parameter_value = "[LocationView.GetLocation]"
+					}
+
+					left_click_and_hold_action = {
+						action_name = "sul_designate_farming_specialization"
+					}
+
+					icon = {
+						parentanchor = center
+						size = { 24 24 }
+						using = sul_concept_texture_farming_button
+					}
+				}
+			}
+
+			# Woodland button
+			widget = {
+				size = { 36 36 }
+				header_action_button_left = {
+					size = { 36 36 }
+					blockoverride "button_icon_stretch_sprite" {  }
+					blockoverride "header_button_frame_inner" { visible = no }
+					blockoverride "header_button_icon_size" { size = { 24 24 } }
+					blockoverride "header_button_text_layout" {  }
+					blockoverride "icon_texture" { visible = no }
+					title = "sul_designate_woodland_specialization"
+					actor = "[GetPlayer]"
+
+					tooltipwidget = {
+						using = action_tooltip_pop_out
+
+						blockoverride "title_icon" {
+							icon = {
+								using = tooltip_title_icon_size
+								using = sul_concept_texture_woodland_button
+							}
+						}
+					}
+
+					parameter = {
+						parameter_name = "target"
+						parameter_value = "[LocationView.GetLocation]"
+					}
+
+					left_click_and_hold_action = {
+						action_name = "sul_designate_woodland_specialization"
+					}
+
+					icon = {
+						parentanchor = center
+						size = { 24 24 }
+						using = sul_concept_texture_woodland_button
+					}
+				}
+			}
+
+			# Gathering button
+			widget = {
+				size = { 36 36 }
+				header_action_button_left = {
+					size = { 36 36 }
+					blockoverride "button_icon_stretch_sprite" {  }
+					blockoverride "header_button_frame_inner" { visible = no }
+					blockoverride "header_button_icon_size" { size = { 24 24 } }
+					blockoverride "header_button_text_layout" {  }
+					blockoverride "icon_texture" { visible = no }
+					title = "sul_designate_gathering_specialization"
+					actor = "[GetPlayer]"
+
+					tooltipwidget = {
+						using = action_tooltip_pop_out
+
+						blockoverride "title_icon" {
+							icon = {
+								using = tooltip_title_icon_size
+								using = sul_concept_texture_gathering_button
+							}
+						}
+					}
+
+					parameter = {
+						parameter_name = "target"
+						parameter_value = "[LocationView.GetLocation]"
+					}
+
+					left_click_and_hold_action = {
+						action_name = "sul_designate_gathering_specialization"
+					}
+
+					icon = {
+						parentanchor = center
+						size = { 24 24 }
+						using = sul_concept_texture_gathering_button
+					}
+				}
+			}
+
+			# Commercial button
+			widget = {
+				size = { 36 36 }
+				header_action_button_left = {
+					size = { 36 36 }
+					blockoverride "button_icon_stretch_sprite" {  }
+					blockoverride "header_button_frame_inner" { visible = no }
+					blockoverride "header_button_icon_size" { size = { 24 24 } }
+					blockoverride "header_button_text_layout" {  }
+					blockoverride "icon_texture" { visible = no }
+					title = "sul_designate_commercial_specialization"
+					actor = "[GetPlayer]"
+
+					tooltipwidget = {
+						using = action_tooltip_pop_out
+
+						blockoverride "title_icon" {
+							icon = {
+								using = tooltip_title_icon_size
+								using = sul_concept_texture_commercial_button
+							}
+						}
+					}
+
+					parameter = {
+						parameter_name = "target"
+						parameter_value = "[LocationView.GetLocation]"
+					}
+
+					left_click_and_hold_action = {
+						action_name = "sul_designate_commercial_specialization"
+					}
+
+					icon = {
+						parentanchor = center
+						size = { 24 24 }
+						using = sul_concept_texture_commercial_button
+					}
+				}
+			}
+
+		}
+	}
 }

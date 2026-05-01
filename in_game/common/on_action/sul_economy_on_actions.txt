@@ -1,16 +1,25 @@
-﻿# Economy / GDP / wage on_actions registered in sul_hardcoded.txt.
+﻿# Economy on_actions — registered in sul_hardcoded.txt.
+# See CONTROL_FLOW.md §4 for variable lifecycle and execution order.
 
-# Economy bootstrap on game start. Seeds the budget pressure variables
-# that the monthly economy update assumes already exist, then runs one
-# full pass so day 1 has correct values rather than zeros.
+# --- GAME START ---
 
+# First-time economy setup. Runs one full economy pass per country so that
+# wages, GDP, demand, and enrichment all have real values on day 1.
+#
+# Init ordering: economy pass → wealth seed → WPP recompute.
+# The economy pass produces national power totals and estate gold that wealth
+# seeding requires. Wealth doesn't exist yet, so capital returns are 0 here
+# (WPP reads are guarded with has_variable). After seeding, a lightweight
+# WPP recompute pass fills in capital returns so they're ready for month 1.
 sul_initialize_economy = {
 	effect = {
+		# Build the static goods→demand lookup tables (once, never changes)
 		sul_init_demand_maps = yes
 
 		every_country = {
 			limit = { is_real_country = yes }
 
+			# Budget pressure defaults (monthly update assumes these exist)
 			set_variable = { name = sul_budget_pressure_nobles value = 1 }
 			set_variable = { name = sul_budget_pressure_clergy value = 1 }
 			set_variable = { name = sul_budget_pressure_burghers value = 1 }
@@ -19,18 +28,24 @@ sul_initialize_economy = {
 			set_variable = { name = sul_country_pop_clergy value = 1 }
 			set_variable = { name = sul_country_pop_burghers value = 1 }
 
-			# Seed per-location wage rates before first economy pass
+			# Compute wage rates per location (base × modifiers → location variables)
 			every_owned_location = { sul_calculate_location_wages = yes }
 
+			# Full economy pass: accumulate estate power, compute WPP + demand + enrichment,
+			# pay enrichment to estates, cache estate gold
 			sul_gdp_init = yes
 			sul_update_country_economy = yes
 
-			# Convert vanilla efficiency sources to merchant_maintenance_cost on day 1.
+			# Apply trade maintenance efficiency formula from vanilla sources
 			sul_trade_maintenance_apply = yes
 		}
 	}
 }
 
+# Set each location's starting wealth from its share of national estate gold.
+# Runs AFTER the economy pass so national power totals and estate gold are available.
+# Also computes minority returns (dhimmi/cossacks) since the economy pass couldn't
+# (wealth didn't exist yet when it ran).
 sul_wealth_seed_all = {
 	effect = {
 		every_country = {
@@ -42,8 +57,25 @@ sul_wealth_seed_all = {
 	}
 }
 
-# WPP refresh batch. Walks at most @sul_ai_batch_size stale AI locations
-# per tick, ordered by oldest sul_last_update first.
+# Final init pass: recompute WPP now that wealth variables exist.
+# The initial economy pass ran without capital returns (wealth hadn't been
+# seeded yet). This pass re-evaluates WPP with the seeded wealth so that
+# capital returns are included from the first monthly tick.
+sul_init_recompute_wpp = {
+	effect = {
+		every_country = {
+			limit = { is_real_country = yes }
+			every_owned_location = {
+				sul_update_location_wpp = yes
+			}
+		}
+	}
+}
+
+# --- WEATHER MONTHLY PULSE (all countries) ---
+
+# Refresh WPP (wages, demand, enrichment, minority returns) on up to 333
+# locations per tick, prioritizing the stalest. Covers all countries.
 @sul_ai_batch_size = 333
 
 sul_batch_location_update = {
@@ -65,6 +97,9 @@ sul_batch_location_update = {
 	}
 }
 
+# --- MONTHLY COUNTRY PULSE ---
+
+# Player: converge wealth toward targets, accumulate estate power, then pay wages.
 sul_player_wage_update = {
 	trigger = {
 		is_ai = no
@@ -72,14 +107,14 @@ sul_player_wage_update = {
 	}
 
 	effect = {
+		# Converge each location's wealth, re-accumulate national estate power
 		sul_monthly_location_pass = yes
+		# Deduct wage bills from estate gold pools
 		sul_estate_wages_pay_all = yes
 	}
 }
 
-# AI wage path: accumulate yearly, pay accumulated total the following month.
-# Splits the cost so AI economy ticks aren't dominated by per-pop math each month.
-
+# AI: converge wealth monthly, but only pay wages after yearly accumulation.
 sul_ai_yearly_wage_accumulate = {
 	trigger = {
 		is_ai = yes
@@ -91,6 +126,7 @@ sul_ai_yearly_wage_accumulate = {
 	}
 }
 
+# AI: pay the wages that were accumulated over the year.
 sul_ai_monthly_wage_payment = {
 	trigger = {
 		is_ai = yes
@@ -103,11 +139,10 @@ sul_ai_monthly_wage_payment = {
 	}
 }
 
-# Yearly recalculation of per-location wage rates from base wages + modifiers.
-# Stores final wage per pop type as location variables so the monthly GDP
-# update only pays variable-read cost, not modifier lookups.
-#   wage = base × (1 + global_modifier + local_modifier)
+# --- YEARLY COUNTRY PULSE ---
 
+# Recalculate wage rates from base wages + modifiers (expensive, so yearly only).
+# Results are stored as location variables for cheap reads during monthly passes.
 sul_yearly_wage_recalc = {
 	trigger = { is_real_country = yes }
 
@@ -116,7 +151,9 @@ sul_yearly_wage_recalc = {
 	}
 }
 
-# Location scope. One-time wealth extraction when a location is occupied.
+# --- ON LOCATION OCCUPIED ---
+
+# Extract a fraction of each estate's wealth when a location falls to occupation.
 sul_wealth_on_location_occupied = {
 	effect = {
 		if = {
@@ -126,9 +163,9 @@ sul_wealth_on_location_occupied = {
 	}
 }
 
-# Destroys AI armies that have been depleted to 0 strength. Without this they
-# linger as 0-strength stacks and corrupt army-iteration counts elsewhere.
+# --- YEARLY CLEANUP ---
 
+# Remove 0-strength AI armies that would otherwise linger and break army iteration.
 sul_cleanup_dead_units = {
 	effect = {
 		if = {

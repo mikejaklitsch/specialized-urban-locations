@@ -23,6 +23,8 @@
 @sul_demand_slope = 1.0
 @sul_enrichment_weight = 0.53
 
+@sul_return_rate = 0.02
+
 # Minority estate per-pop return: assets × return_rate × power_per_pop / local_power
 # power_per_pop inverts to give estimated pop count as denominator
 @sul_dhimmi_power_per_pop = 0.02
@@ -74,7 +76,10 @@ sul_compute_minority_returns = {
 					divide = { value = @sul_dhimmi_power_per_pop min = 0.001 }
 				}
 
-				multiply = owner.var:sul_enrich_rate_dhimmi
+				if = {
+					limit = { owner = { has_variable = sul_enrich_rate_dhimmi } }
+					multiply = owner.var:sul_enrich_rate_dhimmi
+				}
 			}
 		}
 	}
@@ -115,7 +120,10 @@ sul_compute_minority_returns = {
 					divide = { value = @sul_cossacks_power_per_pop min = 0.001 }
 				}
 
-				multiply = owner.var:sul_enrich_rate_cossacks
+				if = {
+					limit = { owner = { has_variable = sul_enrich_rate_cossacks } }
+					multiply = owner.var:sul_enrich_rate_cossacks
+				}
 			}
 		}
 	}
@@ -617,7 +625,10 @@ sul_update_location_wpp = {
 			multiply = local_var:sul_noble_wpp
 			multiply = @sul_enrichment_weight
 			multiply = num_pop_type:nobles
-			multiply = owner.var:sul_enrich_rate_nobles
+			if = {
+				limit = { owner = { has_variable = sul_enrich_rate_nobles } }
+				multiply = owner.var:sul_enrich_rate_nobles
+			}
 		}
 	}
 	set_variable = {
@@ -628,7 +639,10 @@ sul_update_location_wpp = {
 			multiply = local_var:sul_clergy_wpp
 			multiply = @sul_enrichment_weight
 			multiply = num_pop_type:clergy
-			multiply = owner.var:sul_enrich_rate_clergy
+			if = {
+				limit = { owner = { has_variable = sul_enrich_rate_clergy } }
+				multiply = owner.var:sul_enrich_rate_clergy
+			}
 		}
 	}
 	set_variable = {
@@ -639,7 +653,10 @@ sul_update_location_wpp = {
 			multiply = local_var:sul_burgher_wpp
 			multiply = @sul_enrichment_weight
 			multiply = num_pop_type:burghers
-			multiply = owner.var:sul_enrich_rate_burghers
+			if = {
+				limit = { owner = { has_variable = sul_enrich_rate_burghers } }
+				multiply = owner.var:sul_enrich_rate_burghers
+			}
 		}
 	}
 	set_variable = {
@@ -664,7 +681,10 @@ sul_update_location_wpp = {
 				multiply = num_pop_type:peasants
 			}
 
-			multiply = owner.var:sul_enrich_rate_commoners
+			if = {
+				limit = { owner = { has_variable = sul_enrich_rate_commoners } }
+				multiply = owner.var:sul_enrich_rate_commoners
+			}
 		}
 	}
 
@@ -677,7 +697,10 @@ sul_update_location_wpp = {
 			multiply = local_var:sul_tribesmen_wpp
 			multiply = @sul_enrichment_weight
 			multiply = num_pop_type:tribesmen
-			multiply = owner.var:sul_enrich_rate_tribesmen
+			if = {
+				limit = { owner = { has_variable = sul_enrich_rate_tribesmen } }
+				multiply = owner.var:sul_enrich_rate_tribesmen
+			}
 		}
 	}
 
@@ -835,8 +858,6 @@ sul_calculate_location_wages = {
 #
 # Commoner estate: flat wealth supplement = gold × 0.02 / commoner equivalent.
 #   Budget pressure = 1 + gold × 0.02 (additive demand bonus from savings).
-
-@sul_return_rate = 0.02
 
 sul_compute_budget_pressure = {
 	"estate(estate_type:nobles_estate)" ?= {
@@ -2297,7 +2318,7 @@ sul_wealth_loot_location = {
 		}
 
 		add_gold = {
-			value = prev.local_var:sul_loot_total
+			value = local_var:sul_loot_total
 			multiply = local_var:sul_loot_kept
 		}
 	}

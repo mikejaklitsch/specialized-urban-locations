@@ -38,6 +38,7 @@ ICON_MAP = {
     'local_construction_speed': 'gfx/interface/icons/modifier_types/free_building_levels.dds',
     'local_peasant_enfranchisment': 'gfx/interface/icons/modifier_types/_default.dds',
     'local_unrest': 'gfx/interface/icons/resources/war_exhaustion.dds',
+    'local_max_rgo_size_modifier': 'gfx/interface/icons/modifier_types/local_max_rgo_size.dds',
 }
 
 # Goods -> positive icon (auto-maps good_name to good_name_positive.dds)

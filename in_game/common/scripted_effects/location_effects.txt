@@ -113,14 +113,35 @@ horde_raid_location = {
 
 change_location_rank_effect = {
 	if = {
-		limit = { modifier:sul_is_city_rank_tier = yes }
+		limit = {
+			OR = {
+				$location_rank$ = location_rank:mining_city
+				$location_rank$ = location_rank:farming_city
+				$location_rank$ = location_rank:gathering_city
+				$location_rank$ = location_rank:woodland_city
+				$location_rank$ = location_rank:commercial_city
+			}
+		}
+
 		change_location_rank = $location_rank$
 	}
 	else_if = {
 		limit = {
-			modifier:sul_is_town_rank_tier = yes
+			OR = {
+				$location_rank$ = location_rank:mining_town
+				$location_rank$ = location_rank:farming_town
+				$location_rank$ = location_rank:gathering_town
+				$location_rank$ = location_rank:woodland_town
+				$location_rank$ = location_rank:commercial_town
+			}
 			NOT = {
-				modifier:sul_is_city_rank_tier = yes
+				OR = {
+					location_rank = location_rank:mining_city
+					location_rank = location_rank:farming_city
+					location_rank = location_rank:gathering_city
+					location_rank = location_rank:woodland_city
+					location_rank = location_rank:commercial_city
+				}
 			}
 		}
 

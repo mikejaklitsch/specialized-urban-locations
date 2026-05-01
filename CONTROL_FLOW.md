@@ -81,6 +81,8 @@ Each custom location rank carries boolean modifiers in its `rank_modifier` block
 
 These are the authoritative source for specialization identity in script. `sul_spec_id` has been removed.
 
+**Unreachable vanilla ranks:** `city`, `town`, and `rural_settlement` remain defined in 00_default.txt only to avoid major structural rewrites. No location ever holds these ranks — every location is assigned a specialization rank. Treat them as non-existent.
+
 ### Location Variables
 | Variable | Set By | Updated | Read By | Purpose |
 |----------|--------|---------|---------|---------|

@@ -6,6 +6,12 @@ from pathlib import Path
 
 PDX_FORMAT = str(Path.home() / ".local" / "bin" / "pdx-format")
 
+NO_BOM_DIRS = {"setup"}
+
+
+def _needs_no_bom(f: Path) -> bool:
+    return any(d in f.parts for d in NO_BOM_DIRS)
+
 
 def run(mod_root: Path, changed: set[Path] | None = None) -> list[str]:
     errors = []
@@ -20,11 +26,11 @@ def run(mod_root: Path, changed: set[Path] | None = None) -> list[str]:
     if not files:
         return errors
     for f in files:
-        result = subprocess.run(
-            [PDX_FORMAT, "--check", str(f)],
-            capture_output=True,
-            text=True,
-        )
+        cmd = [PDX_FORMAT, "--check"]
+        if _needs_no_bom(f):
+            cmd.append("--no-bom")
+        cmd.append(str(f))
+        result = subprocess.run(cmd, capture_output=True, text=True)
         if result.returncode != 0:
             errors.append(f"needs formatting: {f.relative_to(mod_root)}")
     return errors

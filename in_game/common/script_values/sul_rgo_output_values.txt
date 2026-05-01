@@ -1,6 +1,6 @@
 ﻿# RGO building level / output / max-level math.
 #
-# RGO cap = (base + population) × raw material output × extraction investment.
+# RGO cap = base × (1 + rgo_size) × (1 + raw_material_output) - building_density + population.
 # Uses save_temporary_value_as pattern (from MnT) so every multiplier
 # shows as a tooltipped additive line instead of a blank multiply.
 
@@ -42,47 +42,120 @@ rgo_building_level = {
 }
 
 sul_rgo_max_level_base = {
-	save_temporary_value_as = { name = rgo_base value = 0 }
-
-	# Base
 	save_temporary_value_as = {
 		name = rgo_base
-		value = { value = scope:rgo_base add = 3 }
+		value = { value = 5 add = { value = population divide = 50 } }
 	}
 
-	add = { desc = "BUILDING_LEVEL_BASE" value = 3 }
+	add = { desc = "BUILDING_LEVEL_BASE" value = 5 }
+	add = { desc = "BUILDING_LEVEL_POPULATION" value = population divide = 50 }
 
-	# Population
+	# RGO size (multiplicative on base, displayed as additive)
+	if = {
+		limit = { modifier:local_max_rgo_size_modifier != 0 }
+
+		add = {
+			desc = "SUL_RGO_SIZE"
+			value = scope:rgo_base
+			multiply = modifier:local_max_rgo_size_modifier
+		}
+	}
+	if = {
+		limit = {
+			has_owner = yes
+			owner = { modifier:global_max_rgo_size_modifier != 0 }
+		}
+
+		add = {
+			desc = "SUL_RGO_SIZE_GLOBAL"
+			value = scope:rgo_base
+			multiply = owner.modifier:global_max_rgo_size_modifier
+		}
+	}
+	if = {
+		limit = {
+			has_owner = yes
+			owner = { modifier:global_max_rgo_size_modifier_in_rural != 0 }
+			modifier:sul_is_rural_settlement_rank_tier = yes
+		}
+
+		add = {
+			desc = "SUL_RGO_SIZE_RURAL"
+			value = scope:rgo_base
+			multiply = owner.modifier:global_max_rgo_size_modifier_in_rural
+		}
+	}
+	if = {
+		limit = {
+			has_owner = yes
+			owner = { modifier:global_max_rgo_size_modifier_in_non_rural != 0 }
+			modifier:sul_is_rural_settlement_rank_tier = no
+		}
+
+		add = {
+			desc = "SUL_RGO_SIZE_URBAN"
+			value = scope:rgo_base
+			multiply = owner.modifier:global_max_rgo_size_modifier_in_non_rural
+		}
+	}
+
+	# Update rgo_base to post-RGO-size value
 	save_temporary_value_as = {
 		name = rgo_base
 
 		value = {
 			value = scope:rgo_base
-			add = { value = population multiply = 0.005 }
+			multiply = { value = 1 add = modifier:local_max_rgo_size_modifier }
 		}
 	}
-
-	add = {
-		desc = "BUILDING_LEVEL_POPULATION"
-		value = population
-		multiply = 0.005
-	}
-
-	# Snapshot base+pop before multiplicative scaling
-	save_temporary_value_as = { name = rgo_scaled value = scope:rgo_base }
-
-	# Raw material output bonus (multiplicative, displayed as additive)
 	if = {
-		limit = { modifier:local_raw_material_output != 0 }
+		limit = { has_owner = yes }
 
 		save_temporary_value_as = {
-			name = rgo_scaled
+			name = rgo_base
 
 			value = {
 				value = scope:rgo_base
-				multiply = { value = 1 add = modifier:local_raw_material_output }
+				add = { value = 3 multiply = owner.modifier:global_max_rgo_size_modifier }
 			}
 		}
+	}
+	if = {
+		limit = { has_owner = yes modifier:sul_is_rural_settlement_rank_tier = yes }
+
+		save_temporary_value_as = {
+			name = rgo_base
+
+			value = {
+				value = scope:rgo_base
+
+				add = {
+					value = scope:rgo_base
+					multiply = owner.modifier:global_max_rgo_size_modifier_in_rural
+				}
+			}
+		}
+	}
+	if = {
+		limit = { has_owner = yes modifier:sul_is_rural_settlement_rank_tier = no }
+
+		save_temporary_value_as = {
+			name = rgo_base
+
+			value = {
+				value = scope:rgo_base
+
+				add = {
+					value = scope:rgo_base
+					multiply = owner.modifier:global_max_rgo_size_modifier_in_non_rural
+				}
+			}
+		}
+	}
+
+	# Raw material output (multiplicative on post-RGO-size base, displayed as additive)
+	if = {
+		limit = { modifier:local_raw_material_output != 0 }
 
 		add = {
 			desc = "SUL_RAW_MATERIAL_OUTPUT"
@@ -93,19 +166,6 @@ sul_rgo_max_level_base = {
 	if = {
 		limit = { has_owner = yes owner = { modifier:global_raw_material_output != 0 } }
 
-		save_temporary_value_as = {
-			name = rgo_scaled
-
-			value = {
-				value = scope:rgo_scaled
-
-				add = {
-					value = scope:rgo_base
-					multiply = owner.modifier:global_raw_material_output
-				}
-			}
-		}
-
 		add = {
 			desc = "SUL_RAW_MATERIAL_OUTPUT_GLOBAL"
 			value = scope:rgo_base
@@ -113,12 +173,19 @@ sul_rgo_max_level_base = {
 		}
 	}
 
-	# Extraction investment (multiplicative, displayed as additive)
-	# Each extraction building level adds modifier:sul_extraction_size = 1.
-	# At 0 extraction: total zeroes out. At 1: unchanged. At N: ×N.
+	# Building density (-10 per 100 building levels)
 	add = {
-		desc = "SUL_EXTRACTION_INVESTMENT"
-		value = scope:rgo_scaled
-		multiply = { value = modifier:sul_extraction_size subtract = 1 }
+		desc = "SUL_BUILDING_DENSITY"
+		value = total_building_levels
+		multiply = -0.1
 	}
+
+	# Population (+1 per 25 pops)
+	add = {
+		desc = "BUILDING_LEVEL_POPULATION"
+		value = population
+		multiply = 0.04
+	}
+
+	min = 0
 }

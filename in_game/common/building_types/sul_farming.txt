@@ -48,7 +48,6 @@ REPLACE:fiber_crops_farm = {
 	modifier = {
 		sul_is_extraction_building = yes
 		local_monthly_development = -0.005
-		sul_extraction_size = 1
 		local_population_growth = 0.00015
 	}
 }
@@ -104,7 +103,6 @@ REPLACE:horse_breeders = {
 	modifier = {
 		sul_is_extraction_building = yes
 		local_monthly_development = -0.005
-		sul_extraction_size = 1
 		local_population_growth = 0.00015
 	}
 }
@@ -302,7 +300,6 @@ INJECT:distillers_guild = {
 		local_liquor_output_modifier = 0.005
 		sul_is_production_building = yes
 		local_monthly_development = 0.0025
-		sul_production_size = 1
 	}
 
 	city = no
@@ -329,7 +326,6 @@ INJECT:distillers_workshop = {
 		local_liquor_output_modifier = 0.005
 		sul_is_production_building = yes
 		local_monthly_development = 0.0025
-		sul_production_size = 1
 	}
 
 	city = no
@@ -356,7 +352,6 @@ INJECT:distiller_manufactory = {
 		local_liquor_output_modifier = 0.005
 		sul_is_production_building = yes
 		local_monthly_development = 0.0025
-		sul_production_size = 1
 	}
 
 	city = no
@@ -384,7 +379,6 @@ INJECT:distiller_mill = {
 		local_liquor_output_modifier = 0.005
 		sul_is_production_building = yes
 		local_monthly_development = 0.0025
-		sul_production_size = 1
 	}
 
 	city = no
@@ -411,7 +405,6 @@ INJECT:brewery = {
 		local_beer_output_modifier = 0.005
 		sul_is_production_building = yes
 		local_monthly_development = 0.0025
-		sul_production_size = 1
 	}
 
 	city = no
@@ -438,7 +431,6 @@ INJECT:beer_workshop = {
 		local_beer_output_modifier = 0.005
 		sul_is_production_building = yes
 		local_monthly_development = 0.0025
-		sul_production_size = 1
 	}
 
 	city = no
@@ -465,7 +457,6 @@ INJECT:brewery_manufactory = {
 		local_beer_output_modifier = 0.005
 		sul_is_production_building = yes
 		local_monthly_development = 0.0025
-		sul_production_size = 1
 	}
 
 	city = no
@@ -493,7 +484,6 @@ INJECT:brewery_mill = {
 		local_beer_output_modifier = 0.005
 		sul_is_production_building = yes
 		local_monthly_development = 0.0025
-		sul_production_size = 1
 	}
 
 	city = no
@@ -520,7 +510,6 @@ INJECT:winery = {
 		local_wine_output_modifier = 0.005
 		sul_is_extraction_building = yes
 		local_monthly_development = -0.005
-		sul_extraction_size = 1
 		local_population_growth = 0.00015
 	}
 
@@ -548,7 +537,6 @@ INJECT:winery_manufactory = {
 		local_wine_output_modifier = 0.005
 		sul_is_extraction_building = yes
 		local_monthly_development = -0.005
-		sul_extraction_size = 1
 		local_population_growth = 0.00015
 	}
 
@@ -746,7 +734,6 @@ sul_farmers_market = {
 		local_provisions_output_modifier = 0.005
 		sul_is_production_building = yes
 		local_monthly_development = 0.0025
-		sul_production_size = 1
 	}
 }
 
@@ -778,6 +765,14 @@ sul_rural_granary = {
 	construction_demand = village_construction
 
 	modifier = { local_food_capacity = 100 local_monthly_food = 5 }
+	on_built = {
+		location = { add_to_variable_list = { name = sul_epbm_buildings target = prev } }
+		sul_epbm_on_building_built = yes
+	}
+	on_destroyed = {
+		location = { remove_list_variable = { name = sul_epbm_buildings target = prev } }
+		sul_epbm_on_building_destroyed = yes
+	}
 }
 
 # @sul-diff: ~~~+++ ceff
@@ -1186,7 +1181,6 @@ sul_rural_brewer = {
 		local_beer_output_modifier = 0.005
 		sul_is_production_building = yes
 		local_monthly_development = 0.0025
-		sul_production_size = 1
 	}
 }
 
@@ -1236,7 +1230,6 @@ sul_rural_winemaker = {
 		local_wine_output_modifier = 0.005
 		sul_is_extraction_building = yes
 		local_monthly_development = -0.005
-		sul_extraction_size = 1
 		local_population_growth = 0.00015
 	}
 }
@@ -1286,6 +1279,5 @@ sul_rural_distiller = {
 		local_liquor_output_modifier = 0.005
 		sul_is_production_building = yes
 		local_monthly_development = 0.0025
-		sul_production_size = 1
 	}
 }

@@ -1,3 +1,40 @@
-﻿# Power Projection — scripted effects.
-# All PP drags are now formula-based auto_modifier script_values.
-# No monthly iteration needed.
+# Power Projection — monthly update.
+# Reads monthly_sul_power_projection modifier accumulator, applies percentage
+# decay (base rate scaled by complacency), writes to var:sul_power_projection.
+
+@sul_pp_base_decay = 0.05
+
+sul_projection_monthly_update = {
+	set_variable = {
+		name = sul_power_projection
+		value = {
+			value = var:sul_power_projection
+
+			# Decay toward 0: base 5%, doubled at complacency 100
+			subtract = {
+				value = var:sul_power_projection
+				multiply = @sul_pp_base_decay
+				multiply = {
+					value = 1
+					add = {
+						value = complacency
+						multiply = 0.01
+					}
+				}
+			}
+
+			# Monthly contributions from all sources
+			add = modifier:monthly_sul_power_projection
+
+			min = -100
+			max = 100
+		}
+	}
+}
+
+sul_projection_init_variable = {
+	if = {
+		limit = { NOT = { has_variable = sul_power_projection } }
+		set_variable = { name = sul_power_projection value = 0 }
+	}
+}

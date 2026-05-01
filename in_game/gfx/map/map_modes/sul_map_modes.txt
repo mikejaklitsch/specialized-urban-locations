@@ -21,22 +21,22 @@ REPLACE:power_projection = {
 			limit = { has_owner = yes }
 
 			if = {
-				limit = { owner.power_projection > 0 }
+				limit = { owner = { var:sul_power_projection > 0 } }
 
 				lerp = {
 					min_color = define:NMapColors|MAP_COLOR_MID
 					max_color = define:NMapColors|MAP_COLOR_HIGH
-					factor = { value = owner.power_projection divide = 100 }
+					factor = { value = owner.var:sul_power_projection divide = 100 }
 				}
 			}
 
 			else_if = {
-				limit = { owner.power_projection < 0 }
+				limit = { owner = { var:sul_power_projection < 0 } }
 
 				lerp = {
 					min_color = define:NMapColors|MAP_COLOR_LOW
 					max_color = define:NMapColors|MAP_COLOR_MIN
-					factor = { value = owner.power_projection multiply = -1 divide = 100 }
+					factor = { value = owner.var:sul_power_projection multiply = -1 divide = 100 }
 				}
 			}
 
@@ -46,11 +46,11 @@ REPLACE:power_projection = {
 
 	tooltip_key = {
 		if = {
-			limit = { owner ?= { power_projection > 0 } }
+			limit = { owner ?= { var:sul_power_projection > 0 } }
 			value = "sul_projection_map_positive"
 		}
 		else_if = {
-			limit = { owner ?= { power_projection < 0 } }
+			limit = { owner ?= { var:sul_power_projection < 0 } }
 			value = "sul_projection_map_negative"
 		}
 		else = { value = "sul_projection_map_neutral" }

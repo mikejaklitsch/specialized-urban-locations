@@ -1,114 +1,126 @@
-﻿# Power Projection — unified scale layer + structural drag layer.
+# Power Projection — unified scale layer + structural drag layer.
 #
-# One REPLACE:power_projection holds all PP-scaling effects. Engine multiplies
-# coefficients by signed PP, so negative PP reverses everything automatically.
-# Clamped [-200, 200]. Comments show effect at PP +200.
+# Monthly grow/decay system. Auto_modifiers write to monthly_sul_power_projection
+# (monthly contributions). A monthly scripted effect applies contributions and
+# decay to var:sul_power_projection. The scale layer auto_modifier reads the
+# variable via script_value to produce PP-scaling effects.
 #
-# Drag layer: separate auto_modifiers WRITE power_projection from country
-# state (control, culture, religion, diplomacy, rank).
+# This sidesteps engine limitations where auto_modifiers cannot read modifier
+# values set by other auto_modifiers.
 
 # ============================================================================
-# Structural drag layer
+# Structural drag layer — writes monthly contributions
 # ============================================================================
 
 sul_projection_drag_control = {
 	scales_with = sul_projection_control_drag
 
-	power_projection = 50
+	monthly_sul_power_projection = 0.5
 }
 
 sul_projection_drag_culture = {
 	scales_with = sul_projection_culture_drag
 
-	power_projection = 25
+	monthly_sul_power_projection = 0.25
 }
 
 sul_projection_drag_religion = {
 	scales_with = sul_projection_religion_drag
 
-	power_projection = 25
+	monthly_sul_power_projection = 0.2
 }
 
 # Diplomatic overextension — ratio of used to total diplomatic capacity.
-# 0% used = 0 PP, 100% used = -50 PP. Overcommitted diplomacy erodes projection.
 
 sul_projection_drag_diplomacy = {
 	scales_with = sul_projection_diplo_usage_ratio
 
-	power_projection = -50
+	monthly_sul_power_projection = -0.5
 }
 
-# Government rank. +10 PP per rank tier (county=10, duchy=20, kingdom=30).
+# ============================================================================
+# Scale layer — reads var:sul_power_projection via script_value.
+# ============================================================================
 
-sul_projection_rank = {
-	scales_with = sul_projection_rank_value
+sul_power_projection_impact = {
+	scales_with = sul_power_projection_value
+
+	# --- Projection benefits (positive PP = advantage) ---
+	subject_loyalty = 0.5                                    # +50
+	global_pop_assimilation_speed_modifier = 0.01            # +100%
+	global_pop_conversion_speed_modifier = 0.01              # +100%
+	global_distance_from_capital_speed_propagation = 0.005   # +50%
+	global_war_score_cost = -0.005                           # -50%
+	diplomatic_annexation_cost = -0.005                      # -50%
+	antagonism_taking_land_giving_modifier = -0.01           # -100%
+	sul_trade_maintenance_efficiency = 0.0025                # +25%
+	global_integration_speed_modifier = 0.01                 # +100%
+	settle_country_cost_modifier = -0.005                    # -50%
+	casus_belli_creation_speed_modifier = 0.005              # +50%
+
+	# --- Military ---
+	levy_recovery_modifier = 0.02                            # +200%
+	global_levy_size_modifier = 0.02                         # +200%
+
+	# --- Complacency coupling (PP builds complacency) ---
+	monthly_complacency = 0.005                              # +0.5/mo
+
+	# --- PP cost layer (stability, estates, civic drag) ---
+	stability_decay = -0.0001                                # -1%
+	global_estate_target_satisfaction = -0.002               # -20%
+	global_estate_power = -0.005                             # -50%
+
+	# --- AI behavior ---
+	aggressiveness_modifier = 0.05                           # +5
+	control_importance_modifier = -0.05                      # -5
+	gold_importance_modifier = -0.05                         # -5
+}
+
+# ============================================================================
+# Vanilla power_projection auto_modifier — emptied.
+# ============================================================================
+
+# Vanilla bridge — feeds var:sul_power_projection back into the engine's
+# power_projection value so hardcoded vanilla systems (AI weighting, war
+# score, subject interactions) that read power_projection keep working.
+# Separate from sul_power_projection_impact so the vanilla value never
+# leaks into the player-facing effects tooltip.
+sul_projection_vanilla_bridge = {
+	scales_with = sul_power_projection_value
 
 	power_projection = 1
 }
 
 REPLACE:power_projection = {
-	scales_with = {
-		value = power_projection
-		min = -200
-		max = 200
-	}
-
-	# --- Projection benefits (positive PP = advantage) ---
-	subject_loyalty = 0.25                                   # +50
-	global_pop_assimilation_speed_modifier = 0.005           # +100%
-	global_pop_conversion_speed_modifier = 0.005             # +100%
-	global_distance_from_capital_speed_propagation = 0.0025  # +50%
-	global_war_score_cost = -0.0025                          # -50%
-	diplomatic_annexation_cost = -0.0025                     # -50%
-	antagonism_taking_land_giving_modifier = -0.005          # -100%
-	sul_trade_maintenance_efficiency = 0.00125               # +25%
-	global_integration_speed_modifier = 0.005                # +100%
-	settle_country_cost_modifier = -0.0025                   # -50%
-	casus_belli_creation_speed_modifier = 0.0025             # +50%
-
-	# --- Military ---
-	levy_recovery_modifier = 0.01                            # +200%
-	global_levy_size_modifier = 0.01                         # +200%
-
-	# --- Complacency coupling (PP builds complacency) ---
-	monthly_complacency = 0.0015                             # +0.3/mo
-
-	# --- PP cost layer (stability, estates, civic drag) ---
-	stability_decay = -0.00005                               # -1%
-	global_estate_target_satisfaction = -0.001               # -20%
-	global_estate_power = -0.0025                            # -50%
-
-	# --- AI behavior ---
-	aggressiveness_modifier = 0.025                          # +5
-	control_importance_modifier = -0.025                     # -5
-	gold_importance_modifier = -0.025                        # -5
+	scales_with = power_projection
 }
 
-# Stability → PP. Vanilla scales_with = stability × 0.01.
-# +25 PP at stability 100, -25 PP at stability -100.
+# ============================================================================
+# Vanilla auto_modifier INJECTs — monthly contributions
+# ============================================================================
+
 INJECT:stability_impact = {
-	power_projection = 25
+	monthly_sul_power_projection = 0.1
 }
 
-# Prestige → PP. Vanilla scales_with = prestige × 0.01.
-# +25 PP at prestige 100.
 INJECT:prestige = {
-	power_projection = 25
+	monthly_sul_power_projection = 0.1
 }
 
-# Administrative overhead. Vanilla scales_with = num_locations / 10.
-# -0.25 per (locations/10) = -0.025 per location.
 INJECT:num_locations_impact = {
-	power_projection = -0.25
+	monthly_sul_power_projection = -0.001
 }
 
-# Military strength — regular army size. Vanilla scales_with = regular_army_size.
 INJECT:regular_army_size = {
-	power_projection = 0.5
+	monthly_sul_power_projection = 0.005
 }
 
-# Military strength — regular navy size. Vanilla scales_with = regular_navy_size.
 INJECT:regular_navy_size = {
-	power_projection = 0.5
+	monthly_sul_power_projection = 0.005
 }
 
+# Num advances — cancel vanilla's power_projection = 1, redirect to monthly.
+INJECT:num_advances_impact = {
+	power_projection = -1
+	monthly_sul_power_projection = 0.01
+}

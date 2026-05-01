@@ -19,21 +19,25 @@ sul_initialize_economy = {
 			set_variable = { name = sul_country_pop_clergy value = 1 }
 			set_variable = { name = sul_country_pop_burghers value = 1 }
 
-			every_owned_location = { sul_init_zero_wpp = yes }
-
 			# Seed per-location wage rates before first economy pass
 			every_owned_location = { sul_calculate_location_wages = yes }
 
 			sul_gdp_init = yes
 			sul_update_country_economy = yes
 
-			# Seed location wealth at equilibrium (gold cached after enrichment in sul_update_country_economy)
+			# Convert vanilla efficiency sources to merchant_maintenance_cost on day 1.
+			sul_trade_maintenance_apply = yes
+		}
+	}
+}
+
+sul_wealth_seed_all = {
+	effect = {
+		every_country = {
+			limit = { is_real_country = yes }
 			every_owned_location = {
 				sul_wealth_seed_location = yes
 			}
-
-			# Convert vanilla efficiency sources to merchant_maintenance_cost on day 1.
-			sul_trade_maintenance_apply = yes
 		}
 	}
 }
@@ -116,7 +120,7 @@ sul_yearly_wage_recalc = {
 sul_wealth_on_location_occupied = {
 	effect = {
 		if = {
-			limit = { has_variable = sul_noble_assets }
+			limit = { has_variable = sul_wealth_nobles }
 			sul_wealth_loot_location = yes
 		}
 	}

@@ -3,9 +3,8 @@
 # Pre-fills --prefix, --vanilla, --mod, --output, --exclude for this mod.
 #
 # Usage:
-#   ./tools/generate_epbm_hooks.sh              # default mode (INJECT/REPLACE)
-#   ./tools/generate_epbm_hooks.sh --in-place   # in-place mode (write hooks into mod building files)
-#   ./tools/generate_epbm_hooks.sh --strip       # strip all hooks from mod building files
+#   ./tools/generate_epbm_hooks.sh         # generate hooks (in-place for mod, INJECT/REPLACE for vanilla)
+#   ./tools/generate_epbm_hooks.sh --strip # strip all hooks from mod building files
 #
 # Extra args are forwarded to generate_building_hooks.py.
 

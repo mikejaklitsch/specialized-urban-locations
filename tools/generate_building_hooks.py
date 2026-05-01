@@ -6,27 +6,25 @@ Mod-agnostic generator: parses vanilla building_types and production_methods,
 optionally overlays a mod's building_types (handling file replacement, INJECT:,
 and REPLACE: directives), then produces the generated script files.
 
-Two modes:
-  Default mode:  Generates INJECT/REPLACE files to --output directory.
-  In-place mode: Writes hooks directly into --mod building files (requires --mod).
-                 Idempotent: strips existing EPBM hooks before re-injecting.
+Mod-defined buildings get hooks written directly into their source files.
+Vanilla-only buildings get INJECT/REPLACE blocks in generated output files.
 
 Output files (written to --output directory):
-  Default mode only:
+  Vanilla-only buildings:
     in_game/common/building_types/epbm_generated_inject.txt
     in_game/common/building_types/epbm_generated_replace.txt
-  Both modes:
+  Always:
     in_game/common/scripted_effects/epbm_generated_init_effects.txt
     in_game/common/international_organizations/epbm_generated_ios.txt
     in_game/common/biases/epbm_generated_biases.txt
     main_menu/localization/english/epbm_ios_l_english.yml
 
 Usage:
-  # Default: generate INJECT/REPLACE files
+  # Vanilla only
   python generate_building_hooks.py --vanilla /path/to/game/in_game --output /path/to/mod
 
-  # In-place: write hooks directly into mod's building files
-  python generate_building_hooks.py --vanilla /path/to/game/in_game --mod /path/to/mod/in_game --output /path/to/output --in-place
+  # With mod overlay (hooks written into mod files, INJECT/REPLACE for vanilla)
+  python generate_building_hooks.py --vanilla /path/to/game/in_game --mod /path/to/mod/in_game --output /path/to/output
 
   # With exclusion list
   python generate_building_hooks.py --vanilla ... --mod ... --output ... --exclude exclusions.txt
@@ -279,6 +277,12 @@ def _parse_building_block(bname, block, source_file):
         b['possible_pms'] = ppm
 
     upm = block.get('unique_production_methods')
+    if isinstance(upm, list):
+        merged = OrderedDict()
+        for d in upm:
+            if isinstance(d, dict):
+                merged.update(d)
+        upm = merged
     if isinstance(upm, dict):
         for pm_name, pm_block in upm.items():
             if isinstance(pm_block, dict):
@@ -326,6 +330,8 @@ def _scan_building_dir(directory):
 
     for f in sorted(directory.iterdir()):
         if f.name.lower() in SKIP_FILES or not f.name.endswith(".txt"):
+            continue
+        if f.name.startswith(f"{PREFIX}_generated_"):
             continue
         files_present.add(f.name)
         data = parse_file(f)
@@ -1061,7 +1067,18 @@ def apply_in_place(qualifying, buildings, mod_dir, gdp_buildings=None):
 # Code generation (default mode)
 # ─────────────────────────────────────────────
 
-def generate_inject(qualifying, buildings, gdp_buildings=None):
+def _is_mod_file(building, mod_bt_dir):
+    """True if this building is defined in a mod file (skip for INJECT/REPLACE)."""
+    if mod_bt_dir is None:
+        return False
+    try:
+        building['file'].relative_to(mod_bt_dir)
+        return True
+    except ValueError:
+        return False
+
+
+def generate_inject(qualifying, buildings, gdp_buildings=None, mod_bt_dir=None):
     """Generate epbm_generated_inject.txt (INJECT blocks for buildings without on_built)."""
     if gdp_buildings is None:
         gdp_buildings = {}
@@ -1077,6 +1094,8 @@ def generate_inject(qualifying, buildings, gdp_buildings=None):
     for bname, pm_name, _, is_foreign, _estate in sorted(qualifying, key=lambda x: x[0]):
         b = buildings[bname]
         if is_foreign:
+            continue
+        if _is_mod_file(b, mod_bt_dir):
             continue
         if b['has_on_built'] or b['has_on_destroyed']:
             continue
@@ -1110,6 +1129,8 @@ def generate_inject(qualifying, buildings, gdp_buildings=None):
         b = buildings.get(bname)
         if b is None or b['is_foreign']:
             continue
+        if _is_mod_file(b, mod_bt_dir):
+            continue
         if b['has_on_built'] or b['has_on_destroyed']:
             continue
         # Check if already handled by REPLACE (has existing hooks from EPBM)
@@ -1131,7 +1152,7 @@ def generate_inject(qualifying, buildings, gdp_buildings=None):
     return "\n".join(lines)
 
 
-def generate_replace(qualifying, buildings, gdp_buildings=None):
+def generate_replace(qualifying, buildings, gdp_buildings=None, mod_bt_dir=None):
     """Generate epbm_generated_replace.txt (REPLACE blocks for buildings with existing on_built)."""
     if gdp_buildings is None:
         gdp_buildings = {}
@@ -1147,6 +1168,8 @@ def generate_replace(qualifying, buildings, gdp_buildings=None):
     for bname, pm_name, _, is_foreign, _estate in sorted(qualifying, key=lambda x: x[0]):
         b = buildings[bname]
         if is_foreign:
+            continue
+        if _is_mod_file(b, mod_bt_dir):
             continue
         if not b['has_on_built'] and not b['has_on_destroyed']:
             continue
@@ -1172,9 +1195,10 @@ def generate_replace(qualifying, buildings, gdp_buildings=None):
         b = buildings.get(bname)
         if b is None or b['is_foreign']:
             continue
+        if _is_mod_file(b, mod_bt_dir):
+            continue
         if not b['has_on_built'] and not b['has_on_destroyed']:
             continue
-        # Skip if handled by EPBM qualifying (would be in replaced_buildings)
         epbm_handled = any(bn == bname for bn, _, _, fg, _ in qualifying if not fg)
         if epbm_handled:
             continue
@@ -1478,14 +1502,11 @@ def main():
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog="""
 Examples:
-  # Vanilla only (default mode — generates INJECT/REPLACE files)
+  # Vanilla only
   %(prog)s --vanilla /path/to/game/in_game --output /path/to/mod
 
-  # With mod overlay
+  # With mod overlay (hooks written into mod files, INJECT/REPLACE for vanilla)
   %(prog)s --vanilla /path/to/game/in_game --mod /path/to/mnt/in_game --output /path/to/mod
-
-  # In-place mode — writes hooks directly into mod building files
-  %(prog)s --vanilla /path/to/game/in_game --mod /path/to/mnt/in_game --output /path/to/output --in-place
 
   # Strip mode — remove all EPBM hooks from building files
   %(prog)s --strip /path/to/mod/in_game/common/building_types
@@ -1506,9 +1527,6 @@ Examples:
                         help="Output directory for generated files (mod root)")
     parser.add_argument("--exclude",
                         help="Path to building exclusion list file (one name per line)")
-    parser.add_argument("--in-place", action="store_true", dest="in_place",
-                        help="Write hooks directly into --mod building files instead of "
-                             "generating INJECT/REPLACE output (requires --mod)")
     parser.add_argument("--prefix", default="epbm",
                         help="Prefix for all generated names (default: epbm). "
                              "Affects IO names, effect names, variable names, and filenames.")
@@ -1536,16 +1554,12 @@ Examples:
     vanilla_dir = Path(args.vanilla)
     mod_dir = Path(args.mod) if args.mod else None
     output_dir = Path(args.output)
-    in_place = args.in_place
 
     if not vanilla_dir.exists():
         print(f"ERROR: Vanilla directory not found: {vanilla_dir}")
         return 1
     if mod_dir and not mod_dir.exists():
         print(f"ERROR: Mod directory not found: {mod_dir}")
-        return 1
-    if in_place and not mod_dir:
-        print("ERROR: --in-place requires --mod")
         return 1
 
     # Load exclusions
@@ -1585,18 +1599,6 @@ Examples:
     non_foreign = [q for q in qualifying if not q[3]]
     foreign_count = sum(1 for q in qualifying if q[3])
     estate_count = sum(1 for q in qualifying if q[4] is not None)
-    inject_count = sum(1 for b, _, _, _, _ in non_foreign
-                       if not buildings[b]['has_on_built'] and not buildings[b]['has_on_destroyed'])
-    replace_count = sum(1 for b, _, _, _, _ in non_foreign
-                        if buildings[b]['has_on_built'] or buildings[b]['has_on_destroyed'])
-    print(f"  INJECT buildings: {inject_count}")
-    print(f"  REPLACE buildings: {replace_count}")
-    print(f"  Foreign buildings: {foreign_count}")
-
-    if replace_count > 0:
-        replace_buildings = [b for b, _, _, fg, _ in qualifying
-                            if not fg and (buildings[b]['has_on_built'] or buildings[b]['has_on_destroyed'])]
-        print(f"  REPLACE candidates: {', '.join(replace_buildings)}")
 
     # Output directories
     out_effects = output_dir / "in_game" / "common" / "scripted_effects"
@@ -1604,41 +1606,21 @@ Examples:
     out_biases = output_dir / "in_game" / "common" / "biases"
     out_loc = output_dir / "main_menu" / "localization" / "english"
 
-    # Generate building hooks
-    if in_place:
-        print(f"\nIn-place mode: modifying mod building files...")
-        modified, vanilla_only = apply_in_place(qualifying, buildings, mod_dir, gdp_buildings=gdp_buildings)
-        print(f"  Modified {modified} file(s)")
+    # Generate building hooks (mod-defined buildings filtered out by mod_bt_dir)
+    mod_bt_dir = (mod_dir / "common" / "building_types") if mod_dir else None
+    out_buildings = output_dir / "in_game" / "common" / "building_types"
+    out_buildings.mkdir(parents=True, exist_ok=True)
 
-        # Generate INJECT/REPLACE for buildings from vanilla-only files
-        if vanilla_only:
-            out_buildings = output_dir / "in_game" / "common" / "building_types"
-            out_buildings.mkdir(parents=True, exist_ok=True)
+    print(f"\nGenerating INJECT/REPLACE files...")
+    inject_code = generate_inject(qualifying, buildings, gdp_buildings=gdp_buildings, mod_bt_dir=mod_bt_dir)
+    out_path = out_buildings / f"{PREFIX}_generated_inject.txt"
+    out_path.write_text(inject_code, encoding="utf-8-sig")
+    print(f"  Wrote {out_path.relative_to(output_dir)}")
 
-            print(f"\nGenerating INJECT/REPLACE for {len(vanilla_only)} vanilla-only building(s)...")
-            inject_code = generate_inject(vanilla_only, buildings, gdp_buildings=gdp_buildings)
-            out_path = out_buildings / f"{PREFIX}_generated_inject.txt"
-            out_path.write_text(inject_code, encoding="utf-8-sig")
-            print(f"  Wrote {out_path.relative_to(output_dir)}")
-
-            replace_code = generate_replace(vanilla_only, buildings, gdp_buildings=gdp_buildings)
-            out_path = out_buildings / f"{PREFIX}_generated_replace.txt"
-            out_path.write_text(replace_code, encoding="utf-8-sig")
-            print(f"  Wrote {out_path.relative_to(output_dir)}")
-    else:
-        out_buildings = output_dir / "in_game" / "common" / "building_types"
-        print(f"\nGenerating INJECT/REPLACE files to {output_dir}...")
-
-        out_buildings.mkdir(parents=True, exist_ok=True)
-        inject_code = generate_inject(qualifying, buildings, gdp_buildings=gdp_buildings)
-        out_path = out_buildings / f"{PREFIX}_generated_inject.txt"
-        out_path.write_text(inject_code, encoding="utf-8-sig")
-        print(f"  Wrote {out_path.relative_to(output_dir)}")
-
-        replace_code = generate_replace(qualifying, buildings, gdp_buildings=gdp_buildings)
-        out_path = out_buildings / f"{PREFIX}_generated_replace.txt"
-        out_path.write_text(replace_code, encoding="utf-8-sig")
-        print(f"  Wrote {out_path.relative_to(output_dir)}")
+    replace_code = generate_replace(qualifying, buildings, gdp_buildings=gdp_buildings, mod_bt_dir=mod_bt_dir)
+    out_path = out_buildings / f"{PREFIX}_generated_replace.txt"
+    out_path.write_text(replace_code, encoding="utf-8-sig")
+    print(f"  Wrote {out_path.relative_to(output_dir)}")
 
     # Generate shared files (both modes)
 
@@ -1676,15 +1658,11 @@ Examples:
 
     # Summary
     print("\n=== Summary ===")
-    print(f"Mode: {'in-place' if in_place else 'default (INJECT/REPLACE)'}")
     print(f"Total qualifying buildings: {len(qualifying)}")
     print(f"  Location-tracked buildings: {len(non_foreign)}")
     print(f"  Foreign buildings (no list): {foreign_count}")
     print(f"  Estate-assigned buildings: {estate_count}")
     print(f"Unique PM goods profiles: {len(all_pm_goods)}")
-    if not in_place:
-        print(f"INJECT blocks: {inject_count}")
-        print(f"REPLACE blocks: {replace_count}")
     if exclusions:
         print(f"Excluded buildings: {len(exclusions)}")
 

@@ -11,8 +11,10 @@ Organized by subsystem. **Update this document when adding, removing, or renamin
 1. `sul_rgo_init` — populate `sul_rgo_map` (goods → building_type)
 2. `sul_rgo_removal_start` — remove vanilla RGO buildings
 3. `sul_initialize_all` — full specialization rebuild, set `sul_version` global variable
-4. `sul_initialize_economy` — seed capital returns + budget pressure + GDP init + wealth accumulation, run first economy update
+4. `sul_initialize_economy` — seed budget pressure + GDP init + first economy update (no wealth seeding — deferred to end)
 5. `sul_war_on_game_start` — initialize war momentum for countries already at war
+6. ... (other subsystem inits: integration, minting, EPBM, migration)
+7. `sul_wealth_seed_all` — seed location wealth at equilibrium (last, so all gold-spending inits have finished)
 
 ### Monthly Country Pulse
 Sequential on_actions first, then parallelized events via `sul_monthly_country_pulse`.
@@ -181,16 +183,47 @@ Set and consumed within a single `sul_distribute_*_buildings` call. Not persiste
 | `sul_demand_base` | monthly | `sul_read_demand_base`, demand tiers | Variable map: pop_type → WPP/(A+B*WPP) |
 | `sul_last_update` | monthly (AI batch) | batch scheduling | Year of last WPP update |
 
-### Location Variables — Wealth Assets (seeded on init, monthly convergence)
-Per-location physical wealth stocks. Seeded at equilibrium by `sul_wealth_seed_location`, converge monthly via `sul_location_converge_wealth`. Capital returns = assets × 2% / local pops.
+### Location Variables — Wealth (seeded on init, monthly convergence)
+Per-location physical wealth stocks. Seeded at equilibrium by `sul_wealth_seed_location` (called last in on_game_start via `sul_wealth_seed_all`), converge monthly via `sul_location_converge_wealth`. Capital returns = assets × 2% / local pops. Both seed and converge call `sul_wealth_write_maps` to sync both variable maps.
 
 | Variable | Set By | Read By | Purpose |
 |----------|--------|---------|---------|
-| `sul_noble_assets` | `sul_wealth_seed_location`, `sul_location_converge_wealth` | WPP capital returns, wealth bar tooltip | Noble physical wealth at this location |
-| `sul_clergy_assets` | (same) | (same) | Clergy physical wealth |
-| `sul_burgher_assets` | (same) | (same) | Burgher physical wealth |
-| `sul_peasant_assets` | (same) | (same) | Peasant physical wealth |
-| `sul_crown_assets` | (same) | (same) | Crown treasury allocated to this location |
+| `sul_wealth_nobles` | `sul_wealth_seed_location`, `sul_location_converge_wealth` | convergence, WPP capital returns | Noble physical wealth |
+| `sul_wealth_clergy` | (same) | (same) | Clergy physical wealth |
+| `sul_wealth_burghers` | (same) | (same) | Burgher physical wealth |
+| `sul_wealth_peasants` | (same) | (same) | Peasant physical wealth |
+| `sul_wealth_dhimmi` | (same, conditional) | (same) | Dhimmi physical wealth (only if country has dhimmi estate) |
+| `sul_wealth_cossacks` | (same, conditional) | (same) | Cossack physical wealth (only if country has cossacks estate) |
+| `sul_wealth_tribes` | (same, conditional) | (same) | Tribes physical wealth (only if country has tribes estate) |
+| `sul_wealth_crown` | (same) | (same) | Crown treasury allocated to this location |
+| `sul_wealth_target_nobles` | (same) | tooltip display via map | Convergence target for nobles |
+| `sul_wealth_target_clergy` | (same) | (same) | Convergence target for clergy |
+| `sul_wealth_target_burghers` | (same) | (same) | Convergence target for burghers |
+| `sul_wealth_target_peasants` | (same) | (same) | Convergence target for peasants |
+| `sul_wealth_target_crown` | (same) | (same) | Convergence target for crown |
+| `sul_wealth_target_dhimmi` | (same, conditional) | (same) | Convergence target for dhimmi |
+| `sul_wealth_target_cossacks` | (same, conditional) | (same) | Convergence target for cossacks |
+| `sul_wealth_target_tribes` | (same, conditional) | (same) | Convergence target for tribes |
+
+### Location Variable Maps — Estate Assets & Targets (canonical read surface)
+`sul_estate_assets` and `sul_estate_targets` variable maps on each location, keyed by `estate_type`. Populated together by `sul_wealth_write_maps` after seed and converge. All display script values and GUI read from these maps, never from the per-estate variables directly.
+
+| Map | Key | Value Source | Read By |
+|-----|-----|-------------|---------|
+| `sul_estate_assets` | `estate_type:nobles_estate` | `var:sul_wealth_nobles` | `sul_map_asset_nobles`, `sul_wealth_share_nobles`, `sul_wealth_total`, tooltip GUI, pie chart |
+| | `estate_type:clergy_estate` | `var:sul_wealth_clergy` | (same pattern) |
+| | `estate_type:burghers_estate` | `var:sul_wealth_burghers` | (same) |
+| | `estate_type:peasants_estate` | `var:sul_wealth_peasants` | (same) |
+| | `estate_type:crown_estate` | `var:sul_wealth_crown` | (same) |
+| | `estate_type:dhimmi_estate` | `var:sul_wealth_dhimmi` | (same, conditional) |
+| | `estate_type:cossacks_estate` | `var:sul_wealth_cossacks` | (same, conditional) |
+| | `estate_type:tribes_estate` | `var:sul_wealth_tribes` | (same, conditional) |
+| `sul_estate_targets` | `estate_type:nobles_estate` | `var:sul_wealth_target_nobles` | `sul_wealth_target_total`, `sul_wealth_delta_nobles`, tooltip |
+| | (same pattern for all estates) | | |
+| `sul_dhimmi_return_per_pop` | `sul_update_location_wpp` | demand tooltip (planned) | Per-pop capital return for dhimmi minority pops |
+| `sul_cossacks_return_per_pop` | (same) | (same) | Per-pop capital return for cossack minority pops |
+| `sul_enrichment_dhimmi` | `sul_update_location_wpp` | `sul_update_country_economy` | Per-location dhimmi enrichment (accumulated → paid to estate) |
+| `sul_enrichment_cossacks` | (same) | (same) | Per-location cossack enrichment |
 
 ### Country Variables — Budget Pressure (monthly, set by `sul_compute_budget_pressure`)
 | Variable | Init | Updated By | Read By | Formula |
@@ -224,31 +257,61 @@ Accumulated by `sul_monthly_location_pass` / `sul_update_country_economy`. Raw p
 
 | Variable | Set By | Read By | Purpose |
 |----------|--------|---------|---------|
-| `sul_nobles_estate_raw_power` | `sul_monthly_location_pass` / `sul_update_country_economy` | wealth debug panel | Sum of local_estate_power(nobles) across all locations |
-| `sul_clergy_estate_raw_power` | (same) | (same) | Sum of local_estate_power(clergy) across all locations |
-| `sul_burghers_estate_raw_power` | (same) | (same) | Sum of local_estate_power(burghers) across all locations |
-| `sul_peasants_estate_raw_power` | (same) | (same) | Sum of local_estate_power(peasants) across all locations |
-| `sul_crown_estate_raw_power` | (same, derived) | (same) | Sum of all estate raw power (nobles + clergy + burghers + peasants) |
-| `sul_prev_nobles_raw_power` | saved before zeroing | `sul_location_converge_wealth` | Last month's denominator for convergence fraction |
-| `sul_prev_clergy_raw_power` | (same) | (same) | (same) |
-| `sul_prev_burghers_raw_power` | (same) | (same) | (same) |
-| `sul_prev_peasants_raw_power` | (same) | (same) | (same) |
-| `sul_prev_crown_raw_power` | (same) | (same) | (same) |
-| `sul_nobles_estate_gold` | (same) | wealth convergence, debug panel | Cached estate_gold for nobles |
-| `sul_clergy_estate_gold` | (same) | (same) | Cached estate_gold for clergy |
-| `sul_burghers_estate_gold` | (same) | (same) | Cached estate_gold for burghers |
-| `sul_peasants_estate_gold` | (same, null-safe) | (same) | Cached estate_gold for peasants |
+| `sul_national_power_nobles` | `sul_monthly_location_pass` / `sul_update_country_economy` | wealth convergence, debug panel | Sum of local_estate_power(nobles) across all locations |
+| `sul_national_power_clergy` | (same) | (same) | Sum of local_estate_power(clergy) across all locations |
+| `sul_national_power_burghers` | (same) | (same) | Sum of local_estate_power(burghers) across all locations |
+| `sul_national_power_peasants` | (same) | (same) | Sum of local_estate_power(peasants) across all locations |
+| `sul_national_power_dhimmi` | (same, conditional) | (same) | Sum of local_estate_power(dhimmi) — only if estate exists |
+| `sul_national_power_cossacks` | (same, conditional) | (same) | Sum of local_estate_power(cossacks) — only if estate exists |
+| `sul_national_power_tribes` | (same, conditional) | (same) | Sum of local_estate_power(tribes) — only if estate exists |
+| `sul_national_power_crown` | (same, derived) | (same) | Sum of all estate power (all 7 estates) |
+| `sul_national_power_prev_nobles` | saved before zeroing | `sul_location_converge_wealth` | Last month's denominator for convergence fraction |
+| `sul_national_power_prev_clergy` | (same) | (same) | (same) |
+| `sul_national_power_prev_burghers` | (same) | (same) | (same) |
+| `sul_national_power_prev_peasants` | (same) | (same) | (same) |
+| `sul_national_power_prev_dhimmi` | (same) | (same) | (same) |
+| `sul_national_power_prev_cossacks` | (same) | (same) | (same) |
+| `sul_national_power_prev_tribes` | (same) | (same) | (same) |
+| `sul_national_power_prev_crown` | (same) | (same) | (same) |
+| `sul_estate_gold_nobles` | (same) | wealth convergence, debug panel | Cached estate_gold for nobles |
+| `sul_estate_gold_clergy` | (same) | (same) | Cached estate_gold for clergy |
+| `sul_estate_gold_burghers` | (same) | (same) | Cached estate_gold for burghers |
+| `sul_estate_gold_peasants` | (same, null-safe) | (same) | Cached estate_gold for peasants |
+| `sul_estate_gold_dhimmi` | (same, null-safe) | (same) | Cached estate_gold for dhimmi |
+| `sul_estate_gold_cossacks` | (same, null-safe) | (same) | Cached estate_gold for cossacks |
+| `sul_estate_gold_tribes` | (same, null-safe) | (same) | Cached estate_gold for tribes |
+| `sul_enrich_rate_nobles` | `sul_monthly_location_pass` / `sul_update_country_economy` | enrichment formula | Cached (1 + estate_enrichment) × (1 + sul_nobles_enrichment_rate) |
+| `sul_enrich_rate_clergy` | (same) | (same) | Same for clergy |
+| `sul_enrich_rate_burghers` | (same) | (same) | Same for burghers |
+| `sul_enrich_rate_commoners` | (same) | (same) | Same for commoners |
+| `sul_enrich_rate_tribesmen` | (same) | (same) | Same for tribesmen |
+| `sul_enrich_rate_dhimmi` | (same) | (same) | Same for dhimmi |
+| `sul_enrich_rate_cossacks` | (same) | (same) | Same for cossacks |
+
+### Estate Power Block Modifiers (`in_game/common/estates/sul_estates.txt`)
+Each non-crown estate's `power = {}` block scales these modifiers linearly by estate_power (0–1). Combined non-crown estates at ~70% total power produce `food_purchase_cost = -0.70` and `building_upkeep_costs = -0.70`. Crown low_power/high_power blocks zero out vanilla's building_upkeep_costs so only per-estate power blocks contribute.
+
+| Modifier | Value | Applied To | Purpose |
+|----------|-------|-----------|---------|
+| `food_purchase_cost` | -1.0 | nobles, clergy, burghers, peasants, tribes, dhimmi, cossacks | Estates subsidize food purchases proportional to power |
+| `building_upkeep_costs` | -1.0 | (same 7 estates) | Estates cover building maintenance proportional to power |
+
+All vanilla `food_purchase_cost` sources (advances, laws, parliament) have been cancelled and re-emitted as `sul_granary_max_levels`.
 
 ### Custom Modifier Types — Economy
 Registered in `main_menu/common/modifier_type_definitions/sul_modifier_types.txt`. These are INJECT-able hooks — any advance, privilege, law, or static modifier can source them to modify the enrichment pipeline.
 
 | Modifier | Category | Base Value | Purpose |
 |----------|----------|------------|---------|
-| `sul_nobles_enrichment_rate` | country (percent) | 1.0 (via `country_base_values`) | Multiplier on noble enrichment (savings tier). INJECT via advances/privileges to shift noble savings rate. |
-| `sul_clergy_enrichment_rate` | country (percent) | 1.0 | Same for clergy |
-| `sul_burghers_enrichment_rate` | country (percent) | 1.0 | Same for burghers |
-| `sul_commoners_enrichment_rate` | country (percent) | 1.0 | Same for commoners (soldiers + laborers + peasants) |
+| `sul_nobles_enrichment_rate` | country (percent) | 0 | Per-estate enrichment multiplier. Cached as (1 + estate_enrichment) × (1 + rate) per country. INJECT via advances/privileges. |
+| `sul_clergy_enrichment_rate` | country (percent) | 0 | Same for clergy |
+| `sul_burghers_enrichment_rate` | country (percent) | 0 | Same for burghers |
+| `sul_commoners_enrichment_rate` | country (percent) | 0 | Same for commoners (soldiers + laborers + peasants) |
+| `sul_tribesmen_enrichment_rate` | country (percent) | 0 | Same for tribesmen |
+| `sul_dhimmi_enrichment_rate` | country (percent) | 0 | Same for dhimmi |
+| `sul_cossacks_enrichment_rate` | country (percent) | 0 | Same for cossacks |
 | `sul_looting_efficiency` | country (percent) | 0 (unsourced) | Shifts loot split from destroyed toward kept. Higher = more gold to occupier. |
+| `sul_granary_max_levels` | country (additive) | 0 | Extra building levels for granaries + rural granaries. Read by `sul_granary_max_level` and `sul_rural_granary_max_level` via `owner.modifier:sul_granary_max_levels`. Sourced from converted vanilla `food_purchase_cost` values (×10). |
 
 ### Economy Data Flow
 ```
@@ -261,23 +324,31 @@ MONTHLY (country-level, sul_compute_budget_pressure):
 MONTHLY (per-location, sul_update_location_wpp):
   Upper WPP = wage_pool × power_share / pops + assets × 2% / pops
   Commoner WPP = commoner_pool × bill_share / pops + peasant_assets × 2% / pops
-  WPP → sul_wealth_per_pop map → sul_demand_* → pop_demands
+  Tribesmen WPP = wage_pool × tribes_power_share / pops + tribes_assets × 2% / pops
+  WPP → sul_wealth_per_pop map → sul_demand_* → pop_demands (tribesmen + slaves included)
   WPP → sul_demand_base map → demand tier formulas
-  Enrichment = demand_base × WPP × 0.53 × enrichment_rate → paid to estates
+  Enrichment = demand_base × WPP × 0.53 × cached_enrich_rate → paid to estates
+  Minority returns: dhimmi/cossacks = assets × 2% × power_per_pop / local_power
+  Minority enrichment: return_per_pop through demand formula × estimated_pops × enrich_rate
 
 MONTHLY (sul_monthly_location_pass — single every_owned_location loop):
-  Convergence: assets drift toward (local_power / prev_national_power × estate_gold) at 1%/month
+  Cache enrichment rates: (1 + estate_enrichment) × (1 + per_estate_rate) per country
+  Cache estate gold (after enrichment payments in init path)
+  Convergence: assets drift toward (local_power / prev_national_power × estate_gold) at 2.5%/month
                occupied locations drain 2%/month instead
-  Accumulate:  local_estate_power per location → sul_*_estate_raw_power
+               hard cap: assets can never exceed target
+  Accumulate:  local_estate_power per location → sul_*_estate_raw_power (all 7 estates + crown derived)
   Wages:       cached wage bills → sul_monthly_wages_* → sul_estate_wages_pay_all
                → estate gold → sul_estate_wage_transfer (enfranchisement-scaled)
-  Post-loop:   estate_gold cached after enrichment payments
 
 ON_LOCATION_OCCUPIED (sul_wealth_loot_location):
-  Extract 25% of all assets. Split: (1 - 50% + looting_efficiency) kept by controller.
+  Extract 25% of all 8 estate assets. Conditional estates guarded by has_variable.
+  Split: (1 - 50% + looting_efficiency) kept by controller.
 
 INIT (sul_initialize_economy):
-  sul_update_country_economy → accumulate raw power + cache gold after enrichment
+  sul_update_country_economy → accumulate raw power + enrichment
+    → pay enrichment to all 7 estates (dhimmi/cossacks conditional)
+    → cache enrichment rates + estate gold after payments
   → sul_wealth_seed_location: assets = (local_power / national_power) × estate_gold
 ```
 
@@ -924,7 +995,9 @@ top of fresh vanilla.
 ### Economy (sul_gdp_update.txt + sul_on_actions.txt)
 - Wage rates: `@sul_wage_nobles=5.0`, `@sul_wage_clergy=2.0`, `@sul_wage_burghers=1.0`, `@sul_wage_soldiers=0.5`, `@sul_wage_laborers=0.25`, `@sul_wage_peasants=0.05`
 - Power weights: `@sul_power_weight_nobles=100`, `@sul_power_weight_clergy=25`, `@sul_power_weight_burghers=20`
-- Enrichment offsets: `@sul_enrichment_offset_nobles=0.30`, clergy=0.25, burghers=0.20, commoners=0.10
+- Enrichment: `@sul_w_enrichment=0.53` weight, rates cached as `sul_enrich_rate_*` = (1 + estate_enrichment) × (1 + per_estate_rate)
+- Wealth convergence: `@sul_wealth_converge_rate=0.025`, occupation drain `@sul_wealth_occupation_drain=0.02`, capital return `@sul_return_rate=0.02`
+- Looting: `@sul_loot_extraction_rate=0.25`, destroyed `@sul_loot_destroyed_base=0.50`
 - Enfranchisement bounds: min=0.1, max=1.0
 - Demand tiers: necessity=0, basic=0.05, common=0.12, upper=0.25, luxury=0.5, exotic=1.5
 

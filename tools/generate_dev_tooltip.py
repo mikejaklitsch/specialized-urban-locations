@@ -146,12 +146,7 @@ def classify_modifiers(base_values, dev_values):
         'local_monthly_prosperity', 'local_trade_embark_disembark_cost_modifier',
         'local_clergy_desired_pop_scaled', 'local_nobles_desired_pop_scaled',
         # local_migration_attraction: vanilla base has 0.1, our dev adds 0.001/pt (production bonus)
-        # Vanilla development preserved
-        'local_population_capacity_modifier', 'local_distance_from_capital_speed_propagation',
-        'local_supply_limit_modifier', 'blockade_force_required',
-        'local_trade_center_power', 'free_building_levels',
-        'local_life_expectancy', 'occupation_time',
-        'local_build_buildings_cost', 'maximum_stockpile_capacity',
+        # local_trade_center_power: now a tradeoff (-10% base → +10% at dev 100)
     }
 
     extraction = []  # In base_values WITH negative offset in dev (tradeoff pair)
@@ -466,6 +461,339 @@ def inject_into_gui(gui_path, extraction, production, mod_types, base_values):
     return replaced
 
 
+def generate_template_skeleton():
+    """Generate the full location_development_tooltip template skeleton.
+
+    The tooltip is on the parent widget so it covers both the monthly badge
+    and the progress bar. Generated rows are inserted at the markers.
+    """
+    def side_tooltip(title_key, title_icon, desc_key, loc_marker, ext_marker, prod_marker):
+        return f"""
+					tooltipwidget = {{
+						ContextualTooltipType = {{
+							blockoverride "title_text" {{ text = "{title_key}" }}
+							blockoverride "title_icon" {{
+								ContextualTooltipDefaultIcon = {{
+									blockoverride "title_icon_texture" {{ texture = "{title_icon}" }}
+								}}
+							}}
+							blockoverride "tooltip_content" {{
+								TooltipTextBlock = {{
+									blockoverride "text" {{ text = "{desc_key}" }}
+								}}
+								TooltipListBase = {{
+									blockoverride "block_title" {{ text = "SUL_DEV_CURRENT_LOCATION_TITLE" }}
+									TooltipListScrollArea = {{
+										blockoverride "block_scrollarea" {{
+											maximumsize = {{ -1 150 }}
+											minimumsize = {{ -1 30 }}
+										}}
+										blockoverride "scrollarea_content" {{
+											vbox = {{
+												set_parent_dimension_to_minimum = height
+												layoutpolicy_horizontal = expanding
+												# BEGIN_GENERATED: {loc_marker}
+												# END_GENERATED: {loc_marker}
+											}}
+										}}
+									}}
+								}}
+								TooltipListBase = {{
+									blockoverride "block_title" {{ text = "SUL_DEV_CURRENT_EXTRACTION_TITLE" }}
+									TooltipListScrollArea = {{
+										blockoverride "block_scrollarea" {{
+											maximumsize = {{ -1 150 }}
+											minimumsize = {{ -1 30 }}
+										}}
+										blockoverride "scrollarea_content" {{
+											vbox = {{
+												set_parent_dimension_to_minimum = height
+												layoutpolicy_horizontal = expanding
+												# BEGIN_GENERATED: {ext_marker}
+												# END_GENERATED: {ext_marker}
+											}}
+										}}
+									}}
+								}}
+								TooltipListBase = {{
+									blockoverride "block_title" {{ text = "SUL_DEV_CURRENT_PRODUCTION_TITLE" }}
+									TooltipListScrollArea = {{
+										blockoverride "block_scrollarea" {{
+											maximumsize = {{ -1 150 }}
+											minimumsize = {{ -1 30 }}
+										}}
+										blockoverride "scrollarea_content" {{
+											vbox = {{
+												set_parent_dimension_to_minimum = height
+												layoutpolicy_horizontal = expanding
+												# BEGIN_GENERATED: {prod_marker}
+												# END_GENERATED: {prod_marker}
+											}}
+										}}
+									}}
+								}}
+							}}
+						}}
+					}}"""
+
+    # Current effects tooltip uses shallower indent (8 tabs vs 10)
+    current_tooltip = f"""
+				TooltipListBase = {{
+					blockoverride "block_title" {{ text = "SUL_DEV_CURRENT_EFFECTS_TITLE" }}
+					TooltipListScrollArea = {{
+						blockoverride "block_scrollarea" {{
+							maximumsize = {{ -1 225 }}
+							minimumsize = {{ -1 30 }}
+						}}
+						blockoverride "scrollarea_content" {{
+							vbox = {{
+								set_parent_dimension_to_minimum = height
+								layoutpolicy_horizontal = expanding
+								# BEGIN_GENERATED: CURRENT_LOCATION_ROWS
+								# END_GENERATED: CURRENT_LOCATION_ROWS
+							}}
+						}}
+					}}
+				}}
+				TooltipListBase = {{
+					blockoverride "block_title" {{ text = "SUL_DEV_CURRENT_EXTRACTION_TITLE" }}
+					TooltipListScrollArea = {{
+						blockoverride "block_scrollarea" {{
+							maximumsize = {{ -1 225 }}
+							minimumsize = {{ -1 30 }}
+						}}
+						blockoverride "scrollarea_content" {{
+							vbox = {{
+								set_parent_dimension_to_minimum = height
+								layoutpolicy_horizontal = expanding
+								# BEGIN_GENERATED: CURRENT_EXTRACTION_ROWS
+								# END_GENERATED: CURRENT_EXTRACTION_ROWS
+							}}
+						}}
+					}}
+				}}
+				TooltipListBase = {{
+					blockoverride "block_title" {{ text = "SUL_DEV_CURRENT_PRODUCTION_TITLE" }}
+					TooltipListScrollArea = {{
+						blockoverride "block_scrollarea" {{
+							maximumsize = {{ -1 225 }}
+							minimumsize = {{ -1 30 }}
+						}}
+						blockoverride "scrollarea_content" {{
+							vbox = {{
+								set_parent_dimension_to_minimum = height
+								layoutpolicy_horizontal = expanding
+								# BEGIN_GENERATED: CURRENT_PRODUCTION_ROWS
+								# END_GENERATED: CURRENT_PRODUCTION_ROWS
+							}}
+						}}
+					}}
+				}}"""
+
+    extraction_side = side_tooltip(
+        'SUL_DEV_EXTRACTION_TITLE',
+        'gfx/interface/icons/modifier_types/global_raw_material_output.dds',
+        'SUL_DEV_EXTRACTION_DESC',
+        'DEV0_LOCATION_ROWS', 'DEV0_EXTRACTION_ROWS', 'DEV0_PRODUCTION_ROWS')
+
+    production_side = side_tooltip(
+        'SUL_DEV_PRODUCTION_TITLE',
+        'gfx/interface/icons/modifier_types/global_production_efficiency.dds',
+        'SUL_DEV_PRODUCTION_DESC',
+        'DEV100_LOCATION_ROWS', 'DEV100_EXTRACTION_ROWS', 'DEV100_PRODUCTION_ROWS')
+
+    return f"""
+template location_development_tooltip {{
+	ContextualTooltipType = {{
+
+		blockoverride "title_icon" {{
+			icon = {{
+				using = tooltip_title_icon_size
+				texture = "gfx/interface/icons/location_icons/development.dds"
+			}}
+		}}
+
+		blockoverride "title_text" {{
+			text = "DEVELOPMENT_IN_LOC"
+		}}
+
+		blockoverride "concept_link" {{
+			text = [development|e]
+		}}
+
+		blockoverride "tooltip_content" {{
+			widget = {{
+				size = {{ 400 62 }}
+
+				tooltipwidget = {{
+					ContextualTooltipType = {{
+						blockoverride "title_text" {{ text = "SUL_DEV_EQUILIBRIUM_HEADER" }}
+						blockoverride "title_icon" {{
+							ContextualTooltipDefaultIcon = {{
+								blockoverride "title_icon_texture" {{ texture = "gfx/interface/icons/location_icons/development.dds" }}
+							}}
+						}}
+						blockoverride "tooltip_content" {{
+							TooltipTextBlock = {{
+								blockoverride "text" {{ text = "SUL_DEV_EQUILIBRIUM_DESC" }}
+							}}
+							TooltipListBase = {{
+								blockoverride "block_title" {{}}
+								TooltipListRowContent = {{
+									TooltipManualTableField = {{
+										text_single = {{ fontsize = 15 text = "SUL_DEV_CURRENT_LABEL" }}
+										expand = {{}}
+										text_single = {{ fontsize = 15 raw_text = "[Location.GetDevelopment|2]" }}
+									}}
+								}}
+								TooltipListRowContent = {{
+									TooltipManualTableField = {{
+										text_single = {{ fontsize = 15 text = "SUL_DEV_TOTAL_LABEL" }}
+										expand = {{}}
+										text_single = {{ fontsize = 15 raw_text = "[Location.MakeScope.ScriptValue('sul_total_monthly_development')|+4]" }}
+									}}
+								}}
+								TooltipListRowContent = {{
+									TooltipManualTableField = {{
+										text_single = {{ fontsize = 15 text = "SUL_DEV_EQUILIBRIUM_LABEL" }}
+										expand = {{}}
+										text_single = {{ fontsize = 15 raw_text = "[Location.MakeScope.ScriptValue('sul_development_equilibrium')|2]" }}
+									}}
+								}}
+							}}
+							TooltipStringPairList = {{
+								blockoverride "block_title" {{
+									datacontext = "[Location]"
+									text = "SUL_DEV_TOTAL_LABEL"
+								}}
+								textcontext = "[Location.GetDescriptionValueAndPercentWithCountryFor('local_monthly_development','local_monthly_development_modifier','global_monthly_development')]"
+							}}
+						}}
+					}}
+				}}
+
+				# Monthly change badge (centered on bar, renders behind)
+				widget = {{
+					position = {{ 100 7 }}
+					size = {{ 200 24 }}
+
+					icon = {{
+						position = {{ -5 0 }}
+						size = {{ 50 24 }}
+						using = left_decoration_icon
+					}}
+
+					icon = {{
+						position = {{ 155 0 }}
+						size = {{ 50 24 }}
+						using = right_decoration_icon
+					}}
+
+					using = bg_mapmenu_tab
+
+					text_single = {{
+						parentanchor = center
+						fontsize = 13
+						align = center|nobaseline
+						text = "SUL_DEV_MONTHLY_VALUE"
+					}}
+				}}
+
+				# Bordered bar area
+				widget = {{
+					position = {{ 14 28 }}
+					size = {{ 372 34 }}
+
+					using = bg_paper_card
+					using = bg_cabinet_card_frame
+
+					progressbar = {{
+						position = {{ 18 8 }}
+						size = {{ 336 16 }}
+						using = progress_bar_green_red_alt
+						min = 0
+						max = 1
+						value = "[Divide_float(FixedPointToFloat(Location.GetDevelopment), '(float)100.0')]"
+						direction = horizontal
+					}}
+
+					progressbar = {{
+						position = {{ 18 24 }}
+						size = {{ 336 4 }}
+						using = progress_bar_blue_alt
+						min = 0
+						max = 1
+						value = "[Divide_float(FixedPointToFloat(Location.MakeScope.ScriptValue('sul_development_equilibrium')), '(float)100.0')]"
+						direction = horizontal
+					}}
+
+					icon = {{
+						position = {{ 102 8 }}
+						size = {{ 2 20 }}
+						texture = "gfx/interface/progressbars/progress_black.dds"
+						spriteType = Corneredstretched
+						spriteborder = {{ 1 1 }}
+						alpha = 0.3
+					}}
+
+					icon = {{
+						position = {{ 186 8 }}
+						size = {{ 2 20 }}
+						texture = "gfx/interface/progressbars/progress_black.dds"
+						spriteType = Corneredstretched
+						spriteborder = {{ 1 1 }}
+						alpha = 0.9
+					}}
+
+					icon = {{
+						position = {{ 270 8 }}
+						size = {{ 2 20 }}
+						texture = "gfx/interface/progressbars/progress_black.dds"
+						spriteType = Corneredstretched
+						spriteborder = {{ 1 1 }}
+						alpha = 0.3
+					}}
+				}}
+
+				# Extraction icon (left)
+				widget = {{
+					position = {{ 0 31 }}
+					size = {{ 29 29 }}
+					using = bg_circle
+					using = bg_circle_piechart
+{extraction_side}
+
+					icon = {{
+						size = {{ 60% 60% }}
+						parentanchor = center
+						texture = "gfx/interface/icons/modifier_types/global_raw_material_output.dds"
+					}}
+				}}
+
+				# Production icon (right)
+				widget = {{
+					position = {{ 371 31 }}
+					size = {{ 29 29 }}
+					using = bg_circle
+					using = bg_circle_piechart
+{production_side}
+
+					icon = {{
+						size = {{ 60% 60% }}
+						parentanchor = center
+						texture = "gfx/interface/icons/modifier_types/global_production_efficiency.dds"
+					}}
+				}}
+			}}
+
+			# Current effects at this development level
+{current_tooltip}
+		}}
+	}}
+}}
+"""
+
+
 def main():
     mod_types = parse_modifier_types()
     base_values, dev_values = parse_static_modifiers()
@@ -477,21 +805,17 @@ def main():
         f.write(sv_content)
     print(f"Wrote script values to {SCRIPT_VALUES_FILE}")
 
-    # Inject into GUI file
-    gui_path = os.path.join(MOD_ROOT, "in_game", "gui", "shared", "aaa_sul_location_tooltips.gui")
-    if os.path.exists(gui_path):
-        print(f"\nInjecting into {gui_path}")
-        count = inject_into_gui(gui_path, extraction, production, mod_types, base_values)
-        if count == 0:
-            print("  No markers found. Add markers to the GUI file:")
-            print("    # BEGIN_GENERATED: EXTRACTION_ROWS")
-            print("    # END_GENERATED: EXTRACTION_ROWS")
-            print("    # BEGIN_GENERATED: PRODUCTION_ROWS")
-            print("    # END_GENERATED: PRODUCTION_ROWS")
-            print("    # BEGIN_GENERATED: CURRENT_EFFECTS_ROWS")
-            print("    # END_GENERATED: CURRENT_EFFECTS_ROWS")
-    else:
-        print(f"\nGUI file not found: {gui_path}")
+    # Write the full GUI file (this file is entirely generator-owned)
+    gui_path = os.path.join(MOD_ROOT, "in_game", "gui", "shared", "aaa_sul_development_tooltip.gui")
+    skeleton = generate_template_skeleton()
+    with open(gui_path, 'w', encoding='utf-8-sig') as f:
+        f.write(skeleton)
+    print(f"Wrote template to {gui_path}")
+
+    # Inject generated rows into markers
+    count = inject_into_gui(gui_path, extraction, production, mod_types, base_values)
+    if count == 0:
+        print("  ERROR: No markers found after template generation")
 
     print("\nDone.")
 

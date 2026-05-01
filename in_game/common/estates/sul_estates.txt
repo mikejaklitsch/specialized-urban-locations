@@ -1,49 +1,43 @@
-﻿# Building upkeep discount scales linearly with crown power.
-# 0% crown = free buildings (-100%), 100% crown = full upkeep (0%).
-# Tooltip shows one combined value: e.g. "-25% Building Upkeep" at 75% crown.
+﻿# Estate power blocks: food_purchase_cost + building_upkeep_costs
 #
-# BUILDING_UPKEEP_FACTOR (define) sets the baseline cost ratio, vanilla 0.2(20% building maintenance), currently 1.0 (100%).
-# This system is independent of that factor; both multiply. If factor were 0.5,
-# crown power would still give a -50% discount at 50% crown, applied to the 50% baseline.
-#
-# Why three terms?
-# The engine splits crown power effects at a 25% threshold:
-#   low_power:  value × (0.25 - crown)    active below 25% only, zero at 25%
-#   high_power: value × (crown - 0.25)    active above 25% only, zero at 25%
-#   power:      value × crown             active always, zero at 0%
-#
-# Both low_power and high_power are ALWAYS zero at exactly 25% crown.
-# Without the "power" term there's no way to produce -75% at that point —
-# you'd get a kink where the discount jumps to 0% at 25% then diverges.
-# Two terms give piecewise-linear with different slopes; three give exact linear.
-#
-# Final values needed: low_power(-4), high_power(+4), power(-3)
-#
-#   Crown | low_power(-4) | high_power(+4) | power(-3) | Total
-#     0%  |     -100%     |       -        |     0%    | -100%
-#    25%  |       0%      |       0%       |   -75%    |  -75%
-#    50%  |       -       |    +100%       |  -150%    |  -50%
-#   100%  |       -       |    +300%       |  -300%    |    0%
-#
-# Vanilla estate has low_power(+2) and high_power(-1), so we inject offsets.
+# Each non-crown estate reduces food purchase cost and building upkeep
+# proportional to its power. The engine's power = {} block scales linearly
+# by estate_power (0–1), so combined non-crown estates at 70% total power
+# produce food_purchase_cost = -0.70 and building_upkeep_costs = -0.70.
 
 INJECT:crown_estate = {
 	low_power = {
-		building_upkeep_costs = -2.0 # + vanilla 2.0 = final -4.0
+		building_upkeep_costs = -2.0 # + vanilla 2.0 = net 0
 	}
 
 	high_power = {
-		building_upkeep_costs = 1.0 # + vanilla -1.0 = final +4.0
+		building_upkeep_costs = 1.0 # + vanilla -1.0 = net 0
 		power_projection = -5 # cancel vanilla's +5
-	}
-
-	power = {
-		building_upkeep_costs = 1.0 # no vanilla value
 	}
 }
 
-# Estate satisfaction: cancel vanilla global_monthly_food_modifier and re-emit
-# as concrete per-good output bonuses (matches the food-from-production rule).
+INJECT:nobles_estate = {
+	high_power = { levy_combat_efficiency_modifier = -1.0 discipline = 0.25 }
+
+	power = {
+		food_purchase_cost = -1.0
+		building_upkeep_costs = -1.0
+	}
+}
+
+INJECT:clergy_estate = {
+	power = {
+		food_purchase_cost = -1.0
+		building_upkeep_costs = -1.0
+	}
+}
+
+INJECT:burghers_estate = {
+	power = {
+		food_purchase_cost = -1.0
+		building_upkeep_costs = -1.0
+	}
+}
 
 TRY_INJECT:peasants_estate = {
 	satisfaction = {
@@ -61,24 +55,15 @@ TRY_INJECT:peasants_estate = {
 		global_wild_game_output_modifier = 0.02
 	}
 
-	# Commoners fight with conviction when empowered (from Levy Combat Ability Removed integration).
-	high_power = { land_morale_modifier = 0.50 }
-}
+	high_power = {
+		land_morale_modifier = 0.50
+		food_purchase_cost = 0.5 # cancel vanilla -0.5 (replaced by power block)
+		sul_granary_max_levels = 5 # re-emit vanilla food_purchase_cost as granary levels (0.5 × 10)
+	}
 
-# Nobles estate: cancel vanilla levy_combat_efficiency_modifier high-power bonus, replace with discipline
-# (from Levy Combat Ability Removed integration).
-
-INJECT:nobles_estate = {
-	high_power = { levy_combat_efficiency_modifier = -1.0 discipline = 0.25 }
-}
-
-TRY_INJECT:dhimmi_estate = {
-	satisfaction = {
-		global_monthly_food_modifier = -0.10     # nullify vanilla +0.10
-		global_wheat_output_modifier = 0.03
-		global_rice_output_modifier = 0.03
-		global_livestock_output_modifier = 0.02
-		global_legumes_output_modifier = 0.02
+	power = {
+		food_purchase_cost = -1.0
+		building_upkeep_costs = -1.0
 	}
 }
 
@@ -89,6 +74,26 @@ TRY_INJECT:tribes_estate = {
 		global_wild_game_output_modifier = 0.03
 		global_millet_output_modifier = 0.02
 	}
+
+	power = {
+		food_purchase_cost = -1.0
+		building_upkeep_costs = -1.0
+	}
+}
+
+TRY_INJECT:dhimmi_estate = {
+	satisfaction = {
+		global_monthly_food_modifier = -0.10     # nullify vanilla +0.10
+		global_wheat_output_modifier = 0.03
+		global_rice_output_modifier = 0.03
+		global_livestock_output_modifier = 0.02
+		global_legumes_output_modifier = 0.02
+	}
+
+	power = {
+		food_purchase_cost = -1.0
+		building_upkeep_costs = -1.0
+	}
 }
 
 TRY_INJECT:cossacks_estate = {
@@ -97,5 +102,10 @@ TRY_INJECT:cossacks_estate = {
 		global_livestock_output_modifier = 0.05
 		global_wheat_output_modifier = 0.03
 		global_fish_output_modifier = 0.02
+	}
+
+	power = {
+		food_purchase_cost = -1.0
+		building_upkeep_costs = -1.0
 	}
 }

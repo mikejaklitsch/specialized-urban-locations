@@ -41,17 +41,8 @@ sul_projection_religion_drag = {
 	subtract = 1
 }
 
-# Government rank → PP. County = 10, Duchy = 20, Kingdom = 30.
-
-sul_projection_rank_value = {
-	value = 0
-	if = { limit = { country_rank = country_rank:rank_empire } add = 15 }
-	else_if = { limit = { country_rank = country_rank:rank_kingdom } add = 10 }
-	else_if = { limit = { country_rank = country_rank:rank_duchy } add = 5 }
-}
-
 # Diplomatic capacity usage ratio — used / total.
-# 0 = no slots used, 1.0 = fully committed. Auto_modifier multiplies by -50.
+# 0 = no slots used, 1.0 = fully committed. Auto_modifier multiplies by -0.25.
 
 sul_debug_diplo_used = { value = used_diplomatic_capacity }
 sul_debug_diplo_base = { value = modifier:diplomatic_capacity }
@@ -61,6 +52,33 @@ sul_debug_diplo_total = {
 	multiply = {
 		value = 1
 		add = modifier:diplomatic_capacity_modifier
+	}
+}
+
+# Reads the PP variable. Used by auto_modifier scales_with and GUI display.
+sul_power_projection_value = {
+	value = var:sul_power_projection
+}
+
+# GUI display alias.
+sul_power_projection_display = {
+	value = var:sul_power_projection
+}
+
+# Net monthly change for top bar delta display (contributions + decay).
+# Decay is positive when PP is negative (pulls toward 0).
+sul_power_projection_monthly_delta = {
+	value = modifier:monthly_sul_power_projection
+	add = {
+		value = var:sul_power_projection
+		multiply = -0.05
+		multiply = {
+			value = 1
+			add = {
+				value = complacency
+				multiply = 0.01
+			}
+		}
 	}
 }
 

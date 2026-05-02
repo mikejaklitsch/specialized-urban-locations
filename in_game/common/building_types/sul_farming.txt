@@ -660,12 +660,9 @@ INJECT:winery_manufactory = {
 	commercial_city = yes
 }
 
-# Provisions system flow:
-#   1. Farmer's Market converts raw food goods → provisions (trade good)
-#   2. Windmill supplements with grain-milling provisions
-#   3. Provisions trades on the market like any good
-#   4. Granary consumes provisions → local_monthly_food
-#   5. Rural granary does the same at smaller scale
+# Provisions system: pops demand provisions via native food consumption.
+# Farmer's Market converts raw food goods → provisions (trade good).
+# Provisions has food = 30, so market supply feeds the food stockpile directly.
 
 sul_farmers_market = {
 	is_foreign = no
@@ -673,9 +670,21 @@ sul_farmers_market = {
 	pop_type = laborers
 	employment_size = 0.4
 	category = consumer_goods_category
+	mining_rural = yes
+	mining_town = yes
+	mining_city = yes
 	farming_rural = yes
 	farming_town = yes
 	farming_city = yes
+	gathering_rural = yes
+	gathering_town = yes
+	gathering_city = yes
+	woodland_rural = yes
+	woodland_town = yes
+	woodland_city = yes
+	commercial_rural = yes
+	commercial_town = yes
+	commercial_city = yes
 	important_for_AI = yes
 	can_close = yes
 
@@ -849,52 +858,6 @@ sul_farmers_market = {
 	}
 }
 
-sul_rural_granary = {
-	icon = granary
-	is_foreign = no
-	max_levels = sul_rural_granary_max_level
-	pop_type = peasants
-	employment_size = 0.05
-	category = infrastructure_category
-	mining_rural = yes
-	farming_rural = yes
-	gathering_rural = yes
-	woodland_rural = yes
-	commercial_rural = yes
-	ai_forbid_shutdown = yes
-
-	build_time = rural_build_time
-
-	price = sul_rural_granary_price
-
-	unique_production_methods = {
-		sul_rural_granary_maintenance = {
-			provisions = 0.08
-			category = building_maintenance
-		}
-	}
-
-	construction_demand = village_construction
-
-	modifier = { local_food_capacity = 100 local_monthly_food = 5 }
-
-	on_built = {
-		location = {
-			add_to_variable_list = { name = sul_epbm_buildings target = prev }
-		}
-
-		sul_epbm_on_building_built = yes
-	}
-
-	on_destroyed = {
-		location = {
-			remove_list_variable = { name = sul_epbm_buildings target = prev }
-		}
-
-		sul_epbm_on_building_destroyed = yes
-	}
-}
-
 # @sul-diff: ~~~+++ ceff
 
 # @sul-diff: ~~~+++ ceff
@@ -905,7 +868,6 @@ sul_rural_granary = {
 
 REPLACE:granary = {
 	is_foreign = no
-	allow_wrong_startup = yes
 	max_levels = sul_granary_max_level
 	pop_type = laborers
 	employment_size = granary_employment
@@ -920,22 +882,17 @@ REPLACE:granary = {
 	woodland_city = yes
 	commercial_town = yes
 	commercial_city = yes
-	can_close = yes
 	ai_forbid_shutdown = yes
 
 	build_time = government_build_time
 
 	unique_production_methods = {
-		sul_granary_maintenance = { provisions = 1.0 category = building_maintenance }
+		granary_maintenance = { masonry = 0.2 category = building_maintenance }
 	}
 
 	construction_demand = granary_construction
 
-	modifier = {
-		local_provisions_output_modifier = 0.005
-		local_food_capacity = 1200
-		local_monthly_food = 60
-	}
+	modifier = { local_food_capacity = 200 }
 }
 
 # @sul-diff: ~~~~++ 3811

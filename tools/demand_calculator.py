@@ -101,11 +101,8 @@ POP_TYPES = [
 # ═══════════════════════════════════════════════════════════════════════════
 
 GOODS = [
-    # ─── NECESSITY (6) — bare survival ───────────────────────────────────
-    {"name": "provisions", "category": "necessity", "source": "produced", "price": 2.4,
-     "extra_fields": {"category": "produced", "color": "goods_provisions",
-                       "default_market_price": 2.4, "transport_cost": 1.0},
-     "set_food": 0.0001},
+    # ─── NECESSITY (5) — bare survival ───────────────────────────────────
+    # provisions removed: demand driven by native food system (sul_goods.txt + pop_demands)
     {"name": "cloth", "category": "necessity", "source": "produced"},
     {"name": "pottery", "category": "necessity", "source": "produced"},
     {"name": "medicaments", "category": "necessity", "source": "raw"},

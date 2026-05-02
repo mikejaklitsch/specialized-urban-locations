@@ -492,75 +492,9 @@ def generate_pdx(results):
     return "\n".join(lines)
 
 
-MANUAL_TAIL = """
-# ─────────────────────────────────
-# PROVISIONS — hand-maintained, native food demand
-# ─────────────────────────────────
-# demand driven by pop_food_consumption / 30 per pop type.
-# Pop demand modifiers applied in sul_pop_demands.txt.
-
-provisions = {
-\tcategory = produced
-\tcolor = goods_provisions
-\tdefault_market_price = 2.4
-\ttransport_cost = 1
-\tfood = 30
-
-\tdemand_add = {
-\t\tnobles = 0.8
-\t\tclergy = 0.2
-\t\tburghers = 0.2
-\t\tsoldiers = 0.15
-\t\tlaborers = 0.05
-\t\tpeasants = 0.03
-\t\tslaves = 0.02
-\t}
-}
-
-# ─────────────────────────────────
-# NON-DEMAND OVERRIDES
-# ─────────────────────────────────
-
-# Wool — zeroes food (not in REPLACE list above)
-
-INJECT:wool = {
-\tfood = 0
-}
-
-# Tools — production input, not consumer good; base_production for RGO bootstrapping
-
-INJECT:tools = {
-\tbase_production = 1
-}
-
-# ─────────────────────────────────
-# CONSTRUCTION — no pop demand
-# ─────────────────────────────────
-
-REPLACE:lumber = {
-\tmethod = forestry
-\tcategory = raw_material
-\tcolor = goods_lumber
-\tdefault_market_price = 1.5
-\tbase_production = 0.1
-\ttransport_cost = 1
-\tai_rgo_size_importance = 3
-\tai_rgo_expansion_priority = 0.025
-}
-
-REPLACE:masonry = {
-\tcategory = produced
-\tcolor = goods_masonry
-\tdefault_market_price = 1
-\tai_rgo_expansion_priority = 0.25
-}
-"""
-
-
 def write_pdx(results):
     """Write PDX output to sul_goods.txt."""
     content = generate_pdx(results)
-    content += MANUAL_TAIL
     script_dir = os.path.dirname(os.path.abspath(__file__))
     mod_dir = os.path.dirname(script_dir)
     out_path = os.path.join(mod_dir, "in_game", "common", "goods", "sul_goods.txt")

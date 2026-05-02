@@ -494,6 +494,30 @@ def generate_pdx(results):
 
 MANUAL_TAIL = """
 # ─────────────────────────────────
+# PROVISIONS — hand-maintained, native food demand
+# ─────────────────────────────────
+# demand driven by pop_food_consumption / 30 per pop type.
+# Pop demand modifiers applied in sul_pop_demands.txt.
+
+provisions = {
+\tcategory = produced
+\tcolor = goods_provisions
+\tdefault_market_price = 2.4
+\ttransport_cost = 1
+\tfood = 30
+
+\tdemand_add = {
+\t\tnobles = 0.8
+\t\tclergy = 0.2
+\t\tburghers = 0.2
+\t\tsoldiers = 0.15
+\t\tlaborers = 0.05
+\t\tpeasants = 0.03
+\t\tslaves = 0.02
+\t}
+}
+
+# ─────────────────────────────────
 # NON-DEMAND OVERRIDES
 # ─────────────────────────────────
 

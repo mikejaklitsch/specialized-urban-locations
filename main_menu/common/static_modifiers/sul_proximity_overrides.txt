@@ -1,0 +1,44 @@
+﻿# Proximity & Control Overhaul
+# Raises base step cost, boosts capital source, adds river speed bonus.
+# Goal: proximity speed (terrain) matters more than base cost reductions (roads/rivers).
+
+# ── Capital: 100 → 150 (+50) ──
+
+INJECT:capital = {
+	local_proximity_source = 50
+}
+
+# ── River: add speed bonus alongside vanilla base cost reduction ──
+# Vanilla river_flowing_through has no proximity effect. This adds a speed
+# bonus so rivers remain strong corridors even at higher base costs, while
+# interacting with terrain penalties (mountain rivers help but don't erase
+# the mountain identity).
+
+INJECT:river_flowing_through = {
+	local_distance_from_capital_speed_propagation = 0.10
+}
+
+# ── Integration: max_control → propagation speed ──
+# Conquered territory impedes proximity propagation, creating cascading
+# penalties for everything beyond it. Core territory propagates well,
+# rewarding long-held integrated lands.
+
+INJECT:integration_conquered = {
+	local_max_control = 0.10 # cancel vanilla -0.10
+	local_distance_from_capital_speed_propagation = -0.50
+}
+
+INJECT:integration_integrated = {
+	local_max_control = -0.05 # cancel vanilla +0.05
+}
+
+INJECT:integration_core = {
+	local_max_control = -0.20 # cancel vanilla +0.20
+	local_distance_from_capital_speed_propagation = 0.50
+}
+
+sul_proximity_market_source = {
+	game_data = { category = location }
+
+	local_proximity_source = 1
+}

@@ -32,21 +32,11 @@ flavor_geo.1 = {
 		ruler_or_regent = { save_scope_as = target_character1 }
 		character:chb_chupan = { save_scope_as = target_character2 }
 
-		location:rustavi = {
-			save_scope_as = target_location
-			province = { save_scope_as = target_province }
-		}
+		location:rustavi = { save_scope_as = target_location province = { save_scope_as = target_province } }
 
+		random_estate_privilege = { limit = { estate_type = estate_type:nobles_estate } save_scope_as = first_privilege }
 		random_estate_privilege = {
-			limit = { estate_type = estate_type:nobles_estate }
-			save_scope_as = first_privilege
-		}
-		random_estate_privilege = {
-			limit = {
-				estate_type = estate_type:nobles_estate
-				this != scope:first_privilege
-			}
-
+			limit = { estate_type = estate_type:nobles_estate this != scope:first_privilege }
 			save_scope_as = second_privilege
 		}
 	}
@@ -56,10 +46,7 @@ flavor_geo.1 = {
 
 		custom_tooltip = {
 			text = every_location_target_province_30_prosperity_tt
-
-			scope:target_province = {
-				every_location_in_province = { change_prosperity = prosperity_extreme_bonus }
-			}
+			scope:target_province = { every_location_in_province = { change_prosperity = prosperity_extreme_bonus } }
 		}
 
 		add_government_power = government_power_mild_bonus
@@ -73,17 +60,13 @@ flavor_geo.1 = {
 	option = {
 		name = flavor_geo.1.b
 
-		add_estate_satisfaction = {
-			type = estate_type:nobles_estate
-			value = estate_satisfaction_radical_penalty
-		}
+		add_estate_satisfaction = { type = estate_type:nobles_estate value = estate_satisfaction_radical_penalty }
 
 		capital.province = {
 			if = {
 				limit = {
 					any_location_in_province = { any_pop = { pop_type = pop_type:nobles } }
 				}
-
 				every_location_in_province = {
 					every_pop = {
 						limit = { owner = root pop_type = pop_type:nobles }
@@ -93,14 +76,9 @@ flavor_geo.1 = {
 				}
 			}
 		}
-		if = {
-			limit = { exists = scope:first_privilege }
-			revoke_estate_privilege = scope:first_privilege
-		}
-		if = {
-			limit = { exists = scope:second_privilege }
-			revoke_estate_privilege = scope:second_privilege
-		}
+
+		if = { limit = { exists = scope:first_privilege } revoke_estate_privilege = scope:first_privilege }
+		if = { limit = { exists = scope:second_privilege } revoke_estate_privilege = scope:second_privilege }
 	}
 }
 
@@ -123,13 +101,28 @@ flavor_geo.2 = {
 
 	trigger = {
 		country_exists = c:BYZ
-		c:BYZ = { is_subject = no at_war = no is_during_bankruptcy = no }
+
+		c:BYZ = {
+			is_subject = no
+			at_war = no
+			is_during_bankruptcy = no
+		}
 
 		country_exists = c:VEN
-		c:VEN = { is_subject = no at_war = no is_during_bankruptcy = no }
+
+		c:VEN = {
+			is_subject = no
+			at_war = no
+			is_during_bankruptcy = no
+		}
 
 		country_exists = c:GEN
-		c:GEN = { is_subject = no at_war = no is_during_bankruptcy = no }
+
+		c:GEN = {
+			is_subject = no
+			at_war = no
+			is_during_bankruptcy = no
+		}
 	}
 
 	illustration_tags = { 10 = interior 10 = regular }
@@ -144,38 +137,17 @@ flavor_geo.2 = {
 		capital.market = { save_scope_as = target_location }
 		ruler_or_regent = { save_scope_as = target_character }
 
-		c:BYZ = {
-			save_scope_as = target_country1
-			ruler_or_regent = { save_scope_as = target_character1 }
-		}
+		c:BYZ = { save_scope_as = target_country1 ruler_or_regent = { save_scope_as = target_character1 } }
 
-		c:VEN = {
-			save_scope_as = target_country2
-			ruler_or_regent = { save_scope_as = target_character2 }
-		}
+		c:VEN = { save_scope_as = target_country2 ruler_or_regent = { save_scope_as = target_character2 } }
 
-		c:GEN = {
-			save_scope_as = target_country3
-			ruler_or_regent = { save_scope_as = target_character3 }
-		}
+		c:GEN = { save_scope_as = target_country3 ruler_or_regent = { save_scope_as = target_character3 } }
 	}
 
-	option = {
-		name = flavor_geo.2.a
+	option = { name = flavor_geo.2.a c:BYZ = { trigger_event_non_silently = flavor_geo.3 } }
+	option = { name = flavor_geo.2.b c:VEN = { trigger_event_non_silently = flavor_geo.3 } }
 
-		c:BYZ = { trigger_event_non_silently = flavor_geo.3 }
-	}
-	option = {
-		name = flavor_geo.2.b
-
-		c:VEN = { trigger_event_non_silently = flavor_geo.3 }
-	}
-
-	option = {
-		name = flavor_geo.2.c
-
-		c:GEN = { trigger_event_non_silently = flavor_geo.3 }
-	}
+	option = { name = flavor_geo.2.c c:GEN = { trigger_event_non_silently = flavor_geo.3 } }
 
 	option = { name = flavor_geo.2.d add_legitimacy = legitimacy_weak_bonus }
 }
@@ -195,6 +167,7 @@ flavor_geo.3 = {
 			foreground = estate_type:burghers_estate
 			background = estate_type:nobles_estate
 		}
+
 		if = {
 			limit = { tag = VEN }
 			save_scope_as = target_country1
@@ -233,10 +206,7 @@ flavor_geo.3 = {
 	option = {
 		name = flavor_geo.3.b
 
-		add_estate_satisfaction = {
-			type = estate_type:burghers_estate
-			value = estate_satisfaction_extreme_penalty
-		}
+		add_estate_satisfaction = { type = estate_type:burghers_estate value = estate_satisfaction_extreme_penalty }
 
 		c:GEO = { add_prestige = prestige_mild_bonus }
 	}
@@ -268,19 +238,13 @@ flavor_geo.4 = {
 			at_war = no
 			is_during_bankruptcy = no
 
-			any_owned_location = {
-				area = area:levant_area
-				any_pop = { religion.group = religion_group:christian }
-			}
+			any_owned_location = { area = area:levant_area any_pop = { religion.group = religion_group:christian } }
 		}
 		NOR = {
 			is_rival_of = c:MAM
 			is_enemy_of = c:MAM
 
-			has_mutual_scripted_relation = {
-				type = relation_type:alliance
-				target = c:MAM
-			}
+			has_mutual_scripted_relation = { type = relation_type:alliance target = c:MAM }
 		}
 	}
 
@@ -300,11 +264,7 @@ flavor_geo.4 = {
 			ruler_or_regent = { save_scope_as = target_character2 }
 
 			random_owned_location = {
-				limit = {
-					any_pop = { religion.group = religion_group:christian }
-					area = area:levant_area
-				}
-
+				limit = { any_pop = { religion.group = religion_group:christian } area = area:levant_area }
 				random_pop = {
 					weight = { base = 1 modifier = { add = pop_character_chance } }
 					limit = { religion.group = religion_group:christian }
@@ -348,7 +308,6 @@ flavor_geo.5 = {
 
 		custom_tooltip = {
 			text = every_christian_pop_gains_25_satisfaction_tt
-
 			every_owned_location = {
 				every_pop = {
 					limit = { owner = root religion.group = religion_group:christian }
@@ -362,10 +321,7 @@ flavor_geo.5 = {
 			modifier = opinion_protected_christian_minorities
 		}
 
-		change_societal_value = {
-			type = mysticism_vs_jurisprudence
-			value = societal_value_tiny_move_to_right
-		}
+		change_societal_value = { type = mysticism_vs_jurisprudence value = societal_value_tiny_move_to_right }
 
 		create_relation = {
 			first = root
@@ -381,10 +337,7 @@ flavor_geo.5 = {
 			modifier = opinion_refused_to_help_christian_minorities
 		}
 
-		change_societal_value = {
-			type = mysticism_vs_jurisprudence
-			value = societal_value_tiny_move_to_left
-		}
+		change_societal_value = { type = mysticism_vs_jurisprudence value = societal_value_tiny_move_to_left }
 	}
 
 	after = { c:GEO = { trigger_event_non_silently = flavor_geo.6 } }
@@ -399,13 +352,7 @@ flavor_geo.6 = {
 	desc = {
 		first_valid = {
 			triggered_desc = {
-				trigger = {
-					has_mutual_scripted_relation = {
-						type = relation_type:alliance
-						target = c:MAM
-					}
-				}
-
+				trigger = { has_mutual_scripted_relation = { type = relation_type:alliance target = c:MAM } }
 				desc = flavor_geo.6.desc.a
 			}
 			triggered_desc = { desc = flavor_geo.6.desc.b }
@@ -424,12 +371,7 @@ flavor_geo.6 = {
 	option = {
 		name = flavor_geo.6.a
 
-		trigger = {
-			has_mutual_scripted_relation = {
-				type = relation_type:alliance
-				target = c:MAM
-			}
-		}
+		trigger = { has_mutual_scripted_relation = { type = relation_type:alliance target = c:MAM } }
 
 		custom_tooltip = every_christian_pop_gains_25_satisfaction_tt
 
@@ -438,7 +380,6 @@ flavor_geo.6 = {
 				target = c:MAM
 				modifier = opinion_protected_christian_minorities
 			}
-
 			create_relation = {
 				first = c:MAM
 				second = c:GEO
@@ -450,12 +391,7 @@ flavor_geo.6 = {
 		name = flavor_geo.6.b
 
 		trigger = {
-			NOT = {
-				has_mutual_scripted_relation = {
-					type = relation_type:alliance
-					target = c:MAM
-				}
-			}
+			NOT = { has_mutual_scripted_relation = { type = relation_type:alliance target = c:MAM } }
 		}
 
 		add_prestige = prestige_mild_penalty
@@ -488,17 +424,9 @@ flavor_geo.7 = {
 		at_war = no
 		is_during_bankruptcy = no
 		c:SRV = { own_entire_province = province_definition:baku_province }
-		NOT = {
-			has_casus_belli_of_type_on = {
-				type = casus_belli:cb_conquer_province
-				target = c:SRV
-			}
-		}
+		NOT = { has_casus_belli_of_type_on = { type = casus_belli:cb_conquer_province target = c:SRV } }
 		NOR = {
-			has_mutual_scripted_relation = {
-				type = relation_type:alliance
-				target = c:SRV
-			}
+			has_mutual_scripted_relation = { type = relation_type:alliance target = c:SRV }
 
 			c:SRV = { is_subject = yes }
 			is_subject_of = c:SRV
@@ -516,15 +444,11 @@ flavor_geo.7 = {
 		save_scope_as = target_country
 		ruler_or_regent = { save_scope_as = target_character }
 
-		c:SRV = {
-			save_scope_as = target_country2
-			ruler_or_regent = { save_scope_as = target_character2 }
-		}
+		c:SRV = { save_scope_as = target_country2 ruler_or_regent = { save_scope_as = target_character2 } }
 	}
 
 	option = {
 		name = flavor_geo.7.a
-
 		add_casus_belli = {
 			type = casus_belli:cb_conquer_province
 			province = location:baku.province
@@ -564,10 +488,7 @@ flavor_geo.8 = {
 				this = c:FRA
 				is_subject_or_below_of = root
 
-				has_mutual_scripted_relation = {
-					type = relation_type:alliance
-					target = c:GEO
-				}
+				has_mutual_scripted_relation = { type = relation_type:alliance target = c:GEO }
 			}
 		}
 	}
@@ -583,10 +504,7 @@ flavor_geo.8 = {
 		save_scope_as = target_country
 		ruler_or_regent = { save_scope_as = target_character }
 
-		c:FRA = {
-			save_scope_as = target_country2
-			ruler_or_regent = { save_scope_as = target_character2 }
-		}
+		c:FRA = { save_scope_as = target_country2 ruler_or_regent = { save_scope_as = target_character2 } }
 
 		location:jerusalem = { save_scope_as = target_location }
 	}
@@ -629,24 +547,13 @@ flavor_geo.9 = {
 
 		c:GEO = { set_variable = received_money_variable }
 	}
-	option = {
-		name = flavor_geo.9.b
+	option = { name = flavor_geo.9.b custom_tooltip = up_to_x_commoners_will_migrate_tt }
 
-		custom_tooltip = up_to_x_commoners_will_migrate_tt
-	}
-
-	option = {
-		name = flavor_geo.9.c
-
-		c:GEO = { set_variable = received_nothing_variable }
-	}
+	option = { name = flavor_geo.9.c c:GEO = { set_variable = received_nothing_variable } }
 
 	after = {
 		c:GEO = {
-			trigger_event_non_silently = {
-				id = flavor_geo.10
-				months = { 3 4 }
-			}
+			trigger_event_non_silently = { id = flavor_geo.10 months = { 3 4 } }
 		}
 	}
 }
@@ -672,11 +579,8 @@ flavor_geo.10 = {
 	option = {
 		name = flavor_geo.10.a
 
-		trigger = {
-			NOT = {
-				has_variable = received_nothing_variable
-			}
-		}
+		trigger = { NOT = { has_variable = received_nothing_variable } }
+
 		if = {
 			limit = { has_variable = received_money_variable }
 
@@ -697,7 +601,6 @@ flavor_geo.10 = {
 				create_sub_unit = unit_type:a_late_crusader_knights
 				create_sub_unit = unit_type:a_late_crusader_knights
 			}
-
 			add_migration = {
 				owner = c:FRA
 				from = c:FRA.capital.province_definition
@@ -743,15 +646,13 @@ flavor_geo.11 = {
 	trigger = {
 		at_war = no
 		country_exists = c:CHB
-		c:CHB = { is_subject = no at_war = no is_during_bankruptcy = no }
-		NOR = {
-			has_mutual_scripted_relation = {
-				type = relation_type:alliance
-				target = c:CHB
-			}
 
-			is_subject_of = c:CHB
+		c:CHB = {
+			is_subject = no
+			at_war = no
+			is_during_bankruptcy = no
 		}
+		NOR = { has_mutual_scripted_relation = { type = relation_type:alliance target = c:CHB } is_subject_of = c:CHB }
 		relative_strength = { target = c:CHB value < 0.5 }
 	}
 
@@ -766,10 +667,7 @@ flavor_geo.11 = {
 		save_scope_as = target_country
 		ruler_or_regent = { save_scope_as = target_character }
 
-		c:CHB = {
-			save_scope_as = target_country2
-			ruler_or_regent = { save_scope_as = target_character2 }
-		}
+		c:CHB = { save_scope_as = target_country2 ruler_or_regent = { save_scope_as = target_character2 } }
 	}
 
 	option = {
@@ -785,10 +683,7 @@ flavor_geo.11 = {
 	}
 	option = {
 		name = flavor_geo.11.b
-
-		c:CHB = {
-			add_casus_belli = { type = casus_belli:cb_subject_broke_free target = root }
-		}
+		c:CHB = { add_casus_belli = { type = casus_belli:cb_subject_broke_free target = root } }
 	}
 
 	after = { c:CHB = { trigger_event_silently = flavor_geo.12 } }
@@ -802,10 +697,7 @@ flavor_geo.12 = {
 
 	desc = {
 		first_valid = {
-			triggered_desc = {
-				trigger = { has_variable = geo_accepted_tribute }
-				desc = flavor_geo.12.desc.a
-			}
+			triggered_desc = { trigger = { has_variable = geo_accepted_tribute } desc = flavor_geo.12.desc.a }
 			triggered_desc = { desc = flavor_geo.12.desc.b }
 		}
 	}
@@ -835,16 +727,10 @@ flavor_geo.12 = {
 	option = {
 		name = flavor_geo.12.b
 
-		trigger = {
-			NOT = {
-				has_variable = geo_accepted_tribute
-			}
-		}
+		trigger = { NOT = { has_variable = geo_accepted_tribute } }
 
 		show_as_tooltip = {
-			root = {
-				add_casus_belli = { type = casus_belli:cb_subject_broke_free target = c:GEO }
-			}
+			root = { add_casus_belli = { type = casus_belli:cb_subject_broke_free target = c:GEO } }
 		}
 	}
 
@@ -908,23 +794,15 @@ flavor_geo.13 = {
 			}
 		}
 
-		scope:target_location = {
-			add_road_to = { target = root.capital type = gravel_road }
-		}
+		scope:target_location = { add_road_to = { target = root.capital type = gravel_road } }
 
-		change_societal_value = {
-			type = centralization_vs_decentralization
-			value = societal_value_large_move_to_left
-		}
+		change_societal_value = { type = centralization_vs_decentralization value = societal_value_large_move_to_left }
 	}
 
 	option = {
 		name = flavor_geo.13.b
 
-		change_societal_value = {
-			type = centralization_vs_decentralization
-			value = societal_value_large_move_to_right
-		}
+		change_societal_value = { type = centralization_vs_decentralization value = societal_value_large_move_to_right }
 
 		add_stability = stability_weak_bonus
 	}
@@ -948,14 +826,8 @@ flavor_geo.14 = {
 
 	trigger = {
 		any_owned_location = {
-			OR = {
-				integration_level = integrated
-				integration_level = core
-			}
-			OR = {
-				raw_material = goods:goods_gold
-				raw_material = goods:silver
-			}
+			OR = { integration_level = integrated integration_level = core }
+			OR = { raw_material = goods:goods_gold raw_material = goods:silver }
 		}
 	}
 
@@ -966,17 +838,10 @@ flavor_geo.14 = {
 			foreground = estate_type:burghers_estate
 			background = estate_type:nobles_estate
 		}
-
 		ordered_owned_location = {
 			limit = {
-				OR = {
-					raw_material = goods:goods_gold
-					raw_material = goods:silver
-				}
-				OR = {
-					integration_level = integrated
-					integration_level = core
-				}
+				OR = { raw_material = goods:goods_gold raw_material = goods:silver }
+				OR = { integration_level = integrated integration_level = core }
 			}
 
 			order_by = rgo_workers
@@ -992,7 +857,6 @@ flavor_geo.14 = {
 
 		scope:target_location = {
 			change_max_raw_material_workers = 3
-
 			add_location_modifier = {
 				modifier = mint_of_elentir_modifier
 				years = 20
@@ -1004,10 +868,7 @@ flavor_geo.14 = {
 			scale = -3
 		}
 
-		change_societal_value = {
-			type = capital_economy_vs_traditional_economy
-			value = societal_value_move_to_left
-		}
+		change_societal_value = { type = capital_economy_vs_traditional_economy value = societal_value_move_to_left }
 	}
 	option = {
 		name = flavor_geo.14.b
@@ -1018,11 +879,7 @@ flavor_geo.14 = {
 
 		scope:target_location = {
 			change_prosperity = prosperity_severe_bonus
-
-			every_pop = {
-				limit = { owner = root }
-				add_pop_satisfaction = pop_satisfaction_ultimate_bonus
-			}
+			every_pop = { limit = { owner = root } add_pop_satisfaction = pop_satisfaction_ultimate_bonus }
 		}
 	}
 }
@@ -1046,14 +903,7 @@ flavor_geo.15 = {
 	trigger = {
 		owns = location:tmogvi
 
-		location:tmogvi = {
-			NOT = {
-				has_building = building_type:castle
-			}
-			NOT = {
-				has_building = building_type:bastion
-			}
-		}
+		location:tmogvi = { NOT = { has_building = building_type:castle } NOT = { has_building = building_type:bastion } }
 
 		at_war = no
 		is_during_bankruptcy = no
@@ -1066,26 +916,17 @@ flavor_geo.15 = {
 			foreground = pop_type:soldiers
 			background = pop_type:soldiers
 		}
-
 		location:tmogvi = { save_scope_as = target_location }
 	}
 
 	option = {
 		name = flavor_geo.15.a
 
-		scope:target_location = {
-			construct_building = { building_type = building_type:castle instant = no }
-		}
+		scope:target_location = { construct_building = { building_type = building_type:castle instant = no } }
 
-		scope:target_location.province = {
-			every_location_in_province = { change_prosperity = prosperity_weak_bonus }
-		}
+		scope:target_location.province = { every_location_in_province = { change_prosperity = prosperity_weak_bonus } }
 	}
-	option = {
-		name = flavor_geo.15.b
-
-		add_government_power = government_power_weak_penalty
-	}
+	option = { name = flavor_geo.15.b add_government_power = government_power_weak_penalty }
 }
 
 # [ShowReligionAdjectiveWithNoTooltip('catholic')] Presence in [target_location.GetNameWithNoTooltip]
@@ -1104,9 +945,7 @@ flavor_geo.16 = {
 		monthly_chance = 1
 	}
 
-	trigger = {
-		any_owned_location = { has_building = building_type:missionary_building }
-	}
+	trigger = { any_owned_location = { has_building = building_type:missionary_building } }
 
 	illustration_tags = { 10 = interior 10 = regular }
 
@@ -1148,10 +987,7 @@ flavor_geo.16 = {
 			modifier = opinion_catholic_presence_in_georgia
 		}
 
-		add_estate_satisfaction = {
-			type = estate_type:clergy_estate
-			value = estate_satisfaction_mild_penalty
-		}
+		add_estate_satisfaction = { type = estate_type:clergy_estate value = estate_satisfaction_mild_penalty }
 	}
 
 	option = {
@@ -1164,14 +1000,9 @@ flavor_geo.16 = {
 
 		custom_tooltip = {
 			text = suffer_20_opinion_with_every_catholic_in_range_tt
-
 			every_known_country = {
 				limit = { within_diplomatic_range = root religion = religion:catholic }
-
-				add_opinion = {
-					modifier = opinion_demolished_catholic_embassies
-					target = root
-				}
+				add_opinion = { modifier = opinion_demolished_catholic_embassies target = root }
 			}
 		}
 
@@ -1185,20 +1016,11 @@ flavor_geo.16 = {
 
 		ruler_or_regent = {
 			change_character_religion = religion:catholic
+			every_child = { limit = { is_alive = yes } change_character_religion = religion:catholic }
+		}
 
-			every_child = {
-				limit = { is_alive = yes }
-				change_character_religion = religion:catholic
-			}
-		}
-		if = {
-			limit = { has_consort = yes }
-			consort = { change_character_religion = religion:catholic }
-		}
-		if = {
-			limit = { has_heir = yes }
-			heir = { change_character_religion = religion:catholic }
-		}
+		if = { limit = { has_consort = yes } consort = { change_character_religion = religion:catholic } }
+		if = { limit = { has_heir = yes } heir = { change_character_religion = religion:catholic } }
 
 		add_stability = stability_extreme_penalty
 		add_all_estate_satisfaction = { value = estate_satisfaction_extreme_penalty }
@@ -1233,12 +1055,7 @@ flavor_geo.17 = {
 	option = {
 		name = flavor_geo.17.a
 
-		show_as_tooltip = {
-			add_opinion = {
-				modifier = opinion_demolished_catholic_embassies
-				target = c:GEO
-			}
-		}
+		show_as_tooltip = { add_opinion = { modifier = opinion_demolished_catholic_embassies target = c:GEO } }
 
 		add_government_power = government_power_weak_penalty
 	}
@@ -1289,20 +1106,13 @@ flavor_geo.19 = {
 		any_owned_location = { has_building = building_type:missionary_building }
 		ruler_or_regent = { religion = religion:catholic }
 		"religion_percentage_in_country(religion:catholic)" > 0
-		NOT = {
-			religion = religion:catholic
-		}
+		NOT = { religion = religion:catholic }
 
 		at_war = no
 		is_during_bankruptcy = no
 
 		any_owned_location = {
-			NOT = {
-				has_building = building_type:missionary_building
-				NOT = {
-					dominant_religion = religion:catholic
-				}
-			}
+			NOT = { has_building = building_type:missionary_building NOT = { dominant_religion = religion:catholic } }
 		}
 	}
 
@@ -1319,12 +1129,7 @@ flavor_geo.19 = {
 
 		ordered_owned_location = {
 			limit = {
-				NOT = {
-					has_building = building_type:missionary_building
-					NOT = {
-						dominant_religion = religion:catholic
-					}
-				}
+				NOT = { has_building = building_type:missionary_building NOT = { dominant_religion = religion:catholic } }
 			}
 
 			order_by = population
@@ -1336,9 +1141,7 @@ flavor_geo.19 = {
 			limit = {
 				NOR = {
 					has_building = building_type:missionary_building
-					NOT = {
-						dominant_religion = religion:catholic
-					}
+					NOT = { dominant_religion = religion:catholic }
 
 					this = scope:target_location1
 				}
@@ -1353,9 +1156,7 @@ flavor_geo.19 = {
 			limit = {
 				NOR = {
 					has_building = building_type:missionary_building
-					NOT = {
-						dominant_religion = religion:catholic
-					}
+					NOT = { dominant_religion = religion:catholic }
 
 					this = scope:target_location1
 					this = scope:target_location2
@@ -1379,33 +1180,22 @@ flavor_geo.19 = {
 
 		custom_tooltip = {
 			text = suffer_20_opinion_with_every_catholic_in_range_tt
-
 			every_known_country = {
 				limit = { within_diplomatic_range = root religion = religion:catholic }
-
-				add_opinion = {
-					modifier = opinion_demolished_catholic_embassies
-					target = root
-				}
+				add_opinion = { modifier = opinion_demolished_catholic_embassies target = root }
 			}
 		}
 
 		c:PAP = { trigger_event_non_silently = flavor_geo.17 }
 
-		every_character = {
-			limit = { religion = religion:catholic }
-			change_character_religion = root.religion
-		}
+		every_character = { limit = { religion = religion:catholic } change_character_religion = root.religion }
 	}
 	option = {
 		name = flavor_geo.19.b
 
 		change_religion = religion:catholic
 
-		change_religion_for_ruler_and_family = {
-			country = root
-			religion = religion:catholic
-		}
+		change_religion_for_ruler_and_family = { country = root religion = religion:catholic }
 
 		c:PAP = { trigger_event_non_silently = flavor_geo.20 }
 	}
@@ -1440,9 +1230,9 @@ flavor_geo.20 = {
 				payer = c:PAP
 			}
 		}
+
 		if = {
 			limit = { exists = scope:target_location2 }
-
 			scope:target_location2 = {
 				construct_building = {
 					building_type = building_type:missionary_building
@@ -1452,9 +1242,9 @@ flavor_geo.20 = {
 				}
 			}
 		}
+
 		if = {
 			limit = { exists = scope:target_location3 }
-
 			scope:target_location3 = {
 				construct_building = {
 					building_type = building_type:missionary_building
@@ -1466,25 +1256,16 @@ flavor_geo.20 = {
 		}
 
 		hidden_effect = {
-			c:GEO = {
-				set_variable = { name = agreed_to_finance_missionaries_variable years = 1 }
-			}
+			c:GEO = { set_variable = { name = agreed_to_finance_missionaries_variable years = 1 } }
 		}
 
-		add_religious_influence_if_valid = {
-			VALUE = religious_influence_extreme_bonus
-		}
+		add_religious_influence_if_valid = { VALUE = religious_influence_extreme_bonus }
 	}
 	option = {
 		name = flavor_geo.20.b
 
 		trigger = {
-			NOT = {
-				has_mutual_scripted_relation = {
-					type = relation_type:alliance
-					target = c:GEO
-				}
-			}
+			NOT = { has_mutual_scripted_relation = { type = relation_type:alliance target = c:GEO } }
 		}
 
 		create_relation = {
@@ -1538,9 +1319,9 @@ flavor_geo.21 = {
 					payer = c:PAP
 				}
 			}
+
 			if = {
 				limit = { exists = scope:target_location2 }
-
 				scope:target_location2 = {
 					construct_building = {
 						building_type = building_type:missionary_building
@@ -1550,9 +1331,9 @@ flavor_geo.21 = {
 					}
 				}
 			}
+
 			if = {
 				limit = { exists = scope:target_location3 }
-
 				scope:target_location3 = {
 					construct_building = {
 						building_type = building_type:missionary_building
@@ -1569,12 +1350,8 @@ flavor_geo.21 = {
 		name = flavor_geo.21.b
 
 		trigger = {
-			NOT = {
-				has_variable = agreed_to_finance_missionaries_variable
-			}
-			NOT = {
-				has_variable = papacy_refused_help
-			}
+			NOT = { has_variable = agreed_to_finance_missionaries_variable }
+			NOT = { has_variable = papacy_refused_help }
 		}
 
 		add_religious_influence_if_valid = { VALUE = religious_influence_mild_bonus }
@@ -1599,10 +1376,7 @@ flavor_geo.21 = {
 			limit = { has_variable = agreed_to_finance_missionaries_variable }
 			remove_variable = agreed_to_finance_missionaries_variable
 		}
-		if = {
-			limit = { has_variable = papacy_refused_help }
-			remove_variable = papacy_refused_help
-		}
+		if = { limit = { has_variable = papacy_refused_help } remove_variable = papacy_refused_help }
 	}
 }
 
@@ -1641,7 +1415,6 @@ flavor_geo.22 = {
 
 		capital = {
 			save_scope_as = target_location
-
 			event_illustration_estate_effect = {
 				foreground = estate_type:nobles_estate
 				background = estate_type:clergy_estate
@@ -1652,14 +1425,8 @@ flavor_geo.22 = {
 	option = {
 		name = flavor_geo.22.a
 
-		add_estate_satisfaction = {
-			type = estate_type:nobles_estate
-			value = estate_satisfaction_radical_penalty
-		}
-		add_estate_satisfaction = {
-			type = estate_type:clergy_estate
-			value = estate_satisfaction_radical_bonus
-		}
+		add_estate_satisfaction = { type = estate_type:nobles_estate value = estate_satisfaction_radical_penalty }
+		add_estate_satisfaction = { type = estate_type:clergy_estate value = estate_satisfaction_radical_bonus }
 
 		scope:target_location = {
 			random_pop = {
@@ -1674,14 +1441,8 @@ flavor_geo.22 = {
 	option = {
 		name = flavor_geo.22.b
 
-		add_estate_satisfaction = {
-			type = estate_type:nobles_estate
-			value = estate_satisfaction_severe_penalty
-		}
-		add_estate_satisfaction = {
-			type = estate_type:clergy_estate
-			value = estate_satisfaction_severe_bonus
-		}
+		add_estate_satisfaction = { type = estate_type:nobles_estate value = estate_satisfaction_severe_penalty }
+		add_estate_satisfaction = { type = estate_type:clergy_estate value = estate_satisfaction_severe_bonus }
 
 		scope:target_location = {
 			random_pop = {
@@ -1695,14 +1456,8 @@ flavor_geo.22 = {
 	option = {
 		name = flavor_geo.22.c
 
-		add_estate_satisfaction = {
-			type = estate_type:nobles_estate
-			value = estate_satisfaction_mild_bonus
-		}
-		add_estate_satisfaction = {
-			type = estate_type:clergy_estate
-			value = estate_satisfaction_severe_penalty
-		}
+		add_estate_satisfaction = { type = estate_type:nobles_estate value = estate_satisfaction_mild_bonus }
+		add_estate_satisfaction = { type = estate_type:clergy_estate value = estate_satisfaction_severe_penalty }
 
 		scope:target_location = {
 			random_pop = {
@@ -1748,10 +1503,7 @@ flavor_geo.23 = {
 
 		add_stability = stability_extreme_penalty
 
-		change_societal_value = {
-			type = traditionalist_vs_innovative
-			value = societal_value_large_move_to_right
-		}
+		change_societal_value = { type = traditionalist_vs_innovative value = societal_value_large_move_to_right }
 	}
 
 	option = {
@@ -1781,9 +1533,7 @@ flavor_geo.24 = {
 	trigger = {
 		country_exists = c:TIM
 		is_subject_of = c:TIM
-		NOT = {
-			religion = c:TIM.religion
-		}
+		NOT = { religion = c:TIM.religion }
 	}
 
 	illustration_tags = { 10 = interior 10 = angry }
@@ -1816,14 +1566,9 @@ flavor_geo.24 = {
 			change_character_religion = c:TIM.religion
 			every_child = { change_character_religion = c:TIM.religion }
 		}
-		if = {
-			limit = { has_consort = yes }
-			consort = { change_character_religion = c:TIM.religion }
-		}
-		if = {
-			limit = { has_heir = yes }
-			heir = { change_character_religion = c:TIM.religion }
-		}
+
+		if = { limit = { has_consort = yes } consort = { change_character_religion = c:TIM.religion } }
+		if = { limit = { has_heir = yes } heir = { change_character_religion = c:TIM.religion } }
 
 		add_opinion_mutual_effect = {
 			modifier = opinion_embraced_true_faith
@@ -1832,15 +1577,9 @@ flavor_geo.24 = {
 
 		add_liberty_desire = liberty_desire_severe_minus
 	}
-	option = {
-		name = flavor_geo.24.b
+	option = { name = flavor_geo.24.b add_liberty_desire = liberty_desire_severe_plus }
 
-		add_liberty_desire = liberty_desire_severe_plus
-	}
-
-	after = {
-		scope:target_country2 = { trigger_event_non_silently = flavor_geo.25 }
-	}
+	after = { scope:target_country2 = { trigger_event_non_silently = flavor_geo.25 } }
 }
 
 # The Conversion of [target_country1.GetLongNameWithNoTooltip]
@@ -1859,11 +1598,7 @@ flavor_geo.25 = {
 			foreground = estate_type:nobles_estate
 			background = estate_type:nobles_estate
 		}
-
-		scope:target_country1.capital = {
-			save_scope_as = target_location
-			province = { save_scope_as = target_province }
-		}
+		scope:target_country1.capital = { save_scope_as = target_location province = { save_scope_as = target_province } }
 	}
 
 	option = {
@@ -1871,41 +1606,24 @@ flavor_geo.25 = {
 
 		trigger = {
 			scope:target_country1 = {
-				ruler_or_regent = {
-					NOT = {
-						religion = ROOT.religion
-					}
-				}
+				ruler_or_regent = { NOT = { religion = ROOT.religion } }
 			}
 		}
 
-		scope:target_province = {
-			every_location_in_province = {
-				change_prosperity = prosperity_ultimate_penalty
-			}
-		}
+		scope:target_province = { every_location_in_province = { change_prosperity = prosperity_ultimate_penalty } }
+
 		if = {
 			limit = {
 				scope:target_country1 = {
 					any_owned_location = {
 						is_capital = no
-						OR = {
-							modifier:sul_is_town_rank_tier = yes
-							modifier:sul_is_city_rank_tier = yes
-						}
+						OR = { modifier:sul_is_town_rank_tier = yes modifier:sul_is_city_rank_tier = yes }
 					}
 				}
 			}
-
 			scope:target_country1 = {
 				every_owned_location = {
-					limit = {
-						OR = {
-							modifier:sul_is_town_rank_tier = yes
-							modifier:sul_is_city_rank_tier = yes
-						}
-					}
-
+					limit = { OR = { modifier:sul_is_town_rank_tier = yes modifier:sul_is_city_rank_tier = yes } }
 					ordered_pop = {
 						limit = { pop_type = pop_type:peasants }
 						order_by = pop_size
@@ -1916,9 +1634,7 @@ flavor_geo.25 = {
 				}
 			}
 		}
-		else = {
-			scope:target_country1 = { add_stability = stability_ultimate_penalty }
-		}
+		else = { scope:target_country1 = { add_stability = stability_ultimate_penalty } }
 		scope:target_country1 = { add_liberty_desire = liberty_desire_mild_plus }
 	}
 
@@ -1927,11 +1643,7 @@ flavor_geo.25 = {
 
 		trigger = {
 			scope:target_country1 = {
-				ruler_or_regent = {
-					NOT = {
-						religion = ROOT.religion
-					}
-				}
+				ruler_or_regent = { NOT = { religion = ROOT.religion } }
 			}
 		}
 
@@ -1976,11 +1688,7 @@ flavor_geo.26 = {
 		has_variable = timur_conversion_variable
 		has_ruler = yes
 
-		ruler = {
-			NOT = {
-				religion = root.religion
-			}
-		}
+		ruler = { NOT = { religion = root.religion } }
 	}
 
 	illustration_tags = { 10 = interior 10 = angry }
@@ -1999,23 +1707,13 @@ flavor_geo.26 = {
 		name = flavor_geo.26.a
 
 		every_character = {
-			limit = {
-				dynasty = root.ruler.dynasty
-				NOT = {
-					religion = root.religion
-				}
-			}
-
+			limit = { dynasty = root.ruler.dynasty NOT = { religion = root.religion } }
 			change_character_religion = root.religion
 		}
 
 		add_stability = stability_extreme_penalty
 	}
-	option = {
-		name = flavor_geo.26.b
-
-		add_government_power = government_power_ultimate_penalty
-	}
+	option = { name = flavor_geo.26.b add_government_power = government_power_ultimate_penalty }
 }
 
 # Giorgi Saakadze
@@ -2034,7 +1732,11 @@ flavor_geo.27 = {
 		monthly_chance = 1
 	}
 
-	trigger = { at_war = no is_during_bankruptcy = no owns = location:gori }
+	trigger = {
+		at_war = no
+		is_during_bankruptcy = no
+		owns = location:gori
+	}
 
 	illustration_tags = { 10 = exterior 10 = regular }
 
@@ -2082,18 +1784,12 @@ flavor_geo.27 = {
 
 		add_army_tradition = army_tradition_extreme_bonus
 
-		change_societal_value = {
-			type = offensive_vs_defensive
-			value = societal_value_large_move_to_left
-		}
+		change_societal_value = { type = offensive_vs_defensive value = societal_value_large_move_to_left }
 	}
 	option = {
 		name = flavor_geo.27.b
 
-		change_societal_value = {
-			type = offensive_vs_defensive
-			value = societal_value_large_move_to_right
-		}
+		change_societal_value = { type = offensive_vs_defensive value = societal_value_large_move_to_right }
 
 		hidden_effect = {
 			kill_character_silently = scope:target_character2
@@ -2117,7 +1813,11 @@ flavor_geo.28 = {
 		monthly_chance = 1
 	}
 
-	trigger = { at_war = no is_during_bankruptcy = no owns = location:dmanisi }
+	trigger = {
+		at_war = no
+		is_during_bankruptcy = no
+		owns = location:dmanisi
+	}
 
 	illustration_tags = { 10 = interior 10 = regular }
 

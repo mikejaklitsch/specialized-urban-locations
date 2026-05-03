@@ -4,31 +4,19 @@ bubonic_plague = {
 		# Has the Black Death spawned already?
 		if = {
 			# It has happened already
-			limit = {
-				situation:black_death = { situation_is_active = no situation_has_ended = yes }
-			}
-
+			limit = { situation:black_death = { situation_is_active = no situation_has_ended = yes } }
 			value = 0.005 # Should happen around once per 20 years
 		}
 		else_if = {
 			# It is ongoing
-			limit = {
-				situation:black_death = { situation_is_active = yes situation_has_ended = no }
-			}
-
+			limit = { situation:black_death = { situation_is_active = yes situation_has_ended = no } }
 			# We wait untill it ends
 			value = 0
 		}
 		else = {
 			# It has not started
 			if = {
-				limit = {
-					OR = {
-						disease_is_active = scope:disease
-						has_game_rule = black_death_date_off
-					}
-				}
-
+				limit = { OR = { disease_is_active = scope:disease has_game_rule = black_death_date_off } }
 				value = 0
 			}
 			else_if = {
@@ -66,10 +54,7 @@ bubonic_plague = {
 		# Has the Black Death spawned already?
 		if = {
 			# It has happened already
-			limit = {
-				situation:black_death = { situation_is_active = no situation_has_ended = yes }
-			}
-
+			limit = { situation:black_death = { situation_is_active = no situation_has_ended = yes } }
 			random_ownable_location = {
 				limit = {
 					# Not empty location
@@ -77,10 +62,7 @@ bubonic_plague = {
 					is_endemic_bubonic_plague_location = yes
 					# If the Columbian Exchange has not happened yet, exclude America
 					trigger_if = {
-						limit = {
-							situation:black_death = { situation_is_active = no situation_has_ended = no }
-						}
-
+						limit = { situation:black_death = { situation_is_active = no situation_has_ended = no } }
 						# Endemic regions
 						OR = {
 							continent = continent:asia
@@ -94,7 +76,6 @@ bubonic_plague = {
 
 					# If we can't find an appropiate location we don't spawn
 				}
-
 				spawn_disease = {
 					disease = scope:disease
 					value = 1
@@ -105,10 +86,7 @@ bubonic_plague = {
 		}
 		else_if = {
 			# It is ongoing
-			limit = {
-				situation:black_death = { situation_is_active = yes situation_has_ended = no }
-			}
-
+			limit = { situation:black_death = { situation_is_active = yes situation_has_ended = no } }
 			# We wait untill it ends
 		}
 		else = {
@@ -144,16 +122,13 @@ bubonic_plague = {
 					# save the outbreak created for later
 					save_scope_as = outbreak
 				}
+
 				if = {
-					limit = {
-						situation:black_death = { situation_is_active = no situation_has_ended = no }
-					}
+					limit = { situation:black_death = { situation_is_active = no situation_has_ended = no } }
 
 					activate_situation = situation:black_death
 
-					situation:black_death = {
-						set_variable = { name = original_outbreak value = scope:outbreak }
-					}
+					situation:black_death = { set_variable = { name = original_outbreak value = scope:outbreak } }
 				}
 			}
 		}
@@ -174,13 +149,9 @@ bubonic_plague = {
 					modifier:sul_is_rural_settlement_rank_tier = yes
 				}
 			}
-
 			value = { 1.1 1.3 }
 		}
-		else_if = {
-			limit = { modifier:sul_is_town_rank_tier = yes }
-			value = { 1.3 1.6 }
-		}
+		else_if = { limit = { modifier:sul_is_town_rank_tier = yes } value = { 1.3 1.6 } }
 		else = { value = { 1.5 1.9 } }
 		# markets spread more person to person
 		if = {
@@ -194,18 +165,12 @@ bubonic_plague = {
 					has_building_with_at_least_one_level = stock_exchange
 				}
 			}
-
 			multiply = 1.2
 		}
 
 		# stagnation reduces R0
 		if = {
-			limit = {
-				OR = {
-					disease_has_stagnated = scope:disease
-					"disease_resistance(scope:disease)" > 0.5
-				}
-			}
+			limit = { OR = { disease_has_stagnated = scope:disease "disease_resistance(scope:disease)" > 0.5 } }
 
 			subtract = { 0.2 0.7 }
 			# if low and we have stagnation, move to kill it off quickly
@@ -221,10 +186,7 @@ bubonic_plague = {
 	location_stagnation_chance = {
 		# some locations will spread it much more easily than others.
 		# For this disease, rural places have much more distance between people so spread it less
-		if = {
-			limit = { modifier:sul_is_rural_settlement_rank_tier = yes }
-			value = 0.08
-		}
+		if = { limit = { modifier:sul_is_rural_settlement_rank_tier = yes } value = 0.08 }
 		else_if = { limit = { modifier:sul_is_town_rank_tier = yes } value = 0.04 }
 		else = { value = 0.02 }
 
@@ -239,9 +201,9 @@ bubonic_plague = {
 					climate = tropical
 				}
 			}
-
 			add = 0.2
 		}
+
 		if = { limit = { location_population_percentage < 0.1 } add = 0.2 }
 
 		# if we've got a bit of resistance then stagnation chance will go up
@@ -249,15 +211,13 @@ bubonic_plague = {
 			limit = { "disease_resistance(scope:disease)" > 0.5 }
 			add = { value = "disease_resistance(scope:disease)" subtract = 0.4 }
 		}
+
 		if = { limit = { "disease_resistance(scope:disease)" > 0.95 } add = 0.1 }
 		if = { limit = { "disease_resistance(scope:disease)" > 0.98 } add = 0.2 }
 
 		# We need a minimum spread for the black death to work, we make it immune for a small radius so it can move outside of the Golden horde
 		if = {
-			limit = {
-				distance_to_squared = { location = scope:disease.origin value < 15000 }
-			}
-
+			limit = { distance_to_squared = { location = scope:disease.origin value < 15000 } }
 			value = 0
 		}
 	}
@@ -268,9 +228,7 @@ bubonic_plague = {
 	location_modifier = {
 		potential_trigger = {
 			disease_presence = { disease = scope:disease value >= 0.2 }
-			NOT = {
-				disease_has_stagnated = scope:disease
-			}
+			NOT = { disease_has_stagnated = scope:disease }
 		}
 
 		local_forced_attrition = 5
@@ -293,13 +251,11 @@ bubonic_plague = {
 
 	character_mortality_chance = {
 		value = 0.08
+
 		if = {
 			limit = {
-				NOT = {
-					owner = { has_country_modifier = hiding_from_black_death }
-				}
+				NOT = { owner = { has_country_modifier = hiding_from_black_death } }
 			}
-
 			add = 0.08
 		}
 
@@ -319,7 +275,11 @@ bubonic_plague = {
 	secondary_map_color = {
 		if = {
 			limit = { disease_affects_pops_here = scope:disease }
-			value = rgb { 100 120 188 }
+			value = rgb {
+				100
+				120
+				188
+			}
 		}
 	}
 
@@ -330,6 +290,7 @@ bubonic_plague = {
 	# scope:current_presence is the current disease presence in the location)
 	location_infection_spread_threshold = {
 		value = 0.30 # 30% of the people need to be infected to spread to neighbors
+
 		if = {# Reduce the spread in difficult terrain locations or rural
 			limit = {
 				num_roads = 0
@@ -342,7 +303,6 @@ bubonic_plague = {
 					modifier:sul_is_rural_settlement_rank_tier = yes
 				}
 			}
-
 			multiply = 1.75
 		}# If there is a road reduce it
 		else_if = { limit = { num_roads >= 0 } multiply = 0.50 }

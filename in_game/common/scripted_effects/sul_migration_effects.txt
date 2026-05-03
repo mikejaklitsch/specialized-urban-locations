@@ -10,7 +10,6 @@ sul_migration_initialize = {
 
 	every_market_in_world = {
 		change_global_variable = { name = sul_migration_market_count add = 1 }
-
 		location = {
 			add_location_modifier = {
 				modifier = sul_migration_center_suppression
@@ -51,7 +50,11 @@ sul_migration_process_market = {
 	location = {
 		set_variable = {
 			name = sul_migration_last_update
-			value = { value = current_year multiply = 12 add = current_month }
+			value = {
+				value = current_year
+				multiply = 12
+				add = current_month
+			}
 		}
 	}
 
@@ -67,10 +70,7 @@ sul_migration_process_market = {
 
 	# Find best export target whose center is more attractive than ours
 	ordered_export = {
-		limit = {
-			to_market.location = { has_owner = yes }
-			sul_migration_target_score > 0
-		}
+		limit = { to_market.location = { has_owner = yes } sul_migration_target_score > 0 }
 
 		order_by = sul_migration_target_score
 		max = 1
@@ -85,9 +85,7 @@ sul_migration_process_market = {
 sul_migration_fire = {
 	save_temporary_scope_as = source_market
 
-	location = {
-		set_variable = { name = sul_migration_flow value = sul_migration_amount }
-	}
+	location = { set_variable = { name = sul_migration_flow value = sul_migration_amount } }
 
 	if = {
 		limit = { location = { var:sul_migration_flow >= 0.001 } }

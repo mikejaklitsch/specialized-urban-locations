@@ -1,5 +1,5 @@
 ﻿
-template sul_demand_breakdown_tooltip {
+template sul_nobles_demand_breakdown_tooltip {
 	tooltipwidget = {
 		ContextualTooltipType = {
 			blockoverride "tooltip_title" {  }
@@ -7,249 +7,1482 @@ template sul_demand_breakdown_tooltip {
 				TooltipListBase = {
 					max_update_rate = 30
 
-					TooltipTableHeader = {
-						blockoverride "tableheader_text" { block "header_text" { raw_text = "#T Demand Breakdown#!" } }
-					}
+					TooltipTableHeader = { blockoverride "tableheader_text" { raw_text = "#T Nobles — Demand Breakdown#!" } }
 
 					TooltipListScrollArea = {
-						blockoverride "block_scrollarea" {
-							maximumsize = { -1 600 }
-							minimumsize = { -1 30 }
-						}
+						blockoverride "block_scrollarea" { maximumsize = { -1 600 } minimumsize = { -1 30 } }
 						blockoverride "scrollarea_content" {
 							TooltipListRowContent = {
-								block "tier_necessity" {
-									TooltipManualTableField = {
-										visible = "[GreaterThan_CFixedPoint(Location.MakeScope.ScriptValue('sul_nobles_necessity'), '(CFixedPoint)0')]"
+								TooltipManualTableField = {
+									visible = "[GreaterThan_CFixedPoint(Location.MakeScope.ScriptValue('sul_nobles_necessity'), '(CFixedPoint)0')]"
+									blockoverride "field_content" { text_single = { layoutpolicy_horizontal = expanding raw_text = "#T Necessity#!" } }
+								}
 
-										blockoverride "field_content" {
-											text_single = {
-												layoutpolicy_horizontal = expanding
-												raw_text = "#T Necessity#!"
-											}
-										}
-									}
+								TooltipListRowContent = {
+									visible = "[GreaterThan_CFixedPoint(Location.MakeScope.ScriptValue('sul_nobles_necessity'), '(CFixedPoint)0')]"
+									max_update_rate = 30
+									datamodel = "[GetGlobalMapKeys('sul_da_necessity')]"
 
-									TooltipListRowContent = {
-										visible = "[GreaterThan_CFixedPoint(Location.MakeScope.ScriptValue('sul_nobles_necessity'), '(CFixedPoint)0')]"
-										max_update_rate = 30
-										datamodel = "[GetGlobalMapKeys('sul_da_necessity')]"
+									item = {
+										TooltipManualTableField = {
+											blockoverride "field_content" {
+												datacontext = "[Scope.GetGoods]"
 
-										item = {
-											TooltipManualTableField = {
-												blockoverride "field_content" {
-													datacontext = "[Scope.GetGoods]"
+												icon = { size = { 20 20 } texture = "[GetGoodsIcon(Goods.Self)]" }
 
-													icon = {
-														size = { 20 20 }
-														texture = "[GetGoodsIcon(Goods.Self)]"
-													}
-
-													text_single = {
-														layoutpolicy_horizontal = expanding
-														margin_left = 3
-														text = "[Goods.GetName]"
-													}
-													text_single = {
-														min_width = 60
-														align = right
-														raw_text = "[Multiply_CFixedPoint(GetVariableFromGlobalVariableMap('sul_da_necessity', Goods.MakeScope).GetValue, Location.MakeScope.ScriptValue('sul_nobles_necessity'))|2]"
-													}
+												text_single = {
+													layoutpolicy_horizontal = expanding
+													margin_left = 3
+													text = "[Goods.GetName]"
+												}
+												text_single = {
+													min_width = 60
+													align = right
+													raw_text = "[Multiply_CFixedPoint(GetVariableFromGlobalVariableMap('sul_da_necessity', Goods.MakeScope).GetValue, Location.MakeScope.ScriptValue('sul_nobles_necessity'))|2]"
 												}
 											}
 										}
 									}
 								}
-								block "tier_basic" {
-									TooltipManualTableField = {
-										visible = "[GreaterThan_CFixedPoint(Location.MakeScope.ScriptValue('sul_nobles_basic'), '(CFixedPoint)0')]"
 
-										blockoverride "field_content" {
-											text_single = { layoutpolicy_horizontal = expanding raw_text = "#T Basic#!" }
-										}
-									}
+								TooltipManualTableField = {
+									visible = "[GreaterThan_CFixedPoint(Location.MakeScope.ScriptValue('sul_nobles_basic'), '(CFixedPoint)0')]"
+									blockoverride "field_content" { text_single = { layoutpolicy_horizontal = expanding raw_text = "#T Basic#!" } }
+								}
 
-									TooltipListRowContent = {
-										visible = "[GreaterThan_CFixedPoint(Location.MakeScope.ScriptValue('sul_nobles_basic'), '(CFixedPoint)0')]"
-										max_update_rate = 30
-										datamodel = "[GetGlobalMapKeys('sul_da_basic')]"
+								TooltipListRowContent = {
+									visible = "[GreaterThan_CFixedPoint(Location.MakeScope.ScriptValue('sul_nobles_basic'), '(CFixedPoint)0')]"
+									max_update_rate = 30
+									datamodel = "[GetGlobalMapKeys('sul_da_basic')]"
 
-										item = {
-											TooltipManualTableField = {
-												blockoverride "field_content" {
-													datacontext = "[Scope.GetGoods]"
+									item = {
+										TooltipManualTableField = {
+											blockoverride "field_content" {
+												datacontext = "[Scope.GetGoods]"
 
-													icon = {
-														size = { 20 20 }
-														texture = "[GetGoodsIcon(Goods.Self)]"
-													}
+												icon = { size = { 20 20 } texture = "[GetGoodsIcon(Goods.Self)]" }
 
-													text_single = {
-														layoutpolicy_horizontal = expanding
-														margin_left = 3
-														text = "[Goods.GetName]"
-													}
-													text_single = {
-														min_width = 60
-														align = right
-														raw_text = "[Multiply_CFixedPoint(GetVariableFromGlobalVariableMap('sul_da_basic', Goods.MakeScope).GetValue, Location.MakeScope.ScriptValue('sul_nobles_basic'))|2]"
-													}
+												text_single = {
+													layoutpolicy_horizontal = expanding
+													margin_left = 3
+													text = "[Goods.GetName]"
+												}
+												text_single = {
+													min_width = 60
+													align = right
+													raw_text = "[Multiply_CFixedPoint(GetVariableFromGlobalVariableMap('sul_da_basic', Goods.MakeScope).GetValue, Location.MakeScope.ScriptValue('sul_nobles_basic'))|2]"
 												}
 											}
 										}
 									}
 								}
-								block "tier_common" {
-									TooltipManualTableField = {
-										visible = "[GreaterThan_CFixedPoint(Location.MakeScope.ScriptValue('sul_nobles_common'), '(CFixedPoint)0')]"
 
-										blockoverride "field_content" {
-											text_single = { layoutpolicy_horizontal = expanding raw_text = "#T Common#!" }
-										}
-									}
+								TooltipManualTableField = {
+									visible = "[GreaterThan_CFixedPoint(Location.MakeScope.ScriptValue('sul_nobles_common'), '(CFixedPoint)0')]"
+									blockoverride "field_content" { text_single = { layoutpolicy_horizontal = expanding raw_text = "#T Common#!" } }
+								}
 
-									TooltipListRowContent = {
-										visible = "[GreaterThan_CFixedPoint(Location.MakeScope.ScriptValue('sul_nobles_common'), '(CFixedPoint)0')]"
-										max_update_rate = 30
-										datamodel = "[GetGlobalMapKeys('sul_da_common')]"
+								TooltipListRowContent = {
+									visible = "[GreaterThan_CFixedPoint(Location.MakeScope.ScriptValue('sul_nobles_common'), '(CFixedPoint)0')]"
+									max_update_rate = 30
+									datamodel = "[GetGlobalMapKeys('sul_da_common')]"
 
-										item = {
-											TooltipManualTableField = {
-												blockoverride "field_content" {
-													datacontext = "[Scope.GetGoods]"
+									item = {
+										TooltipManualTableField = {
+											blockoverride "field_content" {
+												datacontext = "[Scope.GetGoods]"
 
-													icon = {
-														size = { 20 20 }
-														texture = "[GetGoodsIcon(Goods.Self)]"
-													}
+												icon = { size = { 20 20 } texture = "[GetGoodsIcon(Goods.Self)]" }
 
-													text_single = {
-														layoutpolicy_horizontal = expanding
-														margin_left = 3
-														text = "[Goods.GetName]"
-													}
-													text_single = {
-														min_width = 60
-														align = right
-														raw_text = "[Multiply_CFixedPoint(GetVariableFromGlobalVariableMap('sul_da_common', Goods.MakeScope).GetValue, Location.MakeScope.ScriptValue('sul_nobles_common'))|2]"
-													}
+												text_single = {
+													layoutpolicy_horizontal = expanding
+													margin_left = 3
+													text = "[Goods.GetName]"
+												}
+												text_single = {
+													min_width = 60
+													align = right
+													raw_text = "[Multiply_CFixedPoint(GetVariableFromGlobalVariableMap('sul_da_common', Goods.MakeScope).GetValue, Location.MakeScope.ScriptValue('sul_nobles_common'))|2]"
 												}
 											}
 										}
 									}
 								}
-								block "tier_upper" {
-									TooltipManualTableField = {
-										visible = "[GreaterThan_CFixedPoint(Location.MakeScope.ScriptValue('sul_nobles_upper'), '(CFixedPoint)0')]"
 
-										blockoverride "field_content" {
-											text_single = { layoutpolicy_horizontal = expanding raw_text = "#T Upper#!" }
-										}
-									}
+								TooltipManualTableField = {
+									visible = "[GreaterThan_CFixedPoint(Location.MakeScope.ScriptValue('sul_nobles_upper'), '(CFixedPoint)0')]"
+									blockoverride "field_content" { text_single = { layoutpolicy_horizontal = expanding raw_text = "#T Upper#!" } }
+								}
 
-									TooltipListRowContent = {
-										visible = "[GreaterThan_CFixedPoint(Location.MakeScope.ScriptValue('sul_nobles_upper'), '(CFixedPoint)0')]"
-										max_update_rate = 30
-										datamodel = "[GetGlobalMapKeys('sul_da_upper')]"
+								TooltipListRowContent = {
+									visible = "[GreaterThan_CFixedPoint(Location.MakeScope.ScriptValue('sul_nobles_upper'), '(CFixedPoint)0')]"
+									max_update_rate = 30
+									datamodel = "[GetGlobalMapKeys('sul_da_upper')]"
 
-										item = {
-											TooltipManualTableField = {
-												blockoverride "field_content" {
-													datacontext = "[Scope.GetGoods]"
+									item = {
+										TooltipManualTableField = {
+											blockoverride "field_content" {
+												datacontext = "[Scope.GetGoods]"
 
-													icon = {
-														size = { 20 20 }
-														texture = "[GetGoodsIcon(Goods.Self)]"
-													}
+												icon = { size = { 20 20 } texture = "[GetGoodsIcon(Goods.Self)]" }
 
-													text_single = {
-														layoutpolicy_horizontal = expanding
-														margin_left = 3
-														text = "[Goods.GetName]"
-													}
-													text_single = {
-														min_width = 60
-														align = right
-														raw_text = "[Multiply_CFixedPoint(GetVariableFromGlobalVariableMap('sul_da_upper', Goods.MakeScope).GetValue, Location.MakeScope.ScriptValue('sul_nobles_upper'))|2]"
-													}
+												text_single = {
+													layoutpolicy_horizontal = expanding
+													margin_left = 3
+													text = "[Goods.GetName]"
+												}
+												text_single = {
+													min_width = 60
+													align = right
+													raw_text = "[Multiply_CFixedPoint(GetVariableFromGlobalVariableMap('sul_da_upper', Goods.MakeScope).GetValue, Location.MakeScope.ScriptValue('sul_nobles_upper'))|2]"
 												}
 											}
 										}
 									}
 								}
-								block "tier_luxury" {
-									TooltipManualTableField = {
-										visible = "[GreaterThan_CFixedPoint(Location.MakeScope.ScriptValue('sul_nobles_luxury'), '(CFixedPoint)0')]"
 
-										blockoverride "field_content" {
-											text_single = { layoutpolicy_horizontal = expanding raw_text = "#T Luxury#!" }
-										}
-									}
+								TooltipManualTableField = {
+									visible = "[GreaterThan_CFixedPoint(Location.MakeScope.ScriptValue('sul_nobles_luxury'), '(CFixedPoint)0')]"
+									blockoverride "field_content" { text_single = { layoutpolicy_horizontal = expanding raw_text = "#T Luxury#!" } }
+								}
 
-									TooltipListRowContent = {
-										visible = "[GreaterThan_CFixedPoint(Location.MakeScope.ScriptValue('sul_nobles_luxury'), '(CFixedPoint)0')]"
-										max_update_rate = 30
-										datamodel = "[GetGlobalMapKeys('sul_da_luxury')]"
+								TooltipListRowContent = {
+									visible = "[GreaterThan_CFixedPoint(Location.MakeScope.ScriptValue('sul_nobles_luxury'), '(CFixedPoint)0')]"
+									max_update_rate = 30
+									datamodel = "[GetGlobalMapKeys('sul_da_luxury')]"
 
-										item = {
-											TooltipManualTableField = {
-												blockoverride "field_content" {
-													datacontext = "[Scope.GetGoods]"
+									item = {
+										TooltipManualTableField = {
+											blockoverride "field_content" {
+												datacontext = "[Scope.GetGoods]"
 
-													icon = {
-														size = { 20 20 }
-														texture = "[GetGoodsIcon(Goods.Self)]"
-													}
+												icon = { size = { 20 20 } texture = "[GetGoodsIcon(Goods.Self)]" }
 
-													text_single = {
-														layoutpolicy_horizontal = expanding
-														margin_left = 3
-														text = "[Goods.GetName]"
-													}
-													text_single = {
-														min_width = 60
-														align = right
-														raw_text = "[Multiply_CFixedPoint(GetVariableFromGlobalVariableMap('sul_da_luxury', Goods.MakeScope).GetValue, Location.MakeScope.ScriptValue('sul_nobles_luxury'))|2]"
-													}
+												text_single = {
+													layoutpolicy_horizontal = expanding
+													margin_left = 3
+													text = "[Goods.GetName]"
+												}
+												text_single = {
+													min_width = 60
+													align = right
+													raw_text = "[Multiply_CFixedPoint(GetVariableFromGlobalVariableMap('sul_da_luxury', Goods.MakeScope).GetValue, Location.MakeScope.ScriptValue('sul_nobles_luxury'))|2]"
 												}
 											}
 										}
 									}
 								}
-								block "tier_exotic" {
-									TooltipManualTableField = {
-										visible = "[GreaterThan_CFixedPoint(Location.MakeScope.ScriptValue('sul_nobles_exotic'), '(CFixedPoint)0')]"
 
-										blockoverride "field_content" {
-											text_single = { layoutpolicy_horizontal = expanding raw_text = "#T Exotic#!" }
+								TooltipManualTableField = {
+									visible = "[GreaterThan_CFixedPoint(Location.MakeScope.ScriptValue('sul_nobles_exotic'), '(CFixedPoint)0')]"
+									blockoverride "field_content" { text_single = { layoutpolicy_horizontal = expanding raw_text = "#T Exotic#!" } }
+								}
+
+								TooltipListRowContent = {
+									visible = "[GreaterThan_CFixedPoint(Location.MakeScope.ScriptValue('sul_nobles_exotic'), '(CFixedPoint)0')]"
+									max_update_rate = 30
+									datamodel = "[GetGlobalMapKeys('sul_da_exotic')]"
+
+									item = {
+										TooltipManualTableField = {
+											blockoverride "field_content" {
+												datacontext = "[Scope.GetGoods]"
+
+												icon = { size = { 20 20 } texture = "[GetGoodsIcon(Goods.Self)]" }
+
+												text_single = {
+													layoutpolicy_horizontal = expanding
+													margin_left = 3
+													text = "[Goods.GetName]"
+												}
+												text_single = {
+													min_width = 60
+													align = right
+													raw_text = "[Multiply_CFixedPoint(GetVariableFromGlobalVariableMap('sul_da_exotic', Goods.MakeScope).GetValue, Location.MakeScope.ScriptValue('sul_nobles_exotic'))|2]"
+												}
+											}
 										}
 									}
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+}
 
-									TooltipListRowContent = {
-										visible = "[GreaterThan_CFixedPoint(Location.MakeScope.ScriptValue('sul_nobles_exotic'), '(CFixedPoint)0')]"
-										max_update_rate = 30
-										datamodel = "[GetGlobalMapKeys('sul_da_exotic')]"
+template sul_clergy_demand_breakdown_tooltip {
+	tooltipwidget = {
+		ContextualTooltipType = {
+			blockoverride "tooltip_title" {  }
+			blockoverride "tooltip_content" {
+				TooltipListBase = {
+					max_update_rate = 30
 
-										item = {
-											TooltipManualTableField = {
-												blockoverride "field_content" {
-													datacontext = "[Scope.GetGoods]"
+					TooltipTableHeader = { blockoverride "tableheader_text" { raw_text = "#T Clergy — Demand Breakdown#!" } }
 
-													icon = {
-														size = { 20 20 }
-														texture = "[GetGoodsIcon(Goods.Self)]"
-													}
+					TooltipListScrollArea = {
+						blockoverride "block_scrollarea" { maximumsize = { -1 600 } minimumsize = { -1 30 } }
+						blockoverride "scrollarea_content" {
+							TooltipListRowContent = {
+								TooltipManualTableField = {
+									visible = "[GreaterThan_CFixedPoint(Location.MakeScope.ScriptValue('sul_clergy_necessity'), '(CFixedPoint)0')]"
+									blockoverride "field_content" { text_single = { layoutpolicy_horizontal = expanding raw_text = "#T Necessity#!" } }
+								}
 
-													text_single = {
-														layoutpolicy_horizontal = expanding
-														margin_left = 3
-														text = "[Goods.GetName]"
-													}
-													text_single = {
-														min_width = 60
-														align = right
-														raw_text = "[Multiply_CFixedPoint(GetVariableFromGlobalVariableMap('sul_da_exotic', Goods.MakeScope).GetValue, Location.MakeScope.ScriptValue('sul_nobles_exotic'))|2]"
-													}
+								TooltipListRowContent = {
+									visible = "[GreaterThan_CFixedPoint(Location.MakeScope.ScriptValue('sul_clergy_necessity'), '(CFixedPoint)0')]"
+									max_update_rate = 30
+									datamodel = "[GetGlobalMapKeys('sul_da_necessity')]"
+
+									item = {
+										TooltipManualTableField = {
+											blockoverride "field_content" {
+												datacontext = "[Scope.GetGoods]"
+
+												icon = { size = { 20 20 } texture = "[GetGoodsIcon(Goods.Self)]" }
+
+												text_single = {
+													layoutpolicy_horizontal = expanding
+													margin_left = 3
+													text = "[Goods.GetName]"
+												}
+												text_single = {
+													min_width = 60
+													align = right
+													raw_text = "[Multiply_CFixedPoint(GetVariableFromGlobalVariableMap('sul_da_necessity', Goods.MakeScope).GetValue, Location.MakeScope.ScriptValue('sul_clergy_necessity'))|2]"
+												}
+											}
+										}
+									}
+								}
+
+								TooltipManualTableField = {
+									visible = "[GreaterThan_CFixedPoint(Location.MakeScope.ScriptValue('sul_clergy_basic'), '(CFixedPoint)0')]"
+									blockoverride "field_content" { text_single = { layoutpolicy_horizontal = expanding raw_text = "#T Basic#!" } }
+								}
+
+								TooltipListRowContent = {
+									visible = "[GreaterThan_CFixedPoint(Location.MakeScope.ScriptValue('sul_clergy_basic'), '(CFixedPoint)0')]"
+									max_update_rate = 30
+									datamodel = "[GetGlobalMapKeys('sul_da_basic')]"
+
+									item = {
+										TooltipManualTableField = {
+											blockoverride "field_content" {
+												datacontext = "[Scope.GetGoods]"
+
+												icon = { size = { 20 20 } texture = "[GetGoodsIcon(Goods.Self)]" }
+
+												text_single = {
+													layoutpolicy_horizontal = expanding
+													margin_left = 3
+													text = "[Goods.GetName]"
+												}
+												text_single = {
+													min_width = 60
+													align = right
+													raw_text = "[Multiply_CFixedPoint(GetVariableFromGlobalVariableMap('sul_da_basic', Goods.MakeScope).GetValue, Location.MakeScope.ScriptValue('sul_clergy_basic'))|2]"
+												}
+											}
+										}
+									}
+								}
+
+								TooltipManualTableField = {
+									visible = "[GreaterThan_CFixedPoint(Location.MakeScope.ScriptValue('sul_clergy_common'), '(CFixedPoint)0')]"
+									blockoverride "field_content" { text_single = { layoutpolicy_horizontal = expanding raw_text = "#T Common#!" } }
+								}
+
+								TooltipListRowContent = {
+									visible = "[GreaterThan_CFixedPoint(Location.MakeScope.ScriptValue('sul_clergy_common'), '(CFixedPoint)0')]"
+									max_update_rate = 30
+									datamodel = "[GetGlobalMapKeys('sul_da_common')]"
+
+									item = {
+										TooltipManualTableField = {
+											blockoverride "field_content" {
+												datacontext = "[Scope.GetGoods]"
+
+												icon = { size = { 20 20 } texture = "[GetGoodsIcon(Goods.Self)]" }
+
+												text_single = {
+													layoutpolicy_horizontal = expanding
+													margin_left = 3
+													text = "[Goods.GetName]"
+												}
+												text_single = {
+													min_width = 60
+													align = right
+													raw_text = "[Multiply_CFixedPoint(GetVariableFromGlobalVariableMap('sul_da_common', Goods.MakeScope).GetValue, Location.MakeScope.ScriptValue('sul_clergy_common'))|2]"
+												}
+											}
+										}
+									}
+								}
+
+								TooltipManualTableField = {
+									visible = "[GreaterThan_CFixedPoint(Location.MakeScope.ScriptValue('sul_clergy_upper'), '(CFixedPoint)0')]"
+									blockoverride "field_content" { text_single = { layoutpolicy_horizontal = expanding raw_text = "#T Upper#!" } }
+								}
+
+								TooltipListRowContent = {
+									visible = "[GreaterThan_CFixedPoint(Location.MakeScope.ScriptValue('sul_clergy_upper'), '(CFixedPoint)0')]"
+									max_update_rate = 30
+									datamodel = "[GetGlobalMapKeys('sul_da_upper')]"
+
+									item = {
+										TooltipManualTableField = {
+											blockoverride "field_content" {
+												datacontext = "[Scope.GetGoods]"
+
+												icon = { size = { 20 20 } texture = "[GetGoodsIcon(Goods.Self)]" }
+
+												text_single = {
+													layoutpolicy_horizontal = expanding
+													margin_left = 3
+													text = "[Goods.GetName]"
+												}
+												text_single = {
+													min_width = 60
+													align = right
+													raw_text = "[Multiply_CFixedPoint(GetVariableFromGlobalVariableMap('sul_da_upper', Goods.MakeScope).GetValue, Location.MakeScope.ScriptValue('sul_clergy_upper'))|2]"
+												}
+											}
+										}
+									}
+								}
+
+								TooltipManualTableField = {
+									visible = "[GreaterThan_CFixedPoint(Location.MakeScope.ScriptValue('sul_clergy_luxury'), '(CFixedPoint)0')]"
+									blockoverride "field_content" { text_single = { layoutpolicy_horizontal = expanding raw_text = "#T Luxury#!" } }
+								}
+
+								TooltipListRowContent = {
+									visible = "[GreaterThan_CFixedPoint(Location.MakeScope.ScriptValue('sul_clergy_luxury'), '(CFixedPoint)0')]"
+									max_update_rate = 30
+									datamodel = "[GetGlobalMapKeys('sul_da_luxury')]"
+
+									item = {
+										TooltipManualTableField = {
+											blockoverride "field_content" {
+												datacontext = "[Scope.GetGoods]"
+
+												icon = { size = { 20 20 } texture = "[GetGoodsIcon(Goods.Self)]" }
+
+												text_single = {
+													layoutpolicy_horizontal = expanding
+													margin_left = 3
+													text = "[Goods.GetName]"
+												}
+												text_single = {
+													min_width = 60
+													align = right
+													raw_text = "[Multiply_CFixedPoint(GetVariableFromGlobalVariableMap('sul_da_luxury', Goods.MakeScope).GetValue, Location.MakeScope.ScriptValue('sul_clergy_luxury'))|2]"
+												}
+											}
+										}
+									}
+								}
+
+								TooltipManualTableField = {
+									visible = "[GreaterThan_CFixedPoint(Location.MakeScope.ScriptValue('sul_clergy_exotic'), '(CFixedPoint)0')]"
+									blockoverride "field_content" { text_single = { layoutpolicy_horizontal = expanding raw_text = "#T Exotic#!" } }
+								}
+
+								TooltipListRowContent = {
+									visible = "[GreaterThan_CFixedPoint(Location.MakeScope.ScriptValue('sul_clergy_exotic'), '(CFixedPoint)0')]"
+									max_update_rate = 30
+									datamodel = "[GetGlobalMapKeys('sul_da_exotic')]"
+
+									item = {
+										TooltipManualTableField = {
+											blockoverride "field_content" {
+												datacontext = "[Scope.GetGoods]"
+
+												icon = { size = { 20 20 } texture = "[GetGoodsIcon(Goods.Self)]" }
+
+												text_single = {
+													layoutpolicy_horizontal = expanding
+													margin_left = 3
+													text = "[Goods.GetName]"
+												}
+												text_single = {
+													min_width = 60
+													align = right
+													raw_text = "[Multiply_CFixedPoint(GetVariableFromGlobalVariableMap('sul_da_exotic', Goods.MakeScope).GetValue, Location.MakeScope.ScriptValue('sul_clergy_exotic'))|2]"
+												}
+											}
+										}
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+}
+
+template sul_burghers_demand_breakdown_tooltip {
+	tooltipwidget = {
+		ContextualTooltipType = {
+			blockoverride "tooltip_title" {  }
+			blockoverride "tooltip_content" {
+				TooltipListBase = {
+					max_update_rate = 30
+
+					TooltipTableHeader = { blockoverride "tableheader_text" { raw_text = "#T Burghers — Demand Breakdown#!" } }
+
+					TooltipListScrollArea = {
+						blockoverride "block_scrollarea" { maximumsize = { -1 600 } minimumsize = { -1 30 } }
+						blockoverride "scrollarea_content" {
+							TooltipListRowContent = {
+								TooltipManualTableField = {
+									visible = "[GreaterThan_CFixedPoint(Location.MakeScope.ScriptValue('sul_burghers_necessity'), '(CFixedPoint)0')]"
+									blockoverride "field_content" { text_single = { layoutpolicy_horizontal = expanding raw_text = "#T Necessity#!" } }
+								}
+
+								TooltipListRowContent = {
+									visible = "[GreaterThan_CFixedPoint(Location.MakeScope.ScriptValue('sul_burghers_necessity'), '(CFixedPoint)0')]"
+									max_update_rate = 30
+									datamodel = "[GetGlobalMapKeys('sul_da_necessity')]"
+
+									item = {
+										TooltipManualTableField = {
+											blockoverride "field_content" {
+												datacontext = "[Scope.GetGoods]"
+
+												icon = { size = { 20 20 } texture = "[GetGoodsIcon(Goods.Self)]" }
+
+												text_single = {
+													layoutpolicy_horizontal = expanding
+													margin_left = 3
+													text = "[Goods.GetName]"
+												}
+												text_single = {
+													min_width = 60
+													align = right
+													raw_text = "[Multiply_CFixedPoint(GetVariableFromGlobalVariableMap('sul_da_necessity', Goods.MakeScope).GetValue, Location.MakeScope.ScriptValue('sul_burghers_necessity'))|2]"
+												}
+											}
+										}
+									}
+								}
+
+								TooltipManualTableField = {
+									visible = "[GreaterThan_CFixedPoint(Location.MakeScope.ScriptValue('sul_burghers_basic'), '(CFixedPoint)0')]"
+									blockoverride "field_content" { text_single = { layoutpolicy_horizontal = expanding raw_text = "#T Basic#!" } }
+								}
+
+								TooltipListRowContent = {
+									visible = "[GreaterThan_CFixedPoint(Location.MakeScope.ScriptValue('sul_burghers_basic'), '(CFixedPoint)0')]"
+									max_update_rate = 30
+									datamodel = "[GetGlobalMapKeys('sul_da_basic')]"
+
+									item = {
+										TooltipManualTableField = {
+											blockoverride "field_content" {
+												datacontext = "[Scope.GetGoods]"
+
+												icon = { size = { 20 20 } texture = "[GetGoodsIcon(Goods.Self)]" }
+
+												text_single = {
+													layoutpolicy_horizontal = expanding
+													margin_left = 3
+													text = "[Goods.GetName]"
+												}
+												text_single = {
+													min_width = 60
+													align = right
+													raw_text = "[Multiply_CFixedPoint(GetVariableFromGlobalVariableMap('sul_da_basic', Goods.MakeScope).GetValue, Location.MakeScope.ScriptValue('sul_burghers_basic'))|2]"
+												}
+											}
+										}
+									}
+								}
+
+								TooltipManualTableField = {
+									visible = "[GreaterThan_CFixedPoint(Location.MakeScope.ScriptValue('sul_burghers_common'), '(CFixedPoint)0')]"
+									blockoverride "field_content" { text_single = { layoutpolicy_horizontal = expanding raw_text = "#T Common#!" } }
+								}
+
+								TooltipListRowContent = {
+									visible = "[GreaterThan_CFixedPoint(Location.MakeScope.ScriptValue('sul_burghers_common'), '(CFixedPoint)0')]"
+									max_update_rate = 30
+									datamodel = "[GetGlobalMapKeys('sul_da_common')]"
+
+									item = {
+										TooltipManualTableField = {
+											blockoverride "field_content" {
+												datacontext = "[Scope.GetGoods]"
+
+												icon = { size = { 20 20 } texture = "[GetGoodsIcon(Goods.Self)]" }
+
+												text_single = {
+													layoutpolicy_horizontal = expanding
+													margin_left = 3
+													text = "[Goods.GetName]"
+												}
+												text_single = {
+													min_width = 60
+													align = right
+													raw_text = "[Multiply_CFixedPoint(GetVariableFromGlobalVariableMap('sul_da_common', Goods.MakeScope).GetValue, Location.MakeScope.ScriptValue('sul_burghers_common'))|2]"
+												}
+											}
+										}
+									}
+								}
+
+								TooltipManualTableField = {
+									visible = "[GreaterThan_CFixedPoint(Location.MakeScope.ScriptValue('sul_burghers_upper'), '(CFixedPoint)0')]"
+									blockoverride "field_content" { text_single = { layoutpolicy_horizontal = expanding raw_text = "#T Upper#!" } }
+								}
+
+								TooltipListRowContent = {
+									visible = "[GreaterThan_CFixedPoint(Location.MakeScope.ScriptValue('sul_burghers_upper'), '(CFixedPoint)0')]"
+									max_update_rate = 30
+									datamodel = "[GetGlobalMapKeys('sul_da_upper')]"
+
+									item = {
+										TooltipManualTableField = {
+											blockoverride "field_content" {
+												datacontext = "[Scope.GetGoods]"
+
+												icon = { size = { 20 20 } texture = "[GetGoodsIcon(Goods.Self)]" }
+
+												text_single = {
+													layoutpolicy_horizontal = expanding
+													margin_left = 3
+													text = "[Goods.GetName]"
+												}
+												text_single = {
+													min_width = 60
+													align = right
+													raw_text = "[Multiply_CFixedPoint(GetVariableFromGlobalVariableMap('sul_da_upper', Goods.MakeScope).GetValue, Location.MakeScope.ScriptValue('sul_burghers_upper'))|2]"
+												}
+											}
+										}
+									}
+								}
+
+								TooltipManualTableField = {
+									visible = "[GreaterThan_CFixedPoint(Location.MakeScope.ScriptValue('sul_burghers_luxury'), '(CFixedPoint)0')]"
+									blockoverride "field_content" { text_single = { layoutpolicy_horizontal = expanding raw_text = "#T Luxury#!" } }
+								}
+
+								TooltipListRowContent = {
+									visible = "[GreaterThan_CFixedPoint(Location.MakeScope.ScriptValue('sul_burghers_luxury'), '(CFixedPoint)0')]"
+									max_update_rate = 30
+									datamodel = "[GetGlobalMapKeys('sul_da_luxury')]"
+
+									item = {
+										TooltipManualTableField = {
+											blockoverride "field_content" {
+												datacontext = "[Scope.GetGoods]"
+
+												icon = { size = { 20 20 } texture = "[GetGoodsIcon(Goods.Self)]" }
+
+												text_single = {
+													layoutpolicy_horizontal = expanding
+													margin_left = 3
+													text = "[Goods.GetName]"
+												}
+												text_single = {
+													min_width = 60
+													align = right
+													raw_text = "[Multiply_CFixedPoint(GetVariableFromGlobalVariableMap('sul_da_luxury', Goods.MakeScope).GetValue, Location.MakeScope.ScriptValue('sul_burghers_luxury'))|2]"
+												}
+											}
+										}
+									}
+								}
+
+								TooltipManualTableField = {
+									visible = "[GreaterThan_CFixedPoint(Location.MakeScope.ScriptValue('sul_burghers_exotic'), '(CFixedPoint)0')]"
+									blockoverride "field_content" { text_single = { layoutpolicy_horizontal = expanding raw_text = "#T Exotic#!" } }
+								}
+
+								TooltipListRowContent = {
+									visible = "[GreaterThan_CFixedPoint(Location.MakeScope.ScriptValue('sul_burghers_exotic'), '(CFixedPoint)0')]"
+									max_update_rate = 30
+									datamodel = "[GetGlobalMapKeys('sul_da_exotic')]"
+
+									item = {
+										TooltipManualTableField = {
+											blockoverride "field_content" {
+												datacontext = "[Scope.GetGoods]"
+
+												icon = { size = { 20 20 } texture = "[GetGoodsIcon(Goods.Self)]" }
+
+												text_single = {
+													layoutpolicy_horizontal = expanding
+													margin_left = 3
+													text = "[Goods.GetName]"
+												}
+												text_single = {
+													min_width = 60
+													align = right
+													raw_text = "[Multiply_CFixedPoint(GetVariableFromGlobalVariableMap('sul_da_exotic', Goods.MakeScope).GetValue, Location.MakeScope.ScriptValue('sul_burghers_exotic'))|2]"
+												}
+											}
+										}
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+}
+
+template sul_soldiers_demand_breakdown_tooltip {
+	tooltipwidget = {
+		ContextualTooltipType = {
+			blockoverride "tooltip_title" {  }
+			blockoverride "tooltip_content" {
+				TooltipListBase = {
+					max_update_rate = 30
+
+					TooltipTableHeader = { blockoverride "tableheader_text" { raw_text = "#T Soldiers — Demand Breakdown#!" } }
+
+					TooltipListScrollArea = {
+						blockoverride "block_scrollarea" { maximumsize = { -1 600 } minimumsize = { -1 30 } }
+						blockoverride "scrollarea_content" {
+							TooltipListRowContent = {
+								TooltipManualTableField = {
+									visible = "[GreaterThan_CFixedPoint(Location.MakeScope.ScriptValue('sul_soldiers_necessity'), '(CFixedPoint)0')]"
+									blockoverride "field_content" { text_single = { layoutpolicy_horizontal = expanding raw_text = "#T Necessity#!" } }
+								}
+
+								TooltipListRowContent = {
+									visible = "[GreaterThan_CFixedPoint(Location.MakeScope.ScriptValue('sul_soldiers_necessity'), '(CFixedPoint)0')]"
+									max_update_rate = 30
+									datamodel = "[GetGlobalMapKeys('sul_da_necessity')]"
+
+									item = {
+										TooltipManualTableField = {
+											blockoverride "field_content" {
+												datacontext = "[Scope.GetGoods]"
+
+												icon = { size = { 20 20 } texture = "[GetGoodsIcon(Goods.Self)]" }
+
+												text_single = {
+													layoutpolicy_horizontal = expanding
+													margin_left = 3
+													text = "[Goods.GetName]"
+												}
+												text_single = {
+													min_width = 60
+													align = right
+													raw_text = "[Multiply_CFixedPoint(GetVariableFromGlobalVariableMap('sul_da_necessity', Goods.MakeScope).GetValue, Location.MakeScope.ScriptValue('sul_soldiers_necessity'))|2]"
+												}
+											}
+										}
+									}
+								}
+
+								TooltipManualTableField = {
+									visible = "[GreaterThan_CFixedPoint(Location.MakeScope.ScriptValue('sul_soldiers_basic'), '(CFixedPoint)0')]"
+									blockoverride "field_content" { text_single = { layoutpolicy_horizontal = expanding raw_text = "#T Basic#!" } }
+								}
+
+								TooltipListRowContent = {
+									visible = "[GreaterThan_CFixedPoint(Location.MakeScope.ScriptValue('sul_soldiers_basic'), '(CFixedPoint)0')]"
+									max_update_rate = 30
+									datamodel = "[GetGlobalMapKeys('sul_da_basic')]"
+
+									item = {
+										TooltipManualTableField = {
+											blockoverride "field_content" {
+												datacontext = "[Scope.GetGoods]"
+
+												icon = { size = { 20 20 } texture = "[GetGoodsIcon(Goods.Self)]" }
+
+												text_single = {
+													layoutpolicy_horizontal = expanding
+													margin_left = 3
+													text = "[Goods.GetName]"
+												}
+												text_single = {
+													min_width = 60
+													align = right
+													raw_text = "[Multiply_CFixedPoint(GetVariableFromGlobalVariableMap('sul_da_basic', Goods.MakeScope).GetValue, Location.MakeScope.ScriptValue('sul_soldiers_basic'))|2]"
+												}
+											}
+										}
+									}
+								}
+
+								TooltipManualTableField = {
+									visible = "[GreaterThan_CFixedPoint(Location.MakeScope.ScriptValue('sul_soldiers_common'), '(CFixedPoint)0')]"
+									blockoverride "field_content" { text_single = { layoutpolicy_horizontal = expanding raw_text = "#T Common#!" } }
+								}
+
+								TooltipListRowContent = {
+									visible = "[GreaterThan_CFixedPoint(Location.MakeScope.ScriptValue('sul_soldiers_common'), '(CFixedPoint)0')]"
+									max_update_rate = 30
+									datamodel = "[GetGlobalMapKeys('sul_da_common')]"
+
+									item = {
+										TooltipManualTableField = {
+											blockoverride "field_content" {
+												datacontext = "[Scope.GetGoods]"
+
+												icon = { size = { 20 20 } texture = "[GetGoodsIcon(Goods.Self)]" }
+
+												text_single = {
+													layoutpolicy_horizontal = expanding
+													margin_left = 3
+													text = "[Goods.GetName]"
+												}
+												text_single = {
+													min_width = 60
+													align = right
+													raw_text = "[Multiply_CFixedPoint(GetVariableFromGlobalVariableMap('sul_da_common', Goods.MakeScope).GetValue, Location.MakeScope.ScriptValue('sul_soldiers_common'))|2]"
+												}
+											}
+										}
+									}
+								}
+
+								TooltipManualTableField = {
+									visible = "[GreaterThan_CFixedPoint(Location.MakeScope.ScriptValue('sul_soldiers_upper'), '(CFixedPoint)0')]"
+									blockoverride "field_content" { text_single = { layoutpolicy_horizontal = expanding raw_text = "#T Upper#!" } }
+								}
+
+								TooltipListRowContent = {
+									visible = "[GreaterThan_CFixedPoint(Location.MakeScope.ScriptValue('sul_soldiers_upper'), '(CFixedPoint)0')]"
+									max_update_rate = 30
+									datamodel = "[GetGlobalMapKeys('sul_da_upper')]"
+
+									item = {
+										TooltipManualTableField = {
+											blockoverride "field_content" {
+												datacontext = "[Scope.GetGoods]"
+
+												icon = { size = { 20 20 } texture = "[GetGoodsIcon(Goods.Self)]" }
+
+												text_single = {
+													layoutpolicy_horizontal = expanding
+													margin_left = 3
+													text = "[Goods.GetName]"
+												}
+												text_single = {
+													min_width = 60
+													align = right
+													raw_text = "[Multiply_CFixedPoint(GetVariableFromGlobalVariableMap('sul_da_upper', Goods.MakeScope).GetValue, Location.MakeScope.ScriptValue('sul_soldiers_upper'))|2]"
+												}
+											}
+										}
+									}
+								}
+
+								TooltipManualTableField = {
+									visible = "[GreaterThan_CFixedPoint(Location.MakeScope.ScriptValue('sul_soldiers_luxury'), '(CFixedPoint)0')]"
+									blockoverride "field_content" { text_single = { layoutpolicy_horizontal = expanding raw_text = "#T Luxury#!" } }
+								}
+
+								TooltipListRowContent = {
+									visible = "[GreaterThan_CFixedPoint(Location.MakeScope.ScriptValue('sul_soldiers_luxury'), '(CFixedPoint)0')]"
+									max_update_rate = 30
+									datamodel = "[GetGlobalMapKeys('sul_da_luxury')]"
+
+									item = {
+										TooltipManualTableField = {
+											blockoverride "field_content" {
+												datacontext = "[Scope.GetGoods]"
+
+												icon = { size = { 20 20 } texture = "[GetGoodsIcon(Goods.Self)]" }
+
+												text_single = {
+													layoutpolicy_horizontal = expanding
+													margin_left = 3
+													text = "[Goods.GetName]"
+												}
+												text_single = {
+													min_width = 60
+													align = right
+													raw_text = "[Multiply_CFixedPoint(GetVariableFromGlobalVariableMap('sul_da_luxury', Goods.MakeScope).GetValue, Location.MakeScope.ScriptValue('sul_soldiers_luxury'))|2]"
+												}
+											}
+										}
+									}
+								}
+
+								TooltipManualTableField = {
+									visible = "[GreaterThan_CFixedPoint(Location.MakeScope.ScriptValue('sul_soldiers_exotic'), '(CFixedPoint)0')]"
+									blockoverride "field_content" { text_single = { layoutpolicy_horizontal = expanding raw_text = "#T Exotic#!" } }
+								}
+
+								TooltipListRowContent = {
+									visible = "[GreaterThan_CFixedPoint(Location.MakeScope.ScriptValue('sul_soldiers_exotic'), '(CFixedPoint)0')]"
+									max_update_rate = 30
+									datamodel = "[GetGlobalMapKeys('sul_da_exotic')]"
+
+									item = {
+										TooltipManualTableField = {
+											blockoverride "field_content" {
+												datacontext = "[Scope.GetGoods]"
+
+												icon = { size = { 20 20 } texture = "[GetGoodsIcon(Goods.Self)]" }
+
+												text_single = {
+													layoutpolicy_horizontal = expanding
+													margin_left = 3
+													text = "[Goods.GetName]"
+												}
+												text_single = {
+													min_width = 60
+													align = right
+													raw_text = "[Multiply_CFixedPoint(GetVariableFromGlobalVariableMap('sul_da_exotic', Goods.MakeScope).GetValue, Location.MakeScope.ScriptValue('sul_soldiers_exotic'))|2]"
+												}
+											}
+										}
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+}
+
+template sul_laborers_demand_breakdown_tooltip {
+	tooltipwidget = {
+		ContextualTooltipType = {
+			blockoverride "tooltip_title" {  }
+			blockoverride "tooltip_content" {
+				TooltipListBase = {
+					max_update_rate = 30
+
+					TooltipTableHeader = { blockoverride "tableheader_text" { raw_text = "#T Laborers — Demand Breakdown#!" } }
+
+					TooltipListScrollArea = {
+						blockoverride "block_scrollarea" { maximumsize = { -1 600 } minimumsize = { -1 30 } }
+						blockoverride "scrollarea_content" {
+							TooltipListRowContent = {
+								TooltipManualTableField = {
+									visible = "[GreaterThan_CFixedPoint(Location.MakeScope.ScriptValue('sul_laborers_necessity'), '(CFixedPoint)0')]"
+									blockoverride "field_content" { text_single = { layoutpolicy_horizontal = expanding raw_text = "#T Necessity#!" } }
+								}
+
+								TooltipListRowContent = {
+									visible = "[GreaterThan_CFixedPoint(Location.MakeScope.ScriptValue('sul_laborers_necessity'), '(CFixedPoint)0')]"
+									max_update_rate = 30
+									datamodel = "[GetGlobalMapKeys('sul_da_necessity')]"
+
+									item = {
+										TooltipManualTableField = {
+											blockoverride "field_content" {
+												datacontext = "[Scope.GetGoods]"
+
+												icon = { size = { 20 20 } texture = "[GetGoodsIcon(Goods.Self)]" }
+
+												text_single = {
+													layoutpolicy_horizontal = expanding
+													margin_left = 3
+													text = "[Goods.GetName]"
+												}
+												text_single = {
+													min_width = 60
+													align = right
+													raw_text = "[Multiply_CFixedPoint(GetVariableFromGlobalVariableMap('sul_da_necessity', Goods.MakeScope).GetValue, Location.MakeScope.ScriptValue('sul_laborers_necessity'))|2]"
+												}
+											}
+										}
+									}
+								}
+
+								TooltipManualTableField = {
+									visible = "[GreaterThan_CFixedPoint(Location.MakeScope.ScriptValue('sul_laborers_basic'), '(CFixedPoint)0')]"
+									blockoverride "field_content" { text_single = { layoutpolicy_horizontal = expanding raw_text = "#T Basic#!" } }
+								}
+
+								TooltipListRowContent = {
+									visible = "[GreaterThan_CFixedPoint(Location.MakeScope.ScriptValue('sul_laborers_basic'), '(CFixedPoint)0')]"
+									max_update_rate = 30
+									datamodel = "[GetGlobalMapKeys('sul_da_basic')]"
+
+									item = {
+										TooltipManualTableField = {
+											blockoverride "field_content" {
+												datacontext = "[Scope.GetGoods]"
+
+												icon = { size = { 20 20 } texture = "[GetGoodsIcon(Goods.Self)]" }
+
+												text_single = {
+													layoutpolicy_horizontal = expanding
+													margin_left = 3
+													text = "[Goods.GetName]"
+												}
+												text_single = {
+													min_width = 60
+													align = right
+													raw_text = "[Multiply_CFixedPoint(GetVariableFromGlobalVariableMap('sul_da_basic', Goods.MakeScope).GetValue, Location.MakeScope.ScriptValue('sul_laborers_basic'))|2]"
+												}
+											}
+										}
+									}
+								}
+
+								TooltipManualTableField = {
+									visible = "[GreaterThan_CFixedPoint(Location.MakeScope.ScriptValue('sul_laborers_common'), '(CFixedPoint)0')]"
+									blockoverride "field_content" { text_single = { layoutpolicy_horizontal = expanding raw_text = "#T Common#!" } }
+								}
+
+								TooltipListRowContent = {
+									visible = "[GreaterThan_CFixedPoint(Location.MakeScope.ScriptValue('sul_laborers_common'), '(CFixedPoint)0')]"
+									max_update_rate = 30
+									datamodel = "[GetGlobalMapKeys('sul_da_common')]"
+
+									item = {
+										TooltipManualTableField = {
+											blockoverride "field_content" {
+												datacontext = "[Scope.GetGoods]"
+
+												icon = { size = { 20 20 } texture = "[GetGoodsIcon(Goods.Self)]" }
+
+												text_single = {
+													layoutpolicy_horizontal = expanding
+													margin_left = 3
+													text = "[Goods.GetName]"
+												}
+												text_single = {
+													min_width = 60
+													align = right
+													raw_text = "[Multiply_CFixedPoint(GetVariableFromGlobalVariableMap('sul_da_common', Goods.MakeScope).GetValue, Location.MakeScope.ScriptValue('sul_laborers_common'))|2]"
+												}
+											}
+										}
+									}
+								}
+
+								TooltipManualTableField = {
+									visible = "[GreaterThan_CFixedPoint(Location.MakeScope.ScriptValue('sul_laborers_upper'), '(CFixedPoint)0')]"
+									blockoverride "field_content" { text_single = { layoutpolicy_horizontal = expanding raw_text = "#T Upper#!" } }
+								}
+
+								TooltipListRowContent = {
+									visible = "[GreaterThan_CFixedPoint(Location.MakeScope.ScriptValue('sul_laborers_upper'), '(CFixedPoint)0')]"
+									max_update_rate = 30
+									datamodel = "[GetGlobalMapKeys('sul_da_upper')]"
+
+									item = {
+										TooltipManualTableField = {
+											blockoverride "field_content" {
+												datacontext = "[Scope.GetGoods]"
+
+												icon = { size = { 20 20 } texture = "[GetGoodsIcon(Goods.Self)]" }
+
+												text_single = {
+													layoutpolicy_horizontal = expanding
+													margin_left = 3
+													text = "[Goods.GetName]"
+												}
+												text_single = {
+													min_width = 60
+													align = right
+													raw_text = "[Multiply_CFixedPoint(GetVariableFromGlobalVariableMap('sul_da_upper', Goods.MakeScope).GetValue, Location.MakeScope.ScriptValue('sul_laborers_upper'))|2]"
+												}
+											}
+										}
+									}
+								}
+
+								TooltipManualTableField = {
+									visible = "[GreaterThan_CFixedPoint(Location.MakeScope.ScriptValue('sul_laborers_luxury'), '(CFixedPoint)0')]"
+									blockoverride "field_content" { text_single = { layoutpolicy_horizontal = expanding raw_text = "#T Luxury#!" } }
+								}
+
+								TooltipListRowContent = {
+									visible = "[GreaterThan_CFixedPoint(Location.MakeScope.ScriptValue('sul_laborers_luxury'), '(CFixedPoint)0')]"
+									max_update_rate = 30
+									datamodel = "[GetGlobalMapKeys('sul_da_luxury')]"
+
+									item = {
+										TooltipManualTableField = {
+											blockoverride "field_content" {
+												datacontext = "[Scope.GetGoods]"
+
+												icon = { size = { 20 20 } texture = "[GetGoodsIcon(Goods.Self)]" }
+
+												text_single = {
+													layoutpolicy_horizontal = expanding
+													margin_left = 3
+													text = "[Goods.GetName]"
+												}
+												text_single = {
+													min_width = 60
+													align = right
+													raw_text = "[Multiply_CFixedPoint(GetVariableFromGlobalVariableMap('sul_da_luxury', Goods.MakeScope).GetValue, Location.MakeScope.ScriptValue('sul_laborers_luxury'))|2]"
+												}
+											}
+										}
+									}
+								}
+
+								TooltipManualTableField = {
+									visible = "[GreaterThan_CFixedPoint(Location.MakeScope.ScriptValue('sul_laborers_exotic'), '(CFixedPoint)0')]"
+									blockoverride "field_content" { text_single = { layoutpolicy_horizontal = expanding raw_text = "#T Exotic#!" } }
+								}
+
+								TooltipListRowContent = {
+									visible = "[GreaterThan_CFixedPoint(Location.MakeScope.ScriptValue('sul_laborers_exotic'), '(CFixedPoint)0')]"
+									max_update_rate = 30
+									datamodel = "[GetGlobalMapKeys('sul_da_exotic')]"
+
+									item = {
+										TooltipManualTableField = {
+											blockoverride "field_content" {
+												datacontext = "[Scope.GetGoods]"
+
+												icon = { size = { 20 20 } texture = "[GetGoodsIcon(Goods.Self)]" }
+
+												text_single = {
+													layoutpolicy_horizontal = expanding
+													margin_left = 3
+													text = "[Goods.GetName]"
+												}
+												text_single = {
+													min_width = 60
+													align = right
+													raw_text = "[Multiply_CFixedPoint(GetVariableFromGlobalVariableMap('sul_da_exotic', Goods.MakeScope).GetValue, Location.MakeScope.ScriptValue('sul_laborers_exotic'))|2]"
+												}
+											}
+										}
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+}
+
+template sul_peasants_demand_breakdown_tooltip {
+	tooltipwidget = {
+		ContextualTooltipType = {
+			blockoverride "tooltip_title" {  }
+			blockoverride "tooltip_content" {
+				TooltipListBase = {
+					max_update_rate = 30
+
+					TooltipTableHeader = { blockoverride "tableheader_text" { raw_text = "#T Peasants — Demand Breakdown#!" } }
+
+					TooltipListScrollArea = {
+						blockoverride "block_scrollarea" { maximumsize = { -1 600 } minimumsize = { -1 30 } }
+						blockoverride "scrollarea_content" {
+							TooltipListRowContent = {
+								TooltipManualTableField = {
+									visible = "[GreaterThan_CFixedPoint(Location.MakeScope.ScriptValue('sul_peasants_necessity'), '(CFixedPoint)0')]"
+									blockoverride "field_content" { text_single = { layoutpolicy_horizontal = expanding raw_text = "#T Necessity#!" } }
+								}
+
+								TooltipListRowContent = {
+									visible = "[GreaterThan_CFixedPoint(Location.MakeScope.ScriptValue('sul_peasants_necessity'), '(CFixedPoint)0')]"
+									max_update_rate = 30
+									datamodel = "[GetGlobalMapKeys('sul_da_necessity')]"
+
+									item = {
+										TooltipManualTableField = {
+											blockoverride "field_content" {
+												datacontext = "[Scope.GetGoods]"
+
+												icon = { size = { 20 20 } texture = "[GetGoodsIcon(Goods.Self)]" }
+
+												text_single = {
+													layoutpolicy_horizontal = expanding
+													margin_left = 3
+													text = "[Goods.GetName]"
+												}
+												text_single = {
+													min_width = 60
+													align = right
+													raw_text = "[Multiply_CFixedPoint(GetVariableFromGlobalVariableMap('sul_da_necessity', Goods.MakeScope).GetValue, Location.MakeScope.ScriptValue('sul_peasants_necessity'))|2]"
+												}
+											}
+										}
+									}
+								}
+
+								TooltipManualTableField = {
+									visible = "[GreaterThan_CFixedPoint(Location.MakeScope.ScriptValue('sul_peasants_basic'), '(CFixedPoint)0')]"
+									blockoverride "field_content" { text_single = { layoutpolicy_horizontal = expanding raw_text = "#T Basic#!" } }
+								}
+
+								TooltipListRowContent = {
+									visible = "[GreaterThan_CFixedPoint(Location.MakeScope.ScriptValue('sul_peasants_basic'), '(CFixedPoint)0')]"
+									max_update_rate = 30
+									datamodel = "[GetGlobalMapKeys('sul_da_basic')]"
+
+									item = {
+										TooltipManualTableField = {
+											blockoverride "field_content" {
+												datacontext = "[Scope.GetGoods]"
+
+												icon = { size = { 20 20 } texture = "[GetGoodsIcon(Goods.Self)]" }
+
+												text_single = {
+													layoutpolicy_horizontal = expanding
+													margin_left = 3
+													text = "[Goods.GetName]"
+												}
+												text_single = {
+													min_width = 60
+													align = right
+													raw_text = "[Multiply_CFixedPoint(GetVariableFromGlobalVariableMap('sul_da_basic', Goods.MakeScope).GetValue, Location.MakeScope.ScriptValue('sul_peasants_basic'))|2]"
+												}
+											}
+										}
+									}
+								}
+
+								TooltipManualTableField = {
+									visible = "[GreaterThan_CFixedPoint(Location.MakeScope.ScriptValue('sul_peasants_common'), '(CFixedPoint)0')]"
+									blockoverride "field_content" { text_single = { layoutpolicy_horizontal = expanding raw_text = "#T Common#!" } }
+								}
+
+								TooltipListRowContent = {
+									visible = "[GreaterThan_CFixedPoint(Location.MakeScope.ScriptValue('sul_peasants_common'), '(CFixedPoint)0')]"
+									max_update_rate = 30
+									datamodel = "[GetGlobalMapKeys('sul_da_common')]"
+
+									item = {
+										TooltipManualTableField = {
+											blockoverride "field_content" {
+												datacontext = "[Scope.GetGoods]"
+
+												icon = { size = { 20 20 } texture = "[GetGoodsIcon(Goods.Self)]" }
+
+												text_single = {
+													layoutpolicy_horizontal = expanding
+													margin_left = 3
+													text = "[Goods.GetName]"
+												}
+												text_single = {
+													min_width = 60
+													align = right
+													raw_text = "[Multiply_CFixedPoint(GetVariableFromGlobalVariableMap('sul_da_common', Goods.MakeScope).GetValue, Location.MakeScope.ScriptValue('sul_peasants_common'))|2]"
+												}
+											}
+										}
+									}
+								}
+
+								TooltipManualTableField = {
+									visible = "[GreaterThan_CFixedPoint(Location.MakeScope.ScriptValue('sul_peasants_upper'), '(CFixedPoint)0')]"
+									blockoverride "field_content" { text_single = { layoutpolicy_horizontal = expanding raw_text = "#T Upper#!" } }
+								}
+
+								TooltipListRowContent = {
+									visible = "[GreaterThan_CFixedPoint(Location.MakeScope.ScriptValue('sul_peasants_upper'), '(CFixedPoint)0')]"
+									max_update_rate = 30
+									datamodel = "[GetGlobalMapKeys('sul_da_upper')]"
+
+									item = {
+										TooltipManualTableField = {
+											blockoverride "field_content" {
+												datacontext = "[Scope.GetGoods]"
+
+												icon = { size = { 20 20 } texture = "[GetGoodsIcon(Goods.Self)]" }
+
+												text_single = {
+													layoutpolicy_horizontal = expanding
+													margin_left = 3
+													text = "[Goods.GetName]"
+												}
+												text_single = {
+													min_width = 60
+													align = right
+													raw_text = "[Multiply_CFixedPoint(GetVariableFromGlobalVariableMap('sul_da_upper', Goods.MakeScope).GetValue, Location.MakeScope.ScriptValue('sul_peasants_upper'))|2]"
+												}
+											}
+										}
+									}
+								}
+
+								TooltipManualTableField = {
+									visible = "[GreaterThan_CFixedPoint(Location.MakeScope.ScriptValue('sul_peasants_luxury'), '(CFixedPoint)0')]"
+									blockoverride "field_content" { text_single = { layoutpolicy_horizontal = expanding raw_text = "#T Luxury#!" } }
+								}
+
+								TooltipListRowContent = {
+									visible = "[GreaterThan_CFixedPoint(Location.MakeScope.ScriptValue('sul_peasants_luxury'), '(CFixedPoint)0')]"
+									max_update_rate = 30
+									datamodel = "[GetGlobalMapKeys('sul_da_luxury')]"
+
+									item = {
+										TooltipManualTableField = {
+											blockoverride "field_content" {
+												datacontext = "[Scope.GetGoods]"
+
+												icon = { size = { 20 20 } texture = "[GetGoodsIcon(Goods.Self)]" }
+
+												text_single = {
+													layoutpolicy_horizontal = expanding
+													margin_left = 3
+													text = "[Goods.GetName]"
+												}
+												text_single = {
+													min_width = 60
+													align = right
+													raw_text = "[Multiply_CFixedPoint(GetVariableFromGlobalVariableMap('sul_da_luxury', Goods.MakeScope).GetValue, Location.MakeScope.ScriptValue('sul_peasants_luxury'))|2]"
+												}
+											}
+										}
+									}
+								}
+
+								TooltipManualTableField = {
+									visible = "[GreaterThan_CFixedPoint(Location.MakeScope.ScriptValue('sul_peasants_exotic'), '(CFixedPoint)0')]"
+									blockoverride "field_content" { text_single = { layoutpolicy_horizontal = expanding raw_text = "#T Exotic#!" } }
+								}
+
+								TooltipListRowContent = {
+									visible = "[GreaterThan_CFixedPoint(Location.MakeScope.ScriptValue('sul_peasants_exotic'), '(CFixedPoint)0')]"
+									max_update_rate = 30
+									datamodel = "[GetGlobalMapKeys('sul_da_exotic')]"
+
+									item = {
+										TooltipManualTableField = {
+											blockoverride "field_content" {
+												datacontext = "[Scope.GetGoods]"
+
+												icon = { size = { 20 20 } texture = "[GetGoodsIcon(Goods.Self)]" }
+
+												text_single = {
+													layoutpolicy_horizontal = expanding
+													margin_left = 3
+													text = "[Goods.GetName]"
+												}
+												text_single = {
+													min_width = 60
+													align = right
+													raw_text = "[Multiply_CFixedPoint(GetVariableFromGlobalVariableMap('sul_da_exotic', Goods.MakeScope).GetValue, Location.MakeScope.ScriptValue('sul_peasants_exotic'))|2]"
+												}
+											}
+										}
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+}
+
+template sul_tribesmen_demand_breakdown_tooltip {
+	tooltipwidget = {
+		ContextualTooltipType = {
+			blockoverride "tooltip_title" {  }
+			blockoverride "tooltip_content" {
+				TooltipListBase = {
+					max_update_rate = 30
+
+					TooltipTableHeader = { blockoverride "tableheader_text" { raw_text = "#T Tribesmen — Demand Breakdown#!" } }
+
+					TooltipListScrollArea = {
+						blockoverride "block_scrollarea" { maximumsize = { -1 600 } minimumsize = { -1 30 } }
+						blockoverride "scrollarea_content" {
+							TooltipListRowContent = {
+								TooltipManualTableField = {
+									visible = "[GreaterThan_CFixedPoint(Location.MakeScope.ScriptValue('sul_tribesmen_necessity'), '(CFixedPoint)0')]"
+									blockoverride "field_content" { text_single = { layoutpolicy_horizontal = expanding raw_text = "#T Necessity#!" } }
+								}
+
+								TooltipListRowContent = {
+									visible = "[GreaterThan_CFixedPoint(Location.MakeScope.ScriptValue('sul_tribesmen_necessity'), '(CFixedPoint)0')]"
+									max_update_rate = 30
+									datamodel = "[GetGlobalMapKeys('sul_da_necessity')]"
+
+									item = {
+										TooltipManualTableField = {
+											blockoverride "field_content" {
+												datacontext = "[Scope.GetGoods]"
+
+												icon = { size = { 20 20 } texture = "[GetGoodsIcon(Goods.Self)]" }
+
+												text_single = {
+													layoutpolicy_horizontal = expanding
+													margin_left = 3
+													text = "[Goods.GetName]"
+												}
+												text_single = {
+													min_width = 60
+													align = right
+													raw_text = "[Multiply_CFixedPoint(GetVariableFromGlobalVariableMap('sul_da_necessity', Goods.MakeScope).GetValue, Location.MakeScope.ScriptValue('sul_tribesmen_necessity'))|2]"
+												}
+											}
+										}
+									}
+								}
+
+								TooltipManualTableField = {
+									visible = "[GreaterThan_CFixedPoint(Location.MakeScope.ScriptValue('sul_tribesmen_basic'), '(CFixedPoint)0')]"
+									blockoverride "field_content" { text_single = { layoutpolicy_horizontal = expanding raw_text = "#T Basic#!" } }
+								}
+
+								TooltipListRowContent = {
+									visible = "[GreaterThan_CFixedPoint(Location.MakeScope.ScriptValue('sul_tribesmen_basic'), '(CFixedPoint)0')]"
+									max_update_rate = 30
+									datamodel = "[GetGlobalMapKeys('sul_da_basic')]"
+
+									item = {
+										TooltipManualTableField = {
+											blockoverride "field_content" {
+												datacontext = "[Scope.GetGoods]"
+
+												icon = { size = { 20 20 } texture = "[GetGoodsIcon(Goods.Self)]" }
+
+												text_single = {
+													layoutpolicy_horizontal = expanding
+													margin_left = 3
+													text = "[Goods.GetName]"
+												}
+												text_single = {
+													min_width = 60
+													align = right
+													raw_text = "[Multiply_CFixedPoint(GetVariableFromGlobalVariableMap('sul_da_basic', Goods.MakeScope).GetValue, Location.MakeScope.ScriptValue('sul_tribesmen_basic'))|2]"
+												}
+											}
+										}
+									}
+								}
+
+								TooltipManualTableField = {
+									visible = "[GreaterThan_CFixedPoint(Location.MakeScope.ScriptValue('sul_tribesmen_common'), '(CFixedPoint)0')]"
+									blockoverride "field_content" { text_single = { layoutpolicy_horizontal = expanding raw_text = "#T Common#!" } }
+								}
+
+								TooltipListRowContent = {
+									visible = "[GreaterThan_CFixedPoint(Location.MakeScope.ScriptValue('sul_tribesmen_common'), '(CFixedPoint)0')]"
+									max_update_rate = 30
+									datamodel = "[GetGlobalMapKeys('sul_da_common')]"
+
+									item = {
+										TooltipManualTableField = {
+											blockoverride "field_content" {
+												datacontext = "[Scope.GetGoods]"
+
+												icon = { size = { 20 20 } texture = "[GetGoodsIcon(Goods.Self)]" }
+
+												text_single = {
+													layoutpolicy_horizontal = expanding
+													margin_left = 3
+													text = "[Goods.GetName]"
+												}
+												text_single = {
+													min_width = 60
+													align = right
+													raw_text = "[Multiply_CFixedPoint(GetVariableFromGlobalVariableMap('sul_da_common', Goods.MakeScope).GetValue, Location.MakeScope.ScriptValue('sul_tribesmen_common'))|2]"
+												}
+											}
+										}
+									}
+								}
+
+								TooltipManualTableField = {
+									visible = "[GreaterThan_CFixedPoint(Location.MakeScope.ScriptValue('sul_tribesmen_upper'), '(CFixedPoint)0')]"
+									blockoverride "field_content" { text_single = { layoutpolicy_horizontal = expanding raw_text = "#T Upper#!" } }
+								}
+
+								TooltipListRowContent = {
+									visible = "[GreaterThan_CFixedPoint(Location.MakeScope.ScriptValue('sul_tribesmen_upper'), '(CFixedPoint)0')]"
+									max_update_rate = 30
+									datamodel = "[GetGlobalMapKeys('sul_da_upper')]"
+
+									item = {
+										TooltipManualTableField = {
+											blockoverride "field_content" {
+												datacontext = "[Scope.GetGoods]"
+
+												icon = { size = { 20 20 } texture = "[GetGoodsIcon(Goods.Self)]" }
+
+												text_single = {
+													layoutpolicy_horizontal = expanding
+													margin_left = 3
+													text = "[Goods.GetName]"
+												}
+												text_single = {
+													min_width = 60
+													align = right
+													raw_text = "[Multiply_CFixedPoint(GetVariableFromGlobalVariableMap('sul_da_upper', Goods.MakeScope).GetValue, Location.MakeScope.ScriptValue('sul_tribesmen_upper'))|2]"
+												}
+											}
+										}
+									}
+								}
+
+								TooltipManualTableField = {
+									visible = "[GreaterThan_CFixedPoint(Location.MakeScope.ScriptValue('sul_tribesmen_luxury'), '(CFixedPoint)0')]"
+									blockoverride "field_content" { text_single = { layoutpolicy_horizontal = expanding raw_text = "#T Luxury#!" } }
+								}
+
+								TooltipListRowContent = {
+									visible = "[GreaterThan_CFixedPoint(Location.MakeScope.ScriptValue('sul_tribesmen_luxury'), '(CFixedPoint)0')]"
+									max_update_rate = 30
+									datamodel = "[GetGlobalMapKeys('sul_da_luxury')]"
+
+									item = {
+										TooltipManualTableField = {
+											blockoverride "field_content" {
+												datacontext = "[Scope.GetGoods]"
+
+												icon = { size = { 20 20 } texture = "[GetGoodsIcon(Goods.Self)]" }
+
+												text_single = {
+													layoutpolicy_horizontal = expanding
+													margin_left = 3
+													text = "[Goods.GetName]"
+												}
+												text_single = {
+													min_width = 60
+													align = right
+													raw_text = "[Multiply_CFixedPoint(GetVariableFromGlobalVariableMap('sul_da_luxury', Goods.MakeScope).GetValue, Location.MakeScope.ScriptValue('sul_tribesmen_luxury'))|2]"
+												}
+											}
+										}
+									}
+								}
+
+								TooltipManualTableField = {
+									visible = "[GreaterThan_CFixedPoint(Location.MakeScope.ScriptValue('sul_tribesmen_exotic'), '(CFixedPoint)0')]"
+									blockoverride "field_content" { text_single = { layoutpolicy_horizontal = expanding raw_text = "#T Exotic#!" } }
+								}
+
+								TooltipListRowContent = {
+									visible = "[GreaterThan_CFixedPoint(Location.MakeScope.ScriptValue('sul_tribesmen_exotic'), '(CFixedPoint)0')]"
+									max_update_rate = 30
+									datamodel = "[GetGlobalMapKeys('sul_da_exotic')]"
+
+									item = {
+										TooltipManualTableField = {
+											blockoverride "field_content" {
+												datacontext = "[Scope.GetGoods]"
+
+												icon = { size = { 20 20 } texture = "[GetGoodsIcon(Goods.Self)]" }
+
+												text_single = {
+													layoutpolicy_horizontal = expanding
+													margin_left = 3
+													text = "[Goods.GetName]"
+												}
+												text_single = {
+													min_width = 60
+													align = right
+													raw_text = "[Multiply_CFixedPoint(GetVariableFromGlobalVariableMap('sul_da_exotic', Goods.MakeScope).GetValue, Location.MakeScope.ScriptValue('sul_tribesmen_exotic'))|2]"
 												}
 											}
 										}
@@ -276,18 +1509,13 @@ template location_tax_base_details {
 			icon_pie_left = {
 				parentanchor = center
 				blockoverride "PieSize" { size = { 90% 90% } }
-				blockoverride "pie_datamodel" {
-					datamodel = "[DataModelSkipFirst(Location.GetOwner.GetGovernment.GetEstates, '(int32)1')]"
-				}
+				blockoverride "pie_datamodel" { datamodel = "[DataModelSkipFirst(Location.GetOwner.GetGovernment.GetEstates, '(int32)1')]" }
 
 				blockoverride "SliceTooltip" {
 					tooltipwidget = {
 						SimpleContextualTooltipType = {
 							blockoverride "title_icon" {
-								icon = {
-									using = tooltip_title_icon_size
-									texture = "gfx/interface/icons/location_icons/tax_base.dds"
-								}
+								icon = { using = tooltip_title_icon_size texture = "gfx/interface/icons/location_icons/tax_base.dds" }
 							}
 							blockoverride "title_text" { text = "TAX_BASE_TT_ESTATES_LIST_SHARE_TITLE" }
 							blockoverride "concept_link" { text = "[wealth_share|e]" }
@@ -323,13 +1551,9 @@ template location_tax_base_details {
 							}
 						}
 					}
-
 					TooltipManualTableField = {
 						blockoverride "field_content" {
-							text_single = {
-								text = "TAX_BASE_TT_LIST"
-								tooltipwidget = { using = location_control_tooltip }
-							}
+							text_single = { text = "TAX_BASE_TT_LIST" tooltipwidget = { using = location_control_tooltip } }
 
 							expand = {  }
 
@@ -350,10 +1574,7 @@ template location_tax_base_details {
 				tooltipwidget = {
 					SimpleContextualStringPairTooltipType = {
 						blockoverride "title_icon" {
-							icon = {
-								using = tooltip_title_icon_size
-								texture = "[GetConceptTexture('peasant_enfranchisement')]"
-							}
+							icon = { using = tooltip_title_icon_size texture = "[GetConceptTexture('peasant_enfranchisement')]" }
 						}
 						blockoverride "concept_link" { text = "[peasant_enfranchisement|e]" }
 						lowpriotextcontext = "[Location.GetPeasantEnfranchismentInfo]"
@@ -404,12 +1625,7 @@ template location_tax_base_details {
 
 					tooltipwidget = {
 						SimpleContextualTooltipType = {
-							blockoverride "title_icon" {
-								icon = {
-									using = tooltip_title_icon_size
-									texture = "[GetConceptTexture('wealth')]"
-								}
-							}
+							blockoverride "title_icon" { icon = { using = tooltip_title_icon_size texture = "[GetConceptTexture('wealth')]" } }
 							blockoverride "title_text" { text = "TAX_BASE_TT_ESTATES_LIST_SHARE_TITLE" }
 							blockoverride "concept_link" { text = "[wealth_share|e]" }
 							textcontext = "TAX_BASE_TT_ESTATES_LIST_SHARE"
@@ -434,10 +1650,7 @@ template location_tax_base_details {
 					tooltipwidget = {
 						SimpleContextualTooltipType = {
 							blockoverride "title_icon" {
-								icon = {
-									using = tooltip_title_icon_size
-									texture = "gfx/interface/icons/location_icons/tax_base.dds"
-								}
+								icon = { using = tooltip_title_icon_size texture = "gfx/interface/icons/location_icons/tax_base.dds" }
 							}
 							blockoverride "title_text" { text = "TAX_BASE_TT_ESTATES_LIST_SHARE_TITLE" }
 							blockoverride "concept_link" { text = "[wealth_share|e]" }
@@ -462,12 +1675,7 @@ template location_tax_base_details {
 
 					tooltipwidget = {
 						SimpleContextualTooltipType = {
-							blockoverride "title_icon" {
-								icon = {
-									using = tooltip_title_icon_size
-									texture = "gfx/interface/icons/resources/gold.dds"
-								}
-							}
+							blockoverride "title_icon" { icon = { using = tooltip_title_icon_size texture = "gfx/interface/icons/resources/gold.dds" } }
 							blockoverride "title_text" { text = "TAX_BASE_TT_ESTATES_LIST_TAXED_TITLE" }
 							blockoverride "concept_link" { text = "[taxes|e]" }
 							textcontext = "TAX_BASE_TT_ESTATES_LIST_TAXED"
@@ -496,12 +1704,7 @@ template location_tax_base_details {
 
 					tooltipwidget = {
 						SimpleContextualTooltipType = {
-							blockoverride "title_icon" {
-								icon = {
-									using = tooltip_title_icon_size
-									texture = "gfx/interface/icons/resources/gold.dds"
-								}
-							}
+							blockoverride "title_icon" { icon = { using = tooltip_title_icon_size texture = "gfx/interface/icons/resources/gold.dds" } }
 							blockoverride "title_text" { text = "TAX_BASE_TT_ESTATES_LIST_TAXED_TITLE" }
 							blockoverride "concept_link" { text = "[taxes|e]" }
 							textcontext = "TAX_BASE_TT_ESTATES_LIST_TAXED"
@@ -514,16 +1717,11 @@ template location_tax_base_details {
 				}
 			}
 
-			blockoverride "column_datamodel" {
-				datamodel = "[DataModelSkipFirst(Location.GetOwner.GetGovernment.GetEstates, '(int32)1')]"
-			}
+			blockoverride "column_datamodel" { datamodel = "[DataModelSkipFirst(Location.GetOwner.GetGovernment.GetEstates, '(int32)1')]" }
 		}
 	}
 
-	TooltipStringPairList = {
-		visible = "[Location.HasOwner]"
-		textcontext = "TAX_BASE_TT_TEXT"
-	}
+	TooltipStringPairList = { visible = "[Location.HasOwner]" textcontext = "TAX_BASE_TT_TEXT" }
 
 	### WPDO: POP DEMAND BUDGET
 
@@ -531,9 +1729,7 @@ template location_tax_base_details {
 		visible = "[Location.MakeScope.GetVariable('sul_local_gdp').IsSet]"
 		max_update_rate = 30
 
-		TooltipTableHeader = {
-			blockoverride "tableheader_text" { raw_text = "#T Pop Demand Per Pop#!" }
-		}
+		TooltipTableHeader = { blockoverride "tableheader_text" { raw_text = "#T Pop Demand Per Pop#!" } }
 
 		TooltipListRowContent = {
 			TooltipManualTableField = {
@@ -557,10 +1753,7 @@ template location_tax_base_details {
 						raw_text = "#T Wages#!"
 
 						tooltipwidget = {
-							SimpleContextualTooltipType = {
-								blockoverride "title_text" { raw_text = "Wages" }
-								textcontext = "SUL_TT_WAGES"
-							}
+							SimpleContextualTooltipType = { blockoverride "title_text" { raw_text = "Wages" } textcontext = "SUL_TT_WAGES" }
 						}
 					}
 					text_single = {
@@ -583,10 +1776,7 @@ template location_tax_base_details {
 						raw_text = "#T Enrichment#!"
 
 						tooltipwidget = {
-							SimpleContextualTooltipType = {
-								blockoverride "title_text" { raw_text = "Enrichment" }
-								textcontext = "SUL_TT_ENRICHMENT"
-							}
+							SimpleContextualTooltipType = { blockoverride "title_text" { raw_text = "Enrichment" } textcontext = "SUL_TT_ENRICHMENT" }
 						}
 					}
 					text_single = {
@@ -596,10 +1786,7 @@ template location_tax_base_details {
 						raw_text = "#T WPP#!"
 
 						tooltipwidget = {
-							SimpleContextualTooltipType = {
-								blockoverride "title_text" { raw_text = "Wealth Per Pop" }
-								textcontext = "SUL_TT_WPP"
-							}
+							SimpleContextualTooltipType = { blockoverride "title_text" { raw_text = "Wealth Per Pop" } textcontext = "SUL_TT_WPP" }
 						}
 					}
 				}
@@ -608,7 +1795,6 @@ template location_tax_base_details {
 			# Nobles
 			TooltipManualTableField = {
 				visible = "[GreaterThan_CFixedPoint(Location.MakeScope.ScriptValue('sul_noble_demand_per_pop'), '(CFixedPoint)0.0001')]"
-
 				blockoverride "field_content" {
 					icon = {
 						size = { 20 20 }
@@ -641,23 +1827,18 @@ template location_tax_base_details {
 									TooltipListBase = {
 										TooltipManualTableField = {
 											blockoverride "field_content" {
-												text_single = {
-													layoutpolicy_horizontal = expanding
-													raw_text = "Local Wage Pool"
-												}
+												text_single = { layoutpolicy_horizontal = expanding raw_text = "Local Wage Pool" }
 												text_single = {
 													align = right
 													min_width = 100
 													raw_text = "[Location.MakeScope.ScriptValue('sul_wage_pool_total')|2]@gold!"
+													using = sul_wage_pool_breakdown_tooltip
 												}
 											}
 										}
 										TooltipManualTableField = {
 											blockoverride "field_content" {
-												text_single = {
-													layoutpolicy_horizontal = expanding
-													raw_text = "Local Estate Power"
-												}
+												text_single = { layoutpolicy_horizontal = expanding raw_text = "Local Estate Power" }
 												text_single = {
 													align = right
 													min_width = 100
@@ -685,18 +1866,13 @@ template location_tax_base_details {
 									}
 								}
 								blockoverride "tooltip_title" {
-									ContextualTooltipHeader = {
-										blockoverride "title_text" { raw_text = "Nobles Capital Returns" }
-									}
+									ContextualTooltipHeader = { blockoverride "title_text" { raw_text = "Nobles Capital Returns" } }
 								}
 								blockoverride "tooltip_content" {
 									TooltipListBase = {
 										TooltipManualTableField = {
 											blockoverride "field_content" {
-												text_single = {
-													layoutpolicy_horizontal = expanding
-													raw_text = "Estate Assets"
-												}
+												text_single = { layoutpolicy_horizontal = expanding raw_text = "Estate Assets" }
 												text_single = {
 													align = right
 													min_width = 100
@@ -707,15 +1883,16 @@ template location_tax_base_details {
 										TooltipManualTableField = {
 											blockoverride "field_content" {
 												text_single = { layoutpolicy_horizontal = expanding raw_text = "Return Rate" }
-												text_single = { align = right min_width = 100 raw_text = "×2%" }
+												text_single = {
+													align = right
+													min_width = 100
+													raw_text = "×2%"
+												}
 											}
 										}
 										TooltipManualTableField = {
 											blockoverride "field_content" {
-												text_single = {
-													layoutpolicy_horizontal = expanding
-													raw_text = "#bold Estate Return#!"
-												}
+												text_single = { layoutpolicy_horizontal = expanding raw_text = "#bold Estate Return#!" }
 												text_single = {
 													align = right
 													min_width = 100
@@ -725,12 +1902,8 @@ template location_tax_base_details {
 										}
 										TooltipManualTableField = {
 											visible = "[GreaterThan_CFixedPoint(Location.MakeScope.ScriptValue('sul_noble_dhimmi_return'), '(CFixedPoint)0')]"
-
 											blockoverride "field_content" {
-												text_single = {
-													layoutpolicy_horizontal = expanding
-													raw_text = "Dhimmi Assets"
-												}
+												text_single = { layoutpolicy_horizontal = expanding raw_text = "Dhimmi Assets" }
 												text_single = {
 													align = right
 													min_width = 100
@@ -740,12 +1913,8 @@ template location_tax_base_details {
 										}
 										TooltipManualTableField = {
 											visible = "[GreaterThan_CFixedPoint(Location.MakeScope.ScriptValue('sul_noble_dhimmi_return'), '(CFixedPoint)0')]"
-
 											blockoverride "field_content" {
-												text_single = {
-													layoutpolicy_horizontal = expanding
-													raw_text = "× Power Share"
-												}
+												text_single = { layoutpolicy_horizontal = expanding raw_text = "× Power Share" }
 												text_single = {
 													align = right
 													min_width = 100
@@ -755,12 +1924,8 @@ template location_tax_base_details {
 										}
 										TooltipManualTableField = {
 											visible = "[GreaterThan_CFixedPoint(Location.MakeScope.ScriptValue('sul_noble_dhimmi_return'), '(CFixedPoint)0')]"
-
 											blockoverride "field_content" {
-												text_single = {
-													layoutpolicy_horizontal = expanding
-													raw_text = "#bold Dhimmi Return#!"
-												}
+												text_single = { layoutpolicy_horizontal = expanding raw_text = "#bold Dhimmi Return#!" }
 												text_single = {
 													align = right
 													min_width = 100
@@ -770,10 +1935,7 @@ template location_tax_base_details {
 										}
 										TooltipManualTableField = {
 											blockoverride "field_content" {
-												text_single = {
-													layoutpolicy_horizontal = expanding
-													raw_text = "#bold Total#!"
-												}
+												text_single = { layoutpolicy_horizontal = expanding raw_text = "#bold Total#!" }
 												text_single = {
 													align = right
 													min_width = 100
@@ -807,10 +1969,7 @@ template location_tax_base_details {
 									TooltipListBase = {
 										TooltipManualTableField = {
 											blockoverride "field_content" {
-												text_single = {
-													layoutpolicy_horizontal = expanding
-													raw_text = "#bold Enrichment Per Pop#!"
-												}
+												text_single = { layoutpolicy_horizontal = expanding raw_text = "#bold Enrichment Per Pop#!" }
 												text_single = {
 													align = right
 													min_width = 100
@@ -820,10 +1979,7 @@ template location_tax_base_details {
 										}
 										TooltipManualTableField = {
 											blockoverride "field_content" {
-												text_single = {
-													layoutpolicy_horizontal = expanding
-													raw_text = "Estate Enrichment"
-												}
+												text_single = { layoutpolicy_horizontal = expanding raw_text = "Estate Enrichment" }
 												text_single = {
 													align = right
 													min_width = 100
@@ -843,10 +1999,7 @@ template location_tax_base_details {
 										}
 										TooltipManualTableField = {
 											blockoverride "field_content" {
-												text_single = {
-													layoutpolicy_horizontal = expanding
-													raw_text = "#bold Combined Rate#!"
-												}
+												text_single = { layoutpolicy_horizontal = expanding raw_text = "#bold Combined Rate#!" }
 												text_single = {
 													align = right
 													min_width = 100
@@ -864,8 +2017,7 @@ template location_tax_base_details {
 						max_width = 70
 						align = right
 						raw_text = "[Location.MakeScope.ScriptValue('sul_noble_demand_per_pop')|2]@gold!"
-						using = sul_demand_breakdown_tooltip
-						blockoverride "header_text" { raw_text = "#T Nobles — Demand Breakdown#!" }
+						using = sul_nobles_demand_breakdown_tooltip
 					}
 				}
 			}
@@ -873,7 +2025,6 @@ template location_tax_base_details {
 			# Clergy
 			TooltipManualTableField = {
 				visible = "[GreaterThan_CFixedPoint(Location.MakeScope.ScriptValue('sul_clergy_demand_per_pop'), '(CFixedPoint)0.0001')]"
-
 				blockoverride "field_content" {
 					icon = {
 						size = { 20 20 }
@@ -906,23 +2057,18 @@ template location_tax_base_details {
 									TooltipListBase = {
 										TooltipManualTableField = {
 											blockoverride "field_content" {
-												text_single = {
-													layoutpolicy_horizontal = expanding
-													raw_text = "Local Wage Pool"
-												}
+												text_single = { layoutpolicy_horizontal = expanding raw_text = "Local Wage Pool" }
 												text_single = {
 													align = right
 													min_width = 100
 													raw_text = "[Location.MakeScope.ScriptValue('sul_wage_pool_total')|2]@gold!"
+													using = sul_wage_pool_breakdown_tooltip
 												}
 											}
 										}
 										TooltipManualTableField = {
 											blockoverride "field_content" {
-												text_single = {
-													layoutpolicy_horizontal = expanding
-													raw_text = "Local Estate Power"
-												}
+												text_single = { layoutpolicy_horizontal = expanding raw_text = "Local Estate Power" }
 												text_single = {
 													align = right
 													min_width = 100
@@ -950,18 +2096,13 @@ template location_tax_base_details {
 									}
 								}
 								blockoverride "tooltip_title" {
-									ContextualTooltipHeader = {
-										blockoverride "title_text" { raw_text = "Clergy Capital Returns" }
-									}
+									ContextualTooltipHeader = { blockoverride "title_text" { raw_text = "Clergy Capital Returns" } }
 								}
 								blockoverride "tooltip_content" {
 									TooltipListBase = {
 										TooltipManualTableField = {
 											blockoverride "field_content" {
-												text_single = {
-													layoutpolicy_horizontal = expanding
-													raw_text = "Estate Assets"
-												}
+												text_single = { layoutpolicy_horizontal = expanding raw_text = "Estate Assets" }
 												text_single = {
 													align = right
 													min_width = 100
@@ -972,15 +2113,16 @@ template location_tax_base_details {
 										TooltipManualTableField = {
 											blockoverride "field_content" {
 												text_single = { layoutpolicy_horizontal = expanding raw_text = "Return Rate" }
-												text_single = { align = right min_width = 100 raw_text = "×2%" }
+												text_single = {
+													align = right
+													min_width = 100
+													raw_text = "×2%"
+												}
 											}
 										}
 										TooltipManualTableField = {
 											blockoverride "field_content" {
-												text_single = {
-													layoutpolicy_horizontal = expanding
-													raw_text = "#bold Estate Return#!"
-												}
+												text_single = { layoutpolicy_horizontal = expanding raw_text = "#bold Estate Return#!" }
 												text_single = {
 													align = right
 													min_width = 100
@@ -990,12 +2132,8 @@ template location_tax_base_details {
 										}
 										TooltipManualTableField = {
 											visible = "[GreaterThan_CFixedPoint(Location.MakeScope.ScriptValue('sul_clergy_dhimmi_return'), '(CFixedPoint)0')]"
-
 											blockoverride "field_content" {
-												text_single = {
-													layoutpolicy_horizontal = expanding
-													raw_text = "Dhimmi Assets"
-												}
+												text_single = { layoutpolicy_horizontal = expanding raw_text = "Dhimmi Assets" }
 												text_single = {
 													align = right
 													min_width = 100
@@ -1005,12 +2143,8 @@ template location_tax_base_details {
 										}
 										TooltipManualTableField = {
 											visible = "[GreaterThan_CFixedPoint(Location.MakeScope.ScriptValue('sul_clergy_dhimmi_return'), '(CFixedPoint)0')]"
-
 											blockoverride "field_content" {
-												text_single = {
-													layoutpolicy_horizontal = expanding
-													raw_text = "× Power Share"
-												}
+												text_single = { layoutpolicy_horizontal = expanding raw_text = "× Power Share" }
 												text_single = {
 													align = right
 													min_width = 100
@@ -1020,12 +2154,8 @@ template location_tax_base_details {
 										}
 										TooltipManualTableField = {
 											visible = "[GreaterThan_CFixedPoint(Location.MakeScope.ScriptValue('sul_clergy_dhimmi_return'), '(CFixedPoint)0')]"
-
 											blockoverride "field_content" {
-												text_single = {
-													layoutpolicy_horizontal = expanding
-													raw_text = "#bold Dhimmi Return#!"
-												}
+												text_single = { layoutpolicy_horizontal = expanding raw_text = "#bold Dhimmi Return#!" }
 												text_single = {
 													align = right
 													min_width = 100
@@ -1035,10 +2165,7 @@ template location_tax_base_details {
 										}
 										TooltipManualTableField = {
 											blockoverride "field_content" {
-												text_single = {
-													layoutpolicy_horizontal = expanding
-													raw_text = "#bold Total#!"
-												}
+												text_single = { layoutpolicy_horizontal = expanding raw_text = "#bold Total#!" }
 												text_single = {
 													align = right
 													min_width = 100
@@ -1072,10 +2199,7 @@ template location_tax_base_details {
 									TooltipListBase = {
 										TooltipManualTableField = {
 											blockoverride "field_content" {
-												text_single = {
-													layoutpolicy_horizontal = expanding
-													raw_text = "#bold Enrichment Per Pop#!"
-												}
+												text_single = { layoutpolicy_horizontal = expanding raw_text = "#bold Enrichment Per Pop#!" }
 												text_single = {
 													align = right
 													min_width = 100
@@ -1085,10 +2209,7 @@ template location_tax_base_details {
 										}
 										TooltipManualTableField = {
 											blockoverride "field_content" {
-												text_single = {
-													layoutpolicy_horizontal = expanding
-													raw_text = "Estate Enrichment"
-												}
+												text_single = { layoutpolicy_horizontal = expanding raw_text = "Estate Enrichment" }
 												text_single = {
 													align = right
 													min_width = 100
@@ -1108,10 +2229,7 @@ template location_tax_base_details {
 										}
 										TooltipManualTableField = {
 											blockoverride "field_content" {
-												text_single = {
-													layoutpolicy_horizontal = expanding
-													raw_text = "#bold Combined Rate#!"
-												}
+												text_single = { layoutpolicy_horizontal = expanding raw_text = "#bold Combined Rate#!" }
 												text_single = {
 													align = right
 													min_width = 100
@@ -1129,245 +2247,7 @@ template location_tax_base_details {
 						max_width = 70
 						align = right
 						raw_text = "[Location.MakeScope.ScriptValue('sul_clergy_demand_per_pop')|2]@gold!"
-						using = sul_demand_breakdown_tooltip
-						blockoverride "header_text" { raw_text = "#T Clergy — Demand Breakdown#!" }
-						blockoverride "tier_necessity" {
-							TooltipManualTableField = {
-								visible = "[GreaterThan_CFixedPoint(Location.MakeScope.ScriptValue('sul_clergy_necessity'), '(CFixedPoint)0')]"
-
-								blockoverride "field_content" {
-									text_single = {
-										layoutpolicy_horizontal = expanding
-										raw_text = "#T Necessity#!"
-									}
-								}
-							}
-
-							TooltipListRowContent = {
-								visible = "[GreaterThan_CFixedPoint(Location.MakeScope.ScriptValue('sul_clergy_necessity'), '(CFixedPoint)0')]"
-								max_update_rate = 30
-								datamodel = "[GetGlobalMapKeys('sul_da_necessity')]"
-
-								item = {
-									TooltipManualTableField = {
-										blockoverride "field_content" {
-											datacontext = "[Scope.GetGoods]"
-
-											icon = {
-												size = { 20 20 }
-												texture = "[GetGoodsIcon(Goods.Self)]"
-											}
-
-											text_single = {
-												layoutpolicy_horizontal = expanding
-												margin_left = 3
-												text = "[Goods.GetName]"
-											}
-											text_single = {
-												min_width = 60
-												align = right
-												raw_text = "[Multiply_CFixedPoint(GetVariableFromGlobalVariableMap('sul_da_necessity', Goods.MakeScope).GetValue, Location.MakeScope.ScriptValue('sul_clergy_necessity'))|2]"
-											}
-										}
-									}
-								}
-							}
-						}
-						blockoverride "tier_basic" {
-							TooltipManualTableField = {
-								visible = "[GreaterThan_CFixedPoint(Location.MakeScope.ScriptValue('sul_clergy_basic'), '(CFixedPoint)0')]"
-
-								blockoverride "field_content" {
-									text_single = { layoutpolicy_horizontal = expanding raw_text = "#T Basic#!" }
-								}
-							}
-
-							TooltipListRowContent = {
-								visible = "[GreaterThan_CFixedPoint(Location.MakeScope.ScriptValue('sul_clergy_basic'), '(CFixedPoint)0')]"
-								max_update_rate = 30
-								datamodel = "[GetGlobalMapKeys('sul_da_basic')]"
-
-								item = {
-									TooltipManualTableField = {
-										blockoverride "field_content" {
-											datacontext = "[Scope.GetGoods]"
-
-											icon = {
-												size = { 20 20 }
-												texture = "[GetGoodsIcon(Goods.Self)]"
-											}
-
-											text_single = {
-												layoutpolicy_horizontal = expanding
-												margin_left = 3
-												text = "[Goods.GetName]"
-											}
-											text_single = {
-												min_width = 60
-												align = right
-												raw_text = "[Multiply_CFixedPoint(GetVariableFromGlobalVariableMap('sul_da_basic', Goods.MakeScope).GetValue, Location.MakeScope.ScriptValue('sul_clergy_basic'))|2]"
-											}
-										}
-									}
-								}
-							}
-						}
-						blockoverride "tier_common" {
-							TooltipManualTableField = {
-								visible = "[GreaterThan_CFixedPoint(Location.MakeScope.ScriptValue('sul_clergy_common'), '(CFixedPoint)0')]"
-
-								blockoverride "field_content" {
-									text_single = { layoutpolicy_horizontal = expanding raw_text = "#T Common#!" }
-								}
-							}
-
-							TooltipListRowContent = {
-								visible = "[GreaterThan_CFixedPoint(Location.MakeScope.ScriptValue('sul_clergy_common'), '(CFixedPoint)0')]"
-								max_update_rate = 30
-								datamodel = "[GetGlobalMapKeys('sul_da_common')]"
-
-								item = {
-									TooltipManualTableField = {
-										blockoverride "field_content" {
-											datacontext = "[Scope.GetGoods]"
-
-											icon = {
-												size = { 20 20 }
-												texture = "[GetGoodsIcon(Goods.Self)]"
-											}
-
-											text_single = {
-												layoutpolicy_horizontal = expanding
-												margin_left = 3
-												text = "[Goods.GetName]"
-											}
-											text_single = {
-												min_width = 60
-												align = right
-												raw_text = "[Multiply_CFixedPoint(GetVariableFromGlobalVariableMap('sul_da_common', Goods.MakeScope).GetValue, Location.MakeScope.ScriptValue('sul_clergy_common'))|2]"
-											}
-										}
-									}
-								}
-							}
-						}
-						blockoverride "tier_upper" {
-							TooltipManualTableField = {
-								visible = "[GreaterThan_CFixedPoint(Location.MakeScope.ScriptValue('sul_clergy_upper'), '(CFixedPoint)0')]"
-
-								blockoverride "field_content" {
-									text_single = { layoutpolicy_horizontal = expanding raw_text = "#T Upper#!" }
-								}
-							}
-
-							TooltipListRowContent = {
-								visible = "[GreaterThan_CFixedPoint(Location.MakeScope.ScriptValue('sul_clergy_upper'), '(CFixedPoint)0')]"
-								max_update_rate = 30
-								datamodel = "[GetGlobalMapKeys('sul_da_upper')]"
-
-								item = {
-									TooltipManualTableField = {
-										blockoverride "field_content" {
-											datacontext = "[Scope.GetGoods]"
-
-											icon = {
-												size = { 20 20 }
-												texture = "[GetGoodsIcon(Goods.Self)]"
-											}
-
-											text_single = {
-												layoutpolicy_horizontal = expanding
-												margin_left = 3
-												text = "[Goods.GetName]"
-											}
-											text_single = {
-												min_width = 60
-												align = right
-												raw_text = "[Multiply_CFixedPoint(GetVariableFromGlobalVariableMap('sul_da_upper', Goods.MakeScope).GetValue, Location.MakeScope.ScriptValue('sul_clergy_upper'))|2]"
-											}
-										}
-									}
-								}
-							}
-						}
-						blockoverride "tier_luxury" {
-							TooltipManualTableField = {
-								visible = "[GreaterThan_CFixedPoint(Location.MakeScope.ScriptValue('sul_clergy_luxury'), '(CFixedPoint)0')]"
-
-								blockoverride "field_content" {
-									text_single = { layoutpolicy_horizontal = expanding raw_text = "#T Luxury#!" }
-								}
-							}
-
-							TooltipListRowContent = {
-								visible = "[GreaterThan_CFixedPoint(Location.MakeScope.ScriptValue('sul_clergy_luxury'), '(CFixedPoint)0')]"
-								max_update_rate = 30
-								datamodel = "[GetGlobalMapKeys('sul_da_luxury')]"
-
-								item = {
-									TooltipManualTableField = {
-										blockoverride "field_content" {
-											datacontext = "[Scope.GetGoods]"
-
-											icon = {
-												size = { 20 20 }
-												texture = "[GetGoodsIcon(Goods.Self)]"
-											}
-
-											text_single = {
-												layoutpolicy_horizontal = expanding
-												margin_left = 3
-												text = "[Goods.GetName]"
-											}
-											text_single = {
-												min_width = 60
-												align = right
-												raw_text = "[Multiply_CFixedPoint(GetVariableFromGlobalVariableMap('sul_da_luxury', Goods.MakeScope).GetValue, Location.MakeScope.ScriptValue('sul_clergy_luxury'))|2]"
-											}
-										}
-									}
-								}
-							}
-						}
-						blockoverride "tier_exotic" {
-							TooltipManualTableField = {
-								visible = "[GreaterThan_CFixedPoint(Location.MakeScope.ScriptValue('sul_clergy_exotic'), '(CFixedPoint)0')]"
-
-								blockoverride "field_content" {
-									text_single = { layoutpolicy_horizontal = expanding raw_text = "#T Exotic#!" }
-								}
-							}
-
-							TooltipListRowContent = {
-								visible = "[GreaterThan_CFixedPoint(Location.MakeScope.ScriptValue('sul_clergy_exotic'), '(CFixedPoint)0')]"
-								max_update_rate = 30
-								datamodel = "[GetGlobalMapKeys('sul_da_exotic')]"
-
-								item = {
-									TooltipManualTableField = {
-										blockoverride "field_content" {
-											datacontext = "[Scope.GetGoods]"
-
-											icon = {
-												size = { 20 20 }
-												texture = "[GetGoodsIcon(Goods.Self)]"
-											}
-
-											text_single = {
-												layoutpolicy_horizontal = expanding
-												margin_left = 3
-												text = "[Goods.GetName]"
-											}
-											text_single = {
-												min_width = 60
-												align = right
-												raw_text = "[Multiply_CFixedPoint(GetVariableFromGlobalVariableMap('sul_da_exotic', Goods.MakeScope).GetValue, Location.MakeScope.ScriptValue('sul_clergy_exotic'))|2]"
-											}
-										}
-									}
-								}
-							}
-						}
+						using = sul_clergy_demand_breakdown_tooltip
 					}
 				}
 			}
@@ -1375,7 +2255,6 @@ template location_tax_base_details {
 			# Burghers
 			TooltipManualTableField = {
 				visible = "[GreaterThan_CFixedPoint(Location.MakeScope.ScriptValue('sul_burgher_demand_per_pop'), '(CFixedPoint)0.0001')]"
-
 				blockoverride "field_content" {
 					icon = {
 						size = { 20 20 }
@@ -1408,23 +2287,18 @@ template location_tax_base_details {
 									TooltipListBase = {
 										TooltipManualTableField = {
 											blockoverride "field_content" {
-												text_single = {
-													layoutpolicy_horizontal = expanding
-													raw_text = "Local Wage Pool"
-												}
+												text_single = { layoutpolicy_horizontal = expanding raw_text = "Local Wage Pool" }
 												text_single = {
 													align = right
 													min_width = 100
 													raw_text = "[Location.MakeScope.ScriptValue('sul_wage_pool_total')|2]@gold!"
+													using = sul_wage_pool_breakdown_tooltip
 												}
 											}
 										}
 										TooltipManualTableField = {
 											blockoverride "field_content" {
-												text_single = {
-													layoutpolicy_horizontal = expanding
-													raw_text = "Local Estate Power"
-												}
+												text_single = { layoutpolicy_horizontal = expanding raw_text = "Local Estate Power" }
 												text_single = {
 													align = right
 													min_width = 100
@@ -1452,18 +2326,13 @@ template location_tax_base_details {
 									}
 								}
 								blockoverride "tooltip_title" {
-									ContextualTooltipHeader = {
-										blockoverride "title_text" { raw_text = "Burghers Capital Returns" }
-									}
+									ContextualTooltipHeader = { blockoverride "title_text" { raw_text = "Burghers Capital Returns" } }
 								}
 								blockoverride "tooltip_content" {
 									TooltipListBase = {
 										TooltipManualTableField = {
 											blockoverride "field_content" {
-												text_single = {
-													layoutpolicy_horizontal = expanding
-													raw_text = "Estate Assets"
-												}
+												text_single = { layoutpolicy_horizontal = expanding raw_text = "Estate Assets" }
 												text_single = {
 													align = right
 													min_width = 100
@@ -1474,15 +2343,16 @@ template location_tax_base_details {
 										TooltipManualTableField = {
 											blockoverride "field_content" {
 												text_single = { layoutpolicy_horizontal = expanding raw_text = "Return Rate" }
-												text_single = { align = right min_width = 100 raw_text = "×2%" }
+												text_single = {
+													align = right
+													min_width = 100
+													raw_text = "×2%"
+												}
 											}
 										}
 										TooltipManualTableField = {
 											blockoverride "field_content" {
-												text_single = {
-													layoutpolicy_horizontal = expanding
-													raw_text = "#bold Estate Return#!"
-												}
+												text_single = { layoutpolicy_horizontal = expanding raw_text = "#bold Estate Return#!" }
 												text_single = {
 													align = right
 													min_width = 100
@@ -1492,12 +2362,8 @@ template location_tax_base_details {
 										}
 										TooltipManualTableField = {
 											visible = "[GreaterThan_CFixedPoint(Location.MakeScope.ScriptValue('sul_burgher_dhimmi_return'), '(CFixedPoint)0')]"
-
 											blockoverride "field_content" {
-												text_single = {
-													layoutpolicy_horizontal = expanding
-													raw_text = "Dhimmi Assets"
-												}
+												text_single = { layoutpolicy_horizontal = expanding raw_text = "Dhimmi Assets" }
 												text_single = {
 													align = right
 													min_width = 100
@@ -1507,12 +2373,8 @@ template location_tax_base_details {
 										}
 										TooltipManualTableField = {
 											visible = "[GreaterThan_CFixedPoint(Location.MakeScope.ScriptValue('sul_burgher_dhimmi_return'), '(CFixedPoint)0')]"
-
 											blockoverride "field_content" {
-												text_single = {
-													layoutpolicy_horizontal = expanding
-													raw_text = "× Power Share"
-												}
+												text_single = { layoutpolicy_horizontal = expanding raw_text = "× Power Share" }
 												text_single = {
 													align = right
 													min_width = 100
@@ -1522,12 +2384,8 @@ template location_tax_base_details {
 										}
 										TooltipManualTableField = {
 											visible = "[GreaterThan_CFixedPoint(Location.MakeScope.ScriptValue('sul_burgher_dhimmi_return'), '(CFixedPoint)0')]"
-
 											blockoverride "field_content" {
-												text_single = {
-													layoutpolicy_horizontal = expanding
-													raw_text = "#bold Dhimmi Return#!"
-												}
+												text_single = { layoutpolicy_horizontal = expanding raw_text = "#bold Dhimmi Return#!" }
 												text_single = {
 													align = right
 													min_width = 100
@@ -1537,10 +2395,7 @@ template location_tax_base_details {
 										}
 										TooltipManualTableField = {
 											blockoverride "field_content" {
-												text_single = {
-													layoutpolicy_horizontal = expanding
-													raw_text = "#bold Total#!"
-												}
+												text_single = { layoutpolicy_horizontal = expanding raw_text = "#bold Total#!" }
 												text_single = {
 													align = right
 													min_width = 100
@@ -1568,18 +2423,13 @@ template location_tax_base_details {
 									}
 								}
 								blockoverride "tooltip_title" {
-									ContextualTooltipHeader = {
-										blockoverride "title_text" { raw_text = "Burghers Enrichment" }
-									}
+									ContextualTooltipHeader = { blockoverride "title_text" { raw_text = "Burghers Enrichment" } }
 								}
 								blockoverride "tooltip_content" {
 									TooltipListBase = {
 										TooltipManualTableField = {
 											blockoverride "field_content" {
-												text_single = {
-													layoutpolicy_horizontal = expanding
-													raw_text = "#bold Enrichment Per Pop#!"
-												}
+												text_single = { layoutpolicy_horizontal = expanding raw_text = "#bold Enrichment Per Pop#!" }
 												text_single = {
 													align = right
 													min_width = 100
@@ -1589,10 +2439,7 @@ template location_tax_base_details {
 										}
 										TooltipManualTableField = {
 											blockoverride "field_content" {
-												text_single = {
-													layoutpolicy_horizontal = expanding
-													raw_text = "Estate Enrichment"
-												}
+												text_single = { layoutpolicy_horizontal = expanding raw_text = "Estate Enrichment" }
 												text_single = {
 													align = right
 													min_width = 100
@@ -1602,10 +2449,7 @@ template location_tax_base_details {
 										}
 										TooltipManualTableField = {
 											blockoverride "field_content" {
-												text_single = {
-													layoutpolicy_horizontal = expanding
-													raw_text = "Burghers Rate"
-												}
+												text_single = { layoutpolicy_horizontal = expanding raw_text = "Burghers Rate" }
 												text_single = {
 													align = right
 													min_width = 100
@@ -1615,10 +2459,7 @@ template location_tax_base_details {
 										}
 										TooltipManualTableField = {
 											blockoverride "field_content" {
-												text_single = {
-													layoutpolicy_horizontal = expanding
-													raw_text = "#bold Combined Rate#!"
-												}
+												text_single = { layoutpolicy_horizontal = expanding raw_text = "#bold Combined Rate#!" }
 												text_single = {
 													align = right
 													min_width = 100
@@ -1636,245 +2477,7 @@ template location_tax_base_details {
 						max_width = 70
 						align = right
 						raw_text = "[Location.MakeScope.ScriptValue('sul_burgher_demand_per_pop')|2]@gold!"
-						using = sul_demand_breakdown_tooltip
-						blockoverride "header_text" { raw_text = "#T Burghers — Demand Breakdown#!" }
-						blockoverride "tier_necessity" {
-							TooltipManualTableField = {
-								visible = "[GreaterThan_CFixedPoint(Location.MakeScope.ScriptValue('sul_burghers_necessity'), '(CFixedPoint)0')]"
-
-								blockoverride "field_content" {
-									text_single = {
-										layoutpolicy_horizontal = expanding
-										raw_text = "#T Necessity#!"
-									}
-								}
-							}
-
-							TooltipListRowContent = {
-								visible = "[GreaterThan_CFixedPoint(Location.MakeScope.ScriptValue('sul_burghers_necessity'), '(CFixedPoint)0')]"
-								max_update_rate = 30
-								datamodel = "[GetGlobalMapKeys('sul_da_necessity')]"
-
-								item = {
-									TooltipManualTableField = {
-										blockoverride "field_content" {
-											datacontext = "[Scope.GetGoods]"
-
-											icon = {
-												size = { 20 20 }
-												texture = "[GetGoodsIcon(Goods.Self)]"
-											}
-
-											text_single = {
-												layoutpolicy_horizontal = expanding
-												margin_left = 3
-												text = "[Goods.GetName]"
-											}
-											text_single = {
-												min_width = 60
-												align = right
-												raw_text = "[Multiply_CFixedPoint(GetVariableFromGlobalVariableMap('sul_da_necessity', Goods.MakeScope).GetValue, Location.MakeScope.ScriptValue('sul_burghers_necessity'))|2]"
-											}
-										}
-									}
-								}
-							}
-						}
-						blockoverride "tier_basic" {
-							TooltipManualTableField = {
-								visible = "[GreaterThan_CFixedPoint(Location.MakeScope.ScriptValue('sul_burghers_basic'), '(CFixedPoint)0')]"
-
-								blockoverride "field_content" {
-									text_single = { layoutpolicy_horizontal = expanding raw_text = "#T Basic#!" }
-								}
-							}
-
-							TooltipListRowContent = {
-								visible = "[GreaterThan_CFixedPoint(Location.MakeScope.ScriptValue('sul_burghers_basic'), '(CFixedPoint)0')]"
-								max_update_rate = 30
-								datamodel = "[GetGlobalMapKeys('sul_da_basic')]"
-
-								item = {
-									TooltipManualTableField = {
-										blockoverride "field_content" {
-											datacontext = "[Scope.GetGoods]"
-
-											icon = {
-												size = { 20 20 }
-												texture = "[GetGoodsIcon(Goods.Self)]"
-											}
-
-											text_single = {
-												layoutpolicy_horizontal = expanding
-												margin_left = 3
-												text = "[Goods.GetName]"
-											}
-											text_single = {
-												min_width = 60
-												align = right
-												raw_text = "[Multiply_CFixedPoint(GetVariableFromGlobalVariableMap('sul_da_basic', Goods.MakeScope).GetValue, Location.MakeScope.ScriptValue('sul_burghers_basic'))|2]"
-											}
-										}
-									}
-								}
-							}
-						}
-						blockoverride "tier_common" {
-							TooltipManualTableField = {
-								visible = "[GreaterThan_CFixedPoint(Location.MakeScope.ScriptValue('sul_burghers_common'), '(CFixedPoint)0')]"
-
-								blockoverride "field_content" {
-									text_single = { layoutpolicy_horizontal = expanding raw_text = "#T Common#!" }
-								}
-							}
-
-							TooltipListRowContent = {
-								visible = "[GreaterThan_CFixedPoint(Location.MakeScope.ScriptValue('sul_burghers_common'), '(CFixedPoint)0')]"
-								max_update_rate = 30
-								datamodel = "[GetGlobalMapKeys('sul_da_common')]"
-
-								item = {
-									TooltipManualTableField = {
-										blockoverride "field_content" {
-											datacontext = "[Scope.GetGoods]"
-
-											icon = {
-												size = { 20 20 }
-												texture = "[GetGoodsIcon(Goods.Self)]"
-											}
-
-											text_single = {
-												layoutpolicy_horizontal = expanding
-												margin_left = 3
-												text = "[Goods.GetName]"
-											}
-											text_single = {
-												min_width = 60
-												align = right
-												raw_text = "[Multiply_CFixedPoint(GetVariableFromGlobalVariableMap('sul_da_common', Goods.MakeScope).GetValue, Location.MakeScope.ScriptValue('sul_burghers_common'))|2]"
-											}
-										}
-									}
-								}
-							}
-						}
-						blockoverride "tier_upper" {
-							TooltipManualTableField = {
-								visible = "[GreaterThan_CFixedPoint(Location.MakeScope.ScriptValue('sul_burghers_upper'), '(CFixedPoint)0')]"
-
-								blockoverride "field_content" {
-									text_single = { layoutpolicy_horizontal = expanding raw_text = "#T Upper#!" }
-								}
-							}
-
-							TooltipListRowContent = {
-								visible = "[GreaterThan_CFixedPoint(Location.MakeScope.ScriptValue('sul_burghers_upper'), '(CFixedPoint)0')]"
-								max_update_rate = 30
-								datamodel = "[GetGlobalMapKeys('sul_da_upper')]"
-
-								item = {
-									TooltipManualTableField = {
-										blockoverride "field_content" {
-											datacontext = "[Scope.GetGoods]"
-
-											icon = {
-												size = { 20 20 }
-												texture = "[GetGoodsIcon(Goods.Self)]"
-											}
-
-											text_single = {
-												layoutpolicy_horizontal = expanding
-												margin_left = 3
-												text = "[Goods.GetName]"
-											}
-											text_single = {
-												min_width = 60
-												align = right
-												raw_text = "[Multiply_CFixedPoint(GetVariableFromGlobalVariableMap('sul_da_upper', Goods.MakeScope).GetValue, Location.MakeScope.ScriptValue('sul_burghers_upper'))|2]"
-											}
-										}
-									}
-								}
-							}
-						}
-						blockoverride "tier_luxury" {
-							TooltipManualTableField = {
-								visible = "[GreaterThan_CFixedPoint(Location.MakeScope.ScriptValue('sul_burghers_luxury'), '(CFixedPoint)0')]"
-
-								blockoverride "field_content" {
-									text_single = { layoutpolicy_horizontal = expanding raw_text = "#T Luxury#!" }
-								}
-							}
-
-							TooltipListRowContent = {
-								visible = "[GreaterThan_CFixedPoint(Location.MakeScope.ScriptValue('sul_burghers_luxury'), '(CFixedPoint)0')]"
-								max_update_rate = 30
-								datamodel = "[GetGlobalMapKeys('sul_da_luxury')]"
-
-								item = {
-									TooltipManualTableField = {
-										blockoverride "field_content" {
-											datacontext = "[Scope.GetGoods]"
-
-											icon = {
-												size = { 20 20 }
-												texture = "[GetGoodsIcon(Goods.Self)]"
-											}
-
-											text_single = {
-												layoutpolicy_horizontal = expanding
-												margin_left = 3
-												text = "[Goods.GetName]"
-											}
-											text_single = {
-												min_width = 60
-												align = right
-												raw_text = "[Multiply_CFixedPoint(GetVariableFromGlobalVariableMap('sul_da_luxury', Goods.MakeScope).GetValue, Location.MakeScope.ScriptValue('sul_burghers_luxury'))|2]"
-											}
-										}
-									}
-								}
-							}
-						}
-						blockoverride "tier_exotic" {
-							TooltipManualTableField = {
-								visible = "[GreaterThan_CFixedPoint(Location.MakeScope.ScriptValue('sul_burghers_exotic'), '(CFixedPoint)0')]"
-
-								blockoverride "field_content" {
-									text_single = { layoutpolicy_horizontal = expanding raw_text = "#T Exotic#!" }
-								}
-							}
-
-							TooltipListRowContent = {
-								visible = "[GreaterThan_CFixedPoint(Location.MakeScope.ScriptValue('sul_burghers_exotic'), '(CFixedPoint)0')]"
-								max_update_rate = 30
-								datamodel = "[GetGlobalMapKeys('sul_da_exotic')]"
-
-								item = {
-									TooltipManualTableField = {
-										blockoverride "field_content" {
-											datacontext = "[Scope.GetGoods]"
-
-											icon = {
-												size = { 20 20 }
-												texture = "[GetGoodsIcon(Goods.Self)]"
-											}
-
-											text_single = {
-												layoutpolicy_horizontal = expanding
-												margin_left = 3
-												text = "[Goods.GetName]"
-											}
-											text_single = {
-												min_width = 60
-												align = right
-												raw_text = "[Multiply_CFixedPoint(GetVariableFromGlobalVariableMap('sul_da_exotic', Goods.MakeScope).GetValue, Location.MakeScope.ScriptValue('sul_burghers_exotic'))|2]"
-											}
-										}
-									}
-								}
-							}
-						}
+						using = sul_burghers_demand_breakdown_tooltip
 					}
 				}
 			}
@@ -1882,7 +2485,6 @@ template location_tax_base_details {
 			# Soldiers
 			TooltipManualTableField = {
 				visible = "[GreaterThan_CFixedPoint(Location.MakeScope.ScriptValue('sul_soldier_demand_per_pop'), '(CFixedPoint)0.0001')]"
-
 				blockoverride "field_content" {
 					icon = {
 						size = { 20 20 }
@@ -1915,23 +2517,18 @@ template location_tax_base_details {
 									TooltipListBase = {
 										TooltipManualTableField = {
 											blockoverride "field_content" {
-												text_single = {
-													layoutpolicy_horizontal = expanding
-													raw_text = "Local Wage Pool"
-												}
+												text_single = { layoutpolicy_horizontal = expanding raw_text = "Local Wage Pool" }
 												text_single = {
 													align = right
 													min_width = 100
 													raw_text = "[Location.MakeScope.ScriptValue('sul_wage_pool_total')|2]@gold!"
+													using = sul_wage_pool_breakdown_tooltip
 												}
 											}
 										}
 										TooltipManualTableField = {
 											blockoverride "field_content" {
-												text_single = {
-													layoutpolicy_horizontal = expanding
-													raw_text = "Local Estate Power"
-												}
+												text_single = { layoutpolicy_horizontal = expanding raw_text = "Local Estate Power" }
 												text_single = {
 													align = right
 													min_width = 100
@@ -1941,10 +2538,7 @@ template location_tax_base_details {
 										}
 										TooltipManualTableField = {
 											blockoverride "field_content" {
-												text_single = {
-													layoutpolicy_horizontal = expanding
-													raw_text = "Wage Bill Share"
-												}
+												text_single = { layoutpolicy_horizontal = expanding raw_text = "Wage Bill Share" }
 												text_single = {
 													align = right
 													min_width = 100
@@ -1972,18 +2566,13 @@ template location_tax_base_details {
 									}
 								}
 								blockoverride "tooltip_title" {
-									ContextualTooltipHeader = {
-										blockoverride "title_text" { raw_text = "Soldiers Capital Returns" }
-									}
+									ContextualTooltipHeader = { blockoverride "title_text" { raw_text = "Soldiers Capital Returns" } }
 								}
 								blockoverride "tooltip_content" {
 									TooltipListBase = {
 										TooltipManualTableField = {
 											blockoverride "field_content" {
-												text_single = {
-													layoutpolicy_horizontal = expanding
-													raw_text = "Peasant Estate Assets"
-												}
+												text_single = { layoutpolicy_horizontal = expanding raw_text = "Peasant Estate Assets" }
 												text_single = {
 													align = right
 													min_width = 100
@@ -1994,15 +2583,16 @@ template location_tax_base_details {
 										TooltipManualTableField = {
 											blockoverride "field_content" {
 												text_single = { layoutpolicy_horizontal = expanding raw_text = "Return Rate" }
-												text_single = { align = right min_width = 100 raw_text = "×2%" }
+												text_single = {
+													align = right
+													min_width = 100
+													raw_text = "×2%"
+												}
 											}
 										}
 										TooltipManualTableField = {
 											blockoverride "field_content" {
-												text_single = {
-													layoutpolicy_horizontal = expanding
-													raw_text = "#bold Estate Return#!"
-												}
+												text_single = { layoutpolicy_horizontal = expanding raw_text = "#bold Estate Return#!" }
 												text_single = {
 													align = right
 													min_width = 100
@@ -2012,12 +2602,8 @@ template location_tax_base_details {
 										}
 										TooltipManualTableField = {
 											visible = "[GreaterThan_CFixedPoint(Location.MakeScope.ScriptValue('sul_commoner_dhimmi_return'), '(CFixedPoint)0')]"
-
 											blockoverride "field_content" {
-												text_single = {
-													layoutpolicy_horizontal = expanding
-													raw_text = "Dhimmi Assets"
-												}
+												text_single = { layoutpolicy_horizontal = expanding raw_text = "Dhimmi Assets" }
 												text_single = {
 													align = right
 													min_width = 100
@@ -2027,12 +2613,8 @@ template location_tax_base_details {
 										}
 										TooltipManualTableField = {
 											visible = "[GreaterThan_CFixedPoint(Location.MakeScope.ScriptValue('sul_commoner_dhimmi_return'), '(CFixedPoint)0')]"
-
 											blockoverride "field_content" {
-												text_single = {
-													layoutpolicy_horizontal = expanding
-													raw_text = "× Power Share"
-												}
+												text_single = { layoutpolicy_horizontal = expanding raw_text = "× Power Share" }
 												text_single = {
 													align = right
 													min_width = 100
@@ -2042,12 +2624,8 @@ template location_tax_base_details {
 										}
 										TooltipManualTableField = {
 											visible = "[GreaterThan_CFixedPoint(Location.MakeScope.ScriptValue('sul_commoner_dhimmi_return'), '(CFixedPoint)0')]"
-
 											blockoverride "field_content" {
-												text_single = {
-													layoutpolicy_horizontal = expanding
-													raw_text = "#bold Dhimmi Return#!"
-												}
+												text_single = { layoutpolicy_horizontal = expanding raw_text = "#bold Dhimmi Return#!" }
 												text_single = {
 													align = right
 													min_width = 100
@@ -2057,10 +2635,7 @@ template location_tax_base_details {
 										}
 										TooltipManualTableField = {
 											blockoverride "field_content" {
-												text_single = {
-													layoutpolicy_horizontal = expanding
-													raw_text = "#bold Total#!"
-												}
+												text_single = { layoutpolicy_horizontal = expanding raw_text = "#bold Total#!" }
 												text_single = {
 													align = right
 													min_width = 100
@@ -2088,18 +2663,13 @@ template location_tax_base_details {
 									}
 								}
 								blockoverride "tooltip_title" {
-									ContextualTooltipHeader = {
-										blockoverride "title_text" { raw_text = "Soldiers Enrichment" }
-									}
+									ContextualTooltipHeader = { blockoverride "title_text" { raw_text = "Soldiers Enrichment" } }
 								}
 								blockoverride "tooltip_content" {
 									TooltipListBase = {
 										TooltipManualTableField = {
 											blockoverride "field_content" {
-												text_single = {
-													layoutpolicy_horizontal = expanding
-													raw_text = "#bold Enrichment Per Pop#!"
-												}
+												text_single = { layoutpolicy_horizontal = expanding raw_text = "#bold Enrichment Per Pop#!" }
 												text_single = {
 													align = right
 													min_width = 100
@@ -2109,10 +2679,7 @@ template location_tax_base_details {
 										}
 										TooltipManualTableField = {
 											blockoverride "field_content" {
-												text_single = {
-													layoutpolicy_horizontal = expanding
-													raw_text = "Estate Enrichment"
-												}
+												text_single = { layoutpolicy_horizontal = expanding raw_text = "Estate Enrichment" }
 												text_single = {
 													align = right
 													min_width = 100
@@ -2122,10 +2689,7 @@ template location_tax_base_details {
 										}
 										TooltipManualTableField = {
 											blockoverride "field_content" {
-												text_single = {
-													layoutpolicy_horizontal = expanding
-													raw_text = "Commoners Rate"
-												}
+												text_single = { layoutpolicy_horizontal = expanding raw_text = "Commoners Rate" }
 												text_single = {
 													align = right
 													min_width = 100
@@ -2135,10 +2699,7 @@ template location_tax_base_details {
 										}
 										TooltipManualTableField = {
 											blockoverride "field_content" {
-												text_single = {
-													layoutpolicy_horizontal = expanding
-													raw_text = "#bold Combined Rate#!"
-												}
+												text_single = { layoutpolicy_horizontal = expanding raw_text = "#bold Combined Rate#!" }
 												text_single = {
 													align = right
 													min_width = 100
@@ -2156,245 +2717,7 @@ template location_tax_base_details {
 						max_width = 70
 						align = right
 						raw_text = "[Location.MakeScope.ScriptValue('sul_soldier_demand_per_pop')|2]@gold!"
-						using = sul_demand_breakdown_tooltip
-						blockoverride "header_text" { raw_text = "#T Soldiers — Demand Breakdown#!" }
-						blockoverride "tier_necessity" {
-							TooltipManualTableField = {
-								visible = "[GreaterThan_CFixedPoint(Location.MakeScope.ScriptValue('sul_soldiers_necessity'), '(CFixedPoint)0')]"
-
-								blockoverride "field_content" {
-									text_single = {
-										layoutpolicy_horizontal = expanding
-										raw_text = "#T Necessity#!"
-									}
-								}
-							}
-
-							TooltipListRowContent = {
-								visible = "[GreaterThan_CFixedPoint(Location.MakeScope.ScriptValue('sul_soldiers_necessity'), '(CFixedPoint)0')]"
-								max_update_rate = 30
-								datamodel = "[GetGlobalMapKeys('sul_da_necessity')]"
-
-								item = {
-									TooltipManualTableField = {
-										blockoverride "field_content" {
-											datacontext = "[Scope.GetGoods]"
-
-											icon = {
-												size = { 20 20 }
-												texture = "[GetGoodsIcon(Goods.Self)]"
-											}
-
-											text_single = {
-												layoutpolicy_horizontal = expanding
-												margin_left = 3
-												text = "[Goods.GetName]"
-											}
-											text_single = {
-												min_width = 60
-												align = right
-												raw_text = "[Multiply_CFixedPoint(GetVariableFromGlobalVariableMap('sul_da_necessity', Goods.MakeScope).GetValue, Location.MakeScope.ScriptValue('sul_soldiers_necessity'))|2]"
-											}
-										}
-									}
-								}
-							}
-						}
-						blockoverride "tier_basic" {
-							TooltipManualTableField = {
-								visible = "[GreaterThan_CFixedPoint(Location.MakeScope.ScriptValue('sul_soldiers_basic'), '(CFixedPoint)0')]"
-
-								blockoverride "field_content" {
-									text_single = { layoutpolicy_horizontal = expanding raw_text = "#T Basic#!" }
-								}
-							}
-
-							TooltipListRowContent = {
-								visible = "[GreaterThan_CFixedPoint(Location.MakeScope.ScriptValue('sul_soldiers_basic'), '(CFixedPoint)0')]"
-								max_update_rate = 30
-								datamodel = "[GetGlobalMapKeys('sul_da_basic')]"
-
-								item = {
-									TooltipManualTableField = {
-										blockoverride "field_content" {
-											datacontext = "[Scope.GetGoods]"
-
-											icon = {
-												size = { 20 20 }
-												texture = "[GetGoodsIcon(Goods.Self)]"
-											}
-
-											text_single = {
-												layoutpolicy_horizontal = expanding
-												margin_left = 3
-												text = "[Goods.GetName]"
-											}
-											text_single = {
-												min_width = 60
-												align = right
-												raw_text = "[Multiply_CFixedPoint(GetVariableFromGlobalVariableMap('sul_da_basic', Goods.MakeScope).GetValue, Location.MakeScope.ScriptValue('sul_soldiers_basic'))|2]"
-											}
-										}
-									}
-								}
-							}
-						}
-						blockoverride "tier_common" {
-							TooltipManualTableField = {
-								visible = "[GreaterThan_CFixedPoint(Location.MakeScope.ScriptValue('sul_soldiers_common'), '(CFixedPoint)0')]"
-
-								blockoverride "field_content" {
-									text_single = { layoutpolicy_horizontal = expanding raw_text = "#T Common#!" }
-								}
-							}
-
-							TooltipListRowContent = {
-								visible = "[GreaterThan_CFixedPoint(Location.MakeScope.ScriptValue('sul_soldiers_common'), '(CFixedPoint)0')]"
-								max_update_rate = 30
-								datamodel = "[GetGlobalMapKeys('sul_da_common')]"
-
-								item = {
-									TooltipManualTableField = {
-										blockoverride "field_content" {
-											datacontext = "[Scope.GetGoods]"
-
-											icon = {
-												size = { 20 20 }
-												texture = "[GetGoodsIcon(Goods.Self)]"
-											}
-
-											text_single = {
-												layoutpolicy_horizontal = expanding
-												margin_left = 3
-												text = "[Goods.GetName]"
-											}
-											text_single = {
-												min_width = 60
-												align = right
-												raw_text = "[Multiply_CFixedPoint(GetVariableFromGlobalVariableMap('sul_da_common', Goods.MakeScope).GetValue, Location.MakeScope.ScriptValue('sul_soldiers_common'))|2]"
-											}
-										}
-									}
-								}
-							}
-						}
-						blockoverride "tier_upper" {
-							TooltipManualTableField = {
-								visible = "[GreaterThan_CFixedPoint(Location.MakeScope.ScriptValue('sul_soldiers_upper'), '(CFixedPoint)0')]"
-
-								blockoverride "field_content" {
-									text_single = { layoutpolicy_horizontal = expanding raw_text = "#T Upper#!" }
-								}
-							}
-
-							TooltipListRowContent = {
-								visible = "[GreaterThan_CFixedPoint(Location.MakeScope.ScriptValue('sul_soldiers_upper'), '(CFixedPoint)0')]"
-								max_update_rate = 30
-								datamodel = "[GetGlobalMapKeys('sul_da_upper')]"
-
-								item = {
-									TooltipManualTableField = {
-										blockoverride "field_content" {
-											datacontext = "[Scope.GetGoods]"
-
-											icon = {
-												size = { 20 20 }
-												texture = "[GetGoodsIcon(Goods.Self)]"
-											}
-
-											text_single = {
-												layoutpolicy_horizontal = expanding
-												margin_left = 3
-												text = "[Goods.GetName]"
-											}
-											text_single = {
-												min_width = 60
-												align = right
-												raw_text = "[Multiply_CFixedPoint(GetVariableFromGlobalVariableMap('sul_da_upper', Goods.MakeScope).GetValue, Location.MakeScope.ScriptValue('sul_soldiers_upper'))|2]"
-											}
-										}
-									}
-								}
-							}
-						}
-						blockoverride "tier_luxury" {
-							TooltipManualTableField = {
-								visible = "[GreaterThan_CFixedPoint(Location.MakeScope.ScriptValue('sul_soldiers_luxury'), '(CFixedPoint)0')]"
-
-								blockoverride "field_content" {
-									text_single = { layoutpolicy_horizontal = expanding raw_text = "#T Luxury#!" }
-								}
-							}
-
-							TooltipListRowContent = {
-								visible = "[GreaterThan_CFixedPoint(Location.MakeScope.ScriptValue('sul_soldiers_luxury'), '(CFixedPoint)0')]"
-								max_update_rate = 30
-								datamodel = "[GetGlobalMapKeys('sul_da_luxury')]"
-
-								item = {
-									TooltipManualTableField = {
-										blockoverride "field_content" {
-											datacontext = "[Scope.GetGoods]"
-
-											icon = {
-												size = { 20 20 }
-												texture = "[GetGoodsIcon(Goods.Self)]"
-											}
-
-											text_single = {
-												layoutpolicy_horizontal = expanding
-												margin_left = 3
-												text = "[Goods.GetName]"
-											}
-											text_single = {
-												min_width = 60
-												align = right
-												raw_text = "[Multiply_CFixedPoint(GetVariableFromGlobalVariableMap('sul_da_luxury', Goods.MakeScope).GetValue, Location.MakeScope.ScriptValue('sul_soldiers_luxury'))|2]"
-											}
-										}
-									}
-								}
-							}
-						}
-						blockoverride "tier_exotic" {
-							TooltipManualTableField = {
-								visible = "[GreaterThan_CFixedPoint(Location.MakeScope.ScriptValue('sul_soldiers_exotic'), '(CFixedPoint)0')]"
-
-								blockoverride "field_content" {
-									text_single = { layoutpolicy_horizontal = expanding raw_text = "#T Exotic#!" }
-								}
-							}
-
-							TooltipListRowContent = {
-								visible = "[GreaterThan_CFixedPoint(Location.MakeScope.ScriptValue('sul_soldiers_exotic'), '(CFixedPoint)0')]"
-								max_update_rate = 30
-								datamodel = "[GetGlobalMapKeys('sul_da_exotic')]"
-
-								item = {
-									TooltipManualTableField = {
-										blockoverride "field_content" {
-											datacontext = "[Scope.GetGoods]"
-
-											icon = {
-												size = { 20 20 }
-												texture = "[GetGoodsIcon(Goods.Self)]"
-											}
-
-											text_single = {
-												layoutpolicy_horizontal = expanding
-												margin_left = 3
-												text = "[Goods.GetName]"
-											}
-											text_single = {
-												min_width = 60
-												align = right
-												raw_text = "[Multiply_CFixedPoint(GetVariableFromGlobalVariableMap('sul_da_exotic', Goods.MakeScope).GetValue, Location.MakeScope.ScriptValue('sul_soldiers_exotic'))|2]"
-											}
-										}
-									}
-								}
-							}
-						}
+						using = sul_soldiers_demand_breakdown_tooltip
 					}
 				}
 			}
@@ -2402,7 +2725,6 @@ template location_tax_base_details {
 			# Laborers
 			TooltipManualTableField = {
 				visible = "[GreaterThan_CFixedPoint(Location.MakeScope.ScriptValue('sul_laborer_demand_per_pop'), '(CFixedPoint)0.0001')]"
-
 				blockoverride "field_content" {
 					icon = {
 						size = { 20 20 }
@@ -2435,23 +2757,18 @@ template location_tax_base_details {
 									TooltipListBase = {
 										TooltipManualTableField = {
 											blockoverride "field_content" {
-												text_single = {
-													layoutpolicy_horizontal = expanding
-													raw_text = "Local Wage Pool"
-												}
+												text_single = { layoutpolicy_horizontal = expanding raw_text = "Local Wage Pool" }
 												text_single = {
 													align = right
 													min_width = 100
 													raw_text = "[Location.MakeScope.ScriptValue('sul_wage_pool_total')|2]@gold!"
+													using = sul_wage_pool_breakdown_tooltip
 												}
 											}
 										}
 										TooltipManualTableField = {
 											blockoverride "field_content" {
-												text_single = {
-													layoutpolicy_horizontal = expanding
-													raw_text = "Local Estate Power"
-												}
+												text_single = { layoutpolicy_horizontal = expanding raw_text = "Local Estate Power" }
 												text_single = {
 													align = right
 													min_width = 100
@@ -2461,10 +2778,7 @@ template location_tax_base_details {
 										}
 										TooltipManualTableField = {
 											blockoverride "field_content" {
-												text_single = {
-													layoutpolicy_horizontal = expanding
-													raw_text = "Wage Bill Share"
-												}
+												text_single = { layoutpolicy_horizontal = expanding raw_text = "Wage Bill Share" }
 												text_single = {
 													align = right
 													min_width = 100
@@ -2492,18 +2806,13 @@ template location_tax_base_details {
 									}
 								}
 								blockoverride "tooltip_title" {
-									ContextualTooltipHeader = {
-										blockoverride "title_text" { raw_text = "Laborers Capital Returns" }
-									}
+									ContextualTooltipHeader = { blockoverride "title_text" { raw_text = "Laborers Capital Returns" } }
 								}
 								blockoverride "tooltip_content" {
 									TooltipListBase = {
 										TooltipManualTableField = {
 											blockoverride "field_content" {
-												text_single = {
-													layoutpolicy_horizontal = expanding
-													raw_text = "Peasant Estate Assets"
-												}
+												text_single = { layoutpolicy_horizontal = expanding raw_text = "Peasant Estate Assets" }
 												text_single = {
 													align = right
 													min_width = 100
@@ -2514,15 +2823,16 @@ template location_tax_base_details {
 										TooltipManualTableField = {
 											blockoverride "field_content" {
 												text_single = { layoutpolicy_horizontal = expanding raw_text = "Return Rate" }
-												text_single = { align = right min_width = 100 raw_text = "×2%" }
+												text_single = {
+													align = right
+													min_width = 100
+													raw_text = "×2%"
+												}
 											}
 										}
 										TooltipManualTableField = {
 											blockoverride "field_content" {
-												text_single = {
-													layoutpolicy_horizontal = expanding
-													raw_text = "#bold Estate Return#!"
-												}
+												text_single = { layoutpolicy_horizontal = expanding raw_text = "#bold Estate Return#!" }
 												text_single = {
 													align = right
 													min_width = 100
@@ -2532,12 +2842,8 @@ template location_tax_base_details {
 										}
 										TooltipManualTableField = {
 											visible = "[GreaterThan_CFixedPoint(Location.MakeScope.ScriptValue('sul_commoner_dhimmi_return'), '(CFixedPoint)0')]"
-
 											blockoverride "field_content" {
-												text_single = {
-													layoutpolicy_horizontal = expanding
-													raw_text = "Dhimmi Assets"
-												}
+												text_single = { layoutpolicy_horizontal = expanding raw_text = "Dhimmi Assets" }
 												text_single = {
 													align = right
 													min_width = 100
@@ -2547,12 +2853,8 @@ template location_tax_base_details {
 										}
 										TooltipManualTableField = {
 											visible = "[GreaterThan_CFixedPoint(Location.MakeScope.ScriptValue('sul_commoner_dhimmi_return'), '(CFixedPoint)0')]"
-
 											blockoverride "field_content" {
-												text_single = {
-													layoutpolicy_horizontal = expanding
-													raw_text = "× Power Share"
-												}
+												text_single = { layoutpolicy_horizontal = expanding raw_text = "× Power Share" }
 												text_single = {
 													align = right
 													min_width = 100
@@ -2562,12 +2864,8 @@ template location_tax_base_details {
 										}
 										TooltipManualTableField = {
 											visible = "[GreaterThan_CFixedPoint(Location.MakeScope.ScriptValue('sul_commoner_dhimmi_return'), '(CFixedPoint)0')]"
-
 											blockoverride "field_content" {
-												text_single = {
-													layoutpolicy_horizontal = expanding
-													raw_text = "#bold Dhimmi Return#!"
-												}
+												text_single = { layoutpolicy_horizontal = expanding raw_text = "#bold Dhimmi Return#!" }
 												text_single = {
 													align = right
 													min_width = 100
@@ -2577,10 +2875,7 @@ template location_tax_base_details {
 										}
 										TooltipManualTableField = {
 											blockoverride "field_content" {
-												text_single = {
-													layoutpolicy_horizontal = expanding
-													raw_text = "#bold Total#!"
-												}
+												text_single = { layoutpolicy_horizontal = expanding raw_text = "#bold Total#!" }
 												text_single = {
 													align = right
 													min_width = 100
@@ -2608,18 +2903,13 @@ template location_tax_base_details {
 									}
 								}
 								blockoverride "tooltip_title" {
-									ContextualTooltipHeader = {
-										blockoverride "title_text" { raw_text = "Laborers Enrichment" }
-									}
+									ContextualTooltipHeader = { blockoverride "title_text" { raw_text = "Laborers Enrichment" } }
 								}
 								blockoverride "tooltip_content" {
 									TooltipListBase = {
 										TooltipManualTableField = {
 											blockoverride "field_content" {
-												text_single = {
-													layoutpolicy_horizontal = expanding
-													raw_text = "#bold Enrichment Per Pop#!"
-												}
+												text_single = { layoutpolicy_horizontal = expanding raw_text = "#bold Enrichment Per Pop#!" }
 												text_single = {
 													align = right
 													min_width = 100
@@ -2629,10 +2919,7 @@ template location_tax_base_details {
 										}
 										TooltipManualTableField = {
 											blockoverride "field_content" {
-												text_single = {
-													layoutpolicy_horizontal = expanding
-													raw_text = "Estate Enrichment"
-												}
+												text_single = { layoutpolicy_horizontal = expanding raw_text = "Estate Enrichment" }
 												text_single = {
 													align = right
 													min_width = 100
@@ -2642,10 +2929,7 @@ template location_tax_base_details {
 										}
 										TooltipManualTableField = {
 											blockoverride "field_content" {
-												text_single = {
-													layoutpolicy_horizontal = expanding
-													raw_text = "Commoners Rate"
-												}
+												text_single = { layoutpolicy_horizontal = expanding raw_text = "Commoners Rate" }
 												text_single = {
 													align = right
 													min_width = 100
@@ -2655,10 +2939,7 @@ template location_tax_base_details {
 										}
 										TooltipManualTableField = {
 											blockoverride "field_content" {
-												text_single = {
-													layoutpolicy_horizontal = expanding
-													raw_text = "#bold Combined Rate#!"
-												}
+												text_single = { layoutpolicy_horizontal = expanding raw_text = "#bold Combined Rate#!" }
 												text_single = {
 													align = right
 													min_width = 100
@@ -2676,245 +2957,7 @@ template location_tax_base_details {
 						max_width = 70
 						align = right
 						raw_text = "[Location.MakeScope.ScriptValue('sul_laborer_demand_per_pop')|2]@gold!"
-						using = sul_demand_breakdown_tooltip
-						blockoverride "header_text" { raw_text = "#T Laborers — Demand Breakdown#!" }
-						blockoverride "tier_necessity" {
-							TooltipManualTableField = {
-								visible = "[GreaterThan_CFixedPoint(Location.MakeScope.ScriptValue('sul_laborers_necessity'), '(CFixedPoint)0')]"
-
-								blockoverride "field_content" {
-									text_single = {
-										layoutpolicy_horizontal = expanding
-										raw_text = "#T Necessity#!"
-									}
-								}
-							}
-
-							TooltipListRowContent = {
-								visible = "[GreaterThan_CFixedPoint(Location.MakeScope.ScriptValue('sul_laborers_necessity'), '(CFixedPoint)0')]"
-								max_update_rate = 30
-								datamodel = "[GetGlobalMapKeys('sul_da_necessity')]"
-
-								item = {
-									TooltipManualTableField = {
-										blockoverride "field_content" {
-											datacontext = "[Scope.GetGoods]"
-
-											icon = {
-												size = { 20 20 }
-												texture = "[GetGoodsIcon(Goods.Self)]"
-											}
-
-											text_single = {
-												layoutpolicy_horizontal = expanding
-												margin_left = 3
-												text = "[Goods.GetName]"
-											}
-											text_single = {
-												min_width = 60
-												align = right
-												raw_text = "[Multiply_CFixedPoint(GetVariableFromGlobalVariableMap('sul_da_necessity', Goods.MakeScope).GetValue, Location.MakeScope.ScriptValue('sul_laborers_necessity'))|2]"
-											}
-										}
-									}
-								}
-							}
-						}
-						blockoverride "tier_basic" {
-							TooltipManualTableField = {
-								visible = "[GreaterThan_CFixedPoint(Location.MakeScope.ScriptValue('sul_laborers_basic'), '(CFixedPoint)0')]"
-
-								blockoverride "field_content" {
-									text_single = { layoutpolicy_horizontal = expanding raw_text = "#T Basic#!" }
-								}
-							}
-
-							TooltipListRowContent = {
-								visible = "[GreaterThan_CFixedPoint(Location.MakeScope.ScriptValue('sul_laborers_basic'), '(CFixedPoint)0')]"
-								max_update_rate = 30
-								datamodel = "[GetGlobalMapKeys('sul_da_basic')]"
-
-								item = {
-									TooltipManualTableField = {
-										blockoverride "field_content" {
-											datacontext = "[Scope.GetGoods]"
-
-											icon = {
-												size = { 20 20 }
-												texture = "[GetGoodsIcon(Goods.Self)]"
-											}
-
-											text_single = {
-												layoutpolicy_horizontal = expanding
-												margin_left = 3
-												text = "[Goods.GetName]"
-											}
-											text_single = {
-												min_width = 60
-												align = right
-												raw_text = "[Multiply_CFixedPoint(GetVariableFromGlobalVariableMap('sul_da_basic', Goods.MakeScope).GetValue, Location.MakeScope.ScriptValue('sul_laborers_basic'))|2]"
-											}
-										}
-									}
-								}
-							}
-						}
-						blockoverride "tier_common" {
-							TooltipManualTableField = {
-								visible = "[GreaterThan_CFixedPoint(Location.MakeScope.ScriptValue('sul_laborers_common'), '(CFixedPoint)0')]"
-
-								blockoverride "field_content" {
-									text_single = { layoutpolicy_horizontal = expanding raw_text = "#T Common#!" }
-								}
-							}
-
-							TooltipListRowContent = {
-								visible = "[GreaterThan_CFixedPoint(Location.MakeScope.ScriptValue('sul_laborers_common'), '(CFixedPoint)0')]"
-								max_update_rate = 30
-								datamodel = "[GetGlobalMapKeys('sul_da_common')]"
-
-								item = {
-									TooltipManualTableField = {
-										blockoverride "field_content" {
-											datacontext = "[Scope.GetGoods]"
-
-											icon = {
-												size = { 20 20 }
-												texture = "[GetGoodsIcon(Goods.Self)]"
-											}
-
-											text_single = {
-												layoutpolicy_horizontal = expanding
-												margin_left = 3
-												text = "[Goods.GetName]"
-											}
-											text_single = {
-												min_width = 60
-												align = right
-												raw_text = "[Multiply_CFixedPoint(GetVariableFromGlobalVariableMap('sul_da_common', Goods.MakeScope).GetValue, Location.MakeScope.ScriptValue('sul_laborers_common'))|2]"
-											}
-										}
-									}
-								}
-							}
-						}
-						blockoverride "tier_upper" {
-							TooltipManualTableField = {
-								visible = "[GreaterThan_CFixedPoint(Location.MakeScope.ScriptValue('sul_laborers_upper'), '(CFixedPoint)0')]"
-
-								blockoverride "field_content" {
-									text_single = { layoutpolicy_horizontal = expanding raw_text = "#T Upper#!" }
-								}
-							}
-
-							TooltipListRowContent = {
-								visible = "[GreaterThan_CFixedPoint(Location.MakeScope.ScriptValue('sul_laborers_upper'), '(CFixedPoint)0')]"
-								max_update_rate = 30
-								datamodel = "[GetGlobalMapKeys('sul_da_upper')]"
-
-								item = {
-									TooltipManualTableField = {
-										blockoverride "field_content" {
-											datacontext = "[Scope.GetGoods]"
-
-											icon = {
-												size = { 20 20 }
-												texture = "[GetGoodsIcon(Goods.Self)]"
-											}
-
-											text_single = {
-												layoutpolicy_horizontal = expanding
-												margin_left = 3
-												text = "[Goods.GetName]"
-											}
-											text_single = {
-												min_width = 60
-												align = right
-												raw_text = "[Multiply_CFixedPoint(GetVariableFromGlobalVariableMap('sul_da_upper', Goods.MakeScope).GetValue, Location.MakeScope.ScriptValue('sul_laborers_upper'))|2]"
-											}
-										}
-									}
-								}
-							}
-						}
-						blockoverride "tier_luxury" {
-							TooltipManualTableField = {
-								visible = "[GreaterThan_CFixedPoint(Location.MakeScope.ScriptValue('sul_laborers_luxury'), '(CFixedPoint)0')]"
-
-								blockoverride "field_content" {
-									text_single = { layoutpolicy_horizontal = expanding raw_text = "#T Luxury#!" }
-								}
-							}
-
-							TooltipListRowContent = {
-								visible = "[GreaterThan_CFixedPoint(Location.MakeScope.ScriptValue('sul_laborers_luxury'), '(CFixedPoint)0')]"
-								max_update_rate = 30
-								datamodel = "[GetGlobalMapKeys('sul_da_luxury')]"
-
-								item = {
-									TooltipManualTableField = {
-										blockoverride "field_content" {
-											datacontext = "[Scope.GetGoods]"
-
-											icon = {
-												size = { 20 20 }
-												texture = "[GetGoodsIcon(Goods.Self)]"
-											}
-
-											text_single = {
-												layoutpolicy_horizontal = expanding
-												margin_left = 3
-												text = "[Goods.GetName]"
-											}
-											text_single = {
-												min_width = 60
-												align = right
-												raw_text = "[Multiply_CFixedPoint(GetVariableFromGlobalVariableMap('sul_da_luxury', Goods.MakeScope).GetValue, Location.MakeScope.ScriptValue('sul_laborers_luxury'))|2]"
-											}
-										}
-									}
-								}
-							}
-						}
-						blockoverride "tier_exotic" {
-							TooltipManualTableField = {
-								visible = "[GreaterThan_CFixedPoint(Location.MakeScope.ScriptValue('sul_laborers_exotic'), '(CFixedPoint)0')]"
-
-								blockoverride "field_content" {
-									text_single = { layoutpolicy_horizontal = expanding raw_text = "#T Exotic#!" }
-								}
-							}
-
-							TooltipListRowContent = {
-								visible = "[GreaterThan_CFixedPoint(Location.MakeScope.ScriptValue('sul_laborers_exotic'), '(CFixedPoint)0')]"
-								max_update_rate = 30
-								datamodel = "[GetGlobalMapKeys('sul_da_exotic')]"
-
-								item = {
-									TooltipManualTableField = {
-										blockoverride "field_content" {
-											datacontext = "[Scope.GetGoods]"
-
-											icon = {
-												size = { 20 20 }
-												texture = "[GetGoodsIcon(Goods.Self)]"
-											}
-
-											text_single = {
-												layoutpolicy_horizontal = expanding
-												margin_left = 3
-												text = "[Goods.GetName]"
-											}
-											text_single = {
-												min_width = 60
-												align = right
-												raw_text = "[Multiply_CFixedPoint(GetVariableFromGlobalVariableMap('sul_da_exotic', Goods.MakeScope).GetValue, Location.MakeScope.ScriptValue('sul_laborers_exotic'))|2]"
-											}
-										}
-									}
-								}
-							}
-						}
+						using = sul_laborers_demand_breakdown_tooltip
 					}
 				}
 			}
@@ -2922,7 +2965,6 @@ template location_tax_base_details {
 			# Peasants
 			TooltipManualTableField = {
 				visible = "[GreaterThan_CFixedPoint(Location.MakeScope.ScriptValue('sul_peasant_demand_per_pop'), '(CFixedPoint)0.0001')]"
-
 				blockoverride "field_content" {
 					icon = {
 						size = { 20 20 }
@@ -2955,23 +2997,18 @@ template location_tax_base_details {
 									TooltipListBase = {
 										TooltipManualTableField = {
 											blockoverride "field_content" {
-												text_single = {
-													layoutpolicy_horizontal = expanding
-													raw_text = "Local Wage Pool"
-												}
+												text_single = { layoutpolicy_horizontal = expanding raw_text = "Local Wage Pool" }
 												text_single = {
 													align = right
 													min_width = 100
 													raw_text = "[Location.MakeScope.ScriptValue('sul_wage_pool_total')|2]@gold!"
+													using = sul_wage_pool_breakdown_tooltip
 												}
 											}
 										}
 										TooltipManualTableField = {
 											blockoverride "field_content" {
-												text_single = {
-													layoutpolicy_horizontal = expanding
-													raw_text = "Local Estate Power"
-												}
+												text_single = { layoutpolicy_horizontal = expanding raw_text = "Local Estate Power" }
 												text_single = {
 													align = right
 													min_width = 100
@@ -2981,10 +3018,7 @@ template location_tax_base_details {
 										}
 										TooltipManualTableField = {
 											blockoverride "field_content" {
-												text_single = {
-													layoutpolicy_horizontal = expanding
-													raw_text = "Wage Bill Share"
-												}
+												text_single = { layoutpolicy_horizontal = expanding raw_text = "Wage Bill Share" }
 												text_single = {
 													align = right
 													min_width = 100
@@ -3012,18 +3046,13 @@ template location_tax_base_details {
 									}
 								}
 								blockoverride "tooltip_title" {
-									ContextualTooltipHeader = {
-										blockoverride "title_text" { raw_text = "Peasants Capital Returns" }
-									}
+									ContextualTooltipHeader = { blockoverride "title_text" { raw_text = "Peasants Capital Returns" } }
 								}
 								blockoverride "tooltip_content" {
 									TooltipListBase = {
 										TooltipManualTableField = {
 											blockoverride "field_content" {
-												text_single = {
-													layoutpolicy_horizontal = expanding
-													raw_text = "Peasant Estate Assets"
-												}
+												text_single = { layoutpolicy_horizontal = expanding raw_text = "Peasant Estate Assets" }
 												text_single = {
 													align = right
 													min_width = 100
@@ -3034,15 +3063,16 @@ template location_tax_base_details {
 										TooltipManualTableField = {
 											blockoverride "field_content" {
 												text_single = { layoutpolicy_horizontal = expanding raw_text = "Return Rate" }
-												text_single = { align = right min_width = 100 raw_text = "×2%" }
+												text_single = {
+													align = right
+													min_width = 100
+													raw_text = "×2%"
+												}
 											}
 										}
 										TooltipManualTableField = {
 											blockoverride "field_content" {
-												text_single = {
-													layoutpolicy_horizontal = expanding
-													raw_text = "#bold Estate Return#!"
-												}
+												text_single = { layoutpolicy_horizontal = expanding raw_text = "#bold Estate Return#!" }
 												text_single = {
 													align = right
 													min_width = 100
@@ -3052,12 +3082,8 @@ template location_tax_base_details {
 										}
 										TooltipManualTableField = {
 											visible = "[GreaterThan_CFixedPoint(Location.MakeScope.ScriptValue('sul_commoner_dhimmi_return'), '(CFixedPoint)0')]"
-
 											blockoverride "field_content" {
-												text_single = {
-													layoutpolicy_horizontal = expanding
-													raw_text = "Dhimmi Assets"
-												}
+												text_single = { layoutpolicy_horizontal = expanding raw_text = "Dhimmi Assets" }
 												text_single = {
 													align = right
 													min_width = 100
@@ -3067,12 +3093,8 @@ template location_tax_base_details {
 										}
 										TooltipManualTableField = {
 											visible = "[GreaterThan_CFixedPoint(Location.MakeScope.ScriptValue('sul_commoner_dhimmi_return'), '(CFixedPoint)0')]"
-
 											blockoverride "field_content" {
-												text_single = {
-													layoutpolicy_horizontal = expanding
-													raw_text = "× Power Share"
-												}
+												text_single = { layoutpolicy_horizontal = expanding raw_text = "× Power Share" }
 												text_single = {
 													align = right
 													min_width = 100
@@ -3082,12 +3104,8 @@ template location_tax_base_details {
 										}
 										TooltipManualTableField = {
 											visible = "[GreaterThan_CFixedPoint(Location.MakeScope.ScriptValue('sul_commoner_dhimmi_return'), '(CFixedPoint)0')]"
-
 											blockoverride "field_content" {
-												text_single = {
-													layoutpolicy_horizontal = expanding
-													raw_text = "#bold Dhimmi Return#!"
-												}
+												text_single = { layoutpolicy_horizontal = expanding raw_text = "#bold Dhimmi Return#!" }
 												text_single = {
 													align = right
 													min_width = 100
@@ -3097,10 +3115,7 @@ template location_tax_base_details {
 										}
 										TooltipManualTableField = {
 											blockoverride "field_content" {
-												text_single = {
-													layoutpolicy_horizontal = expanding
-													raw_text = "#bold Total#!"
-												}
+												text_single = { layoutpolicy_horizontal = expanding raw_text = "#bold Total#!" }
 												text_single = {
 													align = right
 													min_width = 100
@@ -3128,18 +3143,13 @@ template location_tax_base_details {
 									}
 								}
 								blockoverride "tooltip_title" {
-									ContextualTooltipHeader = {
-										blockoverride "title_text" { raw_text = "Peasants Enrichment" }
-									}
+									ContextualTooltipHeader = { blockoverride "title_text" { raw_text = "Peasants Enrichment" } }
 								}
 								blockoverride "tooltip_content" {
 									TooltipListBase = {
 										TooltipManualTableField = {
 											blockoverride "field_content" {
-												text_single = {
-													layoutpolicy_horizontal = expanding
-													raw_text = "#bold Enrichment Per Pop#!"
-												}
+												text_single = { layoutpolicy_horizontal = expanding raw_text = "#bold Enrichment Per Pop#!" }
 												text_single = {
 													align = right
 													min_width = 100
@@ -3149,10 +3159,7 @@ template location_tax_base_details {
 										}
 										TooltipManualTableField = {
 											blockoverride "field_content" {
-												text_single = {
-													layoutpolicy_horizontal = expanding
-													raw_text = "Estate Enrichment"
-												}
+												text_single = { layoutpolicy_horizontal = expanding raw_text = "Estate Enrichment" }
 												text_single = {
 													align = right
 													min_width = 100
@@ -3162,10 +3169,7 @@ template location_tax_base_details {
 										}
 										TooltipManualTableField = {
 											blockoverride "field_content" {
-												text_single = {
-													layoutpolicy_horizontal = expanding
-													raw_text = "Commoners Rate"
-												}
+												text_single = { layoutpolicy_horizontal = expanding raw_text = "Commoners Rate" }
 												text_single = {
 													align = right
 													min_width = 100
@@ -3175,10 +3179,7 @@ template location_tax_base_details {
 										}
 										TooltipManualTableField = {
 											blockoverride "field_content" {
-												text_single = {
-													layoutpolicy_horizontal = expanding
-													raw_text = "#bold Combined Rate#!"
-												}
+												text_single = { layoutpolicy_horizontal = expanding raw_text = "#bold Combined Rate#!" }
 												text_single = {
 													align = right
 													min_width = 100
@@ -3196,245 +3197,7 @@ template location_tax_base_details {
 						max_width = 70
 						align = right
 						raw_text = "[Location.MakeScope.ScriptValue('sul_peasant_demand_per_pop')|2]@gold!"
-						using = sul_demand_breakdown_tooltip
-						blockoverride "header_text" { raw_text = "#T Peasants — Demand Breakdown#!" }
-						blockoverride "tier_necessity" {
-							TooltipManualTableField = {
-								visible = "[GreaterThan_CFixedPoint(Location.MakeScope.ScriptValue('sul_peasants_necessity'), '(CFixedPoint)0')]"
-
-								blockoverride "field_content" {
-									text_single = {
-										layoutpolicy_horizontal = expanding
-										raw_text = "#T Necessity#!"
-									}
-								}
-							}
-
-							TooltipListRowContent = {
-								visible = "[GreaterThan_CFixedPoint(Location.MakeScope.ScriptValue('sul_peasants_necessity'), '(CFixedPoint)0')]"
-								max_update_rate = 30
-								datamodel = "[GetGlobalMapKeys('sul_da_necessity')]"
-
-								item = {
-									TooltipManualTableField = {
-										blockoverride "field_content" {
-											datacontext = "[Scope.GetGoods]"
-
-											icon = {
-												size = { 20 20 }
-												texture = "[GetGoodsIcon(Goods.Self)]"
-											}
-
-											text_single = {
-												layoutpolicy_horizontal = expanding
-												margin_left = 3
-												text = "[Goods.GetName]"
-											}
-											text_single = {
-												min_width = 60
-												align = right
-												raw_text = "[Multiply_CFixedPoint(GetVariableFromGlobalVariableMap('sul_da_necessity', Goods.MakeScope).GetValue, Location.MakeScope.ScriptValue('sul_peasants_necessity'))|2]"
-											}
-										}
-									}
-								}
-							}
-						}
-						blockoverride "tier_basic" {
-							TooltipManualTableField = {
-								visible = "[GreaterThan_CFixedPoint(Location.MakeScope.ScriptValue('sul_peasants_basic'), '(CFixedPoint)0')]"
-
-								blockoverride "field_content" {
-									text_single = { layoutpolicy_horizontal = expanding raw_text = "#T Basic#!" }
-								}
-							}
-
-							TooltipListRowContent = {
-								visible = "[GreaterThan_CFixedPoint(Location.MakeScope.ScriptValue('sul_peasants_basic'), '(CFixedPoint)0')]"
-								max_update_rate = 30
-								datamodel = "[GetGlobalMapKeys('sul_da_basic')]"
-
-								item = {
-									TooltipManualTableField = {
-										blockoverride "field_content" {
-											datacontext = "[Scope.GetGoods]"
-
-											icon = {
-												size = { 20 20 }
-												texture = "[GetGoodsIcon(Goods.Self)]"
-											}
-
-											text_single = {
-												layoutpolicy_horizontal = expanding
-												margin_left = 3
-												text = "[Goods.GetName]"
-											}
-											text_single = {
-												min_width = 60
-												align = right
-												raw_text = "[Multiply_CFixedPoint(GetVariableFromGlobalVariableMap('sul_da_basic', Goods.MakeScope).GetValue, Location.MakeScope.ScriptValue('sul_peasants_basic'))|2]"
-											}
-										}
-									}
-								}
-							}
-						}
-						blockoverride "tier_common" {
-							TooltipManualTableField = {
-								visible = "[GreaterThan_CFixedPoint(Location.MakeScope.ScriptValue('sul_peasants_common'), '(CFixedPoint)0')]"
-
-								blockoverride "field_content" {
-									text_single = { layoutpolicy_horizontal = expanding raw_text = "#T Common#!" }
-								}
-							}
-
-							TooltipListRowContent = {
-								visible = "[GreaterThan_CFixedPoint(Location.MakeScope.ScriptValue('sul_peasants_common'), '(CFixedPoint)0')]"
-								max_update_rate = 30
-								datamodel = "[GetGlobalMapKeys('sul_da_common')]"
-
-								item = {
-									TooltipManualTableField = {
-										blockoverride "field_content" {
-											datacontext = "[Scope.GetGoods]"
-
-											icon = {
-												size = { 20 20 }
-												texture = "[GetGoodsIcon(Goods.Self)]"
-											}
-
-											text_single = {
-												layoutpolicy_horizontal = expanding
-												margin_left = 3
-												text = "[Goods.GetName]"
-											}
-											text_single = {
-												min_width = 60
-												align = right
-												raw_text = "[Multiply_CFixedPoint(GetVariableFromGlobalVariableMap('sul_da_common', Goods.MakeScope).GetValue, Location.MakeScope.ScriptValue('sul_peasants_common'))|2]"
-											}
-										}
-									}
-								}
-							}
-						}
-						blockoverride "tier_upper" {
-							TooltipManualTableField = {
-								visible = "[GreaterThan_CFixedPoint(Location.MakeScope.ScriptValue('sul_peasants_upper'), '(CFixedPoint)0')]"
-
-								blockoverride "field_content" {
-									text_single = { layoutpolicy_horizontal = expanding raw_text = "#T Upper#!" }
-								}
-							}
-
-							TooltipListRowContent = {
-								visible = "[GreaterThan_CFixedPoint(Location.MakeScope.ScriptValue('sul_peasants_upper'), '(CFixedPoint)0')]"
-								max_update_rate = 30
-								datamodel = "[GetGlobalMapKeys('sul_da_upper')]"
-
-								item = {
-									TooltipManualTableField = {
-										blockoverride "field_content" {
-											datacontext = "[Scope.GetGoods]"
-
-											icon = {
-												size = { 20 20 }
-												texture = "[GetGoodsIcon(Goods.Self)]"
-											}
-
-											text_single = {
-												layoutpolicy_horizontal = expanding
-												margin_left = 3
-												text = "[Goods.GetName]"
-											}
-											text_single = {
-												min_width = 60
-												align = right
-												raw_text = "[Multiply_CFixedPoint(GetVariableFromGlobalVariableMap('sul_da_upper', Goods.MakeScope).GetValue, Location.MakeScope.ScriptValue('sul_peasants_upper'))|2]"
-											}
-										}
-									}
-								}
-							}
-						}
-						blockoverride "tier_luxury" {
-							TooltipManualTableField = {
-								visible = "[GreaterThan_CFixedPoint(Location.MakeScope.ScriptValue('sul_peasants_luxury'), '(CFixedPoint)0')]"
-
-								blockoverride "field_content" {
-									text_single = { layoutpolicy_horizontal = expanding raw_text = "#T Luxury#!" }
-								}
-							}
-
-							TooltipListRowContent = {
-								visible = "[GreaterThan_CFixedPoint(Location.MakeScope.ScriptValue('sul_peasants_luxury'), '(CFixedPoint)0')]"
-								max_update_rate = 30
-								datamodel = "[GetGlobalMapKeys('sul_da_luxury')]"
-
-								item = {
-									TooltipManualTableField = {
-										blockoverride "field_content" {
-											datacontext = "[Scope.GetGoods]"
-
-											icon = {
-												size = { 20 20 }
-												texture = "[GetGoodsIcon(Goods.Self)]"
-											}
-
-											text_single = {
-												layoutpolicy_horizontal = expanding
-												margin_left = 3
-												text = "[Goods.GetName]"
-											}
-											text_single = {
-												min_width = 60
-												align = right
-												raw_text = "[Multiply_CFixedPoint(GetVariableFromGlobalVariableMap('sul_da_luxury', Goods.MakeScope).GetValue, Location.MakeScope.ScriptValue('sul_peasants_luxury'))|2]"
-											}
-										}
-									}
-								}
-							}
-						}
-						blockoverride "tier_exotic" {
-							TooltipManualTableField = {
-								visible = "[GreaterThan_CFixedPoint(Location.MakeScope.ScriptValue('sul_peasants_exotic'), '(CFixedPoint)0')]"
-
-								blockoverride "field_content" {
-									text_single = { layoutpolicy_horizontal = expanding raw_text = "#T Exotic#!" }
-								}
-							}
-
-							TooltipListRowContent = {
-								visible = "[GreaterThan_CFixedPoint(Location.MakeScope.ScriptValue('sul_peasants_exotic'), '(CFixedPoint)0')]"
-								max_update_rate = 30
-								datamodel = "[GetGlobalMapKeys('sul_da_exotic')]"
-
-								item = {
-									TooltipManualTableField = {
-										blockoverride "field_content" {
-											datacontext = "[Scope.GetGoods]"
-
-											icon = {
-												size = { 20 20 }
-												texture = "[GetGoodsIcon(Goods.Self)]"
-											}
-
-											text_single = {
-												layoutpolicy_horizontal = expanding
-												margin_left = 3
-												text = "[Goods.GetName]"
-											}
-											text_single = {
-												min_width = 60
-												align = right
-												raw_text = "[Multiply_CFixedPoint(GetVariableFromGlobalVariableMap('sul_da_exotic', Goods.MakeScope).GetValue, Location.MakeScope.ScriptValue('sul_peasants_exotic'))|2]"
-											}
-										}
-									}
-								}
-							}
-						}
+						using = sul_peasants_demand_breakdown_tooltip
 					}
 				}
 			}
@@ -3442,7 +3205,6 @@ template location_tax_base_details {
 			# Tribesmen
 			TooltipManualTableField = {
 				visible = "[GreaterThan_CFixedPoint(Location.MakeScope.ScriptValue('sul_tribesmen_demand_per_pop'), '(CFixedPoint)0.0001')]"
-
 				blockoverride "field_content" {
 					icon = {
 						size = { 20 20 }
@@ -3475,23 +3237,18 @@ template location_tax_base_details {
 									TooltipListBase = {
 										TooltipManualTableField = {
 											blockoverride "field_content" {
-												text_single = {
-													layoutpolicy_horizontal = expanding
-													raw_text = "Local Wage Pool"
-												}
+												text_single = { layoutpolicy_horizontal = expanding raw_text = "Local Wage Pool" }
 												text_single = {
 													align = right
 													min_width = 100
 													raw_text = "[Location.MakeScope.ScriptValue('sul_wage_pool_total')|2]@gold!"
+													using = sul_wage_pool_breakdown_tooltip
 												}
 											}
 										}
 										TooltipManualTableField = {
 											blockoverride "field_content" {
-												text_single = {
-													layoutpolicy_horizontal = expanding
-													raw_text = "Local Estate Power"
-												}
+												text_single = { layoutpolicy_horizontal = expanding raw_text = "Local Estate Power" }
 												text_single = {
 													align = right
 													min_width = 100
@@ -3519,18 +3276,13 @@ template location_tax_base_details {
 									}
 								}
 								blockoverride "tooltip_title" {
-									ContextualTooltipHeader = {
-										blockoverride "title_text" { raw_text = "Tribesmen Capital Returns" }
-									}
+									ContextualTooltipHeader = { blockoverride "title_text" { raw_text = "Tribesmen Capital Returns" } }
 								}
 								blockoverride "tooltip_content" {
 									TooltipListBase = {
 										TooltipManualTableField = {
 											blockoverride "field_content" {
-												text_single = {
-													layoutpolicy_horizontal = expanding
-													raw_text = "Estate Assets"
-												}
+												text_single = { layoutpolicy_horizontal = expanding raw_text = "Estate Assets" }
 												text_single = {
 													align = right
 													min_width = 100
@@ -3541,15 +3293,16 @@ template location_tax_base_details {
 										TooltipManualTableField = {
 											blockoverride "field_content" {
 												text_single = { layoutpolicy_horizontal = expanding raw_text = "Return Rate" }
-												text_single = { align = right min_width = 100 raw_text = "×2%" }
+												text_single = {
+													align = right
+													min_width = 100
+													raw_text = "×2%"
+												}
 											}
 										}
 										TooltipManualTableField = {
 											blockoverride "field_content" {
-												text_single = {
-													layoutpolicy_horizontal = expanding
-													raw_text = "#bold Estate Return#!"
-												}
+												text_single = { layoutpolicy_horizontal = expanding raw_text = "#bold Estate Return#!" }
 												text_single = {
 													align = right
 													min_width = 100
@@ -3559,12 +3312,8 @@ template location_tax_base_details {
 										}
 										TooltipManualTableField = {
 											visible = "[GreaterThan_CFixedPoint(Location.MakeScope.ScriptValue('sul_tribesmen_dhimmi_return'), '(CFixedPoint)0')]"
-
 											blockoverride "field_content" {
-												text_single = {
-													layoutpolicy_horizontal = expanding
-													raw_text = "Dhimmi Assets"
-												}
+												text_single = { layoutpolicy_horizontal = expanding raw_text = "Dhimmi Assets" }
 												text_single = {
 													align = right
 													min_width = 100
@@ -3574,12 +3323,8 @@ template location_tax_base_details {
 										}
 										TooltipManualTableField = {
 											visible = "[GreaterThan_CFixedPoint(Location.MakeScope.ScriptValue('sul_tribesmen_dhimmi_return'), '(CFixedPoint)0')]"
-
 											blockoverride "field_content" {
-												text_single = {
-													layoutpolicy_horizontal = expanding
-													raw_text = "× Power Share"
-												}
+												text_single = { layoutpolicy_horizontal = expanding raw_text = "× Power Share" }
 												text_single = {
 													align = right
 													min_width = 100
@@ -3589,12 +3334,8 @@ template location_tax_base_details {
 										}
 										TooltipManualTableField = {
 											visible = "[GreaterThan_CFixedPoint(Location.MakeScope.ScriptValue('sul_tribesmen_dhimmi_return'), '(CFixedPoint)0')]"
-
 											blockoverride "field_content" {
-												text_single = {
-													layoutpolicy_horizontal = expanding
-													raw_text = "#bold Dhimmi Return#!"
-												}
+												text_single = { layoutpolicy_horizontal = expanding raw_text = "#bold Dhimmi Return#!" }
 												text_single = {
 													align = right
 													min_width = 100
@@ -3604,12 +3345,8 @@ template location_tax_base_details {
 										}
 										TooltipManualTableField = {
 											visible = "[GreaterThan_CFixedPoint(Location.MakeScope.ScriptValue('sul_tribesmen_cossacks_return'), '(CFixedPoint)0')]"
-
 											blockoverride "field_content" {
-												text_single = {
-													layoutpolicy_horizontal = expanding
-													raw_text = "Cossack Assets"
-												}
+												text_single = { layoutpolicy_horizontal = expanding raw_text = "Cossack Assets" }
 												text_single = {
 													align = right
 													min_width = 100
@@ -3619,12 +3356,8 @@ template location_tax_base_details {
 										}
 										TooltipManualTableField = {
 											visible = "[GreaterThan_CFixedPoint(Location.MakeScope.ScriptValue('sul_tribesmen_cossacks_return'), '(CFixedPoint)0')]"
-
 											blockoverride "field_content" {
-												text_single = {
-													layoutpolicy_horizontal = expanding
-													raw_text = "× Power Share"
-												}
+												text_single = { layoutpolicy_horizontal = expanding raw_text = "× Power Share" }
 												text_single = {
 													align = right
 													min_width = 100
@@ -3634,12 +3367,8 @@ template location_tax_base_details {
 										}
 										TooltipManualTableField = {
 											visible = "[GreaterThan_CFixedPoint(Location.MakeScope.ScriptValue('sul_tribesmen_cossacks_return'), '(CFixedPoint)0')]"
-
 											blockoverride "field_content" {
-												text_single = {
-													layoutpolicy_horizontal = expanding
-													raw_text = "#bold Cossack Return#!"
-												}
+												text_single = { layoutpolicy_horizontal = expanding raw_text = "#bold Cossack Return#!" }
 												text_single = {
 													align = right
 													min_width = 100
@@ -3649,10 +3378,7 @@ template location_tax_base_details {
 										}
 										TooltipManualTableField = {
 											blockoverride "field_content" {
-												text_single = {
-													layoutpolicy_horizontal = expanding
-													raw_text = "#bold Total#!"
-												}
+												text_single = { layoutpolicy_horizontal = expanding raw_text = "#bold Total#!" }
 												text_single = {
 													align = right
 													min_width = 100
@@ -3680,18 +3406,13 @@ template location_tax_base_details {
 									}
 								}
 								blockoverride "tooltip_title" {
-									ContextualTooltipHeader = {
-										blockoverride "title_text" { raw_text = "Tribesmen Enrichment" }
-									}
+									ContextualTooltipHeader = { blockoverride "title_text" { raw_text = "Tribesmen Enrichment" } }
 								}
 								blockoverride "tooltip_content" {
 									TooltipListBase = {
 										TooltipManualTableField = {
 											blockoverride "field_content" {
-												text_single = {
-													layoutpolicy_horizontal = expanding
-													raw_text = "#bold Enrichment Per Pop#!"
-												}
+												text_single = { layoutpolicy_horizontal = expanding raw_text = "#bold Enrichment Per Pop#!" }
 												text_single = {
 													align = right
 													min_width = 100
@@ -3701,10 +3422,7 @@ template location_tax_base_details {
 										}
 										TooltipManualTableField = {
 											blockoverride "field_content" {
-												text_single = {
-													layoutpolicy_horizontal = expanding
-													raw_text = "Estate Enrichment"
-												}
+												text_single = { layoutpolicy_horizontal = expanding raw_text = "Estate Enrichment" }
 												text_single = {
 													align = right
 													min_width = 100
@@ -3714,10 +3432,7 @@ template location_tax_base_details {
 										}
 										TooltipManualTableField = {
 											blockoverride "field_content" {
-												text_single = {
-													layoutpolicy_horizontal = expanding
-													raw_text = "Tribesmen Rate"
-												}
+												text_single = { layoutpolicy_horizontal = expanding raw_text = "Tribesmen Rate" }
 												text_single = {
 													align = right
 													min_width = 100
@@ -3727,10 +3442,7 @@ template location_tax_base_details {
 										}
 										TooltipManualTableField = {
 											blockoverride "field_content" {
-												text_single = {
-													layoutpolicy_horizontal = expanding
-													raw_text = "#bold Combined Rate#!"
-												}
+												text_single = { layoutpolicy_horizontal = expanding raw_text = "#bold Combined Rate#!" }
 												text_single = {
 													align = right
 													min_width = 100
@@ -3757,12 +3469,7 @@ template location_tax_base_details {
 
 template sul_wealth_bar_tooltip {
 	ContextualTooltipType = {
-		blockoverride "title_icon" {
-			icon = {
-				using = tooltip_title_icon_size
-				texture = "[GetConceptTexture('wealth')]"
-			}
-		}
+		blockoverride "title_icon" { icon = { using = tooltip_title_icon_size texture = "[GetConceptTexture('wealth')]" } }
 		blockoverride "title_text" { raw_text = "#T [sul_location_assets|E]#!" }
 		blockoverride "concept_link" { text = "[sul_location_assets|e]" }
 		blockoverride "tooltip_content" {
@@ -3782,31 +3489,66 @@ template sul_wealth_bar_tooltip {
 						pieslice = {
 							texture = "gfx/interface/pie_charts/pie_chart_alpha_80.dds"
 							value = "[FixedPointToFloat(LocationView.GetLocation.MakeScope.ScriptValue('sul_wealth_share_nobles'))]"
-							color = { 0.33 0.49 0.80 1 }
+
+							color = {
+								0.33
+								0.49
+								0.80
+								1
+							}
+
 							tooltip = "sul_wealth_slice_nobles"
 						}
 						pieslice = {
 							texture = "gfx/interface/pie_charts/pie_chart_alpha_80.dds"
 							value = "[FixedPointToFloat(LocationView.GetLocation.MakeScope.ScriptValue('sul_wealth_share_clergy'))]"
-							color = { 0.78 0.82 0.90 1 }
+
+							color = {
+								0.78
+								0.82
+								0.90
+								1
+							}
+
 							tooltip = "sul_wealth_slice_clergy"
 						}
 						pieslice = {
 							texture = "gfx/interface/pie_charts/pie_chart_alpha_80.dds"
 							value = "[FixedPointToFloat(LocationView.GetLocation.MakeScope.ScriptValue('sul_wealth_share_burghers'))]"
-							color = { 0.79 0.55 0.10 1 }
+
+							color = {
+								0.79
+								0.55
+								0.10
+								1
+							}
+
 							tooltip = "sul_wealth_slice_burghers"
 						}
 						pieslice = {
 							texture = "gfx/interface/pie_charts/pie_chart_alpha_80.dds"
 							value = "[FixedPointToFloat(LocationView.GetLocation.MakeScope.ScriptValue('sul_wealth_share_peasants'))]"
-							color = { 0.37 0.47 0.26 1 }
+
+							color = {
+								0.37
+								0.47
+								0.26
+								1
+							}
+
 							tooltip = "sul_wealth_slice_commoners"
 						}
 						pieslice = {
 							texture = "gfx/interface/pie_charts/pie_chart_alpha_80.dds"
 							value = "[FixedPointToFloat(LocationView.GetLocation.MakeScope.ScriptValue('sul_wealth_share_crown'))]"
-							color = { 0.54 0.36 0.80 1 }
+
+							color = {
+								0.54
+								0.36
+								0.80
+								1
+							}
+
 							tooltip = "sul_wealth_slice_crown"
 						}
 
@@ -3820,7 +3562,6 @@ template sul_wealth_bar_tooltip {
 
 				vbox = {
 					spacing = 5
-
 					TooltipListBase = {
 						TooltipListRowContent = {
 							TooltipManualTableField = {
@@ -3828,9 +3569,7 @@ template sul_wealth_bar_tooltip {
 									text_single = { raw_text = "#T [sul_location_assets]#!" }
 									expand = {  }
 
-									text_single = {
-										raw_text = "[LocationView.GetLocation.MakeScope.ScriptValue('sul_wealth_total')|2] [wealth_icon]"
-									}
+									text_single = { raw_text = "[LocationView.GetLocation.MakeScope.ScriptValue('sul_wealth_total')|2] [wealth_icon]" }
 								}
 							}
 							TooltipManualTableField = {
@@ -3857,19 +3596,22 @@ template sul_wealth_bar_tooltip {
 					}
 				}
 			}
-
 			TooltipListBase = {
 				TooltipTableHeader = { blockoverride "tableheader_text" { raw_text = "#T Estate Assets#!" } }
-
 				TooltipListRowContent = {
 					TooltipManualTableField = {
 						visible = "[GreaterThan_CFixedPoint(LocationView.GetLocation.MakeScope.ScriptValue('sul_dbg_local_power_nobles'), '(CFixedPoint)0')]"
-
 						blockoverride "field_content" {
 							icon = {
 								size = { 10 20 }
 								texture = "gfx/interface/component_tiles/bookmark_white.dds"
-								tintcolor = { 0.33 0.49 0.80 1 }
+
+								tintcolor = {
+									0.33
+									0.49
+									0.80
+									1
+								}
 							}
 
 							text_single = { default_format = "#subtle_name" raw_text = "Nobles" }
@@ -3883,12 +3625,17 @@ template sul_wealth_bar_tooltip {
 					}
 					TooltipManualTableField = {
 						visible = "[GreaterThan_CFixedPoint(LocationView.GetLocation.MakeScope.ScriptValue('sul_dbg_local_power_clergy'), '(CFixedPoint)0')]"
-
 						blockoverride "field_content" {
 							icon = {
 								size = { 10 20 }
 								texture = "gfx/interface/component_tiles/bookmark_white.dds"
-								tintcolor = { 0.78 0.82 0.90 1 }
+
+								tintcolor = {
+									0.78
+									0.82
+									0.90
+									1
+								}
 							}
 
 							text_single = { default_format = "#subtle_name" raw_text = "Clergy" }
@@ -3902,12 +3649,17 @@ template sul_wealth_bar_tooltip {
 					}
 					TooltipManualTableField = {
 						visible = "[GreaterThan_CFixedPoint(LocationView.GetLocation.MakeScope.ScriptValue('sul_dbg_local_power_burghers'), '(CFixedPoint)0')]"
-
 						blockoverride "field_content" {
 							icon = {
 								size = { 10 20 }
 								texture = "gfx/interface/component_tiles/bookmark_white.dds"
-								tintcolor = { 0.79 0.55 0.10 1 }
+
+								tintcolor = {
+									0.79
+									0.55
+									0.10
+									1
+								}
 							}
 
 							text_single = { default_format = "#subtle_name" raw_text = "Burghers" }
@@ -3921,12 +3673,17 @@ template sul_wealth_bar_tooltip {
 					}
 					TooltipManualTableField = {
 						visible = "[GreaterThan_CFixedPoint(LocationView.GetLocation.MakeScope.ScriptValue('sul_dbg_local_power_peasants'), '(CFixedPoint)0')]"
-
 						blockoverride "field_content" {
 							icon = {
 								size = { 10 20 }
 								texture = "gfx/interface/component_tiles/bookmark_white.dds"
-								tintcolor = { 0.37 0.47 0.26 1 }
+
+								tintcolor = {
+									0.37
+									0.47
+									0.26
+									1
+								}
 							}
 
 							text_single = { default_format = "#subtle_name" raw_text = "Commoners" }
@@ -3940,12 +3697,17 @@ template sul_wealth_bar_tooltip {
 					}
 					TooltipManualTableField = {
 						visible = "[GreaterThan_CFixedPoint(LocationView.GetLocation.MakeScope.ScriptValue('sul_dbg_local_power_dhimmi'), '(CFixedPoint)0')]"
-
 						blockoverride "field_content" {
 							icon = {
 								size = { 10 20 }
 								texture = "gfx/interface/component_tiles/bookmark_white.dds"
-								tintcolor = { 0.85 0.05 0.35 1 }
+
+								tintcolor = {
+									0.85
+									0.05
+									0.35
+									1
+								}
 							}
 
 							text_single = { default_format = "#subtle_name" raw_text = "Dhimmi" }
@@ -3959,12 +3721,17 @@ template sul_wealth_bar_tooltip {
 					}
 					TooltipManualTableField = {
 						visible = "[GreaterThan_CFixedPoint(LocationView.GetLocation.MakeScope.ScriptValue('sul_dbg_local_power_cossacks'), '(CFixedPoint)0')]"
-
 						blockoverride "field_content" {
 							icon = {
 								size = { 10 20 }
 								texture = "gfx/interface/component_tiles/bookmark_white.dds"
-								tintcolor = { 0.76 0.78 0.24 1 }
+
+								tintcolor = {
+									0.76
+									0.78
+									0.24
+									1
+								}
 							}
 
 							text_single = { default_format = "#subtle_name" raw_text = "Cossacks" }
@@ -3978,12 +3745,17 @@ template sul_wealth_bar_tooltip {
 					}
 					TooltipManualTableField = {
 						visible = "[GreaterThan_CFixedPoint(LocationView.GetLocation.MakeScope.ScriptValue('sul_dbg_local_power_tribes'), '(CFixedPoint)0')]"
-
 						blockoverride "field_content" {
 							icon = {
 								size = { 10 20 }
 								texture = "gfx/interface/component_tiles/bookmark_white.dds"
-								tintcolor = { 0.47 0.33 0.26 1 }
+
+								tintcolor = {
+									0.47
+									0.33
+									0.26
+									1
+								}
 							}
 
 							text_single = { default_format = "#subtle_name" raw_text = "Tribes" }
@@ -4000,7 +3772,13 @@ template sul_wealth_bar_tooltip {
 							icon = {
 								size = { 10 20 }
 								texture = "gfx/interface/component_tiles/bookmark_white.dds"
-								tintcolor = { 0.54 0.36 0.80 1 }
+
+								tintcolor = {
+									0.54
+									0.36
+									0.80
+									1
+								}
 							}
 
 							text_single = { default_format = "#subtle_name" raw_text = "Crown" }
@@ -4009,6 +3787,80 @@ template sul_wealth_bar_tooltip {
 							text_single = {
 								align = right
 								raw_text = "[LocationView.GetLocation.MakeScope.ScriptValue('sul_map_asset_crown')|2]@gold! (#green [LocationView.GetLocation.MakeScope.ScriptValue('sul_wealth_delta_crown')|+=2]@gold!#!)"
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+}
+
+template sul_wage_pool_breakdown_tooltip {
+	tooltipwidget = {
+		ContextualTooltipType = {
+			blockoverride "tooltip_title" {
+				ContextualTooltipHeader = { blockoverride "title_text" { raw_text = "Wage Pool Sources" } }
+			}
+			blockoverride "tooltip_content" {
+				TooltipListBase = {
+					TooltipManualTableField = {
+						blockoverride "field_content" {
+							text_single = { layoutpolicy_horizontal = expanding raw_text = "Nobles" }
+							text_single = {
+								align = right
+								min_width = 80
+								raw_text = "[Location.MakeScope.ScriptValue('sul_wage_bill_nobles_display')|2]@gold!"
+							}
+						}
+					}
+					TooltipManualTableField = {
+						blockoverride "field_content" {
+							text_single = { layoutpolicy_horizontal = expanding raw_text = "Clergy" }
+							text_single = {
+								align = right
+								min_width = 80
+								raw_text = "[Location.MakeScope.ScriptValue('sul_wage_bill_clergy_display')|2]@gold!"
+							}
+						}
+					}
+					TooltipManualTableField = {
+						blockoverride "field_content" {
+							text_single = { layoutpolicy_horizontal = expanding raw_text = "Burghers" }
+							text_single = {
+								align = right
+								min_width = 80
+								raw_text = "[Location.MakeScope.ScriptValue('sul_wage_bill_burghers_display')|2]@gold!"
+							}
+						}
+					}
+					TooltipManualTableField = {
+						blockoverride "field_content" {
+							text_single = { layoutpolicy_horizontal = expanding raw_text = "Soldiers" }
+							text_single = {
+								align = right
+								min_width = 80
+								raw_text = "[Location.MakeScope.ScriptValue('sul_wage_bill_soldiers_display')|2]@gold!"
+							}
+						}
+					}
+					TooltipManualTableField = {
+						blockoverride "field_content" {
+							text_single = { layoutpolicy_horizontal = expanding raw_text = "Laborers" }
+							text_single = {
+								align = right
+								min_width = 80
+								raw_text = "[Location.MakeScope.ScriptValue('sul_wage_bill_laborers_display')|2]@gold!"
+							}
+						}
+					}
+					TooltipManualTableField = {
+						blockoverride "field_content" {
+							text_single = { layoutpolicy_horizontal = expanding raw_text = "Peasants" }
+							text_single = {
+								align = right
+								min_width = 80
+								raw_text = "[Location.MakeScope.ScriptValue('sul_wage_bill_peasants_display')|2]@gold!"
 							}
 						}
 					}

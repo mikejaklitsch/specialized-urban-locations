@@ -13,12 +13,10 @@
 
 sul_epbm_initialize_all = {
 	effect = {
+		debug_log = "SUL_TRACE: epbm_initialize_all ENTER"
 		sul_epbm_full_rebuild = yes
 
-		set_global_variable = {
-			name = sul_epbm_version
-			value = sul_epbm_version_value
-		}
+		set_global_variable = { name = sul_epbm_version value = sul_epbm_version_value }
 	}
 }
 
@@ -29,22 +27,14 @@ sul_epbm_initialize_all = {
 
 sul_epbm_version_check = {
 	trigger = {
-		OR = {
-			NOT = {
-				has_global_variable = sul_epbm_version
-			}
-
-			global_var:sul_epbm_version < sul_epbm_version_value
-		}
+		OR = { NOT = { has_global_variable = sul_epbm_version } global_var:sul_epbm_version < sul_epbm_version_value }
 	}
 
 	effect = {
+		debug_log = "SUL_TRACE: epbm_version_check ENTER"
 		sul_epbm_full_rebuild = yes
 
-		set_global_variable = {
-			name = sul_epbm_version
-			value = sul_epbm_version_value
-		}
+		set_global_variable = { name = sul_epbm_version value = sul_epbm_version_value }
 	}
 }
 
@@ -58,6 +48,7 @@ sul_epbm_player_monthly = {
 	}
 
 	effect = {
+		debug_log = "SUL_TRACE: epbm_player_monthly ENTER"
 		sul_epbm_collect_maintenance = yes
 	}
 }
@@ -73,6 +64,7 @@ sul_epbm_ai_monthly_charge = {
 	}
 
 	effect = {
+		debug_log = "SUL_TRACE: epbm_ai_monthly_charge ENTER"
 		sul_epbm_charge_estates = yes
 	}
 }
@@ -93,6 +85,7 @@ sul_epbm_ai_yearly_recalc = {
 	}
 
 	effect = {
+		debug_log = "SUL_TRACE: epbm_ai_yearly_recalc ENTER"
 		sul_epbm_calculate_maintenance = yes
 	}
 }
@@ -108,11 +101,10 @@ sul_epbm_decade_rebuild = {
 	}
 
 	effect = {
+		debug_log = "SUL_TRACE: epbm_decade_rebuild ENTER"
+
 		if = {
-			limit = {
-				has_variable = sul_epbm_rebuild_counter
-				var:sul_epbm_rebuild_counter >= 9
-			}
+			limit = { has_variable = sul_epbm_rebuild_counter var:sul_epbm_rebuild_counter >= 9 }
 
 			sul_epbm_structural_rebuild = yes
 			set_variable = { name = sul_epbm_rebuild_counter value = 0 }
@@ -133,23 +125,16 @@ sul_epbm_on_location_owner_changed = {
 	trigger = { has_global_variable = sul_epbm_version }
 
 	effect = {
+		debug_log = "SUL_TRACE: epbm_on_location_owner_changed ENTER"
 		save_temporary_scope_as = sul_epbm_loc
 		# Remove from loser's list (if they have one)
 		scope:loser ?= {
 			if = {
 				limit = {
 					has_variable_list = sul_epbm_locations
-
-					is_target_in_variable_list = {
-						name = sul_epbm_locations
-						target = scope:sul_epbm_loc
-					}
+					is_target_in_variable_list = { name = sul_epbm_locations target = scope:sul_epbm_loc }
 				}
-
-				remove_list_variable = {
-					name = sul_epbm_locations
-					target = scope:sul_epbm_loc
-				}
+				remove_list_variable = { name = sul_epbm_locations target = scope:sul_epbm_loc }
 			}
 		}
 
@@ -160,18 +145,9 @@ sul_epbm_on_location_owner_changed = {
 					has_variable_list = sul_epbm_locations
 
 					scope:sul_epbm_loc = { has_variable_list = sul_epbm_buildings }
-					NOT = {
-						is_target_in_variable_list = {
-							name = sul_epbm_locations
-							target = scope:sul_epbm_loc
-						}
-					}
+					NOT = { is_target_in_variable_list = { name = sul_epbm_locations target = scope:sul_epbm_loc } }
 				}
-
-				add_to_variable_list = {
-					name = sul_epbm_locations
-					target = scope:sul_epbm_loc
-				}
+				add_to_variable_list = { name = sul_epbm_locations target = scope:sul_epbm_loc }
 			}
 		}
 	}
@@ -185,9 +161,7 @@ sul_epbm_monthly_cache_clear = {
 	trigger = { has_global_variable = sul_epbm_version }
 
 	effect = {
-		every_in_global_list = {
-			variable = sul_epbm_all_ios
-			clear_variable_map = sul_epbm_costs
-		}
+		debug_log = "SUL_TRACE: epbm_monthly_cache_clear ENTER"
+		every_in_global_list = { variable = sul_epbm_all_ios clear_variable_map = sul_epbm_costs }
 	}
 }

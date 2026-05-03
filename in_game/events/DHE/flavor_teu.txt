@@ -46,7 +46,6 @@ flavor_teu.1 = {
 			save_scope_as = prussian_confederation
 			culture = culture:prussian
 		}
-
 		event_illustration_government_estate_effect = yes
 	}
 
@@ -55,17 +54,12 @@ flavor_teu.1 = {
 
 		custom_tooltip = {
 			text = prussian_confederation_support
-
 			every_owned_location = {
 				limit = { area = area:prussia_area }
-
 				every_pop = {
 					limit = {
 						owner = root
-						OR = {
-							pop_type = pop_type:nobles
-							pop_type = pop_type:burghers
-						}
+						OR = { pop_type = pop_type:nobles pop_type = pop_type:burghers }
 
 						culture = culture:prussian
 					}
@@ -145,11 +139,7 @@ flavor_teu.3 = {
 	}
 	option = {
 		name = flavor_teu.3.b
-
-		add_estate_satisfaction = {
-			type = estate_type:nobles_estate
-			value = estate_satisfaction_severe_penalty
-		}
+		add_estate_satisfaction = { type = estate_type:nobles_estate value = estate_satisfaction_severe_penalty }
 	}
 }
 
@@ -173,28 +163,14 @@ flavor_teu.4 = {
 	illustration_tags = { 10 = regular 10 = interior }
 
 	trigger = {
-		NOT = {
-			country_exists = c:PRU
-		}
-		OR = {
-			NOT = {
-				country_exists = c:TEU
-			}
-			c:TEU = { is_subject_of = root }
-		}
+		NOT = { country_exists = c:PRU }
+		OR = { NOT = { country_exists = c:TEU } c:TEU = { is_subject_of = root } }
 
 		at_war = no
 
 		area:prussia_area = {
 			any_location_in_area = {
-				OR = {
-					owner ?= root
-					AND = {
-						country_exists = c:TEU
-						owner ?= c:TEU
-					}
-				}
-
+				OR = { owner ?= root AND = { country_exists = c:TEU owner ?= c:TEU } }
 				percent >= 0.85
 			}
 		}
@@ -211,9 +187,7 @@ flavor_teu.4 = {
 		ruler = { save_scope_as = pol_ruler }
 
 		scripted_geography:royal_prussia_geography = {
-			every_location_in_scripted_geography = {
-				add_to_list = list_of_royal_prussian_locations
-			}
+			every_location_in_scripted_geography = { add_to_list = list_of_royal_prussian_locations }
 		}
 
 		c:TEU = { save_scope_as = ducal_prussia_tag }
@@ -228,15 +202,9 @@ flavor_teu.4 = {
 
 		custom_tooltip = {
 			text = flavor_teu.4.a.cede_locations_to_ducal_prussia
-
 			scripted_geography:ducal_prussia_geography = {
 				every_location_in_scripted_geography = {
-					limit = {
-						OR = {
-							owner ?= root
-							owner ?= c:TEU
-						}
-					}
+					limit = { OR = { owner ?= root owner ?= c:TEU } }
 
 					change_location_owner = scope:ducal_prussia_tag
 					add_core = scope:ducal_prussia_tag
@@ -250,18 +218,13 @@ flavor_teu.4 = {
 				type = subject_type:vassal
 				additional_years_to_prevent_annexation = 100
 			}
-
 			form_country = formable_country:PRU_f
 		}
 
 		custom_tooltip = {
 			text = flavor_teu.4.a.integration_in_royal_prussia
-
 			scripted_geography:royal_prussia_geography = {
-				every_location_in_scripted_geography = {
-					limit = { owner ?= root }
-					change_integration_progress = 75
-				}
+				every_location_in_scripted_geography = { limit = { owner ?= root } change_integration_progress = 75 }
 			}
 		}
 	}
@@ -296,7 +259,6 @@ flavor_teu.5 = {
 			foreground = pop_type:clergy
 			background = pop_type:soldiers
 		}
-
 		random_neighbor_country = {
 			limit = {
 				NOR = {
@@ -306,7 +268,6 @@ flavor_teu.5 = {
 					is_allied_with = { target = root }
 				}
 			}
-
 			save_scope_as = target_nation
 		}
 	}
@@ -326,11 +287,7 @@ flavor_teu.5 = {
 	}
 	option = {
 		name = flavor_teu.5.b
-
-		change_societal_value = {
-			type = spiritualist_vs_humanist
-			value = societal_value_minor_move_to_left
-		}
+		change_societal_value = { type = spiritualist_vs_humanist value = societal_value_minor_move_to_left }
 	}
 }
 
@@ -347,9 +304,7 @@ flavor_teu.6 = {
 		religion.group = religion_group:christian
 		any_owned_location = { teu_event_6_trigger = yes }
 		can_build_building = building_type:castle
-		NOT = {
-			can_build_building = building_type:bastion
-		}
+		NOT = { can_build_building = building_type:bastion }
 	}
 
 	immediate = {
@@ -369,20 +324,11 @@ flavor_teu.6 = {
 
 		ai_chance = {
 			factor = 1
-
-			modifier = {
-				factor = 0
-
-				gold <= {
-					value = building_type:castle.building_base_cost_in_gold
-					multiply = 0.75
-				}
-			}
+			modifier = { factor = 0 gold <= { value = building_type:castle.building_base_cost_in_gold multiply = 0.75 } }
 		}
 
 		scope:target_location = {
 			change_control = control_mild_penalty
-
 			construct_building = {
 				building_type = building_type:castle
 				cost_multiplier = 0.5
@@ -396,15 +342,7 @@ flavor_teu.6 = {
 
 		ai_chance = {
 			factor = 1
-
-			modifier = {
-				factor = 0
-
-				gold > {
-					value = building_type:castle.building_base_cost_in_gold
-					multiply = 0.75
-				}
-			}
+			modifier = { factor = 0 gold > { value = building_type:castle.building_base_cost_in_gold multiply = 0.75 } }
 		}
 
 		scope:target_location = {
@@ -413,10 +351,7 @@ flavor_teu.6 = {
 				modifier = teu_baltic_opposition_brewing
 				years = 20
 			}
-
-			province = {
-				every_location_in_province = { change_control = control_severe_penalty }
-			}
+			province = { every_location_in_province = { change_control = control_severe_penalty } }
 		}
 	}
 
@@ -476,10 +411,7 @@ flavor_teu.7 = {
 			}
 		}
 
-		add_estate_satisfaction = {
-			type = estate_type:burghers_estate
-			value = estate_satisfaction_mild_bonus
-		}
+		add_estate_satisfaction = { type = estate_type:burghers_estate value = estate_satisfaction_mild_bonus }
 	}
 
 	option = {
@@ -487,15 +419,9 @@ flavor_teu.7 = {
 
 		ai_chance = { factor = 0.25 }
 
-		change_societal_value = {
-			type = centralization_vs_decentralization
-			value = societal_value_huge_move_to_left
-		}
+		change_societal_value = { type = centralization_vs_decentralization value = societal_value_huge_move_to_left }
 
-		change_societal_value = {
-			type = aristocracy_vs_plutocracy
-			value = societal_value_move_to_left
-		}
+		change_societal_value = { type = aristocracy_vs_plutocracy value = societal_value_move_to_left }
 	}
 }
 
@@ -527,17 +453,10 @@ flavor_teu.8 = {
 
 		every_owned_foreign_building = {
 			limit = { building_type = building_type:order_commandery }
-
-			change_local_variable = {
-				name = 15_years_of_commanderies_income
-				add = { 0.04 0.05 }
-			}
+			change_local_variable = { name = 15_years_of_commanderies_income add = { 0.04 0.05 } }
 		}
 
-		change_local_variable = {
-			name = 15_years_of_commanderies_income
-			multiply = 180
-		}
+		change_local_variable = { name = 15_years_of_commanderies_income multiply = 180 }
 	}
 
 	option = {
@@ -578,10 +497,7 @@ flavor_teu.8 = {
 
 		add_prestige = prestige_weak_bonus
 
-		add_estate_satisfaction = {
-			type = estate_type:nobles_estate
-			value = estate_satisfaction_weak_bonus
-		}
+		add_estate_satisfaction = { type = estate_type:nobles_estate value = estate_satisfaction_weak_bonus }
 	}
 }
 
@@ -604,10 +520,7 @@ flavor_teu.11 = {
 
 	illustration_tags = { 10 = angry 10 = exterior }
 
-	trigger = {
-		religion = religion:catholic
-		situation:black_death = { situation_has_ended = yes }
-	}
+	trigger = { religion = religion:catholic situation:black_death = { situation_has_ended = yes } }
 
 	immediate = {
 		event_illustration_poptype_effect = {
@@ -624,22 +537,14 @@ flavor_teu.11 = {
 
 		set_variable = kulm_law_revised
 		custom_tooltip = teu_impact_on_kulm_law
-		if = {
-			limit = {
-				NOT = {
-					has_estate_privilege = estate_privilege:kulm_law
-				}
-			}
 
+		if = {
+			limit = { NOT = { has_estate_privilege = estate_privilege:kulm_law } }
 			grant_estate_privilege = estate_privilege:kulm_law
 		}
-		if = {
-			limit = {
-				NOT = {
-					has_estate_privilege = estate_privilege:invite_german_settlers
-				}
-			}
 
+		if = {
+			limit = { NOT = { has_estate_privilege = estate_privilege:invite_german_settlers } }
 			grant_estate_privilege = estate_privilege:invite_german_settlers
 		}
 	}
@@ -679,7 +584,6 @@ flavor_teu.12 = {
 
 	immediate = {
 		goods:amber = { save_scope_as = target_goods }
-
 		unlock_law_effect = {
 			type = teu_amber_monopoly_law
 		}
@@ -713,18 +617,11 @@ flavor_teu.12 = {
 
 		add_policy = policy:burghers_controlled_amber_gathering
 
-		add_estate_satisfaction = {
-			type = estate_type:burghers_estate
-			value = estate_satisfaction_mild_bonus
-		}
+		add_estate_satisfaction = { type = estate_type:burghers_estate value = estate_satisfaction_mild_bonus }
 
 		if = {
 			limit = { has_societal_value = societal_value_type:mercantilism_vs_free_trade }
-
-			change_societal_value = {
-				type = mercantilism_vs_free_trade
-				value = societal_value_large_move_to_right
-			}
+			change_societal_value = { type = mercantilism_vs_free_trade value = societal_value_large_move_to_right }
 		}
 	}
 
@@ -736,15 +633,9 @@ flavor_teu.12 = {
 
 		add_policy = policy:peasant_controlled_amber_gathering
 
-		add_estate_satisfaction = {
-			type = estate_type:peasants_estate
-			value = estate_satisfaction_severe_bonus
-		}
+		add_estate_satisfaction = { type = estate_type:peasants_estate value = estate_satisfaction_severe_bonus }
 
-		change_societal_value = {
-			type = serfdom_vs_free_subjects
-			value = societal_value_large_move_to_right
-		}
+		change_societal_value = { type = serfdom_vs_free_subjects value = societal_value_large_move_to_right }
 	}
 }
 
@@ -777,7 +668,6 @@ flavor_teu.13 = {
 			foreground = estate_type:clergy_estate
 			background = estate_type:clergy_estate
 		}
-
 		create_character = {
 			estate = estate_type:clergy_estate
 			first_name = name_dorothy
@@ -805,10 +695,7 @@ flavor_teu.13 = {
 			years = 20
 		}
 
-		change_societal_value = {
-			type = spiritualist_vs_humanist
-			value = societal_value_move_to_left
-		}
+		change_societal_value = { type = spiritualist_vs_humanist value = societal_value_move_to_left }
 
 		scope:target_character = { move_country = root }
 	}
@@ -883,10 +770,7 @@ flavor_teu.14 = {
 
 		culture = { add_cultural_tradition = cultural_tradition_weak_bonus }
 
-		trigger_event_non_silently = {
-			id = flavor_teu.15
-			years = { 5 10 }
-		}
+		trigger_event_non_silently = { id = flavor_teu.15 years = { 5 10 } }
 
 		custom_tooltip = teu_event_within_5_to_10_years
 	}
@@ -916,10 +800,7 @@ flavor_teu.15 = {
 	immediate = {
 		event_illustration_government_estate_effect = yes
 
-		set_local_variable = {
-			name = work_of_art_quality
-			value = { 60 70 }
-		}
+		set_local_variable = { name = work_of_art_quality value = { 60 70 } }
 
 		capital = {
 			create_art = {
@@ -928,7 +809,6 @@ flavor_teu.15 = {
 				quality = local_var:work_of_art_quality
 				type = work_of_art_type:chronicle
 			}
-
 			work_of_art:chronik_des_land_preussens = { save_scope_as = target_work_of_art }
 		}
 	}
@@ -973,10 +853,7 @@ flavor_teu.16 = {
 		area:prussia_area = {
 			any_location_in_area = {
 				owner ?= root
-				OR = {
-					modifier:sul_is_city_rank_tier = yes
-					modifier:sul_is_town_rank_tier = yes
-				}
+				OR = { modifier:sul_is_city_rank_tier = yes modifier:sul_is_town_rank_tier = yes }
 
 				count >= 2
 			}
@@ -993,13 +870,7 @@ flavor_teu.16 = {
 
 		area:prussia_area = {
 			ordered_location_in_area = {
-				limit = {
-					owner ?= root
-					OR = {
-						modifier:sul_is_city_rank_tier = yes
-						modifier:sul_is_town_rank_tier = yes
-					}
-				}
+				limit = { owner ?= root OR = { modifier:sul_is_city_rank_tier = yes modifier:sul_is_town_rank_tier = yes } }
 
 				max = 5
 				check_range_bounds = no
@@ -1014,7 +885,6 @@ flavor_teu.16 = {
 
 	option = {
 		name = flavor_teu.16.a
-
 		every_in_list = {
 			list = affected_cities
 			change_development = development_mild_bonus
@@ -1025,10 +895,7 @@ flavor_teu.16 = {
 	option = {
 		name = flavor_teu.16.b
 
-		every_in_list = {
-			list = affected_cities
-			change_development = development_severe_penalty
-		}
+		every_in_list = { list = affected_cities change_development = development_severe_penalty }
 
 		add_gold = local_var:exploitation_benefit
 	}
@@ -1036,15 +903,9 @@ flavor_teu.16 = {
 	option = {
 		name = flavor_teu.16.c
 
-		add_estate_satisfaction = {
-			type = estate_type:burghers_estate
-			value = estate_satisfaction_weak_bonus
-		}
+		add_estate_satisfaction = { type = estate_type:burghers_estate value = estate_satisfaction_weak_bonus }
 
-		add_estate_satisfaction = {
-			type = estate_type:nobles_estate
-			value = estate_satisfaction_weak_bonus
-		}
+		add_estate_satisfaction = { type = estate_type:nobles_estate value = estate_satisfaction_weak_bonus }
 	}
 }
 
@@ -1078,7 +939,6 @@ flavor_teu.17 = {
 			foreground = estate_type:clergy_estate
 			background = estate_type:nobles_estate
 		}
-
 		create_character = {
 			estate = estate_type:clergy_estate
 			first_name = name_peter
@@ -1133,12 +993,7 @@ flavor_teu.100 = {
 				desc = flavor_teu.100.desc.crusader_dead
 			}
 			triggered_desc = {
-				trigger = {
-					NOT = {
-						exists = scope:target
-					}
-				}
-
+				trigger = { NOT = { exists = scope:target } }
 				desc = flavor_teu.100.desc.fallback
 			}
 		}
@@ -1146,13 +1001,10 @@ flavor_teu.100 = {
 
 	trigger = {
 		has_variable_list = pr_cr_characters
-
 		any_in_list = {
 			variable = pr_cr_characters
 			is_alive = yes
-			NOT = {
-				has_character_modifier = on_prussian_crusade
-			}
+			NOT = { has_character_modifier = on_prussian_crusade }
 
 			has_variable = pr_cr_home_country
 		}
@@ -1173,9 +1025,7 @@ flavor_teu.100 = {
 
 			limit = {
 				is_alive = yes
-				NOT = {
-					has_character_modifier = on_prussian_crusade
-				}
+				NOT = { has_character_modifier = on_prussian_crusade }
 
 				has_variable = pr_cr_home_country
 			}
@@ -1201,6 +1051,7 @@ flavor_teu.100 = {
 			}
 
 			move_country = scope:target_country
+
 			if = {
 				limit = { has_variable = pr_cr_is_original_monarch }
 				scope:target_country = { set_new_ruler = scope:target }
@@ -1220,12 +1071,7 @@ flavor_teu.100 = {
 
 	option = {
 		name = flavor_teu.100.c
-
-		trigger = {
-			NOT = {
-				exists = scope:target
-			}
-		}
+		trigger = { NOT = { exists = scope:target } }
 	}
 }
 
@@ -1239,31 +1085,18 @@ flavor_teu.101 = {
 
 	desc = {
 		first_valid = {
-			triggered_desc = {
-				trigger = { has_variable = infection_death }
-				desc = flavor_teu.101.desc.infection_death
-			}
+			triggered_desc = { trigger = { has_variable = infection_death } desc = flavor_teu.101.desc.infection_death }
 			triggered_desc = {
 				trigger = { has_variable = training_accident_death }
 				desc = flavor_teu.101.desc.training_accident_death
 			}
-			triggered_desc = {
-				trigger = { has_variable = river_drowning_death }
-				desc = flavor_teu.101.desc.river_drowning_death
-			}
+			triggered_desc = { trigger = { has_variable = river_drowning_death } desc = flavor_teu.101.desc.river_drowning_death }
 			triggered_desc = {
 				trigger = {
-					NOT = {
-						has_variable = infection_death
-					}
-					NOT = {
-						has_variable = training_accident_death
-					}
-					NOT = {
-						has_variable = river_drowning_death
-					}
+					NOT = { has_variable = infection_death }
+					NOT = { has_variable = training_accident_death }
+					NOT = { has_variable = river_drowning_death }
 				}
-
 				desc = flavor_teu.101.desc.fallback
 			}
 		}
@@ -1272,14 +1105,8 @@ flavor_teu.101 = {
 	trigger = {
 		culture = culture:prussian
 		has_reform = government_reform:military_order_reform
-		OR = {
-			current_age = age_1_traditions
-			current_age = age_2_renaissance
-		}
-		any_character = {
-			has_character_modifier = on_prussian_crusade
-			is_alive = yes
-		}
+		OR = { current_age = age_1_traditions current_age = age_2_renaissance }
+		any_character = { has_character_modifier = on_prussian_crusade is_alive = yes }
 	}
 
 	immediate = {
@@ -1287,10 +1114,7 @@ flavor_teu.101 = {
 			random_character = {
 				limit = { has_character_modifier = on_prussian_crusade is_alive = yes }
 				save_scope_as = target
-				if = {
-					limit = { has_variable = pr_cr_home_country }
-					var:pr_cr_home_country = { save_scope_as = target_country }
-				}
+				if = { limit = { has_variable = pr_cr_home_country } var:pr_cr_home_country = { save_scope_as = target_country } }
 			}
 
 			random_list = {
@@ -1305,25 +1129,13 @@ flavor_teu.101 = {
 
 	after = {
 		hidden_effect = {
-			if = {
-				limit = { has_variable = infection_death }
-				remove_variable = infection_death
-			}
-			if = {
-				limit = { has_variable = training_accident_death }
-				remove_variable = training_accident_death
-			}
-			if = {
-				limit = { has_variable = river_drowning_death }
-				remove_variable = river_drowning_death
-			}
+			if = { limit = { has_variable = infection_death } remove_variable = infection_death }
+			if = { limit = { has_variable = training_accident_death } remove_variable = training_accident_death }
+			if = { limit = { has_variable = river_drowning_death } remove_variable = river_drowning_death }
 		}
 		if = {
 			limit = { exists = scope:target_country }
-
-			scope:target_country = {
-				trigger_event_non_silently = { id = flavor_teu.102 days = 10 }
-			}
+			scope:target_country = { trigger_event_non_silently = { id = flavor_teu.102 days = 10 } }
 		}
 	}
 
@@ -1368,15 +1180,9 @@ flavor_teu.101 = {
 		name = flavor_teu.101.zzz
 
 		trigger = {
-			NOT = {
-				has_variable = infection_death
-			}
-			NOT = {
-				has_variable = training_accident_death
-			}
-			NOT = {
-				has_variable = river_drowning_death
-			}
+			NOT = { has_variable = infection_death }
+			NOT = { has_variable = training_accident_death }
+			NOT = { has_variable = river_drowning_death }
 		}
 
 		kill_character = scope:target
@@ -1403,9 +1209,7 @@ flavor_teu.102 = {
 
 	option = { name = flavor_teu.102.a }
 
-	after = {
-		remove_list_variable = { name = pr_cr_characters target = scope:target }
-	}
+	after = { remove_list_variable = { name = pr_cr_characters target = scope:target } }
 }
 
 # Two Naked Swords
@@ -1431,29 +1235,11 @@ flavor_teu.300 = {
 
 	trigger = {
 		country_exists = c:POL
-		NOT = {
-			has_truce_with = c:POL
-		}
-		NOT = {
-			is_at_war_with = c:POL
-		}
-		c:POL = {
-			is_neighbor_of = root
-			OR = {
-				is_enemy_of = root
-				is_rival_of = root
-			}
-		}
-		OR = {
-			has_ruler = yes
-			has_regent = yes
-		}
-		c:POL = {
-			OR = {
-				has_ruler = yes
-				has_regent = yes
-			}
-		}
+		NOT = { has_truce_with = c:POL }
+		NOT = { is_at_war_with = c:POL }
+		c:POL = { is_neighbor_of = root OR = { is_enemy_of = root is_rival_of = root } }
+		OR = { has_ruler = yes has_regent = yes }
+		c:POL = { OR = { has_ruler = yes has_regent = yes } }
 	}
 
 	immediate = {
@@ -1472,15 +1258,10 @@ flavor_teu.300 = {
 
 		historical_option = yes
 
-		change_societal_value = {
-			type = belligerent_vs_conciliatory
-			value = societal_value_large_move_to_left
-		}
+		change_societal_value = { type = belligerent_vs_conciliatory value = societal_value_large_move_to_left }
 
 		show_as_tooltip = {
-			c:POL = {
-				add_casus_belli = { type = casus_belli:cb_insulted_us target = c:TEU }
-			}
+			c:POL = { add_casus_belli = { type = casus_belli:cb_insulted_us target = c:TEU } }
 		}
 
 		hidden_effect = {
@@ -1490,10 +1271,7 @@ flavor_teu.300 = {
 	option = {
 		name = flavor_teu.300.b
 
-		change_societal_value = {
-			type = offensive_vs_defensive
-			value = societal_value_minor_move_to_right
-		}
+		change_societal_value = { type = offensive_vs_defensive value = societal_value_minor_move_to_right }
 
 		scope:teu_ruler = { add_dip = 5 }
 	}
@@ -1554,7 +1332,6 @@ flavor_teu.302 = {
 
 	option = {
 		name = flavor_teu.302.a
-
 		capital = {
 			create_art = {
 				quality = { 85 95 }

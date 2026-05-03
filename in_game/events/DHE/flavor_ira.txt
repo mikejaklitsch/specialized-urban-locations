@@ -51,7 +51,6 @@ flavor_ira.1 = {
 
 		scope:target_character = {
 			set_nickname_if_none_present = { nickname = nick_city_builder }
-
 			add_character_modifier = {
 				modifier = ira_city_builder
 				years = modifier_duration_permanent
@@ -62,34 +61,14 @@ flavor_ira.1 = {
 		change_gold_effect = {
 			scale = -6.00
 		}
-		if = {
-			limit = { owns = location:tabriz }
-			location:tabriz = { change_development = development_mild_bonus }
-		}
-		if = {
-			limit = { owns = location:isfahan }
-			location:isfahan = { change_development = development_severe_bonus }
-		}
-		if = {
-			limit = { owns = location:qazvin }
-			location:qazvin = { change_development = development_mild_bonus }
-		}
-		if = {
-			limit = { owns = location:shiraz }
-			location:shiraz = { change_development = development_mild_bonus }
-		}
-		if = {
-			limit = { owns = location:yazd }
-			location:yazd = { change_development = development_weak_bonus }
-		}
-		if = {
-			limit = { owns = location:qom }
-			location:qom = { change_development = development_weak_bonus }
-		}
-		if = {
-			limit = { owns = location:zanjan }
-			location:zanjan = { change_development = development_weak_bonus }
-		}
+
+		if = { limit = { owns = location:tabriz } location:tabriz = { change_development = development_mild_bonus } }
+		if = { limit = { owns = location:isfahan } location:isfahan = { change_development = development_severe_bonus } }
+		if = { limit = { owns = location:qazvin } location:qazvin = { change_development = development_mild_bonus } }
+		if = { limit = { owns = location:shiraz } location:shiraz = { change_development = development_mild_bonus } }
+		if = { limit = { owns = location:yazd } location:yazd = { change_development = development_weak_bonus } }
+		if = { limit = { owns = location:qom } location:qom = { change_development = development_weak_bonus } }
+		if = { limit = { owns = location:zanjan } location:zanjan = { change_development = development_weak_bonus } }
 	}
 	option = {
 		name = flavor_ira.1.b
@@ -97,7 +76,6 @@ flavor_ira.1 = {
 
 		scope:target_character = {
 			set_nickname_if_none_present = { nickname = nick_reformer }
-
 			add_character_modifier = {
 				modifier = ira_army_reformer
 				years = modifier_duration_permanent
@@ -117,7 +95,6 @@ flavor_ira.1 = {
 
 		scope:target_character = {
 			set_nickname_if_none_present = { nickname = nick_lawgiver }
-
 			add_character_modifier = {
 				modifier = ira_the_lawgiver
 				years = modifier_duration_permanent
@@ -152,10 +129,7 @@ flavor_ira.2 = {
 
 	illustration_tags = { 10 = happy 10 = exterior }
 
-	trigger = {
-		owns = location:isfahan
-		is_eligible_for_the_great_ruler_event = yes
-	}
+	trigger = { owns = location:isfahan is_eligible_for_the_great_ruler_event = yes }
 
 	immediate = {
 		event_illustration_estate_effect = {
@@ -167,10 +141,7 @@ flavor_ira.2 = {
 		save_scope_as = target_country
 	}
 
-	option = {
-		name = flavor_ira.2.a
-		set_character_as_the_great = { target = scope:target_character }
-	}
+	option = { name = flavor_ira.2.a set_character_as_the_great = { target = scope:target_character } }
 }
 
 # Advisor from Abroad
@@ -203,10 +174,7 @@ flavor_ira.3 = {
 			background = estate_type:nobles_estate
 		}
 
-		location:lewes = {
-			create_dynasty_from_location = sherley_dynasty
-			save_scope_as = target_location
-		}
+		location:lewes = { create_dynasty_from_location = sherley_dynasty save_scope_as = target_location }
 
 		create_character = {
 			first_name = name_thomas
@@ -246,21 +214,14 @@ flavor_ira.3 = {
 			create_in_limbo = yes
 			save_scope_as = second_sibling
 		}
-		if = {
-			limit = { country_exists = c:GBR }
-			c:GBR = { save_scope_as = target_country }
-		}
-		else_if = {
-			limit = { country_exists = c:ENG }
-			c:ENG = { save_scope_as = target_country }
-		}
+
+		if = { limit = { country_exists = c:GBR } c:GBR = { save_scope_as = target_country } }
+		else_if = { limit = { country_exists = c:ENG } c:ENG = { save_scope_as = target_country } }
 		else = {
 			scope:target_location = { owner = { save_scope_as = target_country } }
 		}
-		if = {
-			limit = { current_year >= 1612 }
-			kill_character_silently = character:eng_thomas_sherley
-		}
+
+		if = { limit = { current_year >= 1612 } kill_character_silently = character:eng_thomas_sherley }
 
 		save_scope_as = root_country
 	}
@@ -301,14 +262,8 @@ flavor_ira.3 = {
 			}
 		}
 
-		add_estate_satisfaction = {
-			type = estate_type:nobles_estate
-			value = estate_satisfaction_mild_bonus
-		}
-		add_estate_satisfaction = {
-			type = estate_type:clergy_estate
-			value = estate_satisfaction_mild_bonus
-		}
+		add_estate_satisfaction = { type = estate_type:nobles_estate value = estate_satisfaction_mild_bonus }
+		add_estate_satisfaction = { type = estate_type:clergy_estate value = estate_satisfaction_mild_bonus }
 	}
 }
 
@@ -336,16 +291,10 @@ flavor_ira.4 = {
 		has_advance = ira_the_qizilbash
 		country_has_estate = estate_type:tribes_estate
 		has_or_had_great_ruler = yes
-		NOT = {
-			character_is_the_great_ruler = { target = ruler_or_regent }
-		}
+		NOT = { character_is_the_great_ruler = { target = ruler_or_regent } }
 		OR = {
 			"estate_power(estate_type:tribes_estate)" > 0.5
-
-			any_country_sub_unit = {
-				sub_unit_type = unit_type:a_discovery_qizilbash
-				percent >= 0.1
-			}
+			any_country_sub_unit = { sub_unit_type = unit_type:a_discovery_qizilbash percent >= 0.1 }
 		}
 	}
 
@@ -373,20 +322,13 @@ flavor_ira.4 = {
 			scale = -12.00
 		}
 
-		add_estate_satisfaction = {
-			type = estate_type:tribes_estate
-			value = estate_satisfaction_severe_penalty
-		}
+		add_estate_satisfaction = { type = estate_type:tribes_estate value = estate_satisfaction_severe_penalty }
 
 		custom_tooltip = {
 			text = flavor_ira.4.b.tt
-
 			every_unit = {
 				limit = { any_sub_unit = { sub_unit_type = unit_type:a_discovery_qizilbash } }
-
-				destroy_every_sub_unit_of_type = {
-					sub_unit_type = unit_type:a_discovery_qizilbash
-				}
+				destroy_every_sub_unit_of_type = { sub_unit_type = unit_type:a_discovery_qizilbash }
 			}
 		}
 	}
@@ -410,17 +352,13 @@ flavor_ira.5 = {
 
 	illustration_tags = { 10 = happy 10 = interior }
 
-	trigger = {
-		religion.group = religion_group:muslim
-		any_artist = { artist_type = painter }
-	}
+	trigger = { religion.group = religion_group:muslim any_artist = { artist_type = painter } }
 
 	immediate = {
 		event_illustration_estate_effect = {
 			foreground = estate_type:burghers_estate
 			background = estate_type:burghers_estate
 		}
-
 		save_scope_as = target_country
 	}
 
@@ -429,7 +367,6 @@ flavor_ira.5 = {
 
 		custom_tooltip = {
 			text = flavor_ira.5.a.tt
-
 			ordered_artist = {
 				limit = { artist_type = painter }
 				order_by = artist_skill
@@ -441,7 +378,13 @@ flavor_ira.5 = {
 
 		add_gold = {
 			value = root.monthly_income_trade_and_tax
-			multiply = { value = 12 multiply = root.num_artists max = 36 }
+
+			multiply = {
+				value = 12
+				multiply = root.num_artists
+				max = 36
+			}
+
 			multiply = -1
 		}
 	}
@@ -450,10 +393,7 @@ flavor_ira.5 = {
 		# Effects are in the after section, they will be shown anyway
 	}
 
-	after = {
-		add_prestige = prestige_severe_bonus
-		culture = { add_cultural_influence = cultural_influence_mild_bonus }
-	}
+	after = { add_prestige = prestige_severe_bonus culture = { add_cultural_influence = cultural_influence_mild_bonus } }
 }
 
 # Iskander Munshi
@@ -539,10 +479,7 @@ flavor_ira.7 = {
 	trigger = {
 		has_variable = iskander_munshi
 		var:iskander_munshi = { is_alive = yes }
-		OR = {
-			has_ruler = yes
-			has_or_had_great_ruler = yes
-		}
+		OR = { has_ruler = yes has_or_had_great_ruler = yes }
 	}
 
 	immediate = {
@@ -553,10 +490,7 @@ flavor_ira.7 = {
 
 		save_scope_as = target_country
 		var:iskander_munshi = { save_scope_as = target_character }
-		if = {
-			limit = { has_or_had_great_ruler = yes }
-			make_the_great_scope = { save_scope_as = target_ruler }
-		}
+		if = { limit = { has_or_had_great_ruler = yes } make_the_great_scope = { save_scope_as = target_ruler } }
 		else = { ruler ?= { save_scope_as = target_ruler } }
 	}
 
@@ -626,10 +560,7 @@ flavor_ira.8 = {
 	option = {
 		name = flavor_ira.8.b
 
-		change_societal_value = {
-			type = mysticism_vs_jurisprudence
-			value = societal_value_ultimate_move_to_right
-		}
+		change_societal_value = { type = mysticism_vs_jurisprudence value = societal_value_ultimate_move_to_right }
 
 		scope:target_location = {
 			add_location_modifier = {
@@ -670,7 +601,6 @@ flavor_ira.9 = {
 			foreground = estate_type:burghers_estate
 			background = estate_type:burghers_estate
 		}
-
 		save_scope_as = target_country
 	}
 
@@ -703,14 +633,7 @@ flavor_ira.10 = {
 
 	trigger = {
 		owns = location:hoveyzeh
-
-		location:hoveyzeh = {
-			any_pop = {
-				NOT = {
-					religion = religion:shia
-				}
-			}
-		}
+		location:hoveyzeh = { any_pop = { NOT = { religion = religion:shia } } }
 	}
 
 	illustration_tags = { 10 = regular 10 = interior }
@@ -743,7 +666,6 @@ flavor_ira.10 = {
 
 		custom_tooltip = {
 			text = flavor_ira.10.a.tt
-
 			scope:target_location.area = {
 				every_location_in_area = {
 					limit = { owner = root }
@@ -755,12 +677,7 @@ flavor_ira.10 = {
 					}
 
 					every_pop = {
-						limit = {
-							NOT = {
-								religion = religion:shia
-							}
-						}
-
+						limit = { NOT = { religion = religion:shia } }
 						split_pop = { fraction = 0.25 religion = religion:shia }
 					}
 				}
@@ -793,11 +710,9 @@ flavor_ira.10 = {
 
 		custom_tooltip = {
 			text = flavor_ira.10.c.tt
-
 			scope:target_location.area = {
 				every_location_in_area = {
 					limit = { dominant_religion = religion:shia }
-
 					add_location_modifier = {
 						modifier = ira_mushashaiya
 						years = modifier_duration_years_short
@@ -828,10 +743,7 @@ flavor_ira.11 = {
 	fire_only_once = yes
 
 	trigger = {
-		OR = {
-			religion = religion:shia
-			any_owned_location = { dominant_religion = religion:shia }
-		}
+		OR = { religion = religion:shia any_owned_location = { dominant_religion = religion:shia } }
 	}
 
 	immediate = {
@@ -843,13 +755,10 @@ flavor_ira.11 = {
 
 	option = {
 		name = flavor_ira.11.a
-
 		custom_tooltip = {
 			text = flavor_ira.11.b.tt
-
 			every_owned_location = {
 				limit = { dominant_religion = religion:shia }
-
 				add_location_modifier = {
 					modifier = ira_safawiya
 					years = modifier_duration_years_normal
@@ -872,20 +781,12 @@ flavor_ira.12 = {
 
 	trigger = {
 		current_year >= 1450
-		NOT = {
-			current_year >= 1580
-		}
+		NOT = { current_year >= 1580 }
 
 		country_exists = c:IRA
-		NOT = {
-			tag = IRA
-		}
+		NOT = { tag = IRA }
 		any_owned_location = {
-			OR = {
-				dominant_culture = culture:farsi_culture
-				dominant_culture = culture:khorasani_culture
-			}
-
+			OR = { dominant_culture = culture:farsi_culture dominant_culture = culture:khorasani_culture }
 			count >= 10
 		}
 	}
@@ -901,17 +802,11 @@ flavor_ira.12 = {
 
 	option = {
 		name = flavor_ira.12.a
-
 		custom_tooltip = {
 			text = flavor_ira.12.a.tt
-
 			ordered_owned_location = {
 				limit = {
-					OR = {
-						dominant_culture = culture:farsi_culture
-						dominant_culture = culture:khorasani_culture
-					}
-
+					OR = { dominant_culture = culture:farsi_culture dominant_culture = culture:khorasani_culture }
 					is_capital = no
 				}
 
@@ -924,14 +819,7 @@ flavor_ira.12 = {
 				}
 
 				every_pop = {
-					limit = {
-						owner = root
-						OR = {
-							culture = culture:farsi_culture
-							culture = culture:khorasani_culture
-						}
-					}
-
+					limit = { owner = root OR = { culture = culture:farsi_culture culture = culture:khorasani_culture } }
 					add_pop_satisfaction = pop_satisfaction_extreme_penalty
 				}
 			}
@@ -1002,7 +890,6 @@ flavor_ira.13 = {
 
 		custom_tooltip = {
 			text = flavor_ira.13.a.tt
-
 			ordered_in_list = {
 				list = armenian_locations
 				order_by = population
@@ -1010,7 +897,6 @@ flavor_ira.13 = {
 
 				random_pop = {
 					limit = { culture = culture:armenian_culture }
-
 					transfer_pop = {
 						target = scope:target_location
 						operator = divide
@@ -1061,12 +947,7 @@ flavor_ira.14 = {
 
 	fire_only_once = yes
 
-	trigger = {
-		culture_percentage_in_country = {
-			culture = culture:turkmen_culture
-			value > 0
-		}
-	}
+	trigger = { culture_percentage_in_country = { culture = culture:turkmen_culture value > 0 } }
 
 	illustration_tags = { 10 = armed 10 = exterior }
 
@@ -1080,26 +961,21 @@ flavor_ira.14 = {
 	option = {
 		name = flavor_ira.14.a
 		add_yearly_manpower = 1
+
 		if = {
 			limit = { country_has_estate = estate_type:tribes_estate }
-
-			add_estate_satisfaction = {
-				type = estate_type:tribes_estate
-				value = estate_satisfaction_weak_bonus
-			}
+			add_estate_satisfaction = { type = estate_type:tribes_estate value = estate_satisfaction_weak_bonus }
 		}
 	}
 
 	option = {
 		name = flavor_ira.14.b
+
 		if = {
 			limit = { country_has_estate = estate_type:tribes_estate }
-
-			add_estate_satisfaction = {
-				type = estate_type:tribes_estate
-				value = estate_satisfaction_weak_penalty
-			}
+			add_estate_satisfaction = { type = estate_type:tribes_estate value = estate_satisfaction_weak_penalty }
 		}
+
 		culture = { add_cultural_tradition = cultural_tradition_weak_bonus }
 		add_prestige = prestige_weak_bonus
 	}
@@ -1127,7 +1003,6 @@ flavor_ira.15 = {
 
 	option = {
 		name = flavor_ira.15.a
-
 		add_country_modifier = {
 			modifier = ira_selective_horse_breeding
 			years = modifier_duration_years_normal
@@ -1137,7 +1012,6 @@ flavor_ira.15 = {
 
 	option = {
 		name = flavor_ira.15.b
-
 		add_country_modifier = {
 			modifier = ira_intensive_horse_breeding
 			years = modifier_duration_years_normal
@@ -1179,10 +1053,7 @@ flavor_ira.16 = {
 
 		ruler ?= { save_scope_as = target_ruler }
 
-		random_artist = {
-			limit = { artist_type = writer artist_skill > 0.8 }
-			save_scope_as = target_character
-		}
+		random_artist = { limit = { artist_type = writer artist_skill > 0.8 } save_scope_as = target_character }
 	}
 
 	option = {
@@ -1229,13 +1100,7 @@ flavor_ira.17 = {
 	trigger = {
 		has_ruler = yes
 
-		capital = {
-			market ?= {
-				NOT = {
-					is_import_banned = goods:porcelain
-				}
-			}
-		}
+		capital = { market ?= { NOT = { is_import_banned = goods:porcelain } } }
 
 		any_related_country = {
 			type = alliance
@@ -1243,13 +1108,7 @@ flavor_ira.17 = {
 			has_ruler = yes
 
 			capital = {
-				market ?= {
-					NOT = {
-						is_export_banned = goods:porcelain
-					}
-
-					is_produced_in_market = goods:porcelain
-				}
+				market ?= { NOT = { is_export_banned = goods:porcelain } is_produced_in_market = goods:porcelain }
 			}
 		}
 	}
@@ -1264,15 +1123,8 @@ flavor_ira.17 = {
 
 			limit = {
 				capital.sub_continent = sub_continent:east_asia
-
 				capital = {
-					market ?= {
-						NOT = {
-							is_export_banned = goods:porcelain
-						}
-
-						is_produced_in_market = goods:porcelain
-					}
+					market ?= { NOT = { is_export_banned = goods:porcelain } is_produced_in_market = goods:porcelain }
 				}
 			}
 
@@ -1284,12 +1136,7 @@ flavor_ira.17 = {
 	option = {
 		name = flavor_ira.17.a
 
-		scope:root_market = {
-			add_goods_supply = {
-				goods = goods:porcelain
-				amount = market_goods_severe_gain
-			}
-		}
+		scope:root_market = { add_goods_supply = { goods = goods:porcelain amount = market_goods_severe_gain } }
 
 		add_prestige = prestige_mild_bonus
 		scope:target_country = { add_prestige = prestige_mild_bonus }
@@ -1324,14 +1171,12 @@ flavor_ira.18 = {
 
 	option = {	# Monopolize the Rug Market
 		name = flavor_ira.18.a
+
 		if = {
 			limit = { current_age_or_later = { age = age_4_reformation } }
-
-			change_societal_value = {
-				type = mercantilism_vs_free_trade
-				value = societal_value_minor_move_to_left
-			}
+			change_societal_value = { type = mercantilism_vs_free_trade value = societal_value_minor_move_to_left }
 		}
+
 		add_country_modifier = {
 			modifier = ira_rug_monopoly
 			years = modifier_duration_years_long
@@ -1341,14 +1186,12 @@ flavor_ira.18 = {
 
 	option = {	# Flood the Rug Market
 		name = flavor_ira.18.b
+
 		if = {
 			limit = { current_age_or_later = { age = age_4_reformation } }
-
-			change_societal_value = {
-				type = mercantilism_vs_free_trade
-				value = societal_value_minor_move_to_right
-			}
+			change_societal_value = { type = mercantilism_vs_free_trade value = societal_value_minor_move_to_right }
 		}
+
 		add_country_modifier = {
 			modifier = ira_increased_rug_trade
 			years = modifier_duration_years_long
@@ -1358,7 +1201,6 @@ flavor_ira.18 = {
 
 	option = {	# Keep it moderate
 		name = flavor_ira.18.c
-
 		add_country_modifier = {
 			modifier = ira_steady_rug_production
 			years = modifier_duration_years_long
@@ -1405,7 +1247,6 @@ flavor_ira.19 = {
 
 		custom_tooltip = {
 			text = flavor_ira.19.a.tt
-
 			every_country_sub_unit = {
 				limit = { sub_unit_type = unit_type:a_tofangchi }
 				add_subunit_experience = subunit_experience_severe_bonus
@@ -1443,18 +1284,24 @@ flavor_ira.20 = {
 		has_ruler = yes
 
 		region:persia_region = {
-			any_location_in_region = { has_owner = yes owner = root count = all }
+			any_location_in_region = {
+				has_owner = yes
+				owner = root
+				count = all
+			}
 		}
 
 		sub_continent:south_asia = {
-			any_location_in_sub_continent = { has_owner = yes owner = root count >= 200 }
+			any_location_in_sub_continent = {
+				has_owner = yes
+				owner = root
+				count >= 200
+			}
 		}
 
 		sub_continent:middle_east = {
 			any_location_in_sub_continent = {
-				NOT = {
-					region = region:persia_region
-				}
+				NOT = { region = region:persia_region }
 
 				has_owner = yes
 				owner = root
@@ -1463,7 +1310,11 @@ flavor_ira.20 = {
 		}
 
 		continent:europe = {
-			any_location_in_continent = { has_owner = yes owner = root count >= 100 }
+			any_location_in_continent = {
+				has_owner = yes
+				owner = root
+				count >= 100
+			}
 		}
 	}
 
@@ -1474,7 +1325,6 @@ flavor_ira.20 = {
 			foreground = estate_type:nobles_estate
 			background = estate_type:nobles_estate
 		}
-
 		ruler = { save_scope_as = target_ruler }
 	}
 
@@ -1523,7 +1373,6 @@ flavor_ira.21 = {
 	# Expand its development
 	option = {
 		name = flavor_ira.21.a
-
 		location:constantinople = {
 			add_location_modifier = {
 				modifier = ira_second_capital
@@ -1571,30 +1420,19 @@ flavor_ira.22 = {
 
 	trigger = {
 		country_has_estate = estate_type:tribes_estate
-
-		culture_group_percentage_in_country = {
-			culture_group = culture_group:turkic_group
-			value > 0
-		}
+		culture_group_percentage_in_country = { culture_group = culture_group:turkic_group value > 0 }
 	}
 
 	option = {
 		name = flavor_ira.22.a
 		add_yearly_manpower = 3
 
-		add_estate_satisfaction = {
-			type = estate_type:tribes_estate
-			value = estate_satisfaction_mild_bonus
-		}
+		add_estate_satisfaction = { type = estate_type:tribes_estate value = estate_satisfaction_mild_bonus }
 
 		custom_tooltip = {
 			text = flavor_ira.22.a.tt
-
 			every_owned_location = {
-				limit = {
-					dominant_culture = { has_culture_group = culture_group:turkic_group }
-				}
-
+				limit = { dominant_culture = { has_culture_group = culture_group:turkic_group } }
 				change_control = control_weak_penalty
 			}
 		}
@@ -1603,10 +1441,7 @@ flavor_ira.22 = {
 		name = flavor_ira.22.b
 		add_yearly_manpower = 2
 
-		add_estate_satisfaction = {
-			type = estate_type:tribes_estate
-			value = estate_satisfaction_weak_penalty
-		}
+		add_estate_satisfaction = { type = estate_type:tribes_estate value = estate_satisfaction_weak_penalty }
 	}
 }
 
@@ -1626,14 +1461,7 @@ flavor_ira.23 = {
 
 	fire_only_once = yes
 
-	trigger = {
-		culture_percentage_in_country = {
-			culture = culture:georgian_culture
-			value > 0
-		}
-
-		has_ruler = yes
-	}
+	trigger = { culture_percentage_in_country = { culture = culture:georgian_culture value > 0 } has_ruler = yes }
 
 	illustration_tags = { 10 = angry 10 = interior }
 
@@ -1642,30 +1470,18 @@ flavor_ira.23 = {
 			foreground = estate_type:nobles_estate
 			background = estate_type:nobles_estate
 		}
-
 		ruler = { save_scope_as = target_ruler }
 	}
 
 	option = {
 		name = flavor_ira.23.a
 
-		add_estate_satisfaction = {
-			type = estate_type:nobles_estate
-			value = estate_satisfaction_mild_penalty
-		}
+		add_estate_satisfaction = { type = estate_type:nobles_estate value = estate_satisfaction_mild_penalty }
 
 		custom_tooltip = {
 			text = flavor_ira.23.a.tt
-
 			every_pop = {
-				limit = {
-					owner = root
-					OR = {
-						culture = culture:georgian_culture
-						culture = culture:armenian_culture
-					}
-				}
-
+				limit = { owner = root OR = { culture = culture:georgian_culture culture = culture:armenian_culture } }
 				add_pop_satisfaction = pop_satisfaction_severe_bonus
 			}
 		}
@@ -1677,16 +1493,8 @@ flavor_ira.23 = {
 
 		custom_tooltip = {
 			text = flavor_ira.23.b.tt
-
 			every_pop = {
-				limit = {
-					owner = root
-					OR = {
-						culture = culture:georgian_culture
-						culture = culture:armenian_culture
-					}
-				}
-
+				limit = { owner = root OR = { culture = culture:georgian_culture culture = culture:armenian_culture } }
 				add_pop_satisfaction = pop_satisfaction_mild_penalty
 			}
 		}
@@ -1711,10 +1519,7 @@ flavor_ira.24 = {
 
 	fire_only_once = yes
 
-	trigger = {
-		location:ashaval = { owner = root is_core_of = root }
-		has_ruler = yes
-	}
+	trigger = { location:ashaval = { owner = root is_core_of = root } has_ruler = yes }
 
 	illustration_tags = { 10 = regular 10 = exterior }
 
@@ -1734,22 +1539,14 @@ flavor_ira.24 = {
 
 		location:ashaval = {
 			change_development = development_mild_bonus
-			if = {
-				limit = {
-					NOT = {
-						modifier:sul_is_city_rank_tier = yes
-					}
-				}
 
+			if = {
+				limit = { NOT = { modifier:sul_is_city_rank_tier = yes } }
 				sul_set_rank_city = yes
 			}
-			if = {
-				limit = {
-					NOT = {
-						has_building = building_type:temple
-					}
-				}
 
+			if = {
+				limit = { NOT = { has_building = building_type:temple } }
 				construct_building = { building_type = building_type:temple }
 			}
 		}
@@ -1757,10 +1554,7 @@ flavor_ira.24 = {
 		culture = { add_cultural_influence = cultural_influence_weak_bonus }
 	}
 
-	option = {
-		name = flavor_ira.24.b
-		culture = { add_cultural_tradition = cultural_tradition_weak_bonus }
-	}
+	option = { name = flavor_ira.24.b culture = { add_cultural_tradition = cultural_tradition_weak_bonus } }
 }
 
 # Evolution of the Qizilbash
@@ -1773,9 +1567,7 @@ flavor_ira.25 = {
 	trigger = {
 		has_advance = ira_the_qizilbash
 		current_age_or_later = { age = age_4_reformation }
-		NOT = {
-			has_unlocked_unit_trigger = { type = a_reformation_qizilbash }
-		}
+		NOT = { has_unlocked_unit_trigger = { type = a_reformation_qizilbash } }
 	}
 
 	illustration_tags = { 10 = regular 10 = exterior }
@@ -1789,7 +1581,6 @@ flavor_ira.25 = {
 
 	option = {
 		name = flavor_ira.25.a
-
 		unlock_unit_effect = {
 			type = a_reformation_qizilbash
 		}
@@ -1819,7 +1610,6 @@ flavor_ira.26 = {
 			foreground = estate_type:clergy_estate
 			background = estate_type:burghers_estate
 		}
-
 		unlock_estate_privilege_effect = {
 			type = ira_clerical_aristocracy
 		}
@@ -1836,15 +1626,9 @@ flavor_ira.26 = {
 	option = {
 		name = flavor_ira.26.b
 
-		add_estate_satisfaction = {
-			type = estate_type:clergy_estate
-			value = estate_satisfaction_mild_penalty
-		}
+		add_estate_satisfaction = { type = estate_type:clergy_estate value = estate_satisfaction_mild_penalty }
 
-		add_estate_satisfaction = {
-			type = estate_type:burghers_estate
-			value = estate_satisfaction_mild_penalty
-		}
+		add_estate_satisfaction = { type = estate_type:burghers_estate value = estate_satisfaction_mild_penalty }
 	}
 }
 
@@ -1939,10 +1723,7 @@ flavor_ira.29 = {
 
 	fire_only_once = yes
 
-	trigger = {
-		location:qazvin = { is_capital = no owner ?= root }
-		num_rivals >= 1
-	}
+	trigger = { location:qazvin = { is_capital = no owner ?= root } num_rivals >= 1 }
 
 	illustration_tags = { 10 = regular 10 = interior }
 
@@ -1966,20 +1747,13 @@ flavor_ira.29 = {
 
 		set_capital = scope:target_capital
 
-		scope:target_capital = {
-			change_development = development_mild_bonus
-			change_control = control_mild_bonus
-		}
+		scope:target_capital = { change_development = development_mild_bonus change_control = control_mild_bonus }
 
-		change_societal_value = {
-			type = centralization_vs_decentralization
-			value = societal_value_move_to_left
-		}
+		change_societal_value = { type = centralization_vs_decentralization value = societal_value_move_to_left }
 	}
 
 	option = {
 		name = flavor_ira.29.b
-
 		scope:target_capital2 = {
 			change_development = development_extreme_bonus
 			change_prosperity = prosperity_extreme_bonus
@@ -2061,10 +1835,7 @@ flavor_ira.30 = {
 		scope:target_character = { move_country = root }
 		add_prestige = prestige_mild_penalty
 
-		add_estate_satisfaction = {
-			type = estate_type:burghers_estate
-			value = estate_satisfaction_mild_penalty
-		}
+		add_estate_satisfaction = { type = estate_type:burghers_estate value = estate_satisfaction_mild_penalty }
 	}
 }
 
@@ -2085,12 +1856,7 @@ flavor_ira.31 = {
 	fire_only_once = yes
 
 	trigger = {
-		ruler_or_regent ?= {
-			OR = {
-				mil >= 80
-				has_trait = military_theorist
-			}
-		}
+		ruler_or_regent ?= { OR = { mil >= 80 has_trait = military_theorist } }
 	}
 
 	illustration_tags = { 10 = regular 10 = exterior }
@@ -2100,7 +1866,6 @@ flavor_ira.31 = {
 			foreground = pop_type:soldiers
 			background = pop_type:soldiers
 		}
-
 		ruler_or_regent ?= { save_scope_as = target_character }
 	}
 
@@ -2111,11 +1876,7 @@ flavor_ira.31 = {
 
 		custom_tooltip = {
 			text = ira_grant_prosperity_to_armory_building_locations
-
-			every_owned_location = {
-				limit = { has_land_military_building = yes }
-				change_prosperity = prosperity_mild_bonus
-			}
+			every_owned_location = { limit = { has_land_military_building = yes } change_prosperity = prosperity_mild_bonus }
 		}
 	}
 
@@ -2124,10 +1885,7 @@ flavor_ira.31 = {
 
 		add_army_tradition = army_tradition_extreme_bonus
 
-		change_societal_value = {
-			type = quality_vs_quantity
-			value = societal_value_huge_move_to_left
-		}
+		change_societal_value = { type = quality_vs_quantity value = societal_value_huge_move_to_left }
 	}
 
 	option = {
@@ -2135,10 +1893,7 @@ flavor_ira.31 = {
 
 		add_army_tradition = army_tradition_extreme_bonus
 
-		change_societal_value = {
-			type = quality_vs_quantity
-			value = societal_value_huge_move_to_right
-		}
+		change_societal_value = { type = quality_vs_quantity value = societal_value_huge_move_to_right }
 	}
 }
 
@@ -2189,24 +1944,15 @@ flavor_ira.32 = {
 			scale = -4
 		}
 
-		change_societal_value = {
-			type = mysticism_vs_jurisprudence
-			value = societal_value_move_to_right
-		}
+		change_societal_value = { type = mysticism_vs_jurisprudence value = societal_value_move_to_right }
 	}
 
 	option = {
 		name = flavor_ira.32.b
 
-		change_societal_value = {
-			type = mysticism_vs_jurisprudence
-			value = societal_value_move_to_left
-		}
+		change_societal_value = { type = mysticism_vs_jurisprudence value = societal_value_move_to_left }
 
-		add_estate_satisfaction = {
-			type = estate_type:clergy_estate
-			value = estate_satisfaction_mild_penalty
-		}
+		add_estate_satisfaction = { type = estate_type:clergy_estate value = estate_satisfaction_mild_penalty }
 	}
 }
 
@@ -2227,13 +1973,7 @@ flavor_ira.34 = {
 	fire_only_once = yes
 
 	trigger = {
-		ruler ?= {
-			has_dynasty = yes
-			OR = {
-				adm >= 80
-				has_trait = scholar
-			}
-		}
+		ruler ?= { has_dynasty = yes OR = { adm >= 80 has_trait = scholar } }
 
 		religion.group = religion_group:muslim
 		prestige >= 50
@@ -2246,17 +1986,13 @@ flavor_ira.34 = {
 			foreground = estate_type:nobles_estate
 			background = estate_type:nobles_estate
 		}
-
 		ruler_or_regent ?= { save_scope_as = target_character }
 	}
 
 	option = {
 		name = flavor_ira.34.a
 
-		change_societal_value = {
-			type = spiritualist_vs_humanist
-			value = societal_value_move_to_right
-		}
+		change_societal_value = { type = spiritualist_vs_humanist value = societal_value_move_to_right }
 
 		unlock_estate_privilege_effect = {
 			type = ira_iranian_art_patronage
@@ -2274,15 +2010,9 @@ flavor_ira.34 = {
 
 		add_prestige = prestige_mild_penalty
 
-		change_societal_value = {
-			type = spiritualist_vs_humanist
-			value = societal_value_move_to_left
-		}
+		change_societal_value = { type = spiritualist_vs_humanist value = societal_value_move_to_left }
 
-		change_societal_value = {
-			type = mysticism_vs_jurisprudence
-			value = societal_value_move_to_left
-		}
+		change_societal_value = { type = mysticism_vs_jurisprudence value = societal_value_move_to_left }
 	}
 }
 
@@ -2304,13 +2034,7 @@ flavor_ira.35 = {
 
 	trigger = {
 		inflation >= 0.05
-
-		ruler ?= {
-			OR = {
-				adm >= 80
-				has_trait = midas_touched
-			}
-		}
+		ruler ?= { OR = { adm >= 80 has_trait = midas_touched } }
 	}
 
 	illustration_tags = { 10 = angry 10 = exterior }
@@ -2320,32 +2044,22 @@ flavor_ira.35 = {
 			foreground = estate_type:burghers_estate
 			background = estate_type:burghers_estate
 		}
-
 		ruler ?= { save_scope_as = target_character }
 	}
 
 	option = {
 		name = flavor_ira.35.a
 
-		capital.market ?= {
-			add_temporary_demand = { type = demand:ira_currency_reforms years = 10 }
-		}
+		capital.market ?= { add_temporary_demand = { type = demand:ira_currency_reforms years = 10 } }
 
 		add_inflation = inflation_extreme_bonus
 
-		add_estate_satisfaction = {
-			type = estate_type:burghers_estate
-			value = estate_satisfaction_mild_bonus
-		}
+		add_estate_satisfaction = { type = estate_type:burghers_estate value = estate_satisfaction_mild_bonus }
 	}
 
 	option = {
 		name = flavor_ira.35.b
-
-		add_estate_satisfaction = {
-			type = estate_type:nobles_estate
-			value = estate_satisfaction_mild_bonus
-		}
+		add_estate_satisfaction = { type = estate_type:nobles_estate value = estate_satisfaction_mild_bonus }
 	}
 }
 
@@ -2366,11 +2080,7 @@ flavor_ira.37 = {
 	fire_only_once = yes
 
 	trigger = {
-		culture_percentage_in_country = {
-			culture = culture:armenian_culture
-			value > 0.05
-		}
-
+		culture_percentage_in_country = { culture = culture:armenian_culture value > 0.05 }
 		culture != culture:armenian_culture
 	}
 
@@ -2411,14 +2121,10 @@ flavor_ira.37 = {
 
 		scope:target_character2 = { move_country = root }
 
-		add_estate_satisfaction = {
-			type = estate_type:nobles_estate
-			value = estate_satisfaction_mild_penalty
-		}
+		add_estate_satisfaction = { type = estate_type:nobles_estate value = estate_satisfaction_mild_penalty }
 
 		custom_tooltip = {
 			text = ira_all_armenian_pops_gain_satisfaction
-
 			every_pop = {
 				limit = { owner ?= root culture = culture:armenian_culture }
 				add_pop_satisfaction = pop_satisfaction_severe_bonus
@@ -2434,14 +2140,10 @@ flavor_ira.37 = {
 			add_cultural_tradition = cultural_tradition_severe_bonus
 		}
 
-		add_estate_satisfaction = {
-			type = estate_type:nobles_estate
-			value = estate_satisfaction_mild_bonus
-		}
+		add_estate_satisfaction = { type = estate_type:nobles_estate value = estate_satisfaction_mild_bonus }
 
 		custom_tooltip = {
 			text = ira_all_armenian_pops_lose_satisfaction
-
 			every_pop = {
 				limit = { owner ?= root culture = culture:armenian_culture }
 				add_pop_satisfaction = pop_satisfaction_mild_penalty
@@ -2535,10 +2237,7 @@ flavor_ira.39 = {
 
 	trigger = {
 		religion.group = religion_group:muslim
-		OR = {
-			ruler_or_regent ?= { has_trait = zealot }
-			societal_value:spiritualist_vs_humanist <= -20
-		}
+		OR = { ruler_or_regent ?= { has_trait = zealot } societal_value:spiritualist_vs_humanist <= -20 }
 	}
 
 	illustration_tags = { 10 = angry 10 = exterior }
@@ -2561,20 +2260,11 @@ flavor_ira.39 = {
 
 		add_policy = policy:ban_on_alcohol
 
-		add_estate_satisfaction = {
-			type = estate_type:clergy_estate
-			value = estate_satisfaction_mild_bonus
-		}
+		add_estate_satisfaction = { type = estate_type:clergy_estate value = estate_satisfaction_mild_bonus }
 
-		add_estate_satisfaction = {
-			type = estate_type:dhimmi_estate
-			value = estate_satisfaction_mild_penalty
-		}
+		add_estate_satisfaction = { type = estate_type:dhimmi_estate value = estate_satisfaction_mild_penalty }
 
-		change_societal_value = {
-			type = mysticism_vs_jurisprudence
-			value = societal_value_move_to_left
-		}
+		change_societal_value = { type = mysticism_vs_jurisprudence value = societal_value_move_to_left }
 	}
 
 	option = {
@@ -2582,10 +2272,7 @@ flavor_ira.39 = {
 
 		add_policy = policy:no_restriction_on_alcohol
 
-		add_estate_satisfaction = {
-			type = estate_type:dhimmi_estate
-			value = estate_satisfaction_mild_bonus
-		}
+		add_estate_satisfaction = { type = estate_type:dhimmi_estate value = estate_satisfaction_mild_bonus }
 	}
 }
 
@@ -2604,11 +2291,7 @@ flavor_ira.40 = {
 	fire_only_once = yes
 
 	trigger = {
-		religion_percentage_in_country = {
-			religion = religion:zoroastrian
-			value >= 0.05
-		}
-
+		religion_percentage_in_country = { religion = religion:zoroastrian value >= 0.05 }
 		religion.group = religion_group:muslim
 	}
 
@@ -2619,7 +2302,6 @@ flavor_ira.40 = {
 			foreground = estate_type:clergy_estate
 			background = estate_type:clergy_estate
 		}
-
 		ruler_or_regent ?= { save_scope_as = target_character }
 	}
 
@@ -2628,7 +2310,6 @@ flavor_ira.40 = {
 
 		custom_tooltip = {
 			text = ira_conversion_of_zoroastrians_tt
-
 			every_pop = {
 				limit = { owner ?= root religion = religion:zoroastrian }
 				add_pop_satisfaction = pop_satisfaction_mild_penalty
@@ -2642,15 +2323,9 @@ flavor_ira.40 = {
 			}
 		}
 
-		add_estate_satisfaction = {
-			type = estate_type:clergy_estate
-			value = estate_satisfaction_mild_bonus
-		}
+		add_estate_satisfaction = { type = estate_type:clergy_estate value = estate_satisfaction_mild_bonus }
 
-		add_estate_satisfaction = {
-			type = estate_type:dhimmi_estate
-			value = estate_satisfaction_radical_penalty
-		}
+		add_estate_satisfaction = { type = estate_type:dhimmi_estate value = estate_satisfaction_radical_penalty }
 	}
 
 	option = {
@@ -2658,17 +2333,13 @@ flavor_ira.40 = {
 
 		custom_tooltip = {
 			text = ira_satisfaction_for_zoroastrians_tt
-
 			every_pop = {
 				limit = { owner ?= root religion = religion:zoroastrian }
 				add_pop_satisfaction = pop_satisfaction_extreme_bonus
 			}
 		}
 
-		add_estate_satisfaction = {
-			type = estate_type:dhimmi_estate
-			value = estate_satisfaction_mild_bonus
-		}
+		add_estate_satisfaction = { type = estate_type:dhimmi_estate value = estate_satisfaction_mild_bonus }
 	}
 }
 
@@ -2727,19 +2398,11 @@ flavor_ira.41 = {
 			add_cultural_tradition = cultural_tradition_mild_penalty
 		}
 
-		scope:target_country.culture = {
-			add_cultural_tradition = cultural_tradition_mild_bonus
-		}
+		scope:target_country.culture = { add_cultural_tradition = cultural_tradition_mild_bonus }
 
-		change_societal_value = {
-			type = outward_vs_inward
-			value = societal_value_move_to_left
-		}
+		change_societal_value = { type = outward_vs_inward value = societal_value_move_to_left }
 
-		add_estate_satisfaction = {
-			type = estate_type:clergy_estate
-			value = estate_satisfaction_mild_penalty
-		}
+		add_estate_satisfaction = { type = estate_type:clergy_estate value = estate_satisfaction_mild_penalty }
 	}
 
 	option = {
@@ -2747,10 +2410,7 @@ flavor_ira.41 = {
 
 		culture ?= { add_cultural_tradition = cultural_tradition_mild_bonus }
 
-		add_estate_satisfaction = {
-			type = estate_type:clergy_estate
-			value = estate_satisfaction_mild_bonus
-		}
+		add_estate_satisfaction = { type = estate_type:clergy_estate value = estate_satisfaction_mild_bonus }
 	}
 }
 
@@ -2769,9 +2429,7 @@ flavor_ira.42 = {
 	fire_only_once = yes
 
 	trigger = {
-		NOT = {
-			any_cabinet_character = { modifier:is_head_of_cabinet = yes }
-		}
+		NOT = { any_cabinet_character = { modifier:is_head_of_cabinet = yes } }
 	}
 
 	illustration_tags = { 10 = regular 10 = interior }
@@ -2860,33 +2518,20 @@ flavor_ira.43 = {
 	option = {
 		name = flavor_ira.43.a
 
-		scope:target_location = {
-			change_development = development_mild_bonus
-			change_prosperity = prosperity_mild_bonus
-		}
+		scope:target_location = { change_development = development_mild_bonus change_prosperity = prosperity_mild_bonus }
 
 		change_gold_effect = {
 			scale = -3
 		}
 
-		change_societal_value = {
-			type = mysticism_vs_jurisprudence
-			value = societal_value_move_to_right
-		}
+		change_societal_value = { type = mysticism_vs_jurisprudence value = societal_value_move_to_right }
 
-		add_estate_satisfaction = {
-			type = estate_type:clergy_estate
-			value = estate_satisfaction_mild_bonus
-		}
+		add_estate_satisfaction = { type = estate_type:clergy_estate value = estate_satisfaction_mild_bonus }
 	}
 
 	option = {
 		name = flavor_ira.43.b
-
-		change_societal_value = {
-			type = mysticism_vs_jurisprudence
-			value = societal_value_move_to_left
-		}
+		change_societal_value = { type = mysticism_vs_jurisprudence value = societal_value_move_to_left }
 	}
 }
 
@@ -2906,11 +2551,7 @@ flavor_ira.44 = {
 	fire_only_once = yes
 
 	trigger = {
-		ruler_or_heir_if_regent ?= {
-			has_dynasty = yes
-			dynasty ?= dynasty:safavid_dynasty
-		}
-
+		ruler_or_heir_if_regent ?= { has_dynasty = yes dynasty ?= dynasty:safavid_dynasty }
 		religion.group = religion_group:muslim
 	}
 
@@ -2960,10 +2601,7 @@ flavor_ira.44 = {
 
 		add_prestige = prestige_mild_penalty
 
-		change_societal_value = {
-			type = outward_vs_inward
-			value = societal_value_move_to_right
-		}
+		change_societal_value = { type = outward_vs_inward value = societal_value_move_to_right }
 	}
 
 	option = {
@@ -3047,10 +2685,7 @@ flavor_ira.45 = {
 
 		add_government_power = government_power_mild_penalty
 
-		custom_tooltip = {
-			text = ira_qajar_dynasty_may_claim_crown
-			set_variable = ira_qajar_dynasty_rebellion_flag
-		}
+		custom_tooltip = { text = ira_qajar_dynasty_may_claim_crown set_variable = ira_qajar_dynasty_rebellion_flag }
 	}
 
 	option = {
@@ -3082,10 +2717,7 @@ flavor_ira.46 = {
 	trigger = {
 		has_variable = ira_qajar_dynasty_rebellion_flag
 		government_type = government_type:monarchy
-		OR = {
-			character:agha_muhammad_qajar = { is_alive = yes }
-			character:fath_ali_qajar = { is_alive = yes }
-		}
+		OR = { character:agha_muhammad_qajar = { is_alive = yes } character:fath_ali_qajar = { is_alive = yes } }
 
 		ruler_or_regent != character:agha_muhammad_qajar
 		ruler_or_regent != character:fath_ali_qajar
@@ -3101,6 +2733,7 @@ flavor_ira.46 = {
 			foreground = estate_type:peasants_estate
 			background = estate_type:peasants_estate
 		}
+
 		if = {
 			limit = { character:agha_muhammad_qajar = { is_alive = yes } }
 
@@ -3121,25 +2754,19 @@ flavor_ira.46 = {
 
 		set_variable = {
 			name = current_ruler_power_variable
-
 			value = {
 				add = { value = "estate_power(estate_type:crown_estate)" multiply = 5 }
 				add = { value = government_power divide = 2 }
 			}
 		}
 		set_variable = { name = num_rebelling_locations value = 0 }
+
 		if = {
 			limit = { var:current_ruler_power_variable < 100 }
 			while = {
 				limit = { var:current_ruler_power_variable < 100 }
-
 				ordered_owned_location = {
-					limit = {
-						is_capital = no
-						NOT = {
-							has_variable = already_supports_rebel_variable
-						}
-					}
+					limit = { is_capital = no NOT = { has_variable = already_supports_rebel_variable } }
 
 					order_by = { value = population multiply = -1 }
 					max = 1
@@ -3180,11 +2807,7 @@ flavor_ira.46 = {
 		destroy_rebel = scope:target_rebel
 	}
 
-	option = {
-		name = flavor_ira.46.b
-
-		scope:target_rebel = { add_rebel_progress = 0.75 }
-	}
+	option = { name = flavor_ira.46.b scope:target_rebel = { add_rebel_progress = 0.75 } }
 
 	after = {
 		remove_variable = ira_qajar_dynasty_rebellion_flag
@@ -3208,9 +2831,7 @@ flavor_ira.47 = {
 		owns = location:ardabil
 		location:ardabil = { is_capital = no }
 		religious_school = religious_school:safavid_school
-		NOT = {
-			country_exists = c:ABL
-		}
+		NOT = { country_exists = c:ABL }
 	}
 
 	illustration_tags = { 10 = regular 10 = exterior }
@@ -3246,15 +2867,11 @@ flavor_ira.47 = {
 
 	option = {
 		name = flavor_ira.47.a
-
 		custom_tooltip = {
 			text = flavor_ira.47.a.tt
 
 			scope:target_area = {
-				every_location_in_area = {
-					limit = { owner ?= root is_capital = no }
-					add_core = c:ABL
-				}
+				every_location_in_area = { limit = { owner ?= root is_capital = no } add_core = c:ABL }
 			}
 
 			create_country_from_cores_in_our_locations = c:ABL
@@ -3273,15 +2890,9 @@ flavor_ira.47 = {
 	option = {
 		name = flavor_ira.47.b
 
-		change_societal_value = {
-			type = mysticism_vs_jurisprudence
-			value = societal_value_tiny_move_to_right
-		}
+		change_societal_value = { type = mysticism_vs_jurisprudence value = societal_value_tiny_move_to_right }
 
-		add_estate_satisfaction = {
-			type = estate_type:clergy_estate
-			value = estate_satisfaction_extreme_penalty
-		}
+		add_estate_satisfaction = { type = estate_type:clergy_estate value = estate_satisfaction_extreme_penalty }
 
 		scope:target_character = { banish_character = yes }
 	}
@@ -3328,10 +2939,7 @@ flavor_ira.48 = {
 
 	fire_only_once = yes
 
-	trigger = {
-		ruler_or_regent ?= { mil >= 80 }
-		religious_school = religious_school:safavid_school
-	}
+	trigger = { ruler_or_regent ?= { mil >= 80 } religious_school = religious_school:safavid_school }
 
 	illustration_tags = { 10 = regular 10 = exterior }
 
@@ -3340,22 +2948,15 @@ flavor_ira.48 = {
 			foreground = pop_type:soldiers
 			background = pop_type:soldiers
 		}
-
 		ruler_or_regent ?= { save_scope_as = target_character }
 	}
 
 	option = {
 		name = flavor_ira.48.a
 
-		change_societal_value = {
-			type = belligerent_vs_conciliatory
-			value = societal_value_move_to_left
-		}
+		change_societal_value = { type = belligerent_vs_conciliatory value = societal_value_move_to_left }
 
-		change_societal_value = {
-			type = outward_vs_inward
-			value = societal_value_move_to_left
-		}
+		change_societal_value = { type = outward_vs_inward value = societal_value_move_to_left }
 
 		add_army_tradition = army_tradition_severe_bonus
 	}
@@ -3363,15 +2964,9 @@ flavor_ira.48 = {
 	option = {
 		name = flavor_ira.48.b
 
-		change_societal_value = {
-			type = belligerent_vs_conciliatory
-			value = societal_value_move_to_right
-		}
+		change_societal_value = { type = belligerent_vs_conciliatory value = societal_value_move_to_right }
 
-		change_societal_value = {
-			type = outward_vs_inward
-			value = societal_value_move_to_right
-		}
+		change_societal_value = { type = outward_vs_inward value = societal_value_move_to_right }
 	}
 }
 
@@ -3407,10 +3002,7 @@ flavor_ira.49 = {
 			background = estate_type:clergy_estate
 		}
 
-		random_present_religion_in_country = {
-			limit = { group = religion_group:christian }
-			save_scope_as = target_religion
-		}
+		random_present_religion_in_country = { limit = { group = religion_group:christian } save_scope_as = target_religion }
 
 		create_character = {
 			estate = estate_type:dhimmi_estate
@@ -3431,7 +3023,6 @@ flavor_ira.49 = {
 
 		custom_tooltip = {
 			text = ira_convert_christian_people_tt
-
 			every_pop = {
 				limit = { owner = root religion.group = religion_group:christian }
 
@@ -3446,10 +3037,7 @@ flavor_ira.49 = {
 			}
 		}
 
-		change_societal_value = {
-			type = spiritualist_vs_humanist
-			value = societal_value_move_to_left
-		}
+		change_societal_value = { type = spiritualist_vs_humanist value = societal_value_move_to_left }
 
 		scope:target_character = { banish_character = yes }
 	}
@@ -3459,7 +3047,6 @@ flavor_ira.49 = {
 
 		custom_tooltip = {
 			text = ira_happier_christians_tt
-
 			every_pop = {
 				limit = { owner = root religion.group = religion_group:christian }
 				add_pop_satisfaction = pop_satisfaction_extreme_bonus
@@ -3492,7 +3079,6 @@ flavor_ira.50 = {
 			dynasty ?= dynasty:safavid_dynasty
 			mil >= 75
 		}
-
 		country_rank_level = 1
 	}
 
@@ -3503,17 +3089,13 @@ flavor_ira.50 = {
 			foreground = estate_type:nobles_estate
 			background = estate_type:nobles_estate
 		}
-
 		ruler_or_regent ?= { save_scope_as = target_character }
 	}
 
 	option = {
 		name = flavor_ira.50.a
 
-		change_societal_value = {
-			type = outward_vs_inward
-			value = societal_value_move_to_left
-		}
+		change_societal_value = { type = outward_vs_inward value = societal_value_move_to_left }
 
 		ruler_or_regent ?= {
 			add_character_modifier = {
@@ -3527,10 +3109,7 @@ flavor_ira.50 = {
 	option = {
 		name = flavor_ira.50.b
 
-		change_societal_value = {
-			type = outward_vs_inward
-			value = societal_value_move_to_right
-		}
+		change_societal_value = { type = outward_vs_inward value = societal_value_move_to_right }
 
 		add_all_estate_satisfaction = { value = estate_satisfaction_extreme_bonus }
 	}
@@ -3554,14 +3133,10 @@ flavor_ira.51 = {
 
 	trigger = {
 		government_type = government_type:monarchy
-
 		ruler_or_regent ?= {
 			has_dynasty = yes
 			dynasty ?= dynasty:qajar_dynasty
-			OR = {
-				dip >= 90
-				has_trait = scholar
-			}
+			OR = { dip >= 90 has_trait = scholar }
 		}
 	}
 
@@ -3576,7 +3151,6 @@ flavor_ira.51 = {
 
 	option = {
 		name = flavor_ira.51.a
-
 		culture ?= {
 			add_cultural_influence = cultural_influence_severe_bonus
 			add_cultural_tradition = cultural_tradition_severe_bonus
@@ -3634,18 +3208,13 @@ flavor_ira.1000 = {
 				is_situation_active = situation:rise_of_the_ottomans
 				situation:rise_of_the_ottomans = { has_variable = strongest_beylik_variable }
 			}
-
 			situation:rise_of_the_ottomans = {
 				var:strongest_beylik_variable = {
 					has_ruler = yes
 					is_neighbor_of = root
 					is_free_or_tributary_trigger = yes
-					NOT = {
-						is_allied_with = { target = root }
-					}
-					NOT = {
-						is_at_war_with = root
-					}
+					NOT = { is_allied_with = { target = root } }
+					NOT = { is_at_war_with = root }
 					OR = {
 						is_rival_of = root
 						is_enemy_of = root
@@ -3660,12 +3229,8 @@ flavor_ira.1000 = {
 				has_ruler = yes
 				is_neighbor_of = root
 				is_free_or_tributary_trigger = yes
-				NOT = {
-					is_allied_with = { target = root }
-				}
-				NOT = {
-					is_at_war_with = root
-				}
+				NOT = { is_allied_with = { target = root } }
+				NOT = { is_at_war_with = root }
 				OR = {
 					is_rival_of = root
 					is_enemy_of = root
@@ -3691,10 +3256,7 @@ flavor_ira.1000 = {
 		name = flavor_ira.1000.a
 		historical_option = yes
 
-		add_historical_rival_scripted = {
-			target = scope:target_country
-			trigger_recipient_event = no
-		}
+		add_historical_rival_scripted = { target = scope:target_country trigger_recipient_event = no }
 
 		custom_tooltip = flavor_ira.1000.a.tt
 
@@ -3705,19 +3267,10 @@ flavor_ira.1000 = {
 			value = 10
 		}
 
-		change_societal_value = {
-			type = belligerent_vs_conciliatory
-			value = societal_value_large_move_to_left
-		}
+		change_societal_value = { type = belligerent_vs_conciliatory value = societal_value_large_move_to_left }
 
 		scope:target_country = {
-			show_as_tooltip = {
-				add_historical_rival_scripted = {
-					target = scope:root_country
-					trigger_recipient_event = no
-				}
-			}
-
+			show_as_tooltip = { add_historical_rival_scripted = { target = scope:root_country trigger_recipient_event = no } }
 			trigger_event_silently = flavor_ira.1001
 		}
 	}
@@ -3731,10 +3284,7 @@ flavor_ira.1000 = {
 			value = -5
 		}
 
-		change_societal_value = {
-			type = belligerent_vs_conciliatory
-			value = societal_value_large_move_to_right
-		}
+		change_societal_value = { type = belligerent_vs_conciliatory value = societal_value_large_move_to_right }
 	}
 }
 
@@ -3755,11 +3305,7 @@ flavor_ira.1001 = {
 
 	option = {
 		name = flavor_ira.1001.a
-
-		add_historical_rival_scripted = {
-			target = scope:root_country
-			trigger_recipient_event = no
-		}
+		add_historical_rival_scripted = { target = scope:root_country trigger_recipient_event = no }
 	}
 }
 
@@ -3790,9 +3336,7 @@ flavor_ira.1010 = {
 			country_exists = this
 			is_neighbor_of = root
 			religion = religion:sunni
-			NOT = {
-				is_at_war_with = root
-			}
+			NOT = { is_at_war_with = root }
 			any_owned_location = { dominant_religion = religion:shia }
 		}
 	}
@@ -3810,18 +3354,13 @@ flavor_ira.1010 = {
 				country_exists = this
 				is_neighbor_of = root
 				religion = religion:sunni
-				NOT = {
-					is_at_war_with = root
-				}
+				NOT = { is_at_war_with = root }
 				any_owned_location = { dominant_religion = religion:shia }
 			}
 
 			save_scope_as = target_country
 
-			random_owned_location = {
-				limit = { dominant_religion = religion:shia }
-				save_scope_as = target_location
-			}
+			random_owned_location = { limit = { dominant_religion = religion:shia } save_scope_as = target_location }
 
 			create_rebel = {
 				category = religious
@@ -3850,10 +3389,7 @@ flavor_ira.1010 = {
 		qizilbash_estate_satisfaction = { value = estate_satisfaction_severe_penalty }
 		add_stability = stability_severe_penalty
 
-		reverse_add_opinion = {
-			target = scope:target_country
-			modifier = opinion_did_not_support_rebels
-		}
+		reverse_add_opinion = { target = scope:target_country modifier = opinion_did_not_support_rebels }
 
 		hidden_effect = {
 			destroy_rebel = scope:target_rebel
@@ -3874,7 +3410,6 @@ flavor_ira.1011 = {
 			foreground = estate_type:nobles_estate
 			background = estate_type:nobles_estate
 		}
-
 		scope:target_location = { province = { save_scope_as = target_province } }
 	}
 
@@ -3886,7 +3421,6 @@ flavor_ira.1011 = {
 		scope:target_province = {
 			custom_tooltip = {
 				text = flavor_ira.1011.a.tt
-
 				every_location_in_province = {
 					every_pop = {
 						limit = { religion = religion:shia }
@@ -3899,9 +3433,7 @@ flavor_ira.1011 = {
 
 		destroy_rebel = scope:target_rebel
 
-		scope:root_country = {
-			add_opinion = { target = root modifier = opinion_crushed_shiite_revolt }
-		}
+		scope:root_country = { add_opinion = { target = root modifier = opinion_crushed_shiite_revolt } }
 	}
 
 	# We can wait them out.
@@ -3911,10 +3443,7 @@ flavor_ira.1011 = {
 
 		scope:target_province = {
 			every_location_in_province = {
-				every_pop = {
-					limit = { religion = religion:shia }
-					change_pop_allegiance = scope:target_rebel
-				}
+				every_pop = { limit = { religion = religion:shia } change_pop_allegiance = scope:target_rebel }
 			}
 		}
 
@@ -3929,13 +3458,9 @@ flavor_ira.1011 = {
 
 		custom_tooltip = {
 			text = flavor_ira.1011.c.tt
-
 			scope:target_province = {
 				area = {
-					every_location_in_area = {
-						limit = { owner = root }
-						change_control = control_ultimate_penalty
-					}
+					every_location_in_area = { limit = { owner = root } change_control = control_ultimate_penalty }
 				}
 			}
 		}
@@ -3968,12 +3493,8 @@ flavor_ira.1020 = {
 		c:IRA = {
 			is_historical_rival_of = root
 			is_neighbor_of = root
-			NOT = {
-				religion = ROOT.religion
-			}
-			NOT = {
-				is_at_war_with = root
-			}
+			NOT = { religion = ROOT.religion }
+			NOT = { is_at_war_with = root }
 			opinion = { target = root value <= -50 }
 		}
 
@@ -3993,10 +3514,7 @@ flavor_ira.1020 = {
 			save_scope_as = target_country
 			ruler_or_regent ?= { save_scope_as = target_character }
 
-			random_owned_location = {
-				limit = { is_neighbor_of = root }
-				province = { save_scope_as = target_province }
-			}
+			random_owned_location = { limit = { is_neighbor_of = root } province = { save_scope_as = target_province } }
 		}
 	}
 
@@ -4039,14 +3557,9 @@ flavor_ira.1020 = {
 			value = 10
 		}
 
-		remove_historical_rival_scripted = {
-			target = scope:target_country
-			trigger_recipient_event = yes
-		}
+		remove_historical_rival_scripted = { target = scope:target_country trigger_recipient_event = yes }
 
-		scope:target_country = {
-			add_opinion = { target = root modifier = opinion_attempts_of_reconciliation }
-		}
+		scope:target_country = { add_opinion = { target = root modifier = opinion_attempts_of_reconciliation } }
 	}
 }
 
@@ -4063,12 +3576,8 @@ flavor_ira.1021 = {
 			foreground = estate_type:nobles_estate
 			background = estate_type:nobles_estate
 		}
-
 		scope:root_country = {
-			random_owned_location = {
-				limit = { is_neighbor_of = root }
-				province = { save_scope_as = target_province }
-			}
+			random_owned_location = { limit = { is_neighbor_of = root } province = { save_scope_as = target_province } }
 		}
 	}
 
@@ -4091,9 +3600,7 @@ flavor_ira.1021 = {
 
 		add_all_estate_satisfaction = { value = estate_satisfaction_severe_bonus }
 
-		scope:root_country = {
-			add_opinion = { target = root modifier = border_aggression }
-		}
+		scope:root_country = { add_opinion = { target = root modifier = border_aggression } }
 	}
 	option = { name = flavor_ira.1021.b add_prestige = prestige_weak_penalty }
 	option = {
@@ -4107,14 +3614,9 @@ flavor_ira.1021 = {
 			value = 10
 		}
 
-		remove_historical_rival_scripted = {
-			target = scope:root_country
-			trigger_recipient_event = yes
-		}
+		remove_historical_rival_scripted = { target = scope:root_country trigger_recipient_event = yes }
 
-		scope:root_country = {
-			add_opinion = { target = root modifier = opinion_attempts_of_reconciliation }
-		}
+		scope:root_country = { add_opinion = { target = root modifier = opinion_attempts_of_reconciliation } }
 	}
 }
 
@@ -4149,7 +3651,6 @@ flavor_ira.1100 = {
 			foreground = estate_type:nobles_estate
 			background = estate_type:peasants_estate
 		}
-
 		ruler ?= { save_scope_as = target_character }
 	}
 
@@ -4185,9 +3686,7 @@ flavor_ira.1101 = {
 		country_has_estate = estate_type:tribes_estate
 		country_has_estate = estate_type:nobles_estate
 		has_ruler = yes
-		NOT = {
-			ruler = var:ira_ghilman_event
-		}
+		NOT = { ruler = var:ira_ghilman_event }
 		ruler ?= { total_abilities >= 200 }
 	}
 
@@ -4212,26 +3711,15 @@ flavor_ira.1101 = {
 		unlock_government_reform_effect = {
 			type = divided_persian_aristocracy
 		}
-		if = {
-			limit = { exists = scope:target_reform }
-			remove_reform = scope:target_reform
-		}
+
+		if = { limit = { exists = scope:target_reform } remove_reform = scope:target_reform }
 
 		add_reform = government_reform:divided_persian_aristocracy
 
-		add_estate_satisfaction = {
-			type = estate_type:nobles_estate
-			value = estate_satisfaction_severe_penalty
-		}
-		add_estate_satisfaction = {
-			type = estate_type:tribes_estate
-			value = estate_satisfaction_severe_penalty
-		}
+		add_estate_satisfaction = { type = estate_type:nobles_estate value = estate_satisfaction_severe_penalty }
+		add_estate_satisfaction = { type = estate_type:tribes_estate value = estate_satisfaction_severe_penalty }
 
-		change_societal_value = {
-			type = centralization_vs_decentralization
-			value = societal_value_minor_move_to_right
-		}
+		change_societal_value = { type = centralization_vs_decentralization value = societal_value_minor_move_to_right }
 	}
 	option = {
 		name = flavor_ira.1101.b
@@ -4240,19 +3728,10 @@ flavor_ira.1101 = {
 			type = divided_persian_aristocracy
 		}
 
-		add_estate_satisfaction = {
-			type = estate_type:nobles_estate
-			value = estate_satisfaction_weak_bonus
-		}
-		add_estate_satisfaction = {
-			type = estate_type:tribes_estate
-			value = estate_satisfaction_weak_bonus
-		}
+		add_estate_satisfaction = { type = estate_type:nobles_estate value = estate_satisfaction_weak_bonus }
+		add_estate_satisfaction = { type = estate_type:tribes_estate value = estate_satisfaction_weak_bonus }
 
-		change_societal_value = {
-			type = aristocracy_vs_plutocracy
-			value = societal_value_large_move_to_left
-		}
+		change_societal_value = { type = aristocracy_vs_plutocracy value = societal_value_large_move_to_left }
 	}
 }
 
@@ -4275,13 +3754,8 @@ flavor_ira.1200 = {
 
 	trigger = {
 		has_ruler = yes
-		NOT = {
-			religion = religion:shia
-		}
-		OR = {
-			any_owned_location = { dominant_religion = religion:shia }
-			ruler = { religion = religion:shia }
-		}
+		NOT = { religion = religion:shia }
+		OR = { any_owned_location = { dominant_religion = religion:shia } ruler = { religion = religion:shia } }
 	}
 
 	illustration_tags = { 10 = regular 10 = exterior }
@@ -4291,7 +3765,6 @@ flavor_ira.1200 = {
 			foreground = estate_type:clergy_estate
 			background = estate_type:clergy_estate
 		}
-
 		ruler = { save_scope_as = target_ruler }
 	}
 
@@ -4299,10 +3772,7 @@ flavor_ira.1200 = {
 		name = flavor_ira.1200.a
 		change_religion = religion:shia
 
-		change_religion_for_ruler_and_family = {
-			country = root
-			religion = religion:shia
-		}
+		change_religion_for_ruler_and_family = { country = root religion = religion:shia }
 
 		add_country_modifier = {
 			modifier = ira_shia_conversion_policy
@@ -4310,14 +3780,8 @@ flavor_ira.1200 = {
 			mode = add_and_extend
 		}
 
-		trigger_event_silently = {
-			id = flavor_ira.1201
-			months = { 12 60 }
-		}
-		trigger_event_silently = {
-			id = flavor_ira.1202
-			months = { 12 60 }
-		}
+		trigger_event_silently = { id = flavor_ira.1201 months = { 12 60 } }
+		trigger_event_silently = { id = flavor_ira.1202 months = { 12 60 } }
 	}
 	option = { name = flavor_ira.1200.b add_stability = stability_extreme_bonus }
 }
@@ -4340,7 +3804,6 @@ flavor_ira.1201 = {
 
 	option = {
 		name = flavor_ira.1201.a
-
 		add_country_modifier = {
 			modifier = ira_pragmatic_ulema
 			years = modifier_duration_years_normal
@@ -4349,7 +3812,6 @@ flavor_ira.1201 = {
 	}
 	option = {
 		name = flavor_ira.1201.b
-
 		add_country_modifier = {
 			modifier = ira_conversion_of_the_clergy
 			years = modifier_duration_years_short
@@ -4369,22 +3831,14 @@ flavor_ira.1202 = {
 	option = {
 		name = flavor_ira.1202.a
 
-		change_societal_value = {
-			type = mysticism_vs_jurisprudence
-			value = societal_value_tiny_move_to_right
-		}
+		change_societal_value = { type = mysticism_vs_jurisprudence value = societal_value_tiny_move_to_right }
 
 		custom_tooltip = {
 			text = flavor_ira.1202.a.tt
-
 			every_known_country = {
 				limit = {
-					OR = {
-						religion = religion:shia
-						any_owned_location = { dominant_religion = religion:shia }
-					}
+					OR = { religion = religion:shia any_owned_location = { dominant_religion = religion:shia } }
 				}
-
 				add_opinion = { target = c:IRA modifier = opinion_irritated }
 			}
 		}
@@ -4440,7 +3894,6 @@ flavor_ira.1300 = {
 			foreground = estate_type:burghers_estate
 			background = estate_type:nobles_estate
 		}
-
 		location:isfahan = { save_scope_as = target_location }
 	}
 
@@ -4461,10 +3914,7 @@ flavor_ira.1300 = {
 			}
 		}
 
-		trigger_event_silently = {
-			id = flavor_ira.1301
-			months = { 120 240 }
-		}
+		trigger_event_silently = { id = flavor_ira.1301 months = { 120 240 } }
 	}
 	option = { name = flavor_ira.1300.b add_stability = stability_extreme_bonus }
 }
@@ -4477,10 +3927,7 @@ flavor_ira.1301 = {
 	title = flavor_ira.1301.title
 	desc = flavor_ira.1301.desc
 
-	trigger = {
-		owns = location:isfahan
-		location:isfahan = { integration_level = core this = root.capital }
-	}
+	trigger = { owns = location:isfahan location:isfahan = { integration_level = core this = root.capital } }
 
 	illustration_tags = { 10 = happy 10 = exterior }
 
@@ -4489,16 +3936,10 @@ flavor_ira.1301 = {
 			foreground = estate_type:nobles_estate
 			background = estate_type:nobles_estate
 		}
-
 		location:isfahan = {
 			save_scope_as = target_location
 			if = {
-				limit = {
-					NOT = {
-						modifier:sul_is_city_rank_tier = yes
-					}
-				}
-
+				limit = { NOT = { modifier:sul_is_city_rank_tier = yes } }
 				sul_set_rank_city = yes
 			}
 		}
@@ -4545,18 +3986,13 @@ flavor_ira.1400 = {
 				is_situation_active = situation:rise_of_the_ottomans
 				situation:rise_of_the_ottomans = { has_variable = strongest_beylik_variable }
 			}
-
 			situation:rise_of_the_ottomans = {
 				var:strongest_beylik_variable = {
 					has_ruler = yes
 					is_neighbor_of = root
 					is_free_or_tributary_trigger = yes
-					NOT = {
-						is_allied_with = { target = root }
-					}
-					NOT = {
-						is_at_war_with = root
-					}
+					NOT = { is_allied_with = { target = root } }
+					NOT = { is_at_war_with = root }
 					OR = {
 						is_rival_of = root
 						is_enemy_of = root
@@ -4570,18 +4006,13 @@ flavor_ira.1400 = {
 				}
 			}
 		}
-
 		trigger_else = {
 			c:TUR = {
 				has_ruler = yes
 				is_neighbor_of = root
 				is_free_or_tributary_trigger = yes
-				NOT = {
-					is_allied_with = { target = root }
-				}
-				NOT = {
-					is_at_war_with = root
-				}
+				NOT = { is_allied_with = { target = root } }
+				NOT = { is_at_war_with = root }
 				OR = {
 					is_rival_of = root
 					is_enemy_of = root
@@ -4603,15 +4034,13 @@ flavor_ira.1400 = {
 			foreground = estate_type:nobles_estate
 			background = estate_type:nobles_estate
 		}
+
 		if = {
 			limit = {
 				is_situation_active = situation:rise_of_the_ottomans
 				situation:rise_of_the_ottomans = { has_variable = strongest_beylik_variable }
 			}
-
-			situation:rise_of_the_ottomans = {
-				var:strongest_beylik_variable = { save_scope_as = shared_rival }
-			}
+			situation:rise_of_the_ottomans = { var:strongest_beylik_variable = { save_scope_as = shared_rival } }
 		}
 		else = { c:TUR = { save_scope_as = shared_rival } }
 
@@ -4645,11 +4074,7 @@ flavor_ira.1400 = {
 
 	option = {
 		name = flavor_ira.1400.b
-
-		change_societal_value = {
-			type = outward_vs_inward
-			value = societal_value_move_to_right
-		}
+		change_societal_value = { type = outward_vs_inward value = societal_value_move_to_right }
 	}
 }
 
@@ -4684,17 +4109,10 @@ flavor_ira.1401 = {
 			target = scope:target_country
 		}
 
-		change_societal_value = {
-			type = belligerent_vs_conciliatory
-			value = societal_value_move_to_right
-		}
+		change_societal_value = { type = belligerent_vs_conciliatory value = societal_value_move_to_right }
 	}
 
-	option = { # Visit the Persian capital
-		name = flavor_ira.1401.b
-
-		scope:target_country2 = { trigger_event_non_silently = flavor_ira.1402 }
-	}
+	option = { name = flavor_ira.1401.b scope:target_country2 = { trigger_event_non_silently = flavor_ira.1402 } }
 
 	option = { # Reject any alliance with the Persians
 		name = flavor_ira.1401.c
@@ -4706,10 +4124,7 @@ flavor_ira.1401 = {
 
 		add_prestige = prestige_mild_bonus
 
-		change_societal_value = {
-			type = belligerent_vs_conciliatory
-			value = societal_value_move_to_left
-		}
+		change_societal_value = { type = belligerent_vs_conciliatory value = societal_value_move_to_left }
 	}
 }
 
@@ -4732,7 +4147,6 @@ flavor_ira.1402 = {
 
 	option = {
 		name = flavor_ira.1402.a
-
 		add_opinion_mutual_effect = {
 			modifier = ira_visited_capital
 			target = scope:target_country

@@ -11,20 +11,16 @@
 
 sul_minting_goods_count = {
 	value = 0
-	if = {
-		limit = { has_variable = sul_minting_goods_count }
-		add = var:sul_minting_goods_count
-	}
+
+	if = { limit = { has_variable = sul_minting_goods_count } add = var:sul_minting_goods_count }
 
 	min = 1
 }
 
 sul_minting_target_value = {
 	value = 0
-	if = {
-		limit = { has_variable = sul_minting_target_value }
-		add = var:sul_minting_target_value
-	}
+
+	if = { limit = { has_variable = sul_minting_target_value } add = var:sul_minting_target_value }
 }
 
 # ---- Base Monetization ----
@@ -33,22 +29,15 @@ sul_minting_target_value = {
 
 sul_minting_monetization_base = {
 	value = 0
-	if = {
-		limit = { has_variable = sul_monthly_wages_nobles }
-		add = var:sul_monthly_wages_nobles
-	}
-	if = {
-		limit = { has_variable = sul_monthly_wages_clergy }
-		add = var:sul_monthly_wages_clergy
-	}
-	if = {
-		limit = { has_variable = sul_monthly_wages_burghers }
-		add = var:sul_monthly_wages_burghers
-	}
-	if = {
-		limit = { has_variable = sul_monthly_wages_peasants }
-		add = var:sul_monthly_wages_peasants
-	}
+
+	if = { limit = { has_variable = sul_monthly_wages_nobles } add = var:sul_monthly_wages_nobles }
+
+	if = { limit = { has_variable = sul_monthly_wages_clergy } add = var:sul_monthly_wages_clergy }
+
+	if = { limit = { has_variable = sul_monthly_wages_burghers } add = var:sul_monthly_wages_burghers }
+
+	if = { limit = { has_variable = sul_monthly_wages_peasants } add = var:sul_monthly_wages_peasants }
+
 	divide = { value = total_population min = 1 }
 }
 
@@ -88,10 +77,7 @@ sul_minting_debased_output_value = {
 
 	multiply = {
 		value = 1
-		if = {
-			limit = { has_variable = sul_minting_debasement_level }
-			add = var:sul_minting_debasement_level
-		}
+		if = { limit = { has_variable = sul_minting_debasement_level } add = var:sul_minting_debasement_level }
 	}
 }
 
@@ -157,12 +143,10 @@ sul_minting_efficiency_from_cached_cost = {
 
 sul_minting_cached_minting_efficiency = {
 	value = 0
+
 	if = {
 		limit = { is_ai = yes }
-		if = {
-			limit = { has_variable = sul_minting_efficiency }
-			add = var:sul_minting_efficiency
-		}
+		if = { limit = { has_variable = sul_minting_efficiency } add = var:sul_minting_efficiency }
 	}
 	else = { add = sul_minting_efficiency_from_cached_cost }
 }
@@ -181,13 +165,11 @@ sul_minting_modifier_scalar = {
 
 sul_minting_vanilla_minting_inflation = {
 	value = 0
+
 	if = {
 		limit = { slider_minting_value > modifier:minting_inflation_threshold }
 
-		add = {
-			value = slider_minting_value
-			subtract = modifier:minting_inflation_threshold
-		}
+		add = { value = slider_minting_value subtract = modifier:minting_inflation_threshold }
 
 		multiply = @sul_minting_inflation_factor
 	}
@@ -213,11 +195,7 @@ sul_minting_inflation_output_value = {
 		value = 1
 		if = {
 			limit = { has_variable = sul_minting_debasement_level }
-
-			add = {
-				value = var:sul_minting_debasement_level
-				multiply = sul_minting_debasement_inflation_penalty
-			}
+			add = { value = var:sul_minting_debasement_level multiply = sul_minting_debasement_inflation_penalty }
 		}
 	}
 }
@@ -259,7 +237,6 @@ sul_minting_ai_inflation_size = {
 			var:sul_minting_rebasement_level > 0
 			inflation > 0
 		}
-
 		add = sul_minting_rebasement_deflation_effect
 	}
 }

@@ -3,33 +3,21 @@
 expand_hunting_operations = {
 	estate = peasants_estate
 
-	modifier_when_in_debate = {
-		expand_rgo_hunting_cost_modifier = -0.33
-		global_rgo_build_time = -0.2
-	}
+	modifier_when_in_debate = { expand_rgo_hunting_cost_modifier = -0.33 global_rgo_build_time = -0.2 }
 
 	allow = {
-		any_owned_location = {
-			raw_material = { goods_method = hunting }
-			is_full_expanded_rgo = no
-		}
+		any_owned_location = { raw_material = { goods_method = hunting } is_full_expanded_rgo = no }
 	}
 
 	chance = {
 		add = 1
 
 		add = {
-			if = {
-				limit = { societal_value:capital_economy_vs_traditional_economy > 30 }
-				value = 2
-			}
+			if = { limit = { societal_value:capital_economy_vs_traditional_economy > 30 } value = 2 }
 		}
 
 		multiply = {
-			if = {
-				limit = { societal_value:capital_economy_vs_traditional_economy < -60 }
-				value = 0.5
-			}
+			if = { limit = { societal_value:capital_economy_vs_traditional_economy < -60 } value = 0.5 }
 			else = {
 				value = 1	# We need that else or otherwise the whole chance is multiplied with 0
 			}
@@ -40,7 +28,13 @@ expand_hunting_operations = {
 		ordered_owned_location = {
 			limit = { raw_material = { goods_method = hunting } is_full_expanded_rgo = no }
 			order_by = population
-			max = { value = num_provinces multiply = 0.05 add = 1 }
+
+			max = {
+				value = num_provinces
+				multiply = 0.05
+				add = 1
+			}
+
 			change_max_raw_material_workers = 1
 			change_prosperity = prosperity_mild_bonus
 		}
@@ -52,33 +46,21 @@ expand_hunting_operations = {
 expand_gathering_operations = {
 	estate = peasants_estate
 
-	modifier_when_in_debate = {
-		expand_rgo_gathering_cost_modifier = -0.33
-		global_rgo_build_time = -0.2
-	}
+	modifier_when_in_debate = { expand_rgo_gathering_cost_modifier = -0.33 global_rgo_build_time = -0.2 }
 
 	allow = {
-		any_owned_location = {
-			raw_material = { goods_method = gathering }
-			is_full_expanded_rgo = no
-		}
+		any_owned_location = { raw_material = { goods_method = gathering } is_full_expanded_rgo = no }
 	}
 
 	chance = {
 		add = 1
 
 		add = {
-			if = {
-				limit = { societal_value:capital_economy_vs_traditional_economy > 30 }
-				value = 2
-			}
+			if = { limit = { societal_value:capital_economy_vs_traditional_economy > 30 } value = 2 }
 		}
 
 		multiply = {
-			if = {
-				limit = { societal_value:capital_economy_vs_traditional_economy < -60 }
-				value = 0.5
-			}
+			if = { limit = { societal_value:capital_economy_vs_traditional_economy < -60 } value = 0.5 }
 			else = {
 				value = 1	# We need that else or otherwise the whole chance is multiplied with 0
 			}
@@ -87,13 +69,16 @@ expand_gathering_operations = {
 
 	on_debate_passed = {
 		ordered_owned_location = {
-			limit = {
-				raw_material = { goods_method = gathering }
-				is_full_expanded_rgo = no
-			}
+			limit = { raw_material = { goods_method = gathering } is_full_expanded_rgo = no }
 
 			order_by = population
-			max = { value = num_provinces multiply = 0.05 add = 1 }
+
+			max = {
+				value = num_provinces
+				multiply = 0.05
+				add = 1
+			}
+
 			change_max_raw_material_workers = 1
 			change_prosperity = prosperity_mild_bonus
 		}
@@ -109,10 +94,7 @@ sponsor_training_fields = {
 
 	allow = {
 		has_advance = training_fields_advance
-		NOR = {
-			has_advance = regimental_camp_advance
-			has_advance = conscription_center_advance
-		}
+		NOR = { has_advance = regimental_camp_advance has_advance = conscription_center_advance }
 		any_owned_rural_location = {
 			owner = { has_primary_or_accepted_culture = prev.dominant_culture }
 			NOR = {
@@ -127,10 +109,7 @@ sponsor_training_fields = {
 		add = 1
 
 		add = {
-			if = {
-				limit = { total_effective_building_levels:training_fields < 6 }
-				value = 5
-			}
+			if = { limit = { total_effective_building_levels:training_fields < 6 } value = 5 }
 		}
 		add = {
 			if = { limit = { max_manpower > 0.5 manpower_percentage < 0.5 } add = 2 }
@@ -147,7 +126,13 @@ sponsor_training_fields = {
 	on_debate_passed = {
 		ordered_owned_location = {
 			order_by = population
-			max = { value = num_provinces multiply = 0.1 add = 1 }
+
+			max = {
+				value = num_provinces
+				multiply = 0.1
+				add = 1
+			}
+
 			check_range_bounds = no
 
 			limit = {
@@ -179,15 +164,10 @@ sponsor_regimental_camp = {
 
 	allow = {
 		has_advance = regimental_camp_advance
-		NOT = {
-			has_advance = conscription_center_advance
-		}
+		NOT = { has_advance = conscription_center_advance }
 		any_owned_rural_location = {
 			owner = { has_primary_or_accepted_culture = prev.dominant_culture }
-			NOR = {
-				has_building = building_type:regimental_camp
-				has_building = building_type:conscription_center
-			}
+			NOR = { has_building = building_type:regimental_camp has_building = building_type:conscription_center }
 		}
 	}
 
@@ -195,10 +175,7 @@ sponsor_regimental_camp = {
 		add = 1
 
 		add = {
-			if = {
-				limit = { total_effective_building_levels:regimental_camp < 6 }
-				value = 5
-			}
+			if = { limit = { total_effective_building_levels:regimental_camp < 6 } value = 5 }
 		}
 		add = {
 			if = { limit = { max_manpower > 0.5 manpower_percentage < 0.5 } add = 2 }
@@ -215,15 +192,18 @@ sponsor_regimental_camp = {
 	on_debate_passed = {
 		ordered_owned_location = {
 			order_by = population
-			max = { value = num_provinces multiply = 0.1 add = 1 }
+
+			max = {
+				value = num_provinces
+				multiply = 0.1
+				add = 1
+			}
+
 			check_range_bounds = no
 
 			limit = {
 				owner = { has_primary_or_accepted_culture = prev.dominant_culture }
-				NOR = {
-					has_building = building_type:regimental_camp
-					has_building = building_type:conscription_center
-				}
+				NOR = { has_building = building_type:regimental_camp has_building = building_type:conscription_center }
 
 				modifier:sul_is_rural_settlement_rank_tier = yes
 			}
@@ -252,10 +232,7 @@ sponsor_conscription_center = {
 		add = 1
 
 		add = {
-			if = {
-				limit = { total_effective_building_levels:conscription_center < 6 }
-				value = 5
-			}
+			if = { limit = { total_effective_building_levels:conscription_center < 6 } value = 5 }
 		}
 		add = {
 			if = { limit = { max_manpower > 0.5 manpower_percentage < 0.5 } add = 2 }
@@ -272,14 +249,16 @@ sponsor_conscription_center = {
 	on_debate_passed = {
 		ordered_owned_location = {
 			order_by = population
-			max = { value = num_provinces multiply = 0.1 add = 1 }
+
+			max = {
+				value = num_provinces
+				multiply = 0.1
+				add = 1
+			}
+
 			check_range_bounds = no
 
-			limit = {
-				NOT = {
-					has_building = building_type:conscription_center
-				}
-			}
+			limit = { NOT = { has_building = building_type:conscription_center } }
 
 			construct_building = {
 				building_type = building_type:conscription_center
@@ -295,31 +274,19 @@ sponsor_conscription_center = {
 expand_officer_lists = {
 	estate = peasants_estate
 
-	modifier_when_in_debate = {
-		peasants_estate_target_satisfaction = huge_permanent_target_satisfaction
-	}
+	modifier_when_in_debate = { peasants_estate_target_satisfaction = huge_permanent_target_satisfaction }
 
 	allow = {
-		NOT = {
-			has_estate_privilege = estate_privilege:noble_leaders_only
-		}
+		NOT = { has_estate_privilege = estate_privilege:noble_leaders_only }
 	}
 
 	chance = {
 		add = 1
-
 		add = {
 			if = {
 				limit = {
-					NOT = {
-						any_character = {
-							NOT = {
-								mil > 50
-							}
-						}
-					}
+					NOT = { any_character = { NOT = { mil > 50 } } }
 				}
-
 				value = 2
 			}
 		}
@@ -340,10 +307,7 @@ expand_officer_lists = {
 support_peasant_cabinet = {
 	estate = peasants_estate
 
-	modifier_when_in_debate = {
-		country_cabinet_efficiency = 0.2
-		global_monthly_literacy = 0.05
-	}
+	modifier_when_in_debate = { country_cabinet_efficiency = 0.2 global_monthly_literacy = 0.05 }
 
 	allow = {
 		any_character = { in_cabinet = yes has_estate = estate_type:peasants_estate }
@@ -376,11 +340,7 @@ support_peasant_cabinet = {
 			add_dip = 5
 			add_mil = 5
 		}
-
-		change_societal_value = {
-			type = serfdom_vs_free_subjects
-			value = societal_value_move_to_right
-		}
+		change_societal_value = { type = serfdom_vs_free_subjects value = societal_value_move_to_right }
 	}
 
 	on_debate_failed = { parliament_debate_failed_effect = yes }
@@ -396,13 +356,7 @@ expand_food_stockpiles = {
 	allow = {
 		any_province = {
 			province_food_percentage < 0.5
-
-			any_location_in_province = {
-				OR = {
-					modifier:sul_is_town_rank_tier = yes
-					modifier:sul_is_city_rank_tier = yes
-				}
-			}
+			any_location_in_province = { OR = { modifier:sul_is_town_rank_tier = yes modifier:sul_is_city_rank_tier = yes } }
 		}
 	}
 
@@ -414,16 +368,9 @@ expand_food_stockpiles = {
 				limit = {
 					any_province = {
 						province_food_percentage < 0.25
-
-						any_location_in_province = {
-							OR = {
-								modifier:sul_is_town_rank_tier = yes
-								modifier:sul_is_city_rank_tier = yes
-							}
-						}
+						any_location_in_province = { OR = { modifier:sul_is_town_rank_tier = yes modifier:sul_is_city_rank_tier = yes } }
 					}
 				}
-
 				value = 2
 			}
 		}
@@ -439,16 +386,16 @@ expand_food_stockpiles = {
 	on_debate_passed = {
 		ordered_owned_location = {
 			order_by = province.province_food_percentage
-			max = { value = num_provinces multiply = -0.1 add = 1 }
+
+			max = {
+				value = num_provinces
+				multiply = -0.1
+				add = 1
+			}
 
 			limit = {
-				NOT = {
-					has_building = building_type:granary
-				}
-				OR = {
-					modifier:sul_is_town_rank_tier = yes
-					modifier:sul_is_city_rank_tier = yes
-				}
+				NOT = { has_building = building_type:granary }
+				OR = { modifier:sul_is_town_rank_tier = yes modifier:sul_is_city_rank_tier = yes }
 			}
 
 			construct_building = {
@@ -471,16 +418,10 @@ curb_central_authority = {
 		always = no	# Handled through special events
 	}
 
-	modifier_when_in_debate = {
-		monthly_legitimacy = -2
-		monthly_republican_tradition = -2
-	}
+	modifier_when_in_debate = { monthly_legitimacy = -2 monthly_republican_tradition = -2 }
 
 	allow = {
-		OR = {
-			government_type = government_type:monarchy
-			government_type = government_type:republic
-		}
+		OR = { government_type = government_type:monarchy government_type = government_type:republic }
 		any_active_disaster = { disaster_type = disaster_type:revolution_disaster }
 	}
 
@@ -503,25 +444,18 @@ curb_central_authority = {
 					rebel_name_key = revolutionary_rebel
 				}
 			}
-
 			random_rebel = {
 				limit = {
 					rebel_progress > 0
 					rebel_progress < 0.9
 					rebel_name_key = revolutionary_rebel
 				}
-
 				add_rebel_progress = 0.05
 			}
 		}
-		add_estate_satisfaction = {
-			type = estate_type:burghers_estate
-			value = estate_satisfaction_extreme_penalty
-		}
-		add_estate_satisfaction = {
-			type = estate_type:peasants_estate
-			value = estate_satisfaction_extreme_penalty
-		}
+
+		add_estate_satisfaction = { type = estate_type:burghers_estate value = estate_satisfaction_extreme_penalty }
+		add_estate_satisfaction = { type = estate_type:peasants_estate value = estate_satisfaction_extreme_penalty }
 	}
 }
 
@@ -532,15 +466,10 @@ revoke_privilege_of_the_nobles = {
 		always = no	# Handled through special events
 	}
 
-	modifier_when_in_debate = {
-		nobles_estate_target_satisfaction = insane_permanent_target_satisfaction_penalty
-	}
+	modifier_when_in_debate = { nobles_estate_target_satisfaction = insane_permanent_target_satisfaction_penalty }
 
 	allow = {
-		OR = {
-			government_type = government_type:monarchy
-			government_type = government_type:republic
-		}
+		OR = { government_type = government_type:monarchy government_type = government_type:republic }
 		any_active_disaster = { disaster_type = disaster_type:revolution_disaster }
 		"estate(estate_type:nobles_estate)" = { num_privileges > 3 }
 	}
@@ -550,22 +479,15 @@ revoke_privilege_of_the_nobles = {
 	on_debate_passed = {
 		custom_tooltip = {
 			text = random_noble_privilege_revoked_tt
-
 			random_estate_privilege = {
 				limit = { estate_type = estate_type:nobles_estate }
 				root = { revoke_estate_privilege = prev }
 			}
 		}
 
-		add_estate_satisfaction = {
-			type = estate_type:nobles_estate
-			value = estate_satisfaction_extreme_penalty
-		}
+		add_estate_satisfaction = { type = estate_type:nobles_estate value = estate_satisfaction_extreme_penalty }
 
-		change_societal_value = {
-			type = aristocracy_vs_plutocracy
-			value = societal_value_large_move_to_right
-		}
+		change_societal_value = { type = aristocracy_vs_plutocracy value = societal_value_large_move_to_right }
 	}
 
 	on_debate_failed = {
@@ -577,25 +499,18 @@ revoke_privilege_of_the_nobles = {
 					rebel_name_key = revolutionary_rebel
 				}
 			}
-
 			random_rebel = {
 				limit = {
 					rebel_progress > 0
 					rebel_progress < 0.9
 					rebel_name_key = revolutionary_rebel
 				}
-
 				add_rebel_progress = 0.05
 			}
 		}
-		add_estate_satisfaction = {
-			type = estate_type:burghers_estate
-			value = estate_satisfaction_extreme_penalty
-		}
-		add_estate_satisfaction = {
-			type = estate_type:peasants_estate
-			value = estate_satisfaction_extreme_penalty
-		}
+
+		add_estate_satisfaction = { type = estate_type:burghers_estate value = estate_satisfaction_extreme_penalty }
+		add_estate_satisfaction = { type = estate_type:peasants_estate value = estate_satisfaction_extreme_penalty }
 	}
 }
 
@@ -606,16 +521,10 @@ reduce_peasant_taxation = {
 		always = no	# Handled through special events
 	}
 
-	modifier_when_in_debate = {
-		monthly_towards_liberalism = 1
-		global_crown_estate_power = -0.5
-	}
+	modifier_when_in_debate = { monthly_towards_liberalism = 1 global_crown_estate_power = -0.5 }
 
 	allow = {
-		OR = {
-			government_type = government_type:monarchy
-			government_type = government_type:republic
-		}
+		OR = { government_type = government_type:monarchy government_type = government_type:republic }
 		any_active_disaster = { disaster_type = disaster_type:revolution_disaster }
 		estate_tax_percentage:peasants_estate > 0.1
 	}
@@ -629,15 +538,9 @@ reduce_peasant_taxation = {
 			mode = add_and_extend
 		}
 
-		add_estate_satisfaction = {
-			type = estate_type:nobles_estate
-			value = estate_satisfaction_extreme_penalty
-		}
+		add_estate_satisfaction = { type = estate_type:nobles_estate value = estate_satisfaction_extreme_penalty }
 
-		change_societal_value = {
-			type = serfdom_vs_free_subjects
-			value = societal_value_large_move_to_right
-		}
+		change_societal_value = { type = serfdom_vs_free_subjects value = societal_value_large_move_to_right }
 	}
 
 	on_debate_failed = {
@@ -649,25 +552,18 @@ reduce_peasant_taxation = {
 					rebel_name_key = revolutionary_rebel
 				}
 			}
-
 			random_rebel = {
 				limit = {
 					rebel_progress > 0
 					rebel_progress < 0.9
 					rebel_name_key = revolutionary_rebel
 				}
-
 				add_rebel_progress = 0.05
 			}
 		}
-		add_estate_satisfaction = {
-			type = estate_type:burghers_estate
-			value = estate_satisfaction_extreme_penalty
-		}
-		add_estate_satisfaction = {
-			type = estate_type:peasants_estate
-			value = estate_satisfaction_extreme_penalty
-		}
+
+		add_estate_satisfaction = { type = estate_type:burghers_estate value = estate_satisfaction_extreme_penalty }
+		add_estate_satisfaction = { type = estate_type:peasants_estate value = estate_satisfaction_extreme_penalty }
 	}
 }
 
@@ -688,26 +584,16 @@ establish_a_constitution = {
 	allow = {
 		government_type = government_type:monarchy
 		any_active_disaster = { disaster_type = disaster_type:revolution_disaster }
-		OR = {
-			"estate_power(estate_type:crown_estate)" < 0.2
-			government_power < 20
-		}
-		NOT = {
-			parliament_type = parliament_type:constitutional_parliament
-		}
+		OR = { "estate_power(estate_type:crown_estate)" < 0.2 government_power < 20 }
+		NOT = { parliament_type = parliament_type:constitutional_parliament }
 	}
 
 	chance = { add = -1000 }
 
 	on_debate_passed = {
 		set_parliament_type = parliament_type:constitutional_parliament
-
 		if = {
-			limit = {
-				NOT = {
-					has_reform = government_reform:constitutional_state
-				}
-			}
+			limit = { NOT = { has_reform = government_reform:constitutional_state } }
 
 			hidden_effect = {
 				unlock_government_reform_effect = {
@@ -728,24 +614,17 @@ establish_a_constitution = {
 					rebel_name_key = revolutionary_rebel
 				}
 			}
-
 			random_rebel = {
 				limit = {
 					rebel_progress > 0
 					rebel_progress < 0.9
 					rebel_name_key = revolutionary_rebel
 				}
-
 				add_rebel_progress = 0.05
 			}
 		}
-		add_estate_satisfaction = {
-			type = estate_type:burghers_estate
-			value = estate_satisfaction_extreme_penalty
-		}
-		add_estate_satisfaction = {
-			type = estate_type:peasants_estate
-			value = estate_satisfaction_extreme_penalty
-		}
+
+		add_estate_satisfaction = { type = estate_type:burghers_estate value = estate_satisfaction_extreme_penalty }
+		add_estate_satisfaction = { type = estate_type:peasants_estate value = estate_satisfaction_extreme_penalty }
 	}
 }

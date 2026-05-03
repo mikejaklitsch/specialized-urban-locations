@@ -16,26 +16,14 @@ sul_war_apply_occupation = {
 	set_local_variable = { name = sul_war_occupied_forts value = 0 }
 	set_local_variable = { name = sul_war_occupied_non_forts value = 0 }
 	set_local_variable = { name = sul_war_total_forts value = num_forts }
-	set_local_variable = {
-		name = sul_war_total_non_forts
-		value = { add = num_locations subtract = num_forts }
-	}
+	set_local_variable = { name = sul_war_total_non_forts value = { add = num_locations subtract = num_forts } }
 
 	# Regular occupation: our locations where controller != us
 	every_owned_location = {
-		limit = {
-			NOT = {
-				controller ?= prev
-			}
-		}
+		limit = { NOT = { controller ?= prev } }
 
-		if = {
-			limit = { has_fort = yes }
-			change_local_variable = { name = sul_war_occupied_forts add = 1 }
-		}
-		else = {
-			change_local_variable = { name = sul_war_occupied_non_forts add = 1 }
-		}
+		if = { limit = { has_fort = yes } change_local_variable = { name = sul_war_occupied_forts add = 1 } }
+		else = { change_local_variable = { name = sul_war_occupied_non_forts add = 1 } }
 	}
 
 	# Auto-conquest: provinces taken by nations with auto_conquer modifiers.
@@ -49,14 +37,8 @@ sul_war_apply_occupation = {
 
 		every_war = {
 			limit = { is_in_war = scope:sul_war_ac_victim }
-
 			every_war_participant = {
-				limit = {
-					NOT = {
-						is_fighting_war_together_with = scope:sul_war_ac_victim
-					}
-				}
-
+				limit = { NOT = { is_fighting_war_together_with = scope:sul_war_ac_victim } }
 				every_owned_location = {
 					limit = {
 						has_variable = sul_war_original_owner
@@ -65,27 +47,15 @@ sul_war_apply_occupation = {
 					}
 
 					# Add to totals (denominator) since these left our num_locations/num_forts
-					if = {
-						limit = { has_fort = yes }
-						change_local_variable = { name = sul_war_total_forts add = 1 }
-					}
+					if = { limit = { has_fort = yes } change_local_variable = { name = sul_war_total_forts add = 1 } }
 					else = { change_local_variable = { name = sul_war_total_non_forts add = 1 } }
 
 					# Only enemy-held ones count as occupied (numerator)
 					if = {
-						limit = {
-							NOT = {
-								controller ?= scope:sul_war_ac_victim
-							}
-						}
+						limit = { NOT = { controller ?= scope:sul_war_ac_victim } }
 
-						if = {
-							limit = { has_fort = yes }
-							change_local_variable = { name = sul_war_occupied_forts add = 1 }
-						}
-						else = {
-							change_local_variable = { name = sul_war_occupied_non_forts add = 1 }
-						}
+						if = { limit = { has_fort = yes } change_local_variable = { name = sul_war_occupied_forts add = 1 } }
+						else = { change_local_variable = { name = sul_war_occupied_non_forts add = 1 } }
 					}
 				}
 			}
@@ -95,7 +65,6 @@ sul_war_apply_occupation = {
 	# Compute weighted occupation ratio (forts 5x weight)
 	set_local_variable = {
 		name = sul_war_total_location_weight
-
 		value = {
 			add = local_var:sul_war_total_forts
 			multiply = 5
@@ -104,7 +73,6 @@ sul_war_apply_occupation = {
 	}
 	set_local_variable = {
 		name = sul_war_occupied_location_weight
-
 		value = {
 			add = local_var:sul_war_occupied_forts
 			multiply = 5
@@ -113,18 +81,15 @@ sul_war_apply_occupation = {
 	}
 
 	set_local_variable = { name = sul_war_occupation_size value = 0 }
+
 	if = {
 		limit = { local_var:sul_war_total_location_weight > 0 }
-
 		set_local_variable = {
 			name = sul_war_occupation_size
-
-			value = {
-				add = local_var:sul_war_occupied_location_weight
-				divide = local_var:sul_war_total_location_weight
-			}
+			value = { add = local_var:sul_war_occupied_location_weight divide = local_var:sul_war_total_location_weight }
 		}
 	}
+
 	if = {
 		limit = { local_var:sul_war_occupation_size > 1 }
 		set_local_variable = { name = sul_war_occupation_size value = 1 }
@@ -150,31 +115,27 @@ sul_war_update_territory = {
 
 		# Crown = original country, Pretender = rebel breakaway
 		# If we are the rebel, swap perspective so crown/pretender labels are always correct
-		set_local_variable = {
-			name = sul_war_civil_war_crown_forts
-			value = num_forts
-		}
-		set_local_variable = {
-			name = sul_war_civil_war_crown_locs
-			value = { add = num_locations subtract = num_forts }
-		}
+		set_local_variable = { name = sul_war_civil_war_crown_forts value = num_forts }
+		set_local_variable = { name = sul_war_civil_war_crown_locs value = { add = num_locations subtract = num_forts } }
 		set_local_variable = {
 			name = sul_war_civil_war_my_weight
-			value = { add = num_forts multiply = 4 add = num_locations }
+			value = {
+				add = num_forts
+				multiply = 4
+				add = num_locations
+			}
 		}
 
 		civil_war_opponent = {
-			set_local_variable = {
-				name = sul_war_civil_war_pretender_forts
-				value = num_forts
-			}
-			set_local_variable = {
-				name = sul_war_civil_war_pretender_locs
-				value = { add = num_locations subtract = num_forts }
-			}
+			set_local_variable = { name = sul_war_civil_war_pretender_forts value = num_forts }
+			set_local_variable = { name = sul_war_civil_war_pretender_locs value = { add = num_locations subtract = num_forts } }
 			set_local_variable = {
 				name = sul_war_civil_war_opponent_weight
-				value = { add = num_forts multiply = 4 add = num_locations }
+				value = {
+					add = num_forts
+					multiply = 4
+					add = num_locations
+				}
 			}
 		}
 
@@ -182,31 +143,13 @@ sul_war_update_territory = {
 		if = {
 			limit = { is_rebel_country = yes }
 
-			set_local_variable = {
-				name = sul_war_civil_war_swap
-				value = local_var:sul_war_civil_war_crown_forts
-			}
-			set_local_variable = {
-				name = sul_war_civil_war_crown_forts
-				value = local_var:sul_war_civil_war_pretender_forts
-			}
-			set_local_variable = {
-				name = sul_war_civil_war_pretender_forts
-				value = local_var:sul_war_civil_war_swap
-			}
+			set_local_variable = { name = sul_war_civil_war_swap value = local_var:sul_war_civil_war_crown_forts }
+			set_local_variable = { name = sul_war_civil_war_crown_forts value = local_var:sul_war_civil_war_pretender_forts }
+			set_local_variable = { name = sul_war_civil_war_pretender_forts value = local_var:sul_war_civil_war_swap }
 
-			set_local_variable = {
-				name = sul_war_civil_war_swap
-				value = local_var:sul_war_civil_war_crown_locs
-			}
-			set_local_variable = {
-				name = sul_war_civil_war_crown_locs
-				value = local_var:sul_war_civil_war_pretender_locs
-			}
-			set_local_variable = {
-				name = sul_war_civil_war_pretender_locs
-				value = local_var:sul_war_civil_war_swap
-			}
+			set_local_variable = { name = sul_war_civil_war_swap value = local_var:sul_war_civil_war_crown_locs }
+			set_local_variable = { name = sul_war_civil_war_crown_locs value = local_var:sul_war_civil_war_pretender_locs }
+			set_local_variable = { name = sul_war_civil_war_pretender_locs value = local_var:sul_war_civil_war_swap }
 		}
 
 		if = {
@@ -214,37 +157,24 @@ sul_war_update_territory = {
 				local_var:sul_war_civil_war_opponent_weight > 0
 				local_var:sul_war_civil_war_my_weight < local_var:sul_war_civil_war_opponent_weight
 			}
-
 			set_local_variable = {
 				name = sul_war_civil_war_penalty
-
 				value = {
 					add = 1
-
-					subtract = {
-						add = local_var:sul_war_civil_war_my_weight
-						divide = local_var:sul_war_civil_war_opponent_weight
-					}
+					subtract = { add = local_var:sul_war_civil_war_my_weight divide = local_var:sul_war_civil_war_opponent_weight }
 				}
 			}
 		}
 	}
 
 	# Effective occupation: worse of raw occupation and civil war penalty
-	set_local_variable = {
-		name = sul_war_effective_occupation
-		value = local_var:sul_war_occupation_size
-	}
-	if = {
-		limit = {
-			local_var:sul_war_civil_war_penalty > local_var:sul_war_effective_occupation
-		}
+	set_local_variable = { name = sul_war_effective_occupation value = local_var:sul_war_occupation_size }
 
-		set_local_variable = {
-			name = sul_war_effective_occupation
-			value = local_var:sul_war_civil_war_penalty
-		}
+	if = {
+		limit = { local_var:sul_war_civil_war_penalty > local_var:sul_war_effective_occupation }
+		set_local_variable = { name = sul_war_effective_occupation value = local_var:sul_war_civil_war_penalty }
 	}
+
 	if = {
 		limit = { local_var:sul_war_effective_occupation > 1 }
 		set_local_variable = { name = sul_war_effective_occupation value = 1 }
@@ -252,9 +182,9 @@ sul_war_update_territory = {
 
 	# Apply occupation modifier once with the effective value
 	remove_country_modifier = sul_war_momentum_occupation
+
 	if = {
 		limit = { local_var:sul_war_effective_occupation > 0 }
-
 		add_country_modifier = {
 			modifier = sul_war_momentum_occupation
 			days = -1
@@ -263,22 +193,10 @@ sul_war_update_territory = {
 	}
 
 	# --- DISPLAY ---
-	set_variable = {
-		name = sul_war_display_occupied_forts
-		value = local_var:sul_war_occupied_forts
-	}
-	set_variable = {
-		name = sul_war_display_total_forts
-		value = local_var:sul_war_total_forts
-	}
-	set_variable = {
-		name = sul_war_display_occupied_unfortified_locations
-		value = local_var:sul_war_occupied_non_forts
-	}
-	set_variable = {
-		name = sul_war_display_total_unfortified_locations
-		value = local_var:sul_war_total_non_forts
-	}
+	set_variable = { name = sul_war_display_occupied_forts value = local_var:sul_war_occupied_forts }
+	set_variable = { name = sul_war_display_total_forts value = local_var:sul_war_total_forts }
+	set_variable = { name = sul_war_display_occupied_unfortified_locations value = local_var:sul_war_occupied_non_forts }
+	set_variable = { name = sul_war_display_total_unfortified_locations value = local_var:sul_war_total_non_forts }
 	set_variable = {
 		name = sul_war_display_occupation_fort_defense
 		value = { add = local_var:sul_war_effective_occupation multiply = 0.5 }
@@ -294,7 +212,6 @@ sul_war_update_territory = {
 
 		set_variable = {
 			name = sul_war_display_occupied_forts_fort_defense
-
 			value = {
 				add = local_var:sul_war_occupied_forts
 				multiply = 5
@@ -304,7 +221,6 @@ sul_war_update_territory = {
 		}
 		set_variable = {
 			name = sul_war_display_occupied_forts_war_exhaustion
-
 			value = {
 				add = local_var:sul_war_occupied_forts
 				multiply = 5
@@ -314,7 +230,6 @@ sul_war_update_territory = {
 		}
 		set_variable = {
 			name = sul_war_display_occupied_locations_fort_defense
-
 			value = {
 				add = local_var:sul_war_occupied_non_forts
 				divide = local_var:sul_war_total_location_weight
@@ -323,7 +238,6 @@ sul_war_update_territory = {
 		}
 		set_variable = {
 			name = sul_war_display_occupied_locations_war_exhaustion
-
 			value = {
 				add = local_var:sul_war_occupied_non_forts
 				divide = local_var:sul_war_total_location_weight
@@ -333,68 +247,39 @@ sul_war_update_territory = {
 	}
 
 	# Civil war display variables
-	set_variable = {
-		name = sul_war_display_civil_war_penalty
-		value = local_var:sul_war_civil_war_penalty
-	}
-	set_variable = {
-		name = sul_war_display_civil_war_crown_forts
-		value = local_var:sul_war_civil_war_crown_forts
-	}
-	set_variable = {
-		name = sul_war_display_civil_war_crown_locs
-		value = local_var:sul_war_civil_war_crown_locs
-	}
+	set_variable = { name = sul_war_display_civil_war_penalty value = local_var:sul_war_civil_war_penalty }
+	set_variable = { name = sul_war_display_civil_war_crown_forts value = local_var:sul_war_civil_war_crown_forts }
+	set_variable = { name = sul_war_display_civil_war_crown_locs value = local_var:sul_war_civil_war_crown_locs }
 
 	# Totals for fraction display (crown + pretender)
 	set_variable = {
 		name = sul_war_display_civil_war_total_forts
-
-		value = {
-			add = local_var:sul_war_civil_war_crown_forts
-			add = local_var:sul_war_civil_war_pretender_forts
-		}
+		value = { add = local_var:sul_war_civil_war_crown_forts add = local_var:sul_war_civil_war_pretender_forts }
 	}
 	set_variable = {
 		name = sul_war_display_civil_war_total_locs
-
-		value = {
-			add = local_var:sul_war_civil_war_crown_locs
-			add = local_var:sul_war_civil_war_pretender_locs
-		}
+		value = { add = local_var:sul_war_civil_war_crown_locs add = local_var:sul_war_civil_war_pretender_locs }
 	}
 	set_variable = {
 		name = sul_war_display_civil_war_pretender_forts
 		value = local_var:sul_war_civil_war_pretender_forts
 	}
-	set_variable = {
-		name = sul_war_display_civil_war_pretender_locs
-		value = local_var:sul_war_civil_war_pretender_locs
-	}
+	set_variable = { name = sul_war_display_civil_war_pretender_locs value = local_var:sul_war_civil_war_pretender_locs }
 
 	# Flag for GUI to know which side we are (1 = rebel/pretender, 0 = crown)
-	if = {
-		limit = { is_rebel_country = yes }
-		set_variable = { name = sul_war_display_civil_war_is_rebel value = 1 }
-	}
-	else = {
-		set_variable = { name = sul_war_display_civil_war_is_rebel value = 0 }
-	}
+	if = { limit = { is_rebel_country = yes } set_variable = { name = sul_war_display_civil_war_is_rebel value = 1 } }
+	else = { set_variable = { name = sul_war_display_civil_war_is_rebel value = 0 } }
 
 	# Per-category civil war effects: signed contribution of each category.
 	# Positive = this category hurts you (opponent holds more). Negative = helps you (you hold more).
 	# Uses opponent weight as denominator so contributions sum to the total penalty.
 	if = {
-		limit = {
-			local_var:sul_war_civil_war_penalty > 0
-			local_var:sul_war_civil_war_opponent_weight > 0
-		}
+		limit = { local_var:sul_war_civil_war_penalty > 0 local_var:sul_war_civil_war_opponent_weight > 0 }
 
 		# Fort gap: (opponent forts - my forts) * 5 / opponent weight * modifier
 		# Positive when opponent has more forts (hurts). Negative when I have more (helps).
 		set_variable = {
 			name = sul_war_display_civil_war_forts_fort_defense
-
 			value = {
 				add = local_var:sul_war_civil_war_pretender_forts
 				subtract = local_var:sul_war_civil_war_crown_forts
@@ -405,7 +290,6 @@ sul_war_update_territory = {
 		}
 		set_variable = {
 			name = sul_war_display_civil_war_forts_war_exhaustion
-
 			value = {
 				add = local_var:sul_war_civil_war_pretender_forts
 				subtract = local_var:sul_war_civil_war_crown_forts
@@ -418,7 +302,6 @@ sul_war_update_territory = {
 		# Location gap: (opponent locs - my locs) / opponent weight * modifier
 		set_variable = {
 			name = sul_war_display_civil_war_locs_fort_defense
-
 			value = {
 				add = local_var:sul_war_civil_war_pretender_locs
 				subtract = local_var:sul_war_civil_war_crown_locs
@@ -428,7 +311,6 @@ sul_war_update_territory = {
 		}
 		set_variable = {
 			name = sul_war_display_civil_war_locs_war_exhaustion
-
 			value = {
 				add = local_var:sul_war_civil_war_pretender_locs
 				subtract = local_var:sul_war_civil_war_crown_locs
@@ -441,18 +323,13 @@ sul_war_update_territory = {
 	# Capital resilience: local_defensive offsets part of the global penalty
 	set_local_variable = {
 		name = sul_war_combined_size
-
-		value = {
-			add = var:sul_war_momentum_army_size
-			add = local_var:sul_war_effective_occupation
-		}
+		value = { add = var:sul_war_momentum_army_size add = local_var:sul_war_effective_occupation }
 	}
 
 	capital ?= {
 		remove_location_modifier = sul_war_momentum_capital
 		if = {
 			limit = { local_var:sul_war_combined_size > 0 }
-
 			add_location_modifier = {
 				modifier = sul_war_momentum_capital
 				days = -1
@@ -469,18 +346,9 @@ sul_war_update_territory = {
 
 	# Capital fallen: flat penalty if capital is under enemy occupation
 	remove_country_modifier = sul_war_momentum_capital_fallen
-	if = {
-		limit = {
-			capital ?= {
-				NOT = {
-					controller ?= prev
-				}
-			}
-		}
 
-		add_country_modifier = {
-			modifier = sul_war_momentum_capital_fallen
-			days = -1
-		}
+	if = {
+		limit = { capital ?= { NOT = { controller ?= prev } } }
+		add_country_modifier = { modifier = sul_war_momentum_capital_fallen days = -1 }
 	}
 }

@@ -80,21 +80,16 @@ TRY_INJECT:perpetual_diet_law = {
 					text = perpetual_diet
 					hre_is_perpetual_diet_location = yes
 
-					owner = {
-						is_member_of_international_organization = international_organization:hre
-					}
+					owner = { is_member_of_international_organization = international_organization:hre }
 
 					controller = {
 						OR = {
 							is_member_of_international_organization = international_organization:hre
-							NOT = {
-								is_at_war_with = international_organization:hre.leader_country
-							}
+							NOT = { is_at_war_with = international_organization:hre.leader_country }
 						}
 					}
 				}
 			}
-
 			local_monthly_prosperity = 0.01
 		}
 
@@ -102,10 +97,7 @@ TRY_INJECT:perpetual_diet_law = {
 			international_organization_lock_parliament_issue_effect = {
 				type = hre_establish_perpetual_diet
 			}
-
-			every_international_organization_owned_location = {
-				remove_variable = diet_location
-			}
+			every_international_organization_owned_location = { remove_variable = diet_location }
 		}
 
 		# How much the Emperor wants to propose a policy
@@ -115,10 +107,7 @@ TRY_INJECT:perpetual_diet_law = {
 		}
 
 		# How much the princes want to vote for / against the policy
-		wants_this_policy_bias = {
-			add = { desc = "POLICY_BIAS_PRINCE_WANTS" value = 25 }
-			add = hre_default_policy_opinion
-		}
+		wants_this_policy_bias = { add = { desc = "POLICY_BIAS_PRINCE_WANTS" value = 25 } add = hre_default_policy_opinion }
 	}
 }
 
@@ -129,28 +118,16 @@ TRY_INJECT:tax_base_system = {
 		years = 2
 
 		on_pay_price = {
-			change_celestial_authority = {
-				value = celestial_authority_very_strong_penalty
-			}
-
+			change_celestial_authority = { value = celestial_authority_very_strong_penalty }
 			international_organization:middle_kingdom = {
 				leader_country ?= {
 					add_government_power = government_power_ultimate_penalty
-
 					add_gold = {
 						value = this.monthly_income_trade_and_tax
 
 						multiply = {
 							value = -6
-
-							add = {
-								value = -1
-
-								multiply = {
-									value = international_organization:middle_kingdom.total_members
-									divide = 10
-								}
-							}
+							add = { value = -1 multiply = { value = international_organization:middle_kingdom.total_members divide = 10 } }
 						}
 
 						min = -100000
@@ -168,10 +145,7 @@ TRY_INJECT:tax_base_system = {
 			# Celestial Governor benefits
 			potential_trigger = {
 				international_organization:middle_kingdom = {
-					country_has_special_status = {
-						type = special_status:celestial_governor
-						country = root
-					}
+					country_has_special_status = { type = special_status:celestial_governor country = root }
 				}
 			}
 
@@ -185,16 +159,9 @@ TRY_INJECT:tax_base_system = {
 			# Tributary benefits
 			potential_trigger = {
 				international_organization:middle_kingdom = {
-					NOT = {
-						country_has_special_status = {
-							type = special_status:celestial_governor
-							country = root
-						}
-					}
+					NOT = { country_has_special_status = { type = special_status:celestial_governor country = root } }
 				}
-				NOT = {
-					is_leader_of_international_organization = international_organization:middle_kingdom
-				}
+				NOT = { is_leader_of_international_organization = international_organization:middle_kingdom }
 			}
 
 			# vanilla global_monthly_food_modifier = 0.1 removed
@@ -208,14 +175,8 @@ TRY_INJECT:tax_base_system = {
 			if = {
 				limit = { scope:recipient = { international_organization_has_leader = yes } }
 
-				add = {
-					desc = "POLICY_BIAS_OPINION_OF_EMPEROR"
-					value = "opinion(scope:recipient.leader_country)"
-				}
-				add = {
-					desc = "IO_LEADER_DIP_REP"
-					value = scope:recipient.leader_country.modifier:diplomatic_reputation
-				}
+				add = { desc = "POLICY_BIAS_OPINION_OF_EMPEROR" value = "opinion(scope:recipient.leader_country)" }
+				add = { desc = "IO_LEADER_DIP_REP" value = scope:recipient.leader_country.modifier:diplomatic_reputation }
 			}
 			else = { add = { desc = "VOTE_BASE_VALUE" value = 20 } }
 		}
@@ -284,10 +245,7 @@ sul_naval_provisioning = {
 	law_category = military
 
 	potential = {
-		OR = {
-			num_of_ports > 0
-			has_law = sul_naval_provisioning
-		}
+		OR = { num_of_ports > 0 has_law = sul_naval_provisioning }
 	}
 
 	bronze_provisioning = {
@@ -301,7 +259,6 @@ sul_naval_provisioning = {
 				limit = {
 					root = { capital.market = { "goods_supply_in_market(goods:tin)" > 0 } }
 				}
-
 				add = { desc = "has tin supply" value = 50 }
 			}
 		}
@@ -320,14 +277,8 @@ sul_naval_provisioning = {
 		ai_will_do = {
 			if = {
 				limit = {
-					root = {
-						capital.market = {
-							"goods_supply_in_market(goods:copper)" > 0
-							"goods_supply_in_market(goods:tin)" < 0
-						}
-					}
+					root = { capital.market = { "goods_supply_in_market(goods:copper)" > 0 "goods_supply_in_market(goods:tin)" < 0 } }
 				}
-
 				add = { desc = "has copper but lacks tin" value = 100 }
 			}
 		}
@@ -346,14 +297,8 @@ sul_naval_provisioning = {
 		ai_will_do = {
 			if = {
 				limit = {
-					root = {
-						capital.market = {
-							"goods_supply_in_market(goods:iron)" > 0
-							"goods_supply_in_market(goods:tin)" < 0
-						}
-					}
+					root = { capital.market = { "goods_supply_in_market(goods:iron)" > 0 "goods_supply_in_market(goods:tin)" < 0 } }
 				}
-
 				add = { desc = "has iron but lacks tin" value = 100 }
 			}
 		}

@@ -45,6 +45,7 @@ flavor_ere.1 = {
 		name = flavor_ere.1.a
 		historical_option = yes
 		ai_chance = { factor = 100 }
+
 		if = {
 			limit = { is_subject_of = c:JAL }
 
@@ -67,10 +68,7 @@ flavor_ere.1 = {
 			}
 		}
 		else = { add_liberty_desire = 25 }
-		drop_antagonism_bomb = {
-			target = c:JAL.capital
-			modifier = antagonism_declaring_independence
-		}
+		drop_antagonism_bomb = { target = c:JAL.capital modifier = antagonism_declaring_independence }
 	}
 
 	# Not yet.
@@ -100,7 +98,6 @@ flavor_ere.2 = {
 			foreground = estate_type:nobles_estate
 			background = estate_type:nobles_estate
 		}
-
 		ruler_or_regent ?= { save_scope_as = target_character2 }
 	}
 
@@ -163,10 +160,7 @@ flavor_ere.3 = {
 
 		ruler ?= { save_scope_as = target_character }
 
-		c:JAL = {
-			save_scope_as = target_country
-			ruler_or_regent ?= { save_scope_as = target_character2 }
-		}
+		c:JAL = { save_scope_as = target_country ruler_or_regent ?= { save_scope_as = target_character2 } }
 	}
 
 	option = {
@@ -194,21 +188,13 @@ flavor_ere.4 = {
 
 	illustration_tags = { 10 = exterior 10 = regular }
 
-	trigger = {
-		OR = {
-			is_subject = yes
-			at_war = no
-		}
-
-		is_during_bankruptcy = no
-	}
+	trigger = { OR = { is_subject = yes at_war = no } is_during_bankruptcy = no }
 
 	immediate = {
 		event_illustration_poptype_effect = {
 			foreground = pop_type:soldiers
 			background = pop_type:soldiers
 		}
-
 		create_character = {
 			first_name = Burhan
 			last_name = al-Din
@@ -288,25 +274,21 @@ flavor_ere.5 = {
 			save_scope_as = target_rebel
 		}
 
-		character:ere_burhan_al_din = {
-			save_scope_as = target_character2
-			change_character_allegiance = scope:target_rebel
-		}
+		character:ere_burhan_al_din = { save_scope_as = target_character2 change_character_allegiance = scope:target_rebel }
 
 		set_variable = {
 			name = current_ruler_power_variable
-
 			value = {
 				add = { value = "estate_power(estate_type:crown_estate)" multiply = 10 }
 				add = { value = government_power divide = 2 }
 			}
 		}
 		set_variable = { name = num_rebelling_locations value = 0 }
+
 		if = {
 			limit = { var:current_ruler_power_variable < 100 }
 			while = {
 				limit = { var:current_ruler_power_variable < 100 }
-
 				ordered_owned_location = {
 					limit = { is_capital = no }
 					order_by = { value = population multiply = -1 }
@@ -325,37 +307,24 @@ flavor_ere.5 = {
 				}
 			}
 		}
-		else = {
-			remove_variable = current_ruler_power_variable
-			remove_variable = num_rebelling_locations
-		}
+		else = { remove_variable = current_ruler_power_variable remove_variable = num_rebelling_locations }
 	}
 
 	option = {
 		name = flavor_ere.5.a
 		ai_chance = { factor = 100 }
+
 		if = {
-			limit = {
-				OR = {
-					exists = var:current_ruler_power_variable
-					exists = var:num_rebelling_locations
-				}
-			}
+			limit = { OR = { exists = var:current_ruler_power_variable exists = var:num_rebelling_locations } }
 
 			custom_tooltip = impacted_locations_var_tt
 			add_stability = stability_severe_penalty
 		}
 		else = { add_stability = stability_ultimate_penalty }
-		if = {
-			limit = { num_subjects > 0 }
-			every_subject = { add_liberty_desire = 50 }
-		}
+		if = { limit = { num_subjects > 0 } every_subject = { add_liberty_desire = 50 } }
 	}
 
-	after = {
-		remove_variable = current_ruler_power_variable
-		remove_variable = num_rebelling_locations
-	}
+	after = { remove_variable = current_ruler_power_variable remove_variable = num_rebelling_locations }
 }
 
 # Köşkmedrese
@@ -380,12 +349,7 @@ flavor_ere.6 = {
 		character:ere_suli = { is_alive = no }
 		owns = location:kayseri
 
-		location:kayseri = {
-			OR = {
-				modifier:sul_is_town_rank_tier = yes
-				modifier:sul_is_city_rank_tier = yes
-			}
-		}
+		location:kayseri = { OR = { modifier:sul_is_town_rank_tier = yes modifier:sul_is_city_rank_tier = yes } }
 	}
 
 	immediate = {
@@ -418,13 +382,8 @@ flavor_ere.6 = {
 
 		if = {
 			limit = {
-				location:kayseri = {
-					NOT = {
-						has_building = building_type:madrasa
-					}
-				}
+				location:kayseri = { NOT = { has_building = building_type:madrasa } }
 			}
-
 			location:kayseri = {
 				construct_building = {
 					building_type = building_type:madrasa
@@ -437,7 +396,6 @@ flavor_ere.6 = {
 			change_gold_effect = {
 				scale = -4
 			}
-
 			location:kayseri = {
 				create_art = {
 					artist = scope:ere_kaluyan_scope
@@ -447,10 +405,8 @@ flavor_ere.6 = {
 				}
 			}
 		}
-		change_societal_value = {
-			type = traditionalist_vs_innovative
-			value = societal_value_move_to_right
-		}
+
+		change_societal_value = { type = traditionalist_vs_innovative value = societal_value_move_to_right }
 
 		add_prestige = prestige_mild_bonus
 		scope:ere_kaluyan_scope = { move_country = root }

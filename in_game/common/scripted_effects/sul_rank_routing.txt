@@ -11,7 +11,6 @@ sul_set_rank_rural = {
 				location_rank = location_rank:mining_city
 			}
 		}
-
 		change_location_rank = location_rank:mining_rural
 	}
 	else_if = {
@@ -22,7 +21,6 @@ sul_set_rank_rural = {
 				location_rank = location_rank:farming_city
 			}
 		}
-
 		change_location_rank = location_rank:farming_rural
 	}
 	else_if = {
@@ -33,7 +31,6 @@ sul_set_rank_rural = {
 				location_rank = location_rank:gathering_city
 			}
 		}
-
 		change_location_rank = location_rank:gathering_rural
 	}
 	else_if = {
@@ -44,7 +41,6 @@ sul_set_rank_rural = {
 				location_rank = location_rank:woodland_city
 			}
 		}
-
 		change_location_rank = location_rank:woodland_rural
 	}
 	else_if = {
@@ -55,7 +51,6 @@ sul_set_rank_rural = {
 				location_rank = location_rank:commercial_city
 			}
 		}
-
 		change_location_rank = location_rank:commercial_rural
 	}
 }
@@ -69,7 +64,6 @@ sul_set_rank_town = {
 				location_rank = location_rank:mining_city
 			}
 		}
-
 		change_location_rank = location_rank:mining_town
 	}
 	else_if = {
@@ -80,7 +74,6 @@ sul_set_rank_town = {
 				location_rank = location_rank:farming_city
 			}
 		}
-
 		change_location_rank = location_rank:farming_town
 	}
 	else_if = {
@@ -91,7 +84,6 @@ sul_set_rank_town = {
 				location_rank = location_rank:gathering_city
 			}
 		}
-
 		change_location_rank = location_rank:gathering_town
 	}
 	else_if = {
@@ -102,7 +94,6 @@ sul_set_rank_town = {
 				location_rank = location_rank:woodland_city
 			}
 		}
-
 		change_location_rank = location_rank:woodland_town
 	}
 	else_if = {
@@ -113,7 +104,6 @@ sul_set_rank_town = {
 				location_rank = location_rank:commercial_city
 			}
 		}
-
 		change_location_rank = location_rank:commercial_town
 	}
 }
@@ -127,7 +117,6 @@ sul_set_rank_city = {
 				location_rank = location_rank:mining_city
 			}
 		}
-
 		change_location_rank = location_rank:mining_city
 	}
 	else_if = {
@@ -138,7 +127,6 @@ sul_set_rank_city = {
 				location_rank = location_rank:farming_city
 			}
 		}
-
 		change_location_rank = location_rank:farming_city
 	}
 	else_if = {
@@ -149,7 +137,6 @@ sul_set_rank_city = {
 				location_rank = location_rank:gathering_city
 			}
 		}
-
 		change_location_rank = location_rank:gathering_city
 	}
 	else_if = {
@@ -160,7 +147,6 @@ sul_set_rank_city = {
 				location_rank = location_rank:woodland_city
 			}
 		}
-
 		change_location_rank = location_rank:woodland_city
 	}
 	else_if = {
@@ -171,7 +157,6 @@ sul_set_rank_city = {
 				location_rank = location_rank:commercial_city
 			}
 		}
-
 		change_location_rank = location_rank:commercial_city
 	}
 }
@@ -180,22 +165,10 @@ sul_set_rank_city = {
 # Called by the engine when development crosses population thresholds.
 
 REPLACE:upgrade_location_rank = {
-	if = {
-		limit = { location_rank = location_rank:mining_rural }
-		change_location_rank = location_rank:mining_town
-	}
-	else_if = {
-		limit = { location_rank = location_rank:mining_town }
-		change_location_rank = location_rank:mining_city
-	}
-	else_if = {
-		limit = { location_rank = location_rank:farming_rural }
-		change_location_rank = location_rank:farming_town
-	}
-	else_if = {
-		limit = { location_rank = location_rank:farming_town }
-		change_location_rank = location_rank:farming_city
-	}
+	if = { limit = { location_rank = location_rank:mining_rural } change_location_rank = location_rank:mining_town }
+	else_if = { limit = { location_rank = location_rank:mining_town } change_location_rank = location_rank:mining_city }
+	else_if = { limit = { location_rank = location_rank:farming_rural } change_location_rank = location_rank:farming_town }
+	else_if = { limit = { location_rank = location_rank:farming_town } change_location_rank = location_rank:farming_city }
 	else_if = {
 		limit = { location_rank = location_rank:gathering_rural }
 		change_location_rank = location_rank:gathering_town
@@ -228,85 +201,45 @@ REPLACE:upgrade_location_rank = {
 # or falls back to vanilla location_rank for init-time assignment.
 
 sul_rank_set_mining = {
-	if = {
-		limit = { modifier:sul_is_city_rank_tier = yes }
-		change_location_rank = location_rank:mining_city
-	}
+	if = { limit = { modifier:sul_is_city_rank_tier = yes } change_location_rank = location_rank:mining_city }
 	else_if = {
-		limit = {
-			NOT = {
-				modifier:sul_is_rural_settlement_rank_tier = yes
-			}
-		}
-
+		limit = { NOT = { modifier:sul_is_rural_settlement_rank_tier = yes } }
 		change_location_rank = location_rank:mining_town
 	}
 	else = { change_location_rank = location_rank:mining_rural }
 }
 
 sul_rank_set_farming = {
-	if = {
-		limit = { modifier:sul_is_city_rank_tier = yes }
-		change_location_rank = location_rank:farming_city
-	}
+	if = { limit = { modifier:sul_is_city_rank_tier = yes } change_location_rank = location_rank:farming_city }
 	else_if = {
-		limit = {
-			NOT = {
-				modifier:sul_is_rural_settlement_rank_tier = yes
-			}
-		}
-
+		limit = { NOT = { modifier:sul_is_rural_settlement_rank_tier = yes } }
 		change_location_rank = location_rank:farming_town
 	}
 	else = { change_location_rank = location_rank:farming_rural }
 }
 
 sul_rank_set_gathering = {
-	if = {
-		limit = { modifier:sul_is_city_rank_tier = yes }
-		change_location_rank = location_rank:gathering_city
-	}
+	if = { limit = { modifier:sul_is_city_rank_tier = yes } change_location_rank = location_rank:gathering_city }
 	else_if = {
-		limit = {
-			NOT = {
-				modifier:sul_is_rural_settlement_rank_tier = yes
-			}
-		}
-
+		limit = { NOT = { modifier:sul_is_rural_settlement_rank_tier = yes } }
 		change_location_rank = location_rank:gathering_town
 	}
 	else = { change_location_rank = location_rank:gathering_rural }
 }
 
 sul_rank_set_woodland = {
-	if = {
-		limit = { modifier:sul_is_city_rank_tier = yes }
-		change_location_rank = location_rank:woodland_city
-	}
+	if = { limit = { modifier:sul_is_city_rank_tier = yes } change_location_rank = location_rank:woodland_city }
 	else_if = {
-		limit = {
-			NOT = {
-				modifier:sul_is_rural_settlement_rank_tier = yes
-			}
-		}
-
+		limit = { NOT = { modifier:sul_is_rural_settlement_rank_tier = yes } }
 		change_location_rank = location_rank:woodland_town
 	}
 	else = { change_location_rank = location_rank:woodland_rural }
 }
 
 sul_rank_set_commercial = {
-	if = {
-		limit = { modifier:sul_is_city_rank_tier = yes }
-		change_location_rank = location_rank:commercial_city
-	}
+	if = { limit = { modifier:sul_is_city_rank_tier = yes } change_location_rank = location_rank:commercial_city }
 	else_if = {
-		limit = {
-			NOT = {
-				modifier:sul_is_rural_settlement_rank_tier = yes
-			}
-		}
-
+		limit = { NOT = { modifier:sul_is_rural_settlement_rank_tier = yes } }
 		change_location_rank = location_rank:commercial_town
 	}
 	else = { change_location_rank = location_rank:commercial_rural }

@@ -3,30 +3,18 @@
 
 sul_war_update_exhaustion = {
 	set_local_variable = { name = sul_war_exhaustion_size value = 0 }
+
 	if = {
 		limit = { var:sul_war_potential_peak > 0 }
-
 		set_local_variable = {
 			name = sul_war_exhaustion_size
-
-			value = {
-				add = 1
-
-				subtract = {
-					add = local_var:sul_war_effective_strength
-					divide = var:sul_war_potential_peak
-				}
-			}
+			value = { add = 1 subtract = { add = local_var:sul_war_effective_strength divide = var:sul_war_potential_peak } }
 		}
 	}
 
 	# Trapped participants get half exhaustion
 	if = {
-		limit = {
-			local_var:sul_war_exhaustion_size > 0
-			sul_war_is_trapped_in_war = yes
-		}
-
+		limit = { local_var:sul_war_exhaustion_size > 0 sul_war_is_trapped_in_war = yes }
 		set_local_variable = {
 			name = sul_war_exhaustion_size
 			value = { add = local_var:sul_war_exhaustion_size multiply = 0.5 }
@@ -37,15 +25,16 @@ sul_war_update_exhaustion = {
 		limit = { local_var:sul_war_exhaustion_size > 1 }
 		set_local_variable = { name = sul_war_exhaustion_size value = 1 }
 	}
+
 	if = {
 		limit = { local_var:sul_war_exhaustion_size < 0 }
 		set_local_variable = { name = sul_war_exhaustion_size value = 0 }
 	}
 
 	remove_country_modifier = sul_war_momentum_army_exhaustion
+
 	if = {
 		limit = { local_var:sul_war_exhaustion_size > 0 }
-
 		add_country_modifier = {
 			modifier = sul_war_momentum_army_exhaustion
 			days = -1

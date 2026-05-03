@@ -25,33 +25,23 @@ parliaments.1 = {
 
 	trigger = {
 		any_owned_non_rural_location = {
-			NOT = {
-				has_building = building_type:urban_parliament_seat
-			}
+			NOT = { has_building = building_type:urban_parliament_seat }
 
 			is_core_of = owner
 			integration_level = core
-			NOT = {
-				has_location_modifier = parliament_location
-			}
+			NOT = { has_location_modifier = parliament_location }
 		}
-		NOT = {
-			has_variable = asked_for_parliament_seat_already
-		}
+		NOT = { has_variable = asked_for_parliament_seat_already }
 	}
 
 	immediate = {
 		random_owned_non_rural_location = {
 			limit = {
-				NOT = {
-					has_building = building_type:urban_parliament_seat
-				}
+				NOT = { has_building = building_type:urban_parliament_seat }
 
 				is_core_of = owner
 				integration_level = core
-				NOT = {
-					has_location_modifier = parliament_location
-				}
+				NOT = { has_location_modifier = parliament_location }
 			}
 
 			save_scope_as = target_city
@@ -60,7 +50,6 @@ parliaments.1 = {
 				estate_type = estate_type:burghers_estate
 			}
 		}
-
 		set_variable = { name = asked_for_parliament_seat_already years = 1 }
 	}
 
@@ -68,26 +57,18 @@ parliaments.1 = {
 		name = parliaments.1.a
 
 		scope:target_city = {
-			change_building_level_in_location = {
-				building = building_type:urban_parliament_seat
-				value = 1
-			}
+			change_building_level_in_location = { building = building_type:urban_parliament_seat value = 1 }
 		}
 
-		add_estate_satisfaction = {
-			type = estate_type:burghers_estate
-			value = estate_satisfaction_mild_bonus
-		}
+		add_estate_satisfaction = { type = estate_type:burghers_estate value = estate_satisfaction_mild_bonus }
 
 		change_parliament_issue_support = parliament_issue_support_extreme_bonus
 	}
 	option = {
 		name = parliaments.1.b
 
-		add_estate_satisfaction = {
-			type = estate_type:burghers_estate
-			value = estate_satisfaction_extreme_penalty
-		}
+		add_estate_satisfaction = { type = estate_type:burghers_estate value = estate_satisfaction_extreme_penalty }
+
 		if = {
 			limit = { is_revolutionary_issue = yes }
 			change_parliament_issue_support = parliament_issue_support_mild_penalty
@@ -108,10 +89,7 @@ parliaments.2 = {
 		num_of_non_rural > total_effective_building_levels:urban_parliament_seat
 
 		any_owned_non_rural_location = {
-			NOT = {
-				has_building = building_type:urban_parliament_seat
-				has_building_with_at_least_one_level = rotten_borough
-			}
+			NOT = { has_building = building_type:urban_parliament_seat has_building_with_at_least_one_level = rotten_borough }
 		}
 	}
 
@@ -120,13 +98,9 @@ parliaments.2 = {
 			limit = { has_building_with_at_least_one_level = rotten_borough }
 			save_scope_as = target_location
 		}
-
 		random_owned_non_rural_location = {
 			limit = {
-				NOT = {
-					has_building = building_type:urban_parliament_seat
-					has_building_with_at_least_one_level = rotten_borough
-				}
+				NOT = { has_building = building_type:urban_parliament_seat has_building_with_at_least_one_level = rotten_borough }
 			}
 
 			save_scope_as = envious
@@ -140,14 +114,8 @@ parliaments.2 = {
 	option = {
 		name = parliaments.2.a
 
-		add_estate_satisfaction = {
-			type = estate_type:burghers_estate
-			value = estate_satisfaction_mild_penalty
-		}
-		add_estate_satisfaction = {
-			type = estate_type:nobles_estate
-			value = estate_satisfaction_mild_bonus
-		}
+		add_estate_satisfaction = { type = estate_type:burghers_estate value = estate_satisfaction_mild_penalty }
+		add_estate_satisfaction = { type = estate_type:nobles_estate value = estate_satisfaction_mild_bonus }
 
 		change_parliament_issue_support = parliament_issue_support_mild_penalty
 	}
@@ -155,28 +123,12 @@ parliaments.2 = {
 	option = {
 		name = parliaments.2.b
 
-		add_estate_satisfaction = {
-			type = estate_type:burghers_estate
-			value = estate_satisfaction_mild_bonus
-		}
-		add_estate_satisfaction = {
-			type = estate_type:nobles_estate
-			value = estate_satisfaction_mild_penalty
-		}
+		add_estate_satisfaction = { type = estate_type:burghers_estate value = estate_satisfaction_mild_bonus }
+		add_estate_satisfaction = { type = estate_type:nobles_estate value = estate_satisfaction_mild_penalty }
 
-		scope:target_location = {
-			change_building_level_in_location = {
-				building = building_type:rotten_borough
-				value = -1
-			}
-		}
+		scope:target_location = { change_building_level_in_location = { building = building_type:rotten_borough value = -1 } }
 
-		scope:envious = {
-			change_building_level_in_location = {
-				building = building_type:urban_parliament_seat
-				value = 1
-			}
-		}
+		scope:envious = { change_building_level_in_location = { building = building_type:urban_parliament_seat value = 1 } }
 
 		if = {
 			limit = { is_revolutionary_issue = yes }
@@ -195,9 +147,7 @@ parliaments.3 = {
 
 	trigger = {
 		parliament_issue ?= {
-			NOT = {
-				estate_type ?= { this = estate_type:burghers_estate }
-			}
+			NOT = { estate_type ?= { this = estate_type:burghers_estate } }
 		}
 
 		num_of_non_rural > 0
@@ -207,11 +157,7 @@ parliaments.3 = {
 
 	immediate = {
 		random_port_in_country = {
-			limit = {
-				NOT = {
-					modifier:sul_is_rural_settlement_rank_tier = yes
-				}
-			}
+			limit = { NOT = { modifier:sul_is_rural_settlement_rank_tier = yes } }
 
 			save_scope_as = target_location
 
@@ -221,11 +167,7 @@ parliaments.3 = {
 		}
 	}
 
-	option = {
-		name = parliaments.3.a
-
-		change_parliament_issue_support = parliament_issue_support_weak_penalty
-	}
+	option = { name = parliaments.3.a change_parliament_issue_support = parliament_issue_support_weak_penalty }
 
 	option = {
 		name = parliaments.3.b
@@ -259,11 +201,7 @@ parliaments.4 = {
 		}
 	}
 
-	option = {
-		name = parliaments.4.a
-
-		change_parliament_issue_support = parliament_issue_support_weak_penalty
-	}
+	option = { name = parliaments.4.a change_parliament_issue_support = parliament_issue_support_weak_penalty }
 
 	option = {
 		name = parliaments.4.b
@@ -289,10 +227,7 @@ parliaments.5 = {
 		any_owned_location = { has_building_with_at_least_one_level = university }
 
 		parliament_issue ?= {
-			OR = {
-				this = parliament_issue:compulsory_education_nobles
-				this = parliament_issue:sponsor_a_university
-			}
+			OR = { this = parliament_issue:compulsory_education_nobles this = parliament_issue:sponsor_a_university }
 		}
 	}
 
@@ -311,30 +246,16 @@ parliaments.5 = {
 		name = parliaments.5.a
 
 		if = {
-			limit = {
-				OR = {
-					current_age = age_5_absolutism
-					current_age = age_6_revolutions
-				}
-			}
+			limit = { OR = { current_age = age_5_absolutism current_age = age_6_revolutions } }
 
-			change_societal_value = {
-				type = absolutism_vs_liberalism
-				value = societal_value_minor_move_to_right
-			}
+			change_societal_value = { type = absolutism_vs_liberalism value = societal_value_minor_move_to_right }
 
 			change_parliament_issue_support = parliament_issue_support_weak_bonus
 		}
-		else = {
-			change_parliament_issue_support = parliament_issue_support_weak_bonus
-		}
+		else = { change_parliament_issue_support = parliament_issue_support_weak_bonus }
 	}
 
-	option = {
-		name = parliaments.5.b
-
-		add_research_progress = research_progress_mild_bonus
-	}
+	option = { name = parliaments.5.b add_research_progress = research_progress_mild_bonus }
 }
 
 parliaments.6 = {
@@ -353,11 +274,7 @@ parliaments.6 = {
 
 	immediate = {
 		random_port_in_country = {
-			limit = {
-				NOT = {
-					modifier:sul_is_rural_settlement_rank_tier = yes
-				}
-			}
+			limit = { NOT = { modifier:sul_is_rural_settlement_rank_tier = yes } }
 
 			save_scope_as = target_location
 
@@ -367,11 +284,7 @@ parliaments.6 = {
 		}
 	}
 
-	option = {
-		name = parliaments.6.a
-
-		change_parliament_issue_support = parliament_issue_support_weak_bonus
-	}
+	option = { name = parliaments.6.a change_parliament_issue_support = parliament_issue_support_weak_bonus }
 }
 
 parliaments.7 = {
@@ -382,10 +295,7 @@ parliaments.7 = {
 	illustration_tags = { 10 = armed 10 = exterior }
 
 	trigger = {
-		OR = {
-			country_type = location
-			country_type = building
-		}
+		OR = { country_type = location country_type = building }
 		parliament_issue ?= { estate_type ?= { this = estate_type:nobles_estate } }
 		monthly_manpower > 0
 	}
@@ -395,44 +305,26 @@ parliaments.7 = {
 			foreground = pop_type:soldiers
 			background = pop_type:soldiers
 		}
+
 		if = {
 			limit = { country_type = location }
-
-			random_owned_location = {
-				limit = { modifier:local_manpower > 0 }
-				save_scope_as = target_location
-			}
+			random_owned_location = { limit = { modifier:local_manpower > 0 } save_scope_as = target_location }
 		}
+
 		if = {
 			limit = { country_type = building }
-
-			random_owned_foreign_building_location = {
-				limit = { modifier:local_manpower > 0 }
-				save_scope_as = target_location
-			}
+			random_owned_foreign_building_location = { limit = { modifier:local_manpower > 0 } save_scope_as = target_location }
 		}
-		if = {
-			limit = {
-				NOT = {
-					exists = scope:target_location
-				}
-			}
 
+		if = {
+			limit = { NOT = { exists = scope:target_location } }
 			random_owned_foreign_building_location = { save_scope_as = target_location }
 		}
 	}
 
-	option = {
-		name = parliaments.7.a
+	option = { name = parliaments.7.a change_parliament_issue_support = parliament_issue_support_weak_bonus }
 
-		change_parliament_issue_support = parliament_issue_support_weak_bonus
-	}
-
-	option = {
-		name = parliaments.7.b
-
-		add_army_tradition = army_tradition_weak_bonus
-	}
+	option = { name = parliaments.7.b add_army_tradition = army_tradition_weak_bonus }
 }
 
 parliaments.8 = {
@@ -458,17 +350,9 @@ parliaments.8 = {
 		}
 	}
 
-	option = {
-		name = parliaments.8.a
+	option = { name = parliaments.8.a change_parliament_issue_support = parliament_issue_support_weak_bonus }
 
-		change_parliament_issue_support = parliament_issue_support_weak_bonus
-	}
-
-	option = {
-		name = parliaments.8.b
-
-		scope:target_location = { change_development = development_weak_bonus }
-	}
+	option = { name = parliaments.8.b scope:target_location = { change_development = development_weak_bonus } }
 }
 
 parliaments.9 = {
@@ -486,7 +370,6 @@ parliaments.9 = {
 	immediate = {
 		capital = {
 			save_scope_as = target_location
-
 			event_illustration_estate_in_location_effect = {
 				estate_type = estate_type:burghers_estate
 			}
@@ -497,24 +380,15 @@ parliaments.9 = {
 		name = parliaments.9.a
 
 		add_government_power = government_power_weak_bonus
+
 		if = {
-			limit = {
-				OR = {
-					current_age = age_5_absolutism
-					current_age = age_6_revolutions
-				}
-			}
+			limit = { OR = { current_age = age_5_absolutism current_age = age_6_revolutions } }
 
-			change_societal_value = {
-				type = absolutism_vs_liberalism
-				value = societal_value_minor_move_to_left
-			}
+			change_societal_value = { type = absolutism_vs_liberalism value = societal_value_minor_move_to_left }
 
 			change_parliament_issue_support = parliament_issue_support_weak_bonus
 		}
-		else = {
-			change_parliament_issue_support = parliament_issue_support_weak_bonus
-		}
+		else = { change_parliament_issue_support = parliament_issue_support_weak_bonus }
 	}
 }
 
@@ -524,28 +398,18 @@ parliaments.10 = {
 
 	desc = {
 		first_valid = {
-			triggered_desc = {
-				trigger = { is_revolutionary_issue = yes }
-				desc = parliaments.10.desc_b
-			}
+			triggered_desc = { trigger = { is_revolutionary_issue = yes } desc = parliaments.10.desc_b }
 			triggered_desc = { desc = parliaments.10.desc }
 		}
 	}
 
 	illustration_tags = { 10 = happy 10 = exterior }
 
-	trigger = {
-		OR = {
-			country_type = location
-			country_type = building
-		}
-	}
+	trigger = { OR = { country_type = location country_type = building } }
 
 	immediate = {
-		if = {
-			limit = { country_type = location }
-			random_owned_location = { save_scope_as = target_location }
-		}
+		if = { limit = { country_type = location } random_owned_location = { save_scope_as = target_location } }
+
 		if = {
 			limit = { country_type = building }
 			random_owned_foreign_building_location = { save_scope_as = target_location }
@@ -562,13 +426,12 @@ parliaments.10 = {
 		name = parliaments.10.a
 
 		add_prestige = prestige_weak_bonus
+
 		if = {
 			limit = { is_revolutionary_issue = yes }
 			change_parliament_issue_support = parliament_issue_support_weak_penalty
 		}
-		else = {
-			change_parliament_issue_support = parliament_issue_support_weak_bonus
-		}
+		else = { change_parliament_issue_support = parliament_issue_support_weak_bonus }
 	}
 }
 
@@ -579,20 +442,13 @@ parliaments.11 = {
 
 	illustration_tags = { 10 = angry 10 = exterior }
 
-	trigger = {
-		OR = {
-			country_type = location
-			country_type = building
-		}
-	}
+	trigger = { OR = { country_type = location country_type = building } }
 
 	immediate = {
 		if = {
 			limit = { country_type = location }
-
 			random_owned_location = {
 				save_scope_as = target_location
-
 				event_illustration_estate_in_location_effect = {
 					estate_type = estate_type:burghers_estate
 				}
@@ -600,10 +456,8 @@ parliaments.11 = {
 		}
 		if = {
 			limit = { country_type = building }
-
 			random_owned_foreign_building_location = {
 				save_scope_as = target_location
-
 				event_illustration_estate_in_location_effect = {
 					estate_type = estate_type:burghers_estate
 				}
@@ -613,18 +467,14 @@ parliaments.11 = {
 
 	option = {
 		name = parliaments.11.a
+
 		if = {
 			limit = { is_revolutionary_issue = yes }
 			change_parliament_issue_support = parliament_issue_support_severe_bonus
 
-			change_societal_value = {
-				type = absolutism_vs_liberalism
-				value = societal_value_minor_move_to_right
-			}
+			change_societal_value = { type = absolutism_vs_liberalism value = societal_value_minor_move_to_right }
 		}
-		else = {
-			change_parliament_issue_support = parliament_issue_support_weak_penalty
-		}
+		else = { change_parliament_issue_support = parliament_issue_support_weak_penalty }
 	}
 }
 
@@ -651,20 +501,13 @@ parliaments.12 = {
 		name = parliaments.12.a
 
 		if = {
-			limit = {
-				has_estate_privilege = estate_privilege:peasants_represented_in_parliament
-			}
+			limit = { has_estate_privilege = estate_privilege:peasants_represented_in_parliament }
 
 			change_parliament_issue_support = parliament_issue_support_weak_penalty
 
-			change_societal_value = {
-				type = serfdom_vs_free_subjects
-				value = societal_value_minor_move_to_left
-			}
+			change_societal_value = { type = serfdom_vs_free_subjects value = societal_value_minor_move_to_left }
 		}
-		else = {
-			change_parliament_issue_support = parliament_issue_support_mild_penalty
-		}
+		else = { change_parliament_issue_support = parliament_issue_support_mild_penalty }
 	}
 
 	option = {
@@ -673,10 +516,7 @@ parliaments.12 = {
 		trigger = { is_revolutionary_issue = yes }
 		change_parliament_issue_support = parliament_issue_support_severe_bonus
 
-		change_societal_value = {
-			type = serfdom_vs_free_subjects
-			value = societal_value_minor_move_to_right
-		}
+		change_societal_value = { type = serfdom_vs_free_subjects value = societal_value_minor_move_to_right }
 	}
 }
 
@@ -706,20 +546,13 @@ parliaments.13 = {
 		name = parliaments.13.a
 
 		if = {
-			limit = {
-				has_estate_privilege = estate_privilege:peasants_represented_in_parliament
-			}
+			limit = { has_estate_privilege = estate_privilege:peasants_represented_in_parliament }
 
 			change_parliament_issue_support = parliament_issue_support_mild_bonus
 
-			change_societal_value = {
-				type = serfdom_vs_free_subjects
-				value = societal_value_minor_move_to_right
-			}
+			change_societal_value = { type = serfdom_vs_free_subjects value = societal_value_minor_move_to_right }
 		}
-		else = {
-			change_parliament_issue_support = parliament_issue_support_weak_bonus
-		}
+		else = { change_parliament_issue_support = parliament_issue_support_weak_bonus }
 	}
 
 	option = {
@@ -728,10 +561,7 @@ parliaments.13 = {
 		trigger = { is_revolutionary_issue = yes }
 		change_parliament_issue_support = parliament_issue_support_severe_bonus
 
-		change_societal_value = {
-			type = serfdom_vs_free_subjects
-			value = societal_value_minor_move_to_right
-		}
+		change_societal_value = { type = serfdom_vs_free_subjects value = societal_value_minor_move_to_right }
 	}
 }
 
@@ -763,13 +593,10 @@ parliaments.14 = {
 		name = parliaments.14.a
 
 		change_parliament_issue_support = parliament_issue_support_weak_bonus
+
 		if = {
 			limit = { "estate_power(estate_type:burghers_estate)" > 0.4 }
-
-			change_societal_value = {
-				type = capital_economy_vs_traditional_economy
-				value = societal_value_minor_move_to_left
-			}
+			change_societal_value = { type = capital_economy_vs_traditional_economy value = societal_value_minor_move_to_left }
 		}
 	}
 }
@@ -812,17 +639,13 @@ parliaments.15 = {
 	option = {
 		name = parliaments.15.a
 		change_parliament_issue_support = parliament_issue_support_weak_penalty
+
 		if = {
 			limit = { societal_value:land_vs_naval < 0 }
-
 			custom_tooltip = {
 				text = parliaments.15.a.tt
-
 				scope:target_location = {
-					every_pop = {
-						limit = { owner = root }
-						add_pop_satisfaction = pop_satisfaction_weak_penalty
-					}
+					every_pop = { limit = { owner = root } add_pop_satisfaction = pop_satisfaction_weak_penalty }
 				}
 			}
 		}
@@ -858,21 +681,17 @@ parliaments.16 = {
 			max = 1
 			save_scope_as = target_location
 		}
-
 		event_illustration_government_estate_effect = yes
 	}
 
 	option = {
 		name = parliaments.16.a
 		change_parliament_issue_support = parliament_issue_support_weak_penalty
+
 		if = {
 			limit = { societal_value:land_vs_naval > 0 }
-
 			scope:target_location = {
-				every_pop = {
-					limit = { owner = root }
-					add_pop_satisfaction = pop_satisfaction_weak_penalty
-				}
+				every_pop = { limit = { owner = root } add_pop_satisfaction = pop_satisfaction_weak_penalty }
 			}
 		}
 	}
@@ -886,10 +705,7 @@ parliaments.17 = {
 
 	desc = {
 		first_valid = {
-			triggered_desc = {
-				trigger = { societal_value:spiritualist_vs_humanist > 0 }
-				desc = parliaments.17.desc_tolerance
-			}
+			triggered_desc = { trigger = { societal_value:spiritualist_vs_humanist > 0 } desc = parliaments.17.desc_tolerance }
 			triggered_desc = { desc = parliaments.17.desc_intolerance }
 		}
 	}
@@ -905,18 +721,13 @@ parliaments.17 = {
 			save_scope_as = target_location
 
 			ordered_pop = {
-				limit = {
-					NOT = {
-						religion = root.religion
-					}
-				}
+				limit = { NOT = { religion = root.religion } }
 
 				max = 1
 				order_by = pop_size
 
 				order_by = {
 					value = 0
-
 					add = {
 						if = { limit = { estate_type = estate_type:clergy_estate } value = 100 }
 					}
@@ -935,9 +746,7 @@ parliaments.17 = {
 			limit = { societal_value:spiritualist_vs_humanist > 0 }
 			change_parliament_issue_support = parliament_issue_support_weak_bonus
 		}
-		else = {
-			change_parliament_issue_support = parliament_issue_support_weak_penalty
-		}
+		else = { change_parliament_issue_support = parliament_issue_support_weak_penalty }
 	}
 }
 
@@ -948,9 +757,7 @@ parliaments.18 = {
 
 	illustration_tags = { 10 = happy 10 = interior }
 
-	trigger = {
-		any_owned_location = { has_building_with_at_least_one_level = university }
-	}
+	trigger = { any_owned_location = { has_building_with_at_least_one_level = university } }
 
 	immediate = {
 		random_owned_location = {
@@ -963,11 +770,7 @@ parliaments.18 = {
 		}
 	}
 
-	option = {
-		name = parliaments.18.a
-
-		change_parliament_issue_support = parliament_issue_support_weak_bonus
-	}
+	option = { name = parliaments.18.a change_parliament_issue_support = parliament_issue_support_weak_bonus }
 }
 
 parliaments.19 = {
@@ -993,21 +796,20 @@ parliaments.19 = {
 			foreground = estate_type:burghers_estate
 			background = estate_type:nobles_estate
 		}
-
-		random_character = {
-			limit = { in_cabinet = yes }
-			save_scope_as = target_character
-		}
+		random_character = { limit = { in_cabinet = yes } save_scope_as = target_character }
 	}
 
 	option = {
 		name = parliaments.19.a
 
-		if = {
-			limit = { societal_value:aristocracy_vs_plutocracy > 0 }
-			add_prestige = prestige_weak_penalty
+		if = { limit = { societal_value:aristocracy_vs_plutocracy > 0 } add_prestige = prestige_weak_penalty }
+
+		scope:target_character = {
+			add_adm = -3
+			add_dip = -3
+			add_mil = -3
 		}
-		scope:target_character = { add_adm = -3 add_dip = -3 add_mil = -3 }
+
 		change_parliament_issue_support = parliament_issue_support_weak_penalty
 	}
 }
@@ -1019,10 +821,7 @@ parliaments.20 = {
 
 	illustration_tags = { 10 = angry 10 = interior }
 
-	trigger = {
-		num_locations > 1
-		capital = { has_location_modifier = parliament_location }
-	}
+	trigger = { num_locations > 1 capital = { has_location_modifier = parliament_location } }
 
 	immediate = {
 		ordered_owned_location = {
@@ -1051,26 +850,19 @@ parliaments.20 = {
 
 	option = {
 		name = parliaments.20.a
-		if = {
-			limit = { is_revolutionary_issue = yes }
-			add_gold = { value = monthly_income_trade_and_tax multiply = -4 }
-		}
+		if = { limit = { is_revolutionary_issue = yes } add_gold = { value = monthly_income_trade_and_tax multiply = -4 } }
 		else = { add_gold = { value = monthly_income_trade_and_tax multiply = -1.2 } }
 	}
 	option = {
 		name = parliaments.20.b
+
 		if = {
 			limit = { is_revolutionary_issue = yes }
 			change_parliament_issue_support = parliament_issue_support_severe_bonus
 
-			change_societal_value = {
-				type = absolutism_vs_liberalism
-				value = societal_value_minor_move_to_right
-			}
+			change_societal_value = { type = absolutism_vs_liberalism value = societal_value_minor_move_to_right }
 		}
-		else = {
-			change_parliament_issue_support = parliament_issue_support_weak_penalty
-		}
+		else = { change_parliament_issue_support = parliament_issue_support_weak_penalty }
 	}
 }
 
@@ -1081,17 +873,10 @@ parliaments.21 = {
 
 	illustration_tags = { 10 = angry 10 = interior }
 
-	trigger = {
-		num_locations > 1
-		capital = { has_location_modifier = parliament_location }
-	}
+	trigger = { num_locations > 1 capital = { has_location_modifier = parliament_location } }
 
 	immediate = {
-		random_owned_location = {
-			limit = { is_capital = no }
-			save_scope_as = target_location
-		}
-
+		random_owned_location = { limit = { is_capital = no } save_scope_as = target_location }
 		capital = {
 			event_illustration_estate_in_location_effect = {
 				estate_type = estate_type:peasants_estate
@@ -1112,17 +897,12 @@ parliaments.21 = {
 		if = {
 			limit = { is_revolutionary_issue = yes }
 
-			change_societal_value = {
-				type = absolutism_vs_liberalism
-				value = societal_value_minor_move_to_left
-			}
+			change_societal_value = { type = absolutism_vs_liberalism value = societal_value_minor_move_to_left }
 
 			change_parliament_issue_support = parliament_issue_support_weak_penalty
 			add_stability = stability_mild_penalty
 		}
-		else = {
-			change_parliament_issue_support = parliament_issue_support_weak_penalty
-		}
+		else = { change_parliament_issue_support = parliament_issue_support_weak_penalty }
 	}
 }
 
@@ -1144,10 +924,7 @@ parliaments.22 = {
 		}
 	}
 
-	trigger = {
-		num_locations > 1
-		any_owned_location = { location_tax_base > 10 is_capital = no }
-	}
+	trigger = { num_locations > 1 any_owned_location = { location_tax_base > 10 is_capital = no } }
 
 	option = {
 		name = parliaments.22.a
@@ -1156,10 +933,7 @@ parliaments.22 = {
 			if = { limit = { societal_value:aristocracy_vs_plutocracy < 0 } value = 0 }
 		}
 
-		if = {
-			limit = { societal_value:aristocracy_vs_plutocracy < 0 }
-			add_stability = stability_mild_penalty
-		}
+		if = { limit = { societal_value:aristocracy_vs_plutocracy < 0 } add_stability = stability_mild_penalty }
 
 		change_parliament_issue_support = parliament_issue_support_weak_penalty
 
@@ -1177,13 +951,10 @@ parliaments.22 = {
 		name = parliaments.22.b
 
 		add_prestige = prestige_mild_penalty
+
 		if = {
 			limit = { societal_value:aristocracy_vs_plutocracy > 0 }
-
-			change_societal_value = {
-				type = aristocracy_vs_plutocracy
-				value = societal_value_minor_move_to_left
-			}
+			change_societal_value = { type = aristocracy_vs_plutocracy value = societal_value_minor_move_to_left }
 		}
 	}
 }
@@ -1197,10 +968,7 @@ parliaments.23 = {
 
 	trigger = {
 		parliament_type = parliament_type:autocratic_parliament
-		OR = {
-			current_age = age_5_absolutism
-			current_age = age_6_revolutions
-		}
+		OR = { current_age = age_5_absolutism current_age = age_6_revolutions }
 	}
 
 	immediate = {
@@ -1215,10 +983,7 @@ parliaments.23 = {
 
 		add_government_power = government_power_extreme_penalty
 
-		change_societal_value = {
-			type = absolutism_vs_liberalism
-			value = societal_value_minor_move_to_left
-		}
+		change_societal_value = { type = absolutism_vs_liberalism value = societal_value_minor_move_to_left }
 	}
 
 	option = {
@@ -1226,10 +991,8 @@ parliaments.23 = {
 
 		add_prestige = prestige_mild_penalty
 
-		change_societal_value = {
-			type = absolutism_vs_liberalism
-			value = societal_value_minor_move_to_right
-		}
+		change_societal_value = { type = absolutism_vs_liberalism value = societal_value_minor_move_to_right }
+
 		if = {
 			limit = { is_revolutionary_issue = yes }
 			change_parliament_issue_support = parliament_issue_support_severe_bonus
@@ -1246,11 +1009,8 @@ parliaments.24 = {
 
 	trigger = {
 		num_loans > 5
-
 		any_owned_non_rural_location = {
-			NOT = {
-				has_building = building_type:urban_parliament_seat
-			}
+			NOT = { has_building = building_type:urban_parliament_seat }
 
 			is_core_of = owner
 			integration_level = core
@@ -1260,9 +1020,7 @@ parliaments.24 = {
 	immediate = {
 		ordered_owned_non_rural_location = { # This is done to ensure the chosen location is at least remotely relevant
 			limit = {
-				NOT = {
-					has_building = building_type:urban_parliament_seat
-				}
+				NOT = { has_building = building_type:urban_parliament_seat }
 
 				is_core_of = owner
 				integration_level = core
@@ -1273,7 +1031,6 @@ parliaments.24 = {
 			check_range_bounds = no
 			add_to_list = list_of_high_tax_base_locations
 		}
-
 		random_in_list = {
 			list = list_of_high_tax_base_locations
 			save_scope_as = target_location
@@ -1291,10 +1048,7 @@ parliaments.24 = {
 		add_prestige = prestige_weak_penalty
 
 		scope:target_location = {
-			change_building_level_in_location = {
-				building = building_type:urban_parliament_seat
-				value = 1
-			}
+			change_building_level_in_location = { building = building_type:urban_parliament_seat value = 1 }
 		}
 
 		change_gold_effect = {
@@ -1303,11 +1057,7 @@ parliaments.24 = {
 	}
 	option = {
 		name = parliaments.24.b
-
-		add_estate_satisfaction = {
-			type = estate_type:burghers_estate
-			value = estate_satisfaction_severe_penalty
-		}
+		add_estate_satisfaction = { type = estate_type:burghers_estate value = estate_satisfaction_severe_penalty }
 	}
 	option = {
 		name = parliaments.24.c
@@ -1318,10 +1068,7 @@ parliaments.24 = {
 			scale = 1
 		}
 
-		add_estate_satisfaction = {
-			type = estate_type:burghers_estate
-			value = estate_satisfaction_weak_penalty
-		}
+		add_estate_satisfaction = { type = estate_type:burghers_estate value = estate_satisfaction_weak_penalty }
 	}
 }
 
@@ -1354,13 +1101,10 @@ parliaments.25 = {
 		name = parliaments.25.a
 
 		change_parliament_issue_support = parliament_issue_support_weak_penalty
+
 		if = {
 			limit = { "estate_power(estate_type:burghers_estate)" > 0.4 }
-
-			change_societal_value = {
-				type = capital_economy_vs_traditional_economy
-				value = societal_value_minor_move_to_left
-			}
+			change_societal_value = { type = capital_economy_vs_traditional_economy value = societal_value_minor_move_to_left }
 		}
 	}
 }
@@ -1381,11 +1125,7 @@ parliaments.26 = {
 		}
 	}
 
-	option = {
-		name = parliaments.26.a
-
-		change_parliament_issue_support = parliament_issue_support_mild_bonus
-	}
+	option = { name = parliaments.26.a change_parliament_issue_support = parliament_issue_support_mild_bonus }
 
 	option = {
 		name = parliaments.26.b
@@ -1407,19 +1147,14 @@ parliaments.27 = {
 
 	trigger = {
 		capital ?= { has_location_modifier = parliament_location }
-		OR = {
-			country_type = location
-			country_type = building
-		}
+		OR = { country_type = location country_type = building }
 	}
 
 	immediate = {
 		if = {
 			limit = { country_type = location }
-
 			random_owned_location = {
 				save_scope_as = target_location
-
 				event_illustration_estate_in_location_effect = {
 					estate_type = estate_type:peasants_estate
 				}
@@ -1427,10 +1162,8 @@ parliaments.27 = {
 		}
 		if = {
 			limit = { country_type = building }
-
 			random_owned_foreign_building_location = {
 				save_scope_as = target_location
-
 				event_illustration_estate_in_location_effect = {
 					estate_type = estate_type:peasants_estate
 				}
@@ -1441,10 +1174,7 @@ parliaments.27 = {
 	option = {
 		name = parliaments.27.a
 
-		if = {
-			limit = { "estate_power(estate_type:crown_estate)" > 0.5 }
-			add_stability = stability_mild_bonus
-		}
+		if = { limit = { "estate_power(estate_type:crown_estate)" > 0.5 } add_stability = stability_mild_bonus }
 
 		change_parliament_issue_support = parliament_issue_support_mild_bonus
 	}
@@ -1458,10 +1188,7 @@ parliaments.28 = {
 	illustration_tags = { 10 = angry 10 = exterior }
 
 	trigger = {
-		OR = {
-			government_type = government_type:monarchy
-			government_type = government_type:republic
-		}
+		OR = { government_type = government_type:monarchy government_type = government_type:republic }
 		any_active_disaster = { disaster_type = disaster_type:revolution_disaster }
 		has_parliament = yes
 	}
@@ -1470,34 +1197,19 @@ parliaments.28 = {
 		ruler_or_regent ?= { save_scope_as = target_character }
 
 		random_list = {
-			30 = {
-				parliament_issue:curb_central_authority = { save_scope_as = target_debate }
-			}
+			30 = { parliament_issue:curb_central_authority = { save_scope_as = target_debate } }
 
 			10 = {
-				trigger = {
-					OR = {
-						government_power < 0
-						"estate_power(estate_type:crown_estate)" < 0.1
-					}
-				}
-
+				trigger = { OR = { government_power < 0 "estate_power(estate_type:crown_estate)" < 0.1 } }
 				parliament_issue:establish_a_constitution = { save_scope_as = target_debate }
 			}
 
-			30 = {
-				parliament_issue:reduce_peasant_taxation = { save_scope_as = target_debate }
-			}
-			30 = {
-				parliament_issue:revoke_privilege_of_the_nobles = {
-					save_scope_as = target_debate
-				}
-			}
+			30 = { parliament_issue:reduce_peasant_taxation = { save_scope_as = target_debate } }
+			30 = { parliament_issue:revoke_privilege_of_the_nobles = { save_scope_as = target_debate } }
 		}
 
 		random_owned_location = {
 			save_scope_as = target_location
-
 			event_illustration_estate_in_location_effect = {
 				estate_type = estate_type:peasants_estate
 			}
@@ -1518,9 +1230,6 @@ parliaments.28 = {
 			set_parliament_issue = scope:target_debate
 		}
 
-		change_societal_value = {
-			type = absolutism_vs_liberalism
-			value = societal_value_move_to_right
-		}
+		change_societal_value = { type = absolutism_vs_liberalism value = societal_value_move_to_right }
 	}
 }

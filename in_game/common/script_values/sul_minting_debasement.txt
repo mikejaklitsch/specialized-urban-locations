@@ -7,20 +7,16 @@
 
 sul_minting_debasement_level_value = {
 	value = 0
-	if = {
-		limit = { has_variable = sul_minting_debasement_level }
-		add = var:sul_minting_debasement_level
-	}
+
+	if = { limit = { has_variable = sul_minting_debasement_level } add = var:sul_minting_debasement_level }
 }
 
 # Face value multiplier: (1 + d). Debasement stretches bullion into more coins.
 
 sul_minting_debasement_inflation_multiplier = {
 	value = 1
-	if = {
-		limit = { has_variable = sul_minting_debasement_level }
-		add = var:sul_minting_debasement_level
-	}
+
+	if = { limit = { has_variable = sul_minting_debasement_level } add = var:sul_minting_debasement_level }
 }
 
 # Additional monthly_inflation from debased coinage.
@@ -29,9 +25,9 @@ sul_minting_debasement_inflation_multiplier = {
 
 sul_minting_debasement_inflation_effect = {
 	value = 0
+
 	if = {
 		limit = { var:sul_minting_debasement_level > 0 }
-
 		add = {
 			value = var:sul_minting_debasement_level
 			multiply = @sul_minting_inflation_factor
@@ -50,10 +46,8 @@ sul_minting_debasement_progress = {
 
 sul_minting_rebasement_level_value = {
 	value = 0
-	if = {
-		limit = { has_variable = sul_minting_rebasement_level }
-		add = var:sul_minting_rebasement_level
-	}
+
+	if = { limit = { has_variable = sul_minting_rebasement_level } add = var:sul_minting_rebasement_level }
 }
 
 # Deflation from coin recall. Scales with inflation level.
@@ -61,9 +55,9 @@ sul_minting_rebasement_level_value = {
 
 sul_minting_rebasement_deflation_effect = {
 	value = 0
+
 	if = {
 		limit = { inflation > 0 }
-
 		add = {
 			value = var:sul_minting_rebasement_level
 			multiply = -0.01
@@ -77,9 +71,9 @@ sul_minting_rebasement_deflation_effect = {
 
 sul_minting_rebasement_cost = {
 	value = 0
+
 	if = {
 		limit = { inflation > 0 }
-
 		add = {
 			value = var:sul_minting_rebasement_level
 			multiply = country_tax_base
@@ -108,7 +102,11 @@ sul_minting_ai_debasement_target = {
 
 		if = {
 			limit = { country_tax_base > 0 }
-			add = { value = monthly_balance multiply = -3 divide = country_tax_base }
+			add = {
+				value = monthly_balance
+				multiply = -3
+				divide = country_tax_base
+			}
 		}
 
 		add = { value = num_loans multiply = 0.04 }
@@ -124,7 +122,11 @@ sul_minting_ai_debasement_target = {
 	}
 
 	# Inflation penalty: not scaled by slider (existing inflation hurts regardless)
-	subtract = { value = inflation max = 0.10 multiply = 3 }
+	subtract = {
+		value = inflation
+		max = 0.10
+		multiply = 3
+	}
 
 	min = -2.0
 	max = 2.0

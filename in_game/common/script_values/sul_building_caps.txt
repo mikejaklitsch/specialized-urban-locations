@@ -3,15 +3,11 @@
 # Location rank adds flat bonus: +2 town, +5 city.
 
 REPLACE:guild_max_level = {
+	add = { desc = "SUL_CAP_PRODUCTION_SIZE" value = modifier:sul_production_size }
 	add = {
-		desc = "SUL_CAP_PRODUCTION_SIZE"
-		value = modifier:sul_production_size
-	}
-
-	multiply = {
 		desc = "SUL_CAP_POPULATION"
-		value = 1
-		add = { value = population divide = 50 }
+		value = population
+		multiply = 0.02
 	}
 
 	min = 0
@@ -21,12 +17,12 @@ REPLACE:workshop_max_level = {
 	add = {
 		desc = "SUL_CAP_PRODUCTION_SIZE"
 		value = modifier:sul_production_size
+		multiply = 1.5
 	}
-
-	multiply = {
+	add = {
 		desc = "SUL_CAP_POPULATION"
-		value = 1
-		add = { value = population divide = 50 }
+		value = population
+		multiply = 0.02
 	}
 
 	min = 0
@@ -36,12 +32,12 @@ REPLACE:manufactory_max_level = {
 	add = {
 		desc = "SUL_CAP_PRODUCTION_SIZE"
 		value = modifier:sul_production_size
+		multiply = 2.0
 	}
-
-	multiply = {
+	add = {
 		desc = "SUL_CAP_POPULATION"
-		value = 1
-		add = { value = population divide = 50 }
+		value = population
+		multiply = 0.02
 	}
 
 	min = 0
@@ -51,12 +47,12 @@ REPLACE:mills_max_level = {
 	add = {
 		desc = "SUL_CAP_PRODUCTION_SIZE"
 		value = modifier:sul_production_size
+		multiply = 1.5
 	}
-
-	multiply = {
+	add = {
 		desc = "SUL_CAP_POPULATION"
-		value = 1
-		add = { value = population divide = 50 }
+		value = population
+		multiply = 0.02
 	}
 
 	min = 0
@@ -66,27 +62,23 @@ REPLACE:market_max_level = {
 	add = {
 		desc = "SUL_CAP_PRODUCTION_SIZE"
 		value = modifier:sul_production_size
+		multiply = 1.75
 	}
-
-	multiply = {
+	add = {
 		desc = "SUL_CAP_POPULATION"
-		value = 1
-		add = { value = population divide = 50 }
+		value = population
+		multiply = 0.03
 	}
 
 	min = 0
 }
 
 REPLACE:rural_building_cap = {
+	add = { desc = "SUL_CAP_EXTRACTION_SIZE" value = modifier:sul_extraction_size }
 	add = {
-		desc = "SUL_CAP_EXTRACTION_SIZE"
-		value = modifier:sul_extraction_size
-	}
-
-	multiply = {
 		desc = "SUL_CAP_POPULATION"
-		value = 1
-		add = { value = population divide = 50 }
+		value = population
+		multiply = 0.02
 	}
 
 	min = 0
@@ -94,35 +86,23 @@ REPLACE:rural_building_cap = {
 
 REPLACE:irrigant_cap = {
 	add = { desc = "BUILDING_LEVEL_BASE" value = 2 }
+	add = { desc = "SUL_CAP_EXTRACTION_SIZE" value = modifier:sul_extraction_size }
 	add = {
-		desc = "SUL_CAP_EXTRACTION_SIZE"
-		value = modifier:sul_extraction_size
-	}
-
-	multiply = {
 		desc = "SUL_CAP_POPULATION"
-		value = 1
-		add = { value = population divide = 50 }
+		value = population
+		multiply = 0.02
 	}
-
-	add = {
-		desc = "BUILDING_LEVEL_FROM_OWNER_MODIFIERS"
-		add = owner.modifier:irrigant_cap_level
-	}
+	add = { desc = "BUILDING_LEVEL_FROM_OWNER_MODIFIERS" add = owner.modifier:irrigant_cap_level }
 }
 
 # Wrappers referenced by building_types files.
 
 sul_extraction_max_level = {
+	add = { desc = "SUL_CAP_EXTRACTION_SIZE" value = modifier:sul_extraction_size }
 	add = {
-		desc = "SUL_CAP_EXTRACTION_SIZE"
-		value = modifier:sul_extraction_size
-	}
-
-	multiply = {
 		desc = "SUL_CAP_POPULATION"
-		value = 1
-		add = { value = population divide = 50 }
+		value = population
+		multiply = 0.02
 	}
 
 	min = 0
@@ -132,28 +112,23 @@ sul_extraction_efficiency_max_level = {
 	add = {
 		desc = "SUL_CAP_EXTRACTION_SIZE"
 		value = modifier:sul_extraction_size
+		multiply = 0.5
 	}
-
-	multiply = {
+	add = {
 		desc = "SUL_CAP_POPULATION"
-		value = 1
-		add = { value = population divide = 50 }
+		value = population
+		multiply = 0.01
 	}
 
-	multiply = 0.5
 	min = 0
 }
 
 sul_production_max_level = {
+	add = { desc = "SUL_CAP_PRODUCTION_SIZE" value = modifier:sul_production_size }
 	add = {
-		desc = "SUL_CAP_PRODUCTION_SIZE"
-		value = modifier:sul_production_size
-	}
-
-	multiply = {
 		desc = "SUL_CAP_POPULATION"
-		value = 1
-		add = { value = population divide = 50 }
+		value = population
+		multiply = 0.02
 	}
 
 	min = 0
@@ -166,18 +141,11 @@ sul_granary_max_level = {
 		value = population
 		multiply = 0.05
 	}
-	if = {
-		limit = { modifier:sul_is_city_rank_tier = yes }
-		add = { desc = "BUILDING_LEVEL_IS_CITY" value = 4 }
-	}
-	else_if = {
-		limit = { modifier:sul_is_town_rank_tier = yes }
-		add = { desc = "BUILDING_LEVEL_IS_TOWN" value = 2 }
-	}
-	add = {
-		desc = "BUILDING_LEVEL_FROM_OWNER_MODIFIERS"
-		add = owner.modifier:sul_granary_max_levels
-	}
+
+	if = { limit = { modifier:sul_is_city_rank_tier = yes } add = { desc = "BUILDING_LEVEL_IS_CITY" value = 4 } }
+	else_if = { limit = { modifier:sul_is_town_rank_tier = yes } add = { desc = "BUILDING_LEVEL_IS_TOWN" value = 2 } }
+
+	add = { desc = "BUILDING_LEVEL_FROM_OWNER_MODIFIERS" add = owner.modifier:sul_granary_max_levels }
 }
 
 # ── Vanilla overrides (use sul_is_*_rank_tier instead of location_rank) ──
@@ -189,14 +157,10 @@ market_warehouse_max_level = {
 		value = development
 		multiply = 0.025
 	}
-	if = {
-		limit = { modifier:sul_is_town_rank_tier = yes }
-		add = { desc = "BUILDING_LEVEL_IS_TOWN" value = 1 }
-	}
-	if = {
-		limit = { modifier:sul_is_city_rank_tier = yes }
-		add = { desc = "BUILDING_LEVEL_IS_CITY" value = 2 }
-	}
+
+	if = { limit = { modifier:sul_is_town_rank_tier = yes } add = { desc = "BUILDING_LEVEL_IS_TOWN" value = 1 } }
+
+	if = { limit = { modifier:sul_is_city_rank_tier = yes } add = { desc = "BUILDING_LEVEL_IS_CITY" value = 2 } }
 }
 
 manpower_max_level = {
@@ -210,10 +174,8 @@ manpower_max_level = {
 
 hanseatic_kontor_max_level = {
 	add = { desc = "BUILDING_LEVEL_BASE" value = 3 }
-	if = {
-		limit = { modifier:sul_is_city_rank_tier = yes }
-		add = { desc = "BUILDING_LEVEL_IS_CITY" value = 2 }
-	}
+
+	if = { limit = { modifier:sul_is_city_rank_tier = yes } add = { desc = "BUILDING_LEVEL_IS_CITY" value = 2 } }
 }
 
 hanseatic_shipwright_guild_max_level = {
@@ -226,10 +188,7 @@ hanseatic_shipwright_guild_max_level = {
 
 mercury_patio_max_level = {
 	add = { desc = "BUILDING_LEVEL_BASE" value = 1 }
-	add = {
-		desc = "BUILDING_LEVEL_FROM_OWNER_MODIFIERS"
-		value = scope:owner.modifier:mercury_patio_max_level
-	}
+	add = { desc = "BUILDING_LEVEL_FROM_OWNER_MODIFIERS" value = scope:owner.modifier:mercury_patio_max_level }
 }
 
 polders_max_level = {
@@ -255,10 +214,8 @@ slave_market_max_level = {
 		value = development
 		multiply = 0.2
 	}
-	add = {
-		desc = "BUILDING_LEVEL_FROM_OWNER_MODIFIERS"
-		value = owner.modifier:slave_market_max_level
-	}
+	add = { desc = "BUILDING_LEVEL_FROM_OWNER_MODIFIERS" value = owner.modifier:slave_market_max_level }
+
 	if = {
 		limit = { has_variable = ben_more_levels_of_slaves_building_flag }
 		multiply = { desc = "strengthened_african_slave_trade" value = 2 }
@@ -267,14 +224,17 @@ slave_market_max_level = {
 
 janissary_barracks_size = {
 	add = { desc = "BUILDING_LEVEL_BASE" value = 1 }
+
 	if = {
 		limit = { current_age_or_later = { age = age_3_discovery } }
 		add = { desc = "age_3_discovery" value = 1 }
 	}
+
 	if = {
 		limit = { current_age_or_later = { age = age_4_reformation } }
 		add = { desc = "age_4_reformation" value = 1 }
 	}
+
 	if = {
 		limit = { current_age_or_later = { age = age_5_absolutism } }
 		add = { desc = "age_5_absolutism" value = 1 }
@@ -283,18 +243,13 @@ janissary_barracks_size = {
 
 chancery_max_level = {
 	add = { desc = "BUILDING_LEVEL_BASE" value = 1 }
-	add = {
-		desc = "BUILDING_LEVEL_FROM_OWNER_MODIFIERS"
-		value = owner.modifier:chancery_cap_level
-	}
+	add = { desc = "BUILDING_LEVEL_FROM_OWNER_MODIFIERS" value = owner.modifier:chancery_cap_level }
 }
 
 kremlin_max_level = {
 	add = { desc = "BUILDING_LEVEL_BASE" value = 1 }
-	if = {
-		limit = { has_variable = kremlin_stone_upgrade }
-		add = { desc = "kremlin_upgrade" value = 1 }
-	}
+
+	if = { limit = { has_variable = kremlin_stone_upgrade } add = { desc = "kremlin_upgrade" value = 1 } }
 }
 
 venetian_palaces_max_level = {
@@ -304,22 +259,23 @@ venetian_palaces_max_level = {
 		value = development
 		multiply = 0.05
 	}
-	if = {
-		limit = { modifier:sul_is_city_rank_tier = yes }
-		add = { desc = "BUILDING_LEVEL_IS_CITY" value = 2 }
-	}
+
+	if = { limit = { modifier:sul_is_city_rank_tier = yes } add = { desc = "BUILDING_LEVEL_IS_CITY" value = 2 } }
 }
 
 bock_max_level = {
 	add = { desc = "BUILDING_LEVEL_BASE" value = 1 }
+
 	if = {
 		limit = { owner = { has_advance = bastion_advance } }
 		add = { desc = "bastion_advance" value = 1 }
 	}
+
 	if = {
 		limit = { owner = { has_advance = star_fort_advance } }
 		add = { desc = "star_fort_advance" value = 1 }
 	}
+
 	if = {
 		limit = { owner = { has_advance = fortress_advance } }
 		add = { desc = "fortress_advance" value = 1 }
@@ -337,10 +293,7 @@ kurultai_max_level = {
 
 construction_center_max_level = {
 	add = { desc = "BUILDING_LEVEL_BASE" value = 1 }
-	add = {
-		desc = "BUILDING_LEVEL_FROM_OWNER_MODIFIERS"
-		value = scope:owner.modifier:construction_center_max_level
-	}
+	add = { desc = "BUILDING_LEVEL_FROM_OWNER_MODIFIERS" value = scope:owner.modifier:construction_center_max_level }
 }
 
 estate_building_single_level = {

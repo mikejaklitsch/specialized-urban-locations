@@ -17,7 +17,6 @@ sul_gdp_compute_location = {
 
 	if = {
 		limit = { has_variable_map = sul_local_goods }
-
 		every_key_in_variable_map = {
 			variable = sul_local_goods
 			save_scope_as = sul_gdp_good
@@ -25,7 +24,6 @@ sul_gdp_compute_location = {
 			scope:sul_gdp_loc = {
 				change_variable = {
 					name = sul_local_gdp_output
-
 					add = {
 						value = "goods_output(scope:sul_gdp_good)"
 						multiply = "scope:sul_gdp_good.price_in_market(scope:sul_gdp_loc.market)"
@@ -35,10 +33,7 @@ sul_gdp_compute_location = {
 		}
 	}
 
-	if = {
-		limit = { var:sul_local_gdp_output < 0.01 }
-		set_variable = { name = sul_local_gdp_output value = 0.01 }
-	}
+	if = { limit = { var:sul_local_gdp_output < 0.01 } set_variable = { name = sul_local_gdp_output value = 0.01 } }
 }
 
 sul_gdp_yearly_update = {
@@ -46,28 +41,15 @@ sul_gdp_yearly_update = {
 
 	every_owned_location = {
 		sul_gdp_compute_location = yes
-
-		owner ?= {
-			change_variable = {
-				name = sul_national_gdp
-				add = prev.var:sul_local_gdp_output
-			}
-		}
+		owner ?= { change_variable = { name = sul_national_gdp add = prev.var:sul_local_gdp_output } }
 	}
 
-	if = {
-		limit = { var:sul_national_gdp < 1 }
-		set_variable = { name = sul_national_gdp value = 1 }
-	}
+	if = { limit = { var:sul_national_gdp < 1 } set_variable = { name = sul_national_gdp value = 1 } }
 
 	every_owned_location = {
 		set_variable = {
 			name = sul_asset_share
-
-			value = {
-				value = var:sul_local_gdp_output
-				divide = owner.var:sul_national_gdp
-			}
+			value = { value = var:sul_local_gdp_output divide = owner.var:sul_national_gdp }
 		}
 	}
 }
@@ -77,9 +59,7 @@ sul_gdp_yearly_update = {
 # yearly pulse fires.
 
 sul_gdp_init = {
-	every_owned_location = {
-		every_buildings_in_location = { sul_gdp_init_building = yes }
-	}
+	every_owned_location = { every_buildings_in_location = { sul_gdp_init_building = yes } }
 
 	sul_gdp_yearly_update = yes
 }

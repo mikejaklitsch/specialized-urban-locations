@@ -20,31 +20,18 @@ flavor_por.1 = {
 		monthly_chance = 5
 	}
 
-	trigger = {
-		has_advance = quest_for_the_new_world
-		NOT = {
-			discovered_any_in_americas_trigger = yes
-		}
-	}
+	trigger = { has_advance = quest_for_the_new_world NOT = { discovered_any_in_americas_trigger = yes } }
 
 	immediate = {
-		if = {
-			limit = { country_exists = c:SPA }
-			c:SPA = { save_scope_as = target_country }
-		}
-		else_if = {
-			limit = { country_exists = c:CAS }
-			c:CAS = { save_scope_as = target_country }
-		}
+		if = { limit = { country_exists = c:SPA } c:SPA = { save_scope_as = target_country } }
+		else_if = { limit = { country_exists = c:CAS } c:CAS = { save_scope_as = target_country } }
 		else = {
 			ordered_known_country = {
 				limit = {
 					has_advance = quest_for_the_new_world
 					dominant_religion = religion:catholic
 					capital.sub_continent = sub_continent:western_europe
-					NOT = {
-						has_variable = turned_down_columbus
-					}
+					NOT = { has_variable = turned_down_columbus }
 				}
 
 				order_by = modifier:great_power_score
@@ -110,10 +97,7 @@ flavor_por.2 = {
 		monthly_chance = 5
 	}
 
-	trigger = {
-		any_trade = { goods = goods:slaves_goods count > 2 }
-		government_type = government_type:monarchy
-	}
+	trigger = { any_trade = { goods = goods:slaves_goods count > 2 } government_type = government_type:monarchy }
 
 	image = "gfx/interface/icons/trade_goods/illustrations/icon_goods_slaves_goods.dds"
 
@@ -123,7 +107,6 @@ flavor_por.2 = {
 
 		every_market_in_world = {
 			limit = { has_merchant = root }
-
 			add_temporary_demand = {
 				type = demand:african_slave_trade_encouraged
 				months = 240
@@ -132,10 +115,7 @@ flavor_por.2 = {
 		}
 	}
 
-	option = {
-		name = flavor_por.2.b
-		add_government_power = government_power_extreme_bonus
-	}
+	option = { name = flavor_por.2.b add_government_power = government_power_extreme_bonus }
 
 	historical_info = flavor_por.2.historical_info
 }
@@ -156,10 +136,7 @@ flavor_por.3 = {
 		monthly_chance = 5
 	}
 
-	trigger = {
-		discovered_any_in_moluccas_trigger = yes
-		religion = religion:catholic
-	}
+	trigger = { discovered_any_in_moluccas_trigger = yes religion = religion:catholic }
 
 	illustration_tags = { 10 = regular 10 = exterior }
 
@@ -172,17 +149,9 @@ flavor_por.3 = {
 
 	option = {
 		name = flavor_por.3.a
-
 		area:moluccas_area = {
 			ordered_location_in_area = {
-				limit = {
-					NOT = {
-						has_building = building_type:missionary_building
-					}
-					NOT = {
-						dominant_religion = religion:catholic
-					}
-				}
+				limit = { NOT = { has_building = building_type:missionary_building } NOT = { dominant_religion = religion:catholic } }
 
 				order_by = population
 				max = 5
@@ -261,7 +230,6 @@ flavor_por.5 = {
 			foreground = estate_type:nobles_estate
 			background = estate_type:nobles_estate
 		}
-
 		create_character = {
 			first_name = name_francis
 			last_name = de_Arruda
@@ -283,9 +251,7 @@ flavor_por.5 = {
 		name = flavor_por.5.a
 		historical_option = yes
 
-		location:lisbon = {
-			construct_building = { building_type = building_type:tower_of_belem }
-		}
+		location:lisbon = { construct_building = { building_type = building_type:tower_of_belem } }
 
 		scope:target_character = { move_country = root }
 	}
@@ -365,10 +331,7 @@ flavor_por.7 = {
 		}
 	}
 
-	trigger = {
-		discovered_route_to_india = yes
-		location:goa = { is_discovered_by = c:POR }
-	}
+	trigger = { discovered_route_to_india = yes location:goa = { is_discovered_by = c:POR } }
 
 	option = {
 		name = flavor_por.7.a
@@ -406,10 +369,7 @@ flavor_por.8 = {
 	}
 
 	trigger = {
-		any_subject = {
-			is_subject_type = colonial_nation
-			capital.region = region:brazil_region
-		}
+		any_subject = { is_subject_type = colonial_nation capital.region = region:brazil_region }
 
 		has_advance = colonial_policy_advance
 		has_policy = portuguese_colonial_captains
@@ -434,10 +394,7 @@ flavor_por.8 = {
 
 		add_policy = policy:portuguese_governorate_general
 
-		change_societal_value = {
-			type = centralization_vs_decentralization
-			value = societal_value_minor_move_to_left
-		}
+		change_societal_value = { type = centralization_vs_decentralization value = societal_value_minor_move_to_left }
 
 		add_prestige = prestige_mild_bonus
 	}
@@ -445,10 +402,7 @@ flavor_por.8 = {
 	option = {
 		name = flavor_por.8.b
 
-		change_societal_value = {
-			type = centralization_vs_decentralization
-			value = societal_value_minor_move_to_right
-		}
+		change_societal_value = { type = centralization_vs_decentralization value = societal_value_minor_move_to_right }
 
 		add_legitimacy = legitimacy_mild_bonus
 	}
@@ -491,7 +445,6 @@ flavor_por.9 = {
 			foreground = estate_type:burghers_estate
 			background = estate_type:burghers_estate
 		}
-
 		random_market_with_merchants = {
 			limit = {
 				location = {
@@ -502,7 +455,6 @@ flavor_por.9 = {
 					}
 				}
 			}
-
 			save_scope_as = spice_market
 		}
 	}
@@ -522,15 +474,9 @@ flavor_por.9 = {
 	}
 	option = {
 		name = flavor_por.9.b
-
 		scope:spice_market = {
 			every_merchant_in_market = {
-				limit = {
-					NOT = {
-						this = root
-					}
-				}
-
+				limit = { NOT = { this = root } }
 				add_opinion = { target = root modifier = careful_trade_expansion }
 			}
 		}
@@ -554,12 +500,7 @@ flavor_por.10 = {
 		monthly_chance = 10
 	}
 
-	trigger = {
-		any_subject = {
-			is_subject_type = colonial_nation
-			capital.region = region:brazil_region
-		}
-	}
+	trigger = { any_subject = { is_subject_type = colonial_nation capital.region = region:brazil_region } }
 
 	illustration_tags = { 10 = regular 10 = interior }
 
@@ -568,12 +509,8 @@ flavor_por.10 = {
 			foreground = estate_type:nobles_estate
 			background = estate_type:nobles_estate
 		}
-
 		ordered_subject = {
-			limit = {
-				is_subject_type = colonial_nation
-				capital.region = region:brazil_region
-			}
+			limit = { is_subject_type = colonial_nation capital.region = region:brazil_region }
 
 			order_by = total_population
 			max = 1
@@ -595,10 +532,7 @@ flavor_por.10 = {
 		}
 	}
 
-	option = {
-		name = flavor_por.10.a
-		scope:brazil = { set_new_ruler = scope:martim_afonso_de_sousa }
-	}
+	option = { name = flavor_por.10.a scope:brazil = { set_new_ruler = scope:martim_afonso_de_sousa } }
 
 	historical_info = flavor_por.10.historical_info
 }
@@ -624,12 +558,7 @@ flavor_por.11 = {
 		religion = religion:catholic
 
 		area:morocco_area = {
-			any_location_in_area = {
-				dominant_religion.group = religion_group:muslim
-				NOT = {
-					owner = root
-				}
-			}
+			any_location_in_area = { dominant_religion.group = religion_group:muslim NOT = { owner = root } }
 		}
 	}
 
@@ -640,16 +569,9 @@ flavor_por.11 = {
 			foreground = estate_type:clergy_estate
 			background = estate_type:clergy_estate
 		}
-
 		area:morocco_area = {
 			random_location_in_area = {
-				limit = {
-					dominant_religion.group = religion_group:muslim
-					NOT = {
-						owner = root
-					}
-				}
-
+				limit = { dominant_religion.group = religion_group:muslim NOT = { owner = root } }
 				save_scope_as = target_location
 			}
 		}
@@ -666,9 +588,7 @@ flavor_por.11 = {
 			province = scope:target_location.province
 		}
 
-		scope:target_location.owner = {
-			add_opinion = { target = root modifier = prepares_crusade }
-		}
+		scope:target_location.owner = { add_opinion = { target = root modifier = prepares_crusade } }
 	}
 	option = { name = flavor_por.11.b add_prestige = prestige_weak_penalty }
 
@@ -698,25 +618,13 @@ flavor_por.12 = {
 
 		location:london = {
 			owner ?= {
-				NOT = {
-					tag = POR
-				}
+				NOT = { tag = POR }
 
 				culture = culture:english
-				NOT = {
-					is_at_war_with = root
-				}
-				NOT = {
-					is_rival_of = root
-				}
-				NOT = {
-					is_embargoed_by = root
-				}
-				root = {
-					NOT = {
-						is_embargoed_by = prev
-					}
-				}
+				NOT = { is_at_war_with = root }
+				NOT = { is_rival_of = root }
+				NOT = { is_embargoed_by = root }
+				root = { NOT = { is_embargoed_by = prev } }
 			}
 		}
 	}
@@ -728,11 +636,9 @@ flavor_por.12 = {
 			foreground = estate_type:burghers_estate
 			background = estate_type:burghers_estate
 		}
-
 		location:london = {
 			owner = {
 				save_scope_as = target_country
-
 				create_character = {
 					first_name = name_john
 					last_name = Methuen
@@ -764,9 +670,7 @@ flavor_por.12 = {
 		name = flavor_por.12.b
 		add_stability = stability_mild_bonus
 
-		location:london.owner = {
-			add_opinion = { target = root modifier = denounced_meuthen_agreement }
-		}
+		location:london.owner = { add_opinion = { target = root modifier = denounced_meuthen_agreement } }
 	}
 
 	historical_info = flavor_por.12.historical_info
@@ -795,7 +699,6 @@ flavor_por.13 = {
 			foreground = estate_type:nobles_estate
 			background = estate_type:nobles_estate
 		}
-
 		create_character = {
 			first_name = name_louis
 			last_name = de_Meneses
@@ -816,19 +719,13 @@ flavor_por.13 = {
 		name = flavor_por.13.a
 		historical_option = yes
 
-		change_societal_value = {
-			type = mercantilism_vs_free_trade
-			value = societal_value_minor_move_to_left
-		}
+		change_societal_value = { type = mercantilism_vs_free_trade value = societal_value_minor_move_to_left }
 
 		scope:target_character = { move_country = root }
 	}
 
 	option = {
-		change_societal_value = {
-			type = mercantilism_vs_free_trade
-			value = societal_value_minor_move_to_right
-		}
+		change_societal_value = { type = mercantilism_vs_free_trade value = societal_value_minor_move_to_right }
 
 		kill_character_silently = scope:target_character
 		name = flavor_por.13.b
@@ -860,13 +757,10 @@ flavor_por.17 = {
 			AND = {
 				is_female = no
 				age_in_years > 30
-				NOT = {
-					any_child = { is_female = no }
-				}
+				NOT = { any_child = { is_female = no } }
 				any_child = { is_female = yes }
 			}
 		}
-
 		is_subject = no
 	}
 
@@ -919,15 +813,8 @@ flavor_por.17 = {
 			area:north_portugal_area = {
 				every_location_in_area = {
 					limit = { owner ?= root }
-
 					every_pop = {
-						limit = {
-							owner = root
-							OR = {
-								pop_type = pop_type:nobles
-								pop_type = pop_type:burghers
-							}
-						}
+						limit = { owner = root OR = { pop_type = pop_type:nobles pop_type = pop_type:burghers } }
 
 						add_pop_satisfaction = pop_satisfaction_ultimate_penalty
 						change_pop_allegiance = scope:avis_supporters
@@ -938,15 +825,8 @@ flavor_por.17 = {
 			area:south_portugal_area = {
 				every_location_in_area = {
 					limit = { owner ?= root }
-
 					every_pop = {
-						limit = {
-							owner = root
-							OR = {
-								pop_type = pop_type:nobles
-								pop_type = pop_type:burghers
-							}
-						}
+						limit = { owner = root OR = { pop_type = pop_type:nobles pop_type = pop_type:burghers } }
 
 						add_pop_satisfaction = pop_satisfaction_ultimate_penalty
 						change_pop_allegiance = scope:avis_supporters
@@ -966,26 +846,15 @@ flavor_por.17 = {
 		name = flavor_por.17.b
 
 		if = {
-			limit = {
-				NOT = {
-					has_advance = salic_law_advance
-				}
-			}
-
+			limit = { NOT = { has_advance = salic_law_advance } }
 			research_advance = advance_type:salic_law_advance
 		}
 
 		change_heir_selection = heir_selection:salic_law
 
-		add_estate_satisfaction = {
-			type = estate_type:burghers_estate
-			value = estate_satisfaction_mild_bonus
-		}
+		add_estate_satisfaction = { type = estate_type:burghers_estate value = estate_satisfaction_mild_bonus }
 
-		add_estate_satisfaction = {
-			type = estate_type:nobles_estate
-			value = estate_satisfaction_mild_bonus
-		}
+		add_estate_satisfaction = { type = estate_type:nobles_estate value = estate_satisfaction_mild_bonus }
 
 		custom_tooltip = flavor_por.17.tt3
 	}
@@ -1064,10 +933,7 @@ flavor_por.19 = {
 
 		add_government_power = government_power_extreme_penalty
 
-		declare_war_with_cb = {
-			target = c:SPA
-			type = casus_belli:cb_independence_war
-		}
+		declare_war_with_cb = { target = c:SPA type = casus_belli:cb_independence_war }
 
 		add_opinion = { target = c:SPA modifier = opinion_angry }
 
@@ -1082,10 +948,7 @@ flavor_por.19 = {
 	option = {
 		name = flavor_por.19.c
 
-		add_estate_satisfaction = {
-			type = estate_type:nobles_estate
-			value = estate_satisfaction_extreme_penalty
-		}
+		add_estate_satisfaction = { type = estate_type:nobles_estate value = estate_satisfaction_extreme_penalty }
 
 		create_rebel = {
 			category = estate
@@ -1094,14 +957,11 @@ flavor_por.19 = {
 			save_scope_as = braganca_supporters
 		}
 
-		scope:joao_braganca = {
-			change_character_allegiance = scope:braganca_supporters
-		}
+		scope:joao_braganca = { change_character_allegiance = scope:braganca_supporters }
 
 		area:north_portugal_area = {
 			every_location_in_area = {
 				limit = { owner ?= root }
-
 				every_pop = {
 					limit = { owner = root pop_type = pop_type:nobles }
 					add_pop_satisfaction = pop_satisfaction_ultimate_penalty
@@ -1113,7 +973,6 @@ flavor_por.19 = {
 		area:south_portugal_area = {
 			every_location_in_area = {
 				limit = { owner ?= root }
-
 				every_pop = {
 					limit = { owner = root pop_type = pop_type:nobles }
 					add_pop_satisfaction = pop_satisfaction_ultimate_penalty
@@ -1137,20 +996,10 @@ flavor_por.19 = {
 
 		while = {
 			limit = {
-				any_cabinet_character = {
-					NOT = {
-						has_estate = estate_type:nobles_estate
-					}
-				}
+				any_cabinet_character = { NOT = { has_estate = estate_type:nobles_estate } }
 			}
-
 			random_cabinet_character = {
-				limit = {
-					NOT = {
-						has_estate = estate_type:nobles_estate
-					}
-				}
-
+				limit = { NOT = { has_estate = estate_type:nobles_estate } }
 				kill_character = this
 			}
 		}
@@ -1165,13 +1014,14 @@ flavor_por.19 = {
 		trigger = { ruler = { has_trait = intricate_web_weaver } }
 
 		character:por_john_braganza ?= {
-			kill_character = { target = this reason = assassination killer = ruler }
+			kill_character = {
+				target = this
+				reason = assassination
+				killer = ruler
+			}
 		}
 
-		add_estate_satisfaction = {
-			type = estate_type:nobles_estate
-			value = estate_satisfaction_mild_penalty
-		}
+		add_estate_satisfaction = { type = estate_type:nobles_estate value = estate_satisfaction_mild_penalty }
 
 		custom_tooltip = flavor_por.19.tt4
 	}
@@ -1277,7 +1127,6 @@ flavor_por.22 = {
 			script = por_vasco_da_gama
 			save_scope_as = target_character
 		}
-
 		scope:target_character = {
 			add_character_modifier = {
 				modifier = refuses_to_serve_in_cabinet
@@ -1309,7 +1158,6 @@ flavor_por.23 = {
 			foreground = estate_type:clergy_estate
 			background = estate_type:clergy_estate
 		}
-
 		ruler ?= { save_scope_as = target_character }
 	}
 
@@ -1322,19 +1170,14 @@ flavor_por.23 = {
 		}
 
 		add_prestige = prestige_extreme_bonus
+
 		if = {
 			limit = {
-				location:leiria = {
-					NOT = {
-						has_building = building_type:monastery
-					}
-				}
+				location:leiria = { NOT = { has_building = building_type:monastery } }
 			}
-
-			location:leiria = {
-				construct_building = { building_type = building_type:monastery }
-			}
+			location:leiria = { construct_building = { building_type = building_type:monastery } }
 		}
+
 		location:leiria = {
 			create_art = {
 				quality = 95
@@ -1369,7 +1212,6 @@ flavor_por.24 = {
 			foreground = estate_type:clergy_estate
 			background = estate_type:clergy_estate
 		}
-
 		previous_ruler ?= {
 			if = { limit = { this != scope:old_ruler } save_scope_as = old_ruler }
 		}
@@ -1427,7 +1269,6 @@ flavor_por.25 = {
 			foreground = estate_type:clergy_estate
 			background = estate_type:clergy_estate
 		}
-
 		c:POR = { ruler ?= { save_scope_as = target_character } }
 	}
 
@@ -1443,19 +1284,14 @@ flavor_por.25 = {
 			}
 		}
 
-		location:tavira = {
-			destroy_building = "building(building_type:order_stronghold|c:POR)"
-		}
+		location:tavira = { destroy_building = "building(building_type:order_stronghold|c:POR)" }
 	}
 
 	option = {
 		name = flavor_por.25.b
 		add_prestige = prestige_extreme_penalty
 
-		change_societal_value = {
-			type = offensive_vs_defensive
-			value = societal_value_minor_move_to_left
-		}
+		change_societal_value = { type = offensive_vs_defensive value = societal_value_minor_move_to_left }
 	}
 
 	historical_info = flavor_por.25.historical_info
@@ -1481,7 +1317,6 @@ flavor_por.26 = {
 
 	trigger = {
 		owns = location:funchal
-
 		any_subject = {
 			is_subject_type = colonial_nation
 			capital.region = region:brazil_region
@@ -1493,7 +1328,6 @@ flavor_por.26 = {
 					raw_material = goods:sugar
 					rgo_workers >= 3
 				}
-
 				# Several locations with the sugar plantation
 				any_owned_location = {
 					region = region:brazil_region
@@ -1518,19 +1352,12 @@ flavor_por.26 = {
 		historical_option = yes
 		location:funchal = { change_raw_material = goods:wine }
 
-		change_societal_value = {
-			type = capital_economy_vs_traditional_economy
-			value = societal_value_minor_move_to_left
-		}
+		change_societal_value = { type = capital_economy_vs_traditional_economy value = societal_value_minor_move_to_left }
 	}
 
 	option = {
 		name = flavor_por.26.b
-
-		change_societal_value = {
-			type = capital_economy_vs_traditional_economy
-			value = societal_value_move_to_right
-		}
+		change_societal_value = { type = capital_economy_vs_traditional_economy value = societal_value_move_to_right }
 	}
 
 	historical_info = flavor_por.26.historical_info
@@ -1556,9 +1383,7 @@ flavor_por.27 = {
 		any_owned_location = {
 			sub_continent = sub_continent:south_asia
 			dominant_religion.group = religion_group:christian
-			NOT = {
-				dominant_religion = religion:catholic
-			}
+			NOT = { dominant_religion = religion:catholic }
 		}
 	}
 
@@ -1577,38 +1402,25 @@ flavor_por.27 = {
 
 		random_owned_location = {
 			limit = { sub_continent = sub_continent:south_asia }
-
 			every_pop = {
 				limit = {
 					owner = root
 					religion.group = religion_group:christian
-					NOT = {
-						religion = religion:catholic
-					}
+					NOT = { religion = religion:catholic }
 				}
-
 				split_pop = { fraction = 0.25 religion = religion:catholic }
 			}
 		}
 
-		change_societal_value = {
-			type = spiritualist_vs_humanist
-			value = societal_value_minor_move_to_left
-		}
+		change_societal_value = { type = spiritualist_vs_humanist value = societal_value_minor_move_to_left }
 	}
 
 	option = {
 		name = flavor_por.27.b
 
-		add_estate_satisfaction = {
-			type = estate_type:clergy_estate
-			value = estate_satisfaction_mild_penalty
-		}
+		add_estate_satisfaction = { type = estate_type:clergy_estate value = estate_satisfaction_mild_penalty }
 
-		change_societal_value = {
-			type = spiritualist_vs_humanist
-			value = societal_value_move_to_right
-		}
+		change_societal_value = { type = spiritualist_vs_humanist value = societal_value_move_to_right }
 	}
 
 	historical_info = flavor_por.27.historical_info
@@ -1633,9 +1445,7 @@ flavor_por.28 = {
 	trigger = {
 		has_ruler = yes
 		has_consort = yes
-		NOT = {
-			has_policy = local_courts
-		}
+		NOT = { has_policy = local_courts }
 		any_royal_marriage = {
 			total_population >= root.total_population
 			religion = religion:catholic
@@ -1659,7 +1469,6 @@ flavor_por.28 = {
 				religion = religion:catholic
 				has_policy = local_courts
 			}
-
 			save_scope_as = target_country
 		}
 	}
@@ -1669,37 +1478,21 @@ flavor_por.28 = {
 		historical_option = yes
 		add_policy = policy:local_courts
 
-		add_estate_satisfaction = {
-			type = estate_type:clergy_estate
-			value = estate_satisfaction_weak_bonus
-		}
+		add_estate_satisfaction = { type = estate_type:clergy_estate value = estate_satisfaction_weak_bonus }
 
-		scope:target_country = {
-			add_opinion = { target = root modifier = opinion_supportive_monarch }
-		}
+		scope:target_country = { add_opinion = { target = root modifier = opinion_supportive_monarch } }
 
-		change_societal_value = {
-			type = spiritualist_vs_humanist
-			value = societal_value_move_to_left
-		}
+		change_societal_value = { type = spiritualist_vs_humanist value = societal_value_move_to_left }
 	}
 
 	option = {
 		name = flavor_por.28.b
 
-		add_estate_satisfaction = {
-			type = estate_type:clergy_estate
-			value = estate_satisfaction_mild_penalty
-		}
+		add_estate_satisfaction = { type = estate_type:clergy_estate value = estate_satisfaction_mild_penalty }
 
-		scope:target_country = {
-			add_opinion = { target = root modifier = opinion_backward_monarch }
-		}
+		scope:target_country = { add_opinion = { target = root modifier = opinion_backward_monarch } }
 
-		change_societal_value = {
-			type = spiritualist_vs_humanist
-			value = societal_value_move_to_right
-		}
+		change_societal_value = { type = spiritualist_vs_humanist value = societal_value_move_to_right }
 	}
 
 	historical_info = flavor_por.28.historical_info
@@ -1724,10 +1517,7 @@ flavor_por.29 = {
 
 	trigger = {
 		has_ruler = yes
-		OR = {
-			modifier:tolerance_heathen < -3
-			has_policy = local_courts
-		}
+		OR = { modifier:tolerance_heathen < -3 has_policy = local_courts }
 		location:lisbon = {
 			any_pop = { culture = culture:portuguese pop_size > 5 }
 			any_pop = { culture = culture:sephardi pop_size > 0.6 }
@@ -1743,89 +1533,70 @@ flavor_por.29 = {
 		}
 
 		ruler = { save_scope_as = target_character }
+
 		if = {
 			limit = {
 				location:constantinople = { owner = { religion = religion:sunni } }
 			}
-
 			location:constantinople = { save_scope_as = escape_target1 }
 		}
 		else = {
 			region:maghreb_region = {
 				random_location_in_region = {
 					limit = {
-						owner ?= {
-							NOT = {
-								this = root
-							}
-						}
+						owner ?= { NOT = { this = root } }
 
 						dominant_religion = religion:sunni
 						is_coastal = yes
 						is_discovered_by = root
 					}
-
 					save_scope_as = escape_target1
 				}
 			}
 		}
+
 		if = {
 			limit = {
 				location:thessaloniki = { owner = { religion = religion:sunni } }
 			}
-
 			location:thessaloniki = { save_scope_as = escape_target2 }
 		}
 		else = {
 			region:maghreb_region = {
 				random_location_in_region = {
 					limit = {
-						owner ?= {
-							NOT = {
-								this = root
-							}
-						}
+						owner ?= { NOT = { this = root } }
 
 						dominant_religion = religion:sunni
 						is_coastal = yes
 						is_discovered_by = root
 					}
-
 					save_scope_as = escape_target2
 				}
 			}
 		}
+
 		region:maghreb_region = {
 			random_location_in_region = {
 				limit = {
-					owner ?= {
-						NOT = {
-							this = root
-						}
-					}
+					owner ?= { NOT = { this = root } }
 
 					dominant_religion = religion:sunni
 					is_coastal = yes
 					is_discovered_by = root
 				}
-
 				save_scope_as = escape_target3
 			}
 		}
 		region:maghreb_region = {
 			random_location_in_region = {
 				limit = {
-					owner ?= {
-						NOT = {
-							this = root
-						}
-					}
+					owner ?= { NOT = { this = root } }
 
 					dominant_religion = religion:sunni
 					is_coastal = yes
 					is_discovered_by = root
 				}
-
 				save_scope_as = escape_target4
 			}
 		}
@@ -1834,23 +1605,14 @@ flavor_por.29 = {
 			random_location_in_sub_continent = {
 				limit = {
 					owner ?= {
-						NOT = {
-							this = root
-						}
+						NOT = { this = root }
 						OR = {
 							modifier:tolerance_heathen >= 3
-							AND = {
-								religion.group = religion_group:christian
-								NOT = {
-									religion = religion:catholic
-								}
-							}
+							AND = { religion.group = religion_group:christian NOT = { religion = religion:catholic } }
 						}
 					}
-
 					is_discovered_by = root
 				}
-
 				save_scope_as = escape_target5
 			}
 		}
@@ -1858,26 +1620,18 @@ flavor_por.29 = {
 			random_location_in_sub_continent = {
 				limit = {
 					owner ?= {
-						NOT = {
-							this = root
-						}
+						NOT = { this = root }
 						OR = {
 							modifier:tolerance_heathen >= 3
-							AND = {
-								religion.group = religion_group:christian
-								NOT = {
-									religion = religion:catholic
-								}
-							}
+							AND = { religion.group = religion_group:christian NOT = { religion = religion:catholic } }
 						}
 					}
-
 					is_discovered_by = root
 				}
-
 				save_scope_as = escape_target6
 			}
 		}
+
 		if = {
 			limit = { location:sao_tome = { owner ?= root } }
 			location:sao_tome = { save_scope_as = escape_target7 }
@@ -1885,22 +1639,15 @@ flavor_por.29 = {
 		else = {
 			continent:america = {
 				random_location_in_continent = {
-					limit = {
-						is_coastal = yes
-						any_country = { has_colonial_charter_in = prev.province_definition }
-					}
-
+					limit = { is_coastal = yes any_country = { has_colonial_charter_in = prev.province_definition } }
 					save_scope_as = escape_target7
 				}
 			}
 		}
+
 		continent:america = {
 			random_location_in_continent = {
-				limit = {
-					is_coastal = yes
-					any_country = { has_colonial_charter_in = prev.province_definition }
-				}
-
+				limit = { is_coastal = yes any_country = { has_colonial_charter_in = prev.province_definition } }
 				save_scope_as = escape_target8
 			}
 		}
@@ -1914,28 +1661,19 @@ flavor_por.29 = {
 		hidden_effect = {
 			area:north_portugal_area = {
 				every_location_in_area = {
-					every_pop = {
-						limit = { religion = religion:judaism }
-						split_pop = { fraction = 0.90 religion = religion:catholic }
-					}
+					every_pop = { limit = { religion = religion:judaism } split_pop = { fraction = 0.90 religion = religion:catholic } }
 				}
 			}
 
 			area:south_portugal_area = {
 				every_location_in_area = {
-					every_pop = {
-						limit = { religion = religion:judaism }
-						split_pop = { fraction = 0.90 religion = religion:catholic }
-					}
+					every_pop = { limit = { religion = religion:judaism } split_pop = { fraction = 0.90 religion = religion:catholic } }
 				}
 			}
 
 			every_province = {
 				limit = {
-					OR = {
-						area = area:north_portugal_area
-						area = area:south_portugal_area
-					}
+					OR = { area = area:north_portugal_area area = area:south_portugal_area }
 					religion_percentage = { religion = religion:judaism value > 0 }
 				}
 
@@ -2020,7 +1758,6 @@ flavor_por.29 = {
 					}
 				}
 			}
-
 			area:south_portugal_area = {
 				every_location_in_area = {
 					every_pop = {
@@ -2054,10 +1791,7 @@ flavor_por.30 = {
 
 	trigger = {
 		has_ruler = yes
-		OR = {
-			modifier:tolerance_heathen < -3
-			has_policy = local_courts
-		}
+		OR = { modifier:tolerance_heathen < -3 has_policy = local_courts }
 		location:lisbon = {
 			any_pop = { culture = culture:portuguese pop_size > 5 }
 			any_pop = { culture = culture:sephardi pop_size > 0.6 }
@@ -2071,7 +1805,6 @@ flavor_por.30 = {
 			foreground = estate_type:peasants_estate
 			background = estate_type:peasants_estate
 		}
-
 		ruler = { save_scope_as = target_character }
 	}
 
@@ -2081,79 +1814,58 @@ flavor_por.30 = {
 
 		location:lisbon = {
 			change_prosperity = prosperity_severe_penalty
-
 			random_list = {
 				20 = {
 					custom_tooltip = flavor_por.30.tt1
-
 					hidden_effect = {
 						every_pop = {
-							limit = {
-								OR = {
-									culture = culture:portuguese
-									culture = culture:sephardi
-								}
-
-								religion = religion:catholic
+							limit = { OR = { culture = culture:portuguese culture = culture:sephardi } religion = religion:catholic }
+							add_pop_size = {
+								value = pop_size
+								multiply = -0.3
+								max = -4.000
 							}
-
-							add_pop_size = { value = pop_size multiply = -0.3 max = -4.000 }
 						}
 					}
 				}
 
 				30 = {
 					custom_tooltip = flavor_por.30.tt2
-
 					hidden_effect = {
 						every_pop = {
-							limit = {
-								OR = {
-									culture = culture:portuguese
-									culture = culture:sephardi
-								}
-
-								religion = religion:catholic
+							limit = { OR = { culture = culture:portuguese culture = culture:sephardi } religion = religion:catholic }
+							add_pop_size = {
+								value = pop_size
+								multiply = -0.25
+								max = -3.000
 							}
-
-							add_pop_size = { value = pop_size multiply = -0.25 max = -3.000 }
 						}
 					}
 				}
 				30 = {
 					custom_tooltip = flavor_por.30.tt3
-
 					hidden_effect = {
 						every_pop = {
-							limit = {
-								OR = {
-									culture = culture:portuguese
-									culture = culture:sephardi
-								}
-
-								religion = religion:catholic
+							limit = { OR = { culture = culture:portuguese culture = culture:sephardi } religion = religion:catholic }
+							add_pop_size = {
+								value = pop_size
+								multiply = -0.2
+								max = -2.000
 							}
-
-							add_pop_size = { value = pop_size multiply = -0.2 max = -2.000 }
 						}
 					}
 				}
 
 				20 = {
 					custom_tooltip = flavor_por.30.tt4
-
 					hidden_effect = {
 						every_pop = {
-							limit = {
-								OR = {
-									culture = culture:portuguese
-									culture = culture:sephardi
-								}
-
-								religion = religion:catholic
+							limit = { OR = { culture = culture:portuguese culture = culture:sephardi } religion = religion:catholic }
+							add_pop_size = {
+								value = pop_size
+								multiply = -0.1
+								max = -1.000
 							}
-
-							add_pop_size = { value = pop_size multiply = -0.1 max = -1.000 }
 						}
 					}
 				}
@@ -2170,42 +1882,30 @@ flavor_por.30 = {
 
 		location:lisbon = {
 			change_prosperity = prosperity_weak_penalty
-
 			random_list = {
 				60 = {
 					custom_tooltip = flavor_por.30.tt3
-
 					hidden_effect = {
 						every_pop = {
-							limit = {
-								OR = {
-									culture = culture:portuguese
-									culture = culture:sephardi
-								}
-
-								religion = religion:catholic
+							limit = { OR = { culture = culture:portuguese culture = culture:sephardi } religion = religion:catholic }
+							add_pop_size = {
+								value = pop_size
+								multiply = -0.2
+								max = -2.000
 							}
-
-							add_pop_size = { value = pop_size multiply = -0.2 max = -2.000 }
 						}
 					}
 				}
-
 				40 = {
 					custom_tooltip = flavor_por.30.tt4
-
 					hidden_effect = {
 						every_pop = {
-							limit = {
-								OR = {
-									culture = culture:portuguese
-									culture = culture:sephardi
-								}
-
-								religion = religion:catholic
+							limit = { OR = { culture = culture:portuguese culture = culture:sephardi } religion = religion:catholic }
+							add_pop_size = {
+								value = pop_size
+								multiply = -0.10
+								max = -1.000
 							}
-
-							add_pop_size = { value = pop_size multiply = -0.10 max = -1.000 }
 						}
 					}
 				}
@@ -2248,136 +1948,96 @@ flavor_por.31 = {
 		region:maghreb_region = {
 			random_location_in_region = {
 				limit = {
-					owner ?= {
-						NOT = {
-							this = root
-						}
-					}
+					owner ?= { NOT = { this = root } }
 
 					dominant_religion = religion:sunni
 					is_coastal = yes
 					is_discovered_by = root
 				}
-
 				save_scope_as = escape_target1
 			}
 		}
 		region:maghreb_region = {
 			random_location_in_region = {
 				limit = {
-					owner ?= {
-						NOT = {
-							this = root
-						}
-					}
+					owner ?= { NOT = { this = root } }
 
 					dominant_religion = religion:sunni
 					is_coastal = yes
 					is_discovered_by = root
 				}
-
 				save_scope_as = escape_target2
 			}
 		}
 		region:maghreb_region = {
 			random_location_in_region = {
 				limit = {
-					owner ?= {
-						NOT = {
-							this = root
-						}
-					}
+					owner ?= { NOT = { this = root } }
 
 					dominant_religion = religion:sunni
 					is_coastal = yes
 					is_discovered_by = root
 				}
-
 				save_scope_as = escape_target3
 			}
 		}
 		region:maghreb_region = {
 			random_location_in_region = {
 				limit = {
-					owner ?= {
-						NOT = {
-							this = root
-						}
-					}
+					owner ?= { NOT = { this = root } }
 
 					dominant_religion = religion:sunni
 					is_coastal = yes
 					is_discovered_by = root
 				}
-
 				save_scope_as = escape_target4
 			}
 		}
 		region:maghreb_region = {
 			random_location_in_region = {
 				limit = {
-					owner ?= {
-						NOT = {
-							this = root
-						}
-					}
+					owner ?= { NOT = { this = root } }
 
 					dominant_religion = religion:sunni
 					is_coastal = yes
 					is_discovered_by = root
 				}
-
 				save_scope_as = escape_target5
 			}
 		}
 		region:maghreb_region = {
 			random_location_in_region = {
 				limit = {
-					owner ?= {
-						NOT = {
-							this = root
-						}
-					}
+					owner ?= { NOT = { this = root } }
 
 					dominant_religion = religion:sunni
 					is_coastal = yes
 					is_discovered_by = root
 				}
-
 				save_scope_as = escape_target6
 			}
 		}
 		region:maghreb_region = {
 			random_location_in_region = {
 				limit = {
-					owner ?= {
-						NOT = {
-							this = root
-						}
-					}
+					owner ?= { NOT = { this = root } }
 
 					dominant_religion = religion:sunni
 					is_coastal = yes
 					is_discovered_by = root
 				}
-
 				save_scope_as = escape_target7
 			}
 		}
 		region:maghreb_region = {
 			random_location_in_region = {
 				limit = {
-					owner ?= {
-						NOT = {
-							this = root
-						}
-					}
+					owner ?= { NOT = { this = root } }
 
 					dominant_religion = religion:sunni
 					is_coastal = yes
 					is_discovered_by = root
 				}
-
 				save_scope_as = escape_target8
 			}
 		}
@@ -2391,13 +2051,9 @@ flavor_por.31 = {
 		hidden_effect = {
 			every_province = {
 				limit = {
-					OR = {
-						area = area:north_portugal_area
-						area = area:south_portugal_area
-					}
+					OR = { area = area:north_portugal_area area = area:south_portugal_area }
 					religion_percentage = { religion = religion:sunni value > 0 }
 				}
-
 				add_migration = {
 					owner = prev
 					from = this.province_definition
@@ -2419,28 +2075,19 @@ flavor_por.31 = {
 				60 = {
 					area:north_portugal_area = {
 						every_location_in_area = {
-							every_pop = {
-								limit = { religion = religion:sunni }
-								split_pop = { fraction = 0.80 religion = religion:catholic }
-							}
+							every_pop = { limit = { religion = religion:sunni } split_pop = { fraction = 0.80 religion = religion:catholic } }
 						}
 					}
 
 					area:south_portugal_area = {
 						every_location_in_area = {
-							every_pop = {
-								limit = { religion = religion:sunni }
-								split_pop = { fraction = 0.80 religion = religion:catholic }
-							}
+							every_pop = { limit = { religion = religion:sunni } split_pop = { fraction = 0.80 religion = religion:catholic } }
 						}
 					}
 
 					every_province = {
 						limit = {
-							OR = {
-								area = area:north_portugal_area
-								area = area:south_portugal_area
-							}
+							OR = { area = area:north_portugal_area area = area:south_portugal_area }
 							religion_percentage = { religion = religion:sunni value > 0 }
 						}
 
@@ -2510,23 +2157,16 @@ flavor_por.31 = {
 						}
 					}
 				}
-
 				40 = {
 					area:north_portugal_area = {
 						every_location_in_area = {
-							every_pop = {
-								limit = { religion = religion:sunni }
-								split_pop = { fraction = 0.30 religion = religion:catholic }
-							}
+							every_pop = { limit = { religion = religion:sunni } split_pop = { fraction = 0.30 religion = religion:catholic } }
 						}
 					}
 
 					area:south_portugal_area = {
 						every_location_in_area = {
-							every_pop = {
-								limit = { religion = religion:sunni }
-								split_pop = { fraction = 0.30 religion = religion:catholic }
-							}
+							every_pop = { limit = { religion = religion:sunni } split_pop = { fraction = 0.30 religion = religion:catholic } }
 						}
 					}
 
@@ -2538,13 +2178,7 @@ flavor_por.31 = {
 					}
 
 					every_owned_location = {
-						limit = {
-							OR = {
-								area = area:north_portugal_area
-								area = area:south_portugal_area
-							}
-						}
-
+						limit = { OR = { area = area:north_portugal_area area = area:south_portugal_area } }
 						every_pop = {
 							limit = { owner = root religion = religion:sunni }
 							add_pop_satisfaction = pop_satisfaction_ultimate_penalty
@@ -2554,10 +2188,7 @@ flavor_por.31 = {
 
 					every_province = {
 						limit = {
-							OR = {
-								area = area:north_portugal_area
-								area = area:south_portugal_area
-							}
+							OR = { area = area:north_portugal_area area = area:south_portugal_area }
 							religion_percentage = { religion = religion:sunni value > 0 }
 						}
 
@@ -2633,7 +2264,6 @@ flavor_por.31 = {
 							num_of_ports > 0
 							religion = religion:sunni
 						}
-
 						trigger_event_non_silently = { id = flavor_por.32 }
 					}
 				}
@@ -2654,7 +2284,6 @@ flavor_por.31 = {
 					}
 				}
 			}
-
 			area:south_portugal_area = {
 				every_location_in_area = {
 					every_pop = {
@@ -2685,13 +2314,11 @@ flavor_por.32 = {
 			foreground = estate_type:nobles_estate
 			background = estate_type:nobles_estate
 		}
-
 		c:POR = { ruler = { save_scope_as = target_character } }
 	}
 
 	option = {
 		name = flavor_por.32.a
-
 		add_casus_belli = {
 			target = c:POR
 			type = casus_belli:cb_jihad
@@ -2708,10 +2335,7 @@ flavor_por.32 = {
 			target_province = location:lisbon.province
 		}
 
-		change_societal_value = {
-			type = spiritualist_vs_humanist
-			value = societal_value_move_to_left
-		}
+		change_societal_value = { type = spiritualist_vs_humanist value = societal_value_move_to_left }
 	}
 }
 
@@ -2740,7 +2364,6 @@ flavor_por.33 = {
 			foreground = estate_type:burghers_estate
 			background = estate_type:burghers_estate
 		}
-
 		ruler_or_regent = { save_scope_as = target_character }
 	}
 
@@ -2748,14 +2371,9 @@ flavor_por.33 = {
 		name = flavor_por.33.a
 		historical_option = yes
 
-		location:lisbon = {
-			construct_building = { building_type = building_type:ribeira_das_naus }
-		}
+		location:lisbon = { construct_building = { building_type = building_type:ribeira_das_naus } }
 
-		change_societal_value = {
-			type = land_vs_naval
-			value = societal_value_minor_move_to_right
-		}
+		change_societal_value = { type = land_vs_naval value = societal_value_minor_move_to_right }
 	}
 
 	historical_info = flavor_por.33.historical_info
@@ -2845,11 +2463,7 @@ flavor_por.35 = {
 		random_cabinet_character = { save_scope_as = target_character }
 
 		location:covilha = {
-			random_pop = {
-				limit = { owner = root pop_type = pop_type:burghers }
-				save_scope_as = target_pop
-			}
-
+			random_pop = { limit = { owner = root pop_type = pop_type:burghers } save_scope_as = target_pop }
 			save_scope_as = target_location
 		}
 	}
@@ -2857,10 +2471,7 @@ flavor_por.35 = {
 	option = {
 		name = flavor_por.35.a
 
-		change_societal_value = {
-			type = mercantilism_vs_free_trade
-			value = societal_value_huge_move_to_left
-		}
+		change_societal_value = { type = mercantilism_vs_free_trade value = societal_value_huge_move_to_left }
 
 		promote_to_head_of_cabinet_effect = {
 			target = scope:target_character
@@ -2880,10 +2491,7 @@ flavor_por.35 = {
 	option = {
 		name = flavor_por.35.b
 
-		add_estate_satisfaction = {
-			type = estate_type:burghers_estate
-			value = estate_satisfaction_mild_bonus
-		}
+		add_estate_satisfaction = { type = estate_type:burghers_estate value = estate_satisfaction_mild_bonus }
 
 		add_stability = stability_mild_bonus
 	}
@@ -2926,26 +2534,20 @@ flavor_por.36 = {
 			target = scope:target_character
 		}
 
-		change_societal_value = {
-			type = absolutism_vs_liberalism
-			value = societal_value_huge_move_to_left
-		}
+		change_societal_value = { type = absolutism_vs_liberalism value = societal_value_huge_move_to_left }
 
-		change_societal_value = {
-			type = mercantilism_vs_free_trade
-			value = societal_value_large_move_to_left
-		}
+		change_societal_value = { type = mercantilism_vs_free_trade value = societal_value_large_move_to_left }
 
-		add_estate_satisfaction = {
-			type = estate_type:nobles_estate
-			value = estate_satisfaction_extreme_penalty
-		}
+		add_estate_satisfaction = { type = estate_type:nobles_estate value = estate_satisfaction_extreme_penalty }
 	}
 
 	option = {
 		name = flavor_por.36.b
-
-		scope:ruler_scope = { add_adm = 5 add_dip = 5 add_mil = 5 }
+		scope:ruler_scope = {
+			add_adm = 5
+			add_dip = 5
+			add_mil = 5
+		}
 	}
 }
 
@@ -2981,10 +2583,7 @@ flavor_por.37 = {
 			background = estate_type:nobles_estate
 		}
 
-		random_character = {
-			limit = { is_explorer = yes }
-			save_scope_as = target_character
-		}
+		random_character = { limit = { is_explorer = yes } save_scope_as = target_character }
 
 		ruler = { save_scope_as = ruler_scope }
 
@@ -2995,7 +2594,6 @@ flavor_por.37 = {
 				quality = { 80 90 }
 				type = work_of_art_type:treatise
 			}
-
 			work_of_art:esmeraldo_do_situ_orbis = { save_scope_as = target_work_of_art }
 		}
 	}
@@ -3056,10 +2654,7 @@ flavor_por.38 = {
 			save_scope_as = target_character
 		}
 
-		random_pop = {
-			limit = { location.sub_continent = sub_continent:south_asia }
-			save_scope_as = target_pop
-		}
+		random_pop = { limit = { location.sub_continent = sub_continent:south_asia } save_scope_as = target_pop }
 	}
 
 	trigger = { has_presence_in = sub_continent:south_asia }
@@ -3119,7 +2714,6 @@ flavor_por.39 = {
 			foreground = estate_type:nobles_estate
 			background = estate_type:nobles_estate
 		}
-
 		character:por_pedro_barcelos = { save_scope_as = target_character }
 	}
 
@@ -3164,7 +2758,6 @@ flavor_por.40 = {
 			foreground = estate_type:nobles_estate
 			background = estate_type:nobles_estate
 		}
-
 		ruler_or_regent = { save_scope_as = target_character }
 	}
 
@@ -3177,15 +2770,9 @@ flavor_por.40 = {
 
 		add_policy = policy:por_lei_mental
 
-		change_societal_value = {
-			type = centralization_vs_decentralization
-			value = societal_value_move_to_left
-		}
+		change_societal_value = { type = centralization_vs_decentralization value = societal_value_move_to_left }
 
-		add_estate_satisfaction = {
-			type = estate_type:nobles_estate
-			value = estate_satisfaction_extreme_penalty
-		}
+		add_estate_satisfaction = { type = estate_type:nobles_estate value = estate_satisfaction_extreme_penalty }
 	}
 
 	option = {
@@ -3208,11 +2795,7 @@ por_can_be_kicked_out = {
 		root.heir ?= this
 
 		trigger_if = {
-			limit = {
-				has_dynasty = yes
-				root.ruler_or_heir_if_regent ?= { has_dynasty = yes }
-			}
-
+			limit = { has_dynasty = yes root.ruler_or_heir_if_regent ?= { has_dynasty = yes } }
 			this.dynasty = root.ruler_or_heir_if_regent.dynasty
 		}
 	}
@@ -3224,14 +2807,8 @@ flavor_por.41 = {
 	desc = flavor_por.41.desc
 
 	trigger = {
-		OR = {
-			tag = POR
-			tag = CAS
-		}
-		any_character = {
-			has_estate = estate_type:nobles_estate
-			por_can_be_kicked_out = yes
-		}
+		OR = { tag = POR tag = CAS }
+		any_character = { has_estate = estate_type:nobles_estate por_can_be_kicked_out = yes }
 
 		estate_satisfaction:nobles_estate < 0.3 # if adjusting this, adjust por_reason_for_flavor_por_41
 		trigger_if = { limit = { tag = POR } c:CAS ?= { is_neighbor_of = root } }
@@ -3256,7 +2833,6 @@ flavor_por.41 = {
 				modifier = { factor = 10 trigger = { in_cabinet = yes } }
 				modifier = {
 					factor = 5
-
 					trigger = {
 						OR = {
 							is_general = yes
@@ -3269,6 +2845,7 @@ flavor_por.41 = {
 
 			save_scope_as = target_character
 		}
+
 		if = { limit = { tag = POR } c:CAS = { save_scope_as = target_country } }
 		else = { c:POR = { save_scope_as = target_country } }
 	}
@@ -3278,9 +2855,7 @@ flavor_por.41 = {
 
 		custom_tooltip = por_reason_for_flavor_por_41
 
-		show_as_tooltip = {
-			scope:target_character = { move_country = scope:target_country }
-		}
+		show_as_tooltip = { scope:target_character = { move_country = scope:target_country } }
 
 		scope:target_country = { trigger_event_non_silently = { id = flavor_por.42 } }
 	}
@@ -3300,11 +2875,7 @@ flavor_por.42 = {
 		}
 	}
 
-	option = {
-		name = flavor_por.42.a
-
-		scope:target_character = { move_country = scope:target_country }
-	}
+	option = { name = flavor_por.42.a scope:target_character = { move_country = scope:target_country } }
 }
 
 # The Last Troubadour - Livro das Cantigas
@@ -3338,9 +2909,7 @@ flavor_por.43 = {
 
 		character:por_pedro_barcelos = { save_scope_as = target_character }
 
-		character:cas_alfonso_xi_burgundy = {
-			save_scope_as = target_dedication_character
-		}
+		character:cas_alfonso_xi_burgundy = { save_scope_as = target_dedication_character }
 
 		c:CAS = { save_scope_as = target_country }
 
@@ -3361,9 +2930,7 @@ flavor_por.43 = {
 	option = {
 		name = flavor_por.43.a
 
-		show_as_tooltip = {
-			scope:target_work_of_art = { move_art = scope:target_country.capital }
-		}
+		show_as_tooltip = { scope:target_work_of_art = { move_art = scope:target_country.capital } }
 
 		add_prestige = prestige_severe_bonus
 
@@ -3373,11 +2940,7 @@ flavor_por.43 = {
 		}
 	}
 
-	option = {
-		name = flavor_por.43.b
-
-		culture = { add_cultural_tradition = cultural_tradition_severe_bonus }
-	}
+	option = { name = flavor_por.43.b culture = { add_cultural_tradition = cultural_tradition_severe_bonus } }
 }
 
 flavor_por.44 = {
@@ -3435,11 +2998,7 @@ flavor_por.45 = {
 		ruler = { save_scope_as = target_character }
 	}
 
-	option = {
-		name = flavor_por.45.a
-
-		add_reform = government_reform:por_ordinances
-	}
+	option = { name = flavor_por.45.a add_reform = government_reform:por_ordinances }
 
 	option = {
 		name = flavor_por.45.b
@@ -3470,10 +3029,7 @@ flavor_por.46 = {
 		monthly_chance = 10
 	}
 
-	trigger = {
-		has_reform = government_reform:por_ordinances
-		has_embraced_institution = institution:printing_press
-	}
+	trigger = { has_reform = government_reform:por_ordinances has_embraced_institution = institution:printing_press }
 
 	image = "gfx/interface/illustrations/institutions/printing_press.dds"
 
@@ -3514,11 +3070,7 @@ flavor_por.47 = {
 			foreground = estate_type:burghers_estate
 			background = estate_type:burghers_estate
 		}
-
-		capital = {
-			save_scope_as = target_location
-			random_pop = { save_scope_as = target_pop }
-		}
+		capital = { save_scope_as = target_location random_pop = { save_scope_as = target_pop } }
 	}
 
 	option = {
@@ -3530,7 +3082,6 @@ flavor_por.47 = {
 
 		scope:target_location = {
 			change_development = development_mild_bonus
-
 			every_pop = {
 				limit = { owner = root pop_type = pop_type:peasants }
 				add_pop_satisfaction = pop_satisfaction_extreme_bonus
@@ -3550,10 +3101,7 @@ flavor_por.47 = {
 		add_prestige = prestige_mild_penalty
 
 		scope:target_location = {
-			every_pop = {
-				limit = { owner = root }
-				add_pop_satisfaction = pop_satisfaction_extreme_penalty
-			}
+			every_pop = { limit = { owner = root } add_pop_satisfaction = pop_satisfaction_extreme_penalty }
 		}
 	}
 }
@@ -3577,13 +3125,7 @@ flavor_por.48 = {
 	illustration_tags = { 10 = happy 10 = interior }
 
 	trigger = {
-		location:bruges = {
-			NOT = {
-				owner = root
-			}
-
-			within_naval_range_of = root
-		}
+		location:bruges = { NOT = { owner = root } within_naval_range_of = root }
 	}
 
 	immediate = {
@@ -3591,13 +3133,11 @@ flavor_por.48 = {
 			foreground = estate_type:burghers_estate
 			background = estate_type:burghers_estate
 		}
-
 		location:bruges = { save_scope_as = target_location }
 	}
 
 	option = {
 		name = flavor_por.48.a
-
 		scope:target_location = {
 			add_pop = {
 				culture = root
@@ -3605,7 +3145,6 @@ flavor_por.48 = {
 				type = pop_type:burghers
 				size = { 0.1 1 }
 			}
-
 			construct_building = {
 				building_type = building_type:trade_office
 				owner = root
@@ -3624,10 +3163,7 @@ flavor_por.48 = {
 			years = 10
 		}
 
-		add_estate_satisfaction = {
-			type = estate_type:burghers_estate
-			value = estate_satisfaction_weak_penalty
-		}
+		add_estate_satisfaction = { type = estate_type:burghers_estate value = estate_satisfaction_weak_penalty }
 	}
 }
 
@@ -3654,7 +3190,6 @@ flavor_por.49 = {
 			foreground = estate_type:nobles_estate
 			background = estate_type:nobles_estate
 		}
-
 		create_character = {
 			first_name = name_ferdinand # Should be alternative
 			last_name = Lopes
@@ -3709,10 +3244,7 @@ flavor_por.50 = {
 		has_ruler = yes
 
 		any_known_country = {
-			receiving_scripted_relation = {
-				type = relation_type:military_sponsorship
-				target = root
-			}
+			receiving_scripted_relation = { type = relation_type:military_sponsorship target = root }
 
 			any_owned_foreign_building_location = { percent >= 0.75 owner = root }
 			is_ai = yes
@@ -3729,15 +3261,11 @@ flavor_por.50 = {
 
 		every_known_country = {
 			limit = {
-				receiving_scripted_relation = {
-					type = relation_type:military_sponsorship
-					target = root
-				}
+				receiving_scripted_relation = { type = relation_type:military_sponsorship target = root }
 
 				any_owned_foreign_building_location = { percent >= 0.75 owner = root }
 				is_ai = yes
 			}
-
 			add_to_list = order_countries
 		}
 
@@ -3746,17 +3274,11 @@ flavor_por.50 = {
 
 	option = {
 		name = flavor_por.50.a
-
-		every_in_list = {
-			list = order_countries
-
-			make_subject_of = { target = root type = subject_type:vassal }
-		}
+		every_in_list = { list = order_countries make_subject_of = { target = root type = subject_type:vassal } }
 	}
 
 	option = {
 		name = flavor_por.50.b
-
 		every_in_list = {
 			list = order_countries
 
@@ -3768,21 +3290,11 @@ flavor_por.50 = {
 
 			every_owned_foreign_building = {
 				limit = { building_type = building_type:order_commandery }
-
 				location = {
 					destroy_building = prev
 					if = {
-						limit = {
-							owner ?= root
-							NOT = {
-								has_building = building_type:castle
-							}
-						}
-
-						change_building_level_in_location = {
-							building = building_type:castle
-							value = 1
-						}
+						limit = { owner ?= root NOT = { has_building = building_type:castle } }
+						change_building_level_in_location = { building = building_type:castle value = 1 }
 					}
 				}
 			}
@@ -3811,13 +3323,7 @@ flavor_por.51 = {
 	trigger = {
 		location:cabo_corso = {
 			is_discovered_by = root
-
-			owner ?= {
-				this != root
-				NOT = {
-					is_at_war_with = root
-				}
-			}
+			owner ?= { this != root NOT = { is_at_war_with = root } }
 		}
 	}
 
@@ -3826,20 +3332,13 @@ flavor_por.51 = {
 			foreground = estate_type:burghers_estate
 			background = estate_type:burghers_estate
 		}
-
-		location:cabo_corso = {
-			save_scope_as = target_location
-			random_pop = { save_scope_as = random_pop_2 }
-		}
+		location:cabo_corso = { save_scope_as = target_location random_pop = { save_scope_as = random_pop_2 } }
 	}
 
 	option = {
 		name = flavor_por.51.a
 
-		change_societal_value = {
-			type = belligerent_vs_conciliatory
-			value = societal_value_move_to_right
-		}
+		change_societal_value = { type = belligerent_vs_conciliatory value = societal_value_move_to_right }
 
 		scope:target_location = {
 			construct_building = {
@@ -3858,11 +3357,7 @@ flavor_por.51 = {
 
 		if = {
 			limit = { current_age_or_later = { age = age_4_reformation } }
-
-			change_societal_value = {
-				type = mercantilism_vs_free_trade
-				value = societal_value_move_to_left
-			}
+			change_societal_value = { type = mercantilism_vs_free_trade value = societal_value_move_to_left }
 		}
 		else = { add_prestige = prestige_weak_bonus }
 	}
@@ -3899,9 +3394,7 @@ flavor_por.52 = {
 
 		any_owned_location = {
 			is_connected_to = root.capital
-			NOT = {
-				is_capital = yes
-			}
+			NOT = { is_capital = yes }
 
 			is_coastal = yes
 		}
@@ -3921,20 +3414,16 @@ flavor_por.52 = {
 				is_female = no
 				total_abilities >= 180
 			}
-
 			save_scope_as = target_character
 		}
 
 		random_owned_location = {
 			limit = {
 				is_connected_to = root.capital
-				NOT = {
-					is_capital = yes
-				}
+				NOT = { is_capital = yes }
 
 				is_coastal = yes
 			}
-
 			save_scope_as = target_location
 		}
 	}
@@ -3953,10 +3442,7 @@ flavor_por.52 = {
 			years = 25
 		}
 
-		scope:target_character = {
-			set_nickname = nick_the_navigator
-			add_trait = trait:scholar
-		}
+		scope:target_character = { set_nickname = nick_the_navigator add_trait = trait:scholar }
 
 		scope:target_location = {
 			add_location_modifier = {
@@ -3993,7 +3479,6 @@ flavor_por.53 = {
 			foreground = estate_type:burghers_estate
 			background = estate_type:burghers_estate
 		}
-
 		create_character = {
 			estate = estate_type:burghers_estate
 			first_name = name_bartholomew
@@ -4026,10 +3511,7 @@ flavor_por.53 = {
 	option = {
 		name = flavor_por.53.b
 
-		change_societal_value = {
-			type = land_vs_naval
-			value = societal_value_move_to_left
-		}
+		change_societal_value = { type = land_vs_naval value = societal_value_move_to_left }
 
 		hidden_effect = {
 			kill_character_silently = { target = scope:target_character }
@@ -4063,7 +3545,6 @@ flavor_por.54 = {
 			foreground = pop_type:soldiers
 			background = pop_type:soldiers
 		}
-
 		ruler_or_regent ?= { save_scope_as = target_character }
 	}
 
@@ -4074,10 +3555,7 @@ flavor_por.54 = {
 
 		add_navy_tradition = navy_tradition_mild_bonus
 
-		change_societal_value = {
-			type = land_vs_naval
-			value = societal_value_move_to_right
-		}
+		change_societal_value = { type = land_vs_naval value = societal_value_move_to_right }
 	}
 
 	option = {
@@ -4085,10 +3563,7 @@ flavor_por.54 = {
 
 		add_army_tradition = army_tradition_mild_bonus
 
-		change_societal_value = {
-			type = land_vs_naval
-			value = societal_value_move_to_left
-		}
+		change_societal_value = { type = land_vs_naval value = societal_value_move_to_left }
 	}
 }
 
@@ -4103,10 +3578,7 @@ flavor_por.54 = {
 scripted_effect
 
 establish_feitoria_effect = {
-	if = {
-		limit = { has_building = building_type:por_feitoria }
-		change_development = development_mild_bonus
-	}
+	if = { limit = { has_building = building_type:por_feitoria } change_development = development_mild_bonus }
 
 	else = {
 		construct_building = {
@@ -4138,12 +3610,7 @@ flavor_por.55 = {
 	illustration_tags = { 10 = exterior 10 = regular }
 
 	trigger = {
-		location:arguin = {
-			top_owner ?= root
-			NOT = {
-				has_building = building_type:por_feitoria
-			}
-		}
+		location:arguin = { top_owner ?= root NOT = { has_building = building_type:por_feitoria } }
 	}
 
 	immediate = {
@@ -4187,12 +3654,7 @@ flavor_por.56 = {
 	illustration_tags = { 10 = exterior 10 = regular }
 
 	trigger = {
-		location:xiangshan_xinhui = {
-			top_owner ?= root
-			NOT = {
-				has_building = building_type:por_feitoria
-			}
-		}
+		location:xiangshan_xinhui = { top_owner ?= root NOT = { has_building = building_type:por_feitoria } }
 	}
 
 	immediate = {
@@ -4213,19 +3675,12 @@ flavor_por.56 = {
 
 		scope:target_location = { establish_feitoria_effect = yes }
 
-		change_societal_value = {
-			type = mercantilism_vs_free_trade
-			value = societal_value_minor_move_to_left
-		}
+		change_societal_value = { type = mercantilism_vs_free_trade value = societal_value_minor_move_to_left }
 	}
 
 	option = {
 		name = flavor_por.56.b
-
-		change_societal_value = {
-			type = mercantilism_vs_free_trade
-			value = societal_value_minor_move_to_right
-		}
+		change_societal_value = { type = mercantilism_vs_free_trade value = societal_value_minor_move_to_right }
 	}
 }
 
@@ -4249,12 +3704,7 @@ flavor_por.57 = {
 	illustration_tags = { 10 = exterior 10 = regular }
 
 	trigger = {
-		location:goa = {
-			top_owner ?= root
-			NOT = {
-				has_building = building_type:por_feitoria
-			}
-		}
+		location:goa = { top_owner ?= root NOT = { has_building = building_type:por_feitoria } }
 	}
 
 	immediate = {
@@ -4277,11 +3727,7 @@ flavor_por.57 = {
 
 		if = {
 			limit = { current_age_or_later = { age = age_4_reformation } }
-
-			change_societal_value = {
-				type = mercantilism_vs_free_trade
-				value = societal_value_minor_move_to_left
-			}
+			change_societal_value = { type = mercantilism_vs_free_trade value = societal_value_minor_move_to_left }
 		}
 	}
 
@@ -4290,11 +3736,7 @@ flavor_por.57 = {
 
 		if = {
 			limit = { current_age_or_later = { age = age_4_reformation } }
-
-			change_societal_value = {
-				type = mercantilism_vs_free_trade
-				value = societal_value_minor_move_to_right
-			}
+			change_societal_value = { type = mercantilism_vs_free_trade value = societal_value_minor_move_to_right }
 		}
 		else = { add_prestige = prestige_weak_bonus }
 	}
@@ -4320,12 +3762,7 @@ flavor_por.58 = {
 	illustration_tags = { 10 = regular 10 = exterior }
 
 	trigger = {
-		location:hormuz = {
-			top_owner ?= root
-			NOT = {
-				has_building = building_type:por_feitoria
-			}
-		}
+		location:hormuz = { top_owner ?= root NOT = { has_building = building_type:por_feitoria } }
 	}
 
 	immediate = {
@@ -4347,11 +3784,7 @@ flavor_por.58 = {
 
 		if = {
 			limit = { current_age_or_later = { age = age_4_reformation } }
-
-			change_societal_value = {
-				type = mercantilism_vs_free_trade
-				value = societal_value_minor_move_to_left
-			}
+			change_societal_value = { type = mercantilism_vs_free_trade value = societal_value_minor_move_to_left }
 		}
 	}
 
@@ -4360,11 +3793,7 @@ flavor_por.58 = {
 
 		if = {
 			limit = { current_age_or_later = { age = age_4_reformation } }
-
-			change_societal_value = {
-				type = mercantilism_vs_free_trade
-				value = societal_value_minor_move_to_right
-			}
+			change_societal_value = { type = mercantilism_vs_free_trade value = societal_value_minor_move_to_right }
 		}
 		else = { add_prestige = prestige_weak_bonus }
 	}
@@ -4390,12 +3819,7 @@ flavor_por.59 = {
 	illustration_tags = { 10 = regular 10 = exterior }
 
 	trigger = {
-		location:malacca = {
-			top_owner ?= root
-			NOT = {
-				has_building = building_type:por_feitoria
-			}
-		}
+		location:malacca = { top_owner ?= root NOT = { has_building = building_type:por_feitoria } }
 	}
 
 	immediate = {
@@ -4403,7 +3827,6 @@ flavor_por.59 = {
 			foreground = estate_type:burghers_estate
 			background = estate_type:burghers_estate
 		}
-
 		location:malacca = { save_scope_as = target_location }
 	}
 
@@ -4416,11 +3839,7 @@ flavor_por.59 = {
 
 		if = {
 			limit = { current_age_or_later = { age = age_4_reformation } }
-
-			change_societal_value = {
-				type = mercantilism_vs_free_trade
-				value = societal_value_minor_move_to_left
-			}
+			change_societal_value = { type = mercantilism_vs_free_trade value = societal_value_minor_move_to_left }
 		}
 	}
 
@@ -4429,11 +3848,7 @@ flavor_por.59 = {
 
 		if = {
 			limit = { current_age_or_later = { age = age_4_reformation } }
-
-			change_societal_value = {
-				type = mercantilism_vs_free_trade
-				value = societal_value_minor_move_to_right
-			}
+			change_societal_value = { type = mercantilism_vs_free_trade value = societal_value_minor_move_to_right }
 		}
 		else = { add_prestige = prestige_weak_bonus }
 	}
@@ -4463,7 +3878,6 @@ flavor_por.60 = {
 			foreground = estate_type:burghers_estate
 			background = estate_type:burghers_estate
 		}
-
 		location:angra = { save_scope_as = target_location }
 	}
 
@@ -4476,7 +3890,6 @@ flavor_por.60 = {
 			change_location_rank_effect = {
 				modifier:sul_is_city_rank_tier = yes
 			}
-
 			construct_building = {
 				building_type = building_type:dock
 				cost_multiplier = 0.5
@@ -4499,11 +3912,7 @@ flavor_por.60 = {
 
 	option = {
 		name = flavor_por.60.b
-
-		add_estate_satisfaction = {
-			type = estate_type:burghers_estate
-			value = estate_satisfaction_weak_penalty
-		}
+		add_estate_satisfaction = { type = estate_type:burghers_estate value = estate_satisfaction_weak_penalty }
 	}
 }
 
@@ -4529,12 +3938,8 @@ flavor_por.61 = {
 	trigger = {
 		location:ceuta.owner ?= {
 			this != root
-			NOT = {
-				is_subject_or_below_of = root
-			}
-			NOT = {
-				has_mutual_scripted_relation = { type = relation_type:alliance target = root }
-			}
+			NOT = { is_subject_or_below_of = root }
+			NOT = { has_mutual_scripted_relation = { type = relation_type:alliance target = root } }
 		}
 	}
 
@@ -4546,10 +3951,7 @@ flavor_por.61 = {
 
 		ruler_or_regent ?= { save_scope_as = target_character }
 
-		location:ceuta = {
-			save_scope_as = target_location
-			owner ?= { save_scope_as = target_country }
-		}
+		location:ceuta = { save_scope_as = target_location owner ?= { save_scope_as = target_country } }
 	}
 
 	option = {
@@ -4565,11 +3967,7 @@ flavor_por.61 = {
 
 	option = {
 		name = flavor_por.61.b
-
-		change_societal_value = {
-			type = belligerent_vs_conciliatory
-			value = societal_value_minor_move_to_right
-		}
+		change_societal_value = { type = belligerent_vs_conciliatory value = societal_value_minor_move_to_right }
 	}
 }
 
@@ -4614,14 +4012,8 @@ flavor_por.62 = {
 			script = por_magellan
 		}
 
-		if = {
-			limit = { country_exists = c:SPA }
-			c:SPA = { save_scope_as = target_country }
-		}
-		else_if = {
-			limit = { country_exists = c:CAS }
-			c:CAS = { save_scope_as = target_country }
-		}
+		if = { limit = { country_exists = c:SPA } c:SPA = { save_scope_as = target_country } }
+		else_if = { limit = { country_exists = c:CAS } c:CAS = { save_scope_as = target_country } }
 		else = {
 			ordered_known_country = {
 				order_by = prestige
@@ -4653,10 +4045,7 @@ flavor_por.62 = {
 			scale = -1
 		}
 
-		change_societal_value = {
-			type = outward_vs_inward
-			value = societal_value_move_to_left
-		}
+		change_societal_value = { type = outward_vs_inward value = societal_value_move_to_left }
 
 		scope:target_country = { trigger_event_silently = flavor_cas.30 }
 	}
@@ -4682,17 +4071,11 @@ flavor_por.64 = {
 	fire_only_once = yes
 
 	trigger = {
-		location:anomansah = {
-			top_owner ?= root
-			NOT = {
-				has_building = building_type:por_feitoria
-			}
-		}
+		location:anomansah = { top_owner ?= root NOT = { has_building = building_type:por_feitoria } }
 	}
 
 	immediate = {
 		location:anomansah = { save_scope_as = target_location }
-
 		ruler_or_regent ?= { save_scope_as = target_character }
 	}
 
@@ -4705,11 +4088,7 @@ flavor_por.64 = {
 
 		if = {
 			limit = { current_age_or_later = { age = age_4_reformation } }
-
-			change_societal_value = {
-				type = mercantilism_vs_free_trade
-				value = societal_value_minor_move_to_left
-			}
+			change_societal_value = { type = mercantilism_vs_free_trade value = societal_value_minor_move_to_left }
 		}
 	}
 
@@ -4718,11 +4097,7 @@ flavor_por.64 = {
 
 		if = {
 			limit = { current_age_or_later = { age = age_4_reformation } }
-
-			change_societal_value = {
-				type = mercantilism_vs_free_trade
-				value = societal_value_minor_move_to_right
-			}
+			change_societal_value = { type = mercantilism_vs_free_trade value = societal_value_minor_move_to_right }
 		}
 		else = { add_prestige = prestige_weak_bonus }
 	}
@@ -4747,15 +4122,11 @@ flavor_por.1000 = {
 
 	trigger = {
 		num_of_ports > 0
-
 		any_market_with_merchants = {
 			location.sub_continent = sub_continent:south_east_asia
-
 			any_merchant_in_market = {
 				culture = culture:low_franconian
-				NOT = {
-					is_allied_with = { target = root }
-				}
+				NOT = { is_allied_with = { target = root } }
 			}
 		}
 	}
@@ -4767,27 +4138,19 @@ flavor_por.1000 = {
 			foreground = estate_type:burghers_estate
 			background = estate_type:burghers_estate
 		}
-
 		random_market_with_merchants = {
 			limit = {
 				location.sub_continent = sub_continent:south_east_asia
-
 				any_merchant_in_market = {
 					culture = culture:low_franconian
-					NOT = {
-						is_allied_with = { target = root }
-					}
+					NOT = { is_allied_with = { target = root } }
 				}
 			}
-
 			random_merchant_in_market = {
 				limit = {
 					culture = culture:low_franconian
-					NOT = {
-						is_allied_with = { target = root }
-					}
+					NOT = { is_allied_with = { target = root } }
 				}
-
 				save_scope_as = dutch_enemy
 			}
 		}
@@ -4854,11 +4217,7 @@ flavor_por.1002 = {
 
 	option = {
 		name = flavor_por.1002.a
-
-		add_casus_belli = {
-			target = scope:dutch_enemy
-			type = casus_belli:cb_trade_war_triggered
-		}
+		add_casus_belli = { target = scope:dutch_enemy type = casus_belli:cb_trade_war_triggered }
 	}
 }
 
@@ -4878,7 +4237,6 @@ flavor_por.1003 = {
 
 	option = {
 		name = flavor_por.1003.a
-
 		change_gold_effect = {
 			scale = 6
 		}
@@ -4891,9 +4249,7 @@ is_pedro_and_ines_in_affair = {
 	character:cas_ines_castro = {
 		is_alive = yes
 		owner ?= root
-		NOT = {
-			is_spouse_of = character:por_pedro_i_portugal
-		}
+		NOT = { is_spouse_of = character:por_pedro_i_portugal }
 	}
 
 	character:por_pedro_i_portugal = {
@@ -4923,13 +4279,7 @@ flavor_por.2000 = {
 	major_trigger = { this = scope:target_country }
 
 	trigger = {
-		character:cas_ines_castro = {
-			is_alive = yes
-			NOT = {
-				owner ?= root
-			}
-		}
-
+		character:cas_ines_castro = { is_alive = yes NOT = { owner ?= root } }
 		character:por_pedro_i_portugal = { is_alive = yes owner ?= root }
 	}
 
@@ -4946,11 +4296,7 @@ flavor_por.2000 = {
 		scope:target_character.owner = { save_scope_as = target_country }
 	}
 
-	option = {
-		name = flavor_por.2000.a
-
-		scope:target_character = { move_country = root }
-	}
+	option = { name = flavor_por.2000.a scope:target_character = { move_country = root } }
 }
 
 # Pedro's affair with Inês
@@ -4991,10 +4337,7 @@ flavor_por.2001 = {
 		add_prestige = prestige_severe_penalty
 		add_legitimacy = legitimacy_severe_penalty
 
-		trigger_event_non_silently = {
-			id = flavor_por.2002
-			months = { 6 12 }
-		}
+		trigger_event_non_silently = { id = flavor_por.2002 months = { 6 12 } }
 	}
 }
 
@@ -5020,19 +4363,12 @@ flavor_por.2002 = {
 		name = flavor_por.2002.a
 		historical_option = yes
 
-		trigger_event_non_silently = {
-			id = flavor_por.2003
-			days = { 15 30 }
-		}
+		trigger_event_non_silently = { id = flavor_por.2003 days = { 15 30 } }
 	}
 
 	option = {
 		name = flavor_por.2002.b
-
-		trigger_event_non_silently = {
-			id = flavor_por.2007
-			months = { 12 24 }
-		}
+		trigger_event_non_silently = { id = flavor_por.2007 months = { 12 24 } }
 	}
 }
 
@@ -5065,15 +4401,11 @@ flavor_por.2003 = {
 					this = scope:target_character2
 				}
 			}
-
 			save_scope_as = assassin
 		}
 
 		set_variable = assassination_of_ines
-		if = {
-			limit = { exists = scope:assassin }
-			set_variable = { name = assassin_of_ines value = scope:assassin }
-		}
+		if = { limit = { exists = scope:assassin } set_variable = { name = assassin_of_ines value = scope:assassin } }
 	}
 
 	option = {
@@ -5081,16 +4413,13 @@ flavor_por.2003 = {
 
 		if = {
 			limit = { exists = scope:assassin }
-
 			kill_character = {
 				target = scope:target_character
 				reason = assassination
 				killer = scope:assassin
 			}
 		}
-		else = {
-			kill_character = { target = scope:target_character reason = assassination }
-		}
+		else = { kill_character = { target = scope:target_character reason = assassination } }
 
 		trigger_event_non_silently = { id = flavor_por.2004 }
 	}
@@ -5117,11 +4446,7 @@ flavor_por.2004 = {
 		scope:target_character2 = { change_character_allegiance = scope:target_rebel }
 
 		ordered_province = {
-			limit = {
-				NOT = {
-					any_location_in_province = { this = root.capital }
-				}
-			}
+			limit = { NOT = { any_location_in_province = { this = root.capital } } }
 
 			max = { value = root.num_provinces divide = 4 }
 			order_by = population
@@ -5130,27 +4455,18 @@ flavor_por.2004 = {
 		}
 	}
 
-	trigger = {
-		has_ruler = yes
-		scope:target_character2 = { is_child_of = root.ruler }
-	}
+	trigger = { has_ruler = yes scope:target_character2 = { is_child_of = root.ruler } }
 
 	option = {
 		name = flavor_por.2004.a
 
 		historical_option = yes
 
-		change_societal_value = {
-			type = centralization_vs_decentralization
-			value = societal_value_minor_move_to_left
-		}
+		change_societal_value = { type = centralization_vs_decentralization value = societal_value_minor_move_to_left }
 
 		add_legitimacy = legitimacy_mild_penalty
 
-		create_instant_rebellion = {
-			list = revolt_provinces
-			rebel = scope:target_rebel
-		}
+		create_instant_rebellion = { list = revolt_provinces rebel = scope:target_rebel }
 	}
 
 	option = {
@@ -5170,10 +4486,7 @@ flavor_por.2005 = {
 	title = flavor_por.2005.title
 	desc = flavor_por.2005.desc
 
-	trigger = {
-		character:por_pedro_i_portugal ?= scope:new_ruler
-		has_variable = assassination_of_ines
-	}
+	trigger = { character:por_pedro_i_portugal ?= scope:new_ruler has_variable = assassination_of_ines }
 
 	illustration_tags = { 10 = angry 10 = interior }
 
@@ -5191,18 +4504,12 @@ flavor_por.2005 = {
 		name = flavor_por.2005.a
 
 		scope:target_character = {
-			every_child = {
-				limit = { mother ?= character:cas_ines_castro }
-				remove_character_modifier = bastard
-			}
+			every_child = { limit = { mother ?= character:cas_ines_castro } remove_character_modifier = bastard }
 		}
 
 		add_stability = stability_mild_penalty
 
-		trigger_event_non_silently = {
-			id = flavor_por.2006
-			months = { 3 6 }
-		}
+		trigger_event_non_silently = { id = flavor_por.2006 months = { 3 6 } }
 	}
 
 	after = { remove_variable = assassination_of_ines }
@@ -5260,7 +4567,6 @@ flavor_por.2007 = {
 			foreground = estate_type:nobles_estate
 			background = estate_type:nobles_estate
 		}
-
 		c:CAS ?= { save_scope_as = target_country }
 	}
 
@@ -5273,9 +4579,7 @@ flavor_por.2007 = {
 			years = 15
 		}
 
-		scope:target_country ?= {
-			add_opinion = { modifier = por_castro_meddling target = root }
-		}
+		scope:target_country ?= { add_opinion = { modifier = por_castro_meddling target = root } }
 
 		add_prestige = prestige_extreme_penalty
 
@@ -5310,12 +4614,7 @@ flavor_por.2100 = {
 			is_subject = no
 			religion.group != root.religion.group
 
-			ruler_or_regent ?= {
-				OR = {
-					has_trait = tolerant
-					societal_value_type:spiritualist_vs_humanist < 10
-				}
-			}
+			ruler_or_regent ?= { OR = { has_trait = tolerant societal_value_type:spiritualist_vs_humanist < 10 } }
 		}
 	}
 
@@ -5348,7 +4647,6 @@ flavor_por.2100 = {
 
 	option = {
 		name = flavor_por.2100.b
-
 		add_opinion_mutual_effect = {
 			modifier = por_shared_letters_with_persian_shah
 			target = scope:target_country
@@ -5386,7 +4684,6 @@ flavor_por.2101 = {
 
 	option = {
 		name = flavor_por.2101.b
-
 		add_opinion_mutual_effect = {
 			modifier = por_rejected_jesus
 			target = scope:prev_country
@@ -5398,15 +4695,9 @@ flavor_por.2101 = {
 
 		change_religion = scope:prev_country.religion
 
-		change_religion_for_ruler_and_family = {
-			country = root
-			religion = religion:catholic
-		}
+		change_religion_for_ruler_and_family = { country = root religion = religion:catholic }
 
-		add_estate_satisfaction = {
-			type = estate_type:clergy_estate
-			value = estate_satisfaction_extreme_penalty
-		}
+		add_estate_satisfaction = { type = estate_type:clergy_estate value = estate_satisfaction_extreme_penalty }
 
 		add_opinion_mutual_effect = {
 			modifier = por_converted_to_true_faith
@@ -5436,11 +4727,15 @@ flavor_por.2200 = {
 
 	trigger = {
 		at_war = no
-
 		location:kumage_oosumi = {
 			is_discovered_by = root
 			within_naval_range_of = root
-			owner ?= { at_war = no this != root within_diplomatic_range = root }
+
+			owner ?= {
+				at_war = no
+				this != root
+				within_diplomatic_range = root
+			}
 		}
 	}
 
@@ -5456,7 +4751,6 @@ flavor_por.2200 = {
 
 		location:kumage_oosumi = {
 			save_scope_as = target_location
-
 			owner ?= {
 				event_illustration_estate_effect = {
 					foreground = estate_type:burghers_estate
@@ -5484,7 +4778,6 @@ flavor_por.2200 = {
 					owner = root
 					payer = root
 				}
-
 				construct_building = {
 					building_type = building_type:missionary_building
 					cost_multiplier = 0.5
@@ -5493,7 +4786,6 @@ flavor_por.2200 = {
 					payer = root
 				}
 			}
-
 			transfer_yearly_gold = { value = 0.5 target = scope:target_country }
 		}
 
@@ -5504,7 +4796,6 @@ flavor_por.2200 = {
 
 	option = {
 		name = flavor_por.2200.b
-
 		add_casus_belli = {
 			target = scope:target_country
 			type = casus_belli:cb_conquer_province
@@ -5541,7 +4832,6 @@ flavor_por.2201 = {
 				owner = scope:prev_country
 				payer = scope:prev_country
 			}
-
 			construct_building = {
 				building_type = building_type:missionary_building
 				cost_multiplier = 0.5
@@ -5551,28 +4841,16 @@ flavor_por.2201 = {
 			}
 		}
 
-		scope:prev_country = {
-			transfer_yearly_gold = { value = 0.5 target = scope:target_country }
-		}
+		scope:prev_country = { transfer_yearly_gold = { value = 0.5 target = scope:target_country } }
 
 		if = {
-			limit = {
-				NOR = {
-					current_age = age_1_traditions
-					current_age = age_2_renaissance
-				}
-			}
-
-			change_societal_value = {
-				type = outward_vs_inward
-				value = societal_value_move_to_left
-			}
+			limit = { NOR = { current_age = age_1_traditions current_age = age_2_renaissance } }
+			change_societal_value = { type = outward_vs_inward value = societal_value_move_to_left }
 		}
 	}
 
 	option = {
 		name = flavor_por.2201.b
-
 		add_opinion_mutual_effect = {
 			modifier = por_rejected_nanban_trade_port
 			target = scope:prev_country

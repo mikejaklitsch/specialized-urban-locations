@@ -7,6 +7,8 @@
 
 sul_war_on_annex = {
 	effect = {
+		debug_log = "SUL_TRACE: war_on_annex ENTER"
+
 		scope:target = {
 			capital ?= { remove_location_modifier = sul_war_momentum_capital }
 			remove_variable = sul_war_was_auto_conquered
@@ -15,10 +17,7 @@ sul_war_on_annex = {
 		# Clean all auto-conquest tags on the annexer's locations.
 		# Targets tags referencing the annexed country, but also cleans any stale tags
 		# from previously destroyed countries to prevent invalid reference errors.
-		every_owned_location = {
-			limit = { has_variable = sul_war_original_owner }
-			remove_variable = sul_war_original_owner
-		}
+		every_owned_location = { limit = { has_variable = sul_war_original_owner } remove_variable = sul_war_original_owner }
 	}
 }
 
@@ -27,6 +26,7 @@ sul_war_on_annex = {
 
 sul_war_on_capital_moved = {
 	effect = {
+		debug_log = "SUL_TRACE: war_on_capital_moved ENTER"
 		scope:old_capital ?= { remove_location_modifier = sul_war_momentum_capital }
 	}
 }
@@ -42,21 +42,16 @@ sul_war_on_auto_conquest = {
 		exists = scope:loser
 		exists = scope:winner
 		scope:winner = {
-			OR = {
-				modifier:auto_conquer_at_war = yes
-				modifier:auto_conquer_different_religion_at_war = yes
-			}
-
+			OR = { modifier:auto_conquer_at_war = yes modifier:auto_conquer_different_religion_at_war = yes }
 			is_at_war_with = scope:loser
 		}
 	}
 
 	effect = {
+		debug_log = "SUL_TRACE: war_on_auto_conquest ENTER"
 		set_variable = { name = sul_war_original_owner value = scope:loser }
 
-		scope:loser = {
-			set_variable = { name = sul_war_was_auto_conquered value = 1 }
-		}
+		scope:loser = { set_variable = { name = sul_war_was_auto_conquered value = 1 } }
 	}
 }
 
@@ -67,21 +62,15 @@ sul_war_on_auto_conquest = {
 
 sul_war_on_war_end_cleanup = {
 	effect = {
-		scope:winner = {
-			every_owned_location = {
-				limit = { has_variable = sul_war_original_owner }
-				remove_variable = sul_war_original_owner
-			}
+		debug_log = "SUL_TRACE: war_on_war_end_cleanup ENTER"
 
+		scope:winner = {
+			every_owned_location = { limit = { has_variable = sul_war_original_owner } remove_variable = sul_war_original_owner }
 			remove_variable = sul_war_was_auto_conquered
 		}
 
 		scope:loser = {
-			every_owned_location = {
-				limit = { has_variable = sul_war_original_owner }
-				remove_variable = sul_war_original_owner
-			}
-
+			every_owned_location = { limit = { has_variable = sul_war_original_owner } remove_variable = sul_war_original_owner }
 			remove_variable = sul_war_was_auto_conquered
 		}
 	}
@@ -94,6 +83,7 @@ sul_war_on_war_end_cleanup = {
 
 sul_war_on_game_start = {
 	effect = {
+		debug_log = "SUL_TRACE: war_on_game_start ENTER"
 		every_country = {
 			limit = { at_war = yes }
 			sul_war_monthly_update = yes
@@ -113,16 +103,11 @@ sul_war_on_game_start = {
 
 sul_war_init_pulse = {
 	trigger = {
-		OR = {
-			NOT = {
-				has_global_variable = sul_war_version
-			}
-
-			global_var:sul_war_version < sul_war_version_value
-		}
+		OR = { NOT = { has_global_variable = sul_war_version } global_var:sul_war_version < sul_war_version_value }
 	}
 
 	effect = {
+		debug_log = "SUL_TRACE: war_init_pulse ENTER"
 		sul_war_init = yes
 	}
 }
@@ -130,14 +115,10 @@ sul_war_init_pulse = {
 # Monthly update: fires for countries at war or with residual state needing cleanup.
 
 sul_war_monthly_pulse = {
-	trigger = {
-		OR = {
-			at_war = yes
-			has_variable = sul_war_momentum_army_size
-		}
-	}
+	trigger = { OR = { at_war = yes has_variable = sul_war_momentum_army_size } }
 
 	effect = {
+		debug_log = "SUL_TRACE: war_monthly_pulse ENTER"
 		sul_war_monthly_update = yes
 	}
 }
@@ -151,6 +132,7 @@ sul_war_force_rebellions = {
 	trigger = { at_war = yes }
 
 	effect = {
+		debug_log = "SUL_TRACE: war_force_rebellions ENTER"
 		every_rebel = { limit = { rebel_progress >= 1.0 } start_civil_war = {  } }
 	}
 }
@@ -160,6 +142,7 @@ sul_war_force_rebellions = {
 
 sul_war_in_battle_action = {
 	effect = {
+		debug_log = "SUL_TRACE: war_in_battle ENTER"
 		sul_war_battle_frontage_check = yes
 	}
 }
@@ -169,17 +152,9 @@ sul_war_in_battle_action = {
 
 sul_war_battle_cleanup_action = {
 	effect = {
-		if = {
-			limit = { has_variable = sul_war_in_battle }
-			remove_variable = sul_war_in_battle
-		}
-		if = {
-			limit = { has_variable = sul_war_prev_atk }
-			remove_variable = sul_war_prev_atk
-		}
-		if = {
-			limit = { has_variable = sul_war_prev_def }
-			remove_variable = sul_war_prev_def
-		}
+		debug_log = "SUL_TRACE: war_battle_cleanup ENTER"
+		if = { limit = { has_variable = sul_war_in_battle } remove_variable = sul_war_in_battle }
+		if = { limit = { has_variable = sul_war_prev_atk } remove_variable = sul_war_prev_atk }
+		if = { limit = { has_variable = sul_war_prev_def } remove_variable = sul_war_prev_def }
 	}
 }

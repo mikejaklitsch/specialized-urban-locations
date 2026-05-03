@@ -14,32 +14,15 @@
 
 sul_on_rank_changed = {
 	effect = {
+		debug_log = "SUL_TRACE: on_rank_changed ENTER"
 		# Redirect vanilla rural_settlement back to the correct specialization rural
 		if = {
-			limit = {
-				location_rank = location_rank:rural_settlement
-				has_variable = sul_spec_type
-			}
-			if = {
-				limit = { var:sul_spec_type = 1 }
-				change_location_rank = location_rank:mining_rural
-			}
-			else_if = {
-				limit = { var:sul_spec_type = 2 }
-				change_location_rank = location_rank:farming_rural
-			}
-			else_if = {
-				limit = { var:sul_spec_type = 3 }
-				change_location_rank = location_rank:gathering_rural
-			}
-			else_if = {
-				limit = { var:sul_spec_type = 4 }
-				change_location_rank = location_rank:woodland_rural
-			}
-			else_if = {
-				limit = { var:sul_spec_type = 5 }
-				change_location_rank = location_rank:commercial_rural
-			}
+			limit = { location_rank = location_rank:rural_settlement has_variable = sul_spec_type }
+			if = { limit = { var:sul_spec_type = 1 } change_location_rank = location_rank:mining_rural }
+			else_if = { limit = { var:sul_spec_type = 2 } change_location_rank = location_rank:farming_rural }
+			else_if = { limit = { var:sul_spec_type = 3 } change_location_rank = location_rank:gathering_rural }
+			else_if = { limit = { var:sul_spec_type = 4 } change_location_rank = location_rank:woodland_rural }
+			else_if = { limit = { var:sul_spec_type = 5 } change_location_rank = location_rank:commercial_rural }
 		}
 
 		if = {
@@ -56,39 +39,15 @@ sul_on_rank_changed = {
 			# Nested if to prevent var:sul_spec_type evaluation on uninitialized locations.
 			if = {
 				limit = { has_variable = sul_spec_type }
+
 				if = {
 					limit = {
 						OR = {
-							AND = {
-								var:sul_spec_type = @sul_mining_type
-								NOT = {
-									modifier:sul_mining_specialization = yes
-								}
-							}
-							AND = {
-								var:sul_spec_type = @sul_farming_type
-								NOT = {
-									modifier:sul_farming_specialization = yes
-								}
-							}
-							AND = {
-								var:sul_spec_type = @sul_gathering_type
-								NOT = {
-									modifier:sul_gathering_specialization = yes
-								}
-							}
-							AND = {
-								var:sul_spec_type = @sul_woodland_type
-								NOT = {
-									modifier:sul_woodland_specialization = yes
-								}
-							}
-							AND = {
-								var:sul_spec_type = @sul_commercial_type
-								NOT = {
-									modifier:sul_commercial_specialization = yes
-								}
-							}
+							AND = { var:sul_spec_type = @sul_mining_type NOT = { modifier:sul_mining_specialization = yes } }
+							AND = { var:sul_spec_type = @sul_farming_type NOT = { modifier:sul_farming_specialization = yes } }
+							AND = { var:sul_spec_type = @sul_gathering_type NOT = { modifier:sul_gathering_specialization = yes } }
+							AND = { var:sul_spec_type = @sul_woodland_type NOT = { modifier:sul_woodland_specialization = yes } }
+							AND = { var:sul_spec_type = @sul_commercial_type NOT = { modifier:sul_commercial_specialization = yes } }
 						}
 					}
 
@@ -99,17 +58,12 @@ sul_on_rank_changed = {
 
 					if = {
 						limit = { exists = owner }
-
 						owner = {
 							if = {
-								limit = {
-									NOT = {
-										has_variable = sul_mining_count
-									}
-								}
-
+								limit = { NOT = { has_variable = sul_mining_count } }
 								sul_specialization_count_initialize = yes
 							}
+
 							prev = { save_temporary_scope_as = sul_loc }
 							sul_specialization_count_decrement = yes
 							sul_specialization_count_increment = yes
@@ -117,24 +71,14 @@ sul_on_rank_changed = {
 					}
 
 					if = {
-						limit = {
-							is_market_center = yes
-							NOT = {
-								sul_has_commercial_specialization = yes
-							}
-						}
+						limit = { is_market_center = yes NOT = { sul_has_commercial_specialization = yes } }
 
 						sul_migration_on_market_destroyed = yes
 						market = { destroy_market = {  } }
 					}
 
 					if = {
-						limit = {
-							sul_has_commercial_specialization = yes
-							NOT = {
-								is_market_center = yes
-							}
-						}
+						limit = { sul_has_commercial_specialization = yes NOT = { is_market_center = yes } }
 
 						create_market = {
 							builder = owner
@@ -165,23 +109,17 @@ sul_on_rank_changed = {
 
 sul_on_raw_material_changed = {
 	effect = {
+		debug_log = "SUL_TRACE: on_raw_material_changed ENTER"
 		# Save old RGO level so we can rebuild the new one at the same count.
 		# sul_rebuild_rgo_if_empty's prev check uses raw_material directly,
 		# so timing of the var update no longer affects the destroy/rebuild flow.
-		save_temporary_scope_value_as = {
-			name = sul_old_rgo_levels
-			value = sul_location_rgo_building_level
-		}
+		save_temporary_scope_value_as = { name = sul_old_rgo_levels value = sul_location_rgo_building_level }
 
-		set_variable = {
-			name = sul_rgo_building_type
-			value = "global_variable_map(sul_rgo_map|raw_material)"
-		}
+		set_variable = { name = sul_rgo_building_type value = "global_variable_map(sul_rgo_map|raw_material)" }
 
 		# Destroy old RGO via the OLD raw material in scope:old_goods
 		if = {
 			limit = { scope:sul_old_rgo_levels > 0 }
-
 			change_building_level_in_location = {
 				building = "global_variable_map(sul_rgo_map|scope:old_goods)"
 				value = { value = scope:sul_old_rgo_levels multiply = -1 }
@@ -191,7 +129,6 @@ sul_on_raw_material_changed = {
 		# Build new RGO with same level count (or 1 if was empty)
 		if = {
 			limit = { exists = raw_material }
-
 			change_building_level_in_location = {
 				building = "global_variable_map(sul_rgo_map|raw_material)"
 				value = { value = scope:sul_old_rgo_levels min = 1 }
@@ -212,34 +149,20 @@ sul_on_raw_material_changed = {
 
 sul_on_location_changed_owner = {
 	effect = {
-		if = {
-			limit = {
-				exists = scope:winner
-				NOT = {
-					exists = scope:loser
-				}
-			}
+		debug_log = "SUL_TRACE: on_location_changed_owner ENTER"
 
+		if = {
+			limit = { exists = scope:winner NOT = { exists = scope:loser } }
 			sul_on_location_colonized = yes
 		}
 		else_if = {
-			limit = {
-				exists = scope:loser
-				NOT = {
-					exists = scope:winner
-				}
-			}
-
+			limit = { exists = scope:loser NOT = { exists = scope:winner } }
 			sul_on_location_decolonized = yes
 		}
 
 		if = {
 			limit = { exists = raw_material }
-
-			set_variable = {
-				name = sul_rgo_building_type
-				value = "global_variable_map(sul_rgo_map|raw_material)"
-			}
+			set_variable = { name = sul_rgo_building_type value = "global_variable_map(sul_rgo_map|raw_material)" }
 		}
 	}
 }

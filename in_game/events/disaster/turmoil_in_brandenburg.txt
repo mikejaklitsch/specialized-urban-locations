@@ -35,10 +35,7 @@ scripted_effect
 bra_set_localization_scopes = {
 	save_scope_as = root_country
 
-	ruler_or_regent ?= {
-		save_scope_as = root_ruler
-		dynasty ?= { save_scope_as = root_dynasty }
-	}
+	ruler_or_regent ?= { save_scope_as = root_ruler dynasty ?= { save_scope_as = root_dynasty } }
 }
 
 scripted_trigger
@@ -69,10 +66,7 @@ turmoil_in_brandenburg.1 = {
 
 	desc = {
 		first_valid = {
-			triggered_desc = {
-				trigger = { ruler = character:bra_ludwig_v_wittelsbach }
-				desc = turmoil_in_brandenburg.1.desc
-			}
+			triggered_desc = { trigger = { ruler = character:bra_ludwig_v_wittelsbach } desc = turmoil_in_brandenburg.1.desc }
 			triggered_desc = { desc = turmoil_in_brandenburg.1.desc.fallback }
 		}
 	}
@@ -108,23 +102,14 @@ turmoil_in_brandenburg.2 = {
 	trigger = {
 		any_active_disaster = { disaster_type = disaster_type:turmoil_in_brandenburg }
 		OR = {
-			NOT = {
-				government_type = government_type:monarchy
-			}
-			NOT = {
-				is_member_of_international_organization = international_organization:hre
-			}
+			NOT = { government_type = government_type:monarchy }
+			NOT = { is_member_of_international_organization = international_organization:hre }
 			AND = {
 				government_type = government_type:monarchy
 				is_member_of_international_organization = international_organization:hre
 
 				ruler_or_heir_if_regent ?= {
-					OR = {
-						has_dynasty = no
-						NOT = {
-							dynasty = dynasty:wittelsbach_dynasty
-						}
-					}
+					OR = { has_dynasty = no NOT = { dynasty = dynasty:wittelsbach_dynasty } }
 				}
 			}
 		}
@@ -136,14 +121,8 @@ turmoil_in_brandenburg.2 = {
 		name = turmoil_in_brandenburg.2.a
 
 		custom_tooltip = turmoil_in_brandenburg.2.a.tt
-		if = {
-			limit = { has_variable = bra_wittelsbacher_investment_var }
-			remove_variable = bra_wittelsbacher_investment_var
-		}
-		if = {
-			limit = { has_variable = bra_wittelsbacher_neglect_var }
-			remove_variable = bra_wittelsbacher_neglect_var
-		}
+		if = { limit = { has_variable = bra_wittelsbacher_investment_var } remove_variable = bra_wittelsbacher_investment_var }
+		if = { limit = { has_variable = bra_wittelsbacher_neglect_var } remove_variable = bra_wittelsbacher_neglect_var }
 	}
 }
 
@@ -173,25 +152,17 @@ turmoil_in_brandenburg.3 = {
 		}
 
 		has_country_modifier = bra_waldemar_rallies_nobility
-		NOT = {
-			has_variable = false_waldemar_imposter_protection
-		}
+		NOT = { has_variable = false_waldemar_imposter_protection }
 	}
 
 	immediate = {
 		character:false_waldemar = { save_scope_as = target_character }
 
-		random_rebel = {
-			limit = { rebel_name_key = false_waldemar_rebel }
-			save_scope_as = target_rebel
-		}
+		random_rebel = { limit = { rebel_name_key = false_waldemar_rebel } save_scope_as = target_rebel }
 
 		set_variable = { name = bra_false_waldemar_revealed value = yes }
 
-		capital = {
-			create_dynasty_from_location = random
-			last_dynasty_in_location = { save_scope_as = target_dynasty }
-		}
+		capital = { create_dynasty_from_location = random last_dynasty_in_location = { save_scope_as = target_dynasty } }
 	}
 
 	option = {
@@ -203,18 +174,13 @@ turmoil_in_brandenburg.3 = {
 
 			every_descendant = {
 				change_dynasty = scope:recipient.dynasty
-				if = {
-					limit = { has_estate = estate_type:nobles_estate }
-					change_character_estate = estate_type:burghers_estate
-				}
+				if = { limit = { has_estate = estate_type:nobles_estate } change_character_estate = estate_type:burghers_estate }
 			}
 
 			remove_character_modifier = bra_false_waldemar
 		}
-		if = {
-			limit = { exists = scope:target_rebel }
-			destroy_rebel = scope:target_rebel
-		}
+
+		if = { limit = { exists = scope:target_rebel } destroy_rebel = scope:target_rebel }
 
 		remove_country_modifier = bra_waldemar_rallies_nobility
 	}
@@ -246,36 +212,22 @@ turmoil_in_brandenburg.4 = {
 	option = {
 		name = turmoil_in_brandenburg.4.a
 		bra_change_investment_score = { math = add value = 5 }
-		add_estate_satisfaction = {
-			type = estate_type:nobles_estate
-			value = estate_satisfaction_mild_penalty
-		}
+		add_estate_satisfaction = { type = estate_type:nobles_estate value = estate_satisfaction_mild_penalty }
 
 		change_gold_effect = {
 			scale = -2
 		}
 
-		scope:target_location.province = {
-			every_location_in_province = { change_control = control_severe_bonus }
-		}
+		scope:target_location.province = { every_location_in_province = { change_control = control_severe_bonus } }
 	}
 
 	# That is not our issue
 	option = {
 		name = turmoil_in_brandenburg.4.b
 		bra_change_neglect_score = { math = subtract value = 5 }
-		add_estate_satisfaction = {
-			type = estate_type:nobles_estate
-			value = estate_satisfaction_weak_bonus
-		}
-		add_estate_satisfaction = {
-			type = estate_type:burghers_estate
-			value = estate_satisfaction_mild_penalty
-		}
-		add_estate_satisfaction = {
-			type = estate_type:peasants_estate
-			value = estate_satisfaction_mild_penalty
-		}
+		add_estate_satisfaction = { type = estate_type:nobles_estate value = estate_satisfaction_weak_bonus }
+		add_estate_satisfaction = { type = estate_type:burghers_estate value = estate_satisfaction_mild_penalty }
+		add_estate_satisfaction = { type = estate_type:peasants_estate value = estate_satisfaction_mild_penalty }
 	}
 }
 
@@ -291,21 +243,12 @@ turmoil_in_brandenburg.5 = {
 	# Support the Wittelsbacher
 	trigger = {
 		any_active_disaster = { disaster_type = disaster_type:turmoil_in_brandenburg }
-
-		any_owned_location = {
-			modifier:sul_is_rural_settlement_rank_tier = yes
-			any_pop = { pop_type = pop_type:peasants }
-		}
+		any_owned_location = { modifier:sul_is_rural_settlement_rank_tier = yes any_pop = { pop_type = pop_type:peasants } }
 	}
 
 	immediate = {
 		if = {
-			limit = {
-				NOT = {
-					any_rebel = { rebel_name_key = bra_peasants_revolt }
-				}
-			}
-
+			limit = { NOT = { any_rebel = { rebel_name_key = bra_peasants_revolt } } }
 			create_rebel = {
 				name = bra_peasants_revolt
 				category = estate
@@ -314,17 +257,11 @@ turmoil_in_brandenburg.5 = {
 			}
 		}
 		else = {
-			random_rebel = {
-				limit = { rebel_name_key = bra_peasants_revolt }
-				save_scope_as = target_rebel
-			}
+			random_rebel = { limit = { rebel_name_key = bra_peasants_revolt } save_scope_as = target_rebel }
 		}
-		random_owned_location = {
-			limit = {
-				modifier:sul_is_rural_settlement_rank_tier = yes
-				any_pop = { pop_type = pop_type:peasants }
-			}
 
+		random_owned_location = {
+			limit = { modifier:sul_is_rural_settlement_rank_tier = yes any_pop = { pop_type = pop_type:peasants } }
 			save_scope_as = target_location
 		}
 	}
@@ -340,7 +277,6 @@ turmoil_in_brandenburg.5 = {
 
 		scope:target_location = {
 			change_control = control_mild_penalty
-
 			every_pop = {
 				limit = { owner = root pop_type = pop_type:peasants }
 				add_pop_satisfaction = pop_satisfaction_mild_bonus
@@ -373,9 +309,7 @@ turmoil_in_brandenburg.6 = {
 	# Support the Wittelsbacher
 	trigger = {
 		any_active_disaster = { disaster_type = disaster_type:turmoil_in_brandenburg }
-		NOT = {
-			has_country_modifier = bra_revoked_clergy_power
-		}
+		NOT = { has_country_modifier = bra_revoked_clergy_power }
 	}
 
 	immediate = {  }
@@ -385,10 +319,7 @@ turmoil_in_brandenburg.6 = {
 		bra_change_investment_score = { math = add value = 5 }
 		add_stability = stability_weak_penalty
 
-		add_estate_satisfaction = {
-			type = estate_type:clergy_estate
-			value = estate_satisfaction_mild_penalty
-		}
+		add_estate_satisfaction = { type = estate_type:clergy_estate value = estate_satisfaction_mild_penalty }
 
 		add_country_modifier = {
 			modifier = bra_revoked_clergy_power
@@ -401,18 +332,9 @@ turmoil_in_brandenburg.6 = {
 	option = {
 		name = turmoil_in_brandenburg.6.b
 		bra_change_neglect_score = { math = subtract value = 5 }
-		add_estate_satisfaction = {
-			type = estate_type:clergy_estate
-			value = estate_satisfaction_mild_bonus
-		}
-		add_estate_satisfaction = {
-			type = estate_type:burghers_estate
-			value = estate_satisfaction_mild_penalty
-		}
-		add_estate_satisfaction = {
-			type = estate_type:peasants_estate
-			value = estate_satisfaction_weak_penalty
-		}
+		add_estate_satisfaction = { type = estate_type:clergy_estate value = estate_satisfaction_mild_bonus }
+		add_estate_satisfaction = { type = estate_type:burghers_estate value = estate_satisfaction_mild_penalty }
+		add_estate_satisfaction = { type = estate_type:peasants_estate value = estate_satisfaction_weak_penalty }
 	}
 }
 
@@ -427,12 +349,8 @@ turmoil_in_brandenburg.7 = {
 	# Support the Wittelsbacher
 	trigger = {
 		any_active_disaster = { disaster_type = disaster_type:turmoil_in_brandenburg }
-
 		any_owned_location = {
-			OR = {
-				modifier:sul_is_town_rank_tier = yes
-				modifier:sul_is_city_rank_tier = yes
-			}
+			OR = { modifier:sul_is_town_rank_tier = yes modifier:sul_is_city_rank_tier = yes }
 			any_pop = { pop_type = pop_type:burghers }
 		}
 	}
@@ -440,13 +358,9 @@ turmoil_in_brandenburg.7 = {
 	immediate = {
 		random_owned_location = {
 			limit = {
-				OR = {
-					modifier:sul_is_town_rank_tier = yes
-					modifier:sul_is_city_rank_tier = yes
-				}
+				OR = { modifier:sul_is_town_rank_tier = yes modifier:sul_is_city_rank_tier = yes }
 				any_pop = { pop_type = pop_type:burghers }
 			}
-
 			save_scope_as = target_location
 		}
 	}
@@ -456,10 +370,7 @@ turmoil_in_brandenburg.7 = {
 		bra_change_investment_score = { math = add value = 2 }
 		add_legitimacy = legitimacy_weak_bonus
 
-		add_estate_satisfaction = {
-			type = estate_type:burghers_estate
-			value = estate_satisfaction_mild_penalty
-		}
+		add_estate_satisfaction = { type = estate_type:burghers_estate value = estate_satisfaction_mild_penalty }
 
 		scope:target_location = { change_control = control_weak_bonus }
 	}
@@ -468,10 +379,7 @@ turmoil_in_brandenburg.7 = {
 	option = {
 		name = turmoil_in_brandenburg.7.b
 		bra_change_neglect_score = { math = subtract value = 5 }
-		add_estate_satisfaction = {
-			type = estate_type:burghers_estate
-			value = estate_satisfaction_weak_bonus
-		}
+		add_estate_satisfaction = { type = estate_type:burghers_estate value = estate_satisfaction_weak_bonus }
 
 		scope:target_location = { change_control = control_mild_penalty }
 	}
@@ -495,18 +403,13 @@ turmoil_in_brandenburg.8 = {
 			has_estate = estate_type:nobles_estate
 			has_dynasty = yes
 			in_cabinet = no
-			NOT = {
-				has_variable = tib_character_variable_8
-			}
+			NOT = { has_variable = tib_character_variable_8 }
 		}
-
 		any_owned_location = {
 			is_capital = no
 			is_province_capital = yes
 			province != root.capital.province
-			NOT = {
-				has_variable = tib_location_variable_8
-			}
+			NOT = { has_variable = tib_location_variable_8 }
 		}
 	}
 
@@ -520,9 +423,7 @@ turmoil_in_brandenburg.8 = {
 				has_estate = estate_type:nobles_estate
 				has_dynasty = yes
 				in_cabinet = no
-				NOT = {
-					has_variable = tib_character_variable_8
-				}
+				NOT = { has_variable = tib_character_variable_8 }
 			}
 
 			save_scope_as = target_character
@@ -535,9 +436,7 @@ turmoil_in_brandenburg.8 = {
 				is_capital = no
 				is_province_capital = yes
 				province != root.capital.province
-				NOT = {
-					has_variable = tib_location_variable_8
-				}
+				NOT = { has_variable = tib_location_variable_8 }
 			}
 
 			order_by = { value = proximity multiply = -1 }
@@ -560,10 +459,7 @@ turmoil_in_brandenburg.8 = {
 	option = {	# Tolerate it
 		name = turmoil_in_brandenburg.8.a
 
-		add_estate_satisfaction = {
-			type = estate_type:nobles_estate
-			value = estate_satisfaction_mild_bonus
-		}
+		add_estate_satisfaction = { type = estate_type:nobles_estate value = estate_satisfaction_mild_bonus }
 
 		scope:target_location = {
 			add_location_modifier = {
@@ -577,7 +473,6 @@ turmoil_in_brandenburg.8 = {
 	}
 	option = {	# Crush him
 		name = turmoil_in_brandenburg.8.b
-
 		random_list = {
 			1 = {
 				desc = tib_outcome_8_1_tt
@@ -596,7 +491,6 @@ turmoil_in_brandenburg.8 = {
 				scope:target_location = {
 					every_pop = {
 						limit = { owner = root pop_type = pop_type:nobles }
-
 						add_pop_satisfaction = pop_satisfaction_mild_penalty
 					}
 				}
@@ -606,10 +500,7 @@ turmoil_in_brandenburg.8 = {
 				desc = tib_outcome_8_3_tt
 				show_chance = no
 
-				add_estate_satisfaction = {
-					type = estate_type:nobles_estate
-					value = estate_satisfaction_weak_penalty
-				}
+				add_estate_satisfaction = { type = estate_type:nobles_estate value = estate_satisfaction_weak_penalty }
 			}
 		}
 	}
@@ -626,30 +517,18 @@ turmoil_in_brandenburg.9 = {
 
 	trigger = {
 		any_province = {
-			NOT = {
-				any_location_in_province = { is_capital = yes }
-			}
-			NOT = {
-				has_province_modifier = crushed_local_noble_league_modifier
-			}
-			NOT = {
-				has_variable = tib_province_variable_9
-			}
+			NOT = { any_location_in_province = { is_capital = yes } }
+			NOT = { has_province_modifier = crushed_local_noble_league_modifier }
+			NOT = { has_variable = tib_province_variable_9 }
 		}
 	}
 
 	immediate = {
 		random_province = {
 			limit = {
-				NOT = {
-					any_location_in_province = { is_capital = yes }
-				}
-				NOT = {
-					has_province_modifier = crushed_local_noble_league_modifier
-				}
-				NOT = {
-					has_variable = tib_province_variable_9
-				}
+				NOT = { any_location_in_province = { is_capital = yes } }
+				NOT = { has_province_modifier = crushed_local_noble_league_modifier }
+				NOT = { has_variable = tib_province_variable_9 }
 			}
 
 			save_scope_as = target_province
@@ -657,7 +536,6 @@ turmoil_in_brandenburg.9 = {
 
 			set_variable = { name = tib_province_variable_9 years = 5 }
 		}
-
 		random_list = {
 			1 = { set_variable = tib_variable_9_1 }
 			1 = { set_variable = tib_variable_9_2 }
@@ -673,15 +551,11 @@ turmoil_in_brandenburg.9 = {
 		if = {
 			limit = {
 				scope:target_province = {
-					any_location_in_province = {
-						any_pop = { owner = root pop_type = pop_type:nobles }
-					}
+					any_location_in_province = { any_pop = { owner = root pop_type = pop_type:nobles } }
 				}
 			}
-
 			custom_tooltip = {
 				text = nobles_in_target_province_gain_pop_satisfaction_extreme_bonus_tt
-
 				scope:target_province = {
 					every_location_in_province = {
 						every_pop = {
@@ -697,27 +571,19 @@ turmoil_in_brandenburg.9 = {
 			trigger = has_variable
 
 			tib_variable_9_1 = {
-				scope:target_province = {
-					every_location_in_province = { change_control = control_mild_penalty }
-				}
+				scope:target_province = { every_location_in_province = { change_control = control_mild_penalty } }
 			}
 
 			tib_variable_9_2 = {
-				scope:target_province = {
-					every_location_in_province = { change_prosperity = prosperity_mild_penalty }
-				}
+				scope:target_province = { every_location_in_province = { change_prosperity = prosperity_mild_penalty } }
 			}
 
 			tib_variable_9_3 = {
 				custom_tooltip = {
 					text = lower_class_pop_satisfaction_weak_penalty_tt
-
 					scope:target_province = {
 						every_location_in_province = {
-							every_pop = {
-								limit = { owner = root is_upper_class = no }
-								add_pop_satisfaction = pop_satisfaction_weak_penalty
-							}
+							every_pop = { limit = { owner = root is_upper_class = no } add_pop_satisfaction = pop_satisfaction_weak_penalty }
 						}
 					}
 				}
@@ -733,14 +599,8 @@ turmoil_in_brandenburg.9 = {
 				mode = replace
 				years = modifier_duration_years_normal
 			}
-
 			if = {
-				limit = {
-					any_location_in_province = {
-						has_location_modifier = local_noble_stronghold_modifier
-					}
-				}
-
+				limit = { any_location_in_province = { has_location_modifier = local_noble_stronghold_modifier } }
 				every_location_in_province = {
 					limit = { has_location_modifier = local_noble_stronghold_modifier }
 					remove_location_modifier = local_noble_stronghold_modifier
@@ -768,12 +628,7 @@ turmoil_in_brandenburg.10 = {
 	image = "gfx/interface/illustrations/disaster/turmoil_in_brandenburg.dds"
 
 	trigger = {
-		any_owned_location = {
-			is_capital = no
-			NOT = {
-				has_variable = tib_location_variable_10
-			}
-		}
+		any_owned_location = { is_capital = no NOT = { has_variable = tib_location_variable_10 } }
 	}
 
 	immediate = {
@@ -789,10 +644,7 @@ turmoil_in_brandenburg.10 = {
 	option = {	# Let them
 		name = turmoil_in_brandenburg.10.a
 
-		add_estate_satisfaction = {
-			type = estate_type:nobles_estate
-			value = estate_satisfaction_mild_bonus
-		}
+		add_estate_satisfaction = { type = estate_type:nobles_estate value = estate_satisfaction_mild_bonus }
 
 		bra_change_neglect_score = { math = subtract value = 5 }
 
@@ -801,20 +653,11 @@ turmoil_in_brandenburg.10 = {
 	option = {
 		name = turmoil_in_brandenburg.10.b
 
-		add_estate_satisfaction = {
-			type = estate_type:nobles_estate
-			value = estate_satisfaction_severe_penalty
-		}
+		add_estate_satisfaction = { type = estate_type:nobles_estate value = estate_satisfaction_severe_penalty }
 
-		change_societal_value = {
-			type = centralization_vs_decentralization
-			value = societal_value_move_to_left
-		}
+		change_societal_value = { type = centralization_vs_decentralization value = societal_value_move_to_left }
 
-		change_societal_value = {
-			type = aristocracy_vs_plutocracy
-			value = societal_value_move_to_right
-		}
+		change_societal_value = { type = aristocracy_vs_plutocracy value = societal_value_move_to_right }
 	}
 }
 
@@ -828,17 +671,10 @@ turmoil_in_brandenburg.11 = {
 	image = "gfx/interface/illustrations/disaster/turmoil_in_brandenburg.dds"
 
 	trigger = {
-		ruler = {
-			NOT = {
-				has_character_modifier = noble_power_struggle_modifier
-			}
-		}
-
+		ruler = { NOT = { has_character_modifier = noble_power_struggle_modifier } }
 		any_character = {
 			count > 0
-			NOT = {
-				has_variable = tib_variable_11
-			}
+			NOT = { has_variable = tib_variable_11 }
 
 			has_dynasty = yes
 			is_adult = yes
@@ -854,9 +690,7 @@ turmoil_in_brandenburg.11 = {
 	immediate = {
 		random_character = {
 			limit = {
-				NOT = {
-					has_variable = tib_variable_11
-				}
+				NOT = { has_variable = tib_variable_11 }
 
 				has_dynasty = yes
 				is_adult = yes
@@ -873,12 +707,7 @@ turmoil_in_brandenburg.11 = {
 			save_scope_as = target_character_1
 			dynasty = { save_scope_as = target_dynasty_1 }
 		}
-
-		ruler_or_regent = {
-			save_scope_as = target_character_2
-
-			dynasty = { save_scope_as = target_dynasty_2 }
-		}
+		ruler_or_regent = { save_scope_as = target_character_2 dynasty = { save_scope_as = target_dynasty_2 } }
 	}
 
 	option = {	# Support our Ruler!
@@ -901,15 +730,9 @@ turmoil_in_brandenburg.11 = {
 
 		bra_change_neglect_score = { math = subtract value = 5 }
 
-		add_estate_satisfaction = {
-			type = estate_type:nobles_estate
-			value = estate_satisfaction_extreme_bonus
-		}
+		add_estate_satisfaction = { type = estate_type:nobles_estate value = estate_satisfaction_extreme_bonus }
 
-		change_societal_value = {
-			type = aristocracy_vs_plutocracy
-			value = societal_value_move_to_left
-		}
+		change_societal_value = { type = aristocracy_vs_plutocracy value = societal_value_move_to_left }
 	}
 }
 
@@ -925,13 +748,8 @@ turmoil_in_brandenburg.12 = {
 	trigger = {
 		any_province = {
 			province_average_control > 0
-			NOT = {
-				any_location_in_province = { is_capital = yes }
-			}
-			NOR = {
-				has_province_modifier = crown_investments_modifier
-				has_variable = tib_province_variable_12
-			}
+			NOT = { any_location_in_province = { is_capital = yes } }
+			NOR = { has_province_modifier = crown_investments_modifier has_variable = tib_province_variable_12 }
 		}
 	}
 
@@ -939,13 +757,8 @@ turmoil_in_brandenburg.12 = {
 		random_province = {
 			limit = {
 				province_average_control > 0
-				NOT = {
-					any_location_in_province = { is_capital = yes }
-				}
-				NOR = {
-					has_province_modifier = crown_investments_modifier
-					has_variable = tib_province_variable_12
-				}
+				NOT = { any_location_in_province = { is_capital = yes } }
+				NOR = { has_province_modifier = crown_investments_modifier has_variable = tib_province_variable_12 }
 			}
 
 			set_variable = { name = tib_province_variable_12 years = 5 }
@@ -972,12 +785,7 @@ turmoil_in_brandenburg.12 = {
 				mode = replace
 			}
 			if = {
-				limit = {
-					any_location_in_province = {
-						has_location_modifier = local_noble_stronghold_modifier
-					}
-				}
-
+				limit = { any_location_in_province = { has_location_modifier = local_noble_stronghold_modifier } }
 				every_location_in_province = {
 					limit = { has_location_modifier = local_noble_stronghold_modifier }
 					remove_location_modifier = local_noble_stronghold_modifier
@@ -985,20 +793,14 @@ turmoil_in_brandenburg.12 = {
 			}
 		}
 
-		add_estate_satisfaction = {
-			type = estate_type:nobles_estate
-			value = estate_satisfaction_extreme_penalty
-		}
+		add_estate_satisfaction = { type = estate_type:nobles_estate value = estate_satisfaction_extreme_penalty }
 	}
 	option = {	# Delegate its development to the nobles
 		name = turmoil_in_brandenburg.12.b
 
 		bra_change_neglect_score = { math = subtract value = 5 }
 
-		add_estate_satisfaction = {
-			type = estate_type:nobles_estate
-			value = estate_satisfaction_mild_bonus
-		}
+		add_estate_satisfaction = { type = estate_type:nobles_estate value = estate_satisfaction_mild_bonus }
 	}
 }
 
@@ -1013,7 +815,6 @@ turmoil_in_brandenburg.13 = {
 
 	trigger = {
 		at_war = no
-
 		any_owned_location = {
 			is_province_capital = yes
 			NOR = {
@@ -1039,7 +840,6 @@ turmoil_in_brandenburg.13 = {
 			save_scope_as = target_location
 			province = { save_scope_as = target_province }
 		}
-
 		random_list = {
 			1 = { set_variable = tib_variable_13_1 }
 			1 = { set_variable = tib_variable_13_2 }
@@ -1058,7 +858,7 @@ turmoil_in_brandenburg.13 = {
 		}
 
 		switch = {
-			trigger = has_variable 
+			trigger = has_variable
 
 			tib_variable_13_1 = {
 				custom_tooltip = {
@@ -1074,6 +874,7 @@ turmoil_in_brandenburg.13 = {
 					}
 				}
 			}
+
 			tib_variable_13_2 = {
 				custom_tooltip = {
 					text = every_location_in_target_province_gains_flourishing_capital_modifier
@@ -1088,20 +889,18 @@ turmoil_in_brandenburg.13 = {
 					}
 				}
 			}
+
 			tib_variable_13_3 = {
 				custom_tooltip = {
 					text = every_location_in_target_province_gains_development_mild_bonus
-					scope:target_province = {
-						every_location_in_province = { change_development = development_weak_bonus }
-					}
+					scope:target_province = { every_location_in_province = { change_development = development_weak_bonus } }
 				}
 			}
+
 			tib_variable_13_4 = {
 				custom_tooltip = {
 					text = every_location_in_target_province_gains_prosperity_extreme_bonus
-					scope:target_province = {
-						every_location_in_province = { change_prosperity = prosperity_severe_bonus }	
-					}
+					scope:target_province = { every_location_in_province = { change_prosperity = prosperity_severe_bonus } }
 				}
 			}
 		}
@@ -1139,21 +938,13 @@ turmoil_in_brandenburg.13 = {
 				}
 			}
 
-			tib_variable_13_3 = {
-				scope:target_location = { change_development = development_mild_bonus }
-			}
+			tib_variable_13_3 = { scope:target_location = { change_development = development_mild_bonus } }
 
-			tib_variable_13_4 = {
-				scope:target_location = { change_prosperity = prosperity_extreme_bonus }
-			}
+			tib_variable_13_4 = { scope:target_location = { change_prosperity = prosperity_extreme_bonus } }
 		}
 	}
 
-	option = {	# We cannot afford this.
-		name = turmoil_in_brandenburg.13.c
-
-		bra_change_neglect_score = { math = subtract value = 5 }
-	}
+	option = { name = turmoil_in_brandenburg.13.c bra_change_neglect_score = { math = subtract value = 5 } }
 
 	after = {
 		remove_variable = tib_variable_13_1
@@ -1252,7 +1043,6 @@ turmoil_in_brandenburg.300 = {
 
 	option = {
 		name = turmoil_in_brandenburg.300.a
-
 		add_country_modifier = {
 			modifier = bra_overcome_the_turmoil
 			years = 10
@@ -1316,9 +1106,7 @@ turmoil_in_brandenburg.1000 = {
 			save_scope_as = target_character
 		}
 
-		scope:target_character = {
-			add_character_modifier = { modifier = bra_false_waldemar days = -1 }
-		}
+		scope:target_character = { add_character_modifier = { modifier = bra_false_waldemar days = -1 } }
 
 		set_variable = {
 			name = false_waldemar_imposter_protection
@@ -1327,10 +1115,7 @@ turmoil_in_brandenburg.1000 = {
 		}
 
 		international_organization:hre = {
-			leader_country ?= {
-				save_scope_as = emperor_country
-				ruler = { save_scope_as = emperor_ruler }
-			}
+			leader_country ?= { save_scope_as = emperor_country ruler = { save_scope_as = emperor_ruler } }
 		}
 
 		save_scope_as = bra_country
@@ -1350,7 +1135,6 @@ turmoil_in_brandenburg.1000 = {
 
 		custom_tooltip = {
 			text = turmoil_in_brandenburg.1000.a.at
-
 			dynasty:wittelsbach_dynasty = {
 				every_country_in_dynasty = {
 					limit = { this != root }
@@ -1376,19 +1160,13 @@ turmoil_in_brandenburg.1000 = {
 
 		custom_tooltip = {
 			text = turmoil_in_brandenburg.1000.a.tt
-
-			scope:emperor_country = {
-				trigger_event_silently = { id = turmoil_in_brandenburg.1001 years = 2 }
-			}
+			scope:emperor_country = { trigger_event_silently = { id = turmoil_in_brandenburg.1001 years = 2 } }
 		}
 
-		scope:target_character = {
-			change_character_allegiance = scope:false_waldemar_rebel
-		}
+		scope:target_character = { change_character_allegiance = scope:false_waldemar_rebel }
 
 		custom_tooltip = {
 			text = turmoil_in_brandenburg.false_waldemar_rebel.tt
-
 			ordered_owned_location = {
 				limit = { any_pop = { pop_type = pop_type:nobles } }
 				order_by = population
@@ -1396,13 +1174,7 @@ turmoil_in_brandenburg.1000 = {
 				check_range_bounds = no
 
 				every_pop = {
-					limit = {
-						owner = root
-						OR = {
-							pop_type = pop_type:nobles
-							pop_type = pop_type:peasants
-						}
-					}
+					limit = { owner = root OR = { pop_type = pop_type:nobles pop_type = pop_type:peasants } }
 
 					add_pop_satisfaction = pop_satisfaction_ultimate_penalty
 					change_pop_allegiance = scope:false_waldemar_rebel
@@ -1432,7 +1204,6 @@ turmoil_in_brandenburg.1000 = {
 
 		custom_tooltip = {
 			text = turmoil_in_brandenburg.1000.c.at
-
 			dynasty:wittelsbach_dynasty = {
 				every_country_in_dynasty = {
 					limit = { this != root }
@@ -1478,33 +1249,20 @@ turmoil_in_brandenburg.1001 = {
 			}
 			triggered_desc = {
 				trigger = {
-					scope:bra_country = {
-						NOT = {
-							has_variable = bra_false_waldemar_revealed
-						}
-					}
+					scope:bra_country = { NOT = { has_variable = bra_false_waldemar_revealed } }
 				}
-
 				desc = turmoil_in_brandenburg.1001.desc
 			}
 		}
 	}
 
-	trigger = {
-		exists = character:false_waldemar
-		character:false_waldemar = { is_alive = yes }
-	}
+	trigger = { exists = character:false_waldemar character:false_waldemar = { is_alive = yes } }
 
 	immediate = {
 		character:false_waldemar = { save_scope_as = target_character }
-
 		set_variable = {
 			name = bra_gold_tooltip_var
-
-			value = {
-				value = scope:bra_country.monthly_income_trade_and_tax
-				multiply = 18
-			}
+			value = { value = scope:bra_country.monthly_income_trade_and_tax multiply = 18 }
 		}
 	}
 
@@ -1515,28 +1273,17 @@ turmoil_in_brandenburg.1001 = {
 		name = turmoil_in_brandenburg.1001.a
 
 		trigger = {
-			scope:bra_country = {
-				NOT = {
-					has_variable = bra_false_waldemar_revealed
-				}
-			}
-
+			scope:bra_country = { NOT = { has_variable = bra_false_waldemar_revealed } }
 			opinion = { target = scope:bra_country value < 100 }
 		}
 
 		custom_tooltip = {
 			text = turmoil_in_brandenburg.1001.help.tt
-
-			scope:bra_country = {
-				trigger_event_silently = { id = turmoil_in_brandenburg.1002 years = 1 }
-			}
+			scope:bra_country = { trigger_event_silently = { id = turmoil_in_brandenburg.1002 years = 1 } }
 		}
 		custom_tooltip = {
 			text = turmoil_in_brandenburg.1001.a.tt
-
-			scope:bra_country = {
-				set_variable = { name = bra_owes_gold value = root.var:bra_gold_tooltip_var }
-			}
+			scope:bra_country = { set_variable = { name = bra_owes_gold value = root.var:bra_gold_tooltip_var } }
 		}
 	}
 
@@ -1547,24 +1294,18 @@ turmoil_in_brandenburg.1001 = {
 
 		trigger = {
 			scope:bra_country = {
-				NOT = {
-					has_variable = bra_false_waldemar_revealed
-				}
+				NOT = { has_variable = bra_false_waldemar_revealed }
 				has_special_status_in_international_organization = {
 					type = special_status:elector
 					international_organization = international_organization:hre
 				}
 			}
-
 			opinion = { target = scope:bra_country value < 100 }
 		}
 
 		custom_tooltip = {
 			text = turmoil_in_brandenburg.1001.help.tt
-
-			scope:bra_country = {
-				trigger_event_silently = { id = turmoil_in_brandenburg.1002 years = 1 }
-			}
+			scope:bra_country = { trigger_event_silently = { id = turmoil_in_brandenburg.1002 years = 1 } }
 		}
 		custom_tooltip = {
 			text = turmoil_in_brandenburg.1001.b.tt
@@ -1577,28 +1318,17 @@ turmoil_in_brandenburg.1001 = {
 		name = turmoil_in_brandenburg.1001.c
 
 		trigger = {
-			scope:bra_country = {
-				NOT = {
-					has_variable = bra_false_waldemar_revealed
-				}
-			}
-
+			scope:bra_country = { NOT = { has_variable = bra_false_waldemar_revealed } }
 			opinion = { target = scope:bra_country value < 100 }
 		}
 
 		custom_tooltip = {
 			text = turmoil_in_brandenburg.1001.help.tt
-
-			scope:bra_country = {
-				trigger_event_silently = { id = turmoil_in_brandenburg.1002 years = 1 }
-			}
+			scope:bra_country = { trigger_event_silently = { id = turmoil_in_brandenburg.1002 years = 1 } }
 		}
 		custom_tooltip = {
 			text = turmoil_in_brandenburg.1001.c.tt
-
-			scope:bra_country = {
-				set_variable = { name = bra_owes_relations value = yes }
-			}
+			scope:bra_country = { set_variable = { name = bra_owes_relations value = yes } }
 		}
 	}
 
@@ -1607,18 +1337,13 @@ turmoil_in_brandenburg.1001 = {
 		name = turmoil_in_brandenburg.1001.d
 
 		trigger = {
-			scope:bra_country = {
-				NOT = {
-					has_variable = bra_false_waldemar_revealed
-				}
-			}
+			scope:bra_country = { NOT = { has_variable = bra_false_waldemar_revealed } }
 		}
 
 		custom_tooltip = turmoil_in_brandenburg.1001.d.tt
 
 		custom_tooltip = {
 			text = turmoil_in_brandenburg.1001.help.tt
-
 			scope:bra_country = {
 				set_variable = { name = bra_free_support value = yes }
 				trigger_event_silently = { id = turmoil_in_brandenburg.1002 years = 1 }
@@ -1631,21 +1356,13 @@ turmoil_in_brandenburg.1001 = {
 		name = turmoil_in_brandenburg.1001.e
 
 		trigger = {
-			scope:bra_country = {
-				NOT = {
-					has_variable = bra_false_waldemar_revealed
-				}
-			}
-
+			scope:bra_country = { NOT = { has_variable = bra_false_waldemar_revealed } }
 			opinion = { target = scope:bra_country value < 0 }
 		}
 
 		custom_tooltip = {
 			text = turmoil_in_brandenburg.1001.e.tt
-
-			scope:bra_country = {
-				trigger_event_silently = { id = turmoil_in_brandenburg.1003 years = 1 }
-			}
+			scope:bra_country = { trigger_event_silently = { id = turmoil_in_brandenburg.1003 years = 1 } }
 		}
 	}
 
@@ -1656,10 +1373,7 @@ turmoil_in_brandenburg.1001 = {
 
 		custom_tooltip = {
 			text = turmoil_in_brandenburg.1001.zzz.tt
-
-			scope:bra_country = {
-				trigger_event_silently = { id = turmoil_in_brandenburg.1004 years = 1 }
-			}
+			scope:bra_country = { trigger_event_silently = { id = turmoil_in_brandenburg.1004 years = 1 } }
 		}
 
 		add_prestige = prestige_mild_bonus
@@ -1676,48 +1390,31 @@ turmoil_in_brandenburg.1002 = {
 
 	desc = {
 		first_valid = {
-			triggered_desc = {
-				trigger = { has_variable = bra_owes_gold }
-				desc = turmoil_in_brandenburg.1002.desc.gold
-			}
-			triggered_desc = {
-				trigger = { has_variable = bra_owes_loyalty }
-				desc = turmoil_in_brandenburg.1002.desc.loyalty
-			}
-			triggered_desc = {
-				trigger = { has_variable = bra_owes_relations }
-				desc = turmoil_in_brandenburg.1002.desc.relations
-			}
-			triggered_desc = {
-				trigger = { has_variable = bra_free_support }
-				desc = turmoil_in_brandenburg.1002.desc.free
-			}
+			triggered_desc = { trigger = { has_variable = bra_owes_gold } desc = turmoil_in_brandenburg.1002.desc.gold }
+			triggered_desc = { trigger = { has_variable = bra_owes_loyalty } desc = turmoil_in_brandenburg.1002.desc.loyalty }
+			triggered_desc = { trigger = { has_variable = bra_owes_relations } desc = turmoil_in_brandenburg.1002.desc.relations }
+			triggered_desc = { trigger = { has_variable = bra_free_support } desc = turmoil_in_brandenburg.1002.desc.free }
 			triggered_desc = { desc = turmoil_in_brandenburg.1002.desc }
 		}
 	}
 
-	trigger = {
-		exists = character:false_waldemar
-		character:false_waldemar = { is_alive = yes }
-	}
+	trigger = { exists = character:false_waldemar character:false_waldemar = { is_alive = yes } }
 
 	immediate = {
 		character:false_waldemar = { save_scope_as = target_character }
-
-		random_rebel = {
-			limit = { rebel_name_key = false_waldemar_rebel }
-			save_scope_as = target_rebel
-		}
+		random_rebel = { limit = { rebel_name_key = false_waldemar_rebel } save_scope_as = target_rebel }
 	}
 
 	# Excellent
 	option = {
 		name = turmoil_in_brandenburg.1002.a
+
 		if = {
 			limit = { has_variable = bra_owes_gold }
 			add_gold = { value = var:bra_owes_gold multiply = -1 }
 			scope:emperor_country = { add_gold = { value = root.var:bra_owes_gold } }
 		}
+
 		if = {
 			limit = { has_variable = bra_owes_loyalty }
 			add_legitimacy = legitimacy_mild_penalty
@@ -1728,67 +1425,44 @@ turmoil_in_brandenburg.1002 = {
 					resolution = resolution:hre_election
 					vote = scope:emperor_country
 
-					lock_reason = {
-						key = VOTE_LOCK_REASON_SUPPORT
-						emperor = scope:emperor_country
-					}
+					lock_reason = { key = VOTE_LOCK_REASON_SUPPORT emperor = scope:emperor_country }
 				}
 			}
 		}
+
 		if = {
 			limit = { has_variable = bra_owes_relations }
 			add_prestige = prestige_severe_penalty
 
 			custom_tooltip = {
 				text = turmoil_in_brandenburg.1002.a.tt
-
 				scope:emperor_country = {
 					dynasty:wittelsbach_dynasty = {
 						every_country_in_dynasty = {
-							add_opinion = {
-								target = scope:emperor_country
-								modifier = opinion_supported_the_wittelsbacher
-							}
+							add_opinion = { target = scope:emperor_country modifier = opinion_supported_the_wittelsbacher }
 						}
 					}
 				}
 			}
 		}
+
 		if = {
 			limit = { has_variable = bra_free_support }
-
-			add_opinion = {
-				target = scope:emperor_country
-				modifier = opinion_emperors_genorisity
-			}
+			add_opinion = { target = scope:emperor_country modifier = opinion_emperors_genorisity }
 		}
+
 		scope:target_character = { banish_character = yes }
 		bra_change_investment_score = { math = add value = 5 }
-		if = {
-			limit = { exists = scope:target_rebel }
-			destroy_rebel = scope:target_rebel
-		}
+		if = { limit = { exists = scope:target_rebel } destroy_rebel = scope:target_rebel }
 
 		remove_country_modifier = bra_waldemar_rallies_nobility
 	}
 
 	after = {
-		if = {
-			limit = { has_variable = bra_owes_gold }
-			remove_variable = bra_owes_gold
-		}
-		if = {
-			limit = { has_variable = bra_owes_loyalty }
-			remove_variable = bra_owes_loyalty
-		}
-		if = {
-			limit = { has_variable = bra_owes_relations }
-			remove_variable = bra_owes_relations
-		}
-		if = {
-			limit = { has_variable = bra_free_support }
-			remove_variable = bra_free_support
-		}
+		if = { limit = { has_variable = bra_owes_gold } remove_variable = bra_owes_gold }
+		if = { limit = { has_variable = bra_owes_loyalty } remove_variable = bra_owes_loyalty }
+		if = { limit = { has_variable = bra_owes_relations } remove_variable = bra_owes_relations }
+		if = { limit = { has_variable = bra_free_support } remove_variable = bra_free_support }
 	}
 }
 
@@ -1814,22 +1488,14 @@ turmoil_in_brandenburg.1003 = {
 			}
 			triggered_desc = {
 				trigger = {
-					scope:emperor_ruler = {
-						NOT = {
-							dynasty = dynasty:wittelsbach_dynasty
-						}
-					}
+					scope:emperor_ruler = { NOT = { dynasty = dynasty:wittelsbach_dynasty } }
 				}
-
 				desc = turmoil_in_brandenburg.1003.desc
 			}
 		}
 	}
 
-	trigger = {
-		exists = character:false_waldemar
-		character:false_waldemar = { is_alive = yes }
-	}
+	trigger = { exists = character:false_waldemar character:false_waldemar = { is_alive = yes } }
 
 	immediate = { character:false_waldemar = { save_scope_as = target_character } }
 
@@ -1843,19 +1509,13 @@ turmoil_in_brandenburg.1003 = {
 
 			dynasty:wittelsbach_dynasty ?= {
 				every_country_in_dynasty = {
-					add_opinion = {
-						target = scope:emperor_country
-						modifier = opinion_rejected_helping_wittelsbacher
-					}
+					add_opinion = { target = scope:emperor_country modifier = opinion_rejected_helping_wittelsbacher }
 				}
 			}
 
 			dynasty:askanier_dynasty ?= {
 				every_country_in_dynasty = {
-					add_opinion = {
-						target = scope:emperor_country
-						modifier = opinion_rejected_helping_wittelsbacher_askanier
-					}
+					add_opinion = { target = scope:emperor_country modifier = opinion_rejected_helping_wittelsbacher_askanier }
 				}
 			}
 		}
@@ -1876,10 +1536,7 @@ turmoil_in_brandenburg.1004 = {
 
 	desc = turmoil_in_brandenburg.1004.desc
 
-	trigger = {
-		exists = character:false_waldemar
-		character:false_waldemar = { is_alive = yes }
-	}
+	trigger = { exists = character:false_waldemar character:false_waldemar = { is_alive = yes } }
 
 	immediate = { character:false_waldemar = { save_scope_as = target_character } }
 
@@ -1911,10 +1568,7 @@ turmoil_in_brandenburg.1004 = {
 			remove_character_allegiance = yes
 			move_country = root
 			add_dip = 30
-			if = {
-				limit = { has_character_modifier = bra_false_waldemar }
-				remove_character_modifier = bra_false_waldemar
-			}
+			if = { limit = { has_character_modifier = bra_false_waldemar } remove_character_modifier = bra_false_waldemar }
 		}
 
 		add_legitimacy = legitimacy_severe_penalty
@@ -1930,17 +1584,13 @@ turmoil_in_brandenburg.1005 = {
 	image = "gfx/interface/illustrations/disaster/turmoil_in_brandenburg.dds"
 	desc = turmoil_in_brandenburg.1005.desc
 
-	trigger = {
-		has_variable = bra_fake_waldemar_on_throne
-		character:false_waldemar = { is_alive = yes }
-	}
+	trigger = { has_variable = bra_fake_waldemar_on_throne character:false_waldemar = { is_alive = yes } }
 
 	immediate = {  }
 
 	# Research our ruler's backstory
 	option = {
 		name = turmoil_in_brandenburg.1005.a
-
 		custom_tooltip = {
 			text = turmoil_in_brandenburg.1005.a.tt
 			trigger_event_silently = { id = turmoil_in_brandenburg.1006 years = 2 }
@@ -1950,10 +1600,8 @@ turmoil_in_brandenburg.1005 = {
 	# These are just unjustified rumors...
 	option = {
 		name = turmoil_in_brandenburg.1005.b
-
 		scope:target_character = {
 			remove_character_modifier = bra_waldemar_on_the_throne
-
 			add_character_modifier = {
 				modifier = bra_suspicious_waldemar_on_throne
 				years = -1
@@ -1981,10 +1629,7 @@ turmoil_in_brandenburg.1006 = {
 		}
 	}
 
-	trigger = {
-		has_variable = bra_fake_waldemar_on_throne
-		character:false_waldemar = { is_alive = yes }
-	}
+	trigger = { has_variable = bra_fake_waldemar_on_throne character:false_waldemar = { is_alive = yes } }
 
 	immediate = {
 		random_list = {
@@ -2008,7 +1653,6 @@ turmoil_in_brandenburg.1006 = {
 
 		custom_tooltip = {
 			text = turmoil_in_brandenburg.1006.a.tt
-
 			scope:target_character = {
 				change_dynasty = dynasty:askanier_dynasty
 				every_descendant = { change_dynasty = scope:recipient.dynasty }
@@ -2016,10 +1660,7 @@ turmoil_in_brandenburg.1006 = {
 		}
 
 		scope:target_character = {
-			if = {
-				limit = { has_character_modifier = bra_false_waldemar }
-				remove_character_modifier = bra_false_waldemar
-			}
+			if = { limit = { has_character_modifier = bra_false_waldemar } remove_character_modifier = bra_false_waldemar }
 
 			remove_character_modifier = bra_waldemar_on_the_throne
 
@@ -2035,15 +1676,10 @@ turmoil_in_brandenburg.1006 = {
 	option = {
 		name = turmoil_in_brandenburg.1006.b
 
-		trigger = {
-			NOT = {
-				has_variable = bra_true_askanier
-			}
-		}
+		trigger = { NOT = { has_variable = bra_true_askanier } }
 
 		custom_tooltip = {
 			text = turmoil_in_brandenburg.1006.b.tt
-
 			scope:target_character = {
 				change_dynasty = scope:target_dynasty
 				every_descendant = { change_dynasty = scope:recipient.dynasty }
@@ -2052,7 +1688,6 @@ turmoil_in_brandenburg.1006 = {
 
 		scope:target_character = {
 			remove_character_modifier = bra_waldemar_on_the_throne
-
 			add_character_modifier = {
 				modifier = bra_imposter_dynasty_on_throne
 				years = -1
@@ -2065,15 +1700,10 @@ turmoil_in_brandenburg.1006 = {
 	option = {
 		name = turmoil_in_brandenburg.1006.c
 
-		trigger = {
-			NOT = {
-				has_variable = bra_true_askanier
-			}
-		}
+		trigger = { NOT = { has_variable = bra_true_askanier } }
 
 		custom_tooltip = {
 			text = turmoil_in_brandenburg.1006.b.tt
-
 			scope:target_character = {
 				banish_character = yes
 				every_descendant = { limit = { owner = root } banish_character = yes }
@@ -2117,6 +1747,7 @@ turmoil_in_brandenburg.1007 = {
 				save_scope_as = false_waldemar_rebel
 			}
 		}
+
 		set_variable = { name = bra_true_askanier_maker value = random_integer }
 		change_variable = { name = bra_true_askanier_maker modulo = 10 }
 
@@ -2150,10 +1781,7 @@ turmoil_in_brandenburg.1007 = {
 
 				every_descendant = {
 					change_dynasty = scope:recipient.dynasty
-					if = {
-						limit = { has_estate = estate_type:nobles_estate }
-						change_character_estate = estate_type:burghers_estate
-					}
+					if = { limit = { has_estate = estate_type:nobles_estate } change_character_estate = estate_type:burghers_estate }
 				}
 			}
 		}
@@ -2164,16 +1792,11 @@ turmoil_in_brandenburg.1007 = {
 		name = turmoil_in_brandenburg.1007.b
 		add_stability = stability_severe_penalty
 
-		trigger = {
-			NOT = {
-				has_variable = bra_execution_successful
-			}
-		}
+		trigger = { NOT = { has_variable = bra_execution_successful } }
 
 		hidden_effect = {
 			if = {
 				limit = { var:bra_true_askanier_maker = 0 }
-
 				scope:target_character = {
 					change_dynasty = dynasty:askanier_dynasty
 					every_descendant = { change_dynasty = scope:recipient.dynasty }
@@ -2185,29 +1808,21 @@ turmoil_in_brandenburg.1007 = {
 					every_descendant = { change_dynasty = scope:recipient.dynasty }
 				}
 			}
+
 			scope:target_character = { remove_character_modifier = bra_false_waldemar }
 		}
 
-		scope:target_character = {
-			change_character_allegiance = scope:false_waldemar_rebel
-		}
+		scope:target_character = { change_character_allegiance = scope:false_waldemar_rebel }
 
 		custom_tooltip = {
 			text = turmoil_in_brandenburg.false_waldemar_big_rebel.tt
-
 			ordered_owned_location = {
 				order_by = population
 				max = 16
 				check_range_bounds = no
 
 				every_pop = {
-					limit = {
-						owner = root
-						OR = {
-							pop_type = pop_type:nobles
-							pop_type = pop_type:peasants
-						}
-					}
+					limit = { owner = root OR = { pop_type = pop_type:nobles pop_type = pop_type:peasants } }
 
 					add_pop_satisfaction = pop_satisfaction_ultimate_penalty
 					change_pop_allegiance = scope:false_waldemar_rebel
@@ -2246,29 +1861,17 @@ turmoil_in_brandenburg.1100 = {
 		exists = international_organization:hre
 		international_organization:hre = {
 			international_organization_has_leader = yes
-
 			leader_country ?= {
-				NOT = {
-					in_union_with = root
-				}
-				NOT = {
-					has_royal_marriage_with = root
-				}
-				ruler ?= {
-					NOT = {
-						any_spouse = { is_ruler_of = root }
-					}
-				}
+				NOT = { in_union_with = root }
+				NOT = { has_royal_marriage_with = root }
+				ruler ?= { NOT = { any_spouse = { is_ruler_of = root } } }
 			}
 		}
 	}
 
 	immediate = {
 		bra_set_localization_scopes = yes
-
-		international_organization:hre = {
-			leader_country ?= { save_scope_as = emperor_country }
-		}
+		international_organization:hre = { leader_country ?= { save_scope_as = emperor_country } }
 	}
 
 	# The Emperor will be quite disgruntled...
@@ -2281,10 +1884,7 @@ turmoil_in_brandenburg.1100 = {
 
 		custom_tooltip = {
 			text = turmoil_in_brandenburg.1100.a.tt
-
-			scope:emperor_country = {
-				trigger_event_non_silently = { id = turmoil_in_brandenburg.1101 days = 7 }
-			}
+			scope:emperor_country = { trigger_event_non_silently = { id = turmoil_in_brandenburg.1101 days = 7 } }
 		}
 	}
 }
@@ -2307,7 +1907,6 @@ turmoil_in_brandenburg.1101 = {
 		else = {
 			ruler ?= {
 				save_scope_as = emperor_ruler
-
 				dynasty = {
 					random_character_in_dynasty = {
 						limit = {
@@ -2317,12 +1916,12 @@ turmoil_in_brandenburg.1101 = {
 							is_ruler = no
 							owner = root
 						}
-
 						save_scope_as = dynasty_character
 					}
 				}
 			}
 		}
+
 		ordered_cabinet_character = {
 			order_by = total_abilities
 			max = 1
@@ -2338,10 +1937,7 @@ turmoil_in_brandenburg.1101 = {
 
 		custom_tooltip = {
 			text = turmoil_in_brandenburg.1101.a.tt
-
-			scope:root_country = {
-				trigger_event_silently = { id = turmoil_in_brandenburg.1102 days = 5 }
-			}
+			scope:root_country = { trigger_event_silently = { id = turmoil_in_brandenburg.1102 days = 5 } }
 		}
 
 		change_imperial_authority = { value = imperial_authority_very_weak_bonus }
@@ -2355,10 +1951,7 @@ turmoil_in_brandenburg.1101 = {
 
 		custom_tooltip = {
 			text = turmoil_in_brandenburg.1101.b.tt
-
-			scope:root_country = {
-				trigger_event_silently = { id = turmoil_in_brandenburg.1103 days = 5 }
-			}
+			scope:root_country = { trigger_event_silently = { id = turmoil_in_brandenburg.1103 days = 5 } }
 		}
 
 		change_imperial_authority = { value = imperial_authority_weak_bonus }
@@ -2372,9 +1965,7 @@ turmoil_in_brandenburg.1101 = {
 		custom_tooltip = {
 			text = turmoil_in_brandenburg.1101.c.tt
 
-			scope:root_country = {
-				trigger_event_silently = { id = turmoil_in_brandenburg.1104 days = 5 }
-			}
+			scope:root_country = { trigger_event_silently = { id = turmoil_in_brandenburg.1104 days = 5 } }
 
 			international_organization:hre = {
 				every_international_organization_member = {
@@ -2392,10 +1983,7 @@ turmoil_in_brandenburg.1101 = {
 
 		custom_tooltip = {
 			text = turmoil_in_brandenburg.1101.d.tt
-
-			scope:root_country = {
-				trigger_event_silently = { id = turmoil_in_brandenburg.1105 days = 5 }
-			}
+			scope:root_country = { trigger_event_silently = { id = turmoil_in_brandenburg.1105 days = 5 } }
 		}
 
 		change_imperial_authority = { value = imperial_authority_extreme_bonus }
@@ -2408,10 +1996,7 @@ turmoil_in_brandenburg.1101 = {
 
 		custom_tooltip = {
 			text = turmoil_in_brandenburg.1101.e.tt
-
-			scope:root_country = {
-				trigger_event_silently = { id = turmoil_in_brandenburg.1106 days = 5 }
-			}
+			scope:root_country = { trigger_event_silently = { id = turmoil_in_brandenburg.1106 days = 5 } }
 		}
 
 		change_imperial_authority = { value = imperial_authority_mild_penalty }
@@ -2437,13 +2022,8 @@ turmoil_in_brandenburg.1102 = {
 		first_valid = {
 			triggered_desc = {
 				trigger = {
-					scope:emperor_ruler = {
-						NOT = {
-							dynasty = dynasty:wittelsbach_dynasty
-						}
-					}
+					scope:emperor_ruler = { NOT = { dynasty = dynasty:wittelsbach_dynasty } }
 				}
-
 				desc = turmoil_in_brandenburg.1102.desc
 			}
 		}
@@ -2472,11 +2052,7 @@ turmoil_in_brandenburg.1102 = {
 		name = turmoil_in_brandenburg.1102.b
 
 		trigger = {
-			scope:emperor_ruler = {
-				NOT = {
-					dynasty = dynasty:wittelsbach_dynasty
-				}
-			}
+			scope:emperor_ruler = { NOT = { dynasty = dynasty:wittelsbach_dynasty } }
 		}
 
 		set_new_ruler = scope:emperor_ruler
@@ -2506,23 +2082,15 @@ turmoil_in_brandenburg.1103 = {
 	desc = {
 		first_valid = {
 			triggered_desc = {
-				trigger = {
-					scope:dynasty_character = { dynasty = dynasty:wittelsbach_dynasty }
-				}
-
+				trigger = { scope:dynasty_character = { dynasty = dynasty:wittelsbach_dynasty } }
 				desc = turmoil_in_brandenburg.1103.desc.wittelsbach
 			}
 		}
 		first_valid = {
 			triggered_desc = {
 				trigger = {
-					scope:dynasty_character = {
-						NOT = {
-							dynasty = dynasty:wittelsbach_dynasty
-						}
-					}
+					scope:dynasty_character = { NOT = { dynasty = dynasty:wittelsbach_dynasty } }
 				}
-
 				desc = turmoil_in_brandenburg.1103.desc
 			}
 		}
@@ -2533,9 +2101,7 @@ turmoil_in_brandenburg.1103 = {
 	option = {
 		name = turmoil_in_brandenburg.1103.a
 
-		trigger = {
-			scope:dynasty_character = { dynasty = dynasty:wittelsbach_dynasty }
-		}
+		trigger = { scope:dynasty_character = { dynasty = dynasty:wittelsbach_dynasty } }
 
 		set_new_ruler = scope:dynasty_character
 
@@ -2555,11 +2121,7 @@ turmoil_in_brandenburg.1103 = {
 		name = turmoil_in_brandenburg.1103.b
 
 		trigger = {
-			scope:dynasty_character = {
-				NOT = {
-					dynasty = dynasty:wittelsbach_dynasty
-				}
-			}
+			scope:dynasty_character = { NOT = { dynasty = dynasty:wittelsbach_dynasty } }
 		}
 
 		set_new_ruler = scope:dynasty_character
@@ -2589,23 +2151,15 @@ turmoil_in_brandenburg.1104 = {
 	desc = {
 		first_valid = {
 			triggered_desc = {
-				trigger = {
-					scope:cabinet_character = { dynasty = dynasty:wittelsbach_dynasty }
-				}
-
+				trigger = { scope:cabinet_character = { dynasty = dynasty:wittelsbach_dynasty } }
 				desc = turmoil_in_brandenburg.1104.desc.wittelsbach
 			}
 		}
 		first_valid = {
 			triggered_desc = {
 				trigger = {
-					scope:cabinet_character = {
-						NOT = {
-							dynasty = dynasty:wittelsbach_dynasty
-						}
-					}
+					scope:cabinet_character = { NOT = { dynasty = dynasty:wittelsbach_dynasty } }
 				}
-
 				desc = turmoil_in_brandenburg.1104.desc
 			}
 		}
@@ -2616,14 +2170,9 @@ turmoil_in_brandenburg.1104 = {
 	option = {
 		name = turmoil_in_brandenburg.1104.a
 
-		trigger = {
-			scope:cabinet_character = { dynasty = dynasty:wittelsbach_dynasty }
-		}
+		trigger = { scope:cabinet_character = { dynasty = dynasty:wittelsbach_dynasty } }
 
-		make_subject_of = {
-			target = scope:emperor_country
-			type = subject_type:vassal
-		}
+		make_subject_of = { target = scope:emperor_country type = subject_type:vassal }
 
 		scope:cabinet_character = { move_country = root }
 		set_new_ruler = scope:cabinet_character
@@ -2633,17 +2182,10 @@ turmoil_in_brandenburg.1104 = {
 		name = turmoil_in_brandenburg.1104.b
 
 		trigger = {
-			scope:cabinet_character = {
-				NOT = {
-					dynasty = dynasty:wittelsbach_dynasty
-				}
-			}
+			scope:cabinet_character = { NOT = { dynasty = dynasty:wittelsbach_dynasty } }
 		}
 
-		make_subject_of = {
-			target = scope:emperor_country
-			type = subject_type:vassal
-		}
+		make_subject_of = { target = scope:emperor_country type = subject_type:vassal }
 
 		scope:cabinet_character = { move_country = root }
 		set_new_ruler = scope:cabinet_character
@@ -2651,28 +2193,16 @@ turmoil_in_brandenburg.1104 = {
 	}
 	option = {
 		name = turmoil_in_brandenburg.1104.c
-
 		scope:emperor_country = {
 			trigger_event_silently = turmoil_in_brandenburg.1107
-
 			show_as_tooltip = {
-				add_casus_belli = {
-					type = casus_belli:cb_subjugation
-					target = scope:root_country
-				}
-
-				add_opinion = {
-					target = scope:root_country
-					modifier = opinion_resists_our_influence
-				}
+				add_casus_belli = { type = casus_belli:cb_subjugation target = scope:root_country }
+				add_opinion = { target = scope:root_country modifier = opinion_resists_our_influence }
 			}
 		}
 	}
 
-	after = {
-		remove_variable = bra_wittelsbacher_neglect_var
-		remove_variable = bra_wittelsbacher_investment_var
-	}
+	after = { remove_variable = bra_wittelsbacher_neglect_var remove_variable = bra_wittelsbacher_investment_var }
 }
 
 # Hohenzollern event
@@ -2698,7 +2228,6 @@ turmoil_in_brandenburg.1105 = {
 			script = bra_friedrich_hohenzollern
 			save_scope_as = hohenzollern_character
 		}
-
 		set_variable = { name = bra_blocked_from_hohenzoller_event value = yes }
 	}
 
@@ -2744,15 +2273,9 @@ turmoil_in_brandenburg.1107 = {
 	option = {
 		name = turmoil_in_brandenburg.1107.a
 
-		add_casus_belli = {
-			type = casus_belli:cb_subjugation
-			target = scope:root_country
-		}
+		add_casus_belli = { type = casus_belli:cb_subjugation target = scope:root_country }
 
-		add_opinion = {
-			target = scope:root_country
-			modifier = opinion_resists_our_influence
-		}
+		add_opinion = { target = scope:root_country modifier = opinion_resists_our_influence }
 	}
 }
 
@@ -2768,33 +2291,18 @@ turmoil_in_brandenburg.1200 = {
 
 	trigger = {
 		country_exists = c:BRA
-		NOT = {
-			tag = BRA
-		}
+		NOT = { tag = BRA }
 
 		is_emperor = yes
 		has_ruler = yes
 
-		c:BRA = {
-			NOT = {
-				has_variable = bra_blocked_from_hohenzoller_event
-			}
-		}
-		OR = {
-			in_union_with = c:BRA
-			c:BRA = { is_subject_of = root }
-		}
+		c:BRA = { NOT = { has_variable = bra_blocked_from_hohenzoller_event } }
+		OR = { in_union_with = c:BRA c:BRA = { is_subject_of = root } }
 		ruler ?= {
 			has_dynasty = yes
-			NOT = {
-				dynasty = dynasty:wittelsbach_dynasty
-			}
-			NOT = {
-				dynasty = dynasty:hohenzollern_dynasty
-			}
-			NOT = {
-				has_character_modifier = bra_fresh_emperor_ruler_of_brandenburg
-			}
+			NOT = { dynasty = dynasty:wittelsbach_dynasty }
+			NOT = { dynasty = dynasty:hohenzollern_dynasty }
+			NOT = { has_character_modifier = bra_fresh_emperor_ruler_of_brandenburg }
 		}
 	}
 
@@ -2817,10 +2325,7 @@ turmoil_in_brandenburg.1200 = {
 		c:BRA = { save_scope_as = bra_country }
 		save_scope_as = emperor_country
 
-		ruler ?= {
-			save_scope_as = emperor_ruler
-			dynasty ?= { save_scope_as = emperor_dynasty }
-		}
+		ruler ?= { save_scope_as = emperor_ruler dynasty ?= { save_scope_as = emperor_dynasty } }
 	}
 
 	# Place the Hohenzoller on their throne
@@ -2830,11 +2335,9 @@ turmoil_in_brandenburg.1200 = {
 
 		custom_tooltip = {
 			text = turmoil_in_brandenburg.1200.a.tt
-
-			scope:bra_country = {
-				trigger_event_silently = { id = turmoil_in_brandenburg.1201 days = 3 }
-			}
+			scope:bra_country = { trigger_event_silently = { id = turmoil_in_brandenburg.1201 days = 3 } }
 		}
+
 		if = {
 			limit = { scope:bra_country = { is_subject_of = root } }
 			show_as_tooltip = { cancel_subject = scope:bra_country }
@@ -2875,9 +2378,7 @@ turmoil_in_brandenburg.1201 = {
 scripted_trigger
 
 can_have_robber_barons = {
-	NOT = {
-		has_variable = pru_has_had_robber_barons
-	}
+	NOT = { has_variable = pru_has_had_robber_barons }
 }
 
 scripted_effect
@@ -2923,10 +2424,7 @@ turmoil_in_brandenburg.1300 = {
 
 	fire_only_once = yes
 
-	trigger = {
-		has_ruler = yes
-		any_active_disaster = { disaster_type = disaster_type:turmoil_in_brandenburg }
-	}
+	trigger = { has_ruler = yes any_active_disaster = { disaster_type = disaster_type:turmoil_in_brandenburg } }
 
 	immediate = {
 		set_variable = PRU_robber_barons_active
@@ -2944,16 +2442,11 @@ turmoil_in_brandenburg.1300 = {
 	option = {
 		name = turmoil_in_brandenburg.1300.a
 
-		change_societal_value = {
-			type = centralization_vs_decentralization
-			value = societal_value_large_move_to_right
-		}
+		change_societal_value = { type = centralization_vs_decentralization value = societal_value_large_move_to_right }
 
 		add_legitimacy = legitimacy_mild_penalty
 
-		show_as_tooltip = {
-			scope:robber_baron_province = { set_robber_baron_troubles = yes }
-		}
+		show_as_tooltip = { scope:robber_baron_province = { set_robber_baron_troubles = yes } }
 	}
 }
 
@@ -2966,22 +2459,13 @@ turmoil_in_brandenburg.1301 = {
 	desc = turmoil_in_brandenburg.1301.desc
 	image = "gfx/interface/illustrations/disaster/turmoil_in_brandenburg.dds"
 
-	trigger = {
-		has_variable = PRU_robber_barons_active
-		any_province = { can_have_robber_barons = yes }
-	}
+	trigger = { has_variable = PRU_robber_barons_active any_province = { can_have_robber_barons = yes } }
 
-	immediate = {
-		select_baron_province = yes
-		scope:robber_baron_province = { set_robber_baron_troubles = yes }
-	}
+	immediate = { select_baron_province = yes scope:robber_baron_province = { set_robber_baron_troubles = yes } }
 
 	option = {
 		name = turmoil_in_brandenburg.1301.a
-
-		show_as_tooltip = {
-			scope:robber_baron_province = { set_robber_baron_troubles = yes }
-		}
+		show_as_tooltip = { scope:robber_baron_province = { set_robber_baron_troubles = yes } }
 	}
 }
 
@@ -3022,24 +2506,14 @@ turmoil_in_brandenburg.1302 = {
 			estate = nobles_estate
 			save_scope_as = target_rebel
 		}
+
 		while = {
 			limit = {
 				list_size = { name = quitzow_places value < 3 }
-
-				any_owned_location = {
-					NOT = {
-						is_in_list = quitzow_places
-					}
-				}
+				any_owned_location = { NOT = { is_in_list = quitzow_places } }
 			}
-
 			random_owned_location = {
-				limit = {
-					NOT = {
-						is_in_list = quitzow_places
-					}
-				}
-
+				limit = { NOT = { is_in_list = quitzow_places } }
 				add_to_list = quitzow_places
 			}
 		}
@@ -3065,21 +2539,12 @@ turmoil_in_brandenburg.1302 = {
 
 			change_control = control_severe_penalty
 
-			add_location_modifier = {
-				modifier = PRU_quitzow_repressed_modifier
-				years = 20
-			}
+			add_location_modifier = { modifier = PRU_quitzow_repressed_modifier years = 20 }
 		}
 
-		add_estate_satisfaction = {
-			type = estate_type:nobles_estate
-			value = estate_satisfaction_severe_penalty
-		}
+		add_estate_satisfaction = { type = estate_type:nobles_estate value = estate_satisfaction_severe_penalty }
 
-		change_societal_value = {
-			type = centralization_vs_decentralization
-			value = societal_value_minor_move_to_left
-		}
+		change_societal_value = { type = centralization_vs_decentralization value = societal_value_minor_move_to_left }
 
 		remove_variable = robber_barons_issues_are_ignored
 		set_variable = { name = robber_barons_issues_are_dealt_with years = 10 }
@@ -3090,10 +2555,7 @@ turmoil_in_brandenburg.1302 = {
 
 		add_legitimacy = legitimacy_severe_penalty
 
-		add_estate_satisfaction = {
-			type = estate_type:nobles_estate
-			value = estate_satisfaction_mild_bonus
-		}
+		add_estate_satisfaction = { type = estate_type:nobles_estate value = estate_satisfaction_mild_bonus }
 
 		every_in_list = {
 			list = quitzow_places
@@ -3126,18 +2588,11 @@ turmoil_in_brandenburg.1303 = {
 		OR = {
 			any_province = {
 				percent >= 0.75
-				NOT = {
-					has_province_modifier = PRU_robber_barons
-				}
+				NOT = { has_province_modifier = PRU_robber_barons }
 
 				has_variable = pru_has_had_robber_barons
 			}
-			AND = {
-				NOT = {
-					has_variable = robber_barons_issues_are_ignored
-					has_variable = robber_barons_issues_are_dealt_with
-				}
-			}
+			AND = { NOT = { has_variable = robber_barons_issues_are_ignored has_variable = robber_barons_issues_are_dealt_with } }
 		}
 	}
 
@@ -3145,19 +2600,13 @@ turmoil_in_brandenburg.1303 = {
 		remove_variable = PRU_robber_barons_active
 		set_variable = PRU_robber_barons_not_active
 
-		every_province = {
-			remove_province_modifier = PRU_robber_barons
-			remove_variable = pru_has_had_robber_barons
-		}
+		every_province = { remove_province_modifier = PRU_robber_barons remove_variable = pru_has_had_robber_barons }
 	}
 
 	option = {
 		name = turmoil_in_brandenburg.1303.a
 
-		change_societal_value = {
-			type = centralization_vs_decentralization
-			value = societal_value_large_move_to_left
-		}
+		change_societal_value = { type = centralization_vs_decentralization value = societal_value_large_move_to_left }
 
 		add_legitimacy = legitimacy_mild_bonus
 
@@ -3201,10 +2650,7 @@ turmoil_in_brandenburg.1304 = {
 			estate_add_gold = { value = { add = root.monthly_income_total multiply = -4 } }
 		}
 
-		add_estate_satisfaction = {
-			type = estate_type:nobles_estate
-			value = estate_satisfaction_severe_penalty
-		}
+		add_estate_satisfaction = { type = estate_type:nobles_estate value = estate_satisfaction_severe_penalty }
 
 		add_country_modifier = { modifier = PRU_harsh_suppression years = 20 }
 	}
@@ -3217,10 +2663,7 @@ turmoil_in_brandenburg.1304 = {
 			estate_add_gold = { value = { add = root.monthly_income_total multiply = -1 } }
 		}
 
-		add_estate_satisfaction = {
-			type = estate_type:nobles_estate
-			value = estate_satisfaction_mild_penalty
-		}
+		add_estate_satisfaction = { type = estate_type:nobles_estate value = estate_satisfaction_mild_penalty }
 
 		add_country_modifier = { modifier = PRU_mild_suppression years = 20 }
 	}
@@ -3229,10 +2672,7 @@ turmoil_in_brandenburg.1304 = {
 		name = turmoil_in_brandenburg.1304.c
 		add_legitimacy = legitimacy_weak_bonus
 
-		add_estate_satisfaction = {
-			type = estate_type:nobles_estate
-			value = estate_satisfaction_mild_bonus
-		}
+		add_estate_satisfaction = { type = estate_type:nobles_estate value = estate_satisfaction_mild_bonus }
 
 		add_country_modifier = { modifier = PRU_noble_reconciliation years = 20 }
 	}

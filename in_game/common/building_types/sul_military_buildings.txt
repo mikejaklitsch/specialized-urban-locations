@@ -38,15 +38,10 @@ REPLACE:armory = {
 	}
 
 	remove_if = {
-		NOT = {
-			owner = { has_primary_or_accepted_culture = prev.location.dominant_culture }
-		}
+		NOT = { owner = { has_primary_or_accepted_culture = prev.location.dominant_culture } }
 	}
 
-	modifier = {
-		local_manpower = 0.015
-		can_recruit_regiment_in_this_location = yes
-	}
+	modifier = { local_manpower = 0.015 can_recruit_regiment_in_this_location = yes }
 
 	unique_production_methods = {
 		sul_armory_maintenance = {
@@ -90,15 +85,10 @@ REPLACE:training_fields = {
 	}
 
 	remove_if = {
-		NOT = {
-			owner = { has_primary_or_accepted_culture = prev.location.dominant_culture }
-		}
+		NOT = { owner = { has_primary_or_accepted_culture = prev.location.dominant_culture } }
 	}
 
-	modifier = {
-		local_manpower = 0.015
-		can_recruit_regiment_in_this_location = yes
-	}
+	modifier = { local_manpower = 0.015 can_recruit_regiment_in_this_location = yes }
 
 	unique_production_methods = {
 		sul_training_fields_maintenance = {
@@ -148,9 +138,7 @@ REPLACE:barracks = {
 	}
 
 	remove_if = {
-		NOT = {
-			owner = { has_primary_or_accepted_culture = prev.location.dominant_culture }
-		}
+		NOT = { owner = { has_primary_or_accepted_culture = prev.location.dominant_culture } }
 	}
 
 	modifier = {
@@ -202,15 +190,10 @@ REPLACE:regimental_camp = {
 	}
 
 	remove_if = {
-		NOT = {
-			owner = { has_primary_or_accepted_culture = prev.location.dominant_culture }
-		}
+		NOT = { owner = { has_primary_or_accepted_culture = prev.location.dominant_culture } }
 	}
 
-	modifier = {
-		local_manpower = 0.025
-		can_recruit_regiment_in_this_location = yes
-	}
+	modifier = { local_manpower = 0.025 can_recruit_regiment_in_this_location = yes }
 
 	unique_production_methods = {
 		sul_regimental_camp_maintenance = {
@@ -266,9 +249,7 @@ REPLACE:conscription_center = {
 	}
 
 	remove_if = {
-		NOT = {
-			owner = { has_primary_or_accepted_culture = prev.location.dominant_culture }
-		}
+		NOT = { owner = { has_primary_or_accepted_culture = prev.location.dominant_culture } }
 	}
 
 	modifier = {
@@ -421,15 +402,11 @@ REPLACE:naval_supplies_guild = {
 	build_time = guild_build_time
 
 	location_potential = {
-		OR = {
-			modifier:sul_allows_naval_supplies_production = yes
-		}
+		OR = { modifier:sul_allows_naval_supplies_production = yes }
 	}
 
 	remove_if = {
-		NOT = {
-			location = { modifier:sul_allows_naval_supplies_production = yes }
-		}
+		NOT = { location = { modifier:sul_allows_naval_supplies_production = yes } }
 	}
 
 	modifier = {
@@ -531,15 +508,11 @@ REPLACE:naval_supplies_workshop = {
 	obsolete = naval_supplies_guild
 
 	location_potential = {
-		OR = {
-			modifier:sul_allows_naval_supplies_production = yes
-		}
+		OR = { modifier:sul_allows_naval_supplies_production = yes }
 	}
 
 	remove_if = {
-		NOT = {
-			location = { modifier:sul_allows_naval_supplies_production = yes }
-		}
+		NOT = { location = { modifier:sul_allows_naval_supplies_production = yes } }
 	}
 
 	modifier = {
@@ -642,15 +615,11 @@ REPLACE:naval_supplies_manufactory = {
 	obsolete = naval_supplies_workshop
 
 	location_potential = {
-		OR = {
-			modifier:sul_allows_naval_supplies_production = yes
-		}
+		OR = { modifier:sul_allows_naval_supplies_production = yes }
 	}
 
 	remove_if = {
-		NOT = {
-			location = { modifier:sul_allows_naval_supplies_production = yes }
-		}
+		NOT = { location = { modifier:sul_allows_naval_supplies_production = yes } }
 	}
 
 	modifier = {
@@ -753,15 +722,11 @@ REPLACE:naval_supplies_mill = {
 	obsolete = naval_supplies_manufactory
 
 	location_potential = {
-		OR = {
-			modifier:sul_allows_naval_supplies_production = yes
-		}
+		OR = { modifier:sul_allows_naval_supplies_production = yes }
 	}
 
 	remove_if = {
-		NOT = {
-			location = { modifier:sul_allows_naval_supplies_production = yes }
-		}
+		NOT = { location = { modifier:sul_allows_naval_supplies_production = yes } }
 	}
 
 	modifier = {
@@ -1242,12 +1207,8 @@ REPLACE:local_governor = {
 	allow = {
 		custom_tooltip = {
 			text = local_governor_tt
-
-			scope:actor = {
-				total_building_levels_including_construction:local_governor < modifier:num_local_governors
-			}
+			scope:actor = { total_building_levels_including_construction:local_governor < modifier:num_local_governors }
 		}
-
 		owner = scope:actor
 	}
 
@@ -1255,10 +1216,7 @@ REPLACE:local_governor = {
 		has_road_to_capital = yes
 		owner.capital != this
 
-		trigger_if = {
-			limit = { owner = { is_ai = yes } }
-			proximity < 20
-		}
+		trigger_if = { limit = { owner = { is_ai = yes } } proximity < 20 }
 	}
 
 	remove_if = { location = { has_road_to_capital = no } }
@@ -1288,7 +1246,7 @@ REPLACE:local_governor = {
 
 	construction_demand = local_governor_construction
 
-	modifier = { local_proximity_source = 80 }
+	modifier = { local_proximity_source = 30 }
 }
 
 # @sul-diff: ~~~+- 1ec0
@@ -1319,22 +1277,14 @@ REPLACE:naval_governor = {
 	allow = {
 		custom_tooltip = {
 			text = naval_governor_tt
-
-			scope:actor = {
-				total_building_levels_including_construction:naval_governor < modifier:num_naval_governors
-			}
+			scope:actor = { total_building_levels_including_construction:naval_governor < modifier:num_naval_governors }
 		}
-
 		owner = scope:actor
 	}
 
 	location_potential = {
 		is_port = yes
-
-		trigger_if = {
-			limit = { owner = { is_ai = yes } }
-			proximity < 20
-		}
+		trigger_if = { limit = { owner = { is_ai = yes } } proximity < 20 }
 	}
 
 	expensive = yes
@@ -1363,5 +1313,5 @@ REPLACE:naval_governor = {
 
 	construction_demand = local_governor_construction
 
-	modifier = { local_proximity_source = 80 }
+	modifier = { local_proximity_source = 30 }
 }

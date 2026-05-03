@@ -24,9 +24,7 @@ flavor_ayu.1 = {
 		has_ruler = yes
 		location:ayodhya.owner = { has_ruler = yes ruler = root.ruler }
 		OR = {
-			NOT = {
-				country_exists = c:SPN
-			}
+			NOT = { country_exists = c:SPN }
 
 			ruler = character:adh_ramathibodi
 			opinion = { target = c:SPN value >= 50 }
@@ -68,46 +66,38 @@ flavor_ayu.1 = {
 		scope:target_location = {
 			rename_location = ayutthaya
 			if = {
-				limit = {
-					NOT = {
-						modifier:sul_is_city_rank_tier = yes
-					}
-				}
-
+				limit = { NOT = { modifier:sul_is_city_rank_tier = yes } }
 				sul_set_rank_city = yes
 			}
 		}
 
 		location:bight_ayodhya = { rename_location = bight_ayutthaya }
+
 		if = {
 			limit = { ruler = character:adh_ramathibodi }
 			ruler = { found_dynasty = uthong_dynasty set_first_name = name_ramathibodi }
 			set_variable = uthong_ruler
 		}
+
 		if = { limit = { tag = LAV } annex_country = { country = c:ADH } }
 		else = { annex_country = { country = c:LAV } }
+
 		if = {
 			limit = { country_exists = c:SPN c:SPN = { is_ai = yes } }
 			annex_country = { country = c:SPN }
 		}
-		if = {
-			limit = { scope:target_location.owner != root }
-			annex_country = { country = scope:target_location.owner }
-		}
-		if = {
-			limit = {
-				NOT = {
-					capital = scope:target_location
-				}
-			}
 
+		if = { limit = { scope:target_location.owner != root } annex_country = { country = scope:target_location.owner } }
+
+		if = {
+			limit = { NOT = { capital = scope:target_location } }
 			set_capital = scope:target_location
 		}
 
 		form_country = formable_country:AYU_f
+
 		if = { # To avoid him not being ruler afterwards due to shenanigans with unions dissolving
 			limit = { has_variable = uthong_ruler }
-
 			hidden_effect = {
 				remove_variable = uthong_ruler
 				set_new_ruler = character:adh_ramathibodi
@@ -121,12 +111,7 @@ flavor_ayu.1 = {
 		scope:target_location = {
 			rename_location = ayutthaya
 			if = {
-				limit = {
-					NOT = {
-						modifier:sul_is_city_rank_tier = yes
-					}
-				}
-
+				limit = { NOT = { modifier:sul_is_city_rank_tier = yes } }
 				sul_set_rank_city = yes
 			}
 		}
@@ -138,7 +123,6 @@ flavor_ayu.1 = {
 
 	option = { # Divert the funds elsewhere
 		name = flavor_ayu.1.c
-
 		change_gold_effect = {
 			scale = 100
 		}
@@ -172,7 +156,6 @@ flavor_ayu.2 = {
 			foreground = estate_type:nobles_estate
 			background = estate_type:nobles_estate
 		}
-
 		ruler = { save_scope_as = target_ruler }
 	}
 
@@ -207,14 +190,17 @@ flavor_ayu.3 = {
 
 	illustration_tags = { 10 = regular 10 = exterior }
 
-	trigger = { has_ruler = yes ruler.mil >= 70 has_advance = thai_war_elephants }
+	trigger = {
+		has_ruler = yes
+		ruler.mil >= 70
+		has_advance = thai_war_elephants
+	}
 
 	immediate = {
 		event_illustration_poptype_effect = {
 			foreground = pop_type:soldiers
 			background = pop_type:soldiers
 		}
-
 		ruler = { save_scope_as = target_ruler }
 	}
 
@@ -253,23 +239,18 @@ flavor_ayu.4 = {
 			foreground = estate_type:burghers_estate
 			background = estate_type:burghers_estate
 		}
-
 		ruler = { save_scope_as = target_ruler }
 	}
 
 	option = { # Reform
 		name = flavor_ayu.4.a
 
-		change_societal_value = {
-			type = mercantilism_vs_free_trade
-			value = societal_value_tiny_move_to_left
-		}
+		change_societal_value = { type = mercantilism_vs_free_trade value = societal_value_tiny_move_to_left }
 
 		add_inflation = inflation_extreme_bonus
 
 		custom_tooltip = {
 			text = flavor_ayu.4.a.tt
-
 			ordered_owned_location = {
 				limit = { is_capital = no }
 				order_by = population
@@ -333,24 +314,15 @@ flavor_ayu.5 = {
 		scope:target_location = {
 			rename_location = bangkok
 			if = {
-				limit = {
-					NOT = {
-						modifier:sul_is_city_rank_tier = yes
-					}
-				}
-
+				limit = { NOT = { modifier:sul_is_city_rank_tier = yes } }
 				sul_set_rank_city = yes
 			}
 		}
 
 		location:bight_ayodhya = { rename_location = bight_bangkok }
-		if = {
-			limit = {
-				NOT = {
-					capital = scope:target_location
-				}
-			}
 
+		if = {
+			limit = { NOT = { capital = scope:target_location } }
 			set_capital = scope:target_location
 		}
 	}
@@ -417,10 +389,7 @@ flavor_ayu.6 = {
 		name = flavor_ayu.6.b
 		add_government_power = government_power_weak_penalty
 
-		add_estate_satisfaction = {
-			type = estate_type:clergy_estate
-			value = estate_satisfaction_weak_penalty
-		}
+		add_estate_satisfaction = { type = estate_type:clergy_estate value = estate_satisfaction_weak_penalty }
 
 		add_prestige = prestige_mild_bonus
 	}
@@ -467,11 +436,7 @@ flavor_ayu.7 = {
 
 		capital.market = {
 			random_merchant_in_market = {
-				limit = {
-					capital.sub_continent = sub_continent:western_europe
-					opinion = { target = root value >= 100 }
-				}
-
+				limit = { capital.sub_continent = sub_continent:western_europe opinion = { target = root value >= 100 } }
 				save_scope_as = target_country
 			}
 		}
@@ -480,23 +445,15 @@ flavor_ayu.7 = {
 	option = { # Increase trade regulations
 		name = flavor_ayu.7.a
 
-		change_societal_value = {
-			type = mercantilism_vs_free_trade
-			value = societal_value_minor_move_to_left
-		}
+		change_societal_value = { type = mercantilism_vs_free_trade value = societal_value_minor_move_to_left }
 
-		scope:target_country = {
-			add_casus_belli = { target = root type = casus_belli:cb_trade_conflict }
-		}
+		scope:target_country = { add_casus_belli = { target = root type = casus_belli:cb_trade_conflict } }
 	}
 
 	option = { # Allow trade to flow freely
 		name = flavor_ayu.7.b
 
-		change_societal_value = {
-			type = mercantilism_vs_free_trade
-			value = societal_value_minor_move_to_right
-		}
+		change_societal_value = { type = mercantilism_vs_free_trade value = societal_value_minor_move_to_right }
 
 		add_research_progress = research_progress_weak_bonus
 		add_legitimacy = legitimacy_severe_penalty
@@ -551,15 +508,9 @@ flavor_ayu.8 = {
 		location:saraburi = {
 			if = {
 				limit = {
-					OR = {
-						modifier:sul_is_town_rank_tier = yes
-						modifier:sul_is_city_rank_tier = yes
-					}
-					NOT = {
-						has_building_with_at_least_one_level = temple
-					}
+					OR = { modifier:sul_is_town_rank_tier = yes modifier:sul_is_city_rank_tier = yes }
+					NOT = { has_building_with_at_least_one_level = temple }
 				}
-
 				construct_building = {
 					building_type = building_type:temple
 					cost_multiplier = 1
@@ -571,24 +522,15 @@ flavor_ayu.8 = {
 
 		add_karma = karma_mild_bonus
 
-		change_societal_value = {
-			type = spiritualist_vs_humanist
-			value = societal_value_tiny_move_to_left
-		}
+		change_societal_value = { type = spiritualist_vs_humanist value = societal_value_tiny_move_to_left }
 	}
 
 	option = {
 		name = flavor_ayu.8.b
 		add_prestige = prestige_weak_bonus
 
-		change_societal_value = {
-			type = spiritualist_vs_humanist
-			value = societal_value_minor_move_to_right
-		}
-		change_societal_value = {
-			type = traditionalist_vs_innovative
-			value = societal_value_minor_move_to_right
-		}
+		change_societal_value = { type = spiritualist_vs_humanist value = societal_value_minor_move_to_right }
+		change_societal_value = { type = traditionalist_vs_innovative value = societal_value_minor_move_to_right }
 	}
 }
 
@@ -637,9 +579,9 @@ flavor_ayu.9 = {
 			create_in_limbo = yes
 			save_scope_as = target_character
 		}
+
 		if = {
 			limit = { religion:anglican = { is_religion_enabled = yes } }
-
 			scope:target_character = {
 				change_character_religion = religion:anglican # As he was actually anglican when he arrived at Siam
 			}
@@ -651,10 +593,7 @@ flavor_ayu.9 = {
 		historical_option = yes
 		scope:target_character = { move_country = root }
 
-		add_estate_satisfaction = {
-			type = estate_type:nobles_estate
-			value = estate_satisfaction_mild_penalty
-		}
+		add_estate_satisfaction = { type = estate_type:nobles_estate value = estate_satisfaction_mild_penalty }
 
 		add_legitimacy = legitimacy_mild_penalty
 	}
@@ -767,15 +706,10 @@ flavor_ayu.1001 = {
 		historical_option = yes
 		scope:target_country = { set_new_ruler = scope:target_heir }
 	}
-	option = { # Refuse
-		name = flavor_ayu.1001.b
-		scope:target_country = { add_liberty_desire = liberty_desire_severe_plus }
-	}
+	option = { name = flavor_ayu.1001.b scope:target_country = { add_liberty_desire = liberty_desire_severe_plus } }
 
 	after = {
-		scope:target_origin_country = {
-			trigger_event_non_silently = { id = flavor_ayu.1002 }
-		}
+		scope:target_origin_country = { trigger_event_non_silently = { id = flavor_ayu.1002 } }
 	}
 }
 
@@ -787,14 +721,8 @@ flavor_ayu.1002 = {
 
 	desc = {
 		first_valid = {
-			triggered_desc = {
-				trigger = { heir = scope:target_country.ruler }
-				desc = flavor_ayu.1002.desc_heir_accepted
-			}
-			triggered_desc = {
-				trigger = { always = yes }
-				desc = flavor_ayu.1002.desc_heir_refused
-			}
+			triggered_desc = { trigger = { heir = scope:target_country.ruler } desc = flavor_ayu.1002.desc_heir_accepted }
+			triggered_desc = { trigger = { always = yes } desc = flavor_ayu.1002.desc_heir_refused }
 		}
 	}
 
@@ -811,23 +739,15 @@ flavor_ayu.1002 = {
 		name = flavor_ayu.1002.a
 		trigger = { heir = scope:target_country.ruler }
 
-		show_as_tooltip = {
-			scope:target_country = { set_new_ruler = scope:target_heir }
-		}
+		show_as_tooltip = { scope:target_country = { set_new_ruler = scope:target_heir } }
 	}
 
 	option = { # They refused
 		name = flavor_ayu.1002.b
 
-		trigger = {
-			NOT = {
-				heir = scope:target_country.ruler
-			}
-		}
+		trigger = { NOT = { heir = scope:target_country.ruler } }
 
-		show_as_tooltip = {
-			scope:target_country = { add_liberty_desire = liberty_desire_severe_plus }
-		}
+		show_as_tooltip = { scope:target_country = { add_liberty_desire = liberty_desire_severe_plus } }
 	}
 }
 
@@ -854,12 +774,22 @@ flavor_ayu.1003 = {
 			AND = {
 				tag = AYU
 				country_exists = c:SUK
-				c:SUK = { is_ai = yes has_ruler = yes ruler = root.ruler }
+
+				c:SUK = {
+					is_ai = yes
+					has_ruler = yes
+					ruler = root.ruler
+				}
 			}
 			AND = {
 				tag = SUK
 				country_exists = c:AYU
-				c:AYU = { is_ai = yes has_ruler = yes ruler = root.ruler }
+
+				c:AYU = {
+					is_ai = yes
+					has_ruler = yes
+					ruler = root.ruler
+				}
 			}
 		}
 	}
@@ -873,29 +803,13 @@ flavor_ayu.1003 = {
 	option = { # Choose Ayutthaya
 		name = flavor_ayu.1003.a
 		historical_option = yes
-		if = {
-			limit = {
-				NOT = {
-					tag = AYU
-				}
-			}
-
-			change_player = c:AYU
-		}
+		if = { limit = { NOT = { tag = AYU } } change_player = c:AYU }
 		annex_country = { country = c:SUK }
 	}
 
 	option = { # Choose Sukhothai
 		name = flavor_ayu.1003.b
-		if = {
-			limit = {
-				NOT = {
-					tag = SUK
-				}
-			}
-
-			change_player = c:SUK
-		}
+		if = { limit = { NOT = { tag = SUK } } change_player = c:SUK }
 		annex_country = { country = c:AYU }
 	}
 

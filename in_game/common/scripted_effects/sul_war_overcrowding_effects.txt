@@ -19,10 +19,7 @@
 # Called in sub_unit scope. $SIDE$ is the local_variable name to increment.
 
 sul_war_add_subunit_frontage = {
-	if = {
-		limit = { sub_unit_type = unit_type:a_schiltron }
-		change_local_variable = { name = $SIDE$ add = 0.75 }
-	}
+	if = { limit = { sub_unit_type = unit_type:a_schiltron } change_local_variable = { name = $SIDE$ add = 0.75 } }
 	else = { change_local_variable = { name = $SIDE$ add = 1 } }
 }
 
@@ -31,10 +28,7 @@ sul_war_battle_frontage_check = {
 	save_temporary_scope_as = sul_war_commander
 
 	location = {
-		if = {
-			limit = { has_combat = yes }
-			combat ?= { sul_war_calculate_frontage_penalty = yes }
-		}
+		if = { limit = { has_combat = yes } combat ?= { sul_war_calculate_frontage_penalty = yes } }
 	}
 }
 
@@ -52,13 +46,9 @@ sul_war_calculate_frontage_penalty = {
 	scope:sul_war_atk = {
 		every_center = { sul_war_add_subunit_frontage = { SIDE = sul_war_atk_count } }
 
-		every_left_flank = {
-			sul_war_add_subunit_frontage = { SIDE = sul_war_atk_count }
-		}
+		every_left_flank = { sul_war_add_subunit_frontage = { SIDE = sul_war_atk_count } }
 
-		every_right_flank = {
-			sul_war_add_subunit_frontage = { SIDE = sul_war_atk_count }
-		}
+		every_right_flank = { sul_war_add_subunit_frontage = { SIDE = sul_war_atk_count } }
 	}
 
 	# Count frontage on defender flanks (left + center + right)
@@ -67,24 +57,14 @@ sul_war_calculate_frontage_penalty = {
 	scope:sul_war_def = {
 		every_center = { sul_war_add_subunit_frontage = { SIDE = sul_war_def_count } }
 
-		every_left_flank = {
-			sul_war_add_subunit_frontage = { SIDE = sul_war_def_count }
-		}
+		every_left_flank = { sul_war_add_subunit_frontage = { SIDE = sul_war_def_count } }
 
-		every_right_flank = {
-			sul_war_add_subunit_frontage = { SIDE = sul_war_def_count }
-		}
+		every_right_flank = { sul_war_add_subunit_frontage = { SIDE = sul_war_def_count } }
 	}
 
 	# Lift counts into scope values so they're accessible across scope switches
-	save_temporary_scope_value_as = {
-		name = sul_war_cur_atk
-		value = local_var:sul_war_atk_count
-	}
-	save_temporary_scope_value_as = {
-		name = sul_war_cur_def
-		value = local_var:sul_war_def_count
-	}
+	save_temporary_scope_value_as = { name = sul_war_cur_atk value = local_var:sul_war_atk_count }
+	save_temporary_scope_value_as = { name = sul_war_cur_def value = local_var:sul_war_def_count }
 
 	# Skip if counts haven't changed since last application.
 	# sul_war_in_battle flag ensures stale variables from prior battles don't match.
@@ -109,22 +89,27 @@ sul_war_calculate_frontage_penalty = {
 
 		# Determine age multiplier
 		set_local_variable = { name = sul_war_age_mult value = 1.25 }
+
 		if = {
 			limit = { current_later_age_2_renaissance_trigger = yes }
 			set_local_variable = { name = sul_war_age_mult value = 1.30 }
 		}
+
 		if = {
 			limit = { current_later_age_3_discovery_trigger = yes }
 			set_local_variable = { name = sul_war_age_mult value = 1.35 }
 		}
+
 		if = {
 			limit = { current_later_age_4_reformation_trigger = yes }
 			set_local_variable = { name = sul_war_age_mult value = 1.40 }
 		}
+
 		if = {
 			limit = { current_later_age_5_absolutism_trigger = yes }
 			set_local_variable = { name = sul_war_age_mult value = 1.45 }
 		}
+
 		if = {
 			limit = { current_later_age_6_revolutions_trigger = yes }
 			set_local_variable = { name = sul_war_age_mult value = 1.50 }
@@ -134,30 +119,17 @@ sul_war_calculate_frontage_penalty = {
 		if = {
 			limit = { local_var:sul_war_atk_count >= local_var:sul_war_def_count }
 
-			set_local_variable = {
-				name = sul_war_larger
-				value = local_var:sul_war_atk_count
-			}
-			set_local_variable = {
-				name = sul_war_smaller
-				value = local_var:sul_war_def_count
-			}
+			set_local_variable = { name = sul_war_larger value = local_var:sul_war_atk_count }
+			set_local_variable = { name = sul_war_smaller value = local_var:sul_war_def_count }
 		}
 		else = {
-			set_local_variable = {
-				name = sul_war_larger
-				value = local_var:sul_war_def_count
-			}
-			set_local_variable = {
-				name = sul_war_smaller
-				value = local_var:sul_war_atk_count
-			}
+			set_local_variable = { name = sul_war_larger value = local_var:sul_war_def_count }
+			set_local_variable = { name = sul_war_smaller value = local_var:sul_war_atk_count }
 		}
 
 		# Penalty: 1 - (smaller * age_mult / larger)
 		set_local_variable = {
 			name = sul_war_penalty
-
 			value = {
 				add = 1
 
@@ -189,7 +161,6 @@ sul_war_calculate_frontage_penalty = {
 		# Apply penalty to the larger side only
 		if = {
 			limit = { local_var:sul_war_atk_count >= local_var:sul_war_def_count }
-
 			scope:sul_war_atk = {
 				every_participating_units = {
 					add_unit_modifier = {

@@ -22,9 +22,7 @@ press_claims = {
 	select_trigger = {
 		looking_for_a = situation
 
-		interaction_source_list = {
-			situation:rise_of_the_ottomans = { add_to_list = source }
-		}
+		interaction_source_list = { situation:rise_of_the_ottomans = { add_to_list = source } }
 
 		target_flag = recipient
 		name = "choose_situation"
@@ -50,19 +48,11 @@ press_claims = {
 			scope:actor = { can_declare_war_on = root.owner }
 
 			trigger_if = {
-				limit = {
-					scope:actor ?= { num_locations < 120 has_presence_in = region:balkan_region }
-				}
-
+				limit = { scope:actor ?= { num_locations < 120 has_presence_in = region:balkan_region } }
 				region = region:anatolia_region
 			}
 
-			trigger_else = {
-				OR = {
-					region = region:anatolia_region
-					region = region:balkan_region
-				}
-			}
+			trigger_else = { OR = { region = region:anatolia_region region = region:balkan_region } }
 
 			any_location_in_province = { is_neighbor_of = scope:actor }
 			NOT = {
@@ -72,10 +62,7 @@ press_claims = {
 						overlord ?= scope:actor
 						overlord ?= { is_subject_of = scope:actor }
 
-						has_mutual_scripted_relation = {
-							type = relation_type:alliance
-							target = scope:actor
-						}
+						has_mutual_scripted_relation = { type = relation_type:alliance target = scope:actor }
 					}
 				}
 			}
@@ -84,38 +71,25 @@ press_claims = {
 	effect = {
 		if = {
 			limit = { exists = scope:target scope:actor ?= { num_locations <= 120 } }
-
 			custom_tooltip = {
 				text = roto_press_claims_explanation_tt
 				scope:actor = { trigger_event_silently = rise_of_the_ottomans.100 }
 			}
 		}
 		else_if = {
-			limit = {
-				NOT = {
-					exists = scope:target
-				}
-				scope:actor ?= { num_locations <= 120 }
-			}
-
+			limit = { NOT = { exists = scope:target } scope:actor ?= { num_locations <= 120 } }
 			custom_tooltip = roto_press_claims_explanation_tt
 		}
+
 		if = {
 			limit = { scope:actor ?= { num_locations > 120 } exists = scope:target }
-
 			custom_tooltip = {
 				text = roto_press_claims_extra_explanation_tt
 				scope:actor = { trigger_event_silently = rise_of_the_ottomans.100 }
 			}
 		}
 		else_if = {
-			limit = {
-				NOT = {
-					exists = scope:target
-				}
-				scope:actor ?= { num_locations > 120 }
-			}
-
+			limit = { NOT = { exists = scope:target } scope:actor ?= { num_locations > 120 } }
 			custom_tooltip = roto_press_claims_extra_explanation_tt
 		}
 	}
@@ -125,10 +99,7 @@ press_claims = {
 			limit = { exists = scope:target }
 
 			if = {
-				limit = {
-					scope:target.owner = { is_subject = yes top_overlord ?= scope:actor }
-				}
-
+				limit = { scope:target.owner = { is_subject = yes top_overlord ?= scope:actor } }
 				add = { value = -1000 desc = "our subject" }
 			}
 
@@ -166,7 +137,6 @@ press_claims = {
 				limit = {
 					scope:actor = { is_allied_with = { target = scope:target.owner } }
 				}
-
 				add = { value = -1000 desc = "Our ally" }
 			}
 
@@ -222,9 +192,7 @@ raise_bey_fortress = {
 	select_trigger = {
 		looking_for_a = situation
 
-		interaction_source_list = {
-			situation:rise_of_the_ottomans = { add_to_list = source }
-		}
+		interaction_source_list = { situation:rise_of_the_ottomans = { add_to_list = source } }
 
 		target_flag = recipient
 		name = "choose_situation"
@@ -237,25 +205,14 @@ raise_bey_fortress = {
 
 		interaction_source_list = {
 			scope:actor = {
-				every_owned_non_rural_location = {
-					limit = { modifier:sul_is_city_rank_tier = yes }
-					add_to_list = source
-				}
-
+				every_owned_non_rural_location = { limit = { modifier:sul_is_city_rank_tier = yes } add_to_list = source }
 				every_subject = {
 					limit = {
 						is_disloyal_subject = no
-						OR = {
-							is_subject_type = vassal
-							is_subject_type = uc_bey
-						}
+						OR = { is_subject_type = vassal is_subject_type = uc_bey }
 						any_owned_non_rural_location = { modifier:sul_is_city_rank_tier = yes }
 					}
-
-					every_owned_non_rural_location = {
-						limit = { modifier:sul_is_city_rank_tier = yes }
-						add_to_list = source
-					}
+					every_owned_non_rural_location = { limit = { modifier:sul_is_city_rank_tier = yes } add_to_list = source }
 				}
 			}
 		}
@@ -269,15 +226,9 @@ raise_bey_fortress = {
 		visible = {
 			region = region:anatolia_region
 			modifier:sul_is_city_rank_tier = yes
-			NOT = {
-				has_building = building_type:bey_fortress
-			}
-			NOT = {
-				has_location_modifier = stronghold_city_modifier
-			}
-			NOT = {
-				has_variable = recently_elevanted_stronghold_variable
-			}
+			NOT = { has_building = building_type:bey_fortress }
+			NOT = { has_location_modifier = stronghold_city_modifier }
+			NOT = { has_variable = recently_elevanted_stronghold_variable }
 		}
 	}
 
@@ -295,7 +246,6 @@ raise_bey_fortress = {
 
 			scope:actor = { add_army_tradition = army_tradition_mild_bonus }
 		}
-
 		custom_tooltip = raise_bey_fortress_tt
 	}
 
@@ -311,6 +261,7 @@ raise_bey_fortress = {
 				desc = "[target.GetName] [development|e]"
 				value = scope:target.development			# Proximity of the selected location	
 			}
+
 			if = {
 				limit = { scope:target.owner ?= { is_subject_of = scope:actor } }
 				add = { desc = "owned by a subject" value = -25 }
@@ -334,14 +285,10 @@ seek_relations_with_the_byzantines = {
 		scope:actor = {
 			relative_strength = { target = c:BYZ value > 0.5 }
 			government_power > 60
-			NOT = {
-				is_at_war_with = c:BYZ
-			}
+			NOT = { is_at_war_with = c:BYZ }
 		}
-
 		custom_tooltip = {
 			text = byz_not_considering_proposal_from_another_beylik
-
 			c:BYZ ?= {
 				NOR = {
 					has_variable = beylik_requests_official_sponsorship_var
@@ -359,9 +306,7 @@ seek_relations_with_the_byzantines = {
 	select_trigger = {
 		looking_for_a = situation
 
-		interaction_source_list = {
-			situation:rise_of_the_ottomans = { add_to_list = source }
-		}
+		interaction_source_list = { situation:rise_of_the_ottomans = { add_to_list = source } }
 
 		target_flag = recipient
 		name = "choose_situation"
@@ -373,10 +318,7 @@ seek_relations_with_the_byzantines = {
 		scope:actor = { trigger_event_non_silently = rise_of_the_ottomans.108 }
 	}
 
-	cooldown = {
-		type = seek_relations_with_the_byzantines_cooldown_key
-		years = 5
-	}
+	cooldown = { type = seek_relations_with_the_byzantines_cooldown_key years = 5 }
 
 	ai_will_do = { add = 10 }
 }
@@ -401,9 +343,7 @@ examine_our_fortifications = {
 	select_trigger = {
 		looking_for_a = situation
 
-		interaction_source_list = {
-			situation:rise_of_the_ottomans = { add_to_list = source }
-		}
+		interaction_source_list = { situation:rise_of_the_ottomans = { add_to_list = source } }
 
 		target_flag = recipient
 		name = "choose_situation"
@@ -423,9 +363,7 @@ examine_our_fortifications = {
 			any_location_in_area = {
 				owner ?= scope:actor
 				has_fort = yes
-				NOT = {
-					has_location_modifier = recently_inspected_fortifications_modifier
-				}
+				NOT = { has_location_modifier = recently_inspected_fortifications_modifier }
 			}
 		}
 	}
@@ -433,21 +371,20 @@ examine_our_fortifications = {
 	effect = {
 		if = {
 			limit = { exists = scope:target }
-
 			scope:target = {
 				every_location_in_area = {
 					limit = {
 						has_owner = yes
 						owner = scope:actor
 						has_fort = yes
-						NOT = {
-							has_location_modifier = recently_inspected_fortifications_modifier
-						}
+						NOT = { has_location_modifier = recently_inspected_fortifications_modifier }
 					}
+
 					if = {
 						limit = { has_location_modifier = decaying_defenses_modifier }
 						remove_location_modifier = decaying_defenses_modifier
 					}
+
 					add_location_modifier = {
 						modifier = recently_inspected_fortifications_modifier
 						years = 10
@@ -466,7 +403,6 @@ examine_our_fortifications = {
 
 		if = {
 			limit = { scope:actor.fort_maintenance > 0 }
-
 			add = {
 				value = scope:actor.fort_maintenance
 				multiply = 10
@@ -477,12 +413,8 @@ examine_our_fortifications = {
 
 		if = {
 			limit = { exists = scope:target }
-
 			scope:target = {
-				every_ownable_location_in_area = {
-					limit = { owner = scope:actor has_fort = yes }
-					add = this.development
-				}
+				every_ownable_location_in_area = { limit = { owner = scope:actor has_fort = yes } add = this.development }
 			}
 		}
 	}
@@ -497,7 +429,11 @@ offer_diplomatic_protection = {
 	}
 
 	allow = {
-		scope:actor = { at_war = no has_regent = no ruler ?= { has_dynasty = yes } }
+		scope:actor = {
+			at_war = no
+			has_regent = no
+			ruler ?= { has_dynasty = yes }
+		}
 	}
 
 	automation_tick = never
@@ -510,9 +446,7 @@ offer_diplomatic_protection = {
 	select_trigger = {
 		looking_for_a = situation
 
-		interaction_source_list = {
-			situation:rise_of_the_ottomans = { add_to_list = source }
-		}
+		interaction_source_list = { situation:rise_of_the_ottomans = { add_to_list = source } }
 
 		target_flag = recipient
 		name = "choose_situation"
@@ -532,20 +466,14 @@ offer_diplomatic_protection = {
 		visible = {
 			has_reform = government_reform:anatolian_beylik
 			this != scope:actor
-			NOT = {
-				is_rival_of = scope:actor
-			}
-			NOT = {
-				is_enemy_of = scope:actor
-			}
+			NOT = { is_rival_of = scope:actor }
+			NOT = { is_enemy_of = scope:actor }
 
 			at_war = no
 			is_subject = no
 			is_neighbor_of = scope:actor
 			relative_strength = { target = scope:actor value <= 0.5 }
-			NOT = {
-				has_variable = recently_gave_territory
-			}
+			NOT = { has_variable = recently_gave_territory }
 		}
 	}
 
@@ -557,10 +485,7 @@ offer_diplomatic_protection = {
 			scope:actor = {
 				ruler ?= {
 					dynasty = {
-						every_character_in_dynasty = {
-							limit = { owner = scope:actor }
-							add_to_list = source
-						}
+						every_character_in_dynasty = { limit = { owner = scope:actor } add_to_list = source }
 					}
 				}
 			}
@@ -604,15 +529,12 @@ offer_diplomatic_protection = {
 				exists = scope:target_1
 				exists = scope:target_2
 			}
-
 			custom_tooltip = {
 				text = exchange_location_for_guarantee_marriage_alliance_tt
 				scope:target = { trigger_event_non_silently = rise_of_the_ottomans.106 }
 			}
 		}
-		else = {
-			custom_tooltip = no_link_exchange_location_for_guarantee_marriage_alliance_tt
-		}
+		else = { custom_tooltip = no_link_exchange_location_for_guarantee_marriage_alliance_tt }
 	}
 
 	ai_will_do = { add = -10 }
@@ -638,9 +560,7 @@ invade_neighbor_beylik = {
 	select_trigger = {
 		looking_for_a = situation
 
-		interaction_source_list = {
-			situation:rise_of_the_ottomans = { add_to_list = source }
-		}
+		interaction_source_list = { situation:rise_of_the_ottomans = { add_to_list = source } }
 
 		target_flag = recipient
 		name = "choose_situation"
@@ -672,10 +592,7 @@ invade_neighbor_beylik = {
 	effect = {
 		if = {
 			limit = { exists = scope:target }
-
-			scope:actor = {
-				add_casus_belli = { type = casus_belli:cb_insulted_us target = scope:target }
-			}
+			scope:actor = { add_casus_belli = { type = casus_belli:cb_insulted_us target = scope:target } }
 		}
 		else = { custom_tooltip = rott_get_cb_against_them_tt }
 	}
@@ -691,10 +608,7 @@ invade_neighbor_beylik = {
 		}
 
 		if = {
-			limit = {
-				scope:actor = { is_allied_with = { target = scope:target } }
-			}
-
+			limit = { scope:actor = { is_allied_with = { target = scope:target } } }
 			add = { value = -1000 desc = "Our ally" }
 		}
 
@@ -707,7 +621,6 @@ invade_neighbor_beylik = {
 						any_neighbor_country = { scope:actor = { has_casus_belli_on = prev } }
 					}
 				}
-
 				add = { desc = "Already have CB on neighbor" value = -1000 }
 			}
 
@@ -724,11 +637,7 @@ invade_neighbor_beylik = {
 			}
 
 			if = {
-				limit = {
-					scope:actor = { wants_to_attack = scope:target }
-					scope:actor = { stability > 7 }
-				}
-
+				limit = { scope:actor = { wants_to_attack = scope:target } scope:actor = { stability > 7 } }
 				add = { value = 2000 desc = "We want to attack them" }
 			}
 
@@ -753,9 +662,7 @@ invite_turkic_migration = {
 
 	allow = {
 		scope:actor = {
-			any_province = {
-				culture_percentage = { culture = scope:actor.culture value > 0.5 }
-			}
+			any_province = { culture_percentage = { culture = scope:actor.culture value > 0.5 } }
 		}
 	}
 
@@ -770,9 +677,7 @@ invite_turkic_migration = {
 	select_trigger = {
 		looking_for_a = situation
 
-		interaction_source_list = {
-			situation:rise_of_the_ottomans = { add_to_list = source }
-		}
+		interaction_source_list = { situation:rise_of_the_ottomans = { add_to_list = source } }
 
 		target_flag = recipient
 		name = "choose_situation"
@@ -806,17 +711,10 @@ invite_turkic_migration = {
 		column = { data = population }
 		column = { data = province_culture_percentage }
 
-		visible = {
-			owner ?= scope:actor
-			culture_percentage = { culture = scope:actor.culture value < 0.5 }
-		}
+		visible = { owner ?= scope:actor culture_percentage = { culture = scope:actor.culture value < 0.5 } }
 
 		enabled = {
-			any_location_in_province = {
-				NOT = {
-					integration_level = core
-				}
-			}
+			any_location_in_province = { NOT = { integration_level = core } }
 		}
 	}
 	effect = {
@@ -836,7 +734,6 @@ invite_turkic_migration = {
 			scope:target_province_destination = {
 				every_location_in_province = {
 					limit = { integration_level = core }
-
 					subtract = { value = 10 desc = "We have a core here" }
 				}
 			}
@@ -857,32 +754,21 @@ invite_turkic_migration = {
 				multiply = 100
 				divide = scope:actor.total_population
 			}
+
 			if = {
 				limit = {
-					scope:target_province_destination = {
-						culture_percentage = { culture = scope:actor.culture value > 0 }
-					}
+					scope:target_province_destination = { culture_percentage = { culture = scope:actor.culture value > 0 } }
 				}
-
 				add = {
 					desc = "[target_province_destination.GetName] [target_culture.GetName]"
 					value = "scope:target_province_destination.culture_percentage(scope:target_culture)"
 					divide = 0.01
 				}
 			}
-			else = {
-				add = {
-					desc = "[target_province_destination.GetName] [target_culture.GetName]"
-					value = 20
-				}
-			}
-			if = {
-				limit = {
-					scope:target_province_destination = {
-						has_province_modifier = cultural_intermixing_modifier
-					}
-				}
+			else = { add = { desc = "[target_province_destination.GetName] [target_culture.GetName]" value = 20 } }
 
+			if = {
+				limit = { scope:target_province_destination = { has_province_modifier = cultural_intermixing_modifier } }
 				add = { desc = "cultural_intermixing_modifier" value = -50 }
 			}
 		}
@@ -900,7 +786,6 @@ create_uc_bey = {
 	allow = {
 		scope:actor = {
 			at_war = no
-
 			any_subject = {
 				religion.group = religion_group:muslim
 				is_subject_type = vassal
@@ -938,10 +823,7 @@ create_uc_bey = {
 
 		interaction_source_list = {
 			scope:actor = {
-				every_subject = {
-					limit = { is_subject_type = vassal religion.group = religion_group:muslim }
-					add_to_list = source
-				}
+				every_subject = { limit = { is_subject_type = vassal religion.group = religion_group:muslim } add_to_list = source }
 			}
 		}
 
@@ -950,7 +832,12 @@ create_uc_bey = {
 		column = { data = name }
 		column = { data = expected_army_size }
 		column = { data = expected_navy_size }
-		enabled = { is_disloyal_subject = no monthly_manpower > 0 at_war = no }
+
+		enabled = {
+			is_disloyal_subject = no
+			monthly_manpower > 0
+			at_war = no
+		}
 	}
 
 	effect = {
@@ -958,19 +845,18 @@ create_uc_bey = {
 			limit = { exists = scope:target_subject }
 			scope:actor ?= { trigger_event_non_silently = rise_of_the_ottomans.217 }
 		}
-
 		custom_tooltip = create_uc_bey_tt
 	}
 
 	ai_will_do = {
 		# Disabled via ai tick never for now as it causes problems
 		add = 25
+
 		if = {
 			limit = { exists = scope:target_subject }
 
 			subtract = {
 				desc = "current number of uc beys"
-
 				scope:actor = {
 					every_subject = { limit = { is_subject_type = uc_bey } add = 10 }
 				}

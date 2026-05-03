@@ -3,47 +3,20 @@ REPLACE:alliance_can_exist = {
 	scope:actor = {
 		is_rebel_country = no
 		scope:recipient = { is_rebel_country = no }
-		NOT = {
-			is_rival_of = scope:recipient
-		}
-		NOT = {
-			scope:recipient.is_rival_of = scope:actor
-		}
-		NOT = {
-			is_subject_of = scope:recipient
-		}
-		NOT = {
-			scope:recipient.is_subject_of = scope:actor
-		}
-		NOT = {
-			has_blocked_treaties = scope:recipient
-		}
-		NOT = {
-			scope:recipient.has_blocked_treaties = scope:actor
-		}
+		NOT = { is_rival_of = scope:recipient }
+		NOT = { scope:recipient.is_rival_of = scope:actor }
+		NOT = { is_subject_of = scope:recipient }
+		NOT = { scope:recipient.is_subject_of = scope:actor }
+		NOT = { has_blocked_treaties = scope:recipient }
+		NOT = { scope:recipient.has_blocked_treaties = scope:actor }
 		opinion = { target = scope:recipient value >= 0 }
 		scope:recipient = { opinion = { target = scope:actor value >= 0 } }
 		modifier:allowed_alliance = yes
 		scope:recipient.modifier:allowed_alliance = yes
-		NOT = {
-			in_union_with = scope:recipient
-		}
-		NOT = {
-			is_member_of_international_organization_of_type = {
-				type = coalition
-				target = scope:recipient
-			}
-		}
-		NOT = {
-			scope:recipient.is_member_of_international_organization_of_type = {
-				type = coalition
-				target = scope:actor
-			}
-		}
+		NOT = { in_union_with = scope:recipient }
+		NOT = { is_member_of_international_organization_of_type = { type = coalition target = scope:recipient } }
+		NOT = { scope:recipient.is_member_of_international_organization_of_type = { type = coalition target = scope:actor } }
 	}
 
-	can_create_subject_alliance = {
-		actor = scope:actor
-		recipient = scope:recipient
-	}
+	can_create_subject_alliance = { actor = scope:actor recipient = scope:recipient }
 }

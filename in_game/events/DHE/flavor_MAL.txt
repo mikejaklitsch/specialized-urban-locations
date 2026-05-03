@@ -18,9 +18,7 @@ flavor_mal.1 = {
 	}
 
 	trigger = {
-		NOT = {
-			any_active_disaster = { disaster_type = disaster_type:decline_of_mali }
-		}
+		NOT = { any_active_disaster = { disaster_type = disaster_type:decline_of_mali } }
 	}
 
 	illustration_tags = { 10 = regular 10 = interior }
@@ -62,13 +60,7 @@ flavor_mal.2 = {
 	}
 
 	trigger = {
-		OR = {
-			has_ruler = no
-			AND = {
-				has_ruler = yes
-				ruler != character:mal_musa_keita
-			}
-		}
+		OR = { has_ruler = no AND = { has_ruler = yes ruler != character:mal_musa_keita } }
 		character:mal_musa_keita = { is_ruler = no }
 		character:mal_suleyman_keita = { is_ruler = no is_alive = yes }
 		is_subject = no
@@ -138,10 +130,7 @@ flavor_mal.3 = {
 		historical_option = yes
 		add_manpower = { value = root.monthly_manpower multiply = 4 }
 
-		change_societal_value = {
-			type = quality_vs_quantity
-			value = societal_value_move_to_right
-		}
+		change_societal_value = { type = quality_vs_quantity value = societal_value_move_to_right }
 	}
 
 	# We must reduce the influence of the Sofa
@@ -149,10 +138,7 @@ flavor_mal.3 = {
 		name = flavor_mal.3.b
 		add_army_tradition = army_tradition_extreme_bonus
 
-		change_societal_value = {
-			type = quality_vs_quantity
-			value = societal_value_move_to_left
-		}
+		change_societal_value = { type = quality_vs_quantity value = societal_value_move_to_left }
 	}
 }
 
@@ -180,18 +166,13 @@ flavor_mal.4 = {
 		}
 	}
 
-	trigger = {
-		capital.market = { any_merchant_in_market = { tag = POR } }
-	}
+	trigger = { capital.market = { any_merchant_in_market = { tag = POR } } }
 
 	option = {
 		name = flavor_mal.4.a
 		historical_option = yes
 
-		change_societal_value = {
-			type = capital_economy_vs_traditional_economy
-			value = societal_value_minor_move_to_left
-		}
+		change_societal_value = { type = capital_economy_vs_traditional_economy value = societal_value_minor_move_to_left }
 	}
 }
 
@@ -225,17 +206,11 @@ flavor_mal.5 = {
 		name = flavor_mal.5.a
 		historical_option = yes
 
-		add_estate_satisfaction = {
-			type = estate_type:burghers_estate
-			value = estate_satisfaction_mild_penalty
-		}
+		add_estate_satisfaction = { type = estate_type:burghers_estate value = estate_satisfaction_mild_penalty }
 
 		c:POR = { add_opinion = { target = c:MAL modifier = trade_conflict } }
 	}
-	option = {
-		name = flavor_mal.5.b
-		every_port_in_country = { change_control = control_mild_penalty }
-	}
+	option = { name = flavor_mal.5.b every_port_in_country = { change_control = control_mild_penalty } }
 }
 
 # Islamization of the Aristocracy
@@ -262,14 +237,12 @@ flavor_mal.6 = {
 		}
 	}
 
-	trigger = {
-		religion.group = religion_group:muslim
-		"religion_percentage_in_country(religion:nyama_religion)" > 0
-	}
+	trigger = { religion.group = religion_group:muslim "religion_percentage_in_country(religion:nyama_religion)" > 0 }
 
 	option = {
 		name = flavor_mal.6.a
 		historical_option = yes
+
 		if = {
 			limit = { has_estate_privilege = estate_privilege:peasants_protected_faith }
 			revoke_estate_privilege = estate_privilege:peasants_protected_faith
@@ -282,10 +255,7 @@ flavor_mal.6 = {
 			max = { value = 1 add = { value = num_provinces multiply = 0.1 } }
 			order_by = population
 
-			every_pop = {
-				limit = { religion = religion:nyama_religion }
-				change_pop_religion = root.religion
-			}
+			every_pop = { limit = { religion = religion:nyama_religion } change_pop_religion = root.religion }
 		}
 	}
 	option = { name = flavor_mal.6.b add_stability = stability_mild_bonus }
@@ -311,9 +281,7 @@ flavor_mal.7 = {
 	trigger = {
 		capital.market = {
 			any_merchant_in_market = {
-				NOT = {
-					capital.sub_continent = root.capital.sub_continent
-				}
+				NOT = { capital.sub_continent = root.capital.sub_continent }
 				capital.market = { is_traded_in_market = goods:firearms }
 			}
 		}
@@ -323,12 +291,9 @@ flavor_mal.7 = {
 		capital.market = {
 			random_merchant_in_market = {
 				limit = {
-					NOT = {
-						capital.sub_continent = root.capital.sub_continent
-					}
+					NOT = { capital.sub_continent = root.capital.sub_continent }
 					capital.market = { is_traded_in_market = goods:firearms }
 				}
-
 				save_scope_as = mal_arms_dealer
 			}
 		}
@@ -353,10 +318,7 @@ flavor_mal.7 = {
 
 		custom_tooltip = {
 			text = flavor_mal.7.a.tt
-
-			scope:mal_arms_dealer = {
-				trigger_event_silently = { id = flavor_mal.8 days = 7 }
-			}
+			scope:mal_arms_dealer = { trigger_event_silently = { id = flavor_mal.8 days = 7 } }
 		}
 	}
 
@@ -372,10 +334,7 @@ flavor_mal.7 = {
 			}
 		}
 
-		add_estate_satisfaction = {
-			type = estate_type:nobles_estate
-			value = estate_satisfaction_severe_bonus
-		}
+		add_estate_satisfaction = { type = estate_type:nobles_estate value = estate_satisfaction_severe_bonus }
 
 		add_army_tradition = army_tradition_mild_penalty
 	}
@@ -395,20 +354,12 @@ flavor_mal.8 = {
 		historical_option = yes
 
 		show_as_tooltip = {
-			reverse_add_opinion = {
-				target = scope:mal_arms_buyer
-				modifier = mal_rejected_us_access_to_firearms
-			}
+			reverse_add_opinion = { target = scope:mal_arms_buyer modifier = mal_rejected_us_access_to_firearms }
 		}
 
-		scope:mal_arms_buyer = {
-			trigger_event_silently = { id = flavor_mal.10 days = 7 }
-		}
+		scope:mal_arms_buyer = { trigger_event_silently = { id = flavor_mal.10 days = 7 } }
 
-		change_societal_value = {
-			type = capital_economy_vs_traditional_economy
-			value = societal_value_huge_move_to_right
-		}
+		change_societal_value = { type = capital_economy_vs_traditional_economy value = societal_value_huge_move_to_right }
 	}
 
 	# Accept the deal
@@ -417,21 +368,13 @@ flavor_mal.8 = {
 
 		scope:mal_arms_buyer = {
 			show_as_tooltip = {
-				add_opinion = {
-					target = scope:mal_arms_dealer
-					modifier = mal_granted_us_access_to_firearms
-				}
-
+				add_opinion = { target = scope:mal_arms_dealer modifier = mal_granted_us_access_to_firearms }
 				transfer_yearly_gold = { value = 0.2 target = scope:mal_arms_dealer }
 			}
-
 			trigger_event_silently = { id = flavor_mal.9 days = 7 }
 		}
 
-		change_societal_value = {
-			type = capital_economy_vs_traditional_economy
-			value = societal_value_move_to_left
-		}
+		change_societal_value = { type = capital_economy_vs_traditional_economy value = societal_value_move_to_left }
 	}
 }
 
@@ -453,16 +396,10 @@ flavor_mal.9 = {
 				limit = { market = { has_temporary_demand = demand:mal_need_for_firearms } }
 				market = { remove_temporary_demand = demand:mal_need_for_firearms }
 			}
-			change_building_level_in_location = {
-				building = building_type:gun_smith
-				value = 5
-			}
+			change_building_level_in_location = { building = building_type:gun_smith value = 5 }
 		}
 
-		add_opinion = {
-			target = scope:mal_arms_dealer
-			modifier = mal_granted_us_access_to_firearms
-		}
+		add_opinion = { target = scope:mal_arms_dealer modifier = mal_granted_us_access_to_firearms }
 
 		transfer_yearly_gold = { value = 0.2 target = scope:mal_arms_dealer }
 	}
@@ -479,11 +416,7 @@ flavor_mal.10 = {
 
 	option = {
 		name = flavor_mal.10.a
-
-		add_opinion = {
-			target = scope:mal_arms_dealer
-			modifier = mal_rejected_us_access_to_firearms
-		}
+		add_opinion = { target = scope:mal_arms_dealer modifier = mal_rejected_us_access_to_firearms }
 	}
 }
 
@@ -505,15 +438,8 @@ flavor_mal.11 = {
 	trigger = {
 		at_war = yes
 
-		any_current_war = {
-			NOT = {
-				is_an_attacker = root
-			}
-		}
-		OR = {
-			any_active_disaster = { disaster_type = disaster_type:decline_of_mali }
-			num_locations < 50
-		}
+		any_current_war = { NOT = { is_an_attacker = root } }
+		OR = { any_active_disaster = { disaster_type = disaster_type:decline_of_mali } num_locations < 50 }
 	}
 
 	illustration_tags = { 10 = regular 10 = exterior }
@@ -528,30 +454,22 @@ flavor_mal.11 = {
 	option = {
 		name = flavor_mal.11.a
 		historical_option = yes
+
 		if = {
 			limit = { societal_value:offensive_vs_defensive < 20 }
 			set_societal_value = { type = offensive_vs_defensive value = 50 }
 		}
-		else = {
-			change_societal_value = {
-				type = offensive_vs_defensive
-				value = societal_value_huge_move_to_right
-			}
-		}
+		else = { change_societal_value = { type = offensive_vs_defensive value = societal_value_huge_move_to_right } }
 	}
 
 	option = {
 		name = flavor_mal.11.b
+
 		if = {
 			limit = { societal_value:offensive_vs_defensive > -20 }
 			set_societal_value = { type = offensive_vs_defensive value = -50 }
 		}
-		else = {
-			change_societal_value = {
-				type = offensive_vs_defensive
-				value = societal_value_huge_move_to_left
-			}
-		}
+		else = { change_societal_value = { type = offensive_vs_defensive value = societal_value_huge_move_to_left } }
 	}
 }
 
@@ -577,7 +495,6 @@ flavor_mal.12 = {
 			foreground = estate_type:nobles_estate
 			background = estate_type:nobles_estate
 		}
-
 		capital = { save_scope_as = target_location }
 	}
 
@@ -592,15 +509,9 @@ flavor_mal.12 = {
 
 		grant_estate_privilege = estate_privilege:office_of_the_farima_soura_privilege
 
-		change_societal_value = {
-			type = aristocracy_vs_plutocracy
-			value = societal_value_move_to_left
-		}
+		change_societal_value = { type = aristocracy_vs_plutocracy value = societal_value_move_to_left }
 
-		add_estate_satisfaction = {
-			type = estate_type:nobles_estate
-			value = estate_satisfaction_mild_bonus
-		}
+		add_estate_satisfaction = { type = estate_type:nobles_estate value = estate_satisfaction_mild_bonus }
 	}
 
 	# Let us turn to the Sankar-Zouma
@@ -613,15 +524,9 @@ flavor_mal.12 = {
 
 		grant_estate_privilege = estate_privilege:office_of_the_sankar_zouma_privilege
 
-		change_societal_value = {
-			type = aristocracy_vs_plutocracy
-			value = societal_value_move_to_left
-		}
+		change_societal_value = { type = aristocracy_vs_plutocracy value = societal_value_move_to_left }
 
-		add_estate_satisfaction = {
-			type = estate_type:nobles_estate
-			value = estate_satisfaction_mild_bonus
-		}
+		add_estate_satisfaction = { type = estate_type:nobles_estate value = estate_satisfaction_mild_bonus }
 	}
 
 	# Grant them extensive privileges
@@ -640,19 +545,10 @@ flavor_mal.12 = {
 
 		grant_estate_privilege = estate_privilege:office_of_the_farima_soura_privilege
 
-		change_societal_value = {
-			type = aristocracy_vs_plutocracy
-			value = societal_value_large_move_to_left
-		}
-		change_societal_value = {
-			type = centralization_vs_decentralization
-			value = societal_value_move_to_right
-		}
+		change_societal_value = { type = aristocracy_vs_plutocracy value = societal_value_large_move_to_left }
+		change_societal_value = { type = centralization_vs_decentralization value = societal_value_move_to_right }
 
-		add_estate_satisfaction = {
-			type = estate_type:nobles_estate
-			value = estate_satisfaction_extreme_bonus
-		}
+		add_estate_satisfaction = { type = estate_type:nobles_estate value = estate_satisfaction_extreme_bonus }
 
 		add_stability = stability_extreme_bonus
 	}
@@ -661,21 +557,12 @@ flavor_mal.12 = {
 	option = {
 		name = flavor_mal.12.d
 
-		change_societal_value = {
-			type = aristocracy_vs_plutocracy
-			value = societal_value_large_move_to_right
-		}
-		change_societal_value = {
-			type = centralization_vs_decentralization
-			value = societal_value_large_move_to_left
-		}
+		change_societal_value = { type = aristocracy_vs_plutocracy value = societal_value_large_move_to_right }
+		change_societal_value = { type = centralization_vs_decentralization value = societal_value_large_move_to_left }
 
 		add_stability = stability_mild_penalty
 
-		add_estate_satisfaction = {
-			type = estate_type:nobles_estate
-			value = estate_satisfaction_extreme_penalty
-		}
+		add_estate_satisfaction = { type = estate_type:nobles_estate value = estate_satisfaction_extreme_penalty }
 	}
 }
 
@@ -694,10 +581,7 @@ flavor_mal.13 = {
 		monthly_chance = 1
 	}
 
-	trigger = {
-		owns = location:timbuktu
-		location:timbuktu = { has_building_with_at_least_one_level = madrasa }
-	}
+	trigger = { owns = location:timbuktu location:timbuktu = { has_building_with_at_least_one_level = madrasa } }
 
 	illustration_tags = { 10 = regular 10 = interior }
 
@@ -706,7 +590,6 @@ flavor_mal.13 = {
 			foreground = estate_type:clergy_estate
 			background = estate_type:clergy_estate
 		}
-
 		location:timbuktu = { save_scope_as = target_location }
 	}
 
@@ -721,10 +604,7 @@ flavor_mal.13 = {
 			scale = -4
 		}
 
-		change_societal_value = {
-			type = traditionalist_vs_innovative
-			value = societal_value_large_move_to_right
-		}
+		change_societal_value = { type = traditionalist_vs_innovative value = societal_value_large_move_to_right }
 
 		add_prestige = prestige_mild_bonus
 	}
@@ -733,10 +613,7 @@ flavor_mal.13 = {
 	option = {
 		name = flavor_mal.13.b
 
-		change_societal_value = {
-			type = traditionalist_vs_innovative
-			value = societal_value_minor_move_to_right
-		}
+		change_societal_value = { type = traditionalist_vs_innovative value = societal_value_minor_move_to_right }
 
 		culture = {
 			add_cultural_tradition = cultural_tradition_weak_bonus
@@ -764,10 +641,7 @@ flavor_mal.14 = {
 	trigger = {
 		c:JOL = {
 			is_subject_of = root
-			OR = {
-				opinion = { target = root value <= 0 }
-				liberty_desire > 50
-			}
+			OR = { opinion = { target = root value <= 0 } liberty_desire > 50 }
 		}
 	}
 
@@ -794,10 +668,7 @@ flavor_mal.14 = {
 		cancel_subject = c:JOL
 		add_government_power = government_power_mild_penalty
 
-		add_estate_satisfaction = {
-			type = estate_type:nobles_estate
-			value = estate_satisfaction_extreme_penalty
-		}
+		add_estate_satisfaction = { type = estate_type:nobles_estate value = estate_satisfaction_extreme_penalty }
 	}
 
 	# Intervene in Jolof
@@ -864,7 +735,6 @@ flavor_mal.16 = {
 			foreground = estate_type:nobles_estate
 			background = estate_type:nobles_estate
 		}
-
 		c:JOL = { save_scope_as = target_country }
 	}
 
@@ -891,7 +761,6 @@ flavor_mal.17 = {
 			foreground = estate_type:nobles_estate
 			background = estate_type:nobles_estate
 		}
-
 		c:JOL = { save_scope_as = target_country }
 	}
 
@@ -904,19 +773,13 @@ flavor_mal.17 = {
 		add_stability = stability_extreme_penalty
 		add_government_power = government_power_extreme_penalty
 
-		c:JOL = {
-			add_stability = stability_extreme_bonus
-			ruler ?= { add_trait = trait:inspiring_leader }
-		}
+		c:JOL = { add_stability = stability_extreme_bonus ruler ?= { add_trait = trait:inspiring_leader } }
 	}
 
 	# Let them go
 	option = {
 		name = flavor_mal.17.b
-
-		c:JOL = {
-			declare_war_with_cb = { target = root type = casus_belli:cb_independence_war }
-		}
+		c:JOL = { declare_war_with_cb = { target = root type = casus_belli:cb_independence_war } }
 	}
 }
 
@@ -938,21 +801,12 @@ flavor_mal.18 = {
 
 	trigger = {
 		OR = {
-			AND = {
-				any_owned_location = { is_core_of = c:SON average_satisfaction < 0.5 }
-				NOT = {
-					country_exists = c:SON
-				}
-			}
+			AND = { any_owned_location = { is_core_of = c:SON average_satisfaction < 0.5 } NOT = { country_exists = c:SON } }
 			AND = {
 				country_exists = c:SON
-
 				c:SON = {
 					is_subject_of = root
-					OR = {
-						opinion = { target = root value <= 0 }
-						liberty_desire > 50
-					}
+					OR = { opinion = { target = root value <= 0 } liberty_desire > 50 }
 				}
 			}
 		}
@@ -966,11 +820,7 @@ flavor_mal.18 = {
 			background = estate_type:peasants_estate
 		}
 		if = {
-			limit = {
-				NOT = {
-					country_exists = c:SON
-				}
-			}
+			limit = { NOT = { country_exists = c:SON } }
 
 			location:gao = { create_dynasty_from_location = sonni_dynasty }
 
@@ -1003,13 +853,8 @@ flavor_mal.18 = {
 
 					every_province = {
 						limit = {
-							any_location_in_province = {
-								NOT = {
-									integration_level = core
-								}
-							}
+							any_location_in_province = { NOT = { integration_level = core } }
 						}
-
 						change_province_integration = core
 					}
 				}
@@ -1021,6 +866,7 @@ flavor_mal.18 = {
 	option = {
 		name = flavor_mal.18.a
 		historical_option = yes
+
 		if = {
 			limit = { country_exists = c:SON c:SON = { is_subject_of = root } }
 			cancel_subject = c:SON
@@ -1029,15 +875,13 @@ flavor_mal.18 = {
 		add_stability = stability_mild_penalty
 		add_government_power = government_power_mild_penalty
 
-		add_estate_satisfaction = {
-			type = estate_type:nobles_estate
-			value = estate_satisfaction_extreme_penalty
-		}
+		add_estate_satisfaction = { type = estate_type:nobles_estate value = estate_satisfaction_extreme_penalty }
 	}
 
 	# Prepare the troops, we must bring them back into the empire
 	option = {
 		name = flavor_mal.18.b
+
 		if = {
 			limit = { country_exists = c:SON c:SON = { is_subject_of = root } }
 			cancel_subject = c:SON
@@ -1152,10 +996,7 @@ flavor_mal.20 = {
 	option = {
 		name = flavor_mal.20.a
 
-		scope:target_location = {
-			change_prosperity = prosperity_mild_bonus
-			change_development = development_mild_bonus
-		}
+		scope:target_location = { change_prosperity = prosperity_mild_bonus change_development = development_mild_bonus }
 
 		add_prestige = prestige_mild_bonus
 
@@ -1214,10 +1055,8 @@ flavor_mal.21 = {
 	# Focus it on trade
 	option = {
 		name = flavor_mal.21.a
-
 		custom_tooltip = {
 			text = mal_every_location_with_a_market_gains_development_tt
-
 			every_owned_location = {
 				limit = { has_building = building_type:marketplace }
 				change_development = development_mild_bonus
@@ -1231,18 +1070,9 @@ flavor_mal.21 = {
 
 		add_stability = stability_extreme_bonus
 
-		add_estate_satisfaction = {
-			type = estate_type:clergy_estate
-			value = estate_satisfaction_severe_bonus
-		}
-		add_estate_satisfaction = {
-			type = estate_type:nobles_estate
-			value = estate_satisfaction_severe_bonus
-		}
-		add_estate_satisfaction = {
-			type = estate_type:burghers_estate
-			value = estate_satisfaction_severe_bonus
-		}
+		add_estate_satisfaction = { type = estate_type:clergy_estate value = estate_satisfaction_severe_bonus }
+		add_estate_satisfaction = { type = estate_type:nobles_estate value = estate_satisfaction_severe_bonus }
+		add_estate_satisfaction = { type = estate_type:burghers_estate value = estate_satisfaction_severe_bonus }
 	}
 
 	# Focus it on military
@@ -1253,21 +1083,12 @@ flavor_mal.21 = {
 
 		custom_tooltip = {
 			text = mal_every_armory_gains_an_extra_upgrade_if_possible_tt
-
 			every_owned_location = {
 				limit = {
 					has_building = building_type:armory
-
-					location_building_level = {
-						building_type = building_type:armory
-						value > manpower_max_level
-					}
+					location_building_level = { building_type = building_type:armory value > manpower_max_level }
 				}
-
-				change_building_level_in_location = {
-					building = building_type:armory
-					value = 1
-				}
+				change_building_level_in_location = { building = building_type:armory value = 1 }
 			}
 		}
 	}
@@ -1311,7 +1132,6 @@ flavor_mal.22 = {
 
 	immediate = {
 		location:takedda = { save_scope_as = target_location }
-
 		ruler_or_regent ?= { save_scope_as = target_character }
 	}
 
@@ -1334,15 +1154,10 @@ flavor_mal.22 = {
 	# Enforce our rule there
 	option = {
 		name = flavor_mal.22.b
-
 		scope:target_location = {
 			if = {
 				limit = { has_building = building_type:castle }
-
-				change_building_level_in_location = {
-					building = building_type:castle
-					value = 1
-				}
+				change_building_level_in_location = { building = building_type:castle value = 1 }
 			}
 			else = {
 				construct_building = {
@@ -1379,16 +1194,13 @@ flavor_mal.23 = {
 			foreground = estate_type:peasants_estate
 			background = estate_type:peasants_estate
 		}
-
 		ruler_or_regent ?= { save_scope_as = target_character }
 	}
 
 	option = {
 		name = flavor_mal.23.a
-
 		custom_tooltip = {
 			text = mal_unlock_fulani_cattle_rearing_pens_tt
-
 			unlock_building_effect = {
 				type = fulani_cattle_rearing_pen
 			}
@@ -1397,7 +1209,6 @@ flavor_mal.23 = {
 
 	option = {
 		name = flavor_mal.23.b
-
 		change_gold_effect = {
 			scale = 2
 		}
@@ -1421,11 +1232,7 @@ flavor_mal.24 = {
 
 	fire_only_once = yes
 
-	trigger = {
-		character:mal_musa_keita = { is_alive = no }
-
-		ruler_or_regent ?= { has_trait = free_thinker }
-	}
+	trigger = { character:mal_musa_keita = { is_alive = no } ruler_or_regent ?= { has_trait = free_thinker } }
 
 	illustration_tags = { 10 = regular 10 = interior }
 
@@ -1449,10 +1256,7 @@ flavor_mal.24 = {
 			mode = add_and_extend
 		}
 
-		custom_tooltip = {
-			text = mal_finding_america_yields_rewards_tt
-			set_variable = mal_founding_expedition_start
-		}
+		custom_tooltip = { text = mal_finding_america_yields_rewards_tt set_variable = mal_founding_expedition_start }
 	}
 
 	option = {
@@ -1463,17 +1267,8 @@ flavor_mal.24 = {
 		add_stability = stability_mild_bonus
 
 		if = {
-			limit = {
-				NOR = {
-					current_age = age_1_traditions
-					current_age = age_2_renaissance
-				}
-			}
-
-			change_societal_value = {
-				type = outward_vs_inward
-				value = societal_value_move_to_right
-			}
+			limit = { NOR = { current_age = age_1_traditions current_age = age_2_renaissance } }
+			change_societal_value = { type = outward_vs_inward value = societal_value_move_to_right }
 		}
 		else = { add_prestige = prestige_weak_bonus }
 	}
@@ -1506,17 +1301,8 @@ flavor_mal.25 = {
 		name = flavor_mal.25.a
 
 		if = {
-			limit = {
-				NOR = {
-					current_age = age_1_traditions
-					current_age = age_2_renaissance
-				}
-			}
-
-			change_societal_value = {
-				type = outward_vs_inward
-				value = societal_value_move_to_left
-			}
+			limit = { NOR = { current_age = age_1_traditions current_age = age_2_renaissance } }
+			change_societal_value = { type = outward_vs_inward value = societal_value_move_to_left }
 		}
 		else = { add_legitimacy = legitimacy_weak_bonus }
 	}
@@ -1550,7 +1336,6 @@ flavor_mal.26 = {
 			foreground = estate_type:nobles_estate
 			background = estate_type:nobles_estate
 		}
-
 		ruler_or_heir_if_regent ?= { save_scope_as = target_character }
 	}
 
@@ -1562,13 +1347,9 @@ flavor_mal.26 = {
 			years = 25
 			mode = add_and_extend
 		}
-		if = {
-			limit = {
-				NOT = {
-					has_policy = local_courts_administration
-				}
-			}
 
+		if = {
+			limit = { NOT = { has_policy = local_courts_administration } }
 			add_policy = policy:local_courts_administration
 		}
 	}
@@ -1591,12 +1372,7 @@ flavor_mal.27 = {
 	fire_only_once = yes
 
 	trigger = {
-		ruler_or_regent ?= {
-			OR = {
-				has_trait = greedy
-				dip < 25
-			}
-		}
+		ruler_or_regent ?= { OR = { has_trait = greedy dip < 25 } }
 	}
 
 	illustration_tags = { 10 = angry 10 = interior }
@@ -1606,7 +1382,6 @@ flavor_mal.27 = {
 			foreground = estate_type:nobles_estate
 			background = estate_type:nobles_estate
 		}
-
 		ruler_or_regent ?= { save_scope_as = target_character }
 	}
 
@@ -1657,18 +1432,11 @@ flavor_mal.28 = {
 		}
 	}
 
-	option = {
-		name = flavor_mal.28.a
-		add_reform = government_reform:malian_tribute_system
-	}
+	option = { name = flavor_mal.28.a add_reform = government_reform:malian_tribute_system }
 
 	option = {
 		name = flavor_mal.28.b
-
-		change_societal_value = {
-			type = centralization_vs_decentralization
-			value = societal_value_move_to_left
-		}
+		change_societal_value = { type = centralization_vs_decentralization value = societal_value_move_to_left }
 	}
 }
 
@@ -1709,14 +1477,9 @@ flavor_mal.29 = {
 
 		scope:target_location = {
 			change_development = development_mild_bonus
-
 			custom_tooltip = {
 				text = mal_every_pop_gains_20_satisfaction_tt
-
-				every_pop = {
-					limit = { owner = root }
-					add_pop_satisfaction = pop_satisfaction_severe_bonus
-				}
+				every_pop = { limit = { owner = root } add_pop_satisfaction = pop_satisfaction_severe_bonus }
 			}
 		}
 
@@ -1745,12 +1508,7 @@ flavor_mal.30 = {
 	fire_only_once = yes
 
 	trigger = {
-		ruler_or_regent ?= {
-			OR = {
-				has_trait = cruel
-				has_trait = malevolent
-			}
-		}
+		ruler_or_regent ?= { OR = { has_trait = cruel has_trait = malevolent } }
 	}
 
 	illustration_tags = { 10 = angry 10 = interior }
@@ -1760,7 +1518,6 @@ flavor_mal.30 = {
 			foreground = estate_type:peasants_estate
 			background = estate_type:nobles_estate
 		}
-
 		ruler_or_regent ?= { save_scope_as = target_character }
 	}
 
@@ -1769,12 +1526,8 @@ flavor_mal.30 = {
 
 		custom_tooltip = {
 			text = mal_all_pops_lose_15_satisfaction_tt
-
 			every_owned_location = {
-				every_pop = {
-					limit = { owner = root }
-					add_pop_satisfaction = pop_satisfaction_severe_penalty
-				}
+				every_pop = { limit = { owner = root } add_pop_satisfaction = pop_satisfaction_severe_penalty }
 			}
 		}
 
@@ -1798,9 +1551,7 @@ flavor_mal.31 = {
 
 	fire_only_once = yes
 
-	trigger = {
-		any_port_in_country = { count >= 10 region = region:guinea_region }
-	}
+	trigger = { any_port_in_country = { count >= 10 region = region:guinea_region } }
 
 	illustration_tags = { 10 = regular 10 = interior }
 
@@ -1809,7 +1560,6 @@ flavor_mal.31 = {
 			foreground = estate_type:nobles_estate
 			background = estate_type:nobles_estate
 		}
-
 		ordered_port_in_country = {
 			limit = { region = region:guinea_region }
 			order_by = population
@@ -1824,12 +1574,7 @@ flavor_mal.31 = {
 		scope:target_location = {
 			change_development = development_mild_bonus
 			if = {
-				limit = {
-					NOT = {
-						has_building = building_type:marketplace
-					}
-				}
-
+				limit = { NOT = { has_building = building_type:marketplace } }
 				construct_building = {
 					building_type = building_type:marketplace
 					cost_multiplier = 0.5
@@ -1873,9 +1618,7 @@ flavor_mal.32 = {
 	}
 
 	trigger = {
-		NOT = {
-			location:timbuktu = { is_owned_or_owned_by_subjects_of = root }
-		}
+		NOT = { location:timbuktu = { is_owned_or_owned_by_subjects_of = root } }
 	}
 
 	illustration_tags = { 10 = angry 10 = exterior }
@@ -1895,28 +1638,13 @@ flavor_mal.32 = {
 	option = {
 		name = flavor_mal.32.a
 
-		trigger = {
-			ruler_or_regent ?= {
-				NOT = {
-					has_trait = silver_tongue
-				}
-			}
-		}
+		trigger = { ruler_or_regent ?= { NOT = { has_trait = silver_tongue } } }
 
 		add_stability = stability_mild_penalty
 
-		add_estate_satisfaction = {
-			type = estate_type:clergy_estate
-			value = estate_satisfaction_mild_penalty
-		}
-		add_estate_satisfaction = {
-			type = estate_type:nobles_estate
-			value = estate_satisfaction_mild_penalty
-		}
-		add_estate_satisfaction = {
-			type = estate_type:burghers_estate
-			value = estate_satisfaction_mild_penalty
-		}
+		add_estate_satisfaction = { type = estate_type:clergy_estate value = estate_satisfaction_mild_penalty }
+		add_estate_satisfaction = { type = estate_type:nobles_estate value = estate_satisfaction_mild_penalty }
+		add_estate_satisfaction = { type = estate_type:burghers_estate value = estate_satisfaction_mild_penalty }
 	}
 
 	# Try to convince the court that everything is fine
@@ -1956,12 +1684,7 @@ flavor_mal.33 = {
 
 	trigger = {
 		location:timbuktu.owner ?= root
-
-		location:timbuktu = {
-			NOT = {
-				modifier:sul_is_rural_settlement_rank_tier = yes
-			}
-		}
+		location:timbuktu = { NOT = { modifier:sul_is_rural_settlement_rank_tier = yes } }
 	}
 
 	illustration_tags = { 10 = happy 10 = exterior }

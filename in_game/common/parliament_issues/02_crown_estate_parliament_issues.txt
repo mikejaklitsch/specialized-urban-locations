@@ -18,9 +18,7 @@ bolster_the_monarchy = {
 
 		"estate_power(estate_type:crown_estate)" < 0.5
 		government_type = government_type:monarchy
-		NOT = {
-			has_country_modifier = bolstered_crown_authority_modifier
-		}
+		NOT = { has_country_modifier = bolstered_crown_authority_modifier }
 	}
 
 	chance = {
@@ -67,9 +65,7 @@ bolster_the_republic = {
 		}
 
 		government_type = government_type:republic
-		NOT = {
-			has_country_modifier = bolstered_state_authority
-		}
+		NOT = { has_country_modifier = bolstered_state_authority }
 	}
 
 	chance = {
@@ -116,9 +112,7 @@ bolster_the_divine_mandate = {
 		}
 
 		government_type = government_type:theocracy
-		NOT = {
-			has_country_modifier = bolstered_divine_authority
-		}
+		NOT = { has_country_modifier = bolstered_divine_authority }
 	}
 
 	chance = {
@@ -164,9 +158,7 @@ bolster_the_tribal_leader = {
 		}
 
 		government_type = government_type:tribe
-		NOT = {
-			has_country_modifier = bolstered_tribal_authority
-		}
+		NOT = { has_country_modifier = bolstered_tribal_authority }
 	}
 
 	chance = {
@@ -201,15 +193,11 @@ bolster_the_khan = {
 	modifier_when_in_debate = { monthly_horde_unity = 1 }
 
 	allow = {
-		OR = {
-			parliament_type = parliament_type:assembly
-		}
+		OR = { parliament_type = parliament_type:assembly }
 
 		"estate_power(estate_type:crown_estate)" < 0.5
 		government_type = government_type:steppe_horde
-		NOT = {
-			has_country_modifier = bolstered_khan_authority
-		}
+		NOT = { has_country_modifier = bolstered_khan_authority }
 	}
 
 	chance = {
@@ -258,15 +246,9 @@ conduct_a_census = {
 	chance = {
 		add = 1
 
-		add = {
-			if = { limit = { stability <= 0 } value = 2 }
-		}
-		add = {
-			if = { limit = { stability <= -40 } value = 4 }
-		}
-		add = {
-			if = { limit = { stability >= 80 } value = -1 }
-		}
+		add = { if = { limit = { stability <= 0 } value = 2 } }
+		add = { if = { limit = { stability <= -40 } value = 4 } }
+		add = { if = { limit = { stability >= 80 } value = -1 } }
 	}
 
 	on_debate_passed = { add_stability = stability_mild_bonus }
@@ -281,12 +263,8 @@ support_ruler = {
 
 	allow = {
 		has_ruler = yes
-		NOT = {
-			is_subject_type = fiefdom
-		}
-		NOT = {
-			is_subject_type = dominion
-		}
+		NOT = { is_subject_type = fiefdom }
+		NOT = { is_subject_type = dominion }
 		OR = {
 			parliament_type = parliament_type:assembly
 			parliament_type = parliament_type:council
@@ -301,22 +279,26 @@ support_ruler = {
 	chance = {
 		add = 1
 
-		add = {
-			if = { limit = { government_power < 50 } value = -1 }
-		}
-		add = {
-			if = { limit = { government_power > 90 } value = 2 }
-		}
+		add = { if = { limit = { government_power < 50 } value = -1 } }
+		add = { if = { limit = { government_power > 90 } value = 2 } }
 	}
 
 	on_debate_passed = {
 		if = {
 			limit = { has_ruler = yes }
-			ruler = { add_adm = 3 add_dip = 3 add_mil = 3 }
+			ruler = {
+				add_adm = 3
+				add_dip = 3
+				add_mil = 3
+			}
 		}
 		else_if = {
 			limit = { has_regent = yes }
-			regent = { add_adm = 3 add_dip = 3 add_mil = 3 }
+			regent = {
+				add_adm = 3
+				add_dip = 3
+				add_mil = 3
+			}
 		}
 	}
 
@@ -342,13 +324,8 @@ increase_our_control = {
 		has_advance = counting_house_advance
 
 		any_owned_location = {
-			OR = {
-				modifier:sul_is_town_rank_tier = yes
-				modifier:sul_is_city_rank_tier = yes
-			}
-			NOT = {
-				has_building = building_type:counting_house
-			}
+			OR = { modifier:sul_is_town_rank_tier = yes modifier:sul_is_city_rank_tier = yes }
+			NOT = { has_building = building_type:counting_house }
 		}
 	}
 
@@ -370,17 +347,18 @@ increase_our_control = {
 	on_debate_passed = {
 		ordered_owned_location = {
 			order_by = population
-			max = { value = num_provinces multiply = 0.1 add = 1 }
+
+			max = {
+				value = num_provinces
+				multiply = 0.1
+				add = 1
+			}
+
 			check_range_bounds = no
 
 			limit = {
-				NOT = {
-					has_building = building_type:counting_house
-				}
-				OR = {
-					modifier:sul_is_town_rank_tier = yes
-					modifier:sul_is_city_rank_tier = yes
-				}
+				NOT = { has_building = building_type:counting_house }
+				OR = { modifier:sul_is_town_rank_tier = yes modifier:sul_is_city_rank_tier = yes }
 			}
 
 			construct_building = {
@@ -397,9 +375,7 @@ increase_our_control = {
 expand_diplomatic_corps_majors = {
 	estate = crown_estate
 
-	modifier_when_in_debate = {
-		diplomatic_reputation = diplomatic_reputation_mild_bonus
-	}
+	modifier_when_in_debate = { diplomatic_reputation = diplomatic_reputation_mild_bonus }
 
 	allow = {
 		OR = {
@@ -407,12 +383,8 @@ expand_diplomatic_corps_majors = {
 			parliament_type = parliament_type:constitutional_parliament
 		}
 		any_great_power ?= {
-			NOT = {
-				is_rival_of = root
-			}
-			NOT = {
-				is_enemy_of = root
-			}
+			NOT = { is_rival_of = root }
+			NOT = { is_enemy_of = root }
 
 			is_known_by_country = root
 		}
@@ -421,9 +393,7 @@ expand_diplomatic_corps_majors = {
 	chance = {
 		add = 1
 
-		add = {
-			if = { limit = { num_of_diplomats <= 2 } value = 2 }
-		}
+		add = { if = { limit = { num_of_diplomats <= 2 } value = 2 } }
 
 		multiply = {
 			if = { limit = { is_hegemon = yes } value = 0.1 }
@@ -435,16 +405,8 @@ expand_diplomatic_corps_majors = {
 
 	on_debate_passed = {
 		add_diplomats = 5
-
 		ordered_great_power = {
-			limit = {
-				NOT = {
-					is_rival_of = root
-				}
-				NOT = {
-					is_enemy_of = root
-				}
-			}
+			limit = { NOT = { is_rival_of = root } NOT = { is_enemy_of = root } }
 
 			max = 2
 			check_range_bounds = no
@@ -466,10 +428,7 @@ expand_diplomatic_corps_majors = {
 improve_subject_relations = {
 	estate = crown_estate
 
-	modifier_when_in_debate = {
-		subject_loyalty = 10
-		subject_income_modifier = 0.2
-	}
+	modifier_when_in_debate = { subject_loyalty = 10 subject_income_modifier = 0.2 }
 
 	allow = {
 		num_subjects >= 1
@@ -484,15 +443,10 @@ improve_subject_relations = {
 
 	chance = {
 		add = 1
-
-		add = {
-			if = { limit = { num_subjects >= 2 } value = 2 }
-		}
+		add = { if = { limit = { num_subjects >= 2 } value = 2 } }
 	}
 
-	on_debate_passed = {
-		every_subject = { add_liberty_desire = liberty_desire_weak_minus }
-	}
+	on_debate_passed = { every_subject = { add_liberty_desire = liberty_desire_weak_minus } }
 
 	on_debate_failed = { parliament_debate_failed_effect = yes }
 }

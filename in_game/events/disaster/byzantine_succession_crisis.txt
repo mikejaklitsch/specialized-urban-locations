@@ -24,17 +24,13 @@ byzantine_succ_crisis.1 = {
 			foreground = estate_type:nobles_estate
 			background = estate_type:nobles_estate
 		}
+
 		if = {
 			limit = { exists = var:succession_crisis_pretender_variable }
+			var:succession_crisis_pretender_variable ?= { save_scope_as = succession_crisis_pretender_scope }
+		}
 
-			var:succession_crisis_pretender_variable ?= {
-				save_scope_as = succession_crisis_pretender_scope
-			}
-		}
-		random_character = {
-			limit = { has_variable = scope_pretender_var }
-			save_scope_as = target_character
-		}
+		random_character = { limit = { has_variable = scope_pretender_var } save_scope_as = target_character }
 
 		ruler_or_regent ?= { save_scope_as = target_character2 }
 	}
@@ -53,14 +49,8 @@ byzantine_succ_crisis.1 = {
 
 		add_stability = stability_weak_bonus
 
-		add_estate_satisfaction = {
-			type = estate_type:nobles_estate
-			value = estate_satisfaction_mild_bonus
-		}
-		add_estate_satisfaction = {
-			type = estate_type:peasants_estate
-			value = estate_satisfaction_extreme_penalty
-		}
+		add_estate_satisfaction = { type = estate_type:nobles_estate value = estate_satisfaction_mild_bonus }
+		add_estate_satisfaction = { type = estate_type:peasants_estate value = estate_satisfaction_extreme_penalty }
 
 		custom_tooltip = peasants_unhappy_tt
 
@@ -77,15 +67,9 @@ byzantine_succ_crisis.1 = {
 	option = {	# No
 		name = byzantine_succ_crisis.1.b
 
-		change_societal_value = {
-			type = serfdom_vs_free_subjects
-			value = societal_value_large_move_to_right
-		}
+		change_societal_value = { type = serfdom_vs_free_subjects value = societal_value_large_move_to_right }
 
-		add_estate_satisfaction = {
-			type = estate_type:nobles_estate
-			value = estate_satisfaction_radical_penalty
-		}
+		add_estate_satisfaction = { type = estate_type:nobles_estate value = estate_satisfaction_radical_penalty }
 
 		add_government_power = government_power_extreme_bonus
 		custom_tooltip = byz_every_noble_sides_with_pretender_tt
@@ -95,6 +79,7 @@ byzantine_succ_crisis.1 = {
 				random_pop = {
 					limit = { owner = root pop_type = pop_type:nobles }
 					add_pop_satisfaction = pop_satisfaction_severe_penalty
+
 					if = {
 						limit = { exists = scope:succession_crisis_pretender_scope }
 						change_pop_allegiance = scope:succession_crisis_pretender_scope
@@ -119,9 +104,7 @@ byzantine_succ_crisis.2 = {
 	trigger = {
 		tag = BYZ
 		in_civil_war = no
-		NOT = {
-			has_variable = byz_nobles_refused_paying_taxes
-		}
+		NOT = { has_variable = byz_nobles_refused_paying_taxes }
 
 		estate_tax_percentage:nobles_estate > 0
 	}
@@ -131,17 +114,13 @@ byzantine_succ_crisis.2 = {
 			foreground = estate_type:nobles_estate
 			background = estate_type:nobles_estate
 		}
+
 		if = {
 			limit = { exists = var:succession_crisis_pretender_variable }
+			var:succession_crisis_pretender_variable ?= { save_scope_as = succession_crisis_pretender_scope }
+		}
 
-			var:succession_crisis_pretender_variable ?= {
-				save_scope_as = succession_crisis_pretender_scope
-			}
-		}
-		random_character = {
-			limit = { has_variable = scope_pretender_var }
-			save_scope_as = target_character
-		}
+		random_character = { limit = { has_variable = scope_pretender_var } save_scope_as = target_character }
 
 		set_variable = {
 			name = byz_nobles_refused_paying_taxes
@@ -167,10 +146,7 @@ byzantine_succ_crisis.2 = {
 	option = {
 		name = byzantine_succ_crisis.2.b
 
-		add_estate_satisfaction = {
-			type = estate_type:nobles_estate
-			value = estate_satisfaction_radical_penalty
-		}
+		add_estate_satisfaction = { type = estate_type:nobles_estate value = estate_satisfaction_radical_penalty }
 
 		add_government_power = government_power_mild_bonus
 	}
@@ -190,9 +166,7 @@ byzantine_succ_crisis.3 = {
 	trigger = {
 		tag = BYZ
 		in_civil_war = no
-		NOT = {
-			has_variable = byz_nobles_supports_pretender_variable
-		}
+		NOT = { has_variable = byz_nobles_supports_pretender_variable }
 
 		estate_satisfaction:nobles_estate < 0.5
 	}
@@ -202,17 +176,13 @@ byzantine_succ_crisis.3 = {
 			foreground = estate_type:nobles_estate
 			background = estate_type:nobles_estate
 		}
+
 		if = {
 			limit = { exists = var:succession_crisis_pretender_variable }
+			var:succession_crisis_pretender_variable ?= { save_scope_as = succession_crisis_pretender_scope }
+		}
 
-			var:succession_crisis_pretender_variable ?= {
-				save_scope_as = succession_crisis_pretender_scope
-			}
-		}
-		random_character = {
-			limit = { has_variable = scope_pretender_var }
-			save_scope_as = target_character
-		}
+		random_character = { limit = { has_variable = scope_pretender_var } save_scope_as = target_character }
 
 		set_variable = {
 			name = byz_nobles_supports_pretender_variable
@@ -226,9 +196,7 @@ byzantine_succ_crisis.3 = {
 	option = {
 		name = byzantine_succ_crisis.3.a
 
-		var:succession_crisis_pretender_variable ?= {
-			add_rebel_progress = { value = 0.1 }
-		}
+		var:succession_crisis_pretender_variable ?= { add_rebel_progress = { value = 0.1 } }
 
 		add_government_power = government_power_mild_penalty
 	}
@@ -242,10 +210,7 @@ byzantine_succ_crisis.3 = {
 			random_possible_privilege = { root = { grant_estate_privilege = prev } }
 		}
 
-		add_estate_satisfaction = {
-			type = estate_type:nobles_estate
-			value = estate_satisfaction_mild_bonus
-		}
+		add_estate_satisfaction = { type = estate_type:nobles_estate value = estate_satisfaction_mild_bonus }
 
 		add_government_power = government_power_weak_penalty
 	}
@@ -269,24 +234,18 @@ byzantine_succ_crisis.4 = {
 
 		location:thessaloniki = {
 			any_pop = {
-				OR = {
-					pop_type = pop_type:peasants
-					pop_type = pop_type:burghers
-				}
+				OR = { pop_type = pop_type:peasants pop_type = pop_type:burghers }
 				OR = {
 					AND = {
 						exists = root.var:succession_crisis_pretender_variable
 						has_rebel = root.var:succession_crisis_pretender_variable
 						has_rebel = yes
 					}
-
 					pop_satisfaction < 0.4
 				}
 			}
 		}
-		NOT = {
-			has_variable = byz_mariners_guild_rose_up
-		}
+		NOT = { has_variable = byz_mariners_guild_rose_up }
 	}
 
 	immediate = {
@@ -294,17 +253,13 @@ byzantine_succ_crisis.4 = {
 			foreground = estate_type:burghers_estate
 			background = estate_type:burghers_estate
 		}
+
 		if = {
 			limit = { exists = var:succession_crisis_pretender_variable }
+			var:succession_crisis_pretender_variable ?= { save_scope_as = succession_crisis_pretender_scope }
+		}
 
-			var:succession_crisis_pretender_variable ?= {
-				save_scope_as = succession_crisis_pretender_scope
-			}
-		}
-		random_character = {
-			limit = { has_variable = scope_pretender_var }
-			save_scope_as = target_character
-		}
+		random_character = { limit = { has_variable = scope_pretender_var } save_scope_as = target_character }
 
 		location:thessaloniki = { save_scope_as = target_location }
 		set_variable = byz_mariners_guild_rose_up
@@ -321,14 +276,7 @@ byzantine_succ_crisis.4 = {
 				change_control = control_ultimate_penalty
 
 				every_pop = {
-					limit = {
-						owner = root
-						OR = {
-							pop_type = pop_type:peasants
-							pop_type = pop_type:burghers
-						}
-					}
-
+					limit = { owner = root OR = { pop_type = pop_type:peasants pop_type = pop_type:burghers } }
 					add_pop_satisfaction = pop_satisfaction_ultimate_bonus
 				}
 				every_pop = {
@@ -338,28 +286,16 @@ byzantine_succ_crisis.4 = {
 			}
 		}
 
-		add_estate_satisfaction = {
-			type = estate_type:nobles_estate
-			value = estate_satisfaction_extreme_penalty
-		}
+		add_estate_satisfaction = { type = estate_type:nobles_estate value = estate_satisfaction_extreme_penalty }
 
-		change_societal_value = {
-			type = serfdom_vs_free_subjects
-			value = societal_value_minor_move_to_right
-		}
-		change_societal_value = {
-			type = centralization_vs_decentralization
-			value = societal_value_large_move_to_right
-		}
+		change_societal_value = { type = serfdom_vs_free_subjects value = societal_value_minor_move_to_right }
+		change_societal_value = { type = centralization_vs_decentralization value = societal_value_large_move_to_right }
 	}
 
 	option = {
 		name = byzantine_succ_crisis.4.b
 
-		add_estate_satisfaction = {
-			type = estate_type:nobles_estate
-			value = estate_satisfaction_extreme_bonus
-		}
+		add_estate_satisfaction = { type = estate_type:nobles_estate value = estate_satisfaction_extreme_bonus }
 
 		custom_tooltip = thessaloniki_effect_2_tt
 
@@ -368,28 +304,15 @@ byzantine_succ_crisis.4 = {
 				change_control = control_ultimate_penalty
 
 				every_pop = {
-					limit = {
-						owner = root
-						OR = {
-							pop_type = pop_type:peasants
-							pop_type = pop_type:burghers
-						}
-					}
-
+					limit = { owner = root OR = { pop_type = pop_type:peasants pop_type = pop_type:burghers } }
 					add_pop_satisfaction = pop_satisfaction_extreme_penalty
 				}
 
-				random_pop = {
-					limit = { pop_type = pop_type:nobles }
-					add_pop_satisfaction = pop_satisfaction_ultimate_bonus
-				}
+				random_pop = { limit = { pop_type = pop_type:nobles } add_pop_satisfaction = pop_satisfaction_ultimate_bonus }
 			}
 		}
 
-		change_societal_value = {
-			type = serfdom_vs_free_subjects
-			value = societal_value_large_move_to_left
-		}
+		change_societal_value = { type = serfdom_vs_free_subjects value = societal_value_large_move_to_left }
 	}
 }
 
@@ -409,9 +332,7 @@ byzantine_succ_crisis.5 = {
 		in_civil_war = no
 
 		any_owned_location = {
-			NOT = {
-				has_variable = noble_purge_timer
-			}
+			NOT = { has_variable = noble_purge_timer }
 			any_pop = { pop_type = pop_type:peasants pop_satisfaction < 0.4 }
 			any_pop = { pop_type = pop_type:nobles }
 		}
@@ -422,26 +343,24 @@ byzantine_succ_crisis.5 = {
 			foreground = pop_type:nobles
 			background = pop_type:nobles
 		}
+
 		if = {
 			limit = { exists = var:succession_crisis_pretender_variable }
+			var:succession_crisis_pretender_variable ?= { save_scope_as = succession_crisis_pretender_scope }
+		}
 
-			var:succession_crisis_pretender_variable ?= {
-				save_scope_as = succession_crisis_pretender_scope
-			}
-		}
-		random_character = {
-			limit = { has_variable = scope_pretender_var }
-			save_scope_as = target_character
-		}
+		random_character = { limit = { has_variable = scope_pretender_var } save_scope_as = target_character }
 
 		random_owned_location = {
-			limit = {
-				any_pop = { pop_type = pop_type:nobles }
-				any_pop = { pop_type = pop_type:peasants pop_satisfaction < 0.4 }
-			}
+			limit = { any_pop = { pop_type = pop_type:nobles } any_pop = { pop_type = pop_type:peasants pop_satisfaction < 0.4 } }
 
 			save_scope_as = target_location
-			set_variable = { name = noble_purge_timer value = yes years = 2 }
+
+			set_variable = {
+				name = noble_purge_timer
+				value = yes
+				years = 2
+			}
 		}
 
 		ruler_or_regent ?= { save_scope_as = target_character2 }
@@ -464,19 +383,13 @@ byzantine_succ_crisis.5 = {
 
 		add_stability = stability_weak_bonus
 
-		add_estate_satisfaction = {
-			type = estate_type:nobles_estate
-			value = estate_satisfaction_radical_penalty
-		}
+		add_estate_satisfaction = { type = estate_type:nobles_estate value = estate_satisfaction_radical_penalty }
 	}
 
 	option = {
 		name = byzantine_succ_crisis.5.b
 
-		add_estate_satisfaction = {
-			type = estate_type:peasants_estate
-			value = estate_satisfaction_radical_penalty
-		}
+		add_estate_satisfaction = { type = estate_type:peasants_estate value = estate_satisfaction_radical_penalty }
 
 		add_government_power = government_power_weak_bonus
 
@@ -505,12 +418,8 @@ byzantine_succ_crisis.6 = {
 		in_civil_war = no
 
 		any_character = {
-			NOT = {
-				has_variable = scope_pretender_var
-			}
-			NOT = {
-				has_variable = recently_abandoned_var
-			}
+			NOT = { has_variable = scope_pretender_var }
+			NOT = { has_variable = recently_abandoned_var }
 
 			is_ruler = no
 			is_regent = no
@@ -523,25 +432,17 @@ byzantine_succ_crisis.6 = {
 			foreground = estate_type:nobles_estate
 			background = estate_type:nobles_estate
 		}
+
 		if = {
 			limit = { exists = var:succession_crisis_pretender_variable }
+			var:succession_crisis_pretender_variable ?= { save_scope_as = succession_crisis_pretender_scope }
+		}
 
-			var:succession_crisis_pretender_variable ?= {
-				save_scope_as = succession_crisis_pretender_scope
-			}
-		}
-		random_character = {
-			limit = { has_variable = scope_pretender_var }
-			save_scope_as = target_character
-		}
+		random_character = { limit = { has_variable = scope_pretender_var } save_scope_as = target_character }
 		random_character = {
 			limit = {
-				NOT = {
-					has_variable = scope_pretender_var
-				}
-				NOT = {
-					has_variable = recently_abandoned_var
-				}
+				NOT = { has_variable = scope_pretender_var }
+				NOT = { has_variable = recently_abandoned_var }
 
 				is_ruler = no
 				is_regent = no
@@ -549,7 +450,12 @@ byzantine_succ_crisis.6 = {
 			}
 
 			save_scope_as = target_character2
-			set_variable = { name = recently_abandoned_var value = yes years = 1 }
+
+			set_variable = {
+				name = recently_abandoned_var
+				value = yes
+				years = 1
+			}
 		}
 
 		ruler_or_regent ?= { save_scope_as = target_character3 }
@@ -559,56 +465,31 @@ byzantine_succ_crisis.6 = {
 		name = byzantine_succ_crisis.6.a
 
 		add_government_power = government_power_mild_bonus
+
 		if = {
 			limit = { scope:target_character2 ?= { has_estate = estate_type:clergy_estate } }
 
-			add_estate_satisfaction = {
-				type = estate_type:clergy_estate
-				value = estate_satisfaction_severe_penalty
-			}
+			add_estate_satisfaction = { type = estate_type:clergy_estate value = estate_satisfaction_severe_penalty }
 
 			add_religious_influence_if_valid = { VALUE = religious_influence_mild_penalty }
 		}
 		else_if = {
-			limit = {
-				scope:target_character2 ?= { has_estate = estate_type:burghers_estate }
-			}
+			limit = { scope:target_character2 ?= { has_estate = estate_type:burghers_estate } }
 
-			add_estate_satisfaction = {
-				type = estate_type:burghers_estate
-				value = estate_satisfaction_severe_penalty
-			}
+			add_estate_satisfaction = { type = estate_type:burghers_estate value = estate_satisfaction_severe_penalty }
 
-			change_societal_value = {
-				type = aristocracy_vs_plutocracy
-				value = societal_value_minor_move_to_left
-			}
+			change_societal_value = { type = aristocracy_vs_plutocracy value = societal_value_minor_move_to_left }
 		}
 		else_if = {
-			limit = {
-				scope:target_character2 ?= { has_estate = estate_type:peasants_estate }
-			}
+			limit = { scope:target_character2 ?= { has_estate = estate_type:peasants_estate } }
 
-			add_estate_satisfaction = {
-				type = estate_type:peasants_estate
-				value = estate_satisfaction_severe_penalty
-			}
+			add_estate_satisfaction = { type = estate_type:peasants_estate value = estate_satisfaction_severe_penalty }
 
-			change_societal_value = {
-				type = serfdom_vs_free_subjects
-				value = societal_value_minor_move_to_left
-			}
+			change_societal_value = { type = serfdom_vs_free_subjects value = societal_value_minor_move_to_left }
 		}
 		else = {
-			add_estate_satisfaction = {
-				type = estate_type:nobles_estate
-				value = estate_satisfaction_severe_penalty
-			}
-
-			change_societal_value = {
-				type = serfdom_vs_free_subjects
-				value = societal_value_minor_move_to_right
-			}
+			add_estate_satisfaction = { type = estate_type:nobles_estate value = estate_satisfaction_severe_penalty }
+			change_societal_value = { type = serfdom_vs_free_subjects value = societal_value_minor_move_to_right }
 		}
 	}
 
@@ -616,6 +497,7 @@ byzantine_succ_crisis.6 = {
 		name = byzantine_succ_crisis.6.b
 
 		add_stability = stability_mild_bonus
+
 		if = {
 			limit = { scope:target_character2 = { has_estate = estate_type:nobles_estate } }
 
@@ -626,10 +508,7 @@ byzantine_succ_crisis.6 = {
 
 			add_gold = { value = monthly_income_trade_and_tax multiply = 1 }
 
-			add_estate_satisfaction = {
-				type = estate_type:nobles_estate
-				value = estate_satisfaction_mild_penalty
-			}
+			add_estate_satisfaction = { type = estate_type:nobles_estate value = estate_satisfaction_mild_penalty }
 		}
 		else_if = {
 			limit = { scope:target_character2 = { has_estate = estate_type:clergy_estate } }
@@ -641,15 +520,10 @@ byzantine_succ_crisis.6 = {
 
 			add_gold = { value = monthly_income_trade_and_tax }
 
-			add_estate_satisfaction = {
-				type = estate_type:clergy_estate
-				value = estate_satisfaction_mild_penalty
-			}
+			add_estate_satisfaction = { type = estate_type:clergy_estate value = estate_satisfaction_mild_penalty }
 		}
 		else_if = {
-			limit = {
-				scope:target_character2 = { has_estate = estate_type:burghers_estate }
-			}
+			limit = { scope:target_character2 = { has_estate = estate_type:burghers_estate } }
 
 			add_gold_to_estate = {
 				estate_type = estate_type:burghers_estate
@@ -658,15 +532,10 @@ byzantine_succ_crisis.6 = {
 
 			add_gold = { value = monthly_income_trade_and_tax }
 
-			add_estate_satisfaction = {
-				type = estate_type:burghers_estate
-				value = estate_satisfaction_mild_penalty
-			}
+			add_estate_satisfaction = { type = estate_type:burghers_estate value = estate_satisfaction_mild_penalty }
 		}
 		else_if = {
-			limit = {
-				scope:target_character2 = { has_estate = estate_type:peasants_estate }
-			}
+			limit = { scope:target_character2 = { has_estate = estate_type:peasants_estate } }
 
 			add_gold_to_estate = {
 				estate_type = estate_type:peasants_estate
@@ -675,10 +544,7 @@ byzantine_succ_crisis.6 = {
 
 			add_gold = { value = monthly_income_trade_and_tax }
 
-			add_estate_satisfaction = {
-				type = estate_type:peasants_estate
-				value = estate_satisfaction_mild_penalty
-			}
+			add_estate_satisfaction = { type = estate_type:peasants_estate value = estate_satisfaction_mild_penalty }
 		}
 	}
 
@@ -706,9 +572,7 @@ byzantine_succ_crisis.7 = {
 	trigger = {
 		in_civil_war = no
 		tag = BYZ
-		NOT = {
-			has_variable = had_parliament_event_variable
-		}
+		NOT = { has_variable = had_parliament_event_variable }
 
 		is_active_parliament = yes
 	}
@@ -718,19 +582,19 @@ byzantine_succ_crisis.7 = {
 			foreground = estate_type:nobles_estate
 			background = estate_type:nobles_estate
 		}
+
 		if = {
 			limit = { exists = var:succession_crisis_pretender_variable }
-
-			var:succession_crisis_pretender_variable ?= {
-				save_scope_as = succession_crisis_pretender_scope
-			}
-		}
-		random_character = {
-			limit = { has_variable = scope_pretender_var }
-			save_scope_as = target_character
+			var:succession_crisis_pretender_variable ?= { save_scope_as = succession_crisis_pretender_scope }
 		}
 
-		set_variable = { name = had_parliament_event_variable value = yes years = 5 }
+		random_character = { limit = { has_variable = scope_pretender_var } save_scope_as = target_character }
+
+		set_variable = {
+			name = had_parliament_event_variable
+			value = yes
+			years = 5
+		}
 	}
 
 	option = {
@@ -743,24 +607,13 @@ byzantine_succ_crisis.7 = {
 			years = 10
 			mode = add_and_extend
 
-			size = {
-				value = 1
-
-				multiply = {
-					desc = "[crown_power|e]"
-					value = "estate_power(estate_type:crown_estate)"
-				}
-			}
+			size = { value = 1 multiply = { desc = "[crown_power|e]" value = "estate_power(estate_type:crown_estate)" } }
 		}
 
 		custom_tooltip = scales_with_crown_power_tt
 	}
 
-	option = {
-		name = byzantine_succ_crisis.7.b
-
-		add_government_power = government_power_extreme_bonus
-	}
+	option = { name = byzantine_succ_crisis.7.b add_government_power = government_power_extreme_bonus }
 }
 
 # Church Dissaproves of Pretender
@@ -788,7 +641,6 @@ byzantine_succ_crisis.8 = {
 							exists = root.var:succession_crisis_pretender_variable
 							has_rebel = root.var:succession_crisis_pretender_variable
 						}
-
 						pop_satisfaction < 0.4
 					}
 				}
@@ -801,17 +653,13 @@ byzantine_succ_crisis.8 = {
 			foreground = estate_type:clergy_estate
 			background = estate_type:clergy_estate
 		}
+
 		if = {
 			limit = { exists = var:succession_crisis_pretender_variable }
+			var:succession_crisis_pretender_variable ?= { save_scope_as = succession_crisis_pretender_scope }
+		}
 
-			var:succession_crisis_pretender_variable ?= {
-				save_scope_as = succession_crisis_pretender_scope
-			}
-		}
-		random_character = {
-			limit = { has_variable = scope_pretender_var }
-			save_scope_as = target_character
-		}
+		random_character = { limit = { has_variable = scope_pretender_var } save_scope_as = target_character }
 
 		random_province = {
 			limit = {
@@ -823,13 +671,11 @@ byzantine_succ_crisis.8 = {
 								exists = root.var:succession_crisis_pretender_variable
 								has_rebel = root.var:succession_crisis_pretender_variable
 							}
-
 							pop_satisfaction < 0.4
 						}
 					}
 				}
 			}
-
 			save_scope_as = target_province
 		}
 
@@ -871,11 +717,9 @@ byzantine_succ_crisis.8 = {
 									exists = root.var:succession_crisis_pretender_variable
 									has_rebel = root.var:succession_crisis_pretender_variable
 								}
-
 								pop_satisfaction < 0.4
 							}
 						}
-
 						add_pop_satisfaction = pop_satisfaction_severe_bonus
 					}
 				}
@@ -902,9 +746,7 @@ byzantine_succ_crisis.9 = {
 		any_province = {
 			any_location_in_province = { this != root.capital }
 			any_location_in_province = { prosperity < 0.3 }
-			NOT = {
-				has_variable = province_asked_for_aid_variable
-			}
+			NOT = { has_variable = province_asked_for_aid_variable }
 		}
 	}
 
@@ -913,24 +755,16 @@ byzantine_succ_crisis.9 = {
 			foreground = estate_type:peasants_estate
 			background = estate_type:peasants_estate
 		}
+
 		if = {
 			limit = { exists = var:succession_crisis_pretender_variable }
+			var:succession_crisis_pretender_variable ?= { save_scope_as = succession_crisis_pretender_scope }
+		}
 
-			var:succession_crisis_pretender_variable ?= {
-				save_scope_as = succession_crisis_pretender_scope
-			}
-		}
-		random_character = {
-			limit = { has_variable = scope_pretender_var }
-			save_scope_as = target_character
-		}
+		random_character = { limit = { has_variable = scope_pretender_var } save_scope_as = target_character }
 
 		ordered_province = {
-			limit = {
-				any_location_in_province = { this != root.capital }
-
-				any_location_in_province = { prosperity < 0.3 }
-			}
+			limit = { any_location_in_province = { this != root.capital } any_location_in_province = { prosperity < 0.3 } }
 
 			order_by = { value = province_satisfaction multiply = -1 }
 			check_range_bounds = no
@@ -952,23 +786,17 @@ byzantine_succ_crisis.9 = {
 			scale = -2
 		}
 
-		scope:target_province = {
-			every_location_in_province = { change_prosperity = prosperity_very_weak_bonus }
-		}
+		scope:target_province = { every_location_in_province = { change_prosperity = prosperity_very_weak_bonus } }
 	}
 
 	option = {
 		name = byzantine_succ_crisis.9.b
-
 		if = {
 			limit = {
 				exists = var:succession_crisis_pretender_variable
 				NOT = {
 					scope:target_province = {
-						any_location_in_province = {
-							any_pop = { rebel = root.var:succession_crisis_pretender_variable }
-							count >= 2
-						}
+						any_location_in_province = { any_pop = { rebel = root.var:succession_crisis_pretender_variable } count >= 2 }
 					}
 				}
 			}
@@ -981,6 +809,7 @@ byzantine_succ_crisis.9 = {
 						every_pop = {
 							limit = { owner = root }
 							add_pop_satisfaction = pop_satisfaction_mild_penalty
+
 							if = {
 								limit = { exists = scope:succession_crisis_pretender_scope }
 								change_pop_allegiance = scope:succession_crisis_pretender_scope
@@ -1013,9 +842,7 @@ byzantine_succ_crisis.10 = {
 			any_pop = { pop_type = pop_type:burghers }
 			any_pop = { pop_type = pop_type:peasants }
 			is_capital = no
-			NOT = {
-				has_variable = had_usury_disaster_event_variable
-			}
+			NOT = { has_variable = had_usury_disaster_event_variable }
 		}
 	}
 
@@ -1024,26 +851,20 @@ byzantine_succ_crisis.10 = {
 			foreground = estate_type:peasants_estate
 			background = estate_type:peasants_estate
 		}
+
 		if = {
 			limit = { exists = var:succession_crisis_pretender_variable }
+			var:succession_crisis_pretender_variable ?= { save_scope_as = succession_crisis_pretender_scope }
+		}
 
-			var:succession_crisis_pretender_variable ?= {
-				save_scope_as = succession_crisis_pretender_scope
-			}
-		}
-		random_character = {
-			limit = { has_variable = scope_pretender_var }
-			save_scope_as = target_character
-		}
+		random_character = { limit = { has_variable = scope_pretender_var } save_scope_as = target_character }
 
 		ordered_owned_location = {
 			limit = {
 				any_pop = { pop_type = pop_type:nobles }
 				any_pop = { pop_type = pop_type:peasants }
 				any_pop = { pop_type = pop_type:burghers }
-				NOT = {
-					has_variable = had_usury_disaster_event_variable
-				}
+				NOT = { has_variable = had_usury_disaster_event_variable }
 
 				is_capital = no
 			}
@@ -1077,10 +898,7 @@ byzantine_succ_crisis.10 = {
 			}
 		}
 
-		add_estate_satisfaction = {
-			type = estate_type:nobles_estate
-			value = estate_satisfaction_extreme_bonus
-		}
+		add_estate_satisfaction = { type = estate_type:nobles_estate value = estate_satisfaction_extreme_bonus }
 	}
 
 	option = {
@@ -1130,14 +948,7 @@ byzantine_succ_crisis.10 = {
 					add_pop_satisfaction = pop_satisfaction_ultimate_penalty
 				}
 				every_pop = {
-					limit = {
-						owner = root
-						OR = {
-							pop_type = pop_type:nobles
-							pop_type = pop_type:burghers
-						}
-					}
-
+					limit = { owner = root OR = { pop_type = pop_type:nobles pop_type = pop_type:burghers } }
 					add_pop_satisfaction = pop_satisfaction_mild_bonus
 				}
 			}
@@ -1181,22 +992,14 @@ byzantine_succ_crisis.11 = {
 	illustration_tags = { 10 = regular 10 = interior }
 
 	trigger = {
-		any_active_disaster = {
-			disaster_type = disaster_type:byzantine_succession_crisis
-		}
+		any_active_disaster = { disaster_type = disaster_type:byzantine_succession_crisis }
 
 		country_exists = c:VEN
 		country_exists = c:GEN
-		NOR = {
-			c:VEN = { is_subject_of = root }
-			c:GEN = { is_subject_of = root }
-		}
+		NOR = { c:VEN = { is_subject_of = root } c:GEN = { is_subject_of = root } }
 
 		in_civil_war = no
-		NOR = {
-			is_at_war_with = c:GEN
-			is_at_war_with = c:VEN
-		}
+		NOR = { is_at_war_with = c:GEN is_at_war_with = c:VEN }
 	}
 
 	immediate = {
@@ -1206,17 +1009,13 @@ byzantine_succ_crisis.11 = {
 		}
 
 		save_scope_as = target_country
+
 		if = {
 			limit = { exists = var:succession_crisis_pretender_variable }
+			var:succession_crisis_pretender_variable ?= { save_scope_as = succession_crisis_pretender_scope }
+		}
 
-			var:succession_crisis_pretender_variable ?= {
-				save_scope_as = succession_crisis_pretender_scope
-			}
-		}
-		random_character = {
-			limit = { has_variable = scope_pretender_var }
-			save_scope_as = target_character
-		}
+		random_character = { limit = { has_variable = scope_pretender_var } save_scope_as = target_character }
 
 		capital = { save_scope_as = target_location }
 	}
@@ -1224,10 +1023,7 @@ byzantine_succ_crisis.11 = {
 	option = {	# Give privileges to Venice 
 		name = byzantine_succ_crisis.11.a
 
-		add_estate_satisfaction = {
-			type = estate_type:burghers_estate
-			value = estate_satisfaction_extreme_penalty
-		}
+		add_estate_satisfaction = { type = estate_type:burghers_estate value = estate_satisfaction_extreme_penalty }
 
 		scope:target_location.market = {
 			add_merchant_power = {
@@ -1245,23 +1041,17 @@ byzantine_succ_crisis.11 = {
 		}
 
 		c:VEN = { trigger_event_non_silently = byzantine_succ_crisis.12 }
+
 		if = {
 			limit = { current_age_or_later = { age = age_4_reformation } }
-
-			change_societal_value = {
-				type = mercantilism_vs_free_trade
-				value = societal_value_move_to_right
-			}
+			change_societal_value = { type = mercantilism_vs_free_trade value = societal_value_move_to_right }
 		}
 	}
 
 	option = {	# Give privileges to Genoa
 		name = byzantine_succ_crisis.11.b
 
-		add_estate_satisfaction = {
-			type = estate_type:burghers_estate
-			value = estate_satisfaction_extreme_penalty
-		}
+		add_estate_satisfaction = { type = estate_type:burghers_estate value = estate_satisfaction_extreme_penalty }
 
 		scope:target_location.market = {
 			add_merchant_power = {
@@ -1279,23 +1069,17 @@ byzantine_succ_crisis.11 = {
 		}
 
 		c:GEN = { trigger_event_non_silently = byzantine_succ_crisis.12 }
+
 		if = {
 			limit = { current_age_or_later = { age = age_4_reformation } }
-
-			change_societal_value = {
-				type = mercantilism_vs_free_trade
-				value = societal_value_move_to_right
-			}
+			change_societal_value = { type = mercantilism_vs_free_trade value = societal_value_move_to_right }
 		}
 	}
 
 	option = {	# Give privileges to both
 		name = byzantine_succ_crisis.11.c
 
-		add_estate_satisfaction = {
-			type = estate_type:burghers_estate
-			value = estate_satisfaction_radical_penalty
-		}
+		add_estate_satisfaction = { type = estate_type:burghers_estate value = estate_satisfaction_radical_penalty }
 
 		scope:target_location.market = {
 			add_merchant_power = {
@@ -1320,14 +1104,12 @@ byzantine_succ_crisis.11 = {
 			years = 10
 			size = 2
 		}
+
 		if = {
 			limit = { current_age_or_later = { age = age_4_reformation } }
-
-			change_societal_value = {
-				type = mercantilism_vs_free_trade
-				value = societal_value_large_move_to_right
-			}
+			change_societal_value = { type = mercantilism_vs_free_trade value = societal_value_large_move_to_right }
 		}
+
 		c:VEN = { trigger_event_non_silently = byzantine_succ_crisis.12 }
 		c:GEN = { trigger_event_non_silently = byzantine_succ_crisis.12 }
 	}
@@ -1349,14 +1131,12 @@ byzantine_succ_crisis.11 = {
 			target = c:VEN
 			modifier = opinion_denied_special_access
 		}
+
 		if = {
 			limit = { current_age_or_later = { age = age_4_reformation } }
-
-			change_societal_value = {
-				type = mercantilism_vs_free_trade
-				value = societal_value_large_move_to_left
-			}
+			change_societal_value = { type = mercantilism_vs_free_trade value = societal_value_large_move_to_left }
 		}
+
 		hidden_effect = {
 			c:VEN = { trigger_event_non_silently = byzantine_succ_crisis.13 }
 			c:GEN = { trigger_event_non_silently = byzantine_succ_crisis.13 }
@@ -1378,7 +1158,6 @@ byzantine_succ_crisis.12 = {
 			foreground = estate_type:burghers_estate
 			background = estate_type:burghers_estate
 		}
-
 		c:BYZ = { ruler_or_regent ?= { save_scope_as = target_character } }
 	}
 
@@ -1395,18 +1174,13 @@ byzantine_succ_crisis.12 = {
 				}
 			}
 		}
+
 		if = {
 			limit = { current_age_or_later = { age = age_4_reformation } }
+			change_societal_value = { type = mercantilism_vs_free_trade value = societal_value_minor_move_to_left }
+		}
 
-			change_societal_value = {
-				type = mercantilism_vs_free_trade
-				value = societal_value_minor_move_to_left
-			}
-		}
-		change_societal_value = {
-			type = aristocracy_vs_plutocracy
-			value = societal_value_minor_move_to_right
-		}
+		change_societal_value = { type = aristocracy_vs_plutocracy value = societal_value_minor_move_to_right }
 	}
 }
 
@@ -1453,15 +1227,9 @@ byzantine_succ_crisis.14 = {
 	trigger = {
 		country_exists = c:BYZ
 		in_civil_war = no
-		NOT = {
-			is_at_war_with = c:BYZ
-		}
-		NOT = {
-			is_allied_with = { target = c:BYZ }
-		}
-		NOT = {
-			has_truce_with = c:BYZ
-		}
+		NOT = { is_at_war_with = c:BYZ }
+		NOT = { is_allied_with = { target = c:BYZ } }
+		NOT = { has_truce_with = c:BYZ }
 		c:BYZ = { is_subject = no }
 		is_subject = no
 	}
@@ -1474,21 +1242,13 @@ byzantine_succ_crisis.14 = {
 
 		c:BYZ = {
 			if = { limit = { exists = var:succession_crisis_pretender_variable } }
-			var:succession_crisis_pretender_variable ?= {
-				save_scope_as = succession_crisis_pretender_scope
-			}
+			var:succession_crisis_pretender_variable ?= { save_scope_as = succession_crisis_pretender_scope }
 
-			random_character = {
-				limit = { has_variable = scope_pretender_var }
-				save_scope_as = target_character
-			}
+			random_character = { limit = { has_variable = scope_pretender_var } save_scope_as = target_character }
 
 			capital = { save_scope_as = target_location }
 		}
-		c:BYZ = {
-			ruler_or_regent ?= { save_scope_as = target_character2 }
-			save_scope_as = target_country
-		}
+		c:BYZ = { ruler_or_regent ?= { save_scope_as = target_character2 } save_scope_as = target_country }
 
 		ruler_or_regent ?= { save_scope_as = target_character3 }
 	}
@@ -1522,17 +1282,13 @@ byzantine_succ_crisis.15 = {
 			foreground = estate_type:nobles_estate
 			background = estate_type:nobles_estate
 		}
+
 		if = {
 			limit = { exists = var:succession_crisis_pretender_variable }
+			var:succession_crisis_pretender_variable ?= { save_scope_as = succession_crisis_pretender_scope }
+		}
 
-			var:succession_crisis_pretender_variable ?= {
-				save_scope_as = succession_crisis_pretender_scope
-			}
-		}
-		random_character = {
-			limit = { has_variable = scope_pretender_var }
-			save_scope_as = target_character
-		}
+		random_character = { limit = { has_variable = scope_pretender_var } save_scope_as = target_character }
 	}
 
 	option = {
@@ -1540,10 +1296,7 @@ byzantine_succ_crisis.15 = {
 
 		show_as_tooltip = { add_truce_with = { target = c:TUR } }
 
-		c:TUR = {
-			set_variable = byz_paid_variable
-			trigger_event_non_silently = byzantine_succ_crisis.16
-		}
+		c:TUR = { set_variable = byz_paid_variable trigger_event_non_silently = byzantine_succ_crisis.16 }
 
 		change_gold_effect = {
 			scale = -12
@@ -1568,10 +1321,7 @@ byzantine_succ_crisis.16 = {
 
 	desc = {
 		first_valid = {
-			triggered_desc = {
-				trigger = { has_variable = byz_paid_variable }
-				desc = byzantine_succ_crisis.16.desc.a
-			}
+			triggered_desc = { trigger = { has_variable = byz_paid_variable } desc = byzantine_succ_crisis.16.desc.a }
 			triggered_desc = { desc = byzantine_succ_crisis.16.desc.b }
 		}
 	}
@@ -1583,17 +1333,11 @@ byzantine_succ_crisis.16 = {
 			foreground = estate_type:nobles_estate
 			background = estate_type:nobles_estate
 		}
-
 		c:BYZ = {
 			if = { limit = { exists = var:succession_crisis_pretender_variable } }
-			var:succession_crisis_pretender_variable ?= {
-				save_scope_as = succession_crisis_pretender_scope
-			}
+			var:succession_crisis_pretender_variable ?= { save_scope_as = succession_crisis_pretender_scope }
 
-			random_character = {
-				limit = { has_variable = scope_pretender_var }
-				save_scope_as = target_character
-			}
+			random_character = { limit = { has_variable = scope_pretender_var } save_scope_as = target_character }
 		}
 	}
 

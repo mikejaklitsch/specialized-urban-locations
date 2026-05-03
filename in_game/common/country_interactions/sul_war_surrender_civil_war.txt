@@ -8,12 +8,7 @@ REPLACE:surrender_civil_war = {
 	category = CATEGORY_FRIENDLY_ACTIONS
 
 	potential = {
-		scope:actor = {
-			in_civil_war = yes
-			NOT = {
-				has_variable = will_not_surrender
-			}
-		}
+		scope:actor = { in_civil_war = yes NOT = { has_variable = will_not_surrender } }
 	}
 
 	allow = {
@@ -56,7 +51,6 @@ REPLACE:surrender_civil_war = {
 						}
 					}
 				}
-
 				value = 1000
 			}
 		}
@@ -68,30 +62,21 @@ REPLACE:surrender_civil_war = {
 					scope:actor = {
 						any_current_war = {
 							scope:actor = { war_enthusiasm = { war = prev value <= 0 } }
-							OR = {
-								attacker_leader = scope:recipient
-								defender_leader = scope:recipient
-							}
+							OR = { attacker_leader = scope:recipient defender_leader = scope:recipient }
 						}
 					}
 				}
-
 				value = 1000
 			}
 		}
 
 		# War Momentum: AI surrenders when at max war exhaustion
 		add = {
-			if = {
-				limit = { scope:actor = { war_exhaustion >= 20 } }
-				value = 500
-			}
+			if = { limit = { scope:actor = { war_exhaustion >= 20 } } value = 500 }
 		}
 	}
 
 	effect = {
-		scope:recipient = {
-			annex_country = { country = scope:actor reason = CivilWar }
-		}
+		scope:recipient = { annex_country = { country = scope:actor reason = CivilWar } }
 	}
 }

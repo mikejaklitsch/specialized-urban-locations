@@ -39,9 +39,7 @@ flavor_zan.1 = {
 		name = flavor_zan.1.a
 		historical_option = yes
 
-		scope:target_location = {
-			construct_building = { building_type = building_type:husuni_kubwa }
-		}
+		scope:target_location = { construct_building = { building_type = building_type:husuni_kubwa } }
 	}
 	option = {
 		name = flavor_zan.1.b
@@ -70,9 +68,7 @@ flavor_zan.2 = {
 		at_war = no
 		is_during_bankruptcy = no
 		ruler ?= character:zan_daud_mahdali
-		NOT = {
-			has_estate_privilege = estate_privilege:control_over_the_coinage
-		}
+		NOT = { has_estate_privilege = estate_privilege:control_over_the_coinage }
 	}
 
 	illustration_tags = { 10 = regular 10 = interior }
@@ -85,9 +81,7 @@ flavor_zan.2 = {
 
 		ruler_or_regent = { save_scope_as = target_character }
 
-		character:zan_abu_al_mawahib_al_hasan_ibn_suleiman = {
-			save_scope_as = target_character2
-		}
+		character:zan_abu_al_mawahib_al_hasan_ibn_suleiman = { save_scope_as = target_character2 }
 
 		capital = { save_scope_as = target_location }
 	}
@@ -95,52 +89,30 @@ flavor_zan.2 = {
 	option = {
 		name = flavor_zan.2.a
 
-		trigger = {
-			NOT = {
-				has_estate_privilege = estate_privilege:control_over_the_coinage
-			}
-		}
+		trigger = { NOT = { has_estate_privilege = estate_privilege:control_over_the_coinage } }
 
-		scope:target_location.market = {
-			add_temporary_demand = { type = demand:zan_gold_coinage months = 240 }
-		}
+		scope:target_location.market = { add_temporary_demand = { type = demand:zan_gold_coinage months = 240 } }
+
 		if = {
-			limit = {
-				NOT = {
-					has_reform = government_reform:control_of_the_mahdali_coinage_reform
-				}
-			}
-
+			limit = { NOT = { has_reform = government_reform:control_of_the_mahdali_coinage_reform } }
 			add_reform = government_reform:control_of_the_mahdali_coinage_reform
 		}
-		add_estate_satisfaction = {
-			type = estate_type:burghers_estate
-			value = estate_satisfaction_extreme_penalty
-		}
+
+		add_estate_satisfaction = { type = estate_type:burghers_estate value = estate_satisfaction_extreme_penalty }
 	}
 
-	option = {
-		name = flavor_zan.2.b
-
-		add_government_power = government_power_mild_penalty
-	}
+	option = { name = flavor_zan.2.b add_government_power = government_power_mild_penalty }
 
 	option = {
 		name = flavor_zan.2.c
 
-		trigger = {
-			NOT = {
-				has_estate_privilege = estate_privilege:control_over_the_coinage
-			}
-		}
+		trigger = { NOT = { has_estate_privilege = estate_privilege:control_over_the_coinage } }
 
 		grant_estate_privilege = estate_privilege:control_over_the_coinage
 		add_stability = stability_extreme_bonus
-		if = {
-			limit = {
-				has_reform = government_reform:control_of_the_mahdali_coinage_reform
-			}
 
+		if = {
+			limit = { has_reform = government_reform:control_of_the_mahdali_coinage_reform }
 			remove_reform = government_reform:control_of_the_mahdali_coinage_reform
 		}
 	}
@@ -178,9 +150,7 @@ flavor_zan.3 = {
 
 		ruler_or_regent = { save_scope_as = target_character }
 
-		character:zan_abu_al_mawahib_al_hasan_ibn_suleiman = {
-			save_scope_as = target_character2
-		}
+		character:zan_abu_al_mawahib_al_hasan_ibn_suleiman = { save_scope_as = target_character2 }
 	}
 
 	option = {
@@ -191,25 +161,13 @@ flavor_zan.3 = {
 		change_gold_effect = {
 			scale = -2
 		}
-		if = {
-			limit = {
-				religion.group = religion_group:muslim
-				NOT = {
-					has_estate_privilege = estate_privilege:waqf_payments
-				}
-			}
 
+		if = {
+			limit = { religion.group = religion_group:muslim NOT = { has_estate_privilege = estate_privilege:waqf_payments } }
 			grant_estate_privilege = estate_privilege:waqf_payments
 		}
-		else = {
-			add_estate_satisfaction = {
-				type = estate_type:clergy_estate
-				value = estate_satisfaction_extreme_bonus
-			}
-		}
-		capital.province = {
-			every_location_in_province = { change_prosperity = prosperity_weak_bonus }
-		}
+		else = { add_estate_satisfaction = { type = estate_type:clergy_estate value = estate_satisfaction_extreme_bonus } }
+		capital.province = { every_location_in_province = { change_prosperity = prosperity_weak_bonus } }
 	}
 
 	option = {
@@ -269,15 +227,9 @@ flavor_zan.4 = {
 		trigger = {
 			capital = {
 				OR = {
-					NOT = {
-						has_institution = institution:renaissance
-					}
-					NOT = {
-						has_institution = institution:banking
-					}
-					NOT = {
-						has_institution = institution:professional_armies
-					}
+					NOT = { has_institution = institution:renaissance }
+					NOT = { has_institution = institution:banking }
+					NOT = { has_institution = institution:professional_armies }
 				}
 			}
 		}
@@ -288,40 +240,18 @@ flavor_zan.4 = {
 
 		scope:target_location = {
 			if = {
-				limit = {
-					NOT = {
-						has_institution = institution:renaissance
-					}
-				}
-
-				change_institution_progress = {
-					type = institution:renaissance
-					value = institution_progress_mild_bonus
-				}
+				limit = { NOT = { has_institution = institution:renaissance } }
+				change_institution_progress = { type = institution:renaissance value = institution_progress_mild_bonus }
 			}
-			if = {
-				limit = {
-					NOT = {
-						has_institution = institution:banking
-					}
-				}
 
-				change_institution_progress = {
-					type = institution:banking
-					value = institution_progress_mild_bonus
-				}
+			if = {
+				limit = { NOT = { has_institution = institution:banking } }
+				change_institution_progress = { type = institution:banking value = institution_progress_mild_bonus }
 			}
-			if = {
-				limit = {
-					NOT = {
-						has_institution = institution:professional_armies
-					}
-				}
 
-				change_institution_progress = {
-					type = institution:professional_armies
-					value = institution_progress_mild_bonus
-				}
+			if = {
+				limit = { NOT = { has_institution = institution:professional_armies } }
+				change_institution_progress = { type = institution:professional_armies value = institution_progress_mild_bonus }
 			}
 		}
 
@@ -345,11 +275,7 @@ flavor_zan.4 = {
 		name = flavor_zan.4.c
 
 		trigger = {
-			scope:target_location = {
-				NOT = {
-					modifier:sul_is_city_rank_tier = yes
-				}
-			}
+			scope:target_location = { NOT = { modifier:sul_is_city_rank_tier = yes } }
 		}
 
 		change_gold_effect = {
@@ -357,18 +283,10 @@ flavor_zan.4 = {
 		}
 
 		scope:target_location = {
-			if = {
-				limit = { modifier:sul_is_rural_settlement_rank_tier = yes population > 5 }
-				sul_set_rank_town = yes
-			}
-			else_if = {
-				limit = { modifier:sul_is_town_rank_tier = yes population > 20 }
-				sul_set_rank_city = yes
-			}
+			if = { limit = { modifier:sul_is_rural_settlement_rank_tier = yes population > 5 } sul_set_rank_town = yes }
+			else_if = { limit = { modifier:sul_is_town_rank_tier = yes population > 20 } sul_set_rank_city = yes }
 			else = {
-				province = {
-					every_location_in_province = { change_prosperity = prosperity_extreme_bonus }
-				}
+				province = { every_location_in_province = { change_prosperity = prosperity_extreme_bonus } }
 			}
 
 			add_stability = stability_extreme_bonus
@@ -413,10 +331,7 @@ flavor_zan.5 = {
 			add_cultural_influence = cultural_influence_extreme_penalty
 		}
 
-		change_societal_value = {
-			type = spiritualist_vs_humanist
-			value = societal_value_huge_move_to_right
-		}
+		change_societal_value = { type = spiritualist_vs_humanist value = societal_value_huge_move_to_right }
 	}
 	option = {
 		name = flavor_zan.5.b
@@ -489,10 +404,7 @@ flavor_zan.6 = {
 			scope:target_location = {
 				change_prosperity = prosperity_ultimate_bonus
 
-				every_pop = {
-					limit = { owner = root }
-					add_pop_satisfaction = pop_satisfaction_radical_bonus
-				}
+				every_pop = { limit = { owner = root } add_pop_satisfaction = pop_satisfaction_radical_bonus }
 
 				construct_building = {
 					building_type = building_type:irrigation_systems
@@ -524,11 +436,7 @@ flavor_zan.6 = {
 		}
 	}
 
-	option = {
-		name = flavor_zan.6.a
-
-		custom_tooltip = engaruka_people_interesting_tt
-	}
+	option = { name = flavor_zan.6.a custom_tooltip = engaruka_people_interesting_tt }
 }
 
 flavor_zan.7 = {
@@ -544,10 +452,7 @@ flavor_zan.7 = {
 		monthly_chance = 2
 	}
 
-	trigger = {
-		location:bandire = { has_owner = no }
-		location:sofala = { top_owner = root }
-	}
+	trigger = { location:bandire = { has_owner = no } location:sofala = { top_owner = root } }
 
 	illustration_tags = { 10 = regular 10 = exterior }
 
@@ -564,9 +469,7 @@ flavor_zan.7 = {
 	option = {
 		name = flavor_zan.7.a
 
-		scope:target_location = {
-			add_road_to = { target = location:sofala type = gravel_road }
-		}
+		scope:target_location = { add_road_to = { target = location:sofala type = gravel_road } }
 		scope:target_location = {
 			if = {
 				limit = {
@@ -576,35 +479,26 @@ flavor_zan.7 = {
 						location:sofala = { is_capital = yes }
 					}
 				}
-
 				change_location_owner = c:SFA
 			}
 			else = { change_location_owner = root }
 			change_integration_level = core
 		}
+
 		if = {
 			limit = {
 				province_definition:upper_save_province = {
-					any_ownable_location_in_province_definition = {
-						has_owner = yes
-						NOT = {
-							top_owner = root
-						}
-					}
+					any_ownable_location_in_province_definition = { has_owner = yes NOT = { top_owner = root } }
 				}
 			}
-
 			province_definition:upper_save_province = {
 				every_ownable_location_in_province_definition = {
 					limit = {
 						has_owner = yes
-						NOT = {
-							top_owner = root
-						}
+						NOT = { top_owner = root }
 
 						is_province_capital = yes
 					}
-
 					root = {
 						add_casus_belli = {
 							type = casus_belli:cb_conquer_province
@@ -634,10 +528,7 @@ flavor_zan.8 = {
 		monthly_chance = 1
 	}
 
-	trigger = {
-		religion = religion:sunni
-		societal_value:mysticism_vs_jurisprudence < -5
-	}
+	trigger = { religion = religion:sunni societal_value:mysticism_vs_jurisprudence < -5 }
 
 	illustration_tags = { 10 = regular 10 = interior }
 
@@ -655,12 +546,8 @@ flavor_zan.8 = {
 				societal_value:mysticism_vs_jurisprudence > 0
 				has_ports = yes
 				within_diplomatic_range = root
-				NOT = {
-					is_subject_of = root
-				}
-				NOT = {
-					tag = ZAN
-				}
+				NOT = { is_subject_of = root }
+				NOT = { tag = ZAN }
 			}
 
 			order_by = societal_value:mysticism_vs_jurisprudence
@@ -682,32 +569,21 @@ flavor_zan.8 = {
 					societal_value:mysticism_vs_jurisprudence > 0
 					has_ports = yes
 					within_diplomatic_range = root
-					NOT = {
-						is_subject_of = root
-					}
-					NOT = {
-						tag = ZAN
-					}
+					NOT = { is_subject_of = root }
+					NOT = { tag = ZAN }
 				}
 			}
-
 			custom_tooltip = {
 				text = countries_with_positive_piety_reduced_relations_tt
-
 				every_known_country = {
 					limit = {
 						religion.group = religion_group:muslim
 						societal_value:mysticism_vs_jurisprudence > 0
 						has_ports = yes
 						within_diplomatic_range = root
-						NOT = {
-							is_subject_of = root
-						}
-						NOT = {
-							tag = ZAN
-						}
+						NOT = { is_subject_of = root }
+						NOT = { tag = ZAN }
 					}
-
 					add_opinion = { target = root modifier = opinion_shirazi_islam }
 				}
 			}
@@ -715,10 +591,7 @@ flavor_zan.8 = {
 
 		add_government_power = government_power_extreme_bonus
 
-		change_societal_value = {
-			type = mysticism_vs_jurisprudence
-			value = societal_value_move_to_left
-		}
+		change_societal_value = { type = mysticism_vs_jurisprudence value = societal_value_move_to_left }
 
 		hidden_effect = {
 			set_variable = followed_ways_of_ancestors_variable
@@ -734,26 +607,19 @@ flavor_zan.8 = {
 					societal_value:mysticism_vs_jurisprudence > 0
 					has_ports = yes
 					within_diplomatic_range = root
-					NOT = {
-						is_subject_of = root
-					}
+					NOT = { is_subject_of = root }
 				}
 			}
-
 			custom_tooltip = {
 				text = countries_with_positive_piety_increased_relations_tt
-
 				every_known_country = {
 					limit = {
 						religion.group = religion_group:muslim
 						societal_value:mysticism_vs_jurisprudence > 0
 						has_ports = yes
 						within_diplomatic_range = root
-						NOT = {
-							is_subject_of = root
-						}
+						NOT = { is_subject_of = root }
 					}
-
 					add_opinion = { target = root modifier = opinion_adopted_our_religious_views }
 				}
 			}
@@ -761,10 +627,7 @@ flavor_zan.8 = {
 
 		add_government_power = government_power_extreme_penalty
 
-		change_societal_value = {
-			type = mysticism_vs_jurisprudence
-			value = societal_value_move_to_right
-		}
+		change_societal_value = { type = mysticism_vs_jurisprudence value = societal_value_move_to_right }
 
 		add_stability = stability_mild_penalty
 	}
@@ -823,11 +686,7 @@ flavor_zan.9 = {
 			scale = -6
 		}
 	}
-	option = {
-		name = flavor_zan.9.b
-
-		culture = { add_cultural_tradition = cultural_tradition_extreme_penalty }
-	}
+	option = { name = flavor_zan.9.b culture = { add_cultural_tradition = cultural_tradition_extreme_penalty } }
 }
 
 flavor_zan.10 = {
@@ -864,10 +723,7 @@ flavor_zan.10 = {
 			background = pop_type:soldiers
 		}
 
-		c:POR = {
-			save_scope_as = target_country
-			ruler_or_regent = { save_scope_as = target_character }
-		}
+		c:POR = { save_scope_as = target_country ruler_or_regent = { save_scope_as = target_character } }
 
 		save_scope_as = target_country2
 		ruler_or_regent = { save_scope_as = target_character2 }
@@ -921,7 +777,6 @@ flavor_zan.11 = {
 
 	option = {
 		name = flavor_zan.11.c
-
 		add_opinion_mutual_effect = {
 			modifier = opinion_peaceful_trade_relations
 			target = scope:target_country2

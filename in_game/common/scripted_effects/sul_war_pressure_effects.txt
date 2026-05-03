@@ -21,7 +21,6 @@ sul_war_update_pressure = {
 
 			set_local_variable = {
 				name = sul_war_contribution
-
 				value = {
 					add = war_exhaustion
 					multiply = country_tax_base
@@ -35,19 +34,14 @@ sul_war_update_pressure = {
 				name = sul_war_contribution_check
 				value = { add = local_var:sul_war_contribution multiply = 1000 }
 			}
+
 			if = {
 				limit = { local_var:sul_war_contribution_check >= 1 }
 
-				change_local_variable = {
-					name = sul_war_pressure
-					add = local_var:sul_war_contribution
-				}
+				change_local_variable = { name = sul_war_pressure add = local_var:sul_war_contribution }
 
 				# Tag for display map building (same pattern as coalition members)
-				set_variable = {
-					name = sul_war_sub_pressure_contribution
-					value = local_var:sul_war_contribution
-				}
+				set_variable = { name = sul_war_sub_pressure_contribution value = local_var:sul_war_contribution }
 			}
 		}
 
@@ -73,26 +67,18 @@ sul_war_update_pressure = {
 
 			every_war_participant = {
 				limit = {
-					NOT = {
-						this = scope:sul_war_pressure_leader
-					}
-					NOT = {
-						is_subject_of = scope:sul_war_pressure_leader
-					}
+					NOT = { this = scope:sul_war_pressure_leader }
+					NOT = { is_subject_of = scope:sul_war_pressure_leader }
 
 					# Same side as the leader in this war
 					is_fighting_war_together_with = scope:sul_war_pressure_leader
 
 					# In a coalition against the enemy in this war
-					is_member_of_international_organization_of_type = {
-						type = coalition
-						target = scope:sul_war_war_enemy_leader
-					}
+					is_member_of_international_organization_of_type = { type = coalition target = scope:sul_war_war_enemy_leader }
 				}
 
 				set_local_variable = {
 					name = sul_war_contribution
-
 					value = {
 						add = war_exhaustion
 						subtract = 5
@@ -107,26 +93,16 @@ sul_war_update_pressure = {
 					name = sul_war_contribution_check
 					value = { add = local_var:sul_war_contribution multiply = 1000 }
 				}
+
 				if = {
 					limit = {
-						OR = {
-							local_var:sul_war_contribution_check >= 1
-							NOT = {
-								local_var:sul_war_contribution_check > -1
-							}
-						}
+						OR = { local_var:sul_war_contribution_check >= 1 NOT = { local_var:sul_war_contribution_check > -1 } }
 					}
 
-					change_local_variable = {
-						name = sul_war_pressure
-						add = local_var:sul_war_contribution
-					}
+					change_local_variable = { name = sul_war_pressure add = local_var:sul_war_contribution }
 
 					# Tag the participant with their contribution so we can build maps later
-					set_variable = {
-						name = sul_war_coal_pressure_contribution
-						value = local_var:sul_war_contribution
-					}
+					set_variable = { name = sul_war_coal_pressure_contribution value = local_var:sul_war_contribution }
 				}
 			}
 		}
@@ -134,31 +110,19 @@ sul_war_update_pressure = {
 
 	# --- GAMEPLAY: clamp and apply modifier ---
 
-	if = {
-		limit = { local_var:sul_war_pressure > 1 }
-		set_local_variable = { name = sul_war_pressure value = 1 }
-	}
-	if = {
-		limit = {
-			NOT = {
-				local_var:sul_war_pressure > -1
-			}
-		}
+	if = { limit = { local_var:sul_war_pressure > 1 } set_local_variable = { name = sul_war_pressure value = 1 } }
 
+	if = {
+		limit = { NOT = { local_var:sul_war_pressure > -1 } }
 		set_local_variable = { name = sul_war_pressure value = -1 }
 	}
 
 	remove_country_modifier = sul_war_momentum_diplomatic_pressure
+
 	if = {
 		limit = {
-			OR = {
-				local_var:sul_war_pressure > 0
-				NOT = {
-					local_var:sul_war_pressure >= 0
-				}
-			}
+			OR = { local_var:sul_war_pressure > 0 NOT = { local_var:sul_war_pressure >= 0 } }
 		}
-
 		add_country_modifier = {
 			modifier = sul_war_momentum_diplomatic_pressure
 			days = -1
@@ -178,10 +142,7 @@ sul_war_update_pressure = {
 
 		save_temporary_scope_as = sul_war_sub_entry
 
-		set_local_variable = {
-			name = sul_war_display_pressure
-			value = var:sul_war_sub_pressure_contribution
-		}
+		set_local_variable = { name = sul_war_display_pressure value = var:sul_war_sub_pressure_contribution }
 		set_local_variable = {
 			name = sul_war_pressure_visible
 			value = { add = var:sul_war_sub_pressure_contribution multiply = 10000000 }
@@ -209,10 +170,7 @@ sul_war_update_pressure = {
 
 		save_temporary_scope_as = sul_war_coal_entry
 
-		set_local_variable = {
-			name = sul_war_display_pressure
-			value = var:sul_war_coal_pressure_contribution
-		}
+		set_local_variable = { name = sul_war_display_pressure value = var:sul_war_coal_pressure_contribution }
 		set_local_variable = {
 			name = sul_war_pressure_visible
 			value = { add = var:sul_war_coal_pressure_contribution multiply = 10000000 }
@@ -237,22 +195,11 @@ sul_war_update_pressure = {
 	# Display totals
 	if = {
 		limit = {
-			OR = {
-				local_var:sul_war_pressure > 0
-				NOT = {
-					local_var:sul_war_pressure >= 0
-				}
-			}
+			OR = { local_var:sul_war_pressure > 0 NOT = { local_var:sul_war_pressure >= 0 } }
 		}
 
 		set_variable = { name = sul_war_display_has_pressure value = 1 }
-		set_variable = {
-			name = sul_war_display_pressure
-			value = local_var:sul_war_pressure
-		}
+		set_variable = { name = sul_war_display_pressure value = local_var:sul_war_pressure }
 	}
-	else = {
-		remove_variable = sul_war_display_has_pressure
-		remove_variable = sul_war_display_pressure
-	}
+	else = { remove_variable = sul_war_display_has_pressure remove_variable = sul_war_display_pressure }
 }

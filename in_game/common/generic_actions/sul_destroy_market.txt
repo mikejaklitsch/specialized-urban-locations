@@ -1,7 +1,5 @@
 ﻿# Market destruction is gated behind specialization: a location with
 # commercial specialization cannot have its market destroyed directly.
-# Change the specialization away from commercial first — that triggers
-# destroy_market as a side effect via sul_specialization_clear_all_modifiers.
 
 REPLACE:destroy_market = {
 	type = owncountry
@@ -19,19 +17,11 @@ REPLACE:destroy_market = {
 
 	price = {
 		if = {
-			limit = {
-				exists = scope:target
-				scope:target.location = { modifier:sul_is_rural_settlement_rank_tier = yes }
-			}
-
+			limit = { exists = scope:target scope:target.location = { modifier:sul_is_rural_settlement_rank_tier = yes } }
 			value = price:sul_designate_specialization_price_rural
 		}
 		else_if = {
-			limit = {
-				exists = scope:target
-				scope:target.location = { modifier:sul_is_town_rank_tier = yes }
-			}
-
+			limit = { exists = scope:target scope:target.location = { modifier:sul_is_town_rank_tier = yes } }
 			value = price:sul_designate_specialization_price_town
 		}
 		else = { value = price:sul_designate_specialization_price_city }
@@ -60,23 +50,14 @@ REPLACE:destroy_market = {
 		}
 
 		enabled = {
-			location = {
-				sul_has_commercial_specialization = no
-				NOT = {
-					has_location_modifier = sul_recently_respecialized
-				}
-			}
+			location = { sul_has_commercial_specialization = no NOT = { has_location_modifier = sul_recently_respecialized } }
 		}
 	}
 
 	effect = {
 		if = {
 			limit = { exists = scope:target }
-
-			scope:target = {
-				location = { save_scope_as = old_location }
-				destroy_market = {  }
-			}
+			scope:target = { location = { save_scope_as = old_location } destroy_market = {  } }
 		}
 	}
 

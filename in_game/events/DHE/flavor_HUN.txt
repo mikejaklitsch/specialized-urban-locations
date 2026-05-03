@@ -30,7 +30,6 @@ flavor_hun.100 = {
 			foreground = estate_type:nobles_estate
 			background = estate_type:nobles_estate
 		}
-
 		create_character = {
 			first_name = name_john
 			birth_date = 1406
@@ -53,11 +52,7 @@ flavor_hun.100 = {
 	}
 	option = {
 		name = flavor_hun.100.b
-
-		add_estate_satisfaction = {
-			type = estate_type:nobles_estate
-			value = estate_satisfaction_mild_bonus
-		}
+		add_estate_satisfaction = { type = estate_type:nobles_estate value = estate_satisfaction_mild_bonus }
 	}
 	option = { name = flavor_hun.100.c set_new_ruler = scope:janos_hunyadi }
 }
@@ -93,20 +88,13 @@ flavor_hun.110 = {
 	option = {
 		name = flavor_hun.110.a
 
-		change_societal_value = {
-			type = centralization_vs_decentralization
-			value = societal_value_move_to_left
-		}
+		change_societal_value = { type = centralization_vs_decentralization value = societal_value_move_to_left }
 
 		historical_option = yes
 	}
 	option = {
 		name = flavor_hun.110.b
-
-		change_societal_value = {
-			type = belligerent_vs_conciliatory
-			value = societal_value_move_to_right
-		}
+		change_societal_value = { type = belligerent_vs_conciliatory value = societal_value_move_to_right }
 	}
 }
 
@@ -134,21 +122,10 @@ flavor_hun.120 = {
 		add_religious_influence = religious_influence_mild_bonus
 
 		location:bratislava = {
+			if = { limit = { has_building_with_at_least_one_level = university } change_development = development_mild_bonus }
 			if = {
-				limit = { has_building_with_at_least_one_level = university }
-				change_development = development_mild_bonus
-			}
-			if = {
-				limit = {
-					NOT = {
-						has_building = building_type:university
-					}
-				}
-
-				change_building_level_in_location = {
-					building = building_type:university
-					value = 1
-				}
+				limit = { NOT = { has_building = building_type:university } }
+				change_building_level_in_location = { building = building_type:university value = 1 }
 			}
 		}
 	}
@@ -217,7 +194,6 @@ flavor_hun.140 = {
 
 	trigger = {
 		government_type = government_type:monarchy
-
 		any_character = {
 			is_adult = yes
 			is_female = yes
@@ -236,7 +212,6 @@ flavor_hun.140 = {
 			foreground = estate_type:nobles_estate
 			background = estate_type:nobles_estate
 		}
-
 		random_character = {
 			limit = {
 				is_adult = yes
@@ -247,7 +222,6 @@ flavor_hun.140 = {
 				culture = root.culture
 				has_dynasty = yes
 			}
-
 			save_scope_as = target_character
 		}
 	}
@@ -256,20 +230,13 @@ flavor_hun.140 = {
 		name = flavor_hun.140.a
 		historical_option = yes
 
-		add_estate_satisfaction = {
-			type = estate_type:nobles_estate
-			value = estate_satisfaction_mild_penalty
-		}
+		add_estate_satisfaction = { type = estate_type:nobles_estate value = estate_satisfaction_mild_penalty }
 
 		kill_character = { target = scope:target_character reason = execution }
 	}
 	option = {
 		name = flavor_hun.140.b
-
-		add_estate_satisfaction = {
-			type = estate_type:peasants_estate
-			value = estate_satisfaction_mild_penalty
-		}
+		add_estate_satisfaction = { type = estate_type:peasants_estate value = estate_satisfaction_mild_penalty }
 	}
 }
 
@@ -296,12 +263,7 @@ flavor_hun.150 = {
 
 		num_of_non_rural < 5
 
-		c:TUR = {
-			any_owned_location = {
-				previous_owner = c:HUN
-				region = region:carpathia_region
-			}
-		}
+		c:TUR = { any_owned_location = { previous_owner = c:HUN region = region:carpathia_region } }
 	}
 
 	illustration_tags = { 10 = angry 10 = interior }
@@ -311,20 +273,13 @@ flavor_hun.150 = {
 			foreground = estate_type:nobles_estate
 			background = estate_type:nobles_estate
 		}
-
 		c:TUR = { save_scope_as = target_country }
 	}
 
 	option = {
 		name = flavor_hun.150.a
-
 		every_owned_location = {
-			limit = {
-				NOT = {
-					is_core_of = c:HAB
-				}
-			}
-
+			limit = { NOT = { is_core_of = c:HAB } }
 			add_core = c:HAB
 		}
 	}
@@ -343,10 +298,7 @@ flavor_hun.160 = {
 		monthly_chance = 5
 	}
 
-	trigger = {
-		has_reform = government_reform:hun_power_to_magnates
-		stability < -20
-	}
+	trigger = { has_reform = government_reform:hun_power_to_magnates stability < -20 }
 
 	illustration_tags = { 10 = armed 10 = exterior }
 
@@ -359,7 +311,6 @@ flavor_hun.160 = {
 
 	option = {
 		name = flavor_hun.160.a
-
 		ordered_owned_location = {
 			limit = { dominant_culture = culture:hungarian }
 			order_by = population
@@ -397,9 +348,7 @@ flavor_hun.170 = {
 		name = flavor_hun.170.a
 		add_government_power = government_power_extreme_bonus
 
-		c:HAB = {
-			add_opinion = { target = root modifier = hun_bakocz_foreign_policy }
-		}
+		c:HAB = { add_opinion = { target = root modifier = hun_bakocz_foreign_policy } }
 
 		add_opinion = { target = c:HAB modifier = hun_bakocz_foreign_policy }
 	}
@@ -420,7 +369,6 @@ flavor_hun.180 = {
 			foreground = estate_type:nobles_estate
 			background = estate_type:clergy_estate
 		}
-
 		ruler ?= { save_scope_as = target_character }
 	}
 
@@ -430,30 +378,25 @@ flavor_hun.180 = {
 		add_prestige = prestige_mild_bonus
 
 		if = {
-			limit = {
-				c:BOH = { own_entire_province = location:znojmo.province_definition }
-			}
-
+			limit = { c:BOH = { own_entire_province = location:znojmo.province_definition } }
 			add_casus_belli = {
 				target = c:BOH
 				type = casus_belli:cb_conquer_province
 				province = location:znojmo.province
 			}
 		}
+
 		if = {
 			limit = { c:BOH = { own_entire_province = location:brno.province_definition } }
-
 			add_casus_belli = {
 				target = c:BOH
 				type = casus_belli:cb_conquer_province
 				province = location:brno.province
 			}
 		}
-		if = {
-			limit = {
-				c:BOH = { own_entire_province = location:olomouc.province_definition }
-			}
 
+		if = {
+			limit = { c:BOH = { own_entire_province = location:olomouc.province_definition } }
 			add_casus_belli = {
 				target = c:BOH
 				type = casus_belli:cb_conquer_province
@@ -462,10 +405,7 @@ flavor_hun.180 = {
 		}
 
 		if = {
-			limit = {
-				c:BOH = { own_entire_province = location:hradiste.province_definition }
-			}
-
+			limit = { c:BOH = { own_entire_province = location:hradiste.province_definition } }
 			add_casus_belli = {
 				target = c:BOH
 				type = casus_belli:cb_conquer_province
@@ -496,10 +436,7 @@ flavor_hun.181 = {
 		}
 	}
 
-	option = {
-		name = flavor_hun.181.a
-		add_opinion = { target = c:HUN modifier = hun_crowned_by_rebels }
-	}
+	option = { name = flavor_hun.181.a add_opinion = { target = c:HUN modifier = hun_crowned_by_rebels } }
 }
 
 flavor_hun.190 = {
@@ -545,37 +482,23 @@ flavor_hun.190 = {
 				limit = { owner = root }
 				add_to_list = rebelling_pops_flavor_hun_190_list
 
-				owner = {
-					change_variable = {
-						name = display_num_rebelling_pops_variable
-						add = prev.pop_size
-					}
-				}
+				owner = { change_variable = { name = display_num_rebelling_pops_variable add = prev.pop_size } }
 			}
 		}
 	}
 
 	option = {
 		name = flavor_hun.190.a
-
 		custom_tooltip = {
 			text = flavor_hun_show_rebels_tt
-
-			every_in_list = {
-				list = rebelling_pops_flavor_hun_190_list
-				add_pop_satisfaction = pop_satisfaction_severe_penalty
-			}
+			every_in_list = { list = rebelling_pops_flavor_hun_190_list add_pop_satisfaction = pop_satisfaction_severe_penalty }
 		}
 	}
 	option = {
 		name = flavor_hun.190.b
-
 		custom_tooltip = {
 			text = every_location_slovakia_loses_prosperity_tt
-
-			area:slovakia_area = {
-				every_location_in_area = { change_prosperity = prosperity_extreme_penalty }
-			}
+			area:slovakia_area = { every_location_in_area = { change_prosperity = prosperity_extreme_penalty } }
 		}
 	}
 
@@ -614,14 +537,8 @@ flavor_hun.200 = {
 	option = {
 		name = flavor_hun.200.a
 
-		change_societal_value = {
-			type = quality_vs_quantity
-			value = societal_value_move_to_left
-		}
-		change_societal_value = {
-			type = land_vs_naval
-			value = societal_value_move_to_left
-		}
+		change_societal_value = { type = quality_vs_quantity value = societal_value_move_to_left }
+		change_societal_value = { type = land_vs_naval value = societal_value_move_to_left }
 	}
 }
 
@@ -655,13 +572,11 @@ flavor_hun.210 = {
 			foreground = estate_type:nobles_estate
 			background = estate_type:nobles_estate
 		}
-
 		hidden_effect = {
 			if = {
-				limit = {
-					any_neighbor_country = { tag = TUR num_of_non_rural >= root.num_of_non_rural }
-				}
+				limit = { any_neighbor_country = { tag = TUR num_of_non_rural >= root.num_of_non_rural } }
 			}
+
 			c:TUR = { save_scope_as = threat_to_hungary }
 			location:belgrad = { save_scope_as = belgrade_localized }
 		}
@@ -703,12 +618,8 @@ flavor_hun.220 = {
 	trigger = {
 		religion.group = religion_group:christian
 		owns = location:belgrad
-		NOT = {
-			country_exists = c:SER
-		}
-		NOT = {
-			is_allied_with = { target = c:TUR }
-		}
+		NOT = { country_exists = c:SER }
+		NOT = { is_allied_with = { target = c:TUR } }
 		location:belgrad = { dominant_culture = culture:serbian }
 		c:TUR = { any_owned_location = { dominant_culture = culture:serbian } }
 	}
@@ -736,7 +647,6 @@ flavor_hun.220 = {
 
 	option = {
 		name = flavor_hun.220.a
-
 		add_migration = {
 			owner = root
 			from = scope:origin_province
@@ -775,7 +685,6 @@ flavor_hun.230 = {
 			foreground = estate_type:nobles_estate
 			background = estate_type:nobles_estate
 		}
-
 		location:debrecen = { save_scope_as = debrecen_province }
 	}
 
@@ -783,15 +692,14 @@ flavor_hun.230 = {
 		name = flavor_hun.230.a
 		add_policy = policy:jesuits_allowed
 		add_religious_influence = religious_influence_mild_bonus
+
 		if = {
 			limit = { country_exists = c:PAP }
 			add_opinion = { target = c:PAP modifier = hun_invited_jesuits }
 			c:PAP = { add_opinion = { target = root modifier = hun_invited_jesuits } }
 		}
-		add_estate_satisfaction = {
-			type = estate_type:clergy_estate
-			value = estate_satisfaction_mild_bonus
-		}
+
+		add_estate_satisfaction = { type = estate_type:clergy_estate value = estate_satisfaction_mild_bonus }
 	}
 	option = {
 		name = flavor_hun.230.b
@@ -804,10 +712,7 @@ flavor_hun.230 = {
 			every_pop = { split_pop = { fraction = 0.1 religion = religion:calvinist } }
 		}
 
-		add_estate_satisfaction = {
-			type = estate_type:clergy_estate
-			value = estate_satisfaction_mild_penalty
-		}
+		add_estate_satisfaction = { type = estate_type:clergy_estate value = estate_satisfaction_mild_penalty }
 	}
 }
 
@@ -831,7 +736,6 @@ flavor_hun.240 = {
 			foreground = estate_type:nobles_estate
 			background = estate_type:nobles_estate
 		}
-
 		create_character = {
 			first_name = name_thomas
 			last_name = Nadasdy
@@ -869,20 +773,11 @@ flavor_hun.250 = {
 	trigger = {
 		is_neighbor_of = c:TUR
 		country_exists = c:TUR
-		NOT = {
-			is_subject_of = c:TUR
-		}
+		NOT = { is_subject_of = c:TUR }
 
 		num_of_non_rural < c:TUR.num_of_non_rural
-		NOT = {
-			is_allied_with = { target = c:TUR }
-		}
-		c:TUR = {
-			OR = {
-				own_entire_area = area:wallachia_area
-				own_entire_area = area:moldavia_area
-			}
-		}
+		NOT = { is_allied_with = { target = c:TUR } }
+		c:TUR = { OR = { own_entire_area = area:wallachia_area own_entire_area = area:moldavia_area } }
 	}
 
 	illustration_tags = { 10 = regular 10 = exterior }
@@ -892,15 +787,11 @@ flavor_hun.250 = {
 			foreground = pop_type:soldiers
 			background = pop_type:soldiers
 		}
-
 		c:TUR = {
 			ordered_owned_location = {
 				limit = {
 					dominant_religion.group = religion_group:christian
-					OR = {
-						area = area:wallachia_area
-						area = area:moldavia_area
-					}
+					OR = { area = area:wallachia_area area = area:moldavia_area }
 				}
 
 				order_by = population
@@ -914,7 +805,6 @@ flavor_hun.250 = {
 
 	option = {
 		name = flavor_hun.250.a
-
 		add_migration = {
 			owner = root
 			from = scope:origin_province
@@ -958,7 +848,6 @@ flavor_hun.260 = {
 
 	option = {
 		name = flavor_hun.260.a
-
 		ordered_owned_location = {
 			limit = { dominant_culture = culture:wallachian }
 			order_by = population
@@ -992,7 +881,6 @@ flavor_hun.270 = {
 			foreground = estate_type:nobles_estate
 			background = estate_type:nobles_estate
 		}
-
 		create_character = {
 			birth_date = 1558
 			birth_location = location:zagreb
@@ -1009,10 +897,7 @@ flavor_hun.270 = {
 		}
 	}
 
-	option = {
-		name = flavor_hun.270.a
-		scope:target_artist = { move_country = root }
-	}
+	option = { name = flavor_hun.270.a scope:target_artist = { move_country = root } }
 }
 
 flavor_hun.280 = {
@@ -1043,23 +928,15 @@ flavor_hun.280 = {
 		religion:lutheran = { is_religion_enabled = yes }
 		"religion_percentage_in_country(religion:catholic)" > 0.10
 
-		any_owned_location = {
-			dominant_religion = religion:catholic
-			dominant_culture = culture:hungarian
-		}
+		any_owned_location = { dominant_religion = religion:catholic dominant_culture = culture:hungarian }
 	}
 
 	option = {
 		name = flavor_hun.280.a
-
 		custom_tooltip = {
 			text = flavor_hun.280.a.tt
-
 			ordered_owned_location = {
-				limit = {
-					dominant_religion = religion:catholic
-					dominant_culture = culture:hungarian
-				}
+				limit = { dominant_religion = religion:catholic dominant_culture = culture:hungarian }
 
 				order_by = population
 				max = { value = 1 add = { value = num_provinces multiply = 0.2 } }
@@ -1068,10 +945,7 @@ flavor_hun.280 = {
 			}
 		}
 	}
-	option = {
-		name = flavor_hun.280.b
-		add_religious_influence = religious_influence_extreme_bonus
-	}
+	option = { name = flavor_hun.280.b add_religious_influence = religious_influence_extreme_bonus }
 }
 
 # https://en.wikipedia.org/wiki/Janus_Pannonius
@@ -1123,10 +997,7 @@ flavor_hun.290 = {
 	option = {
 		name = flavor_hun.290.b
 
-		add_estate_satisfaction = {
-			type = estate_type:clergy_estate
-			value = estate_satisfaction_mild_bonus
-		}
+		add_estate_satisfaction = { type = estate_type:clergy_estate value = estate_satisfaction_mild_bonus }
 
 		hidden_effect = {
 			kill_character_silently = scope:target_artist
@@ -1154,7 +1025,6 @@ flavor_hun.300 = {
 
 	option = {
 		name = flavor_hun.300.a
-
 		every_owned_location = {
 			limit = {
 				area = area:slovakia_area
@@ -1164,7 +1034,6 @@ flavor_hun.300 = {
 					raw_material = goods:copper
 				}
 			}
-
 			add_location_modifier = {
 				modifier = hun_city_league_obligation
 				years = 50
@@ -1174,7 +1043,6 @@ flavor_hun.300 = {
 	}
 	option = {
 		name = flavor_hun.300.b
-
 		every_owned_location = {
 			limit = {
 				area = area:slovakia_area
@@ -1184,7 +1052,6 @@ flavor_hun.300 = {
 					raw_material = goods:copper
 				}
 			}
-
 			add_location_modifier = {
 				modifier = hun_city_leagues_protected
 				years = 50
@@ -1216,28 +1083,18 @@ flavor_hun.310 = {
 		}
 	}
 
-	trigger = {
-		any_owned_location = { prosperity < -0.25 }
-		manpower_percentage < 0.7
-	}
+	trigger = { any_owned_location = { prosperity < -0.25 } manpower_percentage < 0.7 }
 
 	option = {
 		name = flavor_hun.310.a
 
-		add_estate_satisfaction = {
-			type = estate_type:nobles_estate
-			value = estate_satisfaction_mild_penalty
-		}
+		add_estate_satisfaction = { type = estate_type:nobles_estate value = estate_satisfaction_mild_penalty }
 
 		add_manpower = { value = root.monthly_manpower multiply = 6 }
 	}
 	option = {
 		name = flavor_hun.310.b
-
-		add_estate_satisfaction = {
-			type = estate_type:nobles_estate
-			value = estate_satisfaction_mild_bonus
-		}
+		add_estate_satisfaction = { type = estate_type:nobles_estate value = estate_satisfaction_mild_bonus }
 	}
 }
 
@@ -1265,7 +1122,6 @@ flavor_hun.320 = {
 			foreground = estate_type:nobles_estate
 			background = estate_type:nobles_estate
 		}
-
 		ruler = { save_scope_as = karoly_ruler }
 	}
 
@@ -1282,10 +1138,7 @@ flavor_hun.320 = {
 			}
 		}
 
-		add_estate_satisfaction = {
-			type = estate_type:nobles_estate
-			value = estate_satisfaction_mild_penalty
-		}
+		add_estate_satisfaction = { type = estate_type:nobles_estate value = estate_satisfaction_mild_penalty }
 
 		set_variable = { name = karoly_absolute value = 1 }
 	}
@@ -1293,11 +1146,7 @@ flavor_hun.320 = {
 	# The diet might be needed once again
 	option = {
 		name = flavor_hun.320.b
-
-		add_estate_satisfaction = {
-			type = estate_type:nobles_estate
-			value = estate_satisfaction_mild_bonus
-		}
+		add_estate_satisfaction = { type = estate_type:nobles_estate value = estate_satisfaction_mild_bonus }
 	}
 }
 
@@ -1376,7 +1225,6 @@ flavor_hun.331 = {
 
 		show_as_tooltip = {
 			change_heir_selection = heir_selection:union_of_crowns_succession
-
 			c:HUN = {
 				create_relation = {
 					first = this
@@ -1387,10 +1235,7 @@ flavor_hun.331 = {
 				change_heir_selection = heir_selection:union_of_crowns_succession
 				add_opinion = { target = c:POL modifier = agreed_second_congress_of_visegrad }
 
-				reverse_add_opinion = {
-					target = c:POL
-					modifier = agreed_second_congress_of_visegrad
-				}
+				reverse_add_opinion = { target = c:POL modifier = agreed_second_congress_of_visegrad }
 			}
 		}
 	}
@@ -1405,11 +1250,7 @@ flavor_hun.331 = {
 		show_as_tooltip = {
 			c:HUN = {
 				add_opinion = { target = c:POL modifier = failed_second_congress_of_visegrad }
-
-				reverse_add_opinion = {
-					target = c:POL
-					modifier = failed_second_congress_of_visegrad
-				}
+				reverse_add_opinion = { target = c:POL modifier = failed_second_congress_of_visegrad }
 			}
 		}
 	}
@@ -1443,10 +1284,7 @@ flavor_hun.332 = {
 
 		add_opinion = { target = c:POL modifier = agreed_second_congress_of_visegrad }
 
-		reverse_add_opinion = {
-			target = c:POL
-			modifier = agreed_second_congress_of_visegrad
-		}
+		reverse_add_opinion = { target = c:POL modifier = agreed_second_congress_of_visegrad }
 	}
 }
 
@@ -1470,10 +1308,7 @@ flavor_hun.18 = {
 		name = flavor_hun.18.a
 		add_opinion = { target = c:POL modifier = failed_second_congress_of_visegrad }
 
-		reverse_add_opinion = {
-			target = c:POL
-			modifier = failed_second_congress_of_visegrad
-		}
+		reverse_add_opinion = { target = c:POL modifier = failed_second_congress_of_visegrad }
 	}
 }
 
@@ -1494,9 +1329,7 @@ flavor_hun.340 = {
 
 	trigger = {
 		exists = ruler
-		NOT = {
-			ruler ?= character:hun_karoly_robert
-		}
+		NOT = { ruler ?= character:hun_karoly_robert }
 		character:hun_karoly_robert = { is_alive = no }
 		has_policy = gold_export_ban
 	}
@@ -1518,19 +1351,10 @@ flavor_hun.340 = {
 		historical_option = yes
 		add_policy = policy:unlimited_gold_export
 
-		change_societal_value = {
-			type = capital_economy_vs_traditional_economy
-			value = societal_value_move_to_left
-		}
+		change_societal_value = { type = capital_economy_vs_traditional_economy value = societal_value_move_to_left }
 
-		add_estate_satisfaction = {
-			type = estate_type:nobles_estate
-			value = estate_satisfaction_mild_bonus
-		}
-		add_estate_satisfaction = {
-			type = estate_type:burghers_estate
-			value = estate_satisfaction_mild_bonus
-		}
+		add_estate_satisfaction = { type = estate_type:nobles_estate value = estate_satisfaction_mild_bonus }
+		add_estate_satisfaction = { type = estate_type:burghers_estate value = estate_satisfaction_mild_bonus }
 	}
 	option = {
 		name = flavor_hun.340.b
@@ -1539,19 +1363,10 @@ flavor_hun.340 = {
 			scale = 2
 		}
 
-		change_societal_value = {
-			type = capital_economy_vs_traditional_economy
-			value = societal_value_move_to_right
-		}
+		change_societal_value = { type = capital_economy_vs_traditional_economy value = societal_value_move_to_right }
 
-		add_estate_satisfaction = {
-			type = estate_type:nobles_estate
-			value = estate_satisfaction_mild_penalty
-		}
-		add_estate_satisfaction = {
-			type = estate_type:burghers_estate
-			value = estate_satisfaction_mild_penalty
-		}
+		add_estate_satisfaction = { type = estate_type:nobles_estate value = estate_satisfaction_mild_penalty }
+		add_estate_satisfaction = { type = estate_type:burghers_estate value = estate_satisfaction_mild_penalty }
 	}
 }
 
@@ -1563,10 +1378,7 @@ flavor_hun.350 = {
 
 	desc = {
 		first_valid = {
-			triggered_desc = {
-				trigger = { has_variable = karoly_absolute }
-				desc = flavor_hun.350.desc.a
-			}
+			triggered_desc = { trigger = { has_variable = karoly_absolute } desc = flavor_hun.350.desc.a }
 			triggered_desc = { desc = flavor_hun.350.desc.b }
 		}
 	}
@@ -1582,16 +1394,12 @@ flavor_hun.350 = {
 
 	trigger = {
 		exists = ruler
-		NOT = {
-			ruler = character:hun_karoly_robert
-		}
+		NOT = { ruler = character:hun_karoly_robert }
 
 		ruler.adm < 50
 		ruler.dip < 50
 		ruler.mil < 50
-		NOT = {
-			has_estate_privilege = estate_privilege:golden_bull_of_1222
-		}
+		NOT = { has_estate_privilege = estate_privilege:golden_bull_of_1222 }
 
 		exists = ruler
 	}
@@ -1603,7 +1411,6 @@ flavor_hun.350 = {
 			foreground = estate_type:nobles_estate
 			background = estate_type:nobles_estate
 		}
-
 		hidden_effect = {
 			ruler ?= { save_scope_as = ruler_scope }
 			character:hun_karoly_robert = { save_scope_as = karoly_ruler }
@@ -1615,20 +1422,14 @@ flavor_hun.350 = {
 		historical_option = yes
 		grant_estate_privilege = estate_privilege:golden_bull_of_1222
 
-		add_estate_satisfaction = {
-			type = estate_type:nobles_estate
-			value = estate_satisfaction_mild_bonus
-		}
+		add_estate_satisfaction = { type = estate_type:nobles_estate value = estate_satisfaction_mild_bonus }
 	}
 	option = {
 		name = flavor_hun.350.b
 		add_stability = stability_severe_penalty
 		add_government_power = government_power_extreme_penalty
 
-		add_estate_satisfaction = {
-			type = estate_type:nobles_estate
-			value = estate_satisfaction_mild_penalty
-		}
+		add_estate_satisfaction = { type = estate_type:nobles_estate value = estate_satisfaction_mild_penalty }
 	}
 
 	historical_info = flavor_hun.350.historical_info
@@ -1652,19 +1453,14 @@ flavor_hun.360 = {
 
 	trigger = {
 		has_law = legal_code_law
-		NOT = {
-			has_policy = vlach_law_policy
-		}
-		NOT = {
-			culture.language = language:romanian_language
-		}
+		NOT = { has_policy = vlach_law_policy }
+		NOT = { culture.language = language:romanian_language }
 		any_owned_location = {
 			any_pop = {
 				pop_size > 0.6
 				culture = culture:transylvanian
 				pop_type = pop_type:peasants
 			}
-
 			local_control < 0.5
 		}
 
@@ -1678,15 +1474,11 @@ flavor_hun.360 = {
 			foreground = estate_type:peasants_estate
 			background = estate_type:peasants_estate
 		}
-
 		hidden_effect = {
 			if = {
 				limit = {
-					NOT = {
-						any_rebel = { rebel_name_key = transylvanian_independence_fighter }
-					}
+					NOT = { any_rebel = { rebel_name_key = transylvanian_independence_fighter } }
 				}
-
 				create_rebel = {
 					category = nationalist
 					name = transylvanian_independence_fighter
@@ -1695,10 +1487,7 @@ flavor_hun.360 = {
 				}
 			}
 			ordered_owned_location = {
-				limit = {
-					any_pop = { culture = culture:transylvanian pop_type = pop_type:peasants }
-					local_control < 0.5
-				}
+				limit = { any_pop = { culture = culture:transylvanian pop_type = pop_type:peasants } local_control < 0.5 }
 
 				max = 20
 				check_range_bounds = no
@@ -1718,29 +1507,19 @@ flavor_hun.360 = {
 
 		add_policy = policy:vlach_law_policy
 
-		add_estate_satisfaction = {
-			type = estate_type:nobles_estate
-			value = estate_satisfaction_extreme_penalty
-		}
+		add_estate_satisfaction = { type = estate_type:nobles_estate value = estate_satisfaction_extreme_penalty }
 
-		culture:transylvanian = {
-			change_cultural_view = { target = root.culture change = 1 }
-		}
+		culture:transylvanian = { change_cultural_view = { target = root.culture change = 1 } }
 	}
 	option = {
 		name = flavor_hun.360.b
 
-		add_estate_satisfaction = {
-			type = estate_type:nobles_estate
-			value = estate_satisfaction_mild_bonus
-		}
+		add_estate_satisfaction = { type = estate_type:nobles_estate value = estate_satisfaction_mild_bonus }
 
 		custom_tooltip = {
 			text = flavor_hun.360.b.tt
-
 			every_in_list = {
 				list = transylvanian_location_list
-
 				every_pop = {
 					limit = {
 						owner = root
@@ -1778,9 +1557,7 @@ flavor_hun.370 = {
 		stability >= 0
 		exists = ruler
 		has_regent = no
-		NOT = {
-			ruler = character:hun_karoly_robert
-		}	# Founded the order in 1326, would be weird if he would dissolve it again so fast
+		NOT = { ruler = character:hun_karoly_robert }	# Founded the order in 1326, would be weird if he would dissolve it again so fast
 	}
 
 	illustration_tags = { 10 = regular 10 = interior }
@@ -1790,7 +1567,6 @@ flavor_hun.370 = {
 			foreground = estate_type:nobles_estate
 			background = estate_type:nobles_estate
 		}
-
 		hidden_effect = {
 			ruler = { save_scope_as = ruler_scope }
 			character:hun_karoly_robert = { save_scope_as = karoly_scope }
@@ -1838,10 +1614,7 @@ flavor_hun.380 = {
 		monthly_chance = 1
 	}
 
-	trigger = {
-		ruler ?= { has_character_modifier = enacted_placitum_regium }
-		religion = religion:catholic
-	}
+	trigger = { ruler ?= { has_character_modifier = enacted_placitum_regium } religion = religion:catholic }
 
 	illustration_tags = { 10 = angry 10 = interior }
 
@@ -1850,7 +1623,6 @@ flavor_hun.380 = {
 			foreground = estate_type:clergy_estate
 			background = estate_type:clergy_estate
 		}
-
 		hidden_effect = {
 			ruler = { save_scope_as = ruler_scope }
 		}
@@ -1861,19 +1633,13 @@ flavor_hun.380 = {
 		historical_option = yes
 		ruler = { add_adm = 10 add_mil = 10 }
 
-		add_estate_satisfaction = {
-			type = estate_type:clergy_estate
-			value = estate_satisfaction_severe_penalty
-		}
+		add_estate_satisfaction = { type = estate_type:clergy_estate value = estate_satisfaction_severe_penalty }
 	}
 	option = {
 		name = flavor_hun.380.b
 		ruler = { remove_character_modifier = enacted_placitum_regium }
 
-		add_estate_satisfaction = {
-			type = estate_type:clergy_estate
-			value = estate_satisfaction_severe_bonus
-		}
+		add_estate_satisfaction = { type = estate_type:clergy_estate value = estate_satisfaction_severe_bonus }
 	}
 
 	historical_info = flavor_hun.380.historical_info
@@ -1903,7 +1669,6 @@ flavor_hun.390 = {
 			foreground = pop_type:soldiers
 			background = pop_type:soldiers
 		}
-
 		create_character = {
 			first_name = name_nicholas
 			last_name = toldi
@@ -1936,7 +1701,6 @@ flavor_hun.390 = {
 	}
 	option = {
 		name = flavor_hun.390.b
-
 		scope:toldi_scope = {
 			move_country = root
 			add_adm = 25
@@ -1969,15 +1733,9 @@ flavor_hun.400 = {
 
 	trigger = {
 		owns = location:pecs
-
 		location:pecs = {
-			NOT = {
-				has_building = building_type:university
-			}
-			OR = {
-				modifier:sul_is_town_rank_tier = yes
-				modifier:sul_is_city_rank_tier = yes
-			}
+			NOT = { has_building = building_type:university }
+			OR = { modifier:sul_is_town_rank_tier = yes modifier:sul_is_city_rank_tier = yes }
 		}
 	}
 
@@ -1988,7 +1746,6 @@ flavor_hun.400 = {
 			foreground = estate_type:clergy_estate
 			background = estate_type:nobles_estate
 		}
-
 		hidden_effect = {
 			location:pecs = { save_scope_as = location_scope }
 		}
@@ -2041,11 +1798,7 @@ flavor_hun.410 = {
 
 		region:balkan_region = {
 			any_location_in_region = {
-				controller ?= {
-					culture = culture:turkish_culture
-					religion.group = religion_group:muslim
-				}
-
+				controller ?= { culture = culture:turkish_culture religion.group = religion_group:muslim }
 				count >= 5
 			}
 		}
@@ -2061,12 +1814,7 @@ flavor_hun.410 = {
 
 		region:balkan_region = {
 			random_location_in_region = {
-				limit = {
-					controller ?= {
-						culture = culture:turkish_culture
-						religion.group = religion_group:muslim
-					}
-				}
+				limit = { controller ?= { culture = culture:turkish_culture religion.group = religion_group:muslim } }
 
 				save_scope_as = target_location
 				controller ?= { save_scope_as = turkish_scope }
@@ -2105,7 +1853,6 @@ flavor_hun.410 = {
 						culture.language = language:albanian_language
 					}
 				}
-
 				trigger_event_silently = { id = flavor_hun.411 }
 			}
 		}
@@ -2129,7 +1876,6 @@ flavor_hun.411 = {
 			foreground = estate_type:nobles_estate
 			background = estate_type:nobles_estate
 		}
-
 		hidden_effect = {
 			ruler_or_regent = { save_scope_as = our_ruler }
 		}
@@ -2145,9 +1891,7 @@ flavor_hun.411 = {
 
 		add_policy = policy:order_of_the_dragon_policy
 
-		ruler_or_regent ?= {
-			join_specific_order_of_chivalry = { type = order_of_the_dragon }
-		}
+		ruler_or_regent ?= { join_specific_order_of_chivalry = { type = order_of_the_dragon } }
 
 		add_prestige = prestige_mild_bonus
 	}
@@ -2168,7 +1912,6 @@ winning_character_effect = {
 
 			10 = {
 				add_mil = -10
-
 				add_character_modifier = {
 					modifier = block_leading_armies_or_navies
 					years = -1
@@ -2198,7 +1941,6 @@ losing_character_effect = {
 
 			20 = {
 				add_mil = -10
-
 				add_character_modifier = {
 					modifier = block_leading_armies_or_navies
 					years = -1
@@ -2234,6 +1976,7 @@ apply_character_effects = {
 		hun_tournament_losing_character_small_loss = {	add_mil = -10 add_character_modifier = { modifier = block_leading_armies_or_navies years = -1 mode = add_and_extend } }
 		hun_tournament_losing_character_big_loss = {	kill_character = { target = this reason = jousting } }
 	}
+
 	hidden_effect = {
 		remove_variable = hun_tournament_winning_character_big_gain
 		remove_variable = hun_tournament_winning_character_small_gain
@@ -2267,14 +2010,8 @@ flavor_hun.420 = {
 
 	title = {
 		first_valid = {
-			triggered_desc = {
-				trigger = { exists = scope:tournament_victor }
-				desc = flavor_hun.420.title
-			}
-			triggered_desc = {
-				trigger = { always = yes }
-				desc = flavor_hun.420.title.fallback
-			}
+			triggered_desc = { trigger = { exists = scope:tournament_victor } desc = flavor_hun.420.title }
+			triggered_desc = { trigger = { always = yes } desc = flavor_hun.420.title.fallback }
 		}
 	}
 
@@ -2287,17 +2024,26 @@ flavor_hun.420 = {
 			foreground = estate_type:nobles_estate
 			background = estate_type:nobles_estate
 		}
-
 		random_list = {
 			50 = {
 				scope:first_tournament_participant = { save_scope_as = tournament_victor }
 				scope:second_tournament_participant = { save_scope_as = tournament_loser }
-				set_variable = { name = first_wins value = yes days = 20 }
+
+				set_variable = {
+					name = first_wins
+					value = yes
+					days = 20
+				}
 			}
 			50 = {
 				scope:second_tournament_participant = { save_scope_as = tournament_victor }
 				scope:first_tournament_participant = { save_scope_as = tournament_loser }
-				set_variable = { name = second_wins value = yes days = 20 }
+
+				set_variable = {
+					name = second_wins
+					value = yes
+					days = 20
+				}
 			}
 		}
 	}
@@ -2309,14 +2055,8 @@ flavor_hun.420 = {
 			custom_tooltip = {
 				text = flavor_hun.420.a_tt
 				OR = {
-					AND = {
-						has_variable = first_wins
-						has_variable = first_tournament_participant_bet
-					}
-					AND = {
-						has_variable = second_wins
-						has_variable = second_tournament_participant_bet
-					}
+					AND = { has_variable = first_wins has_variable = first_tournament_participant_bet }
+					AND = { has_variable = second_wins has_variable = second_tournament_participant_bet }
 				}
 			}
 		}
@@ -2332,14 +2072,8 @@ flavor_hun.420 = {
 			custom_tooltip = {
 				text = flavor_hun.420.b_tt
 				OR = {
-					AND = {
-						has_variable = second_wins
-						has_variable = first_tournament_participant_bet
-					}
-					AND = {
-						has_variable = first_wins
-						has_variable = second_tournament_participant_bet
-					}
+					AND = { has_variable = second_wins has_variable = first_tournament_participant_bet }
+					AND = { has_variable = first_wins has_variable = second_tournament_participant_bet }
 				}
 			}
 		}
@@ -2354,18 +2088,10 @@ flavor_hun.420 = {
 		trigger = {
 			custom_tooltip = {
 				text = flavor_hun.420.c.tt
-				NOT = {
-					has_variable = first_wins
-				}
-				NOT = {
-					has_variable = first_tournament_participant_bet
-				}
-				NOT = {
-					has_variable = second_wins
-				}
-				NOT = {
-					has_variable = second_tournament_participant_bet
-				}
+				NOT = { has_variable = first_wins }
+				NOT = { has_variable = first_tournament_participant_bet }
+				NOT = { has_variable = second_wins }
+				NOT = { has_variable = second_tournament_participant_bet }
 			}
 		}
 
@@ -2393,7 +2119,6 @@ flavor_hun.421 = {
 
 	trigger = {
 		has_law = order_of_chivalry_law
-
 		any_character = {
 			is_alive = yes
 			is_female = no
@@ -2411,7 +2136,6 @@ flavor_hun.421 = {
 			foreground = estate_type:nobles_estate
 			background = estate_type:nobles_estate
 		}
-
 		hidden_effect = {
 			random_character = {
 				limit = {
@@ -2421,7 +2145,6 @@ flavor_hun.421 = {
 					is_ruler = no
 					has_estate = estate_type:nobles_estate
 				}
-
 				save_scope_as = first_tournament_participant
 			}
 			random_character = {
@@ -2431,11 +2154,8 @@ flavor_hun.421 = {
 					is_adult = yes
 					is_ruler = no
 					has_estate = estate_type:nobles_estate
-					NOT = {
-						scope:first_tournament_participant = this
-					}
+					NOT = { scope:first_tournament_participant = this }
 				}
-
 				save_scope_as = second_tournament_participant
 			}
 
@@ -2445,10 +2165,8 @@ flavor_hun.421 = {
 
 	option = {
 		name = flavor_hun.421.a
-
 		custom_tooltip = {
 			text = flavor_hun.421.a.tt
-
 			set_variable = {
 				name = first_tournament_participant_bet
 				value = yes
@@ -2458,10 +2176,8 @@ flavor_hun.421 = {
 	}
 	option = {
 		name = flavor_hun.421.b
-
 		custom_tooltip = {
 			text = flavor_hun.421.b.tt
-
 			set_variable = {
 				name = second_tournament_participant_bet
 				value = yes
@@ -2530,9 +2246,7 @@ flavor_hun.430 = {
 		government_type = government_type:monarchy
 		has_ruler = yes
 		# Does Hungary have the crown?
-		any_owned_location = {
-			any_work_of_art_in_location = { this = work_of_art:holy_crown_of_hungary }
-		}
+		any_owned_location = { any_work_of_art_in_location = { this = work_of_art:holy_crown_of_hungary } }
 	}
 
 	illustration_tags = { 10 = angry 10 = interior }
@@ -2543,9 +2257,7 @@ flavor_hun.430 = {
 			background = estate_type:nobles_estate
 		}
 
-		work_of_art:holy_crown_of_hungary = {
-			save_scope_as = scope_holy_crown_of_hungary
-		}
+		work_of_art:holy_crown_of_hungary = { save_scope_as = scope_holy_crown_of_hungary }
 
 		# Culprit
 		random_cabinet_character = { save_scope_as = culprit }
@@ -2584,13 +2296,7 @@ flavor_hun.430 = {
 		name = flavor_hun.430.d
 
 		trigger = {
-			ruler = {
-				OR = {
-					has_trait = cruel
-					has_trait = malevolent
-				}
-			}
-
+			ruler = { OR = { has_trait = cruel has_trait = malevolent } }
 			# There is at least a cabinet member
 			any_cabinet_character = { count > 0 }
 		}
@@ -2612,14 +2318,10 @@ flavor_hun.440 = {
 		tag = HUN
 		government_type = government_type:monarchy
 
-		NOT = {
-			root = work_of_art:holy_crown_of_hungary.location.owner
-		}
+		NOT = { root = work_of_art:holy_crown_of_hungary.location.owner }
 
 		exists = work_of_art:holy_crown_of_hungary_crooked
-		NOT = {
-			work_of_art:holy_crown_of_hungary_crooked.location.owner ?= root
-		}
+		NOT = { work_of_art:holy_crown_of_hungary_crooked.location.owner ?= root }
 	}
 
 	illustration_tags = { 10 = angry 10 = interior }
@@ -2629,18 +2331,12 @@ flavor_hun.440 = {
 			foreground = estate_type:nobles_estate
 			background = estate_type:nobles_estate
 		}
+
 		if = {
 			limit = { exists = work_of_art:holy_crown_of_hungary_crooked }
-
-			work_of_art:holy_crown_of_hungary_crooked = {
-				save_scope_as = scope_holy_crown_of_hungary
-			}
+			work_of_art:holy_crown_of_hungary_crooked = { save_scope_as = scope_holy_crown_of_hungary }
 		}
-		else = {
-			work_of_art:holy_crown_of_hungary = {
-				save_scope_as = scope_holy_crown_of_hungary
-			}
-		}
+		else = { work_of_art:holy_crown_of_hungary = { save_scope_as = scope_holy_crown_of_hungary } }
 
 		ruler = { save_scope_as = ruler_scope }
 	}
@@ -2654,10 +2350,7 @@ flavor_hun.440 = {
 			target = scope:scope_holy_crown_of_hungary.location.owner
 		}
 
-		add_estate_satisfaction = {
-			type = estate_type:nobles_estate
-			value = estate_satisfaction_extreme_penalty
-		}
+		add_estate_satisfaction = { type = estate_type:nobles_estate value = estate_satisfaction_extreme_penalty }
 
 		add_prestige = prestige_weak_penalty
 		add_legitimacy = legitimacy_ultimate_penalty
@@ -2684,12 +2377,7 @@ flavor_hun.450 = {
 		government_type = government_type:monarchy
 		owns = location:buda
 
-		location:buda = {
-			is_capital = yes
-			NOT = {
-				has_building = building_type:royal_court
-			}
-		}
+		location:buda = { is_capital = yes NOT = { has_building = building_type:royal_court } }
 	}
 
 	illustration_tags = { 10 = regular 10 = interior }
@@ -2713,10 +2401,7 @@ flavor_hun.450 = {
 			}
 		}
 
-		change_societal_value = {
-			type = centralization_vs_decentralization
-			value = societal_value_move_to_left
-		}
+		change_societal_value = { type = centralization_vs_decentralization value = societal_value_move_to_left }
 
 		add_government_power = government_power_weak_bonus
 	}
@@ -2725,10 +2410,7 @@ flavor_hun.450 = {
 		name = flavor_hun.450.b
 		add_government_power = government_power_weak_penalty
 
-		change_societal_value = {
-			type = centralization_vs_decentralization
-			value = societal_value_move_to_right
-		}
+		change_societal_value = { type = centralization_vs_decentralization value = societal_value_move_to_right }
 	}
 }
 
@@ -2760,7 +2442,6 @@ flavor_hun.460 = {
 			foreground = estate_type:clergy_estate
 			background = estate_type:nobles_estate
 		}
-
 		create_character = {
 			first_name = name_mark
 			last_name = Kalti
@@ -2801,10 +2482,7 @@ flavor_hun.460 = {
 
 		add_prestige = prestige_weak_penalty
 
-		change_societal_value = {
-			type = traditionalist_vs_innovative
-			value = societal_value_move_to_left
-		}
+		change_societal_value = { type = traditionalist_vs_innovative value = societal_value_move_to_left }
 
 		hidden_effect = {
 			kill_character_silently = scope:target_artist
@@ -2860,26 +2538,14 @@ flavor_hun.470 = {
 		name = flavor_hun.470.a
 		historical_option = yes
 
-		culture:german_carpathian = {
-			add_cultural_influence = cultural_influence_severe_penalty
-		}
+		culture:german_carpathian = { add_cultural_influence = cultural_influence_severe_penalty }
 
 		custom_tooltip = {
 			text = support_slovak_side
-
 			area:slovakia_area = {
 				every_location_in_area = {
-					limit = {
-						OR = {
-							owner = root
-							owner = { is_subject_of = root }
-						}
-					}
-
-					every_pop = {
-						limit = { owner = root culture = culture:slovak }
-						add_pop_satisfaction = pop_satisfaction_mild_bonus
-					}
+					limit = { OR = { owner = root owner = { is_subject_of = root } } }
+					every_pop = { limit = { owner = root culture = culture:slovak } add_pop_satisfaction = pop_satisfaction_mild_bonus }
 				}
 			}
 		}
@@ -2891,16 +2557,9 @@ flavor_hun.470 = {
 
 		custom_tooltip = {
 			text = support_german_carpathian_side
-
 			area:slovakia_area = {
 				every_location_in_area = {
-					limit = {
-						OR = {
-							owner = root
-							owner = { is_subject_of = root }
-						}
-					}
-
+					limit = { OR = { owner = root owner = { is_subject_of = root } } }
 					every_pop = {
 						limit = { owner = root culture = culture:german_carpathian }
 						add_pop_satisfaction = pop_satisfaction_mild_bonus
@@ -2933,15 +2592,10 @@ flavor_hun.480 = {
 	illustration_tags = { 10 = armed 10 = exterior }
 
 	trigger = {
-		NOT = {
-			country_exists = c:HAB
-		}
+		NOT = { country_exists = c:HAB }
 		area:austria_area = { any_location_in_area = { owner = root } }
 
-		any_owned_location = {
-			dominant_culture ?= culture:danube_bavarian
-			average_satisfaction < 0.5
-		}
+		any_owned_location = { dominant_culture ?= culture:danube_bavarian average_satisfaction < 0.5 }
 	}
 
 	immediate = {
@@ -2949,7 +2603,6 @@ flavor_hun.480 = {
 			foreground = estate_type:nobles_estate
 			background = estate_type:nobles_estate
 		}
-
 		create_rebel = {
 			category = nationalist
 			culture = culture:danube_bavarian
@@ -2961,14 +2614,10 @@ flavor_hun.480 = {
 	option = {
 		name = flavor_hun.480.a
 
-		change_societal_value = {
-			type = centralization_vs_decentralization
-			value = societal_value_move_to_left
-		}
+		change_societal_value = { type = centralization_vs_decentralization value = societal_value_move_to_left }
 
 		custom_tooltip = {
 			text = austrian_nobles_joining
-
 			every_owned_location = {
 				every_pop = {
 					limit = { owner = root culture = culture:danube_bavarian }
@@ -2983,10 +2632,7 @@ flavor_hun.480 = {
 	option = {
 		name = flavor_hun.480.b
 
-		change_societal_value = {
-			type = centralization_vs_decentralization
-			value = societal_value_move_to_right
-		}
+		change_societal_value = { type = centralization_vs_decentralization value = societal_value_move_to_right }
 
 		destroy_rebel = scope:austrian_nobles
 		create_country_from_cores_in_our_locations = c:HAB
@@ -3020,7 +2666,6 @@ flavor_hun.490 = {
 			foreground = pop_type:soldiers
 			background = pop_type:soldiers
 		}
-
 		create_character = {
 			birth_date = 1410.2.3
 			birth_location = location:kosice
@@ -3047,7 +2692,6 @@ flavor_hun.490 = {
 
 		scope:target_character = {
 			move_country = root
-
 			add_character_modifier = {
 				modifier = refuses_to_serve_in_cabinet
 				days = -1
@@ -3059,10 +2703,7 @@ flavor_hun.490 = {
 	option = {
 		name = flavor_hun.490.b
 
-		change_societal_value = {
-			type = offensive_vs_defensive
-			value = societal_value_move_to_right
-		}
+		change_societal_value = { type = offensive_vs_defensive value = societal_value_move_to_right }
 
 		scope:target_character = {
 			move_country = root
@@ -3098,7 +2739,6 @@ flavor_hun.500 = {
 			foreground = pop_type:soldiers
 			background = pop_type:soldiers
 		}
-
 		create_character = {
 			first_name = name_paul
 			last_name = Kinizsi
@@ -3119,7 +2759,6 @@ flavor_hun.500 = {
 
 		scope:target_character = {
 			move_country = root
-
 			add_character_modifier = {
 				modifier = refuses_to_serve_in_cabinet
 				days = -1
@@ -3131,10 +2770,7 @@ flavor_hun.500 = {
 	option = {
 		name = flavor_hun.500.b
 
-		change_societal_value = {
-			type = offensive_vs_defensive
-			value = societal_value_move_to_left
-		}
+		change_societal_value = { type = offensive_vs_defensive value = societal_value_move_to_left }
 
 		scope:target_character = {
 			move_country = root
@@ -3170,7 +2806,6 @@ flavor_hun.510 = {
 			foreground = estate_type:burghers_estate
 			background = estate_type:burghers_estate
 		}
-
 		set_variable = unlocked_bibliotheca_corviniana
 	}
 
@@ -3178,9 +2813,7 @@ flavor_hun.510 = {
 		name = flavor_hun.510.a
 		historical_option = yes
 
-		capital = {
-			construct_building = { building_type = building_type:bibliotheca_corviniana }
-		}
+		capital = { construct_building = { building_type = building_type:bibliotheca_corviniana } }
 
 		add_government_power = government_power_weak_bonus
 		add_prestige = prestige_mild_bonus
@@ -3209,12 +2842,7 @@ flavor_hun.520 = {
 
 	trigger = {
 		owns = location:brasov
-
-		location:brasov = {
-			NOT = {
-				has_building = building_type:castle
-			}
-		}
+		location:brasov = { NOT = { has_building = building_type:castle } }
 	}
 
 	illustration_tags = { 10 = regular 10 = exterior }
@@ -3242,11 +2870,7 @@ flavor_hun.520 = {
 
 	option = {
 		name = flavor_hun.520.b
-
-		change_societal_value = {
-			type = offensive_vs_defensive
-			value = societal_value_move_to_right
-		}
+		change_societal_value = { type = offensive_vs_defensive value = societal_value_move_to_right }
 	}
 
 	option = { name = flavor_hun.520.c add_prestige = prestige_mild_penalty }
@@ -3292,17 +2916,12 @@ flavor_hun.530 = {
 		name = flavor_hun.530.a
 		add_stability = stability_extreme_penalty
 
-		change_societal_value = {
-			type = centralization_vs_decentralization
-			value = societal_value_move_to_right
-		}
+		change_societal_value = { type = centralization_vs_decentralization value = societal_value_move_to_right }
 
 		custom_tooltip = {
 			text = hungary_accepted_slovak_autonomy
-
 			every_owned_location = {
 				limit = { any_pop = { owner = root culture = culture:slovak } }
-
 				every_pop = {
 					limit = { owner = root culture = culture:slovak }
 					add_pop_satisfaction = pop_satisfaction_extreme_bonus
@@ -3316,17 +2935,12 @@ flavor_hun.530 = {
 		historical_option = yes
 		add_stability = stability_extreme_bonus
 
-		change_societal_value = {
-			type = centralization_vs_decentralization
-			value = societal_value_move_to_left
-		}
+		change_societal_value = { type = centralization_vs_decentralization value = societal_value_move_to_left }
 
 		custom_tooltip = {
 			text = hungary_rejected_slovak_autonomy
-
 			every_owned_location = {
 				limit = { any_pop = { owner = root culture = culture:slovak } }
-
 				every_pop = {
 					limit = { owner = root culture = culture:slovak }
 					add_pop_satisfaction = pop_satisfaction_ultimate_penalty
@@ -3360,7 +2974,6 @@ flavor_hun.540 = {
 			foreground = estate_type:clergy_estate
 			background = estate_type:clergy_estate
 		}
-
 		create_character = {
 			first_name = name_john
 			last_name = Honterus
@@ -3389,10 +3002,8 @@ flavor_hun.540 = {
 
 	option = {
 		name = flavor_hun.540.a
-
 		custom_tooltip = {
 			text = hungary_transylvanian_germans_convert
-
 			area:transylvania_area = {
 				every_location_in_area = {
 					every_pop = {
@@ -3461,11 +3072,7 @@ flavor_hun.550 = {
 
 	option = {
 		name = flavor_hun.550.b
-
-		capital = {
-			change_development = development_mild_bonus
-			change_prosperity = prosperity_severe_bonus
-		}
+		capital = { change_development = development_mild_bonus change_prosperity = prosperity_severe_bonus }
 	}
 }
 
@@ -3497,15 +3104,9 @@ flavor_hun.560 = {
 		name = flavor_hun.560.a
 		add_stability = stability_mild_bonus
 
-		change_societal_value = {
-			type = serfdom_vs_free_subjects
-			value = societal_value_move_to_right
-		}
+		change_societal_value = { type = serfdom_vs_free_subjects value = societal_value_move_to_right }
 
-		add_estate_satisfaction = {
-			type = estate_type:nobles_estate
-			value = estate_satisfaction_mild_bonus
-		}
+		add_estate_satisfaction = { type = estate_type:nobles_estate value = estate_satisfaction_mild_bonus }
 	}
 
 	option = {
@@ -3513,15 +3114,9 @@ flavor_hun.560 = {
 		historical_option = yes
 		add_prestige = prestige_mild_bonus
 
-		change_societal_value = {
-			type = serfdom_vs_free_subjects
-			value = societal_value_move_to_left
-		}
+		change_societal_value = { type = serfdom_vs_free_subjects value = societal_value_move_to_left }
 
-		add_estate_satisfaction = {
-			type = estate_type:peasants_estate
-			value = estate_satisfaction_mild_bonus
-		}
+		add_estate_satisfaction = { type = estate_type:peasants_estate value = estate_satisfaction_mild_bonus }
 	}
 }
 
@@ -3557,10 +3152,7 @@ flavor_hun.570 = {
 			save_scope_as = target_character
 			create_in_limbo = yes
 		}
-
-		international_organization:hre.leader_country = {
-			save_scope_as = target_emperor
-		}
+		international_organization:hre.leader_country = { save_scope_as = target_emperor }
 	}
 
 	trigger = {
@@ -3585,10 +3177,7 @@ flavor_hun.570 = {
 	option = {
 		name = flavor_hun.570.b
 
-		add_opinion = {
-			target = scope:target_emperor
-			modifier = opinion_good_relations
-		}
+		add_opinion = { target = scope:target_emperor modifier = opinion_good_relations }
 
 		scope:target_character = { move_country = scope:target_emperor }
 	}
@@ -3642,15 +3231,9 @@ flavor_hun.580 = {
 		set_capital = location:bratislava
 
 		location:bratislava = {
-			if = {
-				limit = { modifier:sul_is_rural_settlement_rank_tier = yes }
-				sul_set_rank_town = yes
-			}
+			if = { limit = { modifier:sul_is_rural_settlement_rank_tier = yes } sul_set_rank_town = yes }
 			else = {
-				location:bratislava = {
-					change_development = development_mild_bonus
-					change_prosperity = prosperity_severe_bonus
-				}
+				location:bratislava = { change_development = development_mild_bonus change_prosperity = prosperity_severe_bonus }
 			}
 		}
 	}
@@ -3659,10 +3242,7 @@ flavor_hun.580 = {
 		name = flavor_hun.580.b
 		add_stability = stability_weak_bonus
 
-		capital = {
-			change_development = development_mild_bonus
-			change_prosperity = prosperity_severe_bonus
-		}
+		capital = { change_development = development_mild_bonus change_prosperity = prosperity_severe_bonus }
 	}
 }
 
@@ -3704,10 +3284,7 @@ flavor_hun.590 = {
 		}
 	}
 
-	option = {
-		name = flavor_hun.590.a
-		add_army_tradition = army_tradition_mild_bonus
-	}
+	option = { name = flavor_hun.590.a add_army_tradition = army_tradition_mild_bonus }
 
 	option = {
 		name = flavor_hun.590.b

@@ -24,10 +24,12 @@ sul_ai_respecialize = {
 			limit = { exists = scope:target }
 			add = scope:target.modifier:local_build_buildings_cost
 			add = scope:target.modifier:local_build_new_buildings_cost
+
 			if = {
 				limit = { scope:target = { modifier:sul_is_town_rank_tier = yes } }
 				add = 1
 			}
+
 			if = {
 				limit = { scope:target = { modifier:sul_is_city_rank_tier = yes } }
 				add = 2
@@ -41,7 +43,13 @@ sul_ai_respecialize = {
 
 	ai_tick_frequency = {
 		value = 120
-		divide = { value = num_locations divide = 50 min = 1 }
+
+		divide = {
+			value = num_locations
+			divide = 50
+			min = 1
+		}
+
 		min = 12
 		max = 120
 	}
@@ -55,11 +63,7 @@ sul_ai_respecialize = {
 	}
 
 	ai_will_do = {
-		if = {
-			limit = { exists = scope:target }
-
-			add = { desc = "respec_score" value = scope:target.sul_respec_score }
-		}
+		if = { limit = { exists = scope:target } add = { desc = "respec_score" value = scope:target.sul_respec_score } }
 	}
 
 	select_trigger = {
@@ -79,9 +83,7 @@ sul_ai_respecialize = {
 		}
 
 		enabled = {
-			NOT = {
-				has_location_modifier = sul_recently_respecialized
-			}
+			NOT = { has_location_modifier = sul_recently_respecialized }
 
 			controller = owner
 			market_access >= 0.3
@@ -100,7 +102,6 @@ sul_ai_respecialize = {
 	effect = {
 		if = {
 			limit = { exists = scope:target }
-
 			scope:target = {
 				# Tournament: find best eligible non-current spec
 				set_local_variable = { name = best value = -1000 }
@@ -108,15 +109,10 @@ sul_ai_respecialize = {
 
 				# Mining
 				if = {
-					limit = {
-						NOT = {
-							sul_has_mining_specialization = yes
-						}
-
-						sul_can_specialize_mining = yes
-					}
+					limit = { NOT = { sul_has_mining_specialization = yes } sul_can_specialize_mining = yes }
 
 					set_local_variable = { name = score value = sul_attractiveness_mining }
+
 					if = {
 						limit = { local_var:score > local_var:best }
 						set_local_variable = { name = best value = local_var:score }
@@ -126,15 +122,10 @@ sul_ai_respecialize = {
 
 				# Farming
 				if = {
-					limit = {
-						NOT = {
-							sul_has_farming_specialization = yes
-						}
-
-						sul_can_specialize_farming = yes
-					}
+					limit = { NOT = { sul_has_farming_specialization = yes } sul_can_specialize_farming = yes }
 
 					set_local_variable = { name = score value = sul_attractiveness_farming }
+
 					if = {
 						limit = { local_var:score > local_var:best }
 						set_local_variable = { name = best value = local_var:score }
@@ -144,15 +135,10 @@ sul_ai_respecialize = {
 
 				# Woodland
 				if = {
-					limit = {
-						NOT = {
-							sul_has_woodland_specialization = yes
-						}
-
-						sul_can_specialize_woodland = yes
-					}
+					limit = { NOT = { sul_has_woodland_specialization = yes } sul_can_specialize_woodland = yes }
 
 					set_local_variable = { name = score value = sul_attractiveness_woodland }
+
 					if = {
 						limit = { local_var:score > local_var:best }
 						set_local_variable = { name = best value = local_var:score }
@@ -162,15 +148,10 @@ sul_ai_respecialize = {
 
 				# Gathering
 				if = {
-					limit = {
-						NOT = {
-							sul_has_gathering_specialization = yes
-						}
-
-						sul_can_specialize_gathering = yes
-					}
+					limit = { NOT = { sul_has_gathering_specialization = yes } sul_can_specialize_gathering = yes }
 
 					set_local_variable = { name = score value = sul_attractiveness_gathering }
+
 					if = {
 						limit = { local_var:score > local_var:best }
 						set_local_variable = { name = best value = local_var:score }
@@ -180,13 +161,10 @@ sul_ai_respecialize = {
 
 				# Commercial
 				if = {
-					limit = {
-						NOT = {
-							sul_has_commercial_specialization = yes
-						}
-					}
+					limit = { NOT = { sul_has_commercial_specialization = yes } }
 
 					set_local_variable = { name = score value = sul_attractiveness_commercial }
+
 					if = {
 						limit = { local_var:score > local_var:best }
 						set_local_variable = { name = best value = local_var:score }
@@ -194,26 +172,11 @@ sul_ai_respecialize = {
 					}
 				}
 
-				if = {
-					limit = { local_var:winner = @sul_winner_mining }
-					sul_respec_to_mining = yes
-				}
-				else_if = {
-					limit = { local_var:winner = @sul_winner_farming }
-					sul_respec_to_farming = yes
-				}
-				else_if = {
-					limit = { local_var:winner = @sul_winner_woodland }
-					sul_respec_to_woodland = yes
-				}
-				else_if = {
-					limit = { local_var:winner = @sul_winner_gathering }
-					sul_respec_to_gathering = yes
-				}
-				else_if = {
-					limit = { local_var:winner = @sul_winner_commercial }
-					sul_respec_to_commercial = yes
-				}
+				if = { limit = { local_var:winner = @sul_winner_mining } sul_respec_to_mining = yes }
+				else_if = { limit = { local_var:winner = @sul_winner_farming } sul_respec_to_farming = yes }
+				else_if = { limit = { local_var:winner = @sul_winner_woodland } sul_respec_to_woodland = yes }
+				else_if = { limit = { local_var:winner = @sul_winner_gathering } sul_respec_to_gathering = yes }
+				else_if = { limit = { local_var:winner = @sul_winner_commercial } sul_respec_to_commercial = yes }
 			}
 		}
 	}

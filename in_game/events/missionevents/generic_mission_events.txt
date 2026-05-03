@@ -12,11 +12,7 @@ generic_mission_events.4 = {
 	title = generic_mission_events.4.title
 	desc = generic_mission_events.4.desc
 
-	trigger = {
-		NOT = {
-			has_variable = gme4_cd
-		}
-	}
+	trigger = { NOT = { has_variable = gme4_cd } }
 
 	immediate = {
 		set_variable = { name = gme4_cd months = 4 }
@@ -25,21 +21,16 @@ generic_mission_events.4 = {
 
 		random_estate = {
 			limit = {
-				NOT = {
-					estate_type = scope:mission_target_estate.estate_type
-				}
-				NOT = {
-					estate_type = estate_type:crown_estate
-				}
+				NOT = { estate_type = scope:mission_target_estate.estate_type }
+				NOT = { estate_type = estate_type:crown_estate }
 			}
-
 			save_scope_as = arguing_estate
 		}
+
 		if = {
 			limit = {
 				capital = { any_pop = { estate_type = scope:arguing_estate.estate_type } }
 			}
-
 			capital = {
 				ordered_pop = {
 					limit = { estate_type = scope:arguing_estate.estate_type }
@@ -60,10 +51,7 @@ generic_mission_events.4 = {
 	option = {	# Let them complain
 		name = generic_mission_events.4.a
 
-		add_estate_satisfaction = {
-			type = scope:arguing_estate.estate_type
-			value = estate_satisfaction_weak_penalty
-		}
+		add_estate_satisfaction = { type = scope:arguing_estate.estate_type value = estate_satisfaction_weak_penalty }
 
 		if = {
 			limit = { exists = scope:arguing_pop }
@@ -77,72 +65,45 @@ generic_mission_events.4 = {
 
 		add_legitimacy = legitimacy_weak_penalty
 
-		add_estate_satisfaction = {
-			type = scope:mission_target_estate.estate_type
-			value = estate_satisfaction_mild_penalty
-		}
-		add_estate_satisfaction = {
-			type = scope:arguing_estate.estate_type
-			value = estate_satisfaction_weak_bonus
-		}
+		add_estate_satisfaction = { type = scope:mission_target_estate.estate_type value = estate_satisfaction_mild_penalty }
+		add_estate_satisfaction = { type = scope:arguing_estate.estate_type value = estate_satisfaction_weak_bonus }
 	}
 
 	option = {	# It is time to silence them once and for all
 		name = generic_mission_events.4.c
 
-		trigger = {
-			exists = scope:target_privilege
-			scope:target_character ?= { total_abilities > 250 }
-		}
+		trigger = { exists = scope:target_privilege scope:target_character ?= { total_abilities > 250 } }
 
 		revoke_estate_privilege = scope:target_privilege
 
-		add_estate_satisfaction = {
-			type = scope:arguing_estate.estate_type
-			value = estate_satisfaction_extreme_penalty
-		}
+		add_estate_satisfaction = { type = scope:arguing_estate.estate_type value = estate_satisfaction_extreme_penalty }
 
 		add_stability = {
 			value = stability_extreme_penalty
+
 			if = {
 				limit = { modifier:revoke_privilege_cost_modifier > 0 }
-
-				add = {
-					value = stability_ultimate_penalty
-					multiply = modifier:revoke_privilege_cost_modifier
-				}
+				add = { value = stability_ultimate_penalty multiply = modifier:revoke_privilege_cost_modifier }
 			}
 			else_if = {
 				limit = { modifier:revoke_privilege_cost_modifier < 0 }
-
-				add = {
-					value = stability_ultimate_bonus
-					multiply = modifier:revoke_privilege_cost_modifier
-				}
+				add = { value = stability_ultimate_bonus multiply = modifier:revoke_privilege_cost_modifier }
 			}
 		}
 	}
 
 	option = {
 		name = generic_mission_events.4.d
-
 		random_list = {
 			75 = {
 				desc = upset_both_estates_devastate_target_location_tt
 				show_chance = no
 
-				add_estate_satisfaction = {
-					type = scope:mission_target_estate.estate_type
-					value = estate_satisfaction_weak_penalty
-				}
-				add_estate_satisfaction = {
-					type = scope:arguing_estate.estate_type
-					value = estate_satisfaction_weak_penalty
-				}
+				add_estate_satisfaction = { type = scope:mission_target_estate.estate_type value = estate_satisfaction_weak_penalty }
+				add_estate_satisfaction = { type = scope:arguing_estate.estate_type value = estate_satisfaction_weak_penalty }
 
 				scope:target_location = { change_prosperity = prosperity_weak_penalty }
 			}
-
 			25 = { desc = protests_die_down_tt show_chance = no }
 		}
 	}
@@ -161,13 +122,9 @@ generic_mission_events.5 = {
 	trigger = {
 		any_cabinet_character = {
 			has_estate = scope:mission_target_estate.estate_type
-			NOT = {
-				has_trait = efficient_administrator
-			}
+			NOT = { has_trait = efficient_administrator }
 		}
-		NOT = {
-			has_variable = gme5_cd
-		}
+		NOT = { has_variable = gme5_cd }
 	}
 
 	immediate = {
@@ -198,7 +155,6 @@ generic_mission_events.5 = {
 
 	option = {
 		name = generic_mission_events.5.b
-
 		custom_tooltip = member_of_the_mission_target_estate_may_approach_us_again_after_months_tt
 	}
 }
@@ -212,23 +168,12 @@ generic_mission_events.6 = {
 
 	desc = {
 		first_valid = {
-			triggered_desc = {
-				trigger = { exists = scope:mission_target_estate }
-				desc = generic_mission_events.6.desc
-			}
-			triggered_desc = {
-				trigger = { always = yes }
-				desc = generic_mission_events.6.desc.generic
-			}
+			triggered_desc = { trigger = { exists = scope:mission_target_estate } desc = generic_mission_events.6.desc }
+			triggered_desc = { trigger = { always = yes } desc = generic_mission_events.6.desc.generic }
 		}
 	}
 
-	trigger = {
-		societal_value:centralization_vs_decentralization < 0
-		NOT = {
-			has_variable = gme6_cd
-		}
-	}
+	trigger = { societal_value:centralization_vs_decentralization < 0 NOT = { has_variable = gme6_cd } }
 
 	immediate = {
 		capital ?= { save_scope_as = target_location }
@@ -241,31 +186,18 @@ generic_mission_events.6 = {
 
 		if = {
 			limit = { exists = scope:mission_target_estate }
+			add_estate_satisfaction = { type = scope:mission_target_estate.estate_type value = estate_satisfaction_weak_bonus }
+		}
+		else = { add_all_estate_satisfaction = { value = estate_satisfaction_weak_bonus } }
 
-			add_estate_satisfaction = {
-				type = scope:mission_target_estate.estate_type
-				value = estate_satisfaction_weak_bonus
-			}
-		}
-		else = {
-			add_all_estate_satisfaction = { value = estate_satisfaction_weak_bonus }
-		}
-
-		change_societal_value = {
-			type = centralization_vs_decentralization
-			value = societal_value_move_to_right
-		}
+		change_societal_value = { type = centralization_vs_decentralization value = societal_value_move_to_right }
 
 		add_stability = stability_mild_bonus
 		add_legitimacy = legitimacy_mild_penalty
 
 		if = {
 			limit = { current_age_or_later = { age = age_5_absolutism } }
-
-			change_societal_value = {
-				type = absolutism_vs_liberalism
-				value = societal_value_move_to_right
-			}
+			change_societal_value = { type = absolutism_vs_liberalism value = societal_value_move_to_right }
 		}
 	}
 
@@ -274,30 +206,20 @@ generic_mission_events.6 = {
 
 		if = {
 			limit = { exists = scope:mission_target_estate }
-
 			add_estate_satisfaction = {
 				type = scope:mission_target_estate.estate_type
 				value = estate_satisfaction_severe_penalty
 			}
 		}
-		else = {
-			add_all_estate_satisfaction = { value = estate_satisfaction_weak_penalty }
-		}
+		else = { add_all_estate_satisfaction = { value = estate_satisfaction_weak_penalty } }
 
-		change_societal_value = {
-			type = centralization_vs_decentralization
-			value = societal_value_move_to_left
-		}
+		change_societal_value = { type = centralization_vs_decentralization value = societal_value_move_to_left }
 
 		add_stability = stability_weak_penalty
 
 		if = {
 			limit = { current_age_or_later = { age = age_5_absolutism } }
-
-			change_societal_value = {
-				type = absolutism_vs_liberalism
-				value = societal_value_move_to_left
-			}
+			change_societal_value = { type = absolutism_vs_liberalism value = societal_value_move_to_left }
 		}
 	}
 }
@@ -310,11 +232,7 @@ generic_mission_events.7 = {
 	title = generic_mission_events.7.title
 	desc = generic_mission_events.7.desc
 
-	trigger = {
-		NOT = {
-			has_variable = gme7_cd
-		}
-	}
+	trigger = { NOT = { has_variable = gme7_cd } }
 
 	immediate = {
 		set_variable = { name = gme7_cd months = 4 }
@@ -323,9 +241,7 @@ generic_mission_events.7 = {
 
 		ordered_province = {
 			limit = {
-				any_location_in_province = {
-					any_pop = { estate_type = scope:mission_target_estate.estate_type }
-				}
+				any_location_in_province = { any_pop = { estate_type = scope:mission_target_estate.estate_type } }
 			}
 
 			order_by = province_satisfaction
@@ -360,10 +276,7 @@ generic_mission_events.7 = {
 
 		scope:target_province = {
 			every_location_in_province = {
-				if = {
-					limit = { prosperity < 0.95 }
-					change_prosperity = prosperity_weak_bonus
-				}
+				if = { limit = { prosperity < 0.95 } change_prosperity = prosperity_weak_bonus }
 				else = { change_development = development_weak_bonus }
 			}
 		}
@@ -371,11 +284,7 @@ generic_mission_events.7 = {
 		scope:target_pop_scope = { add_pop_satisfaction = pop_satisfaction_mild_bonus }
 	}
 
-	option = {
-		name = generic_mission_events.7.b
-
-		add_legitimacy = legitimacy_mild_bonus
-	}
+	option = { name = generic_mission_events.7.b add_legitimacy = legitimacy_mild_bonus }
 }
 
 # Subject Accepts Annexation
@@ -387,9 +296,7 @@ generic_mission_events.8 = {
 	desc = generic_mission_events.8.desc
 
 	trigger = {
-		NOT = {
-			has_variable = gme8_cd
-		}
+		NOT = { has_variable = gme8_cd }
 
 		exists = scope:mission_target_subject
 		is_annexing = scope:mission_target_subject
@@ -409,10 +316,7 @@ generic_mission_events.8 = {
 	option = {
 		name = generic_mission_events.8.a
 
-		change_annexation_progress = {
-			target = scope:mission_target_subject
-			value = 0.05
-		}
+		change_annexation_progress = { target = scope:mission_target_subject value = 0.05 }
 
 		add_country_modifier = {
 			modifier = integration_efforts_modifier
@@ -421,11 +325,7 @@ generic_mission_events.8 = {
 		}
 	}
 
-	option = {
-		name = generic_mission_events.8.b
-
-		add_stability = stability_weak_bonus
-	}
+	option = { name = generic_mission_events.8.b add_stability = stability_weak_bonus }
 }
 
 # Subject Accepts Annexation
@@ -437,9 +337,7 @@ generic_mission_events.9 = {
 	desc = generic_mission_events.9.desc
 
 	trigger = {
-		NOT = {
-			has_variable = gme9_cd
-		}
+		NOT = { has_variable = gme9_cd }
 
 		exists = scope:mission_target_subject
 		is_annexing = scope:mission_target_subject
@@ -475,10 +373,7 @@ generic_mission_events.9 = {
 	option = {
 		name = generic_mission_events.9.b
 
-		change_annexation_progress = {
-			target = scope:mission_target_subject
-			value = -0.05
-		}
+		change_annexation_progress = { target = scope:mission_target_subject value = -0.05 }
 
 		if = {
 			limit = { has_country_modifier = integration_efforts_modifier }
@@ -491,10 +386,7 @@ generic_mission_events.9 = {
 	option = {
 		name = generic_mission_events.9.c
 
-		drop_antagonism_bomb = {
-			target = capital
-			modifier = antagonism_forced_integration_progress
-		}
+		drop_antagonism_bomb = { target = capital modifier = antagonism_forced_integration_progress }
 
 		if = { limit = { prestige >= 5 } add_prestige = prestige_mild_penalty }
 		else = { add_stability = stability_weak_penalty }
@@ -511,9 +403,7 @@ generic_mission_events.10 = {
 	desc = generic_mission_events.10.desc
 
 	trigger = {
-		NOT = {
-			has_variable = gme10_cd
-		}
+		NOT = { has_variable = gme10_cd }
 
 		exists = scope:mission_target_subject
 		is_annexing = scope:mission_target_subject
@@ -527,7 +417,6 @@ generic_mission_events.10 = {
 
 		if = {
 			limit = { scope:mission_target_subject.culture != culture }
-
 			create_character = {
 				culture = scope:mission_target_subject.culture
 				religion = scope:mission_target_subject.religion
@@ -547,14 +436,8 @@ generic_mission_events.10 = {
 		random_list = {
 			1 = { set_variable = { name = reward1 months = 4 } }
 			1 = { set_variable = { name = reward2 months = 4 } }
-			1 = {
-				trigger = { scope:target_character1.dip < 95 }
-				set_variable = { name = reward3 months = 4 }
-			}
-			1 = {
-				trigger = { societal_value:traditionalist_vs_innovative < 90 }
-				set_variable = { name = reward4 months = 4 }
-			}
+			1 = { trigger = { scope:target_character1.dip < 95 } set_variable = { name = reward3 months = 4 } }
+			1 = { trigger = { societal_value:traditionalist_vs_innovative < 90 } set_variable = { name = reward4 months = 4 } }
 		}
 	}
 
@@ -563,6 +446,7 @@ generic_mission_events.10 = {
 
 		switch = {
 			trigger = has_variable
+
 			reward1 = {
 				culture = { add_cultural_influence = cultural_influence_mild_bonus }
 				if = {
@@ -570,6 +454,7 @@ generic_mission_events.10 = {
 					scope:mission_target_subject.culture = { add_cultural_influence = cultural_influence_mild_bonus }
 				}
 			}
+
 			reward2 = {
 				culture = { add_cultural_tradition = cultural_tradition_mild_bonus }
 				if = {
@@ -577,22 +462,13 @@ generic_mission_events.10 = {
 					scope:mission_target_subject.culture = { add_cultural_tradition = cultural_tradition_mild_bonus }
 				}
 			}
-			reward3 = {
-				scope:target_character1 = { add_dip = 5 }
-			}
-			reward4 = {
-				change_societal_value = {
-					type = traditionalist_vs_innovative
-					value = societal_value_move_to_right
-				}
-			}
+
+			reward3 = { scope:target_character1 = { add_dip = 5 } }
+			reward4 = { change_societal_value = { type = traditionalist_vs_innovative value = societal_value_move_to_right } }
 		}
 
 		hidden_effect = {
-			if = {
-				limit = { exists = scope:target_character3 }
-				kill_character_silently = scope:target_character3
-			}
+			if = { limit = { exists = scope:target_character3 } kill_character_silently = scope:target_character3 }
 		}
 	}
 
@@ -617,9 +493,7 @@ generic_mission_events.11 = {
 	trigger = {
 		exists = scope:mission_target_subject
 		is_annexing = scope:mission_target_subject
-		NOT = {
-			has_variable = gme11_cd
-		}
+		NOT = { has_variable = gme11_cd }
 
 		culture != scope:mission_target_subject.culture
 	}
@@ -639,14 +513,8 @@ generic_mission_events.11 = {
 		random_list = {
 			1 = { set_variable = { name = reward5 months = 4 } }
 			1 = { set_variable = { name = reward6 months = 4 } }
-			1 = {
-				trigger = { scope:target_character1.dip > 0 }
-				set_variable = { name = reward7 months = 4 }
-			}
-			1 = {
-				trigger = { government_power > 10 }
-				set_variable = { name = reward8 months = 4 }
-			}
+			1 = { trigger = { scope:target_character1.dip > 0 } set_variable = { name = reward7 months = 4 } }
+			1 = { trigger = { government_power > 10 } set_variable = { name = reward8 months = 4 } }
 		}
 
 		if = {
@@ -657,9 +525,12 @@ generic_mission_events.11 = {
 					is_consort = no
 				}
 			}
-
 			random_cabinet_character = {
-				limit = { this != scope:target_character1 is_heir = no is_consort = no }
+				limit = {
+					this != scope:target_character1
+					is_heir = no
+					is_consort = no
+				}
 				save_scope_as = target_scapegoat_character
 			}
 		}
@@ -667,7 +538,6 @@ generic_mission_events.11 = {
 
 	option = {
 		name = generic_mission_events.10.a
-
 		switch = {
 			trigger = has_variable
 			reward5 = {
@@ -696,10 +566,7 @@ generic_mission_events.11 = {
 
 		trigger = { exists = scope:target_scapegoat_character }
 
-		kill_character = {
-			target = scope:target_scapegoat_character
-			reason = execution
-		}
+		kill_character = { target = scope:target_scapegoat_character reason = execution }
 	}
 }
 
@@ -718,15 +585,10 @@ generic_mission_events.12 = {
 			capital ?= { save_scope_as = target_location }
 			ruler_or_regent = { save_scope_as = target_character1 }
 		}
-
 		ruler_or_regent = { save_scope_as = target_character2 }
 	}
 
-	option = {
-		name = generic_mission_events.12.a
-
-		custom_tooltip = overlord_info_generic_vassal_mission_pack_tt
-	}
+	option = { name = generic_mission_events.12.a custom_tooltip = overlord_info_generic_vassal_mission_pack_tt }
 }
 
 # Infrastructure Mission events
@@ -739,13 +601,7 @@ generic_mission_events.13 = {
 	title = generic_mission_events.13.title
 	desc = generic_mission_events.13.desc
 
-	trigger = {
-		NOT = {
-			has_variable = gme13_cd
-		}
-
-		num_of_non_rural > 0
-	}
+	trigger = { NOT = { has_variable = gme13_cd } num_of_non_rural > 0 }
 
 	immediate = {
 		ruler_or_regent ?= { save_scope_as = target_character }
@@ -767,31 +623,20 @@ generic_mission_events.13 = {
 		if = {
 			limit = {
 				scope:target_location.location_population_percentage < 0.75
-
 				any_province = {
-					NOT = {
-						any_location_in_province = { this = scope:target_location }
-					}
+					NOT = { any_location_in_province = { this = scope:target_location } }
 					province_capital = { region = scope:target_location.region }
 					population >= { value = scope:target_province.population multiply = 0.5 }
-					NOT = {
-						has_variable = recently_used_as_migratory_center_variable
-					}
+					NOT = { has_variable = recently_used_as_migratory_center_variable }
 				}
 			}
-
 			random_province = {
 				limit = {
-					NOT = {
-						any_location_in_province = { this = scope:target_location }
-					}
+					NOT = { any_location_in_province = { this = scope:target_location } }
 					province_capital = { region = scope:target_location.region }
 					population >= { value = scope:target_province.population multiply = 0.5 }
-					NOT = {
-						has_variable = recently_used_as_migratory_center_variable
-					}
+					NOT = { has_variable = recently_used_as_migratory_center_variable }
 				}
-
 				save_scope_as = target_origin_migration
 			}
 		}
@@ -806,14 +651,10 @@ generic_mission_events.13 = {
 				years = modifier_duration_years_normal
 				mode = extend
 			}
-
 			change_development = development_weak_bonus
 		}
 
-		change_societal_value = {
-			type = capital_economy_vs_traditional_economy
-			value = societal_value_minor_move_to_left
-		}
+		change_societal_value = { type = capital_economy_vs_traditional_economy value = societal_value_minor_move_to_left }
 
 		change_gold_effect = {
 			scale = -1
@@ -823,12 +664,7 @@ generic_mission_events.13 = {
 	option = {
 		name = generic_mission_events.13.b
 
-		trigger = {
-			custom_tooltip = {
-				text = valid_province_tt
-				exists = scope:target_origin_migration
-			}
-		}
+		trigger = { custom_tooltip = { text = valid_province_tt exists = scope:target_origin_migration } }
 
 		scope:target_location = { change_development = development_severe_bonus }
 
@@ -844,29 +680,19 @@ generic_mission_events.13 = {
 			scale = -4
 		}
 
-		change_societal_value = {
-			type = centralization_vs_decentralization
-			value = societal_value_minor_move_to_left
-		}
+		change_societal_value = { type = centralization_vs_decentralization value = societal_value_minor_move_to_left }
 
 		hidden_effect = {
-			scope:target_origin_migration = {
-				set_variable = { name = recently_used_as_migratory_center_variable years = 1 }
-			}
+			scope:target_origin_migration = { set_variable = { name = recently_used_as_migratory_center_variable years = 1 } }
 		}
 	}
 
 	option = {
 		name = generic_mission_events.13.c
-
 		scope:target_location = {
 			custom_tooltip = {
 				text = every_pop_10_satisfaction_gain_tt
-
-				every_pop = {
-					limit = { owner = root }
-					add_pop_satisfaction = pop_satisfaction_mild_bonus
-				}
+				every_pop = { limit = { owner = root } add_pop_satisfaction = pop_satisfaction_mild_bonus }
 			}
 		}
 	}
@@ -881,13 +707,9 @@ generic_mission_events.14 = {
 	desc = generic_mission_events.14.desc
 
 	trigger = {
-		NOT = {
-			has_variable = gme14_cd
-		}
+		NOT = { has_variable = gme14_cd }
 		any_province = {
-			NOT = {
-				has_variable = gme14_recently_used_province_variable
-			}
+			NOT = { has_variable = gme14_recently_used_province_variable }
 
 			province_average_development > 0
 
@@ -906,7 +728,6 @@ generic_mission_events.14 = {
 		ordered_province = {
 			limit = {
 				province_average_development > 0
-
 				any_location_in_province = {
 					this != root.capital
 					region = root.capital.region
@@ -929,9 +750,7 @@ generic_mission_events.14 = {
 
 		random_cabinet_character ?= {
 			limit = {
-				NOT = {
-					is_close_relative = root.ruler_or_regent
-				}
+				NOT = { is_close_relative = root.ruler_or_regent }
 
 				is_heir = no
 				OR = {
@@ -941,7 +760,6 @@ generic_mission_events.14 = {
 					has_estate = estate_type:peasants_estate
 				}
 			}
-
 			save_scope_as = target_character2
 		}
 	}
@@ -951,32 +769,22 @@ generic_mission_events.14 = {
 
 		custom_tooltip = {
 			text = pops_in_target_province_lose_10_satisfaction_tt
-
 			scope:target_province = {
 				every_location_in_province = {
-					every_pop = {
-						limit = { owner = root }
-						add_pop_satisfaction = pop_satisfaction_mild_penalty
-					}
+					every_pop = { limit = { owner = root } add_pop_satisfaction = pop_satisfaction_mild_penalty }
 				}
 			}
 		}
 
 		add_stability = stability_mild_penalty
 
-		change_societal_value = {
-			type = centralization_vs_decentralization
-			value = societal_value_tiny_move_to_left
-		}
+		change_societal_value = { type = centralization_vs_decentralization value = societal_value_tiny_move_to_left }
 	}
 
 	option = {
 		name = generic_mission_events.14.b
 
-		change_societal_value = {
-			type = centralization_vs_decentralization
-			value = societal_value_tiny_move_to_right
-		}
+		change_societal_value = { type = centralization_vs_decentralization value = societal_value_tiny_move_to_right }
 
 		add_legitimacy = legitimacy_mild_penalty
 	}
@@ -984,12 +792,7 @@ generic_mission_events.14 = {
 	option = {
 		name = generic_mission_events.14.c
 
-		trigger = {
-			custom_tooltip = {
-				text = suitable_character_exists_tt
-				exists = scope:target_character2
-			}
-		}
+		trigger = { custom_tooltip = { text = suitable_character_exists_tt exists = scope:target_character2 } }
 
 		add_stability = stability_mild_penalty
 
@@ -1010,47 +813,29 @@ generic_mission_events.15 = {
 	title = generic_mission_events.15.title
 	desc = generic_mission_events.15.desc
 
-	trigger = {
-		num_provinces > 1
-		NOT = {
-			has_variable = gme15_cd
-		}
-	}
+	trigger = { num_provinces > 1 NOT = { has_variable = gme15_cd } }
 
 	immediate = {
 		set_variable = { name = gme15_cd months = 4 }
 		ruler_or_regent ?= { save_scope_as = target_character }
 
 		ordered_province = {
-			limit = {
-				any_location_in_province = { modifier:sul_is_rural_settlement_rank_tier = yes }
-			}
+			limit = { any_location_in_province = { modifier:sul_is_rural_settlement_rank_tier = yes } }
 
 			order_by = {
 				value = population
+
 				if = {
 					limit = {
-						any_location_in_province = {
-							OR = {
-								modifier:sul_is_town_rank_tier = yes
-								modifier:sul_is_city_rank_tier = yes
-							}
-						}
+						any_location_in_province = { OR = { modifier:sul_is_town_rank_tier = yes modifier:sul_is_city_rank_tier = yes } }
 					}
-
 					multiply = 0.1	# Much Less likely to choose provinces that are various degrees of urbanized
 				}
-				if = {	# Considerably Less likely to choose if recently chosen by this event
-					limit = { has_variable = recently_chosen_province_gme15_variable }
-					multiply = 0.25
-				}
-				if = {	# Near impossible to choose a province that's not connected to our capital
-					limit = {
-						NOT = {
-							province_capital = { is_connected_to = root.capital }
-						}
-					}
 
+				if = { limit = { has_variable = recently_chosen_province_gme15_variable } multiply = 0.25 }
+
+				if = {	# Near impossible to choose a province that's not connected to our capital
+					limit = { NOT = { province_capital = { is_connected_to = root.capital } } }
 					multiply = 0.01
 				}
 			}
@@ -1067,22 +852,15 @@ generic_mission_events.15 = {
 	option = {
 		name = generic_mission_events.15.a
 
-		change_societal_value = {
-			type = centralization_vs_decentralization
-			value = societal_value_tiny_move_to_right
-		}
+		change_societal_value = { type = centralization_vs_decentralization value = societal_value_tiny_move_to_right }
 
 		custom_tooltip = every_pop_in_target_province_gains_5_satisfaction_tt
 
 		scope:target_province = {
 			every_location_in_province = {
 				change_development = development_weak_penalty
-
 				hidden_effect = {
-					every_pop = {
-						limit = { owner = root }
-						add_pop_satisfaction = pop_satisfaction_weak_bonus
-					}
+					every_pop = { limit = { owner = root } add_pop_satisfaction = pop_satisfaction_weak_bonus }
 				}
 			}
 		}
@@ -1109,10 +887,7 @@ generic_mission_events.15 = {
 
 			hidden_effect = {
 				every_location_in_province = {
-					every_pop = {
-						limit = { owner = root }
-						add_pop_satisfaction = pop_satisfaction_mild_penalty
-					}
+					every_pop = { limit = { owner = root } add_pop_satisfaction = pop_satisfaction_mild_penalty }
 				}
 			}
 		}
@@ -1130,24 +905,15 @@ generic_mission_events.15 = {
 				societal_value:aristocracy_vs_plutocracy < 25
 				"estate_power(estate_type:nobles_estate)" > "estate_power(estate_type:crown_estate)"
 			}
-			OR = {
-				societal_value:serfdom_vs_free_subjects > -100
-				societal_value:aristocracy_vs_plutocracy > -100
-			}
+			OR = { societal_value:serfdom_vs_free_subjects > -100 societal_value:aristocracy_vs_plutocracy > -100 }
 
 			country_has_estate = estate_type:nobles_estate
 			government_power > legitimacy_mild_bonus
 		}
 
-		change_societal_value = {
-			type = serfdom_vs_free_subjects
-			value = societal_value_minor_move_to_left
-		}
+		change_societal_value = { type = serfdom_vs_free_subjects value = societal_value_minor_move_to_left }
 
-		change_societal_value = {
-			type = aristocracy_vs_plutocracy
-			value = societal_value_minor_move_to_left
-		}
+		change_societal_value = { type = aristocracy_vs_plutocracy value = societal_value_minor_move_to_left }
 
 		add_legitimacy = legitimacy_mild_penalty
 
@@ -1161,17 +927,9 @@ generic_mission_events.16 = {
 	title = generic_mission_events.16.title
 	desc = generic_mission_events.16.desc
 
-	trigger = {
-		NOR = {
-			has_variable = gme_16_cd
-			has_country_modifier = taxation_reforms_modifier
-		}
-	}
+	trigger = { NOR = { has_variable = gme_16_cd has_country_modifier = taxation_reforms_modifier } }
 
-	immediate = {
-		ruler_or_regent ?= { save_scope_as = target_character }
-		set_variable = { name = gme_16_cd years = 2 }
-	}
+	immediate = { ruler_or_regent ?= { save_scope_as = target_character } set_variable = { name = gme_16_cd years = 2 } }
 
 	option = {
 		name = generic_mission_events.16.a
@@ -1192,10 +950,7 @@ generic_mission_events.16 = {
 
 		add_all_estate_satisfaction = { value = estate_satisfaction_mild_bonus }
 
-		change_societal_value = {
-			type = centralization_vs_decentralization
-			value = societal_value_tiny_move_to_right
-		}
+		change_societal_value = { type = centralization_vs_decentralization value = societal_value_tiny_move_to_right }
 	}
 }
 
@@ -1206,12 +961,7 @@ generic_mission_events.17 = {
 	title = generic_mission_events.17.title
 	desc = generic_mission_events.17.desc
 
-	trigger = {
-		num_of_non_rural <= { value = num_locations divide = 5 }
-		NOT = {
-			has_variable = gme17_cd
-		}
-	}
+	trigger = { num_of_non_rural <= { value = num_locations divide = 5 } NOT = { has_variable = gme17_cd } }
 
 	immediate = {
 		set_variable = { name = gme17_cd months = 10 }
@@ -1232,40 +982,29 @@ generic_mission_events.17 = {
 
 		scope:target_location = {
 			sul_set_rank_town = yes
-
 			every_pop = {
 				limit = {
 					is_upper_class = yes
 					religion = root.religion
 					culture = root.culture
 				}
-
 				add_pop_satisfaction = pop_satisfaction_severe_bonus
 			}
 		}
 
 		add_gold = {
 			value = -400
-			if = {
-				limit = { modifier:town_upgrade_cost_modifier != 0 }
-				multiply = modifier:town_upgrade_cost_modifier
-			}
+			if = { limit = { modifier:town_upgrade_cost_modifier != 0 } multiply = modifier:town_upgrade_cost_modifier }
+
 			if = {
 				limit = { societal_value:centralization_vs_decentralization < -10 }
-
-				add = {
-					value = societal_value:centralization_vs_decentralization
-					multiply = -2
-				}
+				add = { value = societal_value:centralization_vs_decentralization multiply = -2 }
 			}
 
 			max = -100
 		}
 
-		change_societal_value = {
-			type = centralization_vs_decentralization
-			value = societal_value_tiny_move_to_left
-		}
+		change_societal_value = { type = centralization_vs_decentralization value = societal_value_tiny_move_to_left }
 
 		custom_tooltip = cost_of_town_scales_tt
 	}
@@ -1280,7 +1019,6 @@ generic_mission_events.17 = {
 					religion = root.religion
 					culture = root.culture
 				}
-
 				add_pop_satisfaction = pop_satisfaction_mild_bonus
 			}
 		}
@@ -1296,9 +1034,7 @@ generic_mission_events.18 = {
 	desc = generic_mission_events.18.desc
 
 	trigger = {
-		NOT = {
-			has_variable = gme18_cd
-		}
+		NOT = { has_variable = gme18_cd }
 		OR = {
 			total_effective_building_levels:university > 0
 			total_effective_building_levels:madrasa > 0
@@ -1341,11 +1077,7 @@ generic_mission_events.18 = {
 
 		if = {
 			limit = { country_has_estate = estate_type:clergy_estate }
-
-			add_estate_satisfaction = {
-				type = estate_type:clergy_estate
-				value = estate_satisfaction_weak_penalty
-			}
+			add_estate_satisfaction = { type = estate_type:clergy_estate value = estate_satisfaction_weak_penalty }
 		}
 		else = { add_stability = stability_weak_penalty }
 
@@ -1354,35 +1086,24 @@ generic_mission_events.18 = {
 		add_research_progress = {
 			value = research_progress_weak_bonus
 
-			multiply = {
-				value = scope:target_location.average_location_literacy
-				multiply = 0.1
-			}
+			multiply = { value = scope:target_location.average_location_literacy multiply = 0.1 }
 
 			ceiling = yes
 		}
 
 		change_societal_value = {
 			type = traditionalist_vs_innovative
-
 			value = {
 				add = societal_value_tiny_move_to_right
 
-				multiply = {
-					value = scope:target_location.average_location_literacy
-					multiply = 0.1
-				}
+				multiply = { value = scope:target_location.average_location_literacy multiply = 0.1 }
 
 				ceiling = yes
 			}
 		}
 	}
 
-	option = {
-		name = generic_mission_events.18.b
-
-		custom_tooltip = scholars_in_target_location_wont_approach_tt
-	}
+	option = { name = generic_mission_events.18.b custom_tooltip = scholars_in_target_location_wont_approach_tt }
 }
 
 generic_mission_events.19 = {
@@ -1392,12 +1113,8 @@ generic_mission_events.19 = {
 	desc = generic_mission_events.19.desc
 
 	trigger = {
-		NOT = {
-			has_variable = gme19_cd
-		}
-		NOT = {
-			any_artist = { artist_type = scientist count > 3 }
-		}
+		NOT = { has_variable = gme19_cd }
+		NOT = { any_artist = { artist_type = scientist count > 3 } }
 	}
 
 	immediate = {
@@ -1408,10 +1125,7 @@ generic_mission_events.19 = {
 			estate = estate_type:burghers_estate
 			artist = scientist
 
-			artist_skill = {
-				value = { 0.25 0.5 }
-				add = { value = root.average_country_literacy multiply = 0.008 }
-			}
+			artist_skill = { value = { 0.25 0.5 } add = { value = root.average_country_literacy multiply = 0.008 } }
 
 			create_in_limbo = yes
 			save_scope_as = target_character2
@@ -1423,10 +1137,7 @@ generic_mission_events.19 = {
 
 		add_stability = stability_mild_penalty
 
-		change_societal_value = {
-			type = traditionalist_vs_innovative
-			value = societal_value_tiny_move_to_right
-		}
+		change_societal_value = { type = traditionalist_vs_innovative value = societal_value_tiny_move_to_right }
 
 		custom_tooltip = skill_of_scientist_scales_with_country_literacy_tt
 		scope:target_character2 = { move_country = root }
@@ -1443,11 +1154,7 @@ generic_mission_events.19 = {
 
 		if = {
 			limit = { country_has_estate = estate_type:clergy_estate }
-
-			add_estate_satisfaction = {
-				type = estate_type:clergy_estate
-				value = estate_satisfaction_weak_bonus
-			}
+			add_estate_satisfaction = { type = estate_type:clergy_estate value = estate_satisfaction_weak_bonus }
 		}
 		else = { add_stability = stability_weak_bonus }
 	}
@@ -1459,21 +1166,13 @@ generic_mission_events.20 = {
 	title = generic_mission_events.20.title
 	desc = generic_mission_events.20.desc
 
-	trigger = {
-		NOT = {
-			has_variable = gme20_cd
-		}
-		any_artist = { artist_type = scientist }
-	}
+	trigger = { NOT = { has_variable = gme20_cd } any_artist = { artist_type = scientist } }
 
 	immediate = {
 		set_variable = { name = gme20_cd months = 8 }
 		ruler_or_regent ?= { save_scope_as = target_character }
 
-		random_artist = {
-			limit = { artist_type = scientist }
-			save_scope_as = target_character2
-		}
+		random_artist = { limit = { artist_type = scientist } save_scope_as = target_character2 }
 
 		random_list = {
 			1 = { set_variable = gme20a }
@@ -1487,20 +1186,12 @@ generic_mission_events.20 = {
 
 	option = {
 		name = generic_mission_events.20.a
-
 		switch = {
 			trigger = has_variable
-			gme20a = {
-				culture = { add_cultural_influence = cultural_influence_mild_bonus }
-			}
+			gme20a = { culture = { add_cultural_influence = cultural_influence_mild_bonus } }
 			gme20b = { add_research_progress = research_progress_weak_bonus }
 			gme20c = { add_legitimacy = legitimacy_weak_bonus }
-			gme20d = {
-				change_societal_value = {
-					type = traditionalist_vs_innovative
-					value = societal_value_minor_move_to_right
-				}
-			}
+			gme20d = { change_societal_value = { type = traditionalist_vs_innovative value = societal_value_minor_move_to_right } }
 		}
 	}
 
@@ -1509,19 +1200,12 @@ generic_mission_events.20 = {
 
 		if = {
 			limit = { country_has_estate = estate_type:clergy_estate }
-
-			add_estate_satisfaction = {
-				type = estate_type:clergy_estate
-				value = estate_satisfaction_mild_bonus
-			}
+			add_estate_satisfaction = { type = estate_type:clergy_estate value = estate_satisfaction_mild_bonus }
 		}
 
 		add_stability = stability_weak_bonus
 
-		change_societal_value = {
-			type = traditionalist_vs_innovative
-			value = societal_value_tiny_move_to_left
-		}
+		change_societal_value = { type = traditionalist_vs_innovative value = societal_value_tiny_move_to_left }
 	}
 
 	option = {	# Sell it
@@ -1529,10 +1213,7 @@ generic_mission_events.20 = {
 
 		add_gold = monthly_income_trade_and_tax
 
-		change_societal_value = {
-			type = traditionalist_vs_innovative
-			value = societal_value_tiny_move_to_left
-		}
+		change_societal_value = { type = traditionalist_vs_innovative value = societal_value_tiny_move_to_left }
 	}
 }
 
@@ -1544,9 +1225,7 @@ generic_mission_events.21 = {
 	desc = generic_mission_events.21.desc
 
 	trigger = {
-		NOT = {
-			has_variable = gme21_cd
-		}
+		NOT = { has_variable = gme21_cd }
 		any_pop = {
 			pop_type = pop_type:clergy
 			religion = root.religion
@@ -1582,16 +1261,9 @@ generic_mission_events.21 = {
 	option = {
 		name = generic_mission_events.21.a
 
-		every_in_list = {
-			list = upset_clergy_pops_list
+		every_in_list = { list = upset_clergy_pops_list add_pop_satisfaction = pop_satisfaction_severe_penalty }
 
-			add_pop_satisfaction = pop_satisfaction_severe_penalty
-		}
-
-		add_estate_satisfaction = {
-			type = estate_type:clergy_estate
-			value = estate_satisfaction_extreme_penalty
-		}
+		add_estate_satisfaction = { type = estate_type:clergy_estate value = estate_satisfaction_extreme_penalty }
 
 		add_stability = stability_weak_penalty
 
@@ -1600,11 +1272,7 @@ generic_mission_events.21 = {
 
 	option = {
 		name = generic_mission_events.21.b
-
-		change_societal_value = {
-			type = traditionalist_vs_innovative
-			value = societal_value_move_to_left
-		}
+		change_societal_value = { type = traditionalist_vs_innovative value = societal_value_move_to_left }
 	}
 
 	option = {
@@ -1615,10 +1283,7 @@ generic_mission_events.21 = {
 				societal_value:traditionalist_vs_innovative > 95
 				societal_value:spiritualist_vs_humanist > 95
 
-				"estate_power(estate_type:clergy_estate)" <= {
-					value = "estate_power(estate_type:crown_estate)"
-					divide = 2
-				}
+				"estate_power(estate_type:clergy_estate)" <= { value = "estate_power(estate_type:crown_estate)" divide = 2 }
 
 				scope:target_character = {
 					OR = {
@@ -1641,13 +1306,7 @@ generic_mission_events.22 = {
 	title = generic_mission_events.22.title
 	desc = generic_mission_events.22.desc
 
-	trigger = {
-		NOT = {
-			has_variable = gme22_cd
-		}
-
-		total_effective_building_levels:library > 0
-	}
+	trigger = { NOT = { has_variable = gme22_cd } total_effective_building_levels:library > 0 }
 
 	immediate = {
 		set_variable = { name = gme22_cd months = 8 }
@@ -1675,29 +1334,18 @@ generic_mission_events.22 = {
 			limit = {
 				any_neighbor_country = {
 					any_institutions_embraced = {
-						NOT = {
-							root = { has_embraced_institution = prev }
-						}
+						NOT = { root = { has_embraced_institution = prev } }
 					}
 				}
 			}
-
 			random_neighbor_country = {
 				limit = {
 					any_institutions_embraced = {
-						NOT = {
-							root = { has_embraced_institution = prev }
-						}
+						NOT = { root = { has_embraced_institution = prev } }
 					}
 				}
-
 				random_institutions_embraced = {
-					limit = {
-						NOT = {
-							root = { has_embraced_institution = prev }
-						}
-					}
-
+					limit = { NOT = { root = { has_embraced_institution = prev } } }
 					save_scope_as = target_institution
 				}
 			}
@@ -1708,7 +1356,6 @@ generic_mission_events.22 = {
 
 	option = {
 		name = generic_mission_events.22.a
-
 		scope:target_location = {
 			add_location_modifier = {
 				modifier = increased_educational_spending
@@ -1725,10 +1372,7 @@ generic_mission_events.22 = {
 
 		scope:target_province = {
 			every_location_in_province = {
-				change_institution_progress = {
-					type = scope:target_institution
-					value = institution_progress_weak_bonus
-				}
+				change_institution_progress = { type = scope:target_institution value = institution_progress_weak_bonus }
 			}
 		}
 	}
@@ -1752,6 +1396,7 @@ generic_mission_events.22 = {
 			add_adm = {
 				value = { 0 2 }
 				add = { value = root.average_country_literacy divide = 30 }
+
 				if = {
 					limit = { root.societal_value:traditionalist_vs_innovative > 0 }
 					add = { value = root.societal_value:traditionalist_vs_innovative divide = 40 }
@@ -1763,6 +1408,7 @@ generic_mission_events.22 = {
 			add_dip = {
 				value = { 0 2 }
 				add = { value = root.average_country_literacy divide = 30 }
+
 				if = {
 					limit = { root.societal_value:traditionalist_vs_innovative > 0 }
 					add = { value = root.societal_value:traditionalist_vs_innovative divide = 40 }
@@ -1774,6 +1420,7 @@ generic_mission_events.22 = {
 			add_mil = {
 				value = { 0 2 }
 				add = { value = root.average_country_literacy divide = 30 }
+
 				if = {
 					limit = { root.societal_value:traditionalist_vs_innovative > 0 }
 					add = { value = root.societal_value:traditionalist_vs_innovative divide = 40 }
@@ -1805,16 +1452,12 @@ generic_mission_events.23 = {
 
 		if = {
 			limit = { has_country_modifier = foreign_destabilization_efforts_modifier }
-
 			add_country_modifier = {
 				modifier = foreign_destabilization_efforts_modifier
 				mode = add_and_extend
 				years = 1
 
-				size = {	# Let's avoid dogpilling for the most part
-					value = 1
-					multiply = { desc = already_destabilized_desc value = 0.5 }
-				}
+				size = { value = 1 multiply = { desc = already_destabilized_desc value = 0.5 } }
 			}
 		}
 		else = {
@@ -1838,11 +1481,7 @@ generic_mission_events.24 = {
 	title = generic_mission_events.24.title
 	desc = generic_mission_events.24.desc
 
-	trigger = {
-		NOT = {
-			has_variable = gme24_cd
-		}
-	}
+	trigger = { NOT = { has_variable = gme24_cd } }
 
 	immediate = {
 		set_variable = { name = gme24_cd months = 8 }
@@ -1858,23 +1497,18 @@ generic_mission_events.24 = {
 
 		scope:target_location = {
 			change_development = development_mild_bonus
+
 			if = {
 				limit = { prosperity < 1 }
 				change_prosperity = prosperity_weak_bonus
 
 				owner ?= {
-					change_societal_value = {
-						type = capital_economy_vs_traditional_economy
-						value = societal_value_tiny_move_to_left
-					}
+					change_societal_value = { type = capital_economy_vs_traditional_economy value = societal_value_tiny_move_to_left }
 				}
 			}
 			else = {
 				owner ?= {
-					change_societal_value = {
-						type = capital_economy_vs_traditional_economy
-						value = societal_value_minor_move_to_left
-					}
+					change_societal_value = { type = capital_economy_vs_traditional_economy value = societal_value_minor_move_to_left }
 				}
 			}
 		}
@@ -1882,11 +1516,7 @@ generic_mission_events.24 = {
 
 	option = {
 		name = generic_mission_events.24.b
-
-		change_societal_value = {
-			type = capital_economy_vs_traditional_economy
-			value = societal_value_minor_move_to_right
-		}
+		change_societal_value = { type = capital_economy_vs_traditional_economy value = societal_value_minor_move_to_right }
 	}
 }
 
@@ -1899,11 +1529,7 @@ generic_mission_events.25 = {
 	title = generic_mission_events.25.title
 	desc = generic_mission_events.25.desc
 
-	trigger = {
-		NOT = {
-			has_variable = gme25_cd
-		}
-	}
+	trigger = { NOT = { has_variable = gme25_cd } }
 
 	immediate = {
 		set_variable = { name = gme25_cd months = 8 }
@@ -1930,14 +1556,7 @@ generic_mission_events.25 = {
 		scope:target_province = {
 			every_location_in_province = {
 				ordered_pop = {
-					limit = {
-						owner = root
-						OR = {
-							pop_type = pop_type:laborers
-							pop_type = pop_type:peasants
-						}
-					}
-
+					limit = { owner = root OR = { pop_type = pop_type:laborers pop_type = pop_type:peasants } }
 					add_pop_satisfaction = pop_satisfaction_mild_penalty
 				}
 			}
@@ -1949,15 +1568,9 @@ generic_mission_events.25 = {
 	option = {	# We cannot let our rural settlements dwindle!
 		name = generic_mission_events.25.b
 
-		change_societal_value = {
-			type = capital_economy_vs_traditional_economy
-			value = societal_value_move_to_right
-		}
+		change_societal_value = { type = capital_economy_vs_traditional_economy value = societal_value_move_to_right }
 
-		add_estate_satisfaction = {
-			type = estate_type:burghers_estate
-			value = estate_satisfaction_mild_penalty
-		}
+		add_estate_satisfaction = { type = estate_type:burghers_estate value = estate_satisfaction_mild_penalty }
 	}
 }
 
@@ -1976,9 +1589,7 @@ generic_mission_events.26 = {
 				any_buildings_in_location = { building_produced_goods = goods:glass }
 			}
 		}
-		NOT = {
-			has_variable = gme26_cd
-		}
+		NOT = { has_variable = gme26_cd }
 	}
 
 	immediate = {
@@ -1988,29 +1599,20 @@ generic_mission_events.26 = {
 		random_list = {
 			1 = {
 				trigger = {
-					scope:target_location = {
-						any_buildings_in_location = { building_produced_goods = goods:cloth }
-					}
+					scope:target_location = { any_buildings_in_location = { building_produced_goods = goods:cloth } }
 				}
-
 				goods:cloth = { save_scope_as = target_good }
 			}
 			1 = {
 				trigger = {
-					scope:target_location = {
-						any_buildings_in_location = { building_produced_goods = goods:paper }
-					}
+					scope:target_location = { any_buildings_in_location = { building_produced_goods = goods:paper } }
 				}
-
 				goods:paper = { save_scope_as = target_good }
 			}
 			1 = {
 				trigger = {
-					scope:target_location = {
-						any_buildings_in_location = { building_produced_goods = goods:glass }
-					}
+					scope:target_location = { any_buildings_in_location = { building_produced_goods = goods:glass } }
 				}
-
 				goods:glass = { save_scope_as = target_good }
 			}
 		}
@@ -2021,7 +1623,6 @@ generic_mission_events.26 = {
 
 		if = {
 			limit = { scope:target_good = goods:glass }
-
 			scope:target_location = {
 				add_location_modifier = {
 					modifier = growing_glass_industry_modifier
@@ -2032,7 +1633,6 @@ generic_mission_events.26 = {
 		}
 		else_if = {
 			limit = { scope:target_good = goods:paper }
-
 			scope:target_location = {
 				add_location_modifier = {
 					modifier = growing_paper_industry_modifier
@@ -2051,24 +1651,15 @@ generic_mission_events.26 = {
 			}
 		}
 
-		add_estate_satisfaction = {
-			type = estate_type:peasants_estate
-			value = estate_satisfaction_mild_penalty
-		}
+		add_estate_satisfaction = { type = estate_type:peasants_estate value = estate_satisfaction_mild_penalty }
 	}
 
 	option = {
 		name = generic_mission_events.26.b
 
-		add_estate_satisfaction = {
-			type = estate_type:peasants_estate
-			value = estate_satisfaction_weak_bonus
-		}
+		add_estate_satisfaction = { type = estate_type:peasants_estate value = estate_satisfaction_weak_bonus }
 
-		change_societal_value = {
-			type = capital_economy_vs_traditional_economy
-			value = societal_value_tiny_move_to_right
-		}
+		change_societal_value = { type = capital_economy_vs_traditional_economy value = societal_value_tiny_move_to_right }
 	}
 }
 
@@ -2080,13 +1671,7 @@ generic_mission_events.27 = {
 	title = generic_mission_events.27.title
 	desc = generic_mission_events.27.desc
 
-	trigger = {
-		NOT = {
-			has_variable = gme27_cd
-		}
-
-		num_of_non_rural > 0
-	}
+	trigger = { NOT = { has_variable = gme27_cd } num_of_non_rural > 0 }
 
 	immediate = {
 		set_variable = { name = gme27_cd months = 6 }
@@ -2095,10 +1680,7 @@ generic_mission_events.27 = {
 		ordered_owned_rural_location = {
 			limit = { rgo_workers >= 3 }
 
-			order_by = {
-				value = development
-				multiply = { value = 1 add = local_control }
-			}
+			order_by = { value = development multiply = { value = 1 add = local_control } }
 
 			check_range_bounds = no
 			max = { value = 1 add = num_provinces }
@@ -2120,19 +1702,11 @@ generic_mission_events.27 = {
 		scope:target_province = {
 			every_location_in_province = {
 				ordered_pop = {
-					limit = {
-						owner = root
-						OR = {
-							pop_type = pop_type:laborers
-							pop_type = pop_type:peasants
-						}
-					}
-
+					limit = { owner = root OR = { pop_type = pop_type:laborers pop_type = pop_type:peasants } }
 					add_pop_satisfaction = pop_satisfaction_mild_penalty
 				}
 				if = {
 					limit = { modifier:sul_is_rural_settlement_rank_tier = yes rgo_workers >= 3 }
-
 					change_max_raw_material_workers = {
 						value = this.rgo_workers
 						divide = -3
@@ -2146,23 +1720,13 @@ generic_mission_events.27 = {
 	option = {
 		name = generic_mission_events.27.b
 
-		change_societal_value = {
-			type = capital_economy_vs_traditional_economy
-			value = societal_value_minor_move_to_right
-		}
+		change_societal_value = { type = capital_economy_vs_traditional_economy value = societal_value_minor_move_to_right }
 
 		random_list = {
-			5 = {
-				add_estate_satisfaction = {
-					type = estate_type:burghers_estate
-					value = estate_satisfaction_mild_penalty
-				}
-			}
+			5 = { add_estate_satisfaction = { type = estate_type:burghers_estate value = estate_satisfaction_mild_penalty } }
 
 			4 = {
-				scope:target_province = {
-					every_location_in_province = { change_prosperity = prosperity_mild_penalty }
-				}
+				scope:target_province = { every_location_in_province = { change_prosperity = prosperity_mild_penalty } }
 			}
 
 			1 = {  }
@@ -2177,26 +1741,23 @@ generic_mission_events.28 = {
 	desc = generic_mission_events.28.desc
 
 	trigger = {
-		NOT = {
-			has_variable = gme28_cd
-		}
+		NOT = { has_variable = gme28_cd }
 
 		estate_satisfaction:burghers_estate > 0.5
 
-		"estate(estate_type:burghers_estate)" = {
-			estate_gold > { value = root.monthly_income_trade_and_tax multiply = 2 }
-		}
+		"estate(estate_type:burghers_estate)" = { estate_gold > { value = root.monthly_income_trade_and_tax multiply = 2 } }
 	}
 
-	immediate = {
-		set_variable = { name = gme28_cd years = 1 }
-		capital = { save_scope_as = target_location }
-	}
+	immediate = { set_variable = { name = gme28_cd years = 1 } capital = { save_scope_as = target_location } }
 
 	option = {
 		name = generic_mission_events.28.a
 
-		add_gold = { value = monthly_income_trade_and_tax multiply = 2 max = 100000 }
+		add_gold = {
+			value = monthly_income_trade_and_tax
+			multiply = 2
+			max = 100000
+		}
 
 		"estate(estate_type:burghers_estate)" = {
 			estate_add_gold = {

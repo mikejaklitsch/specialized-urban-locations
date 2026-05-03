@@ -16,17 +16,10 @@ empires.1 = {
 		ruler = { mil < 50 }
 		gold < 200
 		prestige > 10
-		NOT = {
-			has_country_modifier = military_funding
-		}
+		NOT = { has_country_modifier = military_funding }
 		NOT = {
 			any_current_war = {
-				any_war_participant = {
-					NOT = {
-						this = root
-					}
-					war_score_versus = { target = root value >= 0.2 }
-				}
+				any_war_participant = { NOT = { this = root } war_score_versus = { target = root value >= 0.2 } }
 			}
 		}
 	}
@@ -38,13 +31,11 @@ empires.1 = {
 			foreground = estate_type:nobles_estate
 			background = estate_type:nobles_estate
 		}
-
 		ruler ?= { save_scope_as = target_ruler }
 	}
 
 	option = {
 		name = empires.1.a
-
 		add_country_modifier = {
 			modifier = military_funding
 			months = 60
@@ -70,10 +61,7 @@ empires.2 = {
 		religious_unity < 0.5
 
 		any_owned_non_rural_location = {
-			NOT = {
-				dominant_culture.language = root.culture.language
-			}
-
+			NOT = { dominant_culture.language = root.culture.language }
 			count > root.num_provinces
 		}
 	}
@@ -89,7 +77,6 @@ empires.2 = {
 
 	option = {
 		name = empires.2.a
-
 		change_gold_effect = {
 			scale = -3.00
 		}
@@ -109,12 +96,8 @@ empires.3 = {
 		num_of_non_rural >= 25
 		num_loans >= 20
 		any_cabinet_character = { modifier:is_head_of_cabinet = yes }
-		NOT = {
-			has_country_modifier = debt_funding_plan
-		}
-		NOT = {
-			has_country_modifier = tax_reform
-		}
+		NOT = { has_country_modifier = debt_funding_plan }
+		NOT = { has_country_modifier = tax_reform }
 	}
 
 	illustration_tags = { 10 = happy 10 = interior }
@@ -124,16 +107,11 @@ empires.3 = {
 			foreground = estate_type:nobles_estate
 			background = estate_type:nobles_estate
 		}
-
-		random_cabinet_character = {
-			limit = { modifier:is_head_of_cabinet = yes }
-			save_scope_as = target_minister
-		}
+		random_cabinet_character = { limit = { modifier:is_head_of_cabinet = yes } save_scope_as = target_minister }
 	}
 
 	option = {
 		name = empires.3.a
-
 		add_country_modifier = {
 			modifier = debt_funding_plan
 			months = 60
@@ -143,7 +121,6 @@ empires.3 = {
 
 	option = {
 		name = empires.3.b
-
 		add_country_modifier = {
 			modifier = tax_reform
 			months = 60
@@ -164,17 +141,11 @@ empires.4 = {
 		stability > 50
 		num_loans < 1
 		num_artists > 0
-		NOT = {
-			has_variable = prosper_time_event
-		}
+		NOT = { has_variable = prosper_time_event }
 
 		at_war = no
 
-		any_owned_non_rural_location = {
-			NOT = {
-				modifier:sul_is_city_rank_tier = yes
-			}
-		}
+		any_owned_non_rural_location = { NOT = { modifier:sul_is_city_rank_tier = yes } }
 	}
 
 	illustration_tags = { 10 = happy 10 = exterior }
@@ -184,50 +155,32 @@ empires.4 = {
 			foreground = estate_type:nobles_estate
 			background = estate_type:nobles_estate
 		}
-
 		hidden_effect = {
 			random_owned_non_rural_location = {
-				limit = {
-					NOT = {
-						modifier:sul_is_city_rank_tier = yes
-					}
-				}
-
+				limit = { NOT = { modifier:sul_is_city_rank_tier = yes } }
+				save_scope_as = target_location
+			}
+			random_owned_non_rural_location = {
+				limit = { NOT = { modifier:sul_is_city_rank_tier = yes } province = { is_starving = no } }
 				save_scope_as = target_location
 			}
 			random_owned_non_rural_location = {
 				limit = {
-					NOT = {
-						modifier:sul_is_city_rank_tier = yes
-					}
-					province = { is_starving = no }
-				}
-
-				save_scope_as = target_location
-			}
-			random_owned_non_rural_location = {
-				limit = {
-					NOT = {
-						modifier:sul_is_city_rank_tier = yes
-					}
+					NOT = { modifier:sul_is_city_rank_tier = yes }
 					province = { is_starving = no }
 					is_capital = no
 					is_connected_to = root.capital
 				}
-
 				save_scope_as = target_location
 			}
 			random_owned_non_rural_location = {
 				limit = {
-					NOT = {
-						modifier:sul_is_city_rank_tier = yes
-					}
+					NOT = { modifier:sul_is_city_rank_tier = yes }
 					province = { is_starving = no }
 					is_capital = no
 					prosperity > 0
 					is_connected_to = root.capital
 				}
-
 				save_scope_as = target_location
 			}
 
@@ -237,7 +190,6 @@ empires.4 = {
 
 	option = {
 		name = empires.4.a
-
 		scope:target_location = {
 			change_development = development_extreme_bonus
 
@@ -255,7 +207,6 @@ empires.4 = {
 
 	option = {
 		name = empires.4.b
-
 		scope:target_location = {
 			change_development = development_extreme_bonus
 
@@ -273,7 +224,6 @@ empires.4 = {
 
 	option = {
 		name = empires.4.c
-
 		scope:target_location = {
 			change_development = development_extreme_bonus
 
@@ -311,8 +261,5 @@ empires.5 = {
 		ruler ?= { save_scope_as = target_character }
 	}
 
-	option = {
-		name = empires.5.a
-		set_character_as_the_great = { target = scope:target_character }
-	}
+	option = { name = empires.5.a set_character_as_the_great = { target = scope:target_character } }
 }

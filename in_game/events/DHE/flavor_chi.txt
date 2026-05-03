@@ -37,10 +37,7 @@ flavor_chi.1 = {
 
 	trigger = {
 		OR = {
-			AND = {
-				exists = character:chi_zheng_he
-				character:chi_zheng_he = { is_alive = yes }
-			}
+			AND = { exists = character:chi_zheng_he character:chi_zheng_he = { is_alive = yes } }
 			any_exploration_from_country = { has_leader = yes }
 		}
 	}
@@ -52,46 +49,27 @@ flavor_chi.1 = {
 			foreground = estate_type:nobles_estate
 			background = estate_type:nobles_estate
 		}
-		if = {
-			limit = {
-				exists = character:chi_zheng_he
-				character:chi_zheng_he = { is_alive = yes }
-			}
 
+		if = {
+			limit = { exists = character:chi_zheng_he character:chi_zheng_he = { is_alive = yes } }
 			character:chi_zheng_he = { save_scope_as = target_explorer }
 		}
 		else = {
-			random_exploration_from_country = {
-				limit = { has_leader = yes }
-				leader = { save_scope_as = target_explorer }
-			}
+			random_exploration_from_country = { limit = { has_leader = yes } leader = { save_scope_as = target_explorer } }
 		}
 	}
 
 	option = {
 		name = flavor_chi.1.a
 		historical_option = yes
-		if = {
-			limit = {
-				NOR = {
-					current_age = age_1_traditions
-					current_age = age_2_renaissance
-				}
-			}
 
-			change_societal_value = {
-				type = outward_vs_inward
-				value = societal_value_huge_move_to_right
-			}
-		}
-		change_societal_value = {
-			type = centralization_vs_decentralization
-			value = societal_value_move_to_left
-		}
 		if = {
-			limit = { modifier:allow_harmony = yes }
-			add_harmony = harmony_mild_penalty
+			limit = { NOR = { current_age = age_1_traditions current_age = age_2_renaissance } }
+			change_societal_value = { type = outward_vs_inward value = societal_value_huge_move_to_right }
 		}
+
+		change_societal_value = { type = centralization_vs_decentralization value = societal_value_move_to_left }
+		if = { limit = { modifier:allow_harmony = yes } add_harmony = harmony_mild_penalty }
 	}
 	option = {
 		name = flavor_chi.1.b
@@ -100,27 +78,14 @@ flavor_chi.1 = {
 	}
 	option = {
 		name = flavor_chi.1.c
-		if = {
-			limit = {
-				NOR = {
-					current_age = age_1_traditions
-					current_age = age_2_renaissance
-				}
-			}
 
-			change_societal_value = {
-				type = outward_vs_inward
-				value = societal_value_huge_move_to_left
-			}
-		}
-		change_societal_value = {
-			type = centralization_vs_decentralization
-			value = societal_value_move_to_right
-		}
 		if = {
-			limit = { modifier:allow_harmony = yes }
-			add_harmony = harmony_mild_bonus
+			limit = { NOR = { current_age = age_1_traditions current_age = age_2_renaissance } }
+			change_societal_value = { type = outward_vs_inward value = societal_value_huge_move_to_left }
 		}
+
+		change_societal_value = { type = centralization_vs_decentralization value = societal_value_move_to_right }
+		if = { limit = { modifier:allow_harmony = yes } add_harmony = harmony_mild_bonus }
 	}
 }
 
@@ -140,19 +105,11 @@ upgrade_great_wall = {
 	}
 
 	root = {
-		if = {
-			limit = { modifier:allow_righteousness = yes }
-			add_righteousness = righteousness_mild_penalty
-		}
-		if = {
-			limit = { modifier:allow_harmony = yes }
-			add_harmony = harmony_weak_bonus
-		}
-		if = {
-			limit = {
-				is_leader_of_international_organization = international_organization:middle_kingdom
-			}
+		if = { limit = { modifier:allow_righteousness = yes } add_righteousness = righteousness_mild_penalty }
+		if = { limit = { modifier:allow_harmony = yes } add_harmony = harmony_weak_bonus }
 
+		if = {
+			limit = { is_leader_of_international_organization = international_organization:middle_kingdom }
 			change_celestial_authority = { value = celestial_authority_weak_bonus }
 		}
 	}
@@ -165,10 +122,7 @@ flavor_chi.2 = {
 
 	fire_only_once = yes
 
-	trigger = {
-		tag = CHI
-		total_effective_building_levels:ruined_great_wall_of_china > 0
-	}
+	trigger = { tag = CHI total_effective_building_levels:ruined_great_wall_of_china > 0 }
 
 	illustration_tags = { 10 = interior 10 = regular }
 
@@ -179,23 +133,14 @@ flavor_chi.2 = {
 		}
 
 		random_province = {
-			limit = {
-				any_location_in_province = {
-					has_building_with_at_least_one_level = ruined_great_wall_of_china
-				}
-			}
-
+			limit = { any_location_in_province = { has_building_with_at_least_one_level = ruined_great_wall_of_china } }
 			save_scope_as = target_province1
 		}
 		random_province = {
 			limit = {
 				this != scope:target_province1
-
-				any_location_in_province = {
-					has_building_with_at_least_one_level = ruined_great_wall_of_china
-				}
+				any_location_in_province = { has_building_with_at_least_one_level = ruined_great_wall_of_china }
 			}
-
 			save_scope_as = target_province2
 		}
 		random_province = {
@@ -203,11 +148,8 @@ flavor_chi.2 = {
 				this != scope:target_province1
 				this != scope:target_province2
 
-				any_location_in_province = {
-					has_building_with_at_least_one_level = ruined_great_wall_of_china
-				}
+				any_location_in_province = { has_building_with_at_least_one_level = ruined_great_wall_of_china }
 			}
-
 			save_scope_as = target_province3
 		}
 
@@ -218,27 +160,17 @@ flavor_chi.2 = {
 			order_by = population
 			max = 5
 
-			root = {
-				change_local_variable = {
-					name = wall_maintenance_price
-					add = prev.location_tax_base
-				}
-			}
+			root = { change_local_variable = { name = wall_maintenance_price add = prev.location_tax_base } }
 		}
 	}
 
 	option = {
 		name = flavor_chi.2.a
 		add_gold = { value = local_var:wall_maintenance_price multiply = -5 }
-		if = {
-			limit = { modifier:allow_righteousness = yes }
-			add_righteousness = righteousness_weak_penalty
-		}
-		if = {
-			limit = {
-				is_leader_of_international_organization = international_organization:middle_kingdom
-			}
+		if = { limit = { modifier:allow_righteousness = yes } add_righteousness = righteousness_weak_penalty }
 
+		if = {
+			limit = { is_leader_of_international_organization = international_organization:middle_kingdom }
 			change_celestial_authority = { value = celestial_authority_weak_bonus }
 		}
 	}
@@ -253,15 +185,10 @@ flavor_chi.2 = {
 		name = flavor_chi.2.c
 		trigger = { exists = scope:target_province2 }
 		scope:target_province2 = { upgrade_great_wall = yes }
-		if = {
-			limit = { modifier:allow_righteousness = yes }
-			add_righteousness = righteousness_weak_penalty
-		}
-		if = {
-			limit = {
-				is_leader_of_international_organization = international_organization:middle_kingdom
-			}
+		if = { limit = { modifier:allow_righteousness = yes } add_righteousness = righteousness_weak_penalty }
 
+		if = {
+			limit = { is_leader_of_international_organization = international_organization:middle_kingdom }
 			change_celestial_authority = { value = celestial_authority_weak_bonus }
 		}
 	}
@@ -275,10 +202,7 @@ flavor_chi.2 = {
 	option = {
 		name = flavor_chi.2.e
 		add_government_power = government_power_ultimate_penalty
-		if = {
-			limit = { modifier:allow_harmony = yes }
-			harmony_mild_towards_equilibrium = yes
-		}
+		if = { limit = { modifier:allow_harmony = yes } harmony_mild_towards_equilibrium = yes }
 	}
 }
 
@@ -297,13 +221,7 @@ flavor_chi.4 = {
 	}
 
 	trigger = {
-		any_character = {
-			mil >= 75
-			OR = {
-				in_cabinet = yes
-				is_general = yes
-			}
-		}
+		any_character = { mil >= 75 OR = { in_cabinet = yes is_general = yes } }
 	}
 
 	illustration_tags = { 10 = exterior 10 = regular }
@@ -313,16 +231,8 @@ flavor_chi.4 = {
 			foreground = pop_type:soldiers
 			background = pop_type:soldiers
 		}
-
 		random_character = {
-			limit = {
-				mil >= 75
-				OR = {
-					in_cabinet = yes
-					is_general = yes
-				}
-			}
-
+			limit = { mil >= 75 OR = { in_cabinet = yes is_general = yes } }
 			save_scope_as = target_character
 		}
 	}
@@ -331,30 +241,19 @@ flavor_chi.4 = {
 		name = flavor_chi.4.a
 		historical_option = yes
 
-		change_societal_value = {
-			type = land_vs_naval
-			value = societal_value_move_to_left
-		}
-		change_societal_value = {
-			type = offensive_vs_defensive
-			value = societal_value_move_to_left
-		}
+		change_societal_value = { type = land_vs_naval value = societal_value_move_to_left }
+		change_societal_value = { type = offensive_vs_defensive value = societal_value_move_to_left }
 
 		change_gold_effect = {
 			scale = -3
 		}
-		if = {
-			limit = { modifier:allow_harmony = yes }
-			add_harmony = harmony_severe_bonus
-		}
+
+		if = { limit = { modifier:allow_harmony = yes } add_harmony = harmony_severe_bonus }
 	}
 	option = {
 		name = flavor_chi.4.b
 		add_stability = stability_mild_bonus
-		if = {
-			limit = { modifier:allow_harmony = yes }
-			harmony_mild_towards_equilibrium = yes
-		}
+		if = { limit = { modifier:allow_harmony = yes } harmony_mild_towards_equilibrium = yes }
 	}
 }
 
@@ -380,10 +279,7 @@ flavor_chi.5 = {
 		num_of_ports > 2
 
 		any_market_present_in_country = {
-			any_merchant_in_market = {
-				capital ?= { continent = continent:europe }
-				religion = religion:catholic
-			}
+			any_merchant_in_market = { capital ?= { continent = continent:europe } religion = religion:catholic }
 		}
 	}
 
@@ -394,15 +290,8 @@ flavor_chi.5 = {
 			foreground = estate_type:clergy_estate
 			background = estate_type:clergy_estate
 		}
-
 		random_market_present_in_country = {
-			limit = {
-				any_merchant_in_market = {
-					capital.continent = continent:europe
-					religion = religion:catholic
-				}
-			}
-
+			limit = { any_merchant_in_market = { capital.continent = continent:europe religion = religion:catholic } }
 			random_merchant_in_market = {
 				limit = { capital.continent = continent:europe religion = religion:catholic }
 				save_scope_as = target_country
@@ -416,27 +305,14 @@ flavor_chi.5 = {
 
 		custom_tooltip = {
 			text = flavor_chi.5.a.tt
-
 			ordered_owned_location = {
-				limit = {
-					NOT = {
-						dominant_religion = religion:catholic
-					}
-
-					is_port = yes
-				}
+				limit = { NOT = { dominant_religion = religion:catholic } is_port = yes }
 
 				order_by = population
 				max = { value = 1 add = { value = num_of_non_rural multiply = 0.2 } }
 
 				random_pop = {
-					limit = {
-						owner = root
-						NOT = {
-							religion = religion:catholic
-						}
-					}
-
+					limit = { owner = root NOT = { religion = religion:catholic } }
 					split_pop = { fraction = 0.10 religion = religion:catholic }
 				}
 			}
@@ -450,34 +326,22 @@ flavor_chi.5 = {
 			limit = { religion = religion:catholic }
 			add_opinion = { target = c:CHI modifier = opinion_accepted_jesuits }
 		}
-		if = {
-			limit = { modifier:allow_harmony = yes }
-			harmony_mild_towards_equilibrium = yes
-		}
-		if = {
-			limit = {
-				is_leader_of_international_organization = international_organization:middle_kingdom
-			}
 
+		if = { limit = { modifier:allow_harmony = yes } harmony_mild_towards_equilibrium = yes }
+
+		if = {
+			limit = { is_leader_of_international_organization = international_organization:middle_kingdom }
 			change_celestial_authority = { value = celestial_authority_mild_penalty }
 		}
 	}
 	option = {
 		name = flavor_chi.5.b
 		add_stability = stability_mild_bonus
-		if = {
-			limit = { modifier:allow_harmony = yes }
-			add_harmony = harmony_severe_bonus
-		}
-		if = {
-			limit = { modifier:allow_righteousness = yes }
-			add_righteousness = righteousness_weak_bonus
-		}
-		if = {
-			limit = {
-				is_leader_of_international_organization = international_organization:middle_kingdom
-			}
+		if = { limit = { modifier:allow_harmony = yes } add_harmony = harmony_severe_bonus }
+		if = { limit = { modifier:allow_righteousness = yes } add_righteousness = righteousness_weak_bonus }
 
+		if = {
+			limit = { is_leader_of_international_organization = international_organization:middle_kingdom }
 			change_celestial_authority = { value = celestial_authority_weak_bonus }
 		}
 	}
@@ -512,10 +376,7 @@ flavor_chi.6 = {
 		name = flavor_chi.6.a
 		historical_option = yes
 		add_inflation = inflation_extreme_penalty
-		if = {
-			limit = { modifier:allow_harmony = yes }
-			add_harmony = harmony_severe_bonus
-		}
+		if = { limit = { modifier:allow_harmony = yes } add_harmony = harmony_severe_bonus }
 	}
 	option = {
 		name = flavor_chi.6.b
@@ -523,19 +384,12 @@ flavor_chi.6 = {
 		change_gold_effect = {
 			scale = -24
 		}
-		if = {
-			limit = { modifier:allow_harmony = yes }
-			harmony_mild_towards_equilibrium = yes
-		}
-		if = {
-			limit = { modifier:allow_righteousness = yes }
-			add_righteousness = righteousness_weak_bonus
-		}
-		if = {
-			limit = {
-				is_leader_of_international_organization = international_organization:middle_kingdom
-			}
 
+		if = { limit = { modifier:allow_harmony = yes } harmony_mild_towards_equilibrium = yes }
+		if = { limit = { modifier:allow_righteousness = yes } add_righteousness = righteousness_weak_bonus }
+
+		if = {
+			limit = { is_leader_of_international_organization = international_organization:middle_kingdom }
 			change_celestial_authority = { value = celestial_authority_weak_penalty }
 		}
 	}
@@ -559,9 +413,7 @@ flavor_chi.7 = {
 	trigger = {
 		has_variable = mng_accepted_jesuits
 		"religion_percentage_in_country(religion:catholic)" > 0
-		NOT = {
-			religion = religion:catholic
-		}
+		NOT = { religion = religion:catholic }
 		any_neighbor_country = { count > 0 }
 	}
 
@@ -572,7 +424,6 @@ flavor_chi.7 = {
 			foreground = estate_type:clergy_estate
 			background = estate_type:clergy_estate
 		}
-
 		ordered_neighbor_country = {
 			max = 1
 			order_by = total_population
@@ -604,25 +455,18 @@ flavor_chi.7 = {
 				months = 60
 			}
 		}
-		if = {
-			limit = { modifier:allow_righteousness = yes }
-			add_righteousness = righteousness_weak_bonus
-		}
+
+		if = { limit = { modifier:allow_righteousness = yes } add_righteousness = righteousness_weak_bonus }
 
 		remove_variable = mng_accepted_jesuits
 	}
 	option = {
 		name = flavor_chi.7.b
 		add_stability = stability_ultimate_penalty
-		if = {
-			limit = { modifier:allow_harmony = yes }
-			harmony_mild_towards_equilibrium = yes
-		}
-		if = {
-			limit = {
-				is_leader_of_international_organization = international_organization:middle_kingdom
-			}
+		if = { limit = { modifier:allow_harmony = yes } harmony_mild_towards_equilibrium = yes }
 
+		if = {
+			limit = { is_leader_of_international_organization = international_organization:middle_kingdom }
 			change_celestial_authority = { value = celestial_authority_weak_penalty }
 		}
 	}
@@ -633,7 +477,11 @@ scripted_trigger
 flavor_chi.15_foreign_country_trigger = {
 	has_ruler = yes
 
-	any_character = { adm >= 60 dip >= 60 in_cabinet = yes }
+	any_character = {
+		adm >= 60
+		dip >= 60
+		in_cabinet = yes
+	}
 }
 
 scripted_effect
@@ -642,7 +490,11 @@ flavor_chi.15_foreign_country_saving_scopes_effect = {
 	ruler = { save_scope_as = target_ruler }
 
 	random_character = {
-		limit = { adm >= 60 dip >= 60 in_cabinet = yes }
+		limit = {
+			adm >= 60
+			dip >= 60
+			in_cabinet = yes
+		}
 		save_scope_as = target_character
 	}
 
@@ -664,21 +516,10 @@ flavor_chi.8 = {
 	}
 
 	trigger = {
-		any_market_present_in_country = {
-			OR = {
-				has_merchant = c:GBR
-				has_merchant = c:ENG
-			}
-		}
+		any_market_present_in_country = { OR = { has_merchant = c:GBR has_merchant = c:ENG } }
 		OR = {
-			AND = {
-				country_exists = c:GBR
-				c:GBR = { flavor_chi.15_foreign_country_trigger = yes }
-			}
-			AND = {
-				country_exists = c:ENG
-				c:ENG = { flavor_chi.15_foreign_country_trigger = yes }
-			}
+			AND = { country_exists = c:GBR c:GBR = { flavor_chi.15_foreign_country_trigger = yes } }
+			AND = { country_exists = c:ENG c:ENG = { flavor_chi.15_foreign_country_trigger = yes } }
 		}
 	}
 
@@ -689,10 +530,8 @@ flavor_chi.8 = {
 			foreground = estate_type:burghers_estate
 			background = estate_type:burghers_estate
 		}
-		if = {
-			limit = { country_exists = c:GBR }
-			c:GBR = { flavor_chi.15_foreign_country_saving_scopes_effect = yes }
-		}
+
+		if = { limit = { country_exists = c:GBR } c:GBR = { flavor_chi.15_foreign_country_saving_scopes_effect = yes } }
 		else = { c:ENG = { flavor_chi.15_foreign_country_saving_scopes_effect = yes } }
 	}
 
@@ -700,31 +539,21 @@ flavor_chi.8 = {
 		name = flavor_chi.8.a
 		historical_option = yes
 		add_stability = stability_severe_bonus
-		if = {
-			limit = { modifier:allow_righteousness = yes }
-			add_righteousness = righteousness_weak_penalty
-		}
-		if = {
-			limit = {
-				is_leader_of_international_organization = international_organization:middle_kingdom
-			}
+		if = { limit = { modifier:allow_righteousness = yes } add_righteousness = righteousness_weak_penalty }
 
+		if = {
+			limit = { is_leader_of_international_organization = international_organization:middle_kingdom }
 			change_celestial_authority = { value = celestial_authority_weak_bonus }
 		}
-		if = {
-			limit = { modifier:allow_harmony = yes }
-			add_harmony = harmony_weak_penalty
-		}
+
+		if = { limit = { modifier:allow_harmony = yes } add_harmony = harmony_weak_penalty }
 	}
 	option = {
 		name = flavor_chi.8.b
 		add_research_progress = research_progress_severe_bonus
 		c:GBR ?= { add_opinion = { target = root modifier = opinion_ideas } }
 		c:ENG ?= { add_opinion = { target = root modifier = opinion_ideas } }
-		if = {
-			limit = { modifier:allow_harmony = yes }
-			harmony_mild_towards_equilibrium = yes
-		}
+		if = { limit = { modifier:allow_harmony = yes } harmony_mild_towards_equilibrium = yes }
 	}
 }
 
@@ -748,7 +577,6 @@ flavor_chi.9 = {
 
 	immediate = {
 		event_illustration_government_estate_effect = yes
-
 		create_character = {
 			first_name = name_matthew
 			last_name = Ricci
@@ -771,24 +599,15 @@ flavor_chi.9 = {
 	option = {
 		name = flavor_chi.9.a
 		add_prestige = prestige_mild_bonus
-		if = {
-			limit = { modifier:allow_harmony = yes }
-			harmony_mild_towards_equilibrium = yes
-		}
-		if = {
-			limit = { modifier:allow_righteousness = yes }
-			add_righteousness = righteousness_weak_bonus
-		}
+		if = { limit = { modifier:allow_harmony = yes } harmony_mild_towards_equilibrium = yes }
+		if = { limit = { modifier:allow_righteousness = yes } add_righteousness = righteousness_weak_bonus }
 		scope:target_character = { move_country = root }
 	}
 	option = {
 		name = flavor_chi.9.b
 		add_stability = stability_severe_bonus
 		scope:target_character = { move_country = c:PAP }
-		if = {
-			limit = { modifier:allow_harmony = yes }
-			add_harmony = harmony_severe_penalty
-		}
+		if = { limit = { modifier:allow_harmony = yes } add_harmony = harmony_severe_penalty }
 	}
 }
 
@@ -820,23 +639,17 @@ flavor_chi.10 = {
 
 		custom_tooltip = {
 			text = flavor_chi.10.a.tt
-
 			every_area = {
 				limit = {
 					continent = continent:europe
-					NOT = {
-						c:CHI = { has_discovered_area = prev }
-					}
+					NOT = { c:CHI = { has_discovered_area = prev } }
 				}
-
 				c:CHI = { discover_area = prev }
 			}
 		}
-		if = {
-			limit = {
-				is_leader_of_international_organization = international_organization:middle_kingdom
-			}
 
+		if = {
+			limit = { is_leader_of_international_organization = international_organization:middle_kingdom }
 			change_celestial_authority = { value = celestial_authority_weak_bonus }
 		}
 	}
@@ -869,7 +682,6 @@ flavor_chi.11 = {
 			foreground = estate_type:clergy_estate
 			background = estate_type:clergy_estate
 		}
-
 		location:xiangshan_xinhui = { save_scope_as = target_location }
 	}
 
@@ -878,48 +690,27 @@ flavor_chi.11 = {
 
 		location:xiangshan_xinhui = {
 			every_pop = {
-				limit = {
-					NOT = {
-						religion = religion:catholic
-					}
-				}
-
+				limit = { NOT = { religion = religion:catholic } }
 				split_pop = { fraction = 0.10 religion = religion:catholic }
 			}
 		}
 
-		change_societal_value = {
-			type = traditionalist_vs_innovative
-			value = societal_value_move_to_right
-		}
-		if = {
-			limit = { modifier:allow_harmony = yes }
-			harmony_mild_towards_equilibrium = yes
-		}
-		if = {
-			limit = {
-				is_leader_of_international_organization = international_organization:middle_kingdom
-			}
+		change_societal_value = { type = traditionalist_vs_innovative value = societal_value_move_to_right }
+		if = { limit = { modifier:allow_harmony = yes } harmony_mild_towards_equilibrium = yes }
 
+		if = {
+			limit = { is_leader_of_international_organization = international_organization:middle_kingdom }
 			change_celestial_authority = { value = celestial_authority_mild_penalty }
 		}
 	}
 	option = {
 		name = flavor_chi.11.b
 
-		change_societal_value = {
-			type = traditionalist_vs_innovative
-			value = societal_value_move_to_left
-		}
-		if = {
-			limit = { modifier:allow_righteousness = yes }
-			add_righteousness = righteousness_weak_penalty
-		}
-		if = {
-			limit = {
-				is_leader_of_international_organization = international_organization:middle_kingdom
-			}
+		change_societal_value = { type = traditionalist_vs_innovative value = societal_value_move_to_left }
+		if = { limit = { modifier:allow_righteousness = yes } add_righteousness = righteousness_weak_penalty }
 
+		if = {
+			limit = { is_leader_of_international_organization = international_organization:middle_kingdom }
 			change_celestial_authority = { value = celestial_authority_weak_bonus }
 		}
 	}
@@ -945,13 +736,8 @@ flavor_chi.12 = {
 			foreground = estate_type:clergy_estate
 			background = estate_type:clergy_estate
 		}
-
 		random_province = {
-			limit = {
-				"religion_percentage(religion:catholic)" < 0.5
-				sub_continent = sub_continent:east_asia
-			}
-
+			limit = { "religion_percentage(religion:catholic)" < 0.5 sub_continent = sub_continent:east_asia }
 			save_scope_as = target_province
 		}
 	}
@@ -962,21 +748,14 @@ flavor_chi.12 = {
 		scope:target_province = {
 			every_location_in_province = {
 				random_pop = {
-					limit = {
-						NOT = {
-							religion = religion:catholic
-						}
-					}
-
+					limit = { NOT = { religion = religion:catholic } }
 					split_pop = { fraction = 0.33 religion = religion:catholic }
 				}
 			}
 		}
-		if = {
-			limit = {
-				is_leader_of_international_organization = international_organization:middle_kingdom
-			}
 
+		if = {
+			limit = { is_leader_of_international_organization = international_organization:middle_kingdom }
 			change_celestial_authority = { value = celestial_authority_mild_penalty }
 		}
 	}
@@ -995,11 +774,7 @@ flavor_chi.13 = {
 		has_variable = mng_accepted_jesuits
 		any_cabinet_character = { religion = religion:catholic }
 
-		ruler = {
-			NOT = {
-				religion = religion:catholic
-			}
-		}
+		ruler = { NOT = { religion = religion:catholic } }
 	}
 
 	illustration_tags = { 10 = interior 10 = regular }
@@ -1009,7 +784,6 @@ flavor_chi.13 = {
 			foreground = estate_type:clergy_estate
 			background = estate_type:clergy_estate
 		}
-
 		ruler = { save_scope_as = target_ruler }
 	}
 
@@ -1017,31 +791,20 @@ flavor_chi.13 = {
 		name = flavor_chi.13.a
 		change_religion = religion:catholic
 
-		change_religion_for_ruler_and_family = {
-			country = root
-			religion = religion:catholic
-		}
+		change_religion_for_ruler_and_family = { country = root religion = religion:catholic }
 
 		ruler = { change_character_religion = religion:catholic }
-		if = {
-			limit = {
-				is_leader_of_international_organization = international_organization:middle_kingdom
-			}
 
+		if = {
+			limit = { is_leader_of_international_organization = international_organization:middle_kingdom }
 			change_celestial_authority = { value = celestial_authority_extreme_penalty }
 		}
 	}
 	option = {
 		name = flavor_chi.13.b
 		add_stability = stability_mild_bonus
-		if = {
-			limit = { modifier:allow_righteousness = yes }
-			add_righteousness = righteousness_severe_bonus
-		}
-		if = {
-			limit = { modifier:allow_harmony = yes }
-			harmony_mild_towards_equilibrium = yes
-		}
+		if = { limit = { modifier:allow_righteousness = yes } add_righteousness = righteousness_severe_bonus }
+		if = { limit = { modifier:allow_harmony = yes } harmony_mild_towards_equilibrium = yes }
 	}
 }
 
@@ -1065,7 +828,6 @@ flavor_chi.14 = {
 			foreground = estate_type:clergy_estate
 			background = estate_type:nobles_estate
 		}
-
 		random_cabinet_character = {
 			limit = { religion != religion:catholic }
 			save_scope_as = target_character
@@ -1084,18 +846,13 @@ flavor_chi.14 = {
 				mode = add_and_extend
 			}
 		}
-		if = {
-			limit = { modifier:allow_righteousness = yes }
-			add_righteousness = righteousness_weak_penalty
-		}
+
+		if = { limit = { modifier:allow_righteousness = yes } add_righteousness = righteousness_weak_penalty }
 	}
 	option = {
 		name = flavor_chi.14.b
 		add_stability = stability_mild_penalty
-		if = {
-			limit = { modifier:allow_harmony = yes }
-			harmony_mild_towards_equilibrium = yes
-		}
+		if = { limit = { modifier:allow_harmony = yes } harmony_mild_towards_equilibrium = yes }
 	}
 }
 
@@ -1108,13 +865,7 @@ flavor_chi.15 = {
 
 	trigger = {
 		tag = CHI
-
-		any_cabinet_character = {
-			total_abilities < 180
-			NOT = {
-				has_variable = was_on_purge_event
-			}
-		}
+		any_cabinet_character = { total_abilities < 180 NOT = { has_variable = was_on_purge_event } }
 	}
 
 	illustration_tags = { 10 = regular 10 = interior }
@@ -1128,12 +879,7 @@ flavor_chi.15 = {
 		ruler_or_regent ?= { save_scope_as = target_character }
 
 		random_cabinet_character = {
-			limit = {
-				total_abilities < 180
-				NOT = {
-					has_variable = was_on_purge_event
-				}
-			}
+			limit = { total_abilities < 180 NOT = { has_variable = was_on_purge_event } }
 
 			save_scope_as = target_character2
 			set_variable = { name = was_on_purge_event years = 2 }
@@ -1152,10 +898,8 @@ flavor_chi.15 = {
 				mode = add_and_extend
 			}
 		}
-		if = {
-			limit = { modifier:allow_righteousness = yes }
-			add_righteousness = righteousness_weak_bonus
-		}
+
+		if = { limit = { modifier:allow_righteousness = yes } add_righteousness = righteousness_weak_bonus }
 	}
 
 	option = {
@@ -1166,24 +910,16 @@ flavor_chi.15 = {
 		hidden_effect = {
 			kill_character_silently = scope:target_character2
 		}
-		if = {
-			limit = { modifier:allow_harmony = yes }
-			add_harmony = harmony_severe_penalty
-		}
+
+		if = { limit = { modifier:allow_harmony = yes } add_harmony = harmony_severe_penalty }
 	}
 
 	option = {
 		name = flavor_chi.15.c
 
 		add_government_power = government_power_mild_penalty
-		if = {
-			limit = { modifier:allow_harmony = yes }
-			harmony_mild_towards_equilibrium = yes
-		}
-		if = {
-			limit = { modifier:allow_righteousness = yes }
-			add_righteousness = righteousness_weak_penalty
-		}
+		if = { limit = { modifier:allow_harmony = yes } harmony_mild_towards_equilibrium = yes }
+		if = { limit = { modifier:allow_righteousness = yes } add_righteousness = righteousness_weak_penalty }
 	}
 }
 
@@ -1197,13 +933,10 @@ flavor_chi.16 = {
 
 	trigger = {
 		tag = CHI
-
 		any_cabinet_character = {
 			count > 0
 			culture != root.culture
-			NOT = {
-				has_variable = cultural_difference_variable
-			}
+			NOT = { has_variable = cultural_difference_variable }
 		}
 	}
 
@@ -1239,19 +972,14 @@ flavor_chi.16 = {
 		}
 
 		add_government_power = government_power_weak_bonus
+
 		if = {
-			limit = {
-				OR = {
-					societal_value:spiritualist_vs_humanist > 25
-					societal_value:spiritualist_vs_humanist < -25
-				}
-			}
+			limit = { OR = { societal_value:spiritualist_vs_humanist > 25 societal_value:spiritualist_vs_humanist < -25 } }
 
 			custom_tooltip = based_on_spiritualist_vs_humanist_tt
 
 			add_stability = {
 				value = stability_weak_penalty
-
 				add = {
 					value = societal_value:spiritualist_vs_humanist
 					divide = 10
@@ -1259,23 +987,17 @@ flavor_chi.16 = {
 				}
 			}
 		}
-		if = {
-			limit = { modifier:allow_righteousness = yes }
-			add_righteousness = righteousness_weak_penalty
-		}
+
+		if = { limit = { modifier:allow_righteousness = yes } add_righteousness = righteousness_weak_penalty }
 	}
 
 	option = {
 		name = flavor_chi.16.b
 
 		add_government_power = government_power_weak_penalty
+
 		if = {
-			limit = {
-				OR = {
-					societal_value:spiritualist_vs_humanist > 25
-					societal_value:spiritualist_vs_humanist < -25
-				}
-			}
+			limit = { OR = { societal_value:spiritualist_vs_humanist > 25 societal_value:spiritualist_vs_humanist < -25 } }
 
 			custom_tooltip = based_on_spiritualist_vs_humanist_tt
 
@@ -1284,16 +1006,12 @@ flavor_chi.16 = {
 				add = { value = societal_value:spiritualist_vs_humanist divide = 10 }
 			}
 		}
-		culture = { add_cultural_influence = cultural_influence_mild_penalty }
-		if = {
-			limit = { modifier:allow_harmony = yes }
-			harmony_mild_towards_equilibrium = yes
-		}
-		if = {
-			limit = {
-				is_leader_of_international_organization = international_organization:middle_kingdom
-			}
 
+		culture = { add_cultural_influence = cultural_influence_mild_penalty }
+		if = { limit = { modifier:allow_harmony = yes } harmony_mild_towards_equilibrium = yes }
+
+		if = {
+			limit = { is_leader_of_international_organization = international_organization:middle_kingdom }
 			change_celestial_authority = { value = celestial_authority_weak_penalty }
 		}
 	}
@@ -1309,13 +1027,7 @@ flavor_chi.17 = {
 
 	trigger = {
 		tag = CHI
-
-		ruler_or_regent ?= {
-			age_in_years < 60
-			NOT = {
-				has_variable = elixir_event_variable
-			}
-		}
+		ruler_or_regent ?= { age_in_years < 60 NOT = { has_variable = elixir_event_variable } }
 	}
 
 	illustration_tags = { 10 = regular 10 = interior }
@@ -1326,10 +1038,7 @@ flavor_chi.17 = {
 			background = estate_type:nobles_estate
 		}
 
-		ruler_or_regent ?= {
-			save_scope_as = target_character
-			remove_character_modifier = mercury_elixir_modifier
-		}
+		ruler_or_regent ?= { save_scope_as = target_character remove_character_modifier = mercury_elixir_modifier }
 
 		create_character = {
 			estate = estate_type:clergy_estate
@@ -1346,10 +1055,7 @@ flavor_chi.17 = {
 	option = {
 		name = flavor_chi.17.a
 
-		change_societal_value = {
-			type = traditionalist_vs_innovative
-			value = societal_value_minor_move_to_right
-		}
+		change_societal_value = { type = traditionalist_vs_innovative value = societal_value_minor_move_to_right }
 
 		custom_tooltip = this_may_shorten_ruler_lifespan_tt
 
@@ -1367,28 +1073,21 @@ flavor_chi.17 = {
 				}
 			}
 		}
-		if = {
-			limit = { modifier:allow_harmony = yes }
-			harmony_mild_towards_equilibrium = yes
-		}
+
+		if = { limit = { modifier:allow_harmony = yes } harmony_mild_towards_equilibrium = yes }
 		scope:target_character2 = { move_country = root }
 	}
 
 	option = {
 		name = flavor_chi.17.b
 
-		change_societal_value = {
-			type = traditionalist_vs_innovative
-			value = societal_value_minor_move_to_left
-		}
+		change_societal_value = { type = traditionalist_vs_innovative value = societal_value_minor_move_to_left }
 
 		hidden_effect = {
 			kill_character_silently = scope:target_character2
 		}
-		if = {
-			limit = { modifier:allow_harmony = yes }
-			add_harmony = harmony_severe_penalty
-		}
+
+		if = { limit = { modifier:allow_harmony = yes } add_harmony = harmony_severe_penalty }
 	}
 }
 
@@ -1404,10 +1103,7 @@ flavor_chi.18 = {
 		tag_exists = CHI
 		tag = CHI
 
-		any_cabinet_character ?= {
-			birth_location.province != root.capital.province
-			birth_location.owner = c:CHI
-		}
+		any_cabinet_character ?= { birth_location.province != root.capital.province birth_location.owner = c:CHI }
 	}
 
 	illustration_tags = { 10 = regular 10 = interior }
@@ -1418,15 +1114,9 @@ flavor_chi.18 = {
 			background = estate_type:nobles_estate
 		}
 
-		ruler_or_regent ?= {
-			save_scope_as = target_character
-			remove_character_modifier = mercury_elixir_modifier
-		}
+		ruler_or_regent ?= { save_scope_as = target_character remove_character_modifier = mercury_elixir_modifier }
 
-		random_cabinet_character = {
-			limit = { birth_location != root.capital }
-			save_scope_as = target_character2
-		}
+		random_cabinet_character = { limit = { birth_location != root.capital } save_scope_as = target_character2 }
 
 		scope:target_character2.birth_location = {
 			save_scope_as = target_location
@@ -1468,16 +1158,8 @@ flavor_chi.18 = {
 
 		hidden_effect = {
 			scope:target_location = {
-				every_pop = {
-					limit = { owner = root }
-					add_pop_satisfaction = root.var:character_pop_satisfaction_gain_variable
-				}
-
-				province = {
-					every_location_in_province = {
-						change_prosperity = root.var:character_prosperity_gain_variable
-					}
-				}
+				every_pop = { limit = { owner = root } add_pop_satisfaction = root.var:character_pop_satisfaction_gain_variable }
+				province = { every_location_in_province = { change_prosperity = root.var:character_prosperity_gain_variable } }
 			}
 		}
 
@@ -1488,20 +1170,15 @@ flavor_chi.18 = {
 				mode = add_and_extend
 			}
 		}
-		if = {
-			limit = { modifier:allow_harmony = yes }
-			harmony_mild_towards_equilibrium = yes
-		}
+
+		if = { limit = { modifier:allow_harmony = yes } harmony_mild_towards_equilibrium = yes }
 	}
 
 	option = {
 		name = flavor_chi.18.b
 
 		add_government_power = government_power_weak_bonus
-		if = {
-			limit = { modifier:allow_righteousness = yes }
-			add_righteousness = righteousness_weak_penalty
-		}
+		if = { limit = { modifier:allow_righteousness = yes } add_righteousness = righteousness_weak_penalty }
 	}
 
 	after = {
@@ -1530,10 +1207,7 @@ flavor_chi.19 = {
 		}
 
 		random_cabinet_character = { save_scope_as = target_character }
-		random_cabinet_character = {
-			limit = { this != scope:target_character }
-			save_scope_as = target_character2
-		}
+		random_cabinet_character = { limit = { this != scope:target_character } save_scope_as = target_character2 }
 
 		ruler_or_regent ?= { save_scope_as = target_character3 }
 	}
@@ -1565,16 +1239,20 @@ flavor_chi.19 = {
 
 		if = {
 			limit = {
-				scope:target_character3 = {
-					OR = {
-						has_trait = well_advised
-						num_of_traits > 2
-					}
-				}
+				scope:target_character3 = { OR = { has_trait = well_advised num_of_traits > 2 } }
 			}
 
-			scope:target_character = { add_adm = 2 add_dip = 2 add_mil = 2 }
-			scope:target_character2 = { add_adm = 2 add_dip = 2 add_mil = 2 }
+			scope:target_character = {
+				add_adm = 2
+				add_dip = 2
+				add_mil = 2
+			}
+
+			scope:target_character2 = {
+				add_adm = 2
+				add_dip = 2
+				add_mil = 2
+			}
 		}
 		else = { scope:target_character3 = { add_trait = trait:well_advised } }
 	}
@@ -1624,19 +1302,11 @@ flavor_chi.20 = {
 		}
 		set_variable = {
 			name = target_province_control_prosperity_variable_display
-
-			value = {
-				add = var:target_province_control_prosperity_variable
-				multiply = 100
-			}
+			value = { add = var:target_province_control_prosperity_variable multiply = 100 }
 		}
 		set_variable = {
 			name = target_province_control_pop_satisfaction_variable_display
-
-			value = {
-				add = var:target_province_control_pop_satisfaction_variable
-				multiply = 100
-			}
+			value = { add = var:target_province_control_pop_satisfaction_variable multiply = 100 }
 		}
 	}
 
@@ -1652,10 +1322,8 @@ flavor_chi.20 = {
 		hidden_effect = {
 			scope:target_province = {
 				change_province_food_percentage = root.var:target_province_control_food_variable
-
 				every_location_in_province = {
 					change_prosperity = root.var:target_province_control_prosperity_variable
-
 					every_pop = {
 						limit = { owner = root }
 						add_pop_satisfaction = root.var:target_province_control_pop_satisfaction_variable
@@ -1663,10 +1331,8 @@ flavor_chi.20 = {
 				}
 			}
 		}
-		if = {
-			limit = { modifier:allow_righteousness = yes }
-			add_righteousness = righteousness_weak_bonus
-		}
+
+		if = { limit = { modifier:allow_righteousness = yes } add_righteousness = righteousness_weak_bonus }
 	}
 
 	option = {
@@ -1679,18 +1345,12 @@ flavor_chi.20 = {
 			scope:target_province = {
 				every_location_in_province = {
 					change_prosperity = prosperity_very_weak_penalty
-
-					every_pop = {
-						limit = { owner = root }
-						add_pop_satisfaction = pop_satisfaction_severe_penalty
-					}
+					every_pop = { limit = { owner = root } add_pop_satisfaction = pop_satisfaction_severe_penalty }
 				}
 			}
 		}
-		if = {
-			limit = { modifier:allow_harmony = yes }
-			harmony_mild_towards_equilibrium = yes
-		}
+
+		if = { limit = { modifier:allow_harmony = yes } harmony_mild_towards_equilibrium = yes }
 	}
 
 	after = {
@@ -1720,7 +1380,6 @@ flavor_chi.21 = {
 			is_alive = yes
 			in_cabinet = yes
 		}
-
 		location:nanchang = { owner = root controller = root }
 	}
 
@@ -1746,29 +1405,18 @@ flavor_chi.21 = {
 
 		custom_tooltip = {
 			text = every_pop_25_satisfaction_gain_tt
-
 			scope:target_location = {
-				every_pop = {
-					limit = { owner = root }
-					add_pop_satisfaction = pop_satisfaction_extreme_bonus
-				}
-
+				every_pop = { limit = { owner = root } add_pop_satisfaction = pop_satisfaction_extreme_bonus }
 				change_development = development_mild_bonus
 			}
 		}
 		custom_tooltip = {
 			text = target_province_gets_20_prosperity
-
-			scope:target_province = {
-				every_location_in_province = { change_prosperity = prosperity_severe_bonus }
-			}
+			scope:target_province = { every_location_in_province = { change_prosperity = prosperity_severe_bonus } }
 		}
 
 		culture = { add_cultural_influence = cultural_influence_mild_bonus }
-		if = {
-			limit = { modifier:allow_righteousness = yes }
-			add_righteousness = righteousness_weak_bonus
-		}
+		if = { limit = { modifier:allow_righteousness = yes } add_righteousness = righteousness_weak_bonus }
 	}
 
 	option = {
@@ -1776,7 +1424,6 @@ flavor_chi.21 = {
 
 		custom_tooltip = {
 			text = every_pop_target_province_loses_25_satisfaction_tt
-
 			scope:target_location = {
 				province = {
 					every_location_in_province = {
@@ -1790,10 +1437,7 @@ flavor_chi.21 = {
 		}
 
 		change_celestial_authority = { value = celestial_authority_very_weak_penalty }
-		if = {
-			limit = { modifier:allow_harmony = yes }
-			harmony_mild_towards_equilibrium = yes
-		}
+		if = { limit = { modifier:allow_harmony = yes } harmony_mild_towards_equilibrium = yes }
 	}
 }
 
@@ -1833,12 +1477,8 @@ flavor_chi.22 = {
 				if = {
 					limit = {
 						international_organization:middle_kingdom.leader_country = root
-
-						international_organization:middle_kingdom = {
-							international_organization_has_policy = policy:new_keju_formats_policy
-						}
+						international_organization:middle_kingdom = { international_organization_has_policy = policy:new_keju_formats_policy }
 					}
-
 					add = { value = 10 }
 				}
 			}
@@ -1848,12 +1488,8 @@ flavor_chi.22 = {
 				if = {
 					limit = {
 						international_organization:middle_kingdom.leader_country = root
-
-						international_organization:middle_kingdom = {
-							international_organization_has_policy = policy:new_keju_formats_policy
-						}
+						international_organization:middle_kingdom = { international_organization_has_policy = policy:new_keju_formats_policy }
 					}
-
 					add = { value = 10 }
 				}
 			}
@@ -1863,12 +1499,8 @@ flavor_chi.22 = {
 				if = {
 					limit = {
 						international_organization:middle_kingdom.leader_country = root
-
-						international_organization:middle_kingdom = {
-							international_organization_has_policy = policy:new_keju_formats_policy
-						}
+						international_organization:middle_kingdom = { international_organization_has_policy = policy:new_keju_formats_policy }
 					}
-
 					add = { value = 10 }
 				}
 			}
@@ -1896,10 +1528,7 @@ flavor_chi.22 = {
 		}
 
 		change_celestial_authority = { value = celestial_authority_very_weak_bonus }
-		if = {
-			limit = { modifier:allow_harmony = yes }
-			add_harmony = harmony_weak_bonus
-		}
+		if = { limit = { modifier:allow_harmony = yes } add_harmony = harmony_weak_bonus }
 	}
 
 	option = {
@@ -1907,14 +1536,8 @@ flavor_chi.22 = {
 
 		add_prestige = prestige_extreme_penalty
 		change_celestial_authority = { value = celestial_authority_weak_penalty }
-		if = {
-			limit = { modifier:allow_harmony = yes }
-			add_harmony = harmony_weak_penalty
-		}
-		if = {
-			limit = { modifier:allow_righteousness = yes }
-			add_righteousness = righteousness_weak_penalty
-		}
+		if = { limit = { modifier:allow_harmony = yes } add_harmony = harmony_weak_penalty }
+		if = { limit = { modifier:allow_righteousness = yes } add_righteousness = righteousness_weak_penalty }
 	}
 }
 
@@ -2040,10 +1663,7 @@ flavor_chi.24 = {
 			}
 		}
 
-		change_societal_value = {
-			type = sinicized_vs_unsinicized
-			value = societal_value_large_move_to_right
-		}
+		change_societal_value = { type = sinicized_vs_unsinicized value = societal_value_large_move_to_right }
 
 		chi_adjust_pre_rtr_modifiers = { value = 0.25 }
 	}
@@ -2059,10 +1679,7 @@ flavor_chi.24 = {
 			}
 		}
 
-		change_societal_value = {
-			type = centralization_vs_decentralization
-			value = societal_value_move_to_left
-		}
+		change_societal_value = { type = centralization_vs_decentralization value = societal_value_move_to_left }
 
 		add_country_modifier = {
 			mode = add_and_extend
@@ -2152,7 +1769,6 @@ flavor_chi.26 = {
 
 	trigger = {
 		is_toqto_in_charge = yes
-
 		international_organization:middle_kingdom ?= {
 			leader_country = root
 			international_organization_has_policy = policy:direct_appointment
@@ -2174,16 +1790,11 @@ flavor_chi.26 = {
 	option = {
 		name = flavor_chi.26.a
 
-		international_organization:middle_kingdom = {
-			add_policy_to_international_organization = policy:focus_on_classics
-		}
+		international_organization:middle_kingdom = { add_policy_to_international_organization = policy:focus_on_classics }
 
 		chi_adjust_pre_rtr_modifiers = { value = -0.05 }
 
-		change_societal_value = {
-			type = sinicized_vs_unsinicized
-			value = societal_value_huge_move_to_left
-		}
+		change_societal_value = { type = sinicized_vs_unsinicized value = societal_value_huge_move_to_left }
 	}
 
 	option = {
@@ -2192,10 +1803,7 @@ flavor_chi.26 = {
 		add_stability = stability_mild_bonus
 		chi_adjust_pre_rtr_modifiers = { value = 0.15 }
 
-		add_estate_satisfaction = {
-			type = estate_type:nobles_estate
-			value = estate_satisfaction_mild_bonus
-		}
+		add_estate_satisfaction = { type = estate_type:nobles_estate value = estate_satisfaction_mild_bonus }
 	}
 }
 
@@ -2217,12 +1825,7 @@ flavor_chi.27 = {
 
 	illustration_tags = { 10 = interior 10 = angry }
 
-	trigger = {
-		is_toqto_in_charge = yes
-		NOT = {
-			has_policy = maintain_status_quo_in_han_policies
-		}
-	}
+	trigger = { is_toqto_in_charge = yes NOT = { has_policy = maintain_status_quo_in_han_policies } }
 
 	immediate = {
 		event_illustration_estate_effect = {
@@ -2242,13 +1845,8 @@ flavor_chi.27 = {
 
 		custom_tooltip = {
 			text = yua_every_chinese_pop_will_get_20_satisfaction
-
 			every_pop = {
-				limit = {
-					owner = root
-					culture = { has_culture_group = culture_group:chinese_group }
-				}
-
+				limit = { owner = root culture = { has_culture_group = culture_group:chinese_group } }
 				add_pop_satisfaction = pop_satisfaction_severe_bonus
 			}
 		}
@@ -2286,7 +1884,6 @@ flavor_chi.28 = {
 			foreground = estate_type:nobles_estate
 			background = estate_type:nobles_estate
 		}
-
 		character:yua_toqto = { save_scope_as = target_character }
 	}
 
@@ -2344,15 +1941,9 @@ flavor_chi.29 = {
 	option = {
 		name = flavor_chi.29.a
 
-		add_estate_satisfaction = {
-			type = estate_type:nobles_estate
-			value = estate_satisfaction_mild_penalty
-		}
+		add_estate_satisfaction = { type = estate_type:nobles_estate value = estate_satisfaction_mild_penalty }
 
-		change_societal_value = {
-			type = centralization_vs_decentralization
-			value = societal_value_move_to_left
-		}
+		change_societal_value = { type = centralization_vs_decentralization value = societal_value_move_to_left }
 	}
 
 	option = {
@@ -2380,7 +1971,6 @@ scripted_effect
 destroy_grand_canal_china = {
 	custom_tooltip = {
 		text = destroy_grand_canal_china_tt
-
 		scripted_geography:chinese_canal_geography = {
 			every_location_in_scripted_geography = { demote_to_destroyed_canal = yes }
 		}
@@ -2394,10 +1984,7 @@ scripted_effect
 repair_grand_canal_china = {
 	custom_tooltip = {
 		text = repair_grand_canal_china_tt
-
-		scripted_geography:chinese_canal_geography = {
-			every_location_in_scripted_geography = { fix_grand_canal_repair = yes }
-		}
+		scripted_geography:chinese_canal_geography = { every_location_in_scripted_geography = { fix_grand_canal_repair = yes } }
 	}
 
 	remove_global_variable = china_grand_canal_sustained_damage
@@ -2424,11 +2011,7 @@ flavor_chi.30 = {
 
 	trigger = {
 		is_yuan_china = yes
-
-		any_owned_location = {
-			is_part_of_yellow_river_near_canal = yes
-			is_part_of_chinese_grand_canal = yes
-		}
+		any_owned_location = { is_part_of_yellow_river_near_canal = yes is_part_of_chinese_grand_canal = yes }
 	}
 
 	immediate = {
@@ -2436,13 +2019,8 @@ flavor_chi.30 = {
 			foreground = estate_type:peasants_estate
 			background = estate_type:peasants_estate
 		}
-
 		random_owned_location = {
-			limit = {
-				is_part_of_yellow_river_near_canal = yes
-				is_part_of_chinese_grand_canal = yes
-			}
-
+			limit = { is_part_of_yellow_river_near_canal = yes is_part_of_chinese_grand_canal = yes }
 			province = { save_scope_as = target_province }
 		}
 	}
@@ -2462,10 +2040,7 @@ flavor_chi.30 = {
 	}
 
 	after = {
-		trigger_event_silently = {
-			id = flavor_chi.122
-			months = { 6 12 }
-		}
+		trigger_event_silently = { id = flavor_chi.122 months = { 6 12 } }
 	}
 }
 
@@ -2484,7 +2059,6 @@ flavor_chi.32 = {
 			foreground = pop_type:soldiers
 			background = pop_type:soldiers
 		}
-
 		location:dadu = { save_scope_as = target_location }
 	}
 
@@ -2534,21 +2108,14 @@ flavor_chi.33 = {
 	trigger = {
 		is_yuan_china = yes
 		in_civil_war = no
-		NOT = {
-			international_organization:middle_kingdom.leader_country ?= root
-		}
+		NOT = { international_organization:middle_kingdom.leader_country ?= root }
 	}
 
 	option = {
 		name = flavor_chi.33.a
 
 		if = {
-			limit = {
-				NOT = {
-					tag = YUA
-				}
-			}
-
+			limit = { NOT = { tag = YUA } }
 			form_country = formable_country:YUA_f
 		}
 
@@ -2561,10 +2128,7 @@ scripted_effect
 set_up_oirat = {
 	hidden_effect = {
 		scope:target_location = {
-			while = {
-				count = 12
-				create_sub_unit_with_owner = { type = a_steppe_horse_archers owner = c:OIR }
-			}
+			while = { count = 12 create_sub_unit_with_owner = { type = a_steppe_horse_archers owner = c:OIR } }
 		}
 	}
 
@@ -2592,42 +2156,23 @@ set_up_oirat = {
 				individualism_vs_communalism = 60
 				outward_vs_inward = -20
 			}
-			if = {
-				limit = { country_rank_level < 3 }
-				set_country_rank = country_rank:rank_kingdom
-			}
+
+			if = { limit = { country_rank_level < 3 } set_country_rank = country_rank:rank_kingdom }
 
 			add_horde_unity = horde_unity_extreme_bonus
 			add_gold = 3000
 
-			add_estate_satisfaction = {
-				type = estate_type:nobles_estate
-				value = estate_satisfaction_radical_bonus
-			}
-			add_estate_satisfaction = {
-				type = estate_type:clergy_estate
-				value = estate_satisfaction_radical_bonus
-			}
-			add_estate_satisfaction = {
-				type = estate_type:peasants_estate
-				value = estate_satisfaction_radical_bonus
-			}
-			add_estate_satisfaction = {
-				type = estate_type:burghers_estate
-				value = estate_satisfaction_radical_bonus
-			}
+			add_estate_satisfaction = { type = estate_type:nobles_estate value = estate_satisfaction_radical_bonus }
+			add_estate_satisfaction = { type = estate_type:clergy_estate value = estate_satisfaction_radical_bonus }
+			add_estate_satisfaction = { type = estate_type:peasants_estate value = estate_satisfaction_radical_bonus }
+			add_estate_satisfaction = { type = estate_type:burghers_estate value = estate_satisfaction_radical_bonus }
 
 			every_owned_location = { change_control = control_radical_bonus }
 
 			every_province = {
 				limit = {
-					any_location_in_province = {
-						NOT = {
-							integration_level = core
-						}
-					}
+					any_location_in_province = { NOT = { integration_level = core } }
 				}
-
 				change_province_integration = core
 			}
 		}
@@ -2649,7 +2194,11 @@ flavor_chi.34 = {
 		monthly_chance = 10
 	}
 
-	trigger = { stability <= 0 owns = location:khovd at_war = no }
+	trigger = {
+		stability <= 0
+		owns = location:khovd
+		at_war = no
+	}
 
 	major = yes
 
@@ -2666,7 +2215,6 @@ flavor_chi.34 = {
 				"this.distance_to(location:karakorum)" < "this.distance_to(location:kharuukh)"
 				dominant_culture = { has_culture_group = culture_group:mongolian_group }
 			}
-
 			add_core = c:OIR
 		}
 
@@ -2691,7 +2239,6 @@ scripted_effect
 flee_to_location_effect_setup = {
 	set_local_variable = {
 		name = difference_between_targets
-
 		value = {
 			value = $from$.development
 			subtract = $to$.development
@@ -2708,12 +2255,7 @@ flee_to_location_effect = {
 
 	$to$ = { change_development = { value = local_var:difference_between_targets } }
 
-	$from$ = {
-		change_development = {
-			value = local_var:difference_between_targets
-			multiply = -1
-		}
-	}
+	$from$ = { change_development = { value = local_var:difference_between_targets multiply = -1 } }
 }
 
 # Flee to Shangdu
@@ -2727,14 +2269,8 @@ flavor_chi.36 = {
 		is_yuan_china = yes
 		owns = location:shangdu
 		capital != location:shangdu
-		NOT = {
-			owns = location:dadu
-		}
-		international_organization:middle_kingdom ?= {
-			NOT = {
-				has_location = root.capital
-			}
-		}
+		NOT = { owns = location:dadu }
+		international_organization:middle_kingdom ?= { NOT = { has_location = root.capital } }
 	}
 
 	fire_only_once = yes
@@ -2759,15 +2295,11 @@ flavor_chi.36 = {
 		location:dadu = { save_scope_as = lost_capital }
 		location:shangdu = { save_scope_as = target_location }
 
-		flee_to_location_effect_setup = {
-			from = scope:current_capital
-			to = scope:target_location
-		}
+		flee_to_location_effect_setup = { from = scope:current_capital to = scope:target_location }
 	}
 
 	option = {
 		name = flavor_chi.36.a
-
 		flee_to_location_effect = {
 			from = scope:current_capital
 			to = scope:target_location
@@ -2802,13 +2334,11 @@ flavor_chi.37 = {
 
 	option = {
 		name = flavor_chi.37.a
-
 		scope:target = {
 			every_pop = { add_pop_size = { value = pop_size multiply = -0.25 } }
 
 			root = {
 				add_gold = { value = prev.development multiply = 50 }
-
 				add_prestige = { value = prev.development multiply = 10 }
 			}
 
@@ -2830,17 +2360,9 @@ flavor_chi.38 = {
 		is_yuan_china = yes
 		owns = location:karakorum
 		capital != location:karakorum
-		NOT = {
-			owns = location:dadu
-		}
-		NOT = {
-			owns = location:shangdu
-		}
-		international_organization:middle_kingdom ?= {
-			NOT = {
-				has_location = root.capital
-			}
-		}
+		NOT = { owns = location:dadu }
+		NOT = { owns = location:shangdu }
+		international_organization:middle_kingdom ?= { NOT = { has_location = root.capital } }
 	}
 
 	fire_only_once = yes
@@ -2864,15 +2386,11 @@ flavor_chi.38 = {
 		capital = { save_scope_as = current_capital }
 		location:karakorum = { save_scope_as = target_location }
 
-		flee_to_location_effect_setup = {
-			from = scope:current_capital
-			to = scope:target_location
-		}
+		flee_to_location_effect_setup = { from = scope:current_capital to = scope:target_location }
 	}
 
 	option = {
 		name = flavor_chi.38.a
-
 		flee_to_location_effect = {
 			from = scope:current_capital
 			to = scope:target_location
@@ -2959,12 +2477,7 @@ flavor_chi.40 = {
 	desc = flavor_chi.40.desc
 
 	major = yes
-	major_trigger = {
-		OR = {
-			this = scope:subject_country
-			this = scope:chain_initiator
-		}
-	}
+	major_trigger = { OR = { this = scope:subject_country this = scope:chain_initiator } }
 
 	illustration_tags = { 10 = happy 10 = exterior }
 
@@ -2977,10 +2490,7 @@ flavor_chi.40 = {
 
 	option = {
 		name = flavor_chi.40.a
-
-		scope:subject_country = {
-			make_subject_of = { target = root type = subject_type:vassal }
-		}
+		scope:subject_country = { make_subject_of = { target = root type = subject_type:vassal } }
 	}
 
 	option = {
@@ -3019,7 +2529,6 @@ flavor_chi.41 = {
 			foreground = estate_type:nobles_estate
 			background = estate_type:nobles_estate
 		}
-
 		create_character = {
 			estate = estate_type:burghers_estate
 			first_name = name_xian.name_zu
@@ -3039,9 +2548,7 @@ flavor_chi.41 = {
 
 		add_prestige = prestige_mild_bonus
 
-		scope:target_character.culture = {
-			add_cultural_tradition = cultural_tradition_severe_bonus
-		}
+		scope:target_character.culture = { add_cultural_tradition = cultural_tradition_severe_bonus }
 
 		location:linchuan = {
 			create_art = {
@@ -3075,10 +2582,7 @@ flavor_chi.42 = {
 	trigger = {
 		owns = location:dadu
 		"religion_percentage_in_country(religion:sunni)" > 0
-		OR = {
-			religion.group = religion_group:muslim
-			modifier:tolerance_heathen >= 1
-		}
+		OR = { religion.group = religion_group:muslim modifier:tolerance_heathen >= 1 }
 		gold >= { value = monthly_income_trade_and_tax multiply = 6 }
 	}
 
@@ -3088,19 +2592,13 @@ flavor_chi.42 = {
 			background = estate_type:clergy_estate
 		}
 
-		random_pop = {
-			limit = { religion = religion:sunni }
-			save_scope_as = sunni_pop
-		}
+		random_pop = { limit = { religion = religion:sunni } save_scope_as = sunni_pop }
 
 		location:dadu = { save_scope_as = target_location }
 
 		religion:sunni = { save_scope_as = target_religion }
 
-		set_local_variable = {
-			name = price_of_mosque
-			value = { value = monthly_income_trade_and_tax multiply = 12 }
-		}
+		set_local_variable = { name = price_of_mosque value = { value = monthly_income_trade_and_tax multiply = 12 } }
 	}
 
 	option = {
@@ -3134,10 +2632,7 @@ set_british_target = {
 scripted_effect
 
 set_british_target_effect = {
-	if = {
-		limit = { tag_exists = GBR country_exists = c:GBR }
-		c:GBR = { save_scope_as = target_country }
-	}
+	if = { limit = { tag_exists = GBR country_exists = c:GBR } c:GBR = { save_scope_as = target_country } }
 	else = { c:ENG = { save_scope_as = target_country } }
 }
 
@@ -3199,10 +2694,7 @@ flavor_chi.43 = {
 	option = {
 		name = flavor_chi.43.a
 
-		change_societal_value = {
-			type = outward_vs_inward
-			value = societal_value_move_to_right
-		}
+		change_societal_value = { type = outward_vs_inward value = societal_value_move_to_right }
 
 		add_stability = stability_mild_bonus
 
@@ -3216,10 +2708,7 @@ flavor_chi.43 = {
 
 		add_research_progress = research_progress_severe_bonus
 
-		add_opinion = {
-			modifier = chi_accepted_mission
-			target = scope:target_country
-		}
+		add_opinion = { modifier = chi_accepted_mission target = scope:target_country }
 
 		scope:target_character = { move_country = root }
 	}
@@ -3255,10 +2744,7 @@ flavor_chi.44 = {
 		}
 
 		random_current_reforms = { save_scope_as = target_reform }
-		random_current_reforms = {
-			limit = { is_major_reform = no }
-			save_scope_as = target_reform
-		}
+		random_current_reforms = { limit = { is_major_reform = no } save_scope_as = target_reform }
 	}
 
 	option = {
@@ -3266,10 +2752,7 @@ flavor_chi.44 = {
 
 		add_all_estate_satisfaction = { value = 0.15 }
 
-		if = {
-			limit = { num_open_reform_slots = 0 }
-			remove_reform = scope:target_reform
-		}
+		if = { limit = { num_open_reform_slots = 0 } remove_reform = scope:target_reform }
 
 		add_reform = government_reform:empower_the_eunuchs
 		custom_tooltip = chi_how_to_strengthen_the_reform
@@ -3350,7 +2833,6 @@ flavor_chi.46 = {
 			foreground = pop_type:soldiers
 			background = pop_type:soldiers
 		}
-
 		create_character = {
 			estate = estate_type:burghers_estate
 			first_name = name_liang2.name_yu4
@@ -3375,8 +2857,11 @@ flavor_chi.46 = {
 	}
 	option = {
 		name = flavor_chi.46.c
-
-		scope:target_character = { add_adm = 10 add_dip = 10 add_mil = 5 }
+		scope:target_character = {
+			add_adm = 10
+			add_dip = 10
+			add_mil = 5
+		}
 	}
 }
 
@@ -3403,7 +2888,6 @@ flavor_chi.47 = {
 			foreground = estate_type:nobles_estate
 			background = estate_type:nobles_estate
 		}
-
 		create_character = {
 			estate = estate_type:burghers_estate
 			first_name = name_zhen.name_yi2
@@ -3459,6 +2943,7 @@ flavor_chi.48 = {
 			foreground = pop_type:soldiers
 			background = pop_type:soldiers
 		}
+
 		if = {
 			limit = { character:chi_yu_qian ?= { is_alive = yes owner ?= root } }
 			character:chi_yu_qian = { save_scope_as = target_character }
@@ -3528,9 +3013,7 @@ flavor_chi.49 = {
 		}
 	}
 
-	trigger = {
-		is_leader_of_international_organization = international_organization:middle_kingdom
-	}
+	trigger = { is_leader_of_international_organization = international_organization:middle_kingdom }
 
 	option = {
 		name = flavor_chi.49.a
@@ -3553,10 +3036,7 @@ flavor_chi.49 = {
 			years = 40
 		}
 
-		change_societal_value = {
-			type = spiritualist_vs_humanist
-			value = societal_value_minor_move_to_left
-		}
+		change_societal_value = { type = spiritualist_vs_humanist value = societal_value_minor_move_to_left }
 	}
 
 	option = {
@@ -3568,10 +3048,7 @@ flavor_chi.49 = {
 			years = 40
 		}
 
-		change_societal_value = {
-			type = centralization_vs_decentralization
-			value = societal_value_minor_move_to_left
-		}
+		change_societal_value = { type = centralization_vs_decentralization value = societal_value_minor_move_to_left }
 	}
 
 	option = { name = flavor_chi.49.d add_stability = stability_severe_bonus }
@@ -3604,7 +3081,6 @@ flavor_chi.50 = {
 
 	option = {
 		name = flavor_chi.50.a
-
 		add_country_modifier = {
 			mode = add_and_extend
 			modifier = chi_western_bureau
@@ -3614,7 +3090,6 @@ flavor_chi.50 = {
 
 	option = {
 		name = flavor_chi.50.b
-
 		add_country_modifier = {
 			mode = add_and_extend
 			modifier = chi_eastern_bureau
@@ -3643,17 +3118,13 @@ flavor_chi.51 = {
 
 	illustration_tags = { 10 = happy 10 = exterior }
 
-	trigger = {
-		owns = location:shangyuan
-		gold >= { value = monthly_income_trade_and_tax multiply = 9 }
-	}
+	trigger = { owns = location:shangyuan gold >= { value = monthly_income_trade_and_tax multiply = 9 } }
 
 	immediate = {
 		event_illustration_estate_effect = {
 			foreground = estate_type:burghers_estate
 			background = estate_type:nobles_estate
 		}
-
 		location:shangyuan = { save_scope_as = target_location }
 	}
 
@@ -3666,16 +3137,10 @@ flavor_chi.51 = {
 
 		scope:target_location = {
 			change_development = development_severe_bonus
-
-			market = {
-				add_temporary_demand = { type = demand:porcelain_tower_demand years = 15 }
-			}
+			market = { add_temporary_demand = { type = demand:porcelain_tower_demand years = 15 } }
 		}
 
-		trigger_event_silently = {
-			id = flavor_chi.52
-			years = { 20 25 }
-		}
+		trigger_event_silently = { id = flavor_chi.52 years = { 20 25 } }
 	}
 
 	option = { name = flavor_chi.51.b add_prestige = prestige_severe_penalty }
@@ -3758,10 +3223,7 @@ flavor_chi.53 = {
 
 		scope:target_location = { change_development = development_severe_bonus }
 
-		trigger_event_silently = {
-			id = flavor_chi.54
-			years = { 10 20 }
-		}
+		trigger_event_silently = { id = flavor_chi.54 years = { 10 20 } }
 	}
 
 	option = { name = flavor_chi.53.b add_prestige = prestige_severe_penalty }
@@ -3781,26 +3243,16 @@ flavor_chi.54 = {
 			foreground = estate_type:nobles_estate
 			background = estate_type:nobles_estate
 		}
-
 		capital = { save_scope_as = current_capital }
 	}
 
 	option = {
 		name = flavor_chi.54.a
 
-		scope:target_location = {
-			change_building_level_in_location = {
-				building = building_type:forbidden_city
-				value = 1
-			}
-		}
-		if = {
-			limit = {
-				NOT = {
-					capital = scope:target_location
-				}
-			}
+		scope:target_location = { change_building_level_in_location = { building = building_type:forbidden_city value = 1 } }
 
+		if = {
+			limit = { NOT = { capital = scope:target_location } }
 			move_capital_event_effect = {
 				from = root.capital
 				to = scope:target_location
@@ -3811,18 +3263,9 @@ flavor_chi.54 = {
 	option = {
 		name = flavor_chi.54.b
 
-		trigger = {
-			NOT = {
-				capital = scope:target_location
-			}
-		}
+		trigger = { NOT = { capital = scope:target_location } }
 
-		scope:target_location = {
-			change_building_level_in_location = {
-				building = building_type:forbidden_city
-				value = 1
-			}
-		}
+		scope:target_location = { change_building_level_in_location = { building = building_type:forbidden_city value = 1 } }
 	}
 }
 
@@ -3843,10 +3286,7 @@ flavor_chi.55 = {
 
 	trigger = {
 		is_yuan_china = no
-		OR = {
-			current_year < 1375
-			any_artist = { artist_type = writer has_art_in_progress = no }
-		}
+		OR = { current_year < 1375 any_artist = { artist_type = writer has_art_in_progress = no } }
 	}
 
 	illustration_tags = { 10 = angry 10 = interior }
@@ -3856,9 +3296,9 @@ flavor_chi.55 = {
 			foreground = estate_type:burghers_estate
 			background = estate_type:nobles_estate
 		}
+
 		if = {
 			limit = { current_year < 1375 }
-
 			create_character = {
 				estate = estate_type:burghers_estate
 				first_name = name_lian
@@ -3871,10 +3311,7 @@ flavor_chi.55 = {
 			}
 		}
 		else = {
-			random_artist = {
-				limit = { artist_type = writer has_art_in_progress = no }
-				save_scope_as = target_character
-			}
+			random_artist = { limit = { artist_type = writer has_art_in_progress = no } save_scope_as = target_character }
 		}
 
 		set_local_variable = {
@@ -3907,7 +3344,6 @@ scripted_effect
 chi_give_recommendation_modifier_based_on_value = {
 	if = {
 		limit = { $value$ = 1 }
-
 		ruler = {
 			add_character_modifier = {
 				mode = add_and_extend
@@ -3918,7 +3354,6 @@ chi_give_recommendation_modifier_based_on_value = {
 	}
 	else_if = {
 		limit = { $value$ = 2 }
-
 		ruler = {
 			add_character_modifier = {
 				mode = add_and_extend
@@ -3929,7 +3364,6 @@ chi_give_recommendation_modifier_based_on_value = {
 	}
 	else_if = {
 		limit = { $value$ = 3 }
-
 		ruler = {
 			add_character_modifier = {
 				mode = add_and_extend
@@ -3940,7 +3374,6 @@ chi_give_recommendation_modifier_based_on_value = {
 	}
 	else_if = {
 		limit = { $value$ = 4 }
-
 		ruler = {
 			add_character_modifier = {
 				mode = add_and_extend
@@ -3951,7 +3384,6 @@ chi_give_recommendation_modifier_based_on_value = {
 	}
 	else_if = {
 		limit = { $value$ = 5 }
-
 		ruler = {
 			add_character_modifier = {
 				mode = add_and_extend
@@ -3966,19 +3398,14 @@ chi_give_recommendation_modifier_based_on_value = {
 scripted_effect
 
 chi_follow_recommendations = {
-	chi_give_recommendation_modifier_based_on_value = {
-		value = var:huang_ming_zuxun_choice
-	}
+	chi_give_recommendation_modifier_based_on_value = { value = var:huang_ming_zuxun_choice }
 }
 
 # input: $value$ - integer that corresponds to the recommendation to select
 scripted_effect
 
 chi_select_recommendation = {
-	custom_tooltip = {
-		text = chi_subsequent_rulers
-		set_variable = { name = huang_ming_zuxun_choice value = $value$ }
-	}
+	custom_tooltip = { text = chi_subsequent_rulers set_variable = { name = huang_ming_zuxun_choice value = $value$ } }
 
 	chi_give_recommendation_modifier_based_on_value = { value = $value$ }
 }
@@ -4040,12 +3467,9 @@ flavor_chi.57 = {
 
 	trigger = {
 		ruler ?= { mil >= 90 }
-
 		international_organization:middle_kingdom ?= {
 			leader_country = root
-			NOT = {
-				international_organization_has_unlocked_policy_trigger = { type = military_examination }
-			}
+			NOT = { international_organization_has_unlocked_policy_trigger = { type = military_examination } }
 		}
 	}
 
@@ -4065,7 +3489,6 @@ flavor_chi.57 = {
 			foreground = pop_type:soldiers
 			background = pop_type:soldiers
 		}
-
 		ruler = { save_scope_as = target_character }
 	}
 
@@ -4078,7 +3501,6 @@ flavor_chi.57 = {
 			international_organization_unlock_policy_effect = {
 				type = military_examination
 			}
-
 			add_policy_to_international_organization = policy:military_examination
 		}
 	}
@@ -4086,10 +3508,7 @@ flavor_chi.57 = {
 	option = {
 		name = flavor_chi.57.b
 
-		change_societal_value = {
-			type = belligerent_vs_conciliatory
-			value = societal_value_minor_move_to_left
-		}
+		change_societal_value = { type = belligerent_vs_conciliatory value = societal_value_minor_move_to_left }
 
 		add_stability = stability_mild_bonus
 	}
@@ -4114,9 +3533,7 @@ flavor_chi.58 = {
 	illustration_tags = { 10 = exterior 10 = regular }
 
 	trigger = {
-		NOT = {
-			religion.group = religion_group:muslim
-		}
+		NOT = { religion.group = religion_group:muslim }
 
 		"religion_percentage_in_country(religion:sunni)" > 0
 		modifier:tolerance_heathen >= 0
@@ -4133,13 +3550,9 @@ flavor_chi.58 = {
 			limit = { religion = religion:sunni }
 			save_scope_as = target_pop # illustration
 		}
-		if = {
-			limit = {
-				NOT = {
-					exists = scope:target_pop
-				}
-			}
 
+		if = {
+			limit = { NOT = { exists = scope:target_pop } }
 			random_pop = { save_scope_as = target_pop }
 		}
 
@@ -4152,7 +3565,6 @@ flavor_chi.58 = {
 
 		custom_tooltip = {
 			text = chi_every_sunni_pop_gains_10_satisfaction
-
 			every_pop = {
 				limit = { owner = root religion = scope:target_religion }
 				add_pop_satisfaction = pop_satisfaction_mild_bonus
@@ -4161,7 +3573,6 @@ flavor_chi.58 = {
 
 		custom_tooltip = {
 			text = chi_every_sunni_country_gets_bias
-
 			scope:target_religion = {
 				every_country_in_religion = {
 					limit = { knows_country = root }
@@ -4173,24 +3584,21 @@ flavor_chi.58 = {
 
 	option = {
 		name = flavor_chi.58.b
-
-		change_societal_value = {
-			type = spiritualist_vs_humanist
-			value = societal_value_move_to_left
-		}
+		change_societal_value = { type = spiritualist_vs_humanist value = societal_value_move_to_left }
 	}
 
 	option = {
 		name = flavor_chi.58.c
 
-		trigger = { stability >= 90 modifier:tolerance_heathen >= 1 is_ai = no }
+		trigger = {
+			stability >= 90
+			modifier:tolerance_heathen >= 1
+			is_ai = no
+		}
 
 		change_religion = religion:sunni
 
-		change_religion_for_ruler_and_family = {
-			country = root
-			religion = religion:sunni
-		}
+		change_religion_for_ruler_and_family = { country = root religion = religion:sunni }
 	}
 }
 
@@ -4221,38 +3629,23 @@ flavor_chi.59 = {
 
 	trigger = {
 		is_yuan_china = no
-
 		international_organization:middle_kingdom ?= {
 			leader_country = root
-			NOT = {
-				international_organization_has_policy = policy:direct_appointment
-			}
+			NOT = { international_organization_has_policy = policy:direct_appointment }
 		}
 	}
 
 	option = {
 		name = flavor_chi.59.a
 
-		international_organization:middle_kingdom = {
-			add_policy_to_international_organization = policy:direct_appointment
-		}
+		international_organization:middle_kingdom = { add_policy_to_international_organization = policy:direct_appointment }
 
-		add_estate_satisfaction = {
-			type = estate_type:nobles_estate
-			value = estate_satisfaction_severe_bonus
-		}
+		add_estate_satisfaction = { type = estate_type:nobles_estate value = estate_satisfaction_severe_bonus }
 
-		change_societal_value = {
-			type = aristocracy_vs_plutocracy
-			value = societal_value_move_to_left
-		}
+		change_societal_value = { type = aristocracy_vs_plutocracy value = societal_value_move_to_left }
 	}
 
-	option = {
-		name = flavor_chi.59.b
-
-		add_research_progress = research_progress_mild_bonus
-	}
+	option = { name = flavor_chi.59.b add_research_progress = research_progress_mild_bonus }
 }
 
 # Follow Recommendations of Ancestor - Huang Ming Zuxun
@@ -4265,10 +3658,7 @@ flavor_chi.60 = {
 
 	illustration_tags = { 10 = interior 10 = regular }
 
-	trigger = {
-		has_variable = huang_ming_zuxun_choice
-		has_variable = chi_ancestor
-	}
+	trigger = { has_variable = huang_ming_zuxun_choice has_variable = chi_ancestor }
 
 	immediate = {
 		event_illustration_estate_effect = {
@@ -4281,11 +3671,7 @@ flavor_chi.60 = {
 
 	option = {
 		name = flavor_chi.60.b
-
-		change_societal_value = {
-			type = traditionalist_vs_innovative
-			value = societal_value_minor_move_to_right
-		}
+		change_societal_value = { type = traditionalist_vs_innovative value = societal_value_minor_move_to_right }
 	}
 }
 
@@ -4294,11 +3680,7 @@ scripted_effect
 create_or_target_eunuch_character = {
 	if = {
 		limit = { any_cabinet_character = { has_trait = eunuch } }
-
-		random_cabinet_character = {
-			limit = { has_trait = eunuch }
-			save_scope_as = eunuch
-		}
+		random_cabinet_character = { limit = { has_trait = eunuch } save_scope_as = eunuch }
 	}
 	else = {
 		create_character = {
@@ -4320,12 +3702,7 @@ flavor_chi.61 = {
 
 	illustration_tags = { 10 = interior 10 = angry }
 
-	trigger = {
-		has_eunuchs = yes
-		NOT = {
-			has_country_modifier = chi_eunuchs
-		}
-	}
+	trigger = { has_eunuchs = yes NOT = { has_country_modifier = chi_eunuchs } }
 
 	immediate = {
 		event_illustration_estate_effect = {
@@ -4336,8 +3713,11 @@ flavor_chi.61 = {
 
 	option = {
 		name = flavor_chi.61.a
-
-		add_country_modifier = { mode = add modifier = chi_eunuchs years = 30 }
+		add_country_modifier = {
+			mode = add
+			modifier = chi_eunuchs
+			years = 30
+		}
 	}
 }
 
@@ -4366,11 +3746,7 @@ flavor_chi.62 = {
 		heir = { save_scope_as = target_character }
 	}
 
-	option = {
-		name = flavor_chi.62.a
-
-		scope:target_character = { add_trait = trait:raised_by_eunuchs }
-	}
+	option = { name = flavor_chi.62.a scope:target_character = { add_trait = trait:raised_by_eunuchs } }
 }
 
 flavor_chi.63 = {
@@ -4391,7 +3767,6 @@ flavor_chi.63 = {
 			foreground = estate_type:nobles_estate
 			background = estate_type:nobles_estate
 		}
-
 		ordered_cabinet_character = {
 			order_by = { value = this.total_abilities }
 			max = 1
@@ -4447,7 +3822,6 @@ flavor_chi.64 = {
 			foreground = estate_type:nobles_estate
 			background = estate_type:nobles_estate
 		}
-
 		capital = { save_scope_as = target_location }
 	}
 
@@ -4475,20 +3849,22 @@ flavor_chi.65 = {
 
 	illustration_tags = { 10 = interior 10 = regular }
 
-	trigger = { has_eunuchs = yes modifier:eunuch_power >= 0.75 exists = capital }
+	trigger = {
+		has_eunuchs = yes
+		modifier:eunuch_power >= 0.75
+		exists = capital
+	}
 
 	immediate = {
 		event_illustration_estate_effect = {
 			foreground = estate_type:nobles_estate
 			background = estate_type:nobles_estate
 		}
-
 		capital = { save_scope_as = target_location }
 	}
 
 	option = {
 		name = flavor_chi.65.a
-
 		add_country_modifier = {
 			mode = add_and_extend
 			modifier = chi_more_eunuchs
@@ -4513,20 +3889,22 @@ flavor_chi.66 = {
 
 	illustration_tags = { 10 = interior 10 = angry }
 
-	trigger = { has_eunuchs = yes has_ruler = yes modifier:eunuch_power >= -0.25 }
+	trigger = {
+		has_eunuchs = yes
+		has_ruler = yes
+		modifier:eunuch_power >= -0.25
+	}
 
 	immediate = {
 		event_illustration_estate_effect = {
 			foreground = estate_type:nobles_estate
 			background = estate_type:nobles_estate
 		}
-
 		ruler = { save_scope_as = target_character }
 	}
 
 	option = {
 		name = flavor_chi.66.a
-
 		add_country_modifier = {
 			mode = add_and_extend
 			modifier = chi_reverse_eunuch_powers
@@ -4577,7 +3955,11 @@ flavor_chi.68 = {
 
 	illustration_tags = { 10 = interior 10 = angry }
 
-	trigger = { has_eunuchs = yes modifier:eunuch_power >= 2 has_ruler = yes }
+	trigger = {
+		has_eunuchs = yes
+		modifier:eunuch_power >= 2
+		has_ruler = yes
+	}
 
 	immediate = {
 		event_illustration_estate_effect = {
@@ -4592,7 +3974,6 @@ flavor_chi.68 = {
 
 	option = {
 		name = flavor_chi.68.a
-
 		add_country_modifier = {
 			mode = replace
 			modifier = chi_powerful_eunuch
@@ -4627,9 +4008,7 @@ flavor_chi.69 = {
 		modifier:eunuch_power >= 2.5
 		has_ruler = yes
 		has_country_modifier = chi_powerful_eunuch
-		NOT = {
-			has_country_modifier = chi_eunuch_government
-		}
+		NOT = { has_country_modifier = chi_eunuch_government }
 	}
 
 	immediate = {
@@ -4641,7 +4020,6 @@ flavor_chi.69 = {
 
 	option = {
 		name = flavor_chi.69.a
-
 		add_country_modifier = {
 			mode = add_and_extend
 			modifier = chi_eunuch_government
@@ -4675,15 +4053,7 @@ flavor_chi.70 = {
 		create_or_target_eunuch_character = yes
 
 		random_character = {
-			limit = {
-				NOT = {
-					is_ruler = yes
-				}
-				NOT = {
-					this = scope:eunuch
-				}
-			}
-
+			limit = { NOT = { is_ruler = yes } NOT = { this = scope:eunuch } }
 			save_scope_as = murder_target
 		}
 	}
@@ -4699,10 +4069,7 @@ flavor_chi.70 = {
 
 		add_stability = stability_extreme_penalty
 		remove_country_modifier = chi_powerful_eunuch
-		if = {
-			limit = { has_country_modifier = chi_eunuch_government }
-			remove_country_modifier = chi_eunuch_government
-		}
+		if = { limit = { has_country_modifier = chi_eunuch_government } remove_country_modifier = chi_eunuch_government }
 
 		scope:eunuch = {
 			imprison_character_effect = {
@@ -4722,18 +4089,13 @@ flavor_chi.71 = {
 	trigger = {
 		has_global_variable_list = wokou_nation_list
 
-		any_in_global_list = {
-			variable = wokou_nation_list
-			"border_distance_to(root)" < 800
-		}
+		any_in_global_list = { variable = wokou_nation_list "border_distance_to(root)" < 800 }
 
 		num_of_ports >= 10
 
 		international_organization:middle_kingdom ?= {
 			leader_country = root
-			NOT = {
-				international_organization_has_policy = policy:haijin_policy
-			}
+			NOT = { international_organization_has_policy = policy:haijin_policy }
 		}
 	}
 
@@ -4761,20 +4123,14 @@ flavor_chi.71 = {
 	option = {
 		name = flavor_chi.71.a
 
-		international_organization:middle_kingdom = {
-			add_policy_to_international_organization = policy:haijin_policy
-		}
+		international_organization:middle_kingdom = { add_policy_to_international_organization = policy:haijin_policy }
 
 		add_navy_tradition = navy_tradition_mild_bonus
 	}
 
 	option = {
 		name = flavor_chi.71.b
-
-		add_estate_satisfaction = {
-			type = estate_type:burghers_estate
-			value = estate_satisfaction_mild_bonus
-		}
+		add_estate_satisfaction = { type = estate_type:burghers_estate value = estate_satisfaction_mild_bonus }
 	}
 }
 
@@ -4787,10 +4143,7 @@ flavor_chi.72 = {
 
 	illustration_tags = { 10 = exterior 10 = regular }
 
-	trigger = {
-		is_yuan_china = no
-		army_tradition >= army_tradition_severe_penalty
-	}
+	trigger = { is_yuan_china = no army_tradition >= army_tradition_severe_penalty }
 
 	fire_only_once = yes
 
@@ -4833,11 +4186,7 @@ flavor_chi.72 = {
 
 	option = {
 		name = flavor_chi.72.b
-
-		change_societal_value = {
-			type = traditionalist_vs_innovative
-			value = societal_value_minor_move_to_left
-		}
+		change_societal_value = { type = traditionalist_vs_innovative value = societal_value_minor_move_to_left }
 	}
 }
 
@@ -4866,7 +4215,6 @@ flavor_chi.73 = {
 			foreground = estate_type:nobles_estate
 			background = estate_type:nobles_estate
 		}
-
 		ruler = { save_scope_as = target_character }
 	}
 
@@ -4886,10 +4234,7 @@ flavor_chi.73 = {
 	option = {
 		name = flavor_chi.73.b
 
-		add_estate_satisfaction = {
-			type = estate_type:nobles_estate
-			value = estate_satisfaction_severe_bonus
-		}
+		add_estate_satisfaction = { type = estate_type:nobles_estate value = estate_satisfaction_severe_bonus }
 
 		change_gold_effect = {
 			scale = 3
@@ -4923,7 +4268,6 @@ flavor_chi.74 = {
 			foreground = estate_type:nobles_estate
 			background = estate_type:burghers_estate
 		}
-
 		ruler = { save_scope_as = target_character }
 	}
 
@@ -5009,10 +4353,7 @@ flavor_chi.75 = {
 
 		add_policy = policy:chi_grand_chancellorship
 
-		change_societal_value = {
-			type = traditionalist_vs_innovative
-			value = societal_value_minor_move_to_left
-		}
+		change_societal_value = { type = traditionalist_vs_innovative value = societal_value_minor_move_to_left }
 	}
 }
 
@@ -5035,13 +4376,7 @@ flavor_chi.76 = {
 	illustration_tags = { 10 = regular 10 = exterior }
 
 	trigger = {
-		ruler ?= {
-			OR = {
-				total_abilities >= 200
-				has_trait = scholar
-			}
-		}
-
+		ruler ?= { OR = { total_abilities >= 200 has_trait = scholar } }
 		gold >= { value = root.monthly_income_trade_and_tax multiply = 6 }
 	}
 
@@ -5050,7 +4385,6 @@ flavor_chi.76 = {
 			foreground = estate_type:nobles_estate
 			background = estate_type:nobles_estate
 		}
-
 		ruler = { save_scope_as = target_character }
 	}
 
@@ -5128,19 +4462,14 @@ flavor_chi.78 = {
 		unlock_government_reform_effect = {
 			type = single_whip_law
 		}
-		if = {
-			limit = { num_open_reform_slots = 0 }
-			random_current_reforms = { save_scope_as = target_government_reform }
-		}
+
+		if = { limit = { num_open_reform_slots = 0 } random_current_reforms = { save_scope_as = target_government_reform } }
 	}
 
 	option = {
 		name = flavor_chi.78.a
 
-		if = {
-			limit = { num_open_reform_slots = 0 }
-			remove_reform = scope:target_government_reform
-		}
+		if = { limit = { num_open_reform_slots = 0 } remove_reform = scope:target_government_reform }
 
 		add_reform = government_reform:single_whip_law
 	}
@@ -5166,12 +4495,7 @@ flavor_chi.79 = {
 
 	trigger = {
 		has_eunuchs = yes
-
-		capital ?= {
-			NOT = {
-				has_building_with_at_least_one_level = confucian_school
-			}
-		}
+		capital ?= { NOT = { has_building_with_at_least_one_level = confucian_school } }
 	}
 
 	illustration_tags = { 10 = regular 10 = interior }
@@ -5181,7 +4505,6 @@ flavor_chi.79 = {
 			foreground = estate_type:nobles_estate
 			background = estate_type:nobles_estate
 		}
-
 		capital = { save_scope_as = target_location }
 	}
 
@@ -5200,21 +4523,12 @@ flavor_chi.79 = {
 
 		add_research_progress = research_progress_mild_bonus
 
-		scope:target_location = {
-			change_building_level_in_location = {
-				building = building_type:confucian_school
-				value = 1
-			}
-		}
+		scope:target_location = { change_building_level_in_location = { building = building_type:confucian_school value = 1 } }
 	}
 
 	option = {
 		name = flavor_chi.79.b
-
-		change_societal_value = {
-			type = centralization_vs_decentralization
-			value = societal_value_minor_move_to_left
-		}
+		change_societal_value = { type = centralization_vs_decentralization value = societal_value_minor_move_to_left }
 	}
 }
 
@@ -5232,21 +4546,13 @@ in_amur_expedition_area = {
 scripted_trigger
 
 is_a_valid_jurchen_target = {
-	NOT = {
-		is_subject_or_below_of = root
-	}
+	NOT = { is_subject_or_below_of = root }
 	trigger_if = {
 		limit = { country_type = pop }
-
-		any_owned_nomad_pop = {
-			percent >= 0.5
-			location = { in_amur_expedition_area = yes }
-		}
+		any_owned_nomad_pop = { percent >= 0.5 location = { in_amur_expedition_area = yes } }
 	}
 
-	trigger_else = {
-		any_owned_location = { percent >= 0.5 in_amur_expedition_area = yes }
-	}
+	trigger_else = { any_owned_location = { percent >= 0.5 in_amur_expedition_area = yes } }
 }
 
 scripted_trigger
@@ -5294,10 +4600,7 @@ flavor_chi.80 = {
 			background = pop_type:soldiers
 		}
 
-		random_character = {
-			limit = { has_trait_category = general }
-			save_scope_as = target_character
-		}
+		random_character = { limit = { has_trait_category = general } save_scope_as = target_character }
 
 		save_scope_as = expedition_country
 
@@ -5333,49 +4636,26 @@ flavor_chi.80 = {
 	option = {
 		name = flavor_chi.80.a
 
-		change_societal_value = {
-			type = centralization_vs_decentralization
-			value = societal_value_minor_move_to_left
-		}
+		change_societal_value = { type = centralization_vs_decentralization value = societal_value_minor_move_to_left }
 
 		every_in_list = {
 			list = list_of_jurchens
 			limit = { is_a_valid_jurchen_target = yes }
 
-			trigger_event_non_silently = {
-				id = flavor_chi.81
-				years = { 1 3 }
-			}
+			trigger_event_non_silently = { id = flavor_chi.81 years = { 1 3 } }
 		}
 
-		trigger_event_non_silently = {
-			id = flavor_chi.82
-			years = { 3 5 }
-		}
+		trigger_event_non_silently = { id = flavor_chi.82 years = { 3 5 } }
 	}
 
 	option = {
 		name = flavor_chi.80.b
 
 		if = {
-			limit = {
-				NOR = {
-					current_age = age_1_traditions
-					current_age = age_2_renaissance
-				}
-			}
-
-			change_societal_value = {
-				type = outward_vs_inward
-				value = societal_value_minor_move_to_right
-			}
+			limit = { NOR = { current_age = age_1_traditions current_age = age_2_renaissance } }
+			change_societal_value = { type = outward_vs_inward value = societal_value_minor_move_to_right }
 		}
-		else = {
-			change_societal_value = {
-				type = belligerent_vs_conciliatory
-				value = societal_value_minor_move_to_right
-			}
-		}
+		else = { change_societal_value = { type = belligerent_vs_conciliatory value = societal_value_minor_move_to_right } }
 	}
 }
 
@@ -5403,10 +4683,7 @@ flavor_chi.81 = {
 	option = {
 		name = flavor_chi.81.a
 
-		make_subject_of = {
-			target = scope:expedition_country
-			type = subject_type:tributary
-		}
+		make_subject_of = { target = scope:expedition_country type = subject_type:tributary }
 
 		add_legitimacy = legitimacy_mild_bonus
 	}
@@ -5414,9 +4691,7 @@ flavor_chi.81 = {
 	option = {
 		name = flavor_chi.81.b
 
-		scope:expedition_country = {
-			add_casus_belli = { target = root type = casus_belli:cb_make_tributary }
-		}
+		scope:expedition_country = { add_casus_belli = { target = root type = casus_belli:cb_make_tributary } }
 
 		add_prestige = prestige_severe_bonus
 	}
@@ -5436,7 +4711,6 @@ flavor_chi.82 = {
 			foreground = pop_type:burghers
 			background = pop_type:soldiers
 		}
-
 		location:nurgan = { save_scope_as = target_location }
 	}
 
@@ -5478,19 +4752,14 @@ flavor_chi.83 = {
 		}
 
 		random_province = {
-			limit = {
-				dominant_culture = { has_culture_group = culture_group:chinese_group }
-			}
+			limit = { dominant_culture = { has_culture_group = culture_group:chinese_group } }
 
 			save_scope_as = target_province
 
 			random_location_in_province = {
 				save_scope_as = target_location
 				random_pop = { save_scope_as = target_pop }
-				random_pop = {
-					limit = { pop_type = pop_type:peasants }
-					save_scope_as = target_pop
-				}
+				random_pop = { limit = { pop_type = pop_type:peasants } save_scope_as = target_pop }
 			}
 		}
 
@@ -5510,26 +4779,18 @@ flavor_chi.83 = {
 
 		scope:target_character = { change_character_allegiance = scope:target_rebel }
 
-		set_local_variable = {
-			name = length_of_agitation
-			value = { 3 10 }
-		}
+		set_local_variable = { name = length_of_agitation value = { 3 10 } }
 	}
 
 	trigger = {
 		tag = CHI
-
-		any_province = {
-			dominant_culture = { has_culture_group = culture_group:chinese_group }
-		}
+		any_province = { dominant_culture = { has_culture_group = culture_group:chinese_group } }
 	}
 
 	option = {
 		name = flavor_chi.83.a
-
 		custom_tooltip = {
 			text = flavor_chi.83.tooltip
-
 			scope:target_province = {
 				every_location_in_province = {
 					every_pop = {
@@ -5537,7 +4798,6 @@ flavor_chi.83 = {
 						change_pop_allegiance = scope:target_rebel
 						add_pop_satisfaction = pop_satisfaction_mild_penalty
 					}
-
 					add_location_modifier = {
 						mode = add_and_extend
 						modifier = chi_white_lotus_agitation
@@ -5557,7 +4817,11 @@ flavor_chi.84 = {
 	desc = flavor_chi.84.desc
 	historical_info = flavor_chi.84.historical_info
 
-	trigger = { has_eunuchs = yes has_ruler = yes modifier:eunuch_power >= 2.5 }
+	trigger = {
+		has_eunuchs = yes
+		has_ruler = yes
+		modifier:eunuch_power >= 2.5
+	}
 
 	illustration_tags = { 10 = regular 10 = interior }
 
@@ -5614,7 +4878,12 @@ flavor_chi.84 = {
 		name = flavor_chi.84.b
 
 		add_stability = stability_mild_penalty
-		scope:target_character = { add_adm = 10 add_dip = 10 add_mil = 10 }
+
+		scope:target_character = {
+			add_adm = 10
+			add_dip = 10
+			add_mil = 10
+		}
 	}
 }
 
@@ -5641,21 +4910,13 @@ flavor_chi.85 = {
 			background = estate_type:peasants_estate
 		}
 
-		random_owned_location = {
-			limit = { raw_material = goods:salt }
-			province = { save_scope_as = target_province }
-		}
+		random_owned_location = { limit = { raw_material = goods:salt } province = { save_scope_as = target_province } }
 
 		set_local_variable = { name = cost_to_deal_with_smugglers value = 0 }
 
 		scope:target_province = {
 			every_location_in_province = {
-				root = {
-					change_local_variable = {
-						name = cost_to_deal_with_smugglers
-						add = prev.location_tax_base
-					}
-				}
+				root = { change_local_variable = { name = cost_to_deal_with_smugglers add = prev.location_tax_base } }
 			}
 		}
 
@@ -5667,10 +4928,7 @@ flavor_chi.85 = {
 
 		add_gold = local_var:cost_to_deal_with_smugglers
 
-		add_estate_satisfaction = {
-			type = estate_type:peasants_estate
-			value = estate_satisfaction_weak_penalty
-		}
+		add_estate_satisfaction = { type = estate_type:peasants_estate value = estate_satisfaction_weak_penalty }
 
 		add_legitimacy = legitimacy_mild_bonus
 	}
@@ -5678,10 +4936,7 @@ flavor_chi.85 = {
 	option = {
 		name = flavor_chi.85.b
 
-		change_societal_value = {
-			type = centralization_vs_decentralization
-			value = societal_value_move_to_right
-		}
+		change_societal_value = { type = centralization_vs_decentralization value = societal_value_move_to_right }
 
 		scope:target_province = {
 			add_province_modifier = {
@@ -5714,10 +4969,7 @@ flavor_chi.86 = {
 	title = flavor_chi.86.title
 	desc = flavor_chi.86.desc
 
-	trigger = {
-		tag = CHI
-		has_reform = government_reform:three_departments_system
-	}
+	trigger = { tag = CHI has_reform = government_reform:three_departments_system }
 
 	illustration_tags = { 10 = interior 10 = angry }
 
@@ -5796,10 +5048,7 @@ flavor_chi.88 = {
 
 	immediate = {
 		random_pop = { save_scope_as = target_pop }
-		random_pop = {
-			limit = { religion = religion:catholic }
-			save_scope_as = target_pop
-		}
+		random_pop = { limit = { religion = religion:catholic } save_scope_as = target_pop }
 
 		create_character = {
 			estate = estate_type:clergy_estate
@@ -5814,11 +5063,7 @@ flavor_chi.88 = {
 		}
 	}
 
-	option = {
-		name = flavor_chi.88.a
-
-		scope:target_character = { move_country = root }
-	}
+	option = { name = flavor_chi.88.a scope:target_character = { move_country = root } }
 }
 
 # Constructing a Fleet for Treasure Voyages
@@ -5840,24 +5085,14 @@ flavor_chi.89 = {
 
 	illustration_tags = { 10 = regular 10 = exterior }
 
-	trigger = {
-		has_variable = enabled_treasure_voyages
-		OR = {
-			gold >= yearly_gold
-			current_year >= 1420
-		}
-	}
+	trigger = { has_variable = enabled_treasure_voyages OR = { gold >= yearly_gold current_year >= 1420 } }
 
 	immediate = {
 		event_illustration_estate_effect = {
 			foreground = estate_type:nobles_estate
 			background = estate_type:burghers_estate
 		}
-
-		set_local_variable = {
-			name = cost_of_treasure_voyage_fleet
-			value = { value = yearly_gold multiply = -1 }
-		}
+		set_local_variable = { name = cost_of_treasure_voyage_fleet value = { value = yearly_gold multiply = -1 } }
 	}
 
 	option = {
@@ -5900,7 +5135,6 @@ flavor_chi.90 = {
 
 	trigger = {
 		c:PLB ?= { is_ai = yes has_ports = yes }
-
 		international_organization:middle_kingdom ?= {
 			leader_country = root
 			international_organization_has_policy = policy:haijin_policy
@@ -5963,18 +5197,12 @@ flavor_chi.91 = {
 
 		random_current_reforms = { save_scope_as = target_government_reform }
 
-		random_current_reforms = {
-			limit = { is_major_reform = yes }
-			save_scope_as = target_government_reform
-		}
+		random_current_reforms = { limit = { is_major_reform = yes } save_scope_as = target_government_reform }
 	}
 
 	major = yes
 	major_trigger = {
-		OR = {
-			this = scope:from
-			capital ?= { sub_continent = sub_continent:south_east_asia }
-		}
+		OR = { this = scope:from capital ?= { sub_continent = sub_continent:south_east_asia } }
 	}
 
 	illustration_tags = { 10 = armed 10 = exterior }
@@ -5991,10 +5219,8 @@ flavor_chi.91 = {
 		unlock_government_reform_effect = {
 			type = pirate_brethren_reform
 		}
-		if = {
-			limit = { exists = scope:target_government_reform }
-			remove_reform = scope:target_government_reform
-		}
+
+		if = { limit = { exists = scope:target_government_reform } remove_reform = scope:target_government_reform }
 
 		add_reform = government_reform:pirate_brethren_reform
 		add_policy = policy:state_piracy_policy
@@ -6186,19 +5412,11 @@ flavor_chi.93 = {
 
 		add_prestige = prestige_mild_bonus
 
-		scope:target_character = {
-			add_character_modifier = {
-				modifier = chi_artistic_master_of_the_yuan_dynasty
-				years = -1
-			}
-		}
+		scope:target_character = { add_character_modifier = { modifier = chi_artistic_master_of_the_yuan_dynasty years = -1 } }
 
 		chi_adjust_pre_rtr_modifiers = { value = 0.1 }
 
-		change_societal_value = {
-			type = sinicized_vs_unsinicized
-			value = societal_value_minor_move_to_left
-		}
+		change_societal_value = { type = sinicized_vs_unsinicized value = societal_value_minor_move_to_left }
 	}
 
 	option = {
@@ -6211,10 +5429,7 @@ flavor_chi.93 = {
 
 		chi_adjust_pre_rtr_modifiers = { value = -0.05 }
 
-		change_societal_value = {
-			type = sinicized_vs_unsinicized
-			value = societal_value_minor_move_to_right
-		}
+		change_societal_value = { type = sinicized_vs_unsinicized value = societal_value_minor_move_to_right }
 	}
 }
 
@@ -6277,19 +5492,11 @@ flavor_chi.94 = {
 
 		add_prestige = prestige_mild_bonus
 
-		scope:target_character = {
-			add_character_modifier = {
-				modifier = chi_artistic_master_of_the_yuan_dynasty
-				years = -1
-			}
-		}
+		scope:target_character = { add_character_modifier = { modifier = chi_artistic_master_of_the_yuan_dynasty years = -1 } }
 		scope:target_character = { move_country = root }
 		chi_adjust_pre_rtr_modifiers = { value = 0.1 }
 
-		change_societal_value = {
-			type = sinicized_vs_unsinicized
-			value = societal_value_minor_move_to_left
-		}
+		change_societal_value = { type = sinicized_vs_unsinicized value = societal_value_minor_move_to_left }
 	}
 
 	option = {
@@ -6306,10 +5513,7 @@ flavor_chi.94 = {
 
 		chi_adjust_pre_rtr_modifiers = { value = -0.05 }
 
-		change_societal_value = {
-			type = sinicized_vs_unsinicized
-			value = societal_value_minor_move_to_right
-		}
+		change_societal_value = { type = sinicized_vs_unsinicized value = societal_value_minor_move_to_right }
 	}
 }
 
@@ -6372,19 +5576,11 @@ flavor_chi.95 = {
 
 		add_prestige = prestige_mild_bonus
 
-		scope:target_character = {
-			add_character_modifier = {
-				modifier = chi_artistic_master_of_the_yuan_dynasty
-				years = -1
-			}
-		}
+		scope:target_character = { add_character_modifier = { modifier = chi_artistic_master_of_the_yuan_dynasty years = -1 } }
 		scope:target_character = { move_country = root }
 		chi_adjust_pre_rtr_modifiers = { value = 0.1 }
 
-		change_societal_value = {
-			type = sinicized_vs_unsinicized
-			value = societal_value_minor_move_to_left
-		}
+		change_societal_value = { type = sinicized_vs_unsinicized value = societal_value_minor_move_to_left }
 	}
 
 	option = {
@@ -6398,10 +5594,7 @@ flavor_chi.95 = {
 		scope:target_character = { banish_character = yes }
 		chi_adjust_pre_rtr_modifiers = { value = -0.05 }
 
-		change_societal_value = {
-			type = sinicized_vs_unsinicized
-			value = societal_value_minor_move_to_right
-		}
+		change_societal_value = { type = sinicized_vs_unsinicized value = societal_value_minor_move_to_right }
 	}
 }
 
@@ -6464,19 +5657,11 @@ flavor_chi.96 = {
 
 		add_prestige = prestige_mild_bonus
 
-		scope:target_character = {
-			add_character_modifier = {
-				modifier = chi_artistic_master_of_the_yuan_dynasty
-				years = -1
-			}
-		}
+		scope:target_character = { add_character_modifier = { modifier = chi_artistic_master_of_the_yuan_dynasty years = -1 } }
 		scope:target_character = { move_country = root }
 		chi_adjust_pre_rtr_modifiers = { value = 0.1 }
 
-		change_societal_value = {
-			type = sinicized_vs_unsinicized
-			value = societal_value_minor_move_to_left
-		}
+		change_societal_value = { type = sinicized_vs_unsinicized value = societal_value_minor_move_to_left }
 	}
 
 	option = {
@@ -6493,10 +5678,7 @@ flavor_chi.96 = {
 
 		chi_adjust_pre_rtr_modifiers = { value = -0.05 }
 
-		change_societal_value = {
-			type = sinicized_vs_unsinicized
-			value = societal_value_minor_move_to_right
-		}
+		change_societal_value = { type = sinicized_vs_unsinicized value = societal_value_minor_move_to_right }
 	}
 }
 
@@ -6557,12 +5739,7 @@ flavor_chi.97 = {
 
 		add_legitimacy = legitimacy_mild_bonus
 
-		scope:target_character = {
-			add_character_modifier = {
-				modifier = chi_artistic_master_of_the_ming_dynasty
-				years = -1
-			}
-		}
+		scope:target_character = { add_character_modifier = { modifier = chi_artistic_master_of_the_ming_dynasty years = -1 } }
 
 		change_gold_effect = {
 			scale = -1
@@ -6642,12 +5819,7 @@ flavor_chi.98 = {
 
 		add_legitimacy = legitimacy_mild_bonus
 
-		scope:target_character = {
-			add_character_modifier = {
-				modifier = chi_artistic_master_of_the_ming_dynasty
-				years = -1
-			}
-		}
+		scope:target_character = { add_character_modifier = { modifier = chi_artistic_master_of_the_ming_dynasty years = -1 } }
 
 		change_gold_effect = {
 			scale = -1
@@ -6727,12 +5899,7 @@ flavor_chi.99 = {
 
 		add_legitimacy = legitimacy_mild_bonus
 
-		scope:target_character = {
-			add_character_modifier = {
-				modifier = chi_artistic_master_of_the_ming_dynasty
-				years = -1
-			}
-		}
+		scope:target_character = { add_character_modifier = { modifier = chi_artistic_master_of_the_ming_dynasty years = -1 } }
 
 		change_gold_effect = {
 			scale = -1
@@ -6812,12 +5979,7 @@ flavor_chi.100 = {
 
 		add_legitimacy = legitimacy_mild_bonus
 
-		scope:target_character = {
-			add_character_modifier = {
-				modifier = chi_artistic_master_of_the_ming_dynasty
-				years = -1
-			}
-		}
+		scope:target_character = { add_character_modifier = { modifier = chi_artistic_master_of_the_ming_dynasty years = -1 } }
 
 		change_gold_effect = {
 			scale = -1
@@ -6899,12 +6061,7 @@ flavor_chi.101 = {
 	option = {
 		name = flavor_chi.101.a
 
-		scope:target_character = {
-			add_character_modifier = {
-				modifier = chi_artistic_master_of_the_qing_dynasty
-				years = -1
-			}
-		}
+		scope:target_character = { add_character_modifier = { modifier = chi_artistic_master_of_the_qing_dynasty years = -1 } }
 
 		culture ?= {
 			add_cultural_influence = cultural_influence_mild_bonus
@@ -6913,10 +6070,7 @@ flavor_chi.101 = {
 
 		scope:target_character = { move_country = root }
 
-		change_societal_value = {
-			type = spiritualist_vs_humanist
-			value = societal_value_huge_move_to_left
-		}
+		change_societal_value = { type = spiritualist_vs_humanist value = societal_value_huge_move_to_left }
 	}
 
 	option = {
@@ -6926,14 +6080,8 @@ flavor_chi.101 = {
 			kill_character_silently = scope:target_character
 		}
 
-		change_societal_value = {
-			type = spiritualist_vs_humanist
-			value = societal_value_huge_move_to_right
-		}
-		change_societal_value = {
-			type = outward_vs_inward
-			value = societal_value_huge_move_to_left
-		}
+		change_societal_value = { type = spiritualist_vs_humanist value = societal_value_huge_move_to_right }
+		change_societal_value = { type = outward_vs_inward value = societal_value_huge_move_to_left }
 	}
 }
 
@@ -6992,11 +6140,7 @@ flavor_chi.102 = {
 		name = flavor_chi.102.a
 
 		scope:target_character = {
-			add_character_modifier = {
-				modifier = chi_artistic_master_of_the_qing_dynasty
-				years = -1
-			}
-
+			add_character_modifier = { modifier = chi_artistic_master_of_the_qing_dynasty years = -1 }
 			move_country = root
 		}
 
@@ -7005,10 +6149,7 @@ flavor_chi.102 = {
 			add_cultural_tradition = cultural_tradition_mild_bonus
 		}
 
-		change_societal_value = {
-			type = spiritualist_vs_humanist
-			value = societal_value_huge_move_to_right
-		}
+		change_societal_value = { type = spiritualist_vs_humanist value = societal_value_huge_move_to_right }
 
 		add_stability = stability_mild_penalty
 	}
@@ -7016,14 +6157,8 @@ flavor_chi.102 = {
 	option = {
 		name = flavor_chi.102.b
 
-		change_societal_value = {
-			type = spiritualist_vs_humanist
-			value = societal_value_huge_move_to_left
-		}
-		change_societal_value = {
-			type = outward_vs_inward
-			value = societal_value_huge_move_to_right
-		}
+		change_societal_value = { type = spiritualist_vs_humanist value = societal_value_huge_move_to_left }
+		change_societal_value = { type = outward_vs_inward value = societal_value_huge_move_to_right }
 
 		scope:target_character = { banish_character = yes }
 	}
@@ -7079,12 +6214,7 @@ flavor_chi.103 = {
 	option = {
 		name = flavor_chi.103.a
 
-		scope:target_character = {
-			add_character_modifier = {
-				modifier = chi_artistic_master_of_the_qing_dynasty
-				years = -1
-			}
-		}
+		scope:target_character = { add_character_modifier = { modifier = chi_artistic_master_of_the_qing_dynasty years = -1 } }
 
 		culture ?= {
 			add_cultural_influence = cultural_influence_mild_bonus
@@ -7093,10 +6223,7 @@ flavor_chi.103 = {
 
 		scope:target_character = { move_country = root }
 
-		change_societal_value = {
-			type = individualism_vs_communalism
-			value = societal_value_huge_move_to_right
-		}
+		change_societal_value = { type = individualism_vs_communalism value = societal_value_huge_move_to_right }
 	}
 
 	option = {
@@ -7106,14 +6233,8 @@ flavor_chi.103 = {
 			kill_character_silently = scope:target_character
 		}
 
-		change_societal_value = {
-			type = individualism_vs_communalism
-			value = societal_value_huge_move_to_left
-		}
-		change_societal_value = {
-			type = outward_vs_inward
-			value = societal_value_huge_move_to_left
-		}
+		change_societal_value = { type = individualism_vs_communalism value = societal_value_huge_move_to_left }
+		change_societal_value = { type = outward_vs_inward value = societal_value_huge_move_to_left }
 	}
 }
 
@@ -7167,12 +6288,7 @@ flavor_chi.104 = {
 	option = {
 		name = flavor_chi.104.a
 
-		scope:target_character = {
-			add_character_modifier = {
-				modifier = chi_artistic_master_of_the_qing_dynasty
-				years = -1
-			}
-		}
+		scope:target_character = { add_character_modifier = { modifier = chi_artistic_master_of_the_qing_dynasty years = -1 } }
 
 		culture ?= {
 			add_cultural_influence = cultural_influence_mild_bonus
@@ -7181,10 +6297,7 @@ flavor_chi.104 = {
 
 		scope:target_character = { move_country = root }
 
-		change_societal_value = {
-			type = individualism_vs_communalism
-			value = societal_value_huge_move_to_right
-		}
+		change_societal_value = { type = individualism_vs_communalism value = societal_value_huge_move_to_right }
 	}
 
 	option = {
@@ -7194,14 +6307,8 @@ flavor_chi.104 = {
 			kill_character_silently = scope:target_character
 		}
 
-		change_societal_value = {
-			type = individualism_vs_communalism
-			value = societal_value_huge_move_to_left
-		}
-		change_societal_value = {
-			type = outward_vs_inward
-			value = societal_value_huge_move_to_left
-		}
+		change_societal_value = { type = individualism_vs_communalism value = societal_value_huge_move_to_left }
+		change_societal_value = { type = outward_vs_inward value = societal_value_huge_move_to_left }
 	}
 }
 
@@ -7255,12 +6362,7 @@ flavor_chi.105 = {
 	option = {
 		name = flavor_chi.105.a
 
-		scope:target_character = {
-			add_character_modifier = {
-				modifier = chi_artistic_master_of_the_qing_dynasty
-				years = -1
-			}
-		}
+		scope:target_character = { add_character_modifier = { modifier = chi_artistic_master_of_the_qing_dynasty years = -1 } }
 
 		culture ?= {
 			add_cultural_influence = cultural_influence_mild_bonus
@@ -7269,10 +6371,7 @@ flavor_chi.105 = {
 
 		scope:target_character = { move_country = root }
 
-		change_societal_value = {
-			type = individualism_vs_communalism
-			value = societal_value_huge_move_to_right
-		}
+		change_societal_value = { type = individualism_vs_communalism value = societal_value_huge_move_to_right }
 	}
 
 	option = {
@@ -7282,14 +6381,8 @@ flavor_chi.105 = {
 			kill_character_silently = scope:target_character
 		}
 
-		change_societal_value = {
-			type = individualism_vs_communalism
-			value = societal_value_huge_move_to_left
-		}
-		change_societal_value = {
-			type = outward_vs_inward
-			value = societal_value_huge_move_to_left
-		}
+		change_societal_value = { type = individualism_vs_communalism value = societal_value_huge_move_to_left }
+		change_societal_value = { type = outward_vs_inward value = societal_value_huge_move_to_left }
 	}
 }
 
@@ -7343,12 +6436,7 @@ flavor_chi.106 = {
 	option = {
 		name = flavor_chi.106.a
 
-		scope:target_character = {
-			add_character_modifier = {
-				modifier = chi_artistic_master_of_the_qing_dynasty
-				years = -1
-			}
-		}
+		scope:target_character = { add_character_modifier = { modifier = chi_artistic_master_of_the_qing_dynasty years = -1 } }
 
 		culture ?= {
 			add_cultural_influence = cultural_influence_mild_bonus
@@ -7357,10 +6445,7 @@ flavor_chi.106 = {
 
 		scope:target_character = { move_country = root }
 
-		change_societal_value = {
-			type = individualism_vs_communalism
-			value = societal_value_huge_move_to_right
-		}
+		change_societal_value = { type = individualism_vs_communalism value = societal_value_huge_move_to_right }
 	}
 
 	option = {
@@ -7370,14 +6455,8 @@ flavor_chi.106 = {
 			kill_character_silently = scope:target_character
 		}
 
-		change_societal_value = {
-			type = individualism_vs_communalism
-			value = societal_value_huge_move_to_left
-		}
-		change_societal_value = {
-			type = outward_vs_inward
-			value = societal_value_huge_move_to_left
-		}
+		change_societal_value = { type = individualism_vs_communalism value = societal_value_huge_move_to_left }
+		change_societal_value = { type = outward_vs_inward value = societal_value_huge_move_to_left }
 	}
 }
 
@@ -7397,10 +6476,7 @@ flavor_chi.107 = {
 		monthly_chance = 10
 	}
 
-	trigger = {
-		culture ?= { has_culture_group = culture_group:jurchen_group }
-		ruler ?= { has_dynasty = yes }
-	}
+	trigger = { culture ?= { has_culture_group = culture_group:jurchen_group } ruler ?= { has_dynasty = yes } }
 
 	illustration_tags = { 10 = regular 10 = exterior }
 
@@ -7409,7 +6485,6 @@ flavor_chi.107 = {
 			foreground = estate_type:nobles_estate
 			background = estate_type:nobles_estate
 		}
-
 		ruler = { save_scope_as = target_character }
 	}
 
@@ -7515,7 +6590,6 @@ flavor_chi.109 = {
 
 		scope:origin_country = {
 			remove_country_modifier = chi_large_tributary_envoy
-
 			add_opinion = { modifier = chi_reduced_tributary_size target = root }
 		}
 	}
@@ -7545,10 +6619,7 @@ flavor_chi.110 = {
 	title = flavor_chi.110.title
 	desc = flavor_chi.110.desc
 
-	trigger = {
-		culture = { has_culture_group = culture_group:chinese_group }
-		any_character = { adm >= 80 }
-	}
+	trigger = { culture = { has_culture_group = culture_group:chinese_group } any_character = { adm >= 80 } }
 
 	illustration_tags = { 10 = angry 10 = interior }
 
@@ -7570,12 +6641,7 @@ flavor_chi.110 = {
 		}
 
 		random_estate = {
-			limit = {
-				NOT = {
-					estate_type = estate_type:crown_estate
-				}
-			}
-
+			limit = { NOT = { estate_type = estate_type:crown_estate } }
 			save_scope_as = target_estate
 		}
 	}
@@ -7585,10 +6651,7 @@ flavor_chi.110 = {
 
 		ai_chance = { factor = 1 modifier = { factor = 4 government_power < 25 } }
 
-		add_estate_satisfaction = {
-			type = scope:target_estate.estate_type
-			value = estate_satisfaction_mild_penalty
-		}
+		add_estate_satisfaction = { type = scope:target_estate.estate_type value = estate_satisfaction_mild_penalty }
 
 		add_government_power = government_power_severe_bonus
 	}
@@ -7629,7 +6692,6 @@ flavor_chi.111 = {
 			foreground = estate_type:nobles_estate
 			background = estate_type:nobles_estate
 		}
-
 		random_character = { limit = { adm >= 90 } save_scope_as = target_character }
 	}
 
@@ -7654,10 +6716,7 @@ flavor_chi.111 = {
 			years = 30
 		}
 
-		add_estate_satisfaction = {
-			type = estate_type:peasants_estate
-			value = estate_satisfaction_mild_bonus
-		}
+		add_estate_satisfaction = { type = estate_type:peasants_estate value = estate_satisfaction_mild_bonus }
 	}
 
 	option = {
@@ -7705,7 +6764,6 @@ flavor_chi.112 = {
 			foreground = pop_type:soldiers
 			background = pop_type:soldiers
 		}
-
 		random_province = {
 			limit = {
 				OR = {
@@ -7765,10 +6823,7 @@ flavor_chi.112 = {
 	option = {
 		name = flavor_chi.112.b
 
-		ai_chance = {
-			factor = 1
-			modifier = { factor = 0.1 estate_satisfaction:peasants_estate < 0.4 }
-		}
+		ai_chance = { factor = 1 modifier = { factor = 0.1 estate_satisfaction:peasants_estate < 0.4 } }
 
 		scope:target_province = {
 			add_province_modifier = {
@@ -7778,10 +6833,7 @@ flavor_chi.112 = {
 			}
 		}
 
-		add_estate_satisfaction = {
-			type = estate_type:peasants_estate
-			value = estate_satisfaction_mild_penalty
-		}
+		add_estate_satisfaction = { type = estate_type:peasants_estate value = estate_satisfaction_mild_penalty }
 	}
 }
 
@@ -7796,9 +6848,7 @@ flavor_chi.113 = {
 		is_yuan_china = no
 		any_character = { is_general = yes }
 
-		area:taiwan_area = {
-			any_location_in_area = { has_owner = no is_coastal = yes }
-		}
+		area:taiwan_area = { any_location_in_area = { has_owner = no is_coastal = yes } }
 	}
 
 	illustration_tags = { 10 = regular 10 = exterior }
@@ -7809,16 +6859,10 @@ flavor_chi.113 = {
 			background = pop_type:soldiers
 		}
 
-		random_character = {
-			limit = { is_general = yes }
-			save_scope_as = target_character
-		}
+		random_character = { limit = { is_general = yes } save_scope_as = target_character }
 
 		area:taiwan_area = {
-			random_location_in_area = {
-				limit = { has_owner = no is_coastal = yes }
-				save_scope_as = target_location
-			}
+			random_location_in_area = { limit = { has_owner = no is_coastal = yes } save_scope_as = target_location }
 		}
 
 		scope:target_location = {
@@ -7859,10 +6903,7 @@ flavor_chi.114 = {
 	title = flavor_chi.114.title
 	desc = flavor_chi.114.desc
 
-	trigger = {
-		has_policy = abolish_imperial_examination
-		any_cabinet_character = { count >= 1 }
-	}
+	trigger = { has_policy = abolish_imperial_examination any_cabinet_character = { count >= 1 } }
 
 	illustration_tags = { 10 = regular 10 = interior }
 
@@ -7890,7 +6931,6 @@ flavor_chi.114 = {
 
 		ai_chance = {
 			factor = 0.75
-
 			modifier = {
 				factor = 0
 				trigger = { gold < { value = monthly_income_trade_and_tax multiply = 3 } }
@@ -7944,7 +6984,6 @@ flavor_chi.115 = {
 			foreground = estate_type:nobles_estate
 			background = estate_type:nobles_estate
 		}
-
 		save_scope_as = target_country
 	}
 
@@ -7961,22 +7000,13 @@ flavor_chi.115 = {
 			if = {
 				limit = {
 					exists = international_organization:middle_kingdom
-					NOT = {
-						is_leader_of_international_organization = international_organization:middle_kingdom
-					}
+					NOT = { is_leader_of_international_organization = international_organization:middle_kingdom }
 				}
-
 				international_organization:middle_kingdom.leader_country = {
-					every_subject = {
-						limit = { is_subject_type = tributary }
-						trigger_event_non_silently = flavor_chi.116
-					}
+					every_subject = { limit = { is_subject_type = tributary } trigger_event_non_silently = flavor_chi.116 }
 				}
 			}
-			every_subject = {
-				limit = { is_subject_type = tributary }
-				trigger_event_non_silently = flavor_chi.116
-			}
+			every_subject = { limit = { is_subject_type = tributary } trigger_event_non_silently = flavor_chi.116 }
 		}
 	}
 }
@@ -8075,7 +7105,6 @@ flavor_chi.117 = {
 		scope:target_area = {
 			every_location_in_area = {
 				limit = { owner ?= root }
-
 				every_pop = {
 					limit = { estate_type = estate_type:peasants_estate }
 					add_pop_satisfaction = pop_satisfaction_extreme_penalty
@@ -8085,11 +7114,7 @@ flavor_chi.117 = {
 		}
 	}
 
-	option = {
-		name = flavor_chi.117.a
-
-		scope:target_rebels = { add_rebel_progress = 0.8 }
-	}
+	option = { name = flavor_chi.117.a scope:target_rebels = { add_rebel_progress = 0.8 } }
 
 	option = {
 		name = flavor_chi.117.b
@@ -8128,7 +7153,6 @@ flavor_chi.118 = {
 			foreground = estate_type:peasants_estate
 			background = estate_type:peasants_estate
 		}
-
 		character:chi_li_zicheng = { save_scope_as = target_character }
 	}
 
@@ -8179,14 +7203,11 @@ flavor_chi.119 = {
 
 		location:dadu = { save_scope_as = target_location }
 
-		international_organization:middle_kingdom.leader_country = {
-			save_scope_as = target_country
-		}
+		international_organization:middle_kingdom.leader_country = { save_scope_as = target_country }
 	}
 
 	option = {
 		name = flavor_chi.119.a
-
 		add_country_modifier = {
 			mode = replace
 			modifier = chi_mandate_of_heaven_claimant
@@ -8194,11 +7215,7 @@ flavor_chi.119 = {
 		}
 	}
 
-	option = {
-		name = flavor_chi.119.b
-
-		add_government_power = government_power_extreme_bonus
-	}
+	option = { name = flavor_chi.119.b add_government_power = government_power_extreme_bonus }
 }
 
 # Peasant Legacy
@@ -8230,7 +7247,6 @@ flavor_chi.120 = {
 			foreground = estate_type:peasants_estate
 			background = estate_type:peasants_estate
 		}
-
 		character:chi_li_zicheng = { save_scope_as = target_character }
 	}
 
@@ -8247,20 +7263,11 @@ flavor_chi.120 = {
 	option = {
 		name = flavor_chi.120.b
 
-		change_societal_value = {
-			type = aristocracy_vs_plutocracy
-			value = societal_value_huge_move_to_left
-		}
+		change_societal_value = { type = aristocracy_vs_plutocracy value = societal_value_huge_move_to_left }
 
-		change_societal_value = {
-			type = centralization_vs_decentralization
-			value = societal_value_large_move_to_left
-		}
+		change_societal_value = { type = centralization_vs_decentralization value = societal_value_large_move_to_left }
 
-		add_estate_satisfaction = {
-			type = estate_type:peasants_estate
-			value = estate_satisfaction_extreme_penalty
-		}
+		add_estate_satisfaction = { type = estate_type:peasants_estate value = estate_satisfaction_extreme_penalty }
 	}
 }
 
@@ -8280,10 +7287,7 @@ flavor_chi.121 = {
 		monthly_chance = 10
 	}
 
-	trigger = {
-		army_tradition >= 80
-		any_character = { is_general = yes mil >= 80 }
-	}
+	trigger = { army_tradition >= 80 any_character = { is_general = yes mil >= 80 } }
 
 	illustration_tags = { 10 = regular 10 = exterior }
 
@@ -8299,10 +7303,7 @@ flavor_chi.121 = {
 			save_scope_as = target_character
 		}
 
-		set_local_variable = {
-			name = work_of_art_quality
-			value = { 0.75 0.9 }
-		}
+		set_local_variable = { name = work_of_art_quality value = { 0.75 0.9 } }
 
 		capital = {
 			create_art = {
@@ -8364,15 +7365,9 @@ flavor_chi.122 = {
 			desc = until_yellow_river_works_are_complete
 		}
 
-		trigger_event_silently = {
-			id = flavor_chi.123
-			months = { 3 6 }
-		}
+		trigger_event_silently = { id = flavor_chi.123 months = { 3 6 } }
 
-		trigger_event_non_silently = {
-			id = flavor_chi.124
-			months = { 12 24 }
-		}
+		trigger_event_non_silently = { id = flavor_chi.124 months = { 12 24 } }
 	}
 }
 
@@ -8436,10 +7431,7 @@ flavor_chi.123 = {
 	}
 
 	after = {
-		trigger_event_non_silently = {
-			id = flavor_chi.125
-			months = { 24 48 }
-		}
+		trigger_event_non_silently = { id = flavor_chi.125 months = { 24 48 } }
 	}
 }
 
@@ -8462,10 +7454,7 @@ flavor_chi.124 = {
 	option = {
 		name = flavor_chi.124.a
 		chi_adjust_pre_rtr_modifiers = { value = -0.25 }
-		if = {
-			limit = { has_country_modifier = chi_yellow_river_works }
-			remove_country_modifier = chi_yellow_river_works
-		}
+		if = { limit = { has_country_modifier = chi_yellow_river_works } remove_country_modifier = chi_yellow_river_works }
 
 		repair_grand_canal_china = yes
 
@@ -8492,7 +7481,6 @@ flavor_chi.125 = {
 			foreground = estate_type:peasants_estate
 			background = estate_type:peasants_estate
 		}
-
 		character:cso_shantong_han = { save_scope_as = target_character }
 	}
 
@@ -8501,10 +7489,7 @@ flavor_chi.125 = {
 		historical_option = yes
 		chi_adjust_pre_rtr_modifiers = { value = -0.1 }
 
-		custom_tooltip = {
-			text = chi_red_turban_rebellion
-			set_variable = chi_red_turban_leader_arrested
-		}
+		custom_tooltip = { text = chi_red_turban_rebellion set_variable = chi_red_turban_leader_arrested }
 
 		scope:target_character = {
 			imprison_character_effect = {
@@ -8578,12 +7563,7 @@ flavor_chi.127 = {
 		monthly_chance = 5
 	}
 
-	trigger = {
-		owns = location:jingzhao
-		NOT = {
-			is_situation_active = situation:red_turban_rebellions
-		}
-	}
+	trigger = { owns = location:jingzhao NOT = { is_situation_active = situation:red_turban_rebellions } }
 
 	illustration_tags = { 10 = regular 10 = interior }
 
@@ -8592,7 +7572,6 @@ flavor_chi.127 = {
 			foreground = estate_type:nobles_estate
 			background = estate_type:nobles_estate
 		}
-
 		location:jingzhao = { save_scope_as = target_location }
 	}
 
@@ -8603,12 +7582,7 @@ flavor_chi.127 = {
 
 		scope:target_location = {
 			if = {
-				limit = {
-					NOT = {
-						modifier:sul_is_city_rank_tier = yes
-					}
-				}
-
+				limit = { NOT = { modifier:sul_is_city_rank_tier = yes } }
 				change_location_rank_effect = {
 					modifier:sul_is_city_rank_tier = yes
 				}
@@ -8625,12 +7599,7 @@ flavor_chi.127 = {
 
 		scope:target_location = {
 			if = {
-				limit = {
-					NOT = {
-						modifier:sul_is_city_rank_tier = yes
-					}
-				}
-
+				limit = { NOT = { modifier:sul_is_city_rank_tier = yes } }
 				change_location_rank_effect = {
 					modifier:sul_is_city_rank_tier = yes
 				}
@@ -8659,12 +7628,7 @@ flavor_chi.128 = {
 		monthly_chance = 5
 	}
 
-	trigger = {
-		owns = location:shangyuan
-		NOT = {
-			is_situation_active = situation:red_turban_rebellions
-		}
-	}
+	trigger = { owns = location:shangyuan NOT = { is_situation_active = situation:red_turban_rebellions } }
 
 	illustration_tags = { 10 = regular 10 = interior }
 
@@ -8673,7 +7637,6 @@ flavor_chi.128 = {
 			foreground = estate_type:nobles_estate
 			background = estate_type:nobles_estate
 		}
-
 		location:shangyuan = { save_scope_as = target_location }
 	}
 
@@ -8684,12 +7647,7 @@ flavor_chi.128 = {
 
 		scope:target_location = {
 			if = {
-				limit = {
-					NOT = {
-						modifier:sul_is_city_rank_tier = yes
-					}
-				}
-
+				limit = { NOT = { modifier:sul_is_city_rank_tier = yes } }
 				change_location_rank_effect = {
 					modifier:sul_is_city_rank_tier = yes
 				}
@@ -8708,12 +7666,7 @@ flavor_chi.128 = {
 
 		scope:target_location = {
 			if = {
-				limit = {
-					NOT = {
-						modifier:sul_is_city_rank_tier = yes
-					}
-				}
-
+				limit = { NOT = { modifier:sul_is_city_rank_tier = yes } }
 				change_location_rank_effect = {
 					modifier:sul_is_city_rank_tier = yes
 				}
@@ -8773,7 +7726,6 @@ flavor_chi.1000 = {
 					root = { opinion = { target = prev value >= 0 } }
 				}
 			}
-
 			random_merchant_in_market = {
 				limit = {
 					capital.continent = continent:europe
@@ -8781,117 +7733,68 @@ flavor_chi.1000 = {
 					opinion = { target = root value >= 0 }
 					root = { opinion = { target = prev value >= 0 } }
 				}
-
 				save_scope_as = target_foreign_country
 			}
 		}
 
 		area:guangdong_area = {
-			random_location_in_area = {
-				limit = { owner ?= root is_port = yes }
-				save_scope_as = target_location
-			}
+			random_location_in_area = { limit = { owner ?= root is_port = yes } save_scope_as = target_location }
 		}
 	}
 
 	option = {
 		name = flavor_chi.1000.a
-		if = {
-			limit = {
-				NOR = {
-					current_age = age_1_traditions
-					current_age = age_2_renaissance
-				}
-			}
 
-			change_societal_value = {
-				type = outward_vs_inward
-				value = societal_value_huge_move_to_right
-			}
+		if = {
+			limit = { NOR = { current_age = age_1_traditions current_age = age_2_renaissance } }
+			change_societal_value = { type = outward_vs_inward value = societal_value_huge_move_to_right }
 		}
+
 		if = {
 			limit = { current_age_or_later = { age = age_4_reformation } }
-
-			change_societal_value = {
-				type = mercantilism_vs_free_trade
-				value = societal_value_move_to_left
-			}
+			change_societal_value = { type = mercantilism_vs_free_trade value = societal_value_move_to_left }
 		}
 		else = { add_prestige = prestige_weak_bonus }
-		if = {
-			limit = { modifier:allow_harmony = yes }
-			add_harmony = harmony_weak_penalty
-		}
-		if = {
-			limit = { modifier:allow_righteousness = yes }
-			add_righteousness = righteousness_mild_bonus
-		}
+		if = { limit = { modifier:allow_harmony = yes } add_harmony = harmony_weak_penalty }
+		if = { limit = { modifier:allow_righteousness = yes } add_righteousness = righteousness_mild_bonus }
 	}
 	option = {
 		name = flavor_chi.1000.b
-		if = {
-			limit = {
-				NOR = {
-					current_age = age_1_traditions
-					current_age = age_2_renaissance
-				}
-			}
 
-			change_societal_value = {
-				type = outward_vs_inward
-				value = societal_value_huge_move_to_left
-			}
+		if = {
+			limit = { NOR = { current_age = age_1_traditions current_age = age_2_renaissance } }
+			change_societal_value = { type = outward_vs_inward value = societal_value_huge_move_to_left }
 		}
+
 		if = {
 			limit = { current_age_or_later = { age = age_4_reformation } }
-
-			change_societal_value = {
-				type = mercantilism_vs_free_trade
-				value = societal_value_move_to_right
-			}
+			change_societal_value = { type = mercantilism_vs_free_trade value = societal_value_move_to_right }
 		}
 		else = { add_prestige = prestige_weak_bonus }
-		if = {
-			limit = {
-				is_leader_of_international_organization = international_organization:middle_kingdom
-			}
 
+		if = {
+			limit = { is_leader_of_international_organization = international_organization:middle_kingdom }
 			change_celestial_authority = { value = celestial_authority_weak_bonus }
 		}
-		if = {
-			limit = { modifier:allow_harmony = yes }
-			harmony_mild_towards_equilibrium = yes
-		}
+
+		if = { limit = { modifier:allow_harmony = yes } harmony_mild_towards_equilibrium = yes }
 	}
 	option = {
 		name = flavor_chi.1000.c
 		historical_option = yes
-		if = {
-			limit = {
-				NOR = {
-					current_age = age_1_traditions
-					current_age = age_2_renaissance
-				}
-			}
 
-			change_societal_value = {
-				type = outward_vs_inward
-				value = societal_value_move_to_right
-			}
+		if = {
+			limit = { NOR = { current_age = age_1_traditions current_age = age_2_renaissance } }
+			change_societal_value = { type = outward_vs_inward value = societal_value_move_to_right }
 		}
+
 		if = {
 			limit = { current_age_or_later = { age = age_4_reformation } }
-
-			change_societal_value = {
-				type = mercantilism_vs_free_trade
-				value = societal_value_minor_move_to_left
-			}
+			change_societal_value = { type = mercantilism_vs_free_trade value = societal_value_minor_move_to_left }
 		}
 		else = { add_stability = stability_weak_bonus }
-		if = {
-			limit = { modifier:allow_harmony = yes }
-			add_harmony = harmony_weak_bonus
-		}
+		if = { limit = { modifier:allow_harmony = yes } add_harmony = harmony_weak_bonus }
+
 		custom_tooltip = {
 			text = flavor_chi.1000.c.tt
 			save_scope_as = target_origin_country
@@ -8958,15 +7861,10 @@ flavor_chi.1002 = {
 	option = {
 		name = flavor_chi.1002.a
 
-		add_gold = {
-			value = scope:target_foreign_country.monthly_income_trade_and_tax
-			multiply = 24
-		}
-		if = {
-			limit = {
-				is_leader_of_international_organization = international_organization:middle_kingdom
-			}
+		add_gold = { value = scope:target_foreign_country.monthly_income_trade_and_tax multiply = 24 }
 
+		if = {
+			limit = { is_leader_of_international_organization = international_organization:middle_kingdom }
 			change_celestial_authority = { value = celestial_authority_mild_bonus }
 		}
 	}
@@ -8991,17 +7889,10 @@ flavor_chi.1003 = {
 	option = {
 		name = flavor_chi.1003.a
 
-		show_as_tooltip = {
-			add_casus_belli = {
-				type = casus_belli:cb_insulted_us
-				target = scope:target_foreign_country
-			}
-		}
-		if = {
-			limit = {
-				is_leader_of_international_organization = international_organization:middle_kingdom
-			}
+		show_as_tooltip = { add_casus_belli = { type = casus_belli:cb_insulted_us target = scope:target_foreign_country } }
 
+		if = {
+			limit = { is_leader_of_international_organization = international_organization:middle_kingdom }
 			change_celestial_authority = { value = celestial_authority_strong_penalty }
 		}
 	}
@@ -9067,7 +7958,6 @@ flavor_chi.1101 = {
 			foreground = estate_type:clergy_estate
 			background = estate_type:clergy_estate
 		}
-
 		c:PAP = { save_scope_as = target_papal_country }
 	}
 
@@ -9077,30 +7967,17 @@ flavor_chi.1101 = {
 		remove_variable = mng_accepted_jesuits
 		custom_tooltip = flavor_chi.1102.a.tt
 
-		c:PAP = {
-			add_opinion = { target = c:CHI modifier = mng_chinese_rites_denounced }
-		}
-		if = {
-			limit = { modifier:allow_righteousness = yes }
-			add_righteousness = righteousness_extreme_bonus
-		}
-		if = {
-			limit = { modifier:allow_harmony = yes }
-			add_harmony = harmony_mild_bonus
-		}
+		c:PAP = { add_opinion = { target = c:CHI modifier = mng_chinese_rites_denounced } }
+		if = { limit = { modifier:allow_righteousness = yes } add_righteousness = righteousness_extreme_bonus }
+		if = { limit = { modifier:allow_harmony = yes } add_harmony = harmony_mild_bonus }
 	}
 	option = {
 		name = flavor_chi.1101.b
 		add_prestige = prestige_weak_bonus
-		if = {
-			limit = { modifier:allow_harmony = yes }
-			harmony_mild_towards_equilibrium = yes
-		}
-		if = {
-			limit = {
-				is_leader_of_international_organization = international_organization:middle_kingdom
-			}
+		if = { limit = { modifier:allow_harmony = yes } harmony_mild_towards_equilibrium = yes }
 
+		if = {
+			limit = { is_leader_of_international_organization = international_organization:middle_kingdom }
 			change_celestial_authority = { value = celestial_authority_mild_penalty }
 		}
 	}
@@ -9118,7 +7995,6 @@ flavor_chi.1102 = {
 			foreground = estate_type:clergy_estate
 			background = estate_type:clergy_estate
 		}
-
 		c:PAP = { save_scope_as = target_papal_country }
 	}
 
@@ -9128,31 +8004,18 @@ flavor_chi.1102 = {
 		remove_variable = mng_accepted_jesuits
 		custom_tooltip = flavor_chi.1102.a.tt
 
-		c:PAP = {
-			add_opinion = { target = c:CHI modifier = mng_chinese_rites_denounced }
-		}
-		if = {
-			limit = { modifier:allow_righteousness = yes }
-			add_righteousness = righteousness_extreme_bonus
-		}
-		if = {
-			limit = { modifier:allow_harmony = yes }
-			add_harmony = harmony_mild_bonus
-		}
+		c:PAP = { add_opinion = { target = c:CHI modifier = mng_chinese_rites_denounced } }
+		if = { limit = { modifier:allow_righteousness = yes } add_righteousness = righteousness_extreme_bonus }
+		if = { limit = { modifier:allow_harmony = yes } add_harmony = harmony_mild_bonus }
 	}
 	option = {
 		name = flavor_chi.1102.b
 		add_prestige = prestige_weak_bonus
 		add_stability = stability_mild_bonus
-		if = {
-			limit = { modifier:allow_harmony = yes }
-			harmony_mild_towards_equilibrium = yes
-		}
-		if = {
-			limit = {
-				is_leader_of_international_organization = international_organization:middle_kingdom
-			}
+		if = { limit = { modifier:allow_harmony = yes } harmony_mild_towards_equilibrium = yes }
 
+		if = {
+			limit = { is_leader_of_international_organization = international_organization:middle_kingdom }
 			change_celestial_authority = { value = celestial_authority_mild_penalty }
 		}
 	}

@@ -11,19 +11,12 @@ call_parliament = {
 		scope:actor = {
 			is_active_parliament = no
 			months_since_last_parliament_called > "define:NCountry|PARLIAMENT_COOLDOWN_MONTHS"
-			NOT = {
-				modifier:parliament_abolished = yes
-			}
+			NOT = { modifier:parliament_abolished = yes }
 		}
 	}
 
 	select_trigger = {
-		show_if = {
-			scope:actor = {
-				country_type = location
-				modifier:permanent_parliament_location = no
-			}
-		}
+		show_if = { scope:actor = { country_type = location modifier:permanent_parliament_location = no } }
 
 		looking_for_a = location
 		source = actor
@@ -48,18 +41,10 @@ call_parliament = {
 			OR = {
 				is_capital = yes
 				AND = {
+					OR = { is_core_of = scope:actor modifier:has_parliament_seat = yes }
+					OR = { is_province_capital = yes modifier:fort_level > 0 }
 					OR = {
-						is_core_of = scope:actor
-						modifier:has_parliament_seat = yes
-					}
-					OR = {
-						is_province_capital = yes
-						modifier:fort_level > 0
-					}
-					OR = {
-						NOT = {
-							modifier:sul_is_rural_settlement_rank_tier = yes
-						}
+						NOT = { modifier:sul_is_rural_settlement_rank_tier = yes }
 						scope:actor = { modifier:can_call_rural_parliaments = yes }
 					}
 				}
@@ -77,10 +62,7 @@ call_parliament = {
 		ai_interaction_source_list = {
 			scope:actor = {
 				every_possible_parliament_issue = {
-					if = {
-						limit = { "ai_parliament_issue_resolution_vote_bias(scope:actor)" >= 0 }
-						add_to_list = source
-					}
+					if = { limit = { "ai_parliament_issue_resolution_vote_bias(scope:actor)" >= 0 } add_to_list = source }
 				}
 			}
 		}
@@ -105,11 +87,8 @@ call_parliament = {
 					limit = { scope:parliament_location = scope:actor.capital }
 					custom_tooltip = { text = select_parliament_location_capital_modifier_tooltip }
 				}
-				else = {
-					custom_tooltip = {
-						text = select_parliament_location_not_capital_modifier_tooltip
-					}
-				}
+				else = { custom_tooltip = { text = select_parliament_location_not_capital_modifier_tooltip } }
+
 				scope:parliament_location = {
 					add_location_modifier = {
 						modifier = parliament_location
@@ -118,10 +97,7 @@ call_parliament = {
 					}
 				}
 			}
-			else = {
-				custom_tooltip = select_parliament_location_inform_choice_tt
-				set_parliament_location = scope:actor.capital
-			}
+			else = { custom_tooltip = select_parliament_location_inform_choice_tt set_parliament_location = scope:actor.capital }
 
 			set_parliament_active = yes
 
@@ -130,17 +106,10 @@ call_parliament = {
 				set_parliament_issue = scope:parliament_issue
 
 				set_parliament_issue_support = {
-					add = {
-						desc = parliament_base_support
-						value = modifier:parliament_base_support
-					}
+					add = { desc = parliament_base_support value = modifier:parliament_base_support }
 					if = {
 						limit = { scope:parliament_issue.estate_type = { always_loyal = no } }
-
-						add = {
-							desc = estate_power
-							value = "estate_power(scope:parliament_issue.estate_type)"
-						}
+						add = { desc = estate_power value = "estate_power(scope:parliament_issue.estate_type)" }
 					}
 				}
 			}
@@ -150,10 +119,7 @@ call_parliament = {
 	ai_will_do = {
 		add = {
 			if = {
-				limit = {
-					scope:actor = { months_since_last_parliament_called < 72 stability < 0 }
-				}
-
+				limit = { scope:actor = { months_since_last_parliament_called < 72 stability < 0 } }
 				value = -10000
 			}
 
@@ -172,40 +138,26 @@ call_parliament = {
 						}
 					}
 				}
-
 				value = 100
 			}
 		}
 
 		scope:actor = {
-			if = {
-				limit = { exists = scope:parliament_issue }
-				add = "parliament_issue_chance(scope:parliament_issue)"
-			}
+			if = { limit = { exists = scope:parliament_issue } add = "parliament_issue_chance(scope:parliament_issue)" }
 		}
+
 		if = {
 			limit = { exists = scope:parliament_location }
-
-			scope:parliament_location = {
-				save_temporary_scope_as = this_parliament_location
-			}
+			scope:parliament_location = { save_temporary_scope_as = this_parliament_location }
 		}
 		else = {
-			scope:actor = {
-				capital = { save_temporary_scope_as = this_parliament_location }
-			}
+			scope:actor = { capital = { save_temporary_scope_as = this_parliament_location } }
 		}
 
 		multiply = {
 			scope:this_parliament_location = {
 				if = {
-					limit = {
-						scope:actor = {
-							capital = scope:this_parliament_location
-							modifier:can_call_rural_parliaments = no
-						}
-					}
-
+					limit = { scope:actor = { capital = scope:this_parliament_location modifier:can_call_rural_parliaments = no } }
 					value = 30
 				}
 				else = {
@@ -215,10 +167,7 @@ call_parliament = {
 						value = local_control # control goes from 0 to 1
 						multiply = 10
 					}
-					add = {
-						value = scope:actor.societal_value:centralization_vs_decentralization
-						multiply = 0.1
-					}
+					add = { value = scope:actor.societal_value:centralization_vs_decentralization multiply = 0.1 }
 
 					add = { value = random_integer modulo = 10 }
 				}
@@ -247,9 +196,7 @@ request_more_taxes = {
 	allow = {
 		scope:actor = {
 			is_active_parliament = yes
-			NOT = {
-				has_country_modifier = parliament_approved_extra_taxes
-			}
+			NOT = { has_country_modifier = parliament_approved_extra_taxes }
 
 			parliament_issue_support > modifier:parliament_request_issue_support_needed
 		}
@@ -262,11 +209,7 @@ request_more_taxes = {
 				years = 1
 				mode = add_and_extend
 			}
-
-			change_parliament_issue_support = {
-				value = modifier:parliament_request_issue_support_needed
-				multiply = -1
-			}
+			change_parliament_issue_support = { value = modifier:parliament_request_issue_support_needed multiply = -1 }
 		}
 	}
 
@@ -275,23 +218,17 @@ request_more_taxes = {
 			if = {
 				limit = {
 					scope:actor = {
-						OR = {
-							parliament_issue_support > 0.9
-							stability >= 20
-						}
+						OR = { parliament_issue_support > 0.9 stability >= 20 }
 
 						higher_temporary_taxes_needed >= 0.05
 						NOT = {
 							any_country_in_diplomatic_range = {
 								scope:actor = { wants_casus_belli_with = prev }
-								NOT = {
-									has_target_casus_belli_on_us = scope:actor
-								}
+								NOT = { has_target_casus_belli_on_us = scope:actor }
 							}
 						}
 					}
 				}
-
 				value = 10
 			}
 		}
@@ -311,10 +248,7 @@ prepare_for_war = {
 	player_automated_category = parliament
 
 	allow = {
-		scope:actor = {
-			is_active_parliament = yes
-			parliament_issue_support > { value = parliament_request_support }
-		}
+		scope:actor = { is_active_parliament = yes parliament_issue_support > { value = parliament_request_support } }
 	}
 
 	select_trigger = {
@@ -325,19 +259,12 @@ prepare_for_war = {
 				every_country_in_diplomatic_range = {
 					limit = {
 						capital = { is_discovered_by = scope:actor }
-						NOT = {
-							has_target_casus_belli_on_us = root
-						}
-						NOT = {
-							has_truce_with = scope:actor
-						}
-						NOT = {
-							is_subject_of = scope:actor
-						}
+						NOT = { has_target_casus_belli_on_us = root }
+						NOT = { has_truce_with = scope:actor }
+						NOT = { is_subject_of = scope:actor }
 
 						is_rebel_country = no
 					}
-
 					add_to_list = source
 				}
 			}
@@ -359,15 +286,16 @@ prepare_for_war = {
 				limit = { scope:target ?= { is_rival_of = scope:actor } }
 				add = { desc = "game_concept_rival" value = 100 }
 			}
+
 			if = {
 				limit = { exists = scope:actor exists = scope:target }
-
 				subtract = {
 					desc = "OUR_OPINION_TOOLTIP"
 					value = "scope:actor.opinion(scope:target)"
 					divide = 10
 				}
 			}
+
 			if = {
 				limit = { scope:actor = { wants_casus_belli_with = scope:target } }
 				add = 100
@@ -395,7 +323,6 @@ prepare_for_war = {
 					}
 				}
 			}
-
 			add = province_tax_base
 		}
 
@@ -412,7 +339,6 @@ prepare_for_war = {
 		scope:actor = {
 			if = {
 				limit = { exists = scope:target }
-
 				add_casus_belli = {
 					target = scope:target
 					type = casus_belli:cb_parliament_conquer_province
@@ -420,31 +346,27 @@ prepare_for_war = {
 				}
 			}
 			else = { custom_tooltip = select_a_country_to_get_casus_belli_on }
-			change_parliament_issue_support = {
-				value = modifier:parliament_request_issue_support_needed
-				multiply = -1
-			}
+			change_parliament_issue_support = { value = modifier:parliament_request_issue_support_needed multiply = -1 }
 		}
 	}
 
 	ai_will_do = {
 		if = {
 			limit = {
-				NOT = {
-					scope:actor = { wants_casus_belli_with = scope:target }
-				}
+				NOT = { scope:actor = { wants_casus_belli_with = scope:target } }
 			}
-
 			add = -1000
 		}
 
 		add = {
 			value = 50 # we don't like these people
 		}
+
 		if = {
 			limit = { scope:target ?= { is_rival_of = scope:actor } }
 			add = { desc = "game_concept_rival" value = 100 }
 		}
+
 		subtract = {
 			desc = "OUR_OPINION_TOOLTIP"
 			value = "scope:actor.opinion(scope:target)"
@@ -470,9 +392,7 @@ ask_for_larger_levies = {
 	allow = {
 		scope:actor = {
 			is_active_parliament = yes
-			NOT = {
-				has_country_modifier = parliament_approved_extra_levies
-			}
+			NOT = { has_country_modifier = parliament_approved_extra_levies }
 
 			parliament_issue_support > modifier:parliament_request_issue_support_needed
 		}
@@ -485,32 +405,20 @@ ask_for_larger_levies = {
 				years = 3
 				mode = add_and_extend
 			}
-
-			change_parliament_issue_support = {
-				value = modifier:parliament_request_issue_support_needed
-				multiply = -1
-			}
+			change_parliament_issue_support = { value = modifier:parliament_request_issue_support_needed multiply = -1 }
 		}
 	}
 
 	ai_will_do = {
 		# Base
 		subtract = { value = 1 }
-
 		add = {
 			if = {
 				limit = {
 					scope:actor = {
-						OR = {
-							is_in_losing_war = yes
-							AND = {
-								at_war = yes
-								stability >= 10
-							}
-						}
+						OR = { is_in_losing_war = yes AND = { at_war = yes stability >= 10 } }
 					}
 				}
-
 				value = 2
 			}
 		}
@@ -556,10 +464,7 @@ ask_for_law_changes = {
 
 		interaction_source_list = {
 			scope:actor = {
-				every_possible_policy = {
-					limit = { law = scope:target_law }
-					add_to_list = source
-				}
+				every_possible_policy = { limit = { law = scope:target_law } add_to_list = source }
 			}
 		}
 
@@ -572,27 +477,16 @@ ask_for_law_changes = {
 
 	effect = {
 		scope:actor = {
-			if = {
-				limit = { exists = scope:target_law exists = scope:target_policy }
-				add_policy = scope:target_policy
-			}
+			if = { limit = { exists = scope:target_law exists = scope:target_policy } add_policy = scope:target_policy }
 			else = { custom_tooltip = ask_for_law_changes_select_law_title }
-			change_parliament_issue_support = {
-				value = modifier:parliament_request_issue_support_needed
-				multiply = -1
-			}
+			change_parliament_issue_support = { value = modifier:parliament_request_issue_support_needed multiply = -1 }
 		}
 	}
 
 	ai_will_do = {
 		add = {
 			if = {
-				limit = {
-					scope:actor = {
-						discount_needed_for_law_change > 0
-						discount_needed_for_law_change <= 0.5
-					}
-				}
+				limit = { scope:actor = { discount_needed_for_law_change > 0 discount_needed_for_law_change <= 0.5 } }
 
 				value = scope:actor.discount_needed_for_law_change
 				multiply = 100
@@ -604,7 +498,11 @@ ask_for_law_changes = {
 change_parliament_type = {
 	type = owncountry
 
-	ai_prerequisite = { at_war = no stability >= 40 legitimacy >= 90 }
+	ai_prerequisite = {
+		at_war = no
+		stability >= 40
+		legitimacy >= 90
+	}
 
 	allow = {
 		scope:actor = { is_active_parliament = no modifier:parliament_abolished = no }
@@ -626,10 +524,7 @@ change_parliament_type = {
 
 	effect = {
 		scope:actor = {
-			if = {
-				limit = { exists = scope:parliament_type }
-				set_parliament_type = scope:parliament_type
-			}
+			if = { limit = { exists = scope:parliament_type } set_parliament_type = scope:parliament_type }
 		}
 	}
 
@@ -643,7 +538,6 @@ change_parliament_type = {
 	ai_will_do = {
 		# base reluctance
 		subtract = { value = 10 }
-
 		scope:actor = { add = "parliament_type_utility(scope:parliament_type|yes)" }
 	}
 }
@@ -658,19 +552,13 @@ force_parliament_issue = {
 			trigger_if = {
 				limit = { tag = HUN }
 				OR = {
-					AND = {
-						has_ruler = yes
-						ruler = { has_character_modifier = hun_absolute_rule }
-					}
-
+					AND = { has_ruler = yes ruler = { has_character_modifier = hun_absolute_rule } }
 					parliament_type = parliament_type:autocratic_parliament
 				}
 			}
 
 			trigger_else = { parliament_type = parliament_type:autocratic_parliament }
-			NOT = {
-				has_cooldown = has_forced_parliament_issue
-			}
+			NOT = { has_cooldown = has_forced_parliament_issue }
 		}
 	}
 
@@ -678,13 +566,10 @@ force_parliament_issue = {
 		scope:actor = {
 			set_parliament_issue_support = { value = 1 }
 			add_cooldown = { type = has_forced_parliament_issue years = 5 }
+
 			if = {
 				limit = { current_age_or_later = { age = age_5_absolutism } }
-
-				change_societal_value = {
-					type = absolutism_vs_liberalism
-					value = societal_value_move_to_left
-				}
+				change_societal_value = { type = absolutism_vs_liberalism value = societal_value_move_to_left }
 			}
 		}
 	}
@@ -699,7 +584,6 @@ force_parliament_issue = {
 	ai_will_do = {
 		# Base
 		subtract = { value = 1 }
-
 		add = {
 			if = {
 				limit = {
@@ -712,7 +596,6 @@ force_parliament_issue = {
 						}
 					}
 				}
-
 				value = 2
 			}
 		}

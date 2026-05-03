@@ -17,30 +17,39 @@ Organized by subsystem. **Update this document when adding, removing, or renamin
 7. `sul_wealth_seed_all` — seed location wealth at equilibrium (last, so all gold-spending inits have finished). Also computes minority return_per_pop via `sul_compute_minority_returns` — the call in step 4's WPP pass produces 0 because wealth doesn't exist yet.
 
 ### Monthly Country Pulse
-Sequential on_actions first, then parallelized events via `sul_monthly_country_pulse`.
+Sequential on_actions first, then parallelized events, then sequential EPBM/DWUI.
 
 **Sequential (sul_hardcoded.txt):**
 1. `sul_projection_monthly` — recompute subject-strength drag, decay conquest debt
 
 **Parallel events (sul_parallel_on_actions.txt → sul_monthly_country_pulse):**
-- `sul_economy.0` (player) — `sul_monthly_location_pass` + pay wages + EPBM collect
-- `sul_economy.1` (AI) — pay previously accumulated wages + EPBM charge
+- `sul_economy.monthly` — wealth convergence + power accumulation + wage payment
 - `sul_trade_maint.0` — convert summed efficiency to merchant_maintenance_cost
 - `sul_minting_pulse.0` — minting price cache, debasement, AI minting modifiers
 - `sul_war_pulse.0` — war momentum update (countries at war only)
 - `sul_war_pulse.1` — war rebellions
 
+**Sequential (after parallel):**
+- `sul_epbm_player_monthly` — player EPBM collect
+- `sul_epbm_ai_monthly_charge` — AI EPBM charge
+- `sul_dwui_monthly_recalc` — unit composition recalc
+
 ### Yearly Country Pulse
-Parallelized events via `sul_yearly_country_pulse`.
-- `sul_economy.2` — wage rate recalc + AI `sul_monthly_location_pass` + EPBM AI recalc + decade rebuild
-- `sul_economy.3` — GDP yearly: per-location output + asset shares for capital returns
+Parallelized events, then sequential EPBM.
+
+**Parallel events (sul_parallel_on_actions.txt → sul_yearly_country_pulse):**
+- `sul_economy.yearly_wages` — recalculate location wage rates
+- `sul_economy.yearly_gdp` — GDP + asset shares for capital returns
 - `sul_rgo_pulse.0` — RGO trim
 - `sul_rgo_pulse.1` — cleanup dead units
 - `sul_minting_pulse.1` — AI minting price cache + minting modifier refresh
 
+**Sequential (after parallel):**
+- `sul_epbm_ai_yearly_recalc` — AI EPBM recalc
+- `sul_epbm_decade_rebuild` — structural rebuild every 10 years
+
 ### Weather Monthly Pulse (every month, scopeless)
 All version checks live here because the pulse fires once globally (no per-country race, so no reentrance guard needed). Each check compares a `sul_X_version` global variable against its matching `sul_X_version_value` script_value (defined in `main_menu/common/script_values/sul_versions.txt`) and re-runs full init on mismatch.
-- `sul_passthrough_pulse` — per-market stockpile-driven temp demand pass
 - `sul_batch_location_update` — WPP refresh for up to 333 stale AI locations
 - `sul_version_check` — specialization system version gate
 - `sul_war_init_pulse` — war system version gate
@@ -124,25 +133,6 @@ Set by `sul_specialization_set_init_production_variables` during game start. Gat
 
 ---
 
-## 2. Market Cache
-
-### Global Variable Maps (keyed by market)
-| Map | Set By | Updated | Read By | Purpose |
-|-----|--------|---------|---------|---------|
-| `sul_iron_pressure` | `sul_market_cache_update` | monthly cache refresh | spec eligibility | Iron market pressure |
-| `sul_mining_finished_composite` | (same) | (same) | spec eligibility | Mining output demand/supply ratio |
-| `sul_farming_finished_composite` | (same) | (same) | spec eligibility | Farming output demand/supply ratio |
-| `sul_woodland_finished_composite` | (same) | (same) | spec eligibility | Woodland output demand/supply ratio |
-| `sul_gathering_finished_composite` | (same) | (same) | spec eligibility | Gathering output demand/supply ratio |
-| `sul_commercial_finished_composite` | (same) | (same) | spec eligibility | Commercial output demand/supply ratio |
-| `sul_trade_spread` | `sul_market_cache_refresh_all` | monthly cache refresh | commercial spec gating | Price deviation across all goods in market |
-
-### Global Flags
-| Variable | Set By | Cleared By | Purpose |
-|----------|--------|------------|---------|
-| `sul_market_demand_cached` | `sul_market_cache_refresh_all` | `sul_clear_market_cache` (monthly) | Cache validity flag |
-| `sul_cache_month` | `sul_clear_market_cache` | (overwritten monthly) | Current month for expiry detection |
-
 ---
 
 ## 3. RGO System
@@ -158,18 +148,6 @@ Set by `sul_specialization_set_init_production_variables` during game start. Gat
 |----------|--------|---------|---------|---------|
 | `sul_rgo_building_type` | `sul_on_location_changed_owner`, RGO init | on_raw_material_changed | building construction/destruction, `sul_location_rgo_building_level` script value | Cached building_type for this location's RGO |
 | `sul_rgo_constructing` | RGO construction callbacks | on_construction_ended (-1) | construction tracking | Levels under construction |
-| `sul_prior_building_levels` | `sul_specialization_save_building_levels` | on spec change | building redistribution | Saved levels before destruction |
-
-### Distribution Counters (location scope, temporary during `sul_distribute_*_buildings`)
-| Variable | Purpose |
-|----------|---------|
-| `sul_dist_budget` | Remaining building levels to distribute |
-| `sul_dist_cap` | Per-building level cap (from rural_building_cap) |
-| `sul_guild_cap` | Guild building max level cap |
-| `sul_c0`..`sul_c4` | Per-building counters during mining distribution (stone, bog_iron, smelters, iron_mine, marble) |
-| `sul_g0`..`sul_g3` | Per-guild counters during guild building distribution |
-
-Set and consumed within a single `sul_distribute_*_buildings` call. Not persistent.
 
 ---
 
@@ -185,46 +163,29 @@ Set and consumed within a single `sul_distribute_*_buildings` call. Not persiste
 | `sul_demand_base` | monthly | `sul_read_demand_base`, demand tiers | Variable map: pop_type → WPP/(A+B*WPP) |
 | `sul_last_update` | monthly (AI batch) | batch scheduling | Year of last WPP update |
 
-### Location Variables — Wealth (seeded on init, monthly convergence)
-Per-location physical wealth stocks. Seeded at equilibrium by `sul_wealth_seed_location` (called last in on_game_start via `sul_wealth_seed_all`), converge monthly via `sul_location_converge_wealth`. Capital returns = assets × 2% / local pops. Both seed and converge call `sul_wealth_write_maps` to sync both variable maps.
+### Location Variable Maps — Estate Assets & Targets (sole storage)
+`sul_estate_assets` and `sul_estate_targets` are the only persistent storage for per-location wealth. No intermediate variables — seed, convergence, occupation drain, and loot all read from and write directly to these maps using `cmf_change_variable_map` (CMF helper: remove key then add, because `add_to_variable_map` does not overwrite existing keys). Keyed by `estate_type`. Convergence uses local variables for intermediate math within a tick.
 
+| Map | Key | Written By | Read By | Purpose |
+|-----|-----|-----------|---------|---------|
+| `sul_estate_assets` | `estate_type:nobles_estate` | seed, convergence, loot | `sul_map_asset_nobles`, WPP capital returns, GUI | Current noble wealth |
+| | `estate_type:clergy_estate` | (same) | (same pattern) | Current clergy wealth |
+| | `estate_type:burghers_estate` | (same) | (same) | Current burgher wealth |
+| | `estate_type:peasants_estate` | (same) | (same) | Current peasant wealth |
+| | `estate_type:crown_estate` | (same) | (same) | Current crown wealth |
+| | `estate_type:dhimmi_estate` | (same, conditional) | (same) | Current dhimmi wealth |
+| | `estate_type:cossacks_estate` | (same, conditional) | (same) | Current cossack wealth |
+| | `estate_type:tribes_estate` | (same, conditional) | (same) | Current tribes wealth |
+| `sul_estate_targets` | (same keys) | seed, convergence | `sul_map_target_*`, GUI tooltip | Convergence target per estate |
+
+**Guard pattern:** Script values use `has_variable_map` + `is_key_in_variable_map` (short-circuits). Effects use `owner = { country_has_estate }` when the map is guaranteed to exist (inside convergence after seeding check).
+
+### Location Variables — Minority Returns (set by `sul_compute_minority_returns`)
 | Variable | Set By | Read By | Purpose |
 |----------|--------|---------|---------|
-| `sul_wealth_nobles` | `sul_wealth_seed_location`, `sul_location_converge_wealth` | convergence, WPP capital returns | Noble physical wealth |
-| `sul_wealth_clergy` | (same) | (same) | Clergy physical wealth |
-| `sul_wealth_burghers` | (same) | (same) | Burgher physical wealth |
-| `sul_wealth_peasants` | (same) | (same) | Peasant physical wealth |
-| `sul_wealth_dhimmi` | (same, conditional) | (same) | Dhimmi physical wealth (only if country has dhimmi estate) |
-| `sul_wealth_cossacks` | (same, conditional) | (same) | Cossack physical wealth (only if country has cossacks estate) |
-| `sul_wealth_tribes` | (same, conditional) | (same) | Tribes physical wealth (only if country has tribes estate) |
-| `sul_wealth_crown` | (same) | (same) | Crown treasury allocated to this location |
-| `sul_wealth_target_nobles` | (same) | tooltip display via map | Convergence target for nobles |
-| `sul_wealth_target_clergy` | (same) | (same) | Convergence target for clergy |
-| `sul_wealth_target_burghers` | (same) | (same) | Convergence target for burghers |
-| `sul_wealth_target_peasants` | (same) | (same) | Convergence target for peasants |
-| `sul_wealth_target_crown` | (same) | (same) | Convergence target for crown |
-| `sul_wealth_target_dhimmi` | (same, conditional) | (same) | Convergence target for dhimmi |
-| `sul_wealth_target_cossacks` | (same, conditional) | (same) | Convergence target for cossacks |
-| `sul_wealth_target_tribes` | (same, conditional) | (same) | Convergence target for tribes |
-
-### Location Variable Maps — Estate Assets & Targets (canonical read surface)
-`sul_estate_assets` and `sul_estate_targets` variable maps on each location, keyed by `estate_type`. Populated together by `sul_wealth_write_maps` after seed and converge. All display script values and GUI read from these maps, never from the per-estate variables directly.
-
-| Map | Key | Value Source | Read By |
-|-----|-----|-------------|---------|
-| `sul_estate_assets` | `estate_type:nobles_estate` | `var:sul_wealth_nobles` | `sul_map_asset_nobles`, `sul_wealth_share_nobles`, `sul_wealth_total`, tooltip GUI, pie chart |
-| | `estate_type:clergy_estate` | `var:sul_wealth_clergy` | (same pattern) |
-| | `estate_type:burghers_estate` | `var:sul_wealth_burghers` | (same) |
-| | `estate_type:peasants_estate` | `var:sul_wealth_peasants` | (same) |
-| | `estate_type:crown_estate` | `var:sul_wealth_crown` | (same) |
-| | `estate_type:dhimmi_estate` | `var:sul_wealth_dhimmi` | (same, conditional) |
-| | `estate_type:cossacks_estate` | `var:sul_wealth_cossacks` | (same, conditional) |
-| | `estate_type:tribes_estate` | `var:sul_wealth_tribes` | (same, conditional) |
-| `sul_estate_targets` | `estate_type:nobles_estate` | `var:sul_wealth_target_nobles` | `sul_wealth_target_total`, `sul_wealth_delta_nobles`, tooltip |
-| | (same pattern for all estates) | | |
-| `sul_dhimmi_return_per_pop` | `sul_compute_minority_returns` (called by `sul_update_location_wpp` + `sul_wealth_seed_location`) | `sul_noble_dhimmi_return` et al. (tooltip script values), demand WPP | Per-pop capital return for dhimmi minority pops |
+| `sul_dhimmi_return_per_pop` | `sul_compute_minority_returns` | tooltip script values, demand WPP | Per-pop capital return for dhimmi minority pops |
 | `sul_cossacks_return_per_pop` | (same) | (same) | Per-pop capital return for cossack minority pops |
-| `sul_enrichment_dhimmi` | `sul_compute_minority_returns` | `sul_update_country_economy` | Per-location dhimmi enrichment (accumulated → paid to estate) |
+| `sul_enrichment_dhimmi` | (same) | `sul_init_economy_full_pass` | Per-location dhimmi enrichment (accumulated → paid to estate) |
 | `sul_enrichment_cossacks` | (same) | (same) | Per-location cossack enrichment |
 
 ### Country Variables — Budget Pressure (monthly, set by `sul_compute_budget_pressure`)
@@ -234,7 +195,7 @@ Per-location physical wealth stocks. Seeded at equilibrium by `sul_wealth_seed_l
 | `sul_budget_pressure_clergy` | (same) | (same) | (same) | (same) |
 | `sul_budget_pressure_burghers` | (same) | (same) | (same) | (same) |
 | `sul_budget_pressure_peasants` | (same) | (same) | (same) | (same) |
-| `sul_country_pop_nobles` | seeded to 1 | `sul_monthly_location_pass` | WPP per-pop division | Country-wide noble pop count |
+| `sul_country_pop_nobles` | seeded to 1 | `sul_converge_wealth_and_accumulate_power` | WPP per-pop division | Country-wide noble pop count |
 | `sul_country_pop_clergy` | (same) | (same) | (same) | Country-wide clergy pop count |
 | `sul_country_pop_burghers` | (same) | (same) | (same) | Country-wide burgher pop count |
 
@@ -246,7 +207,7 @@ Per-location physical wealth stocks. Seeded at equilibrium by `sul_wealth_seed_l
 ### Country Variables — Accumulated Wages (monthly player / yearly AI)
 | Variable | Set By | Read By | Purpose |
 |----------|--------|---------|---------|
-| `sul_monthly_wages_nobles` | `sul_monthly_location_pass` / `sul_update_country_economy` | `sul_estate_wages_pay_all` | Noble estate payment |
+| `sul_monthly_wages_nobles` | `sul_converge_wealth_and_accumulate_power` / `sul_init_economy_full_pass` | `sul_estate_wages_pay_all` | Noble estate payment |
 | `sul_monthly_wages_clergy` | (same) | (same) | Clergy estate payment |
 | `sul_monthly_wages_burghers` | (same) | (same) | Burgher estate payment |
 | `sul_monthly_wages_peasants` | (same) | (same) | Peasant estate payment |
@@ -255,11 +216,11 @@ Per-location physical wealth stocks. Seeded at equilibrium by `sul_wealth_seed_l
 | `sul_monthly_wages_tribes` | (same, always 0) | (same) | Placeholder |
 
 ### Country Variables — Location Wealth Accumulators (monthly player / yearly AI)
-Accumulated by `sul_monthly_location_pass` / `sul_update_country_economy`. Raw power is summed from `local_estate_power` across all owned locations. `_prev` vars hold last month's totals for use as convergence denominators. Estate gold is a country-scope cache of the engine's complex `estate_gold` formula, cached AFTER enrichment payments.
+Accumulated by `sul_converge_wealth_and_accumulate_power` / `sul_init_economy_full_pass`. Raw power is summed from `local_estate_power` across all owned locations. `_prev` vars hold last month's totals for use as convergence denominators. Estate gold is a country-scope cache of the engine's complex `estate_gold` formula, cached AFTER enrichment payments.
 
 | Variable | Set By | Read By | Purpose |
 |----------|--------|---------|---------|
-| `sul_national_power_nobles` | `sul_monthly_location_pass` / `sul_update_country_economy` | wealth convergence, debug panel | Sum of local_estate_power(nobles) across all locations |
+| `sul_national_power_nobles` | `sul_converge_wealth_and_accumulate_power` / `sul_init_economy_full_pass` | wealth convergence, debug panel | Sum of local_estate_power(nobles) across all locations |
 | `sul_national_power_clergy` | (same) | (same) | Sum of local_estate_power(clergy) across all locations |
 | `sul_national_power_burghers` | (same) | (same) | Sum of local_estate_power(burghers) across all locations |
 | `sul_national_power_peasants` | (same) | (same) | Sum of local_estate_power(peasants) across all locations |
@@ -267,7 +228,7 @@ Accumulated by `sul_monthly_location_pass` / `sul_update_country_economy`. Raw p
 | `sul_national_power_cossacks` | (same, conditional) | (same) | Sum of local_estate_power(cossacks) — only if estate exists |
 | `sul_national_power_tribes` | (same, conditional) | (same) | Sum of local_estate_power(tribes) — only if estate exists |
 | `sul_national_power_crown` | (same, derived) | (same) | Sum of all estate power (all 7 estates) |
-| `sul_national_power_prev_nobles` | saved before zeroing | `sul_location_converge_wealth` | Last month's denominator for convergence fraction |
+| `sul_national_power_prev_nobles` | saved before zeroing | `sul_converge_location_assets` | Last month's denominator for convergence fraction |
 | `sul_national_power_prev_clergy` | (same) | (same) | (same) |
 | `sul_national_power_prev_burghers` | (same) | (same) | (same) |
 | `sul_national_power_prev_peasants` | (same) | (same) | (same) |
@@ -282,7 +243,7 @@ Accumulated by `sul_monthly_location_pass` / `sul_update_country_economy`. Raw p
 | `sul_estate_gold_dhimmi` | (same, null-safe) | (same) | Cached estate_gold for dhimmi |
 | `sul_estate_gold_cossacks` | (same, null-safe) | (same) | Cached estate_gold for cossacks |
 | `sul_estate_gold_tribes` | (same, null-safe) | (same) | Cached estate_gold for tribes |
-| `sul_enrich_rate_nobles` | `sul_monthly_location_pass` / `sul_update_country_economy` | enrichment formula | Cached (1 + estate_enrichment) × (1 + sul_nobles_enrichment_rate) |
+| `sul_enrich_rate_nobles` | `sul_converge_wealth_and_accumulate_power` / `sul_init_economy_full_pass` | enrichment formula | Cached (1 + estate_enrichment) × (1 + sul_nobles_enrichment_rate) |
 | `sul_enrich_rate_clergy` | (same) | (same) | Same for clergy |
 | `sul_enrich_rate_burghers` | (same) | (same) | Same for burghers |
 | `sul_enrich_rate_commoners` | (same) | (same) | Same for commoners |
@@ -333,7 +294,7 @@ MONTHLY (per-location, sul_update_location_wpp):
   Minority returns: dhimmi/cossacks = assets × 2% × power_per_pop / local_power
   Minority enrichment: return_per_pop through demand formula × estimated_pops × enrich_rate
 
-MONTHLY (sul_monthly_location_pass — single every_owned_location loop):
+MONTHLY (sul_converge_wealth_and_accumulate_power — single every_owned_location loop):
   Cache enrichment rates: (1 + estate_enrichment) × (1 + per_estate_rate) per country
   Cache estate gold (after enrichment payments in init path)
   Convergence: assets drift toward (local_power / prev_national_power × estate_gold) at 2.5%/month
@@ -348,7 +309,7 @@ ON_LOCATION_OCCUPIED (sul_wealth_loot_location):
   Split: (1 - 50% + looting_efficiency) kept by controller.
 
 INIT (sul_initialize_economy → sul_wealth_seed_all):
-  sul_update_country_economy → accumulate raw power + enrichment
+  sul_init_economy_full_pass → accumulate raw power + enrichment
     → pay enrichment to all 7 estates (dhimmi/cossacks conditional)
     → cache enrichment rates + estate gold after payments
     → sul_update_location_wpp → sul_compute_minority_returns: produces 0 (wealth doesn't exist yet)
@@ -516,47 +477,6 @@ See the unified version-stamp table in section 5. War uses `sul_war_version` (gl
 Applied to larger side only. Size = `1 - (smaller x age_mult / larger)`, clamped to 0.
 
 ---
-
-## 8. Passthrough / Middleman Trading
-
-Stockpile-driven price-crush mechanism adapted from `yosiu_market_stockpiles`
-workshop mod, compressed via `$GOOD$` argument substitution. **Stateless** —
-no persistent variables, variable maps, or location flags. All state is read
-live from `stockpile_in_market`, `goods_supply_in_market`, and the
-`maximum_stockpile_capacity` location modifier.
-
-### Execution
-- `sul_passthrough_pulse` (on_action, monthly_country_pulse, `has_markets = yes` trigger)
-  → `sul_passthrough_apply` (every_market_center_in_country)
-  → bulk-removes 75 `sul_<good>_stockpile` + 75 `sul_<good>_oversupply` temp demands
-  → calls `sul_passthrough_per_good = { GOOD = <name> }` 75 times (parse-time expansion)
-
-`sul_passthrough_per_good` checks `sul_passthrough_fill_ratio` against tier
-thresholds (5% / 50% / 75% / 95%) and applies the appropriate temp demand.
-Above 5% fill: piecewise linear ramp via `sul_passthrough_supply_effect`,
-plus paired `_oversupply` (cancels warehouse output). Below 4.9% fill on
-relevant goods: small reverse demand + `add_goods_supply` drip to keep
-depleted hubs visible to trade routing.
-
-### Files
-| Path | Purpose |
-|---|---|
-| `goods_demand/sul_passthrough_demands.txt` | 150 templates (75 `_stockpile`, 75 `_oversupply`), one pair per good |
-| `building_types/sul_warehouse_buildings.txt` | 75 fake `sul_<good>_warehouse` buildings (`free_building_levels = 1`, self-cancelling production method) |
-| `auto_modifiers/sul_passthrough_modifiers.txt` | INJECT `produced_in_market_bonus = -0.2` into `country_base_values` to cancel vanilla local-producer discount |
-| `generic_actions/sul_destroy_market.txt` | REPLACE vanilla `destroy_market` with the `has_temporary_demands = no` check removed |
-| `script_values/sul_passthrough_warehouse_values.txt` | `sul_passthrough_local_capacity`, `_fill_ratio`, `_upper_value`, `_lower_value`, `_upper_overflow`, `_supply_effect`, `_warehouse_correction`, `_low_supply_effect`, `_low_stockpile_effect`, `_1cutoff`, `_2cutoff`, `_3cutoff` |
-| `scripted_effects/sul_passthrough_pulse.txt` | `sul_passthrough_apply`, `sul_passthrough_per_good` |
-| `on_action/sul_passthrough_on_actions.txt` | `sul_passthrough_pulse` handler |
-| `on_action/sul_hardcoded.txt` | `sul_passthrough_pulse` registered in `monthly_country_pulse` |
-
-### Defines tuned for passthrough (`loading_screen/common/defines/sul_food_defines.txt`)
-- `MARKET_MIN_STOCKPILE_TO_ALLOW_EXTRA_TRADE = 0.0`, `MARKET_STOCKPILE_PERCENTAGE_FOR_EXTRA_TRADE = 0.20` — vanilla extra-trade-supply mechanism always-on at 20%
-- `TRADE_IMPACT_ON_SUPPLY/DEMAND_SCALE = 1.0`, `BURGHER_TRADE_IMPACT_ON_SUPPLY/DEMAND_SCALE = 1.0` — trade counts at full weight on both sides
-- `SUPPLY_AND_DEMAND_STABILITY_OFFSET_CONSTANT = 0.02` — hyper-volatile prices (workshop mod's value)
-- `MONTHLY_PRICE_CHANGE = 0.2` — prices converge to target 4× faster than vanilla
-- `ADJUST_TRADE_ROUTE_CHANCE = 0.25` — AI trade route changes more conservative
-- `POP_MISSING_GOODS_UTILITY_FACTOR = 0.5` — AI strongly prioritizes filling pop shortages
 
 ---
 

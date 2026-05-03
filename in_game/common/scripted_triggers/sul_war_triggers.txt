@@ -24,32 +24,20 @@ sul_war_is_subject_with_overlord_in_war = {
 sul_war_is_trapped_in_war = {
 	OR = {
 		# Subject with limited diplomacy fighting alongside their overlord
-		AND = {
-			has_limited_diplomacy = yes
-			overlord = { is_fighting_war_together_with = prev }
-		}
-
+		AND = { has_limited_diplomacy = yes overlord = { is_fighting_war_together_with = prev } }
 		# Non-leader coalition member in a coalition war
 		any_enemy_war_leader = {
 			save_temporary_scope_as = sul_war_coalition_target
-
 			prev = {
 				# I am in a coalition against this enemy war leader
-				is_member_of_international_organization_of_type = {
-					type = coalition
-					target = scope:sul_war_coalition_target
-				}
-
+				is_member_of_international_organization_of_type = { type = coalition target = scope:sul_war_coalition_target }
 				# A country fighting on my side also meets both conditions:
 				# they are in the coalition against this enemy AND they lead the war against them.
 				# This confirms the coalition and the war are the same conflict.
 				any_country_together_in_war_with = {
 					save_temporary_scope_as = sul_war_coalition_ally
 
-					is_member_of_international_organization_of_type = {
-						type = coalition
-						target = scope:sul_war_coalition_target
-					}
+					is_member_of_international_organization_of_type = { type = coalition target = scope:sul_war_coalition_target }
 
 					# This ally leads a war against the coalition target
 					any_current_war = {

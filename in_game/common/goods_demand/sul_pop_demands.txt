@@ -23,87 +23,62 @@
 REPLACE:pop_demand = {
 	provisions = {
 		value = 1
+
 		if = {
-			limit = { pop_type = pop_type:nobles }
-
+			limit = { pop_type = pop_type:nobles exists = location.owner }
 			multiply = {
 				value = 1
-				add = owner.modifier:global_pop_food_consumption_modifier
-				add = location.modifier:local_pop_food_consumption_modifier
-				add = owner.modifier:global_nobles_food_consumption_modifier
-				add = location.modifier:local_nobles_food_consumption_modifier
+				add = location.owner.modifier:global_pop_food_consumption
+				add = location.modifier:local_pop_food_consumption
+				add = location.owner.modifier:global_nobles_food_consumption
+				add = location.modifier:local_nobles_food_consumption
 			}
 		}
 		else_if = {
-			limit = { pop_type = pop_type:clergy }
-
+			limit = { pop_type = pop_type:clergy exists = location.owner }
 			multiply = {
 				value = 1
-				add = owner.modifier:global_pop_food_consumption_modifier
-				add = location.modifier:local_pop_food_consumption_modifier
-				add = owner.modifier:global_clergy_food_consumption_modifier
-				add = location.modifier:local_clergy_food_consumption_modifier
+				add = location.owner.modifier:global_pop_food_consumption
+				add = location.modifier:local_pop_food_consumption
+				add = location.owner.modifier:global_clergy_food_consumption
+				add = location.modifier:local_clergy_food_consumption
 			}
 		}
 		else_if = {
-			limit = { pop_type = pop_type:burghers }
-
+			limit = { pop_type = pop_type:burghers exists = location.owner }
 			multiply = {
 				value = 1
-				add = owner.modifier:global_pop_food_consumption_modifier
-				add = location.modifier:local_pop_food_consumption_modifier
-				add = owner.modifier:global_burghers_food_consumption_modifier
-				add = location.modifier:local_burghers_food_consumption_modifier
+				add = location.owner.modifier:global_pop_food_consumption
+				add = location.modifier:local_pop_food_consumption
+				add = location.owner.modifier:global_burghers_food_consumption
+				add = location.modifier:local_burghers_food_consumption
 			}
 		}
 		else_if = {
-			limit = { pop_type = pop_type:soldiers }
-
+			limit = { pop_type = pop_type:soldiers exists = location.owner }
 			multiply = {
 				value = 1
-				add = owner.modifier:global_pop_food_consumption_modifier
-				add = location.modifier:local_pop_food_consumption_modifier
-				add = owner.modifier:global_soldiers_food_consumption_modifier
-				add = location.modifier:local_soldiers_food_consumption_modifier
+				add = location.owner.modifier:global_pop_food_consumption
+				add = location.modifier:local_pop_food_consumption
+				add = location.owner.modifier:global_soldiers_food_consumption
+				add = location.modifier:local_soldiers_food_consumption
 			}
 		}
 		else_if = {
-			limit = { pop_type = pop_type:laborers }
-
+			limit = { pop_type = pop_type:laborers exists = location.owner }
 			multiply = {
 				value = 1
-				add = owner.modifier:global_pop_food_consumption_modifier
-				add = location.modifier:local_pop_food_consumption_modifier
-				add = owner.modifier:global_laborers_food_consumption_modifier
-				add = location.modifier:local_laborers_food_consumption_modifier
-			}
-		}
-		else_if = {
-			limit = { pop_type = pop_type:peasants }
-
-			multiply = {
-				value = 1
-				add = owner.modifier:global_pop_food_consumption_modifier
-				add = location.modifier:local_pop_food_consumption_modifier
-				add = owner.modifier:global_peasants_food_consumption_modifier
-				add = location.modifier:local_peasants_food_consumption_modifier
-			}
-		}
-		else_if = {
-			limit = { pop_type = pop_type:slaves }
-
-			multiply = {
-				value = 1
-				add = owner.modifier:global_pop_food_consumption_modifier
-				add = location.modifier:local_pop_food_consumption_modifier
-				add = owner.modifier:global_slaves_food_consumption_modifier
-				add = location.modifier:local_slaves_food_consumption_modifier
+				add = location.owner.modifier:global_pop_food_consumption
+				add = location.modifier:local_pop_food_consumption
+				add = location.owner.modifier:global_laborers_food_consumption
+				add = location.modifier:local_laborers_food_consumption
 			}
 		}
 	}
 
 	wine = {
 		value = 1
+
 		if = {
 			limit = {
 				religion = {
@@ -114,7 +89,6 @@ REPLACE:pop_demand = {
 					}
 				}
 			}
-
 			multiply = { value = 0 desc = "POP_DEMAND_RELIGION_FORBIDS" }
 		}
 
@@ -124,7 +98,6 @@ REPLACE:pop_demand = {
 				# Andeans favor "Chicha" that is a beer
 				culture = { has_culture_group = culture_group:andean_group }
 			}
-
 			multiply = { desc = "POP_DEMAND_CULTURAL_PREFERENCES" value = 0.75 }
 		}
 
@@ -133,7 +106,6 @@ REPLACE:pop_demand = {
 				# Japanese favor "Sake" that is a liquor
 				culture = { has_culture_group = culture_group:japanese_group }
 			}
-
 			multiply = { desc = "POP_DEMAND_CULTURAL_PREFERENCES" value = 0.75 }
 		}
 
@@ -147,7 +119,6 @@ REPLACE:pop_demand = {
 					}
 				}
 			}
-
 			multiply = { value = 1.5 desc = "POP_DEMAND_MEDITERRANEAN" }
 		}
 
@@ -160,21 +131,13 @@ REPLACE:pop_demand = {
 		if = {
 			limit = {
 				pop_type = pop_type:clergy
-
 				religion = {
 					OR = {
 						this = religion:shinto
-
-						group = {
-							OR = {
-								this = religion_group:christian
-								this = religion_group:israelite_group
-							}
-						}
+						group = { OR = { this = religion_group:christian this = religion_group:israelite_group } }
 					}
 				}
 			}
-
 			multiply = { value = 3 desc = "POP_DEMAND_RITUAL_WINE" }
 		}
 
@@ -188,6 +151,7 @@ REPLACE:pop_demand = {
 
 	liquor = {
 		value = 1
+
 		if = {
 			limit = {
 				religion = {
@@ -198,7 +162,6 @@ REPLACE:pop_demand = {
 					}
 				}
 			}
-
 			multiply = { value = 0 desc = "POP_DEMAND_RELIGION_FORBIDS" }
 		}
 
@@ -208,7 +171,6 @@ REPLACE:pop_demand = {
 				# Andeans favor "Chicha" that is a beer
 				culture = { has_culture_group = culture_group:andean_group }
 			}
-
 			multiply = { desc = "POP_DEMAND_CULTURAL_PREFERENCES" value = 0.75 }
 		}
 
@@ -217,7 +179,6 @@ REPLACE:pop_demand = {
 				# Japanese favor "Sake" that is a liquor
 				culture = { has_culture_group = culture_group:japanese_group }
 			}
-
 			multiply = { desc = "POP_DEMAND_CULTURAL_PREFERENCES" value = 1.5 }
 		}
 
@@ -231,7 +192,6 @@ REPLACE:pop_demand = {
 					}
 				}
 			}
-
 			multiply = { value = 0.75 desc = "POP_DEMAND_MEDITERRANEAN" }
 		}
 
@@ -245,7 +205,6 @@ REPLACE:pop_demand = {
 					}
 				}
 			}
-
 			multiply = { value = 1.5 desc = "POP_DEMAND_NORDIC" }
 		}
 
@@ -259,6 +218,7 @@ REPLACE:pop_demand = {
 
 	beer = {
 		value = 1
+
 		if = {
 			limit = {
 				religion = {
@@ -269,7 +229,6 @@ REPLACE:pop_demand = {
 					}
 				}
 			}
-
 			multiply = { value = 0 desc = "POP_DEMAND_RELIGION_FORBIDS" }
 		}
 
@@ -279,15 +238,14 @@ REPLACE:pop_demand = {
 				# Andeans favor "Chicha" that is a beer
 				culture = { has_culture_group = culture_group:andean_group }
 			}
-
 			multiply = { desc = "POP_DEMAND_CULTURAL_PREFERENCES" value = 1.5 }
 		}
+
 		if = {
 			limit = {
 				# Japanese favor "Sake" that is a liquor
 				culture = { has_culture_group = culture_group:japanese_group }
 			}
-
 			multiply = { desc = "POP_DEMAND_CULTURAL_PREFERENCES" value = 0 }
 		}
 
@@ -301,7 +259,6 @@ REPLACE:pop_demand = {
 					}
 				}
 			}
-
 			multiply = { value = 0.75 desc = "POP_DEMAND_MEDITERRANEAN" }
 		}
 
@@ -357,10 +314,7 @@ REPLACE:pop_demand = {
 			multiply = { value = 0 desc = "POP_DEMAND_CLIMATE" }
 		}
 
-		if = {	# non-violent
-			limit = { religion = religion:jain }
-			multiply = { value = 0 desc = "POP_DEMAND_JAIN" }
-		}
+		if = { limit = { religion = religion:jain } multiply = { value = 0 desc = "POP_DEMAND_JAIN" } }
 
 		if = {
 			limit = { location = { topography = mountains } }
@@ -375,13 +329,7 @@ REPLACE:pop_demand = {
 
 		location = {
 			if = {
-				limit = {
-					OR = {
-						location_max_winter_level = none
-						location_max_winter_level = mild
-					}
-				}
-
+				limit = { OR = { location_max_winter_level = none location_max_winter_level = mild } }
 				multiply = { value = 0.75 desc = "POP_DEMAND_CLIMATE_MAX_WINTER_LEVEL" }
 			}
 			else_if = {
@@ -443,9 +391,9 @@ REPLACE:pop_demand = {
 
 		if = {
 			limit = { location.market ?= { produced_in_market:amber <= 0 } }
-
 			multiply = { value = 0.75 desc = "POP_DEMAND_CULTURAL_PREFERENCES" }
 		}
+
 		if = {
 			limit = {
 				location.region = {
@@ -456,7 +404,6 @@ REPLACE:pop_demand = {
 					}
 				}
 			}
-
 			multiply = { value = 1.25 desc = "POP_DEMAND_CULTURAL_PREFERENCES" }
 		}
 
@@ -468,18 +415,11 @@ REPLACE:pop_demand = {
 
 		# Indian nobles prize ivory
 		if = {
-			limit = {
-				pop_type = pop_type:nobles
-				location.sub_continent = sub_continent:south_asia
-			}
-
+			limit = { pop_type = pop_type:nobles location.sub_continent = sub_continent:south_asia }
 			multiply = { value = 1.1 desc = "POP_DEMAND_NOBLES_INDIAN" }
 		}
 
-		if = {
-			limit = { religion = religion:jain }
-			multiply = { value = 0 desc = "POP_DEMAND_JAIN" }
-		}
+		if = { limit = { religion = religion:jain } multiply = { value = 0 desc = "POP_DEMAND_JAIN" } }
 
 		multiply = { value = location.sul_demand_luxury }
 	}
@@ -497,7 +437,6 @@ REPLACE:pop_demand = {
 					religion = religion:catholic
 				}
 			}
-
 			multiply = { value = 1.5 desc = "POP_DEMAND_CLERGY" }
 		}
 
@@ -515,17 +454,12 @@ REPLACE:pop_demand = {
 
 		if = {# Coca leaf usage in all society
 			limit = { culture = { has_culture_group = culture_group:andean_group } }
-
 			multiply = { value = 2.5 desc = "POP_DEMAND_ANDEAN_COCA_LEAF" }
 		}
 
 		# Clergy use coca leaf as religious sacrifice
 		if = {
-			limit = {
-				religion.group = religion_group:folk_peruvian_group
-				pop_type = pop_type:clergy
-			}
-
+			limit = { religion.group = religion_group:folk_peruvian_group pop_type = pop_type:clergy }
 			multiply = { desc = "POP_DEMAND_ANDEAN_COCA_LEAF_CLERGY" value = 1.5 }
 		}
 
@@ -553,7 +487,6 @@ REPLACE:pop_demand = {
 					location.region = region:korea_region
 				}
 			}
-
 			multiply = { value = location.sul_demand_common }
 		}
 		else = { multiply = { value = location.sul_demand_upper } }
@@ -572,7 +505,6 @@ REPLACE:pop_demand = {
 					location.region = region:indochina_region
 				}
 			}
-
 			multiply = { value = location.sul_demand_common }
 		}
 		else = { multiply = { value = location.sul_demand_exotic } }
@@ -590,7 +522,6 @@ REPLACE:pop_demand = {
 				religion = religion:anglican
 				location.owner ?= { has_variable = anglican_vestments }
 			}
-
 			multiply = { value = 1.5 desc = "POP_DEMAND_CLERGY" }
 		}
 
@@ -626,13 +557,7 @@ REPLACE:pop_demand = {
 		value = 1
 
 		if = {
-			limit = {
-				location.owner ?= {
-					has_variable = por_printing_ordinances
-					has_reform = government_reform:por_ordinances
-				}
-			}
-
+			limit = { location.owner ?= { has_variable = por_printing_ordinances has_reform = government_reform:por_ordinances } }
 			multiply = 1.5
 		}
 
@@ -647,13 +572,12 @@ REPLACE:pop_demand = {
 
 	books = {
 		value = 1
-		if = {
-			limit = {
-				location.owner ?= { has_embraced_institution = institution:printing_press }
-			}
 
+		if = {
+			limit = { location.owner ?= { has_embraced_institution = institution:printing_press } }
 			multiply = { value = 1.1 desc = "POP_DEMAND_PRINTING_PRESS" }
 		}
+
 		multiply = {
 			value = pop_literacy
 			divide = 100 # value goes from 0 to 100
@@ -669,23 +593,13 @@ REPLACE:pop_demand = {
 		# Policy gate: peasants/laborers can't buy weapons unless privilege allows it
 		if = {
 			limit = {
-				OR = {
-					pop_type = pop_type:peasants
-					pop_type = pop_type:laborers
-				}
-				AND = {
-					exists = owner
-					owner.modifier:peasants_allowed_weapons = no
-				}
+				OR = { pop_type = pop_type:peasants pop_type = pop_type:laborers }
+				AND = { exists = location.owner location.owner.modifier:peasants_allowed_weapons = no }
 			}
-
 			multiply = { value = 0 desc = "POP_DEMAND_PEASANTSNO_WEAPONS" }
 		}
 
-		if = {	# non-violent
-			limit = { religion = religion:jain }
-			multiply = { value = 0 desc = "POP_DEMAND_JAIN" }
-		}
+		if = { limit = { religion = religion:jain } multiply = { value = 0 desc = "POP_DEMAND_JAIN" } }
 
 		multiply = { value = location.sul_demand_common }
 	}
@@ -726,15 +640,11 @@ REPLACE:pop_demand = {
 				# Coca leaf usage in all society
 				culture = { has_culture_group = culture_group:andean_group }
 			}
-
 			multiply = { desc = "POP_DEMAND_CULTURAL_PREFERENCES" value = 0.55 }
 		}
 
 		# Regional tier: common in Americas, upper elsewhere
-		if = {
-			limit = { location.continent = continent:america }
-			multiply = { value = location.sul_demand_common }
-		}
+		if = { limit = { location.continent = continent:america } multiply = { value = location.sul_demand_common } }
 		else = { multiply = { value = location.sul_demand_upper } }
 	}
 
@@ -742,25 +652,15 @@ REPLACE:pop_demand = {
 		value = 1
 
 		if = {
-			limit = { # Turks use tea extensively
-				OR = {
-					culture = culture:turkish_culture
-					culture = culture:turkoman_culture
-				}
-			}
-
+			limit = { OR = { culture = culture:turkish_culture culture = culture:turkoman_culture } }
 			multiply = { value = 1.5 desc = "POP_DEMAND_TURKISH" }
 		}
-		if = {
-			limit = { # Egyptians use tea a lot
-				OR = {
-					culture = culture:lower_egyptian_culture
-					culture = culture:upper_egyptian_culture
-				}
-			}
 
+		if = {
+			limit = { OR = { culture = culture:lower_egyptian_culture culture = culture:upper_egyptian_culture } }
 			multiply = { value = 1.25 desc = "POP_DEMAND_EGYPT" }
 		}
+
 		if = {
 			limit = { culture = { has_culture_group = culture_group:maghrebi_group } }
 			multiply = { value = 1.5 desc = "POP_DEMAND_MAGHREBI" }
@@ -776,7 +676,6 @@ REPLACE:pop_demand = {
 					location.region = region:korea_region
 				}
 			}
-
 			multiply = { value = location.sul_demand_necessity }
 		}
 		else_if = {
@@ -788,7 +687,6 @@ REPLACE:pop_demand = {
 					location.region = region:anatolia_region
 				}
 			}
-
 			multiply = { value = location.sul_demand_common }
 		}
 		else = { multiply = { value = location.sul_demand_upper } }
@@ -798,10 +696,7 @@ REPLACE:pop_demand = {
 		value = 1
 
 		# Regional tier: common in Americas, upper elsewhere
-		if = {
-			limit = { location.continent = continent:america }
-			multiply = { value = location.sul_demand_common }
-		}
+		if = { limit = { location.continent = continent:america } multiply = { value = location.sul_demand_common } }
 		else = { multiply = { value = location.sul_demand_upper } }
 	}
 
@@ -810,13 +705,7 @@ REPLACE:pop_demand = {
 
 		# Regional tier: common in Arabia/East Africa, upper elsewhere
 		if = {
-			limit = {
-				OR = {
-					location.region = region:arabia_region
-					location.sub_continent = sub_continent:east_africa
-				}
-			}
-
+			limit = { OR = { location.region = region:arabia_region location.sub_continent = sub_continent:east_africa } }
 			multiply = { value = location.sul_demand_common }
 		}
 		else = { multiply = { value = location.sul_demand_upper } }
@@ -824,42 +713,20 @@ REPLACE:pop_demand = {
 
 	saffron = {
 		value = 1
-		if = {
-			limit = { # Turks use it extensively
-				OR = {
-					culture = culture:turkish_culture
-					culture = culture:turkoman_culture
-				}
-			}
 
+		if = {
+			limit = { OR = { culture = culture:turkish_culture culture = culture:turkoman_culture } }
 			multiply = { value = 1.25 desc = "POP_DEMAND_TURKISH" }
 		}
 		else_if = {
 			limit = { # Leine croich Gaelic saffron shirts
-				culture = {
-					OR = {
-						has_culture_group = culture_group:hibernian_group
-						language = language:gaelic_language
-					}
-				}
-
-				owner = {
-					NOT = {
-						modifier:country_bans_saffron_shirts = yes
-					}
-				}
+				culture = { OR = { has_culture_group = culture_group:hibernian_group language = language:gaelic_language } }
+				location.owner ?= { NOT = { modifier:country_bans_saffron_shirts = yes } }
 			}
-
 			multiply = { value = 2.5 desc = "POP_DEMAND_GAELIC_SAFFRON" }
 		}
 		else_if = {
-			limit = { # Egyptians use saffron
-				OR = {
-					culture = culture:lower_egyptian_culture
-					culture = culture:upper_egyptian_culture
-				}
-			}
-
+			limit = { OR = { culture = culture:lower_egyptian_culture culture = culture:upper_egyptian_culture } }
 			multiply = { value = 1.1 desc = "POP_DEMAND_EGYPT" }
 		}
 		else_if = {
@@ -877,7 +744,6 @@ REPLACE:pop_demand = {
 					location.region = region:italy_region
 				}
 			}
-
 			multiply = { value = location.sul_demand_common }
 		}
 		else = { multiply = { value = location.sul_demand_exotic } }
@@ -894,13 +760,7 @@ REPLACE:pop_demand = {
 
 		# Regional tier: common in South/SE Asia, exotic elsewhere
 		if = {
-			limit = {
-				OR = {
-					location.sub_continent = sub_continent:south_asia
-					location.region = region:indochina_region
-				}
-			}
-
+			limit = { OR = { location.sub_continent = sub_continent:south_asia location.region = region:indochina_region } }
 			multiply = { value = location.sul_demand_common }
 		}
 		else = { multiply = { value = location.sul_demand_exotic } }
@@ -911,13 +771,7 @@ REPLACE:pop_demand = {
 
 		# Regional tier: common in SE Asia, exotic elsewhere
 		if = {
-			limit = {
-				OR = {
-					location.region = region:indochina_region
-					location.sub_continent = sub_continent:south_asia
-				}
-			}
-
+			limit = { OR = { location.region = region:indochina_region location.sub_continent = sub_continent:south_asia } }
 			multiply = { value = location.sul_demand_common }
 		}
 		else = { multiply = { value = location.sul_demand_exotic } }
@@ -927,10 +781,7 @@ REPLACE:pop_demand = {
 		value = 1
 
 		# Regional tier: common in Americas, exotic elsewhere
-		if = {
-			limit = { location.continent = continent:america }
-			multiply = { value = location.sul_demand_common }
-		}
+		if = { limit = { location.continent = continent:america } multiply = { value = location.sul_demand_common } }
 		else = { multiply = { value = location.sul_demand_exotic } }
 	}
 

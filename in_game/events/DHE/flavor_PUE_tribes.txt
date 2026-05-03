@@ -31,17 +31,13 @@ flavor_pue.101 = {
 		location:aaku = {
 			owner ?= root
 			is_connected_to = location:shiewhibak
-			NOT = {
-				has_road_to = location:shiewhibak
-			}
+			NOT = { has_road_to = location:shiewhibak }
 		}
 
 		location:shiewhibak = {
 			owner ?= root
 			is_connected_to = location:aaku
-			NOT = {
-				has_road_to = location:aaku
-			}
+			NOT = { has_road_to = location:aaku }
 		}
 
 		gold > 70
@@ -53,7 +49,6 @@ flavor_pue.101 = {
 			foreground = estate_type:peasants_estate
 			background = estate_type:peasants_estate
 		}
-
 		ruler ?= { save_scope_as = our_ruler }
 	}
 
@@ -104,14 +99,17 @@ flavor_pue.102 = {
 		monthly_chance = 4
 	}
 
-	trigger = { has_ruler = yes at_war = no gold > 50 }
+	trigger = {
+		has_ruler = yes
+		at_war = no
+		gold > 50
+	}
 
 	immediate = {
 		event_illustration_estate_effect = {
 			foreground = estate_type:peasants_estate
 			background = estate_type:peasants_estate
 		}
-
 		ruler ?= { save_scope_as = our_ruler }
 	}
 
@@ -123,7 +121,6 @@ flavor_pue.102 = {
 
 		capital = {
 			change_development = development_severe_bonus
-
 			add_location_modifier = {
 				modifier = pue_improve_capital_irrigation
 				years = modifier_duration_years_normal
@@ -162,7 +159,11 @@ flavor_pue.103 = {
 		monthly_chance = 3
 	}
 
-	trigger = { has_ruler = yes owns = location:aaku at_war = no }
+	trigger = {
+		has_ruler = yes
+		owns = location:aaku
+		at_war = no
+	}
 
 	illustration_tags = { 10 = regular 10 = exterior }
 
@@ -171,7 +172,6 @@ flavor_pue.103 = {
 			foreground = estate_type:peasants_estate
 			background = estate_type:peasants_estate
 		}
-
 		ruler ?= { save_scope_as = our_ruler }
 	}
 
@@ -183,8 +183,11 @@ flavor_pue.103 = {
 			change_location_rank_effect = {
 				modifier:sul_is_town_rank_tier = yes
 			}
-
-			add_location_modifier = { modifier = pue_the_sky_city years = -1 mode = add }
+			add_location_modifier = {
+				modifier = pue_the_sky_city
+				years = -1
+				mode = add
+			}
 		}
 	}
 }
@@ -216,22 +219,9 @@ flavor_pue.104 = {
 		has_ruler = yes
 		at_war = no
 
-		location:tse_bitai = {
-			OR = {
-				has_owner = no
-				owner ?= root
-			}
-			any_neighbor_location = { owner ?= root }
-		}
+		location:tse_bitai = { OR = { has_owner = no owner ?= root } any_neighbor_location = { owner ?= root } }
 
-		any_owned_location = {
-			OR = {
-				integration_level = integrated
-				integration_level = core
-			}
-
-			count > 4
-		}
+		any_owned_location = { OR = { integration_level = integrated integration_level = core } count > 4 }
 
 		gold > 100
 	}
@@ -260,9 +250,9 @@ flavor_pue.104 = {
 		}
 
 		culture = { add_cultural_influence = cultural_influence_extreme_bonus }
+
 		if = {
 			limit = { owns = location:tse_bitai }
-
 			location:tse_bitai = {
 				add_location_modifier = {
 					modifier = pue_mesa_verde_reclaimed
@@ -271,13 +261,9 @@ flavor_pue.104 = {
 				}
 			}
 		}
-		if = {
-			limit = {
-				NOT = {
-					owns = location:tse_bitai
-				}
-			}
 
+		if = {
+			limit = { NOT = { owns = location:tse_bitai } }
 			location:tse_bitai = {
 				change_location_owner = root
 				change_integration_level = integrated
@@ -334,7 +320,6 @@ flavor_pue.105 = {
 			foreground = estate_type:nobles_estate
 			background = estate_type:nobles_estate
 		}
-
 		ruler ?= { save_scope_as = our_ruler }
 	}
 
@@ -343,13 +328,9 @@ flavor_pue.105 = {
 	option = { # It shall serve as our seat once more
 		name = flavor_pue.105.a
 		add_prestige = prestige_severe_bonus
-		if = {
-			limit = {
-				NOT = {
-					capital = location:tse_bitai
-				}
-			}
 
+		if = {
+			limit = { NOT = { capital = location:tse_bitai } }
 			set_capital = location:tse_bitai
 		}
 		else = {
@@ -359,6 +340,7 @@ flavor_pue.105 = {
 				}
 			}
 		}
+
 		location:tse_bitai = {
 			add_location_modifier = {
 				modifier = pue_mesa_verde_capital
@@ -368,10 +350,7 @@ flavor_pue.105 = {
 		}
 	}
 
-	option = { # <capital> will always remain our capital
-		name = flavor_pue.105.b
-		add_tribal_cohesion = tribal_cohesion_severe_bonus
-	}
+	option = { name = flavor_pue.105.b add_tribal_cohesion = tribal_cohesion_severe_bonus }
 
 	after = { remove_variable = pue_mesa_verde_returned }
 }
@@ -403,14 +382,7 @@ flavor_pue.106 = {
 		has_ruler = yes
 		at_war = no
 
-		any_owned_location = {
-			OR = {
-				integration_level = integrated
-				integration_level = core
-			}
-
-			count > 3
-		}
+		any_owned_location = { OR = { integration_level = integrated integration_level = core } count > 3 }
 	}
 
 	immediate = {
@@ -418,7 +390,6 @@ flavor_pue.106 = {
 			foreground = estate_type:nobles_estate
 			background = estate_type:nobles_estate
 		}
-
 		ruler ?= { save_scope_as = our_ruler }
 	}
 
@@ -437,7 +408,6 @@ flavor_pue.106 = {
 
 	option = { # It would be a wasted effort, let us focus on peace instead
 		name = flavor_pue.106.b
-
 		add_country_modifier = {
 			modifier = pue_maintain_inner_tribal_peace
 			years = 25
@@ -469,7 +439,6 @@ flavor_pue.107 = {
 			foreground = estate_type:nobles_estate
 			background = estate_type:nobles_estate
 		}
-
 		ruler ?= { save_scope_as = our_ruler }
 	}
 

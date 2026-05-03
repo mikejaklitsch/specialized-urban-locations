@@ -19,17 +19,9 @@ flavor_dai.1 = {
 
 	trigger = {
 		country_exists = c:CHA
-		NOT = {
-			is_allied_with = { target = c:CHA }
-		}
-		NOT = {
-			has_truce_with = c:CHA
-		}
-		c:CHA = {
-			NOT = {
-				is_subject_of = root
-			}
-		}
+		NOT = { is_allied_with = { target = c:CHA } }
+		NOT = { has_truce_with = c:CHA }
+		c:CHA = { NOT = { is_subject_of = root } }
 	}
 
 	illustration_tags = { 10 = armed 10 = exterior }
@@ -39,7 +31,6 @@ flavor_dai.1 = {
 			foreground = estate_type:nobles_estate
 			background = estate_type:nobles_estate
 		}
-
 		c:CHA = { save_scope_as = target_country }
 	}
 
@@ -47,15 +38,9 @@ flavor_dai.1 = {
 		name = flavor_dai.1.a
 		historical_option = yes
 
-		add_casus_belli = {
-			target = scope:target_country
-			type = casus_belli:cb_annex
-		}
+		add_casus_belli = { target = scope:target_country type = casus_belli:cb_annex }
 
-		add_historical_rival_scripted = {
-			target = scope:target_country
-			trigger_recipient_event = yes
-		}
+		add_historical_rival_scripted = { target = scope:target_country trigger_recipient_event = yes }
 	}
 	option = {
 		name = flavor_dai.1.b
@@ -86,22 +71,10 @@ flavor_dai.2 = {
 
 	trigger = {
 		OR = {
-			AND = {
-				tag = CHA
-				NOT = {
-					country_exists = c:DAI
-				}
-			}
-			AND = {
-				tag = DAI
-				NOT = {
-					country_exists = c:CHA
-				}
-			}
+			AND = { tag = CHA NOT = { country_exists = c:DAI } }
+			AND = { tag = DAI NOT = { country_exists = c:CHA } }
 		}
-		area:red_river_delta_area = {
-			any_location_in_area = { owner = root percent >= 0.65 }
-		}
+		area:red_river_delta_area = { any_location_in_area = { owner = root percent >= 0.65 } }
 
 		area:champa_area = { any_location_in_area = { owner = root percent >= 0.65 } }
 		owns = location:thang_long
@@ -117,15 +90,13 @@ flavor_dai.2 = {
 		}
 
 		culture = { save_scope_as = root_culture }
+
 		if = {
 			limit = { tag = DAI }
 			location:thang_long = { save_scope_as = root_location }
 			location:vijaya = { save_scope_as = target_location }
 
-			c:CHA = {
-				save_scope_as = target_country
-				culture = { save_scope_as = target_culture }
-			}
+			c:CHA = { save_scope_as = target_country culture = { save_scope_as = target_culture } }
 
 			area:champa_area = { save_scope_as = target_area }
 		}
@@ -133,10 +104,7 @@ flavor_dai.2 = {
 			location:thang_long = { save_scope_as = target_location }
 			location:vijaya = { save_scope_as = root_location }
 
-			c:DAI = {
-				save_scope_as = target_country
-				culture = { save_scope_as = target_culture }
-			}
+			c:DAI = { save_scope_as = target_country culture = { save_scope_as = target_culture } }
 
 			area:red_river_delta_area = { save_scope_as = target_area }
 		}
@@ -145,15 +113,12 @@ flavor_dai.2 = {
 	option = {
 		name = flavor_dai.2.a
 		historical_option = yes
-		if = {
-			limit = {
-				NOT = {
-					has_accepted_culture = scope:target_culture
-				}
-			}
 
+		if = {
+			limit = { NOT = { has_accepted_culture = scope:target_culture } }
 			add_accepted_culture = scope:target_culture
 		}
+
 		scope:root_culture = {
 			change_cultural_view = { target = scope:target_culture change = 1 }
 			add_cultural_tradition = cultural_tradition_mild_penalty
@@ -166,18 +131,13 @@ flavor_dai.2 = {
 
 		add_stability = stability_weak_bonus
 
-		change_societal_value = {
-			type = spiritualist_vs_humanist
-			value = societal_value_large_move_to_right
-		}
+		change_societal_value = { type = spiritualist_vs_humanist value = societal_value_large_move_to_right }
 	}
 	option = { name = flavor_dai.2.b add_stability = stability_mild_bonus }
 	option = {
 		name = flavor_dai.2.c
-		if = {
-			limit = { has_accepted_culture = scope:target_culture }
-			remove_accepted_culture = scope:target_culture
-		}
+		if = { limit = { has_accepted_culture = scope:target_culture } remove_accepted_culture = scope:target_culture }
+
 		scope:root_culture = {
 			change_cultural_view = { target = scope:target_culture change = -1 }
 			add_cultural_influence = cultural_influence_mild_bonus
@@ -202,11 +162,7 @@ flavor_dai.2 = {
 		scope:target_area = {
 			custom_tooltip = {
 				text = flavor_dai.2.tt
-
-				every_location_in_area = {
-					limit = { owner = root }
-					change_integration_progress = integration_progress_mild_bonus
-				}
+				every_location_in_area = { limit = { owner = root } change_integration_progress = integration_progress_mild_bonus }
 			}
 		}
 	}
@@ -231,15 +187,9 @@ flavor_dai.3 = {
 
 	trigger = {
 		owns = location:dien_ban
-
 		location:dien_ban = {
 			market = {
-				any_merchant_in_market = {
-					NOT = {
-						this = root
-					}
-					culture ?= { has_culture_group = culture_group:japanese_group }
-				}
+				any_merchant_in_market = { NOT = { this = root } culture ?= { has_culture_group = culture_group:japanese_group } }
 			}
 		}
 	}
@@ -256,28 +206,17 @@ flavor_dai.3 = {
 
 		location:dien_ban = {
 			save_scope_as = target_location
-
 			market = {
 				save_scope_as = target_market
-
 				random_merchant_in_market = {
-					limit = {
-						NOT = {
-							this = root
-						}
-						culture = { has_culture_group = culture_group:japanese_group }
-					}
+					limit = { NOT = { this = root } culture = { has_culture_group = culture_group:japanese_group } }
 
 					save_scope_as = target_country
 					capital = { region = { save_scope_as = target_region } }
 
 					culture = {
 						save_scope_as = target_culture
-
-						random_culture_group = {
-							limit = { this = culture_group:japanese_group }
-							save_scope_as = target_culture_group
-						}
+						random_culture_group = { limit = { this = culture_group:japanese_group } save_scope_as = target_culture_group }
 					}
 				}
 			}
@@ -288,18 +227,13 @@ flavor_dai.3 = {
 		name = flavor_dai.3.a
 		historical_option = yes
 
-		scope:root_culture = {
-			change_cultural_view = { target = scope:target_culture change = 1 }
-		}
+		scope:root_culture = { change_cultural_view = { target = scope:target_culture change = 1 } }
 
-		scope:target_culture = {
-			change_cultural_view = { target = scope:root_culture change = 1 }
-		}
+		scope:target_culture = { change_cultural_view = { target = scope:root_culture change = 1 } }
 
 		scope:target_location = {
 			if = {
 				limit = { modifier:sul_is_rural_settlement_rank_tier = yes }
-
 				construct_building = {
 					building_type = building_type:overseas_trading_post
 					cost_multiplier = 0
@@ -319,34 +253,19 @@ flavor_dai.3 = {
 			}
 		}
 
-		add_estate_satisfaction = {
-			type = estate_type:nobles_estate
-			value = estate_satisfaction_mild_penalty
-		}
+		add_estate_satisfaction = { type = estate_type:nobles_estate value = estate_satisfaction_mild_penalty }
 	}
 	option = {
 		name = flavor_dai.3.b
 
-		add_estate_satisfaction = {
-			type = estate_type:burghers_estate
-			value = estate_satisfaction_weak_bonus
-		}
-		add_estate_satisfaction = {
-			type = estate_type:nobles_estate
-			value = estate_satisfaction_weak_penalty
-		}
+		add_estate_satisfaction = { type = estate_type:burghers_estate value = estate_satisfaction_weak_bonus }
+		add_estate_satisfaction = { type = estate_type:nobles_estate value = estate_satisfaction_weak_penalty }
 	}
 	option = {
 		name = flavor_dai.3.c
 
-		add_estate_satisfaction = {
-			type = estate_type:burghers_estate
-			value = estate_satisfaction_severe_penalty
-		}
-		add_estate_satisfaction = {
-			type = estate_type:nobles_estate
-			value = estate_satisfaction_mild_bonus
-		}
+		add_estate_satisfaction = { type = estate_type:burghers_estate value = estate_satisfaction_severe_penalty }
+		add_estate_satisfaction = { type = estate_type:nobles_estate value = estate_satisfaction_mild_bonus }
 
 		create_relation = {
 			first = root
@@ -354,13 +273,9 @@ flavor_dai.3 = {
 			type = relation_type:embargo_nation
 		}
 
-		scope:root_culture = {
-			change_cultural_view = { target = scope:target_culture change = -1 }
-		}
+		scope:root_culture = { change_cultural_view = { target = scope:target_culture change = -1 } }
 
-		scope:target_culture = {
-			change_cultural_view = { target = scope:root_culture change = -1 }
-		}
+		scope:target_culture = { change_cultural_view = { target = scope:root_culture change = -1 } }
 	}
 }
 
@@ -373,18 +288,10 @@ flavor_dai.4 = {
 	desc = {
 		first_valid = {
 			triggered_desc = {
-				trigger = {
-					NOT = {
-						scope:capital_location = scope:target_location
-					}
-				}
-
+				trigger = { NOT = { scope:capital_location = scope:target_location } }
 				desc = flavor_dai.4.desc.a
 			}
-			triggered_desc = {
-				trigger = { scope:capital_location = scope:target_location }
-				desc = flavor_dai.4.desc.b
-			}
+			triggered_desc = { trigger = { scope:capital_location = scope:target_location } desc = flavor_dai.4.desc.b }
 		}
 	}
 
@@ -423,11 +330,7 @@ flavor_dai.4 = {
 		name = flavor_dai.4.a
 		historical_option = yes
 
-		trigger = {
-			NOT = {
-				scope:capital_location = scope:target_location
-			}
-		}
+		trigger = { NOT = { scope:capital_location = scope:target_location } }
 
 		set_capital = scope:target_location
 
@@ -448,11 +351,7 @@ flavor_dai.4 = {
 	option = {
 		name = flavor_dai.4.b
 
-		trigger = {
-			NOT = {
-				scope:capital_location = scope:target_location
-			}
-		}
+		trigger = { NOT = { scope:capital_location = scope:target_location } }
 
 		scope:capital_location = {
 			rename_location = hue_location
@@ -506,7 +405,6 @@ flavor_dai.5 = {
 
 	trigger = {
 		culture = culture:vietnamese_culture
-
 		capital = {
 			market = {
 				any_merchant_in_market = {
@@ -527,10 +425,7 @@ flavor_dai.5 = {
 			background = estate_type:nobles_estate
 		}
 
-		culture = {
-			save_scope_as = root_culture
-			language = { save_scope_as = root_language }
-		}
+		culture = { save_scope_as = root_culture language = { save_scope_as = root_language } }
 
 		capital = {
 			save_scope_as = target_location
@@ -573,18 +468,11 @@ flavor_dai.5 = {
 		name = flavor_dai.5.a
 		historical_option = yes
 
-		scope:root_culture = {
-			change_cultural_view = { target = scope:target_culture change = 1 }
-		}
+		scope:root_culture = { change_cultural_view = { target = scope:target_culture change = 1 } }
 
-		scope:target_culture = {
-			change_cultural_view = { target = scope:root_culture change = 1 }
-		}
+		scope:target_culture = { change_cultural_view = { target = scope:root_culture change = 1 } }
 
-		add_estate_satisfaction = {
-			type = estate_type:clergy_estate
-			value = estate_satisfaction_severe_penalty
-		}
+		add_estate_satisfaction = { type = estate_type:clergy_estate value = estate_satisfaction_severe_penalty }
 
 		scope:target_location = {
 			construct_building = {
@@ -605,10 +493,7 @@ flavor_dai.5 = {
 	option = {
 		name = flavor_dai.5.b
 
-		add_estate_satisfaction = {
-			type = estate_type:clergy_estate
-			value = estate_satisfaction_mild_penalty
-		}
+		add_estate_satisfaction = { type = estate_type:clergy_estate value = estate_satisfaction_mild_penalty }
 
 		scope:target_location = {
 			construct_building = {
@@ -629,10 +514,7 @@ flavor_dai.5 = {
 			}
 		}
 
-		add_estate_satisfaction = {
-			type = estate_type:clergy_estate
-			value = estate_satisfaction_mild_bonus
-		}
+		add_estate_satisfaction = { type = estate_type:clergy_estate value = estate_satisfaction_mild_bonus }
 
 		create_relation = {
 			first = root

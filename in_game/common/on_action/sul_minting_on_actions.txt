@@ -1,16 +1,20 @@
 ﻿
 sul_minting_initialize_all = {
 	effect = {
+		debug_log = "SUL_TRACE: minting_initialize_all ENTER"
+
 		every_country = {
 			limit = { capital ?= { exists = market } }
 			sul_minting_initialize_country = yes
-			set_variable = { name = sul_minting_first_month_tick value = yes days = 35 }
+
+			set_variable = {
+				name = sul_minting_first_month_tick
+				value = yes
+				days = 35
+			}
 		}
 
-		set_global_variable = {
-			name = sul_minting_version
-			value = sul_minting_version_value
-		}
+		set_global_variable = { name = sul_minting_version value = sul_minting_version_value }
 	}
 }
 
@@ -20,6 +24,7 @@ sul_minting_on_policy_changed = {
 	trigger = { sul_minting_is_active_country = yes }
 
 	effect = {
+		debug_log = "SUL_TRACE: minting_on_policy_changed ENTER"
 		sul_minting_rebuild_minting_goods = yes
 		sul_minting_cache_market_center = yes
 
@@ -29,14 +34,12 @@ sul_minting_on_policy_changed = {
 		# AI: update minting modifier from fresh E
 		if = {
 			limit = { is_ai = yes }
-
 			add_country_modifier = {
 				modifier = sul_minting_ai_minting
 				days = -1
 				mode = replace
 				size = sul_minting_ai_minting_size
 			}
-
 			# change_country_modifier_size = {
 			# 	modifier = sul_minting_ai_minting
 			# 	value = sul_minting_ai_minting_size
@@ -50,26 +53,24 @@ sul_minting_on_policy_changed = {
 
 sul_minting_version_check = {
 	trigger = {
-		OR = {
-			NOT = {
-				has_global_variable = sul_minting_version
-			}
-
-			global_var:sul_minting_version < sul_minting_version_value
-		}
+		OR = { NOT = { has_global_variable = sul_minting_version } global_var:sul_minting_version < sul_minting_version_value }
 	}
 
 	effect = {
+		debug_log = "SUL_TRACE: minting_version_check ENTER"
+
 		every_country = {
 			limit = { capital ?= { exists = market } }
 			sul_minting_initialize_country = yes
-			set_variable = { name = sul_minting_first_month_tick value = yes days = 35 }
+
+			set_variable = {
+				name = sul_minting_first_month_tick
+				value = yes
+				days = 35
+			}
 		}
 
-		set_global_variable = {
-			name = sul_minting_version
-			value = sul_minting_version_value
-		}
+		set_global_variable = { name = sul_minting_version value = sul_minting_version_value }
 	}
 }
 
@@ -77,28 +78,24 @@ sul_minting_monthly_update = {
 	trigger = { sul_minting_is_active_country = yes }
 
 	effect = {
+		debug_log = "SUL_TRACE: minting_monthly_update ENTER"
 		# Initialize new countries (formed midgame, released, etc.)
 		if = {
-			limit = {
-				NOT = {
-					has_variable = sul_minting_debasement_level
-				}
-			}
+			limit = { NOT = { has_variable = sul_minting_debasement_level } }
 
 			sul_minting_initialize_country = yes
-			set_variable = { name = sul_minting_first_month_tick value = yes days = 35 }
+
+			set_variable = {
+				name = sul_minting_first_month_tick
+				value = yes
+				days = 35
+			}
 		}
 
 		# Price cache: player monthly, AI first tick only.
 		# Yearly pulse handles AI price refresh.
 		if = {
-			limit = {
-				OR = {
-					is_ai = no
-					has_variable = sul_minting_first_month_tick
-				}
-			}
-
+			limit = { OR = { is_ai = no has_variable = sul_minting_first_month_tick } }
 			sul_minting_update_price_cache = yes
 		}
 
@@ -109,7 +106,6 @@ sul_minting_monthly_update = {
 				var:sul_minting_rebasement_level > 0
 				inflation = 0
 			}
-
 			set_variable = { name = sul_minting_rebasement_level value = 0 }
 		}
 
@@ -122,7 +118,6 @@ sul_minting_monthly_update = {
 			# First tick: apply minting modifier
 			if = {
 				limit = { has_variable = sul_minting_first_month_tick }
-
 				add_country_modifier = {
 					modifier = sul_minting_ai_minting
 					days = -1
@@ -146,7 +141,6 @@ sul_minting_monthly_update = {
 					var:sul_minting_rebasement_level > 0
 					inflation > 0
 				}
-
 				add_country_modifier = {
 					modifier = sul_minting_ai_rebasement
 					days = -1
@@ -169,6 +163,7 @@ sul_minting_yearly_update = {
 	}
 
 	effect = {
+		debug_log = "SUL_TRACE: minting_yearly_update ENTER"
 		sul_minting_update_price_cache = yes
 
 		# Update minting modifier from fresh E

@@ -48,50 +48,50 @@ sul_rgo_max_level_base = {
 	}
 
 	add = { desc = "BUILDING_LEVEL_BASE" value = 5 }
-	add = { desc = "BUILDING_LEVEL_POPULATION" value = population divide = 50 }
+	add = {
+		desc = "BUILDING_LEVEL_POPULATION"
+		value = population
+		divide = 50
+	}
 
 	# RGO size (multiplicative on base, displayed as additive)
 	if = {
 		limit = { modifier:local_max_rgo_size_modifier != 0 }
-
 		add = {
 			desc = "SUL_RGO_SIZE"
 			value = scope:rgo_base
 			multiply = modifier:local_max_rgo_size_modifier
 		}
 	}
-	if = {
-		limit = {
-			has_owner = yes
-			owner = { modifier:global_max_rgo_size_modifier != 0 }
-		}
 
+	if = {
+		limit = { has_owner = yes owner = { modifier:global_max_rgo_size_modifier != 0 } }
 		add = {
 			desc = "SUL_RGO_SIZE_GLOBAL"
 			value = scope:rgo_base
 			multiply = owner.modifier:global_max_rgo_size_modifier
 		}
 	}
+
 	if = {
 		limit = {
 			has_owner = yes
 			owner = { modifier:global_max_rgo_size_modifier_in_rural != 0 }
 			modifier:sul_is_rural_settlement_rank_tier = yes
 		}
-
 		add = {
 			desc = "SUL_RGO_SIZE_RURAL"
 			value = scope:rgo_base
 			multiply = owner.modifier:global_max_rgo_size_modifier_in_rural
 		}
 	}
+
 	if = {
 		limit = {
 			has_owner = yes
 			owner = { modifier:global_max_rgo_size_modifier_in_non_rural != 0 }
 			modifier:sul_is_rural_settlement_rank_tier = no
 		}
-
 		add = {
 			desc = "SUL_RGO_SIZE_URBAN"
 			value = scope:rgo_base
@@ -102,53 +102,35 @@ sul_rgo_max_level_base = {
 	# Update rgo_base to post-RGO-size value
 	save_temporary_value_as = {
 		name = rgo_base
-
-		value = {
-			value = scope:rgo_base
-			multiply = { value = 1 add = modifier:local_max_rgo_size_modifier }
-		}
+		value = { value = scope:rgo_base multiply = { value = 1 add = modifier:local_max_rgo_size_modifier } }
 	}
+
 	if = {
 		limit = { has_owner = yes }
-
 		save_temporary_value_as = {
 			name = rgo_base
-
-			value = {
-				value = scope:rgo_base
-				add = { value = 3 multiply = owner.modifier:global_max_rgo_size_modifier }
-			}
+			value = { value = scope:rgo_base add = { value = 3 multiply = owner.modifier:global_max_rgo_size_modifier } }
 		}
 	}
+
 	if = {
 		limit = { has_owner = yes modifier:sul_is_rural_settlement_rank_tier = yes }
-
 		save_temporary_value_as = {
 			name = rgo_base
-
 			value = {
 				value = scope:rgo_base
-
-				add = {
-					value = scope:rgo_base
-					multiply = owner.modifier:global_max_rgo_size_modifier_in_rural
-				}
+				add = { value = scope:rgo_base multiply = owner.modifier:global_max_rgo_size_modifier_in_rural }
 			}
 		}
 	}
+
 	if = {
 		limit = { has_owner = yes modifier:sul_is_rural_settlement_rank_tier = no }
-
 		save_temporary_value_as = {
 			name = rgo_base
-
 			value = {
 				value = scope:rgo_base
-
-				add = {
-					value = scope:rgo_base
-					multiply = owner.modifier:global_max_rgo_size_modifier_in_non_rural
-				}
+				add = { value = scope:rgo_base multiply = owner.modifier:global_max_rgo_size_modifier_in_non_rural }
 			}
 		}
 	}
@@ -156,16 +138,15 @@ sul_rgo_max_level_base = {
 	# Raw material output (multiplicative on post-RGO-size base, displayed as additive)
 	if = {
 		limit = { modifier:local_raw_material_output != 0 }
-
 		add = {
 			desc = "SUL_RAW_MATERIAL_OUTPUT"
 			value = scope:rgo_base
 			multiply = modifier:local_raw_material_output
 		}
 	}
+
 	if = {
 		limit = { has_owner = yes owner = { modifier:global_raw_material_output != 0 } }
-
 		add = {
 			desc = "SUL_RAW_MATERIAL_OUTPUT_GLOBAL"
 			value = scope:rgo_base

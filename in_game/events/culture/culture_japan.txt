@@ -25,7 +25,6 @@ culture_japan.1 = {
 			foreground = estate_type:nobles_estate
 			background = estate_type:nobles_estate
 		}
-
 		heir ?= { save_scope_as = target_character }
 	}
 
@@ -34,10 +33,7 @@ culture_japan.1 = {
 		name = culture_japan.1.b
 		add_legitimacy = legitimacy_mild_penalty
 
-		add_estate_satisfaction = {
-			type = estate_type:nobles_estate
-			value = estate_satisfaction_extreme_penalty
-		}
+		add_estate_satisfaction = { type = estate_type:nobles_estate value = estate_satisfaction_extreme_penalty }
 	}
 }
 
@@ -65,27 +61,23 @@ culture_japan.2 = {
 
 	option = {
 		name = culture_japan.2.a
+
 		if = {
 			limit = { country_has_estate = estate_type:peasants_estate }
-
-			add_estate_satisfaction = {
-				type = estate_type:peasants_estate
-				value = estate_satisfaction_extreme_penalty
-			}
+			add_estate_satisfaction = { type = estate_type:peasants_estate value = estate_satisfaction_extreme_penalty }
 		}
 		else = { add_prestige = prestige_extreme_penalty }
 		add_army_tradition = army_tradition_extreme_bonus
 	}
 	option = {
 		name = culture_japan.2.b
+
 		if = {
 			limit = { religion = { has_honor = yes } }
 			add_honor = honor_weak_bonus
 		}
-		add_estate_satisfaction = {
-			type = estate_type:nobles_estate
-			value = estate_satisfaction_extreme_penalty
-		}
+
+		add_estate_satisfaction = { type = estate_type:nobles_estate value = estate_satisfaction_extreme_penalty }
 	}
 }
 
@@ -100,19 +92,13 @@ culture_japan.3 = {
 		culture = { has_culture_group = culture_group:japanese_group }
 		has_ruler_in_country = yes
 
-		ruler ?= {
-			NOT = {
-				any_child = { is_alive = yes }
-			}
-		}
+		ruler ?= { NOT = { any_child = { is_alive = yes } } }
 
 		has_heir = no
 
 		any_character = {
 			has_dynasty = no
-			NOT = {
-				exists = father
-			}
+			NOT = { exists = father }
 
 			is_female = no
 			age_in_years < { value = root.ruler.age_in_years subtract = 10 }
@@ -131,15 +117,12 @@ culture_japan.3 = {
 		random_character = {
 			limit = {
 				has_dynasty = no
-				NOT = {
-					exists = father
-				}
+				NOT = { exists = father }
 
 				is_female = no
 				age_in_years < { value = root.ruler.age_in_years subtract = 10 }
 				is_artist = no
 			}
-
 			save_scope_as = target_character
 		}
 
@@ -153,23 +136,14 @@ culture_japan.3 = {
 		if = {
 			limit = {
 				# Make sure that the new "parent" is not a descendant of the new "kid"
-				scope:new_ruler ?= {
-					NOT = {
-						any_descendant = { this = scope:old_ruler }
-					}
-				}
+				scope:new_ruler ?= { NOT = { any_descendant = { this = scope:old_ruler } } }
 			}
-
 			scope:target_ruler = { adopt_character = scope:target_character }
 		}
+
 		scope:target_character = {
 			if = {
-				limit = {
-					NOT = {
-						has_estate = estate_type:nobles_estate
-					}
-				}
-
+				limit = { NOT = { has_estate = estate_type:nobles_estate } }
 				change_character_estate = estate_type:nobles_estate
 			}
 		}
@@ -198,12 +172,12 @@ culture_japan.4 = {
 			foreground = estate_type:nobles_estate
 			background = estate_type:nobles_estate
 		}
-
 		ruler ?= { save_scope_as = target_character }
 	}
 
 	option = {
 		name = culture_japan.4.a
+
 		if = {
 			limit = { religion = { has_honor = yes } }
 			add_honor = honor_weak_penalty
@@ -231,7 +205,6 @@ culture_japan.5 = {
 		international_organization:japanese_shogunate ?= {
 			any_international_organization_member = {
 				has_ruler = yes
-
 				has_special_status_in_international_organization = {
 					type = special_status:japanese_emperor
 					international_organization = international_organization:japanese_shogunate
@@ -251,7 +224,6 @@ culture_japan.5 = {
 			random_international_organization_member = {
 				limit = {
 					has_ruler = yes
-
 					has_special_status_in_international_organization = {
 						type = special_status:japanese_emperor
 						international_organization = international_organization:japanese_shogunate
@@ -271,9 +243,7 @@ culture_japan.5 = {
 			scale = -5
 		}
 
-		scope:target_emperor = {
-			add_opinion = { target = root modifier = opinion_pleased }
-		}
+		scope:target_emperor = { add_opinion = { target = root modifier = opinion_pleased } }
 	}
 	option = { name = culture_japan.5.b add_prestige = prestige_mild_penalty }
 }
@@ -294,10 +264,7 @@ culture_japan.6 = {
 		at_war = no
 
 		international_organization:japanese_shogunate ?= {
-			any_international_organization_member = {
-				has_ruler = yes
-				is_japanese_emperor_or_shogun = yes
-			}
+			any_international_organization_member = { has_ruler = yes is_japanese_emperor_or_shogun = yes }
 		}
 
 		is_japanese_emperor_or_shogun = no
@@ -317,13 +284,10 @@ culture_japan.6 = {
 		name = culture_japan.6.a
 		add_prestige = prestige_mild_bonus
 
-		scope:target_boss = {
-			add_opinion = { target = root modifier = opinion_pleased }
-		}
+		scope:target_boss = { add_opinion = { target = root modifier = opinion_pleased } }
 	}
 	option = {
 		name = culture_japan.6.b
-
 		change_gold_effect = {
 			scale = 2
 		}
@@ -345,18 +309,11 @@ culture_japan.7 = {
 
 	image = "gfx/interface/icons/trade_goods/illustrations/icon_goods_weaponry.dds"
 
-	trigger = {
-		produced_in_country:weaponry > 0
-		culture = { has_culture_group = culture_group:japanese_group }
-	}
+	trigger = { produced_in_country:weaponry > 0 culture = { has_culture_group = culture_group:japanese_group } }
 
-	option = {
-		name = culture_japan.7.a
-		add_army_tradition = army_tradition_extreme_bonus
-	}
+	option = { name = culture_japan.7.a add_army_tradition = army_tradition_extreme_bonus }
 	option = {
 		name = culture_japan.7.b
-
 		change_gold_effect = {
 			scale = 2
 		}
@@ -392,7 +349,11 @@ culture_japan.8 = {
 		}
 
 		random_character = {
-			limit = { is_general = yes is_ruler = no dynasty != root.ruler.dynasty }
+			limit = {
+				is_general = yes
+				is_ruler = no
+				dynasty != root.ruler.dynasty
+			}
 			save_scope_as = target_character
 		}
 
@@ -401,6 +362,7 @@ culture_japan.8 = {
 
 	option = {
 		name = culture_japan.8.a
+
 		if = {
 			limit = { religion = { has_purity = yes } }
 			add_purity = honor_weak_penalty
@@ -413,6 +375,7 @@ culture_japan.8 = {
 	option = {
 		name = culture_japan.8.b
 		add_stability = stability_mild_penalty
+
 		if = {
 			limit = { religion = { has_honor = yes } }
 			add_honor = honor_weak_penalty
@@ -433,17 +396,11 @@ culture_japan.9 = {
 		ruler ?= { mil > 50 }
 		country_type = location
 		culture = { has_culture_group = culture_group:japanese_group }
-		NOT = {
-			has_country_modifier = japanese_jokamachi
-		}
+		NOT = { has_country_modifier = japanese_jokamachi }
 		any_neighbor_country = {
 			culture = { has_culture_group = culture_group:japanese_group }
 
-			any_fort_in_country = {
-				NOT = {
-					modifier:sul_is_rural_settlement_rank_tier = yes
-				}
-			}
+			any_fort_in_country = { NOT = { modifier:sul_is_rural_settlement_rank_tier = yes } }
 
 			has_advance = jap_jokamachi
 		}
@@ -463,15 +420,10 @@ culture_japan.9 = {
 			limit = {
 				culture = { has_culture_group = culture_group:japanese_group }
 
-				any_fort_in_country = {
-					NOT = {
-						modifier:sul_is_rural_settlement_rank_tier = yes
-					}
-				}
+				any_fort_in_country = { NOT = { modifier:sul_is_rural_settlement_rank_tier = yes } }
 
 				has_advance = jap_jokamachi
 			}
-
 			save_scope_as = target_neighbor
 		}
 	}
@@ -485,19 +437,13 @@ culture_japan.9 = {
 			mode = add_and_extend
 		}
 
-		add_estate_satisfaction = {
-			type = estate_type:nobles_estate
-			value = estate_satisfaction_mild_penalty
-		}
+		add_estate_satisfaction = { type = estate_type:nobles_estate value = estate_satisfaction_mild_penalty }
 	}
 
 	option = {
 		name = culture_japan.9.b
 
-		add_estate_satisfaction = {
-			type = estate_type:burghers_estate
-			value = estate_satisfaction_mild_penalty
-		}
+		add_estate_satisfaction = { type = estate_type:burghers_estate value = estate_satisfaction_mild_penalty }
 
 		add_prestige = prestige_weak_bonus
 	}
@@ -515,10 +461,7 @@ culture_japan.10 = {
 		has_ruler = yes
 		ruler ?= { dip > 50 }
 		culture = { has_culture_group = culture_group:japanese_group }
-		OR = {
-			current_age = age_5_absolutism
-			current_age = age_6_revolutions
-		}
+		OR = { current_age = age_5_absolutism current_age = age_6_revolutions }
 
 		num_of_non_rural > 0
 	}
@@ -532,13 +475,11 @@ culture_japan.10 = {
 		}
 	}
 
-	option = {
-		name = culture_japan.10.a
-		culture = { add_cultural_tradition = cultural_tradition_mild_bonus }
-	}
+	option = { name = culture_japan.10.a culture = { add_cultural_tradition = cultural_tradition_mild_bonus } }
 	option = {
 		name = culture_japan.10.b
 		add_prestige = prestige_weak_bonus
+
 		if = {
 			limit = { religion = { has_honor = yes } }
 			add_honor = honor_weak_bonus
@@ -558,12 +499,8 @@ culture_japan.11 = {
 		societal_value:mercantilism_vs_free_trade < 0.00
 		has_ruler = yes
 		country_has_estate = estate_type:burghers_estate
-		NOT = {
-			has_country_modifier = endorsing_za
-		}
-		NOT = {
-			has_country_modifier = curtailed_za
-		}
+		NOT = { has_country_modifier = endorsing_za }
+		NOT = { has_country_modifier = curtailed_za }
 	}
 
 	illustration_tags = { 10 = regular 10 = exterior }
@@ -573,32 +510,28 @@ culture_japan.11 = {
 			foreground = estate_type:burghers_estate
 			background = estate_type:clergy_estate
 		}
-
 		ruler = { save_scope_as = target_character }
 	}
 
 	option = {
 		name = culture_japan.11.a
+
 		if = {
 			limit = { current_age_or_later = { age = age_4_reformation } }
-
-			change_societal_value = {
-				type = mercantilism_vs_free_trade
-				value = societal_value_minor_move_to_left
-			}
+			change_societal_value = { type = mercantilism_vs_free_trade value = societal_value_minor_move_to_left }
 		}
+
 		change_gold_effect = {
 			scale = -2.00
 		}
 
-		add_estate_satisfaction = {
-			type = estate_type:burghers_estate
-			value = estate_satisfaction_mild_bonus
-		}
+		add_estate_satisfaction = { type = estate_type:burghers_estate value = estate_satisfaction_mild_bonus }
+
 		if = {
 			limit = { religion = { has_purity = yes } }
 			add_purity = purity_weak_penalty
 		}
+
 		add_country_modifier = {
 			modifier = endorsing_za
 			years = 5
@@ -608,10 +541,8 @@ culture_japan.11 = {
 	option = {
 		name = culture_japan.11.b
 
-		add_estate_satisfaction = {
-			type = estate_type:burghers_estate
-			value = estate_satisfaction_mild_penalty
-		}
+		add_estate_satisfaction = { type = estate_type:burghers_estate value = estate_satisfaction_mild_penalty }
+
 		if = {
 			limit = { religion = { has_honor = yes } }
 			add_honor = honor_weak_penalty
@@ -630,9 +561,7 @@ culture_japan.12 = {
 		culture = { has_culture_group = culture_group:japanese_group }
 		country_has_estate = estate_type:burghers_estate
 		"estate_power(estate_type:burghers_estate)" > 0.5
-		NOT = {
-			has_country_modifier = curtailed_za
-		}
+		NOT = { has_country_modifier = curtailed_za }
 	}
 
 	illustration_tags = { 10 = regular 10 = exterior }
@@ -646,18 +575,14 @@ culture_japan.12 = {
 
 	option = {
 		name = culture_japan.12.a
+
 		if = {
 			limit = { current_age_or_later = { age = age_4_reformation } }
+			change_societal_value = { type = mercantilism_vs_free_trade value = societal_value_move_to_right }
+		}
 
-			change_societal_value = {
-				type = mercantilism_vs_free_trade
-				value = societal_value_move_to_right
-			}
-		}
-		if = {
-			limit = { has_country_modifier = endorsing_za }
-			remove_country_modifier = endorsing_za
-		}
+		if = { limit = { has_country_modifier = endorsing_za } remove_country_modifier = endorsing_za }
+
 		add_country_modifier = {
 			modifier = curtailed_za
 			years = 5
@@ -666,13 +591,10 @@ culture_japan.12 = {
 	}
 	option = {
 		name = culture_japan.12.b
+
 		if = {
 			limit = { current_age_or_later = { age = age_4_reformation } }
-
-			change_societal_value = {
-				type = mercantilism_vs_free_trade
-				value = societal_value_minor_move_to_left
-			}
+			change_societal_value = { type = mercantilism_vs_free_trade value = societal_value_minor_move_to_left }
 		}
 		else = { add_prestige = prestige_weak_bonus }
 	}
@@ -689,10 +611,7 @@ culture_japan.13 = {
 		country_type = location
 		culture = { has_culture_group = culture_group:japanese_group }
 
-		capital = {
-			modifier:fort_level > 0
-			modifier:sul_is_rural_settlement_rank_tier = yes
-		}
+		capital = { modifier:fort_level > 0 modifier:sul_is_rural_settlement_rank_tier = yes }
 
 		has_advance = jap_jokamachi
 	}
@@ -704,7 +623,6 @@ culture_japan.13 = {
 			foreground = estate_type:nobles_estate
 			background = estate_type:burghers_estate
 		}
-
 		capital = { save_scope_as = target_location }
 	}
 
@@ -715,15 +633,9 @@ culture_japan.13 = {
 			scale = -12.00
 		}
 
-		capital = {
-			change_development = development_mild_bonus
-			sul_set_rank_town = yes
-		}
+		capital = { change_development = development_mild_bonus sul_set_rank_town = yes }
 
-		change_societal_value = {
-			type = centralization_vs_decentralization
-			value = societal_value_minor_move_to_left
-		}
+		change_societal_value = { type = centralization_vs_decentralization value = societal_value_minor_move_to_left }
 	}
 	option = {
 		name = culture_japan.13.b
@@ -735,10 +647,7 @@ culture_japan.13 = {
 			change_development = development_weak_bonus
 		}
 
-		change_societal_value = {
-			type = centralization_vs_decentralization
-			value = societal_value_minor_move_to_right
-		}
+		change_societal_value = { type = centralization_vs_decentralization value = societal_value_minor_move_to_right }
 	}
 }
 
@@ -755,10 +664,7 @@ culture_japan.14 = {
 
 		capital = {
 			modifier:fort_level > 0
-			OR = {
-				modifier:sul_is_town_rank_tier = yes
-				modifier:sul_is_city_rank_tier = yes
-			}
+			OR = { modifier:sul_is_town_rank_tier = yes modifier:sul_is_city_rank_tier = yes }
 		}
 
 		num_of_non_rural > 0
@@ -771,18 +677,13 @@ culture_japan.14 = {
 			foreground = estate_type:peasants_estate
 			background = estate_type:nobles_estate
 		}
-
 		capital = { save_scope_as = target_location }
 	}
 
 	option = {
 		name = culture_japan.14.a
 
-		trigger = {
-			NOT = {
-				has_estate_privilege = estate_privilege:peasants_free_peasantry
-			}
-		}
+		trigger = { NOT = { has_estate_privilege = estate_privilege:peasants_free_peasantry } }
 
 		add_country_modifier = {
 			modifier = movement_restrictions
@@ -792,7 +693,6 @@ culture_japan.14 = {
 	}
 	option = {
 		name = culture_japan.14.b
-
 		capital = {
 			add_location_modifier = {
 				modifier = urban_growing_pains
@@ -825,66 +725,53 @@ culture_japan.15 = {
 			foreground = estate_type:burghers_estate
 			background = estate_type:nobles_estate
 		}
-
 		ruler = { save_scope_as = target_ruler }
 	}
 
 	option = {
 		name = culture_japan.15.a
+
 		if = {
 			limit = { current_age_or_later = { age = age_4_reformation } }
-
-			change_societal_value = {
-				type = mercantilism_vs_free_trade
-				value = societal_value_tiny_move_to_right
-			}
+			change_societal_value = { type = mercantilism_vs_free_trade value = societal_value_tiny_move_to_right }
 		}
+
 		change_gold_effect = {
 			scale = 12.00
 		}
+
 		if = {
 			limit = { country_has_estate = estate_type:burghers_estate }
-
-			add_estate_satisfaction = {
-				type = estate_type:burghers_estate
-				value = estate_satisfaction_mild_penalty
-			}
+			add_estate_satisfaction = { type = estate_type:burghers_estate value = estate_satisfaction_mild_penalty }
 		}
 	}
 	option = {
 		name = culture_japan.15.b
+
 		if = {
 			limit = { current_age_or_later = { age = age_4_reformation } }
-
-			change_societal_value = {
-				type = mercantilism_vs_free_trade
-				value = societal_value_tiny_move_to_left
-			}
+			change_societal_value = { type = mercantilism_vs_free_trade value = societal_value_tiny_move_to_left }
 		}
+
 		change_gold_effect = {
 			scale = 6.00
 		}
 	}
 	option = {
 		name = culture_japan.15.c
+
 		if = {
 			limit = { current_age_or_later = { age = age_4_reformation } }
-
-			change_societal_value = {
-				type = mercantilism_vs_free_trade
-				value = societal_value_minor_move_to_left
-			}
+			change_societal_value = { type = mercantilism_vs_free_trade value = societal_value_minor_move_to_left }
 		}
+
 		change_gold_effect = {
 			scale = -3.00
 		}
+
 		if = {
 			limit = { country_has_estate = estate_type:burghers_estate }
-
-			add_estate_satisfaction = {
-				type = estate_type:burghers_estate
-				value = estate_satisfaction_mild_bonus
-			}
+			add_estate_satisfaction = { type = estate_type:burghers_estate value = estate_satisfaction_mild_bonus }
 		}
 	}
 }
@@ -899,13 +786,8 @@ culture_japan.16 = {
 	trigger = {
 		culture = { has_culture_group = culture_group:japanese_group }
 		num_of_ports >= 1
-		NOT = {
-			has_policy = state_piracy_policy
-		}
-		NOR = {
-			current_age = age_5_absolutism
-			current_age = age_6_revolutions
-		}
+		NOT = { has_policy = state_piracy_policy }
+		NOR = { current_age = age_5_absolutism current_age = age_6_revolutions }
 	}
 
 	illustration_tags = { 10 = angry 10 = exterior }
@@ -920,45 +802,35 @@ culture_japan.16 = {
 	option = { # Fund them
 		name = culture_japan.16.a
 
-		trigger = {
-			NOT = {
-				has_policy = anti_piracy_policy
-			}
-		}
+		trigger = { NOT = { has_policy = anti_piracy_policy } }
+
 		if = {
 			limit = { country_exists = c:KOR }
 			c:KOR = { add_opinion = { target = root modifier = opinion_displeased } }
 		}
+
 		if = {
 			limit = { country_exists = c:CHI }
 			c:CHI = { add_opinion = { target = root modifier = opinion_displeased } }
 		}
+
 		if = {
 			limit = {
 				any_owned_location = {
 					is_coastal = yes
-					NOT = {
-						has_building_with_at_least_one_level = pirate_haven
-					}
+					NOT = { has_building_with_at_least_one_level = pirate_haven }
 
 					can_build_building = building_type:pirate_haven
-					NOT = {
-						has_location_modifier = wokou_pirate_stronghold_friendly
-					}
+					NOT = { has_location_modifier = wokou_pirate_stronghold_friendly }
 				}
 			}
-
 			random_owned_location = {
 				limit = {
 					is_coastal = yes
-					NOT = {
-						has_building_with_at_least_one_level = pirate_haven
-					}
+					NOT = { has_building_with_at_least_one_level = pirate_haven }
 
 					can_build_building = building_type:pirate_haven
-					NOT = {
-						has_location_modifier = wokou_pirate_stronghold_friendly
-					}
+					NOT = { has_location_modifier = wokou_pirate_stronghold_friendly }
 				}
 
 				construct_building = {
@@ -989,14 +861,17 @@ culture_japan.16 = {
 	}
 	option = { # Persecute them
 		name = culture_japan.16.b
+
 		if = {
 			limit = { country_exists = c:KOR }
 			c:KOR = { add_opinion = { target = root modifier = opinion_pleased } }
 		}
+
 		if = {
 			limit = { country_exists = c:CHI }
 			c:CHI = { add_opinion = { target = root modifier = opinion_pleased } }
 		}
+
 		random_owned_location = {
 			limit = { has_building_with_at_least_one_level = pirate_haven }
 			destroy_building = "building(building_type:pirate_haven|owner)"
@@ -1014,13 +889,8 @@ culture_japan.17 = {
 	trigger = {
 		culture = { has_culture_group = culture_group:japanese_group }
 		num_of_ports >= 1
-		NOT = {
-			has_policy = state_piracy_policy
-		}
-		NOR = {
-			current_age = age_5_absolutism
-			current_age = age_6_revolutions
-		}
+		NOT = { has_policy = state_piracy_policy }
+		NOR = { current_age = age_5_absolutism current_age = age_6_revolutions }
 	}
 
 	illustration_tags = { 10 = angry 10 = exterior }
@@ -1043,28 +913,23 @@ culture_japan.17 = {
 				key = wako_raids
 			}
 		}
+
 		if = {
 			limit = {
 				any_owned_location = {
 					is_coastal = yes
-					NOT = {
-						has_building_with_at_least_one_level = pirate_haven
-					}
+					NOT = { has_building_with_at_least_one_level = pirate_haven }
 
 					can_build_building = building_type:pirate_haven
 				}
 			}
-
 			random_owned_location = {
 				limit = {
 					is_coastal = yes
-					NOT = {
-						has_building_with_at_least_one_level = pirate_haven
-					}
+					NOT = { has_building_with_at_least_one_level = pirate_haven }
 
 					can_build_building = building_type:pirate_haven
 				}
-
 				construct_building = {
 					building_type = building_type:pirate_haven
 					cost_multiplier = 0.25
@@ -1073,10 +938,7 @@ culture_japan.17 = {
 			}
 		}
 		else = {
-			random_owned_location = {
-				limit = { is_coastal = yes }
-				change_control = control_mild_penalty
-			}
+			random_owned_location = { limit = { is_coastal = yes } change_control = control_mild_penalty }
 		}
 	}
 	option = { name = culture_japan.17.b add_prestige = prestige_mild_penalty }
@@ -1093,16 +955,9 @@ culture_japan.18 = {
 		culture = { has_culture_group = culture_group:japanese_group }
 		has_ruler = yes
 		num_of_ports >= 1
-		NOT = {
-			has_policy = state_piracy_policy
-		}
-		NOT = {
-			has_policy = anti_piracy_policy
-		}
-		NOR = {
-			current_age = age_5_absolutism
-			current_age = age_6_revolutions
-		}
+		NOT = { has_policy = state_piracy_policy }
+		NOT = { has_policy = anti_piracy_policy }
+		NOR = { current_age = age_5_absolutism current_age = age_6_revolutions }
 	}
 
 	illustration_tags = { 10 = regular 10 = exterior }
@@ -1112,7 +967,6 @@ culture_japan.18 = {
 			foreground = pop_type:soldiers
 			background = pop_type:soldiers
 		}
-
 		ruler ?= { save_scope_as = target_ruler }
 	}
 
@@ -1122,7 +976,6 @@ culture_japan.18 = {
 
 		custom_tooltip = {
 			text = culture_japan.18.a.tt
-
 			every_known_country = {
 				limit = { capital.market = { in_trade_range_of = root } }
 				add_opinion = { target = root modifier = opinion_pirate_supporters }
@@ -1138,7 +991,6 @@ culture_japan.18 = {
 
 		custom_tooltip = {
 			text = culture_japan.18.b.tt
-
 			every_known_country = {
 				limit = { capital.market = { in_trade_range_of = root } }
 				add_opinion = { target = root modifier = opinion_pirate_fighting }
@@ -1156,10 +1008,7 @@ culture_japan.19 = {
 
 	trigger = {
 		culture = { has_culture_group = culture_group:japanese_group }
-		NOR = {
-			current_age = age_5_absolutism
-			current_age = age_6_revolutions
-		}
+		NOR = { current_age = age_5_absolutism current_age = age_6_revolutions }
 		any_owned_location = { has_building_with_at_least_one_level = pirate_haven }
 	}
 
@@ -1196,7 +1045,6 @@ culture_japan.19 = {
 
 	option = {
 		name = culture_japan.19.a
-
 		scope:target_location = {
 			add_location_modifier = {
 				modifier = wokou_pirate_stronghold_indifferent
@@ -1224,14 +1072,9 @@ culture_japan.19 = {
 	}
 	option = {
 		name = culture_japan.19.c
-		if = {
-			limit = { manpower > 0 monthly_manpower > 0 }
-			add_manpower = { value = monthly_manpower multiply = -3 }
-		}
+		if = { limit = { manpower > 0 monthly_manpower > 0 } add_manpower = { value = monthly_manpower multiply = -3 } }
 		else = { add_stability = stability_severe_penalty }
-		scope:target_location = {
-			destroy_building = "building(building_type:pirate_haven|owner)"
-		}
+		scope:target_location = { destroy_building = "building(building_type:pirate_haven|owner)" }
 
 		kill_character = { target = scope:target_character reason = execution }
 	}
@@ -1252,10 +1095,7 @@ culture_japan.20 = {
 			leader_country ?= { has_ruler = yes this != root }
 			international_organization_has_policy = policy:sankin_kotai_policy
 		}
-		OR = {
-			has_heir = no
-			heir ?= { owner ?= root }
-		}
+		OR = { has_heir = no heir ?= { owner ?= root } }
 	}
 
 	illustration_tags = { 10 = regular 10 = interior }
@@ -1267,10 +1107,7 @@ culture_japan.20 = {
 		}
 
 		international_organization:japanese_shogunate = {
-			leader_country ?= {
-				save_scope_as = target_country
-				ruler ?= { save_scope_as = target_character }
-			}
+			leader_country ?= { save_scope_as = target_country ruler ?= { save_scope_as = target_character } }
 		}
 
 		ruler ?= { save_scope_as = target_own_ruler }
@@ -1279,10 +1116,8 @@ culture_japan.20 = {
 	option = {
 		name = culture_japan.20.a
 		add_legitimacy = legitimacy_mild_penalty
-		if = {
-			limit = { has_heir = yes }
-			heir ?= { move_country = scope:target_country }
-		}
+		if = { limit = { has_heir = yes } heir ?= { move_country = scope:target_country } }
+
 		if = {
 			limit = { religion = { has_honor = yes } }
 			add_honor = honor_mild_bonus
@@ -1290,11 +1125,7 @@ culture_japan.20 = {
 	}
 	option = {
 		name = culture_japan.20.b
-
-		reverse_add_opinion = {
-			target = scope:target_country
-			modifier = opinion_refused_demands
-		}
+		reverse_add_opinion = { target = scope:target_country modifier = opinion_refused_demands }
 	}
 }
 
@@ -1323,24 +1154,14 @@ culture_japan.21 = {
 				custom_tooltip = regencies.1.founds_dynasty_tt
 
 				hidden_effect = {
-					location = {
-						create_dynasty_from_location = random
-						last_dynasty_in_location = { save_scope_as = target_dynasty }
-					}
-
+					location = { create_dynasty_from_location = random last_dynasty_in_location = { save_scope_as = target_dynasty } }
 					change_dynasty = scope:target_dynasty
 				}
 			}
 			hidden_effect = {
 				every_descendant = {
 					if = {
-						limit = {
-							NOR = {
-								has_estate = estate_type:nobles_estate
-								has_estate = estate_type:clergy_estate
-							}
-						}
-
+						limit = { NOR = { has_estate = estate_type:nobles_estate has_estate = estate_type:clergy_estate } }
 						change_character_estate = estate_type:nobles_estate
 					}
 					if = { limit = { has_dynasty = no } change_dynasty = scope:target_dynasty }
@@ -1356,11 +1177,7 @@ culture_japan.21 = {
 
 		trigger = {
 			# Make sure that the new "parent" is not a descendant of the new "kid"
-			scope:new_ruler ?= {
-				NOT = {
-					any_descendant = { this = scope:old_ruler }
-				}
-			}
+			scope:new_ruler ?= { NOT = { any_descendant = { this = scope:old_ruler } } }
 		}
 
 		scope:old_ruler = { adopt_character = scope:new_ruler }
@@ -1389,20 +1206,13 @@ culture_japan.22 = {
 			foreground = pop_type:soldiers
 			background = pop_type:soldiers
 		}
-
-		random_character = {
-			limit = { is_general = yes is_ruler = no }
-			save_scope_as = target_character
-		}
+		random_character = { limit = { is_general = yes is_ruler = no } save_scope_as = target_character }
 	}
 
 	option = {
 		name = culture_japan.22.a
 
-		scope:target_character = {
-			add_trait = trait:unsuited_for_army_command
-			add_trait = trait:unsuited_for_naval_command
-		}
+		scope:target_character = { add_trait = trait:unsuited_for_army_command add_trait = trait:unsuited_for_naval_command }
 
 		remove_commander = scope:target_character
 		add_prestige = prestige_mild_penalty
@@ -1411,6 +1221,7 @@ culture_japan.22 = {
 	option = {
 		name = culture_japan.22.b
 		add_army_tradition = army_tradition_mild_penalty
+
 		if = {
 			limit = { religion = { has_honor = yes } }
 			add_honor = honor_weak_bonus
@@ -1426,9 +1237,7 @@ culture_japan.1000 = {
 	desc = culture_japan.1000.desc
 
 	trigger = {
-		NOT = {
-			is_situation_active = situation:nanbokuchou
-		}
+		NOT = { is_situation_active = situation:nanbokuchou }
 		culture = { has_culture_group = culture_group:japanese_group }
 		has_ruler = yes
 		exists = international_organization:japanese_shogunate
@@ -1458,7 +1267,6 @@ culture_japan.1000 = {
 
 		custom_tooltip = {
 			text = culture_japan.1000.a.tt
-
 			international_organization:japanese_shogunate = {
 				every_international_organization_member = {
 					limit = { is_japanese_emperor_or_shogun = no }
@@ -1494,6 +1302,7 @@ culture_japan.1001 = {
 			target = scope:target_country
 			modifier = opinion_refused_cadastral_survey
 		}
+
 		if = {
 			limit = { religion = { has_honor = yes } }
 			add_honor = honor_mild_penalty
@@ -1502,10 +1311,7 @@ culture_japan.1001 = {
 	option = {
 		name = culture_japan.1001.b
 
-		add_opinion = {
-			target = scope:target_country
-			modifier = opinion_allowed_cadastral_survey
-		}
+		add_opinion = { target = scope:target_country modifier = opinion_allowed_cadastral_survey }
 
 		add_stability = stability_mild_penalty
 	}
@@ -1520,9 +1326,7 @@ culture_japan.1100 = {
 	desc = culture_japan.1100.desc
 
 	trigger = {
-		NOT = {
-			is_situation_active = situation:nanbokuchou
-		}
+		NOT = { is_situation_active = situation:nanbokuchou }
 		culture = { has_culture_group = culture_group:japanese_group }
 		has_ruler = yes
 		exists = international_organization:japanese_shogunate
@@ -1532,9 +1336,7 @@ culture_japan.1100 = {
 			any_international_organization_member = {
 				has_ruler = yes
 				is_japanese_emperor_or_shogun = no
-				NOT = {
-					is_at_war_with = root
-				}
+				NOT = { is_at_war_with = root }
 
 				is_subject = no
 			}
@@ -1557,51 +1359,39 @@ culture_japan.1100 = {
 				limit = {
 					has_ruler = yes
 					is_japanese_emperor_or_shogun = no
-					NOT = {
-						is_at_war_with = root
-					}
+					NOT = { is_at_war_with = root }
 
 					is_subject = no
 				}
-
 				save_scope_as = target_clan_1
 			}
 			random_international_organization_member = {
 				limit = {
 					has_ruler = yes
 					is_japanese_emperor_or_shogun = no
-					NOT = {
-						is_at_war_with = root
-					}
+					NOT = { is_at_war_with = root }
 
 					is_subject = no
 					this != scope:target_clan_1
 				}
-
 				save_scope_as = target_clan_2
 			}
 			random_international_organization_member = {
 				limit = {
 					has_ruler = yes
 					is_japanese_emperor_or_shogun = no
-					NOT = {
-						is_at_war_with = root
-					}
+					NOT = { is_at_war_with = root }
 
 					is_subject = no
 					this != scope:target_clan_1
 					this != scope:target_clan_2
 				}
-
 				save_scope_as = target_clan_3
 			}
 		}
 	}
 
-	option = {
-		name = culture_japan.1100.a
-		scope:target_clan_1 = { trigger_event_non_silently = culture_japan.1101 }
-	}
+	option = { name = culture_japan.1100.a scope:target_clan_1 = { trigger_event_non_silently = culture_japan.1101 } }
 
 	option = {
 		name = culture_japan.1100.b
@@ -1615,10 +1405,7 @@ culture_japan.1100 = {
 		scope:target_clan_3 = { trigger_event_non_silently = culture_japan.1101 }
 	}
 
-	option = {
-		name = culture_japan.1100.d
-		add_legitimacy = legitimacy_mild_bonus
-	}
+	option = { name = culture_japan.1100.d add_legitimacy = legitimacy_mild_bonus }
 }
 
 # Appointment to [target_shogunate.GetGovernment.GetAdjective] Office
@@ -1656,6 +1443,7 @@ culture_japan.1101 = {
 			text = culture_japan.1101.b.tt
 			scope:target_shogunate = { trigger_event_silently = culture_japan.1104 }
 		}
+
 		if = {
 			limit = { religion = { has_honor = yes } }
 			add_honor = honor_extreme_penalty
@@ -1683,25 +1471,21 @@ culture_japan.1102 = {
 		name = culture_japan.1102.a
 
 		trigger = {
-			scope:target_clan = {
-				country_type = building
-				any_owned_foreign_building_location = { owner ?= root }
-			}
+			scope:target_clan = { country_type = building any_owned_foreign_building_location = { owner ?= root } }
 		}
 
 		scope:target_clan = {
 			random_owned_foreign_building_location = {
 				limit = { owner ?= root }
+
 				if = {
 					limit = {
 						save_temporary_scope_value_as = {
 							name = max_effective_control
 							value = { value = max_control subtract = control_mild_bonus }
 						}
-
 						local_control <= scope:max_effective_control
 					}
-
 					change_control = control_mild_bonus
 				}
 				else = { change_development = development_mild_bonus }
@@ -1715,14 +1499,8 @@ culture_japan.1102 = {
 		trigger = {
 			scope:target_clan = {
 				OR = {
-					AND = {
-						country_type = building
-						any_owned_foreign_building_location = { owner = root count > 1 }
-					}
-					AND = {
-						country_type = location
-						num_locations > 1
-					}
+					AND = { country_type = building any_owned_foreign_building_location = { owner = root count > 1 } }
+					AND = { country_type = location num_locations > 1 }
 				}
 			}
 		}
@@ -1730,33 +1508,26 @@ culture_japan.1102 = {
 		scope:target_clan = {
 			if = {
 				limit = { country_type = building }
-
 				random_owned_foreign_building = {
 					limit = { location = { owner ?= root } }
 					location = { destroy_building = prev }
 				}
 			}
+
 			if = {
 				limit = { country_type = location }
+				random_owned_location = { limit = { this != capital } change_location_owner = root }
+			}
 
-				random_owned_location = {
-					limit = { this != capital }
-					change_location_owner = root
-				}
-			}
-			custom_tooltip = {
-				text = culture_japan.1102.b.tt
-				trigger_event_silently = culture_japan.1103
-			}
+			custom_tooltip = { text = culture_japan.1102.b.tt trigger_event_silently = culture_japan.1103 }
 		}
+
 		if = {
 			limit = { religion = { has_honor = yes } }
 			add_honor = honor_severe_penalty
 		}
-		if = {
-			limit = { modifier:allow_righteousness = yes }
-			add_righteousness = righteousness_severe_penalty
-		}
+
+		if = { limit = { modifier:allow_righteousness = yes } add_righteousness = righteousness_severe_penalty }
 	}
 
 	option = { name = culture_japan.1102.c add_stability = stability_mild_bonus }
@@ -1780,7 +1551,6 @@ culture_japan.1103 = {
 
 	option = {
 		name = culture_japan.1103.a
-
 		add_casus_belli = {
 			target = scope:target_shogunate
 			type = casus_belli:cb_japanese_clan_rebel_against_shogunate_authority
@@ -1789,6 +1559,7 @@ culture_japan.1103 = {
 
 	option = {
 		name = culture_japan.1103.b
+
 		if = {
 			limit = { religion = { has_honor = yes } }
 			add_honor = honor_extreme_bonus
@@ -1821,10 +1592,7 @@ culture_japan.1104 = {
 	option = {
 		name = culture_japan.1104.b
 
-		add_casus_belli = {
-			target = scope:target_clan
-			type = casus_belli:cb_shogunate_reassert_authority
-		}
+		add_casus_belli = { target = scope:target_clan type = casus_belli:cb_shogunate_reassert_authority }
 
 		scope:target_clan = { trigger_event_silently = culture_japan.1106 }
 	}
@@ -1871,10 +1639,7 @@ culture_japan.1106 = {
 
 		show_as_tooltip = {
 			scope:target_shogunate = {
-				add_casus_belli = {
-					target = scope:target_clan
-					type = casus_belli:cb_shogunate_reassert_authority
-				}
+				add_casus_belli = { target = scope:target_clan type = casus_belli:cb_shogunate_reassert_authority }
 			}
 		}
 	}
@@ -1883,10 +1648,8 @@ culture_japan.1106 = {
 scripted_effect
 
 culture_japan.1200_clan_sends_help = {
-	if = {
-		limit = { monthly_manpower > 0 }
-		add_manpower = { value = monthly_manpower multiply = -2 }
-	}
+	if = { limit = { monthly_manpower > 0 } add_manpower = { value = monthly_manpower multiply = -2 } }
+
 	change_gold_effect = {
 		scale = -2
 	}
@@ -1905,12 +1668,9 @@ culture_japan.1200_clan_refuses_help = {
 			target = scope:target_clan
 			modifier = opinion_refused_demands
 		}
-
-		custom_tooltip = {
-			text = culture_japan.1201.c.tt
-			trigger_event_silently = culture_japan.1207
-		}
+		custom_tooltip = { text = culture_japan.1201.c.tt trigger_event_silently = culture_japan.1207 }
 	}
+
 	if = {
 		limit = { religion = { has_honor = yes } }
 		add_honor = honor_mild_penalty
@@ -1925,12 +1685,8 @@ culture_japan.1200 = {
 	desc = culture_japan.1200.desc
 
 	trigger = {
-		NOT = {
-			is_situation_active = situation:nanbokuchou
-		}
-		NOT = {
-			is_situation_active = situation:sengoku
-		}
+		NOT = { is_situation_active = situation:nanbokuchou }
+		NOT = { is_situation_active = situation:sengoku }
 		culture = { has_culture_group = culture_group:japanese_group }
 		exists = international_organization:japanese_shogunate
 		is_leader_of_international_organization = international_organization:japanese_shogunate
@@ -1939,19 +1695,13 @@ culture_japan.1200 = {
 			stability <= 50
 			war_exhaustion >= 5
 		}
-		any_owned_location = {
-			NOT = {
-				has_building = building_type:yamashiro
-			}
-		}
+		any_owned_location = { NOT = { has_building = building_type:yamashiro } }
 
 		international_organization:japanese_shogunate = {
 			any_international_organization_member = {
 				country_type = building
 				is_japanese_emperor_or_shogun = no
-				NOT = {
-					is_at_war_with = root
-				}
+				NOT = { is_at_war_with = root }
 
 				is_subject = no
 				opinion = { target = root value >= 50 }
@@ -1974,45 +1724,36 @@ culture_japan.1200 = {
 				limit = {
 					country_type = building
 					is_japanese_emperor_or_shogun = no
-					NOT = {
-						is_at_war_with = root
-					}
+					NOT = { is_at_war_with = root }
 
 					is_subject = no
 					opinion = { target = root value >= 50 }
 				}
-
 				save_scope_as = target_clan_1
 			}
 			random_international_organization_member = {
 				limit = {
 					country_type = building
 					is_japanese_emperor_or_shogun = no
-					NOT = {
-						is_at_war_with = root
-					}
+					NOT = { is_at_war_with = root }
 
 					is_subject = no
 					this != scope:target_clan_1
 					opinion = { target = root value >= 50 }
 				}
-
 				save_scope_as = target_clan_2
 			}
 			random_international_organization_member = {
 				limit = {
 					country_type = building
 					is_japanese_emperor_or_shogun = no
-					NOT = {
-						is_at_war_with = root
-					}
+					NOT = { is_at_war_with = root }
 
 					is_subject = no
 					this != scope:target_clan_1
 					this != scope:target_clan_2
 					opinion = { target = root value >= 50 }
 				}
-
 				save_scope_as = target_clan_3
 			}
 		}
@@ -2021,6 +1762,7 @@ culture_japan.1200 = {
 	option = {
 		name = culture_japan.1200.a
 		scope:target_clan_1 = { trigger_event_non_silently = culture_japan.1201 }
+
 		if = {
 			limit = { religion = { has_honor = yes } }
 			add_honor = honor_weak_penalty
@@ -2030,6 +1772,7 @@ culture_japan.1200 = {
 	option = {
 		name = culture_japan.1200.b
 		scope:target_clan_2 = { trigger_event_non_silently = culture_japan.1201 }
+
 		if = {
 			limit = { religion = { has_honor = yes } }
 			add_honor = honor_weak_penalty
@@ -2039,6 +1782,7 @@ culture_japan.1200 = {
 	option = {
 		name = culture_japan.1200.c
 		scope:target_clan_3 = { trigger_event_non_silently = culture_japan.1201 }
+
 		if = {
 			limit = { religion = { has_honor = yes } }
 			add_honor = honor_weak_penalty
@@ -2062,24 +1806,14 @@ culture_japan.1201 = {
 			foreground = estate_type:nobles_estate
 			background = estate_type:nobles_estate
 		}
-
 		save_scope_as = target_clan
 	}
 
-	option = { # Accept to help
-		name = culture_japan.1201.a
-		culture_japan.1200_clan_sends_help = yes
-	}
+	option = { name = culture_japan.1201.a culture_japan.1200_clan_sends_help = yes }
 
-	option = { # Ask compensation
-		name = culture_japan.1201.b
-		scope:target_shogunate = { trigger_event_non_silently = culture_japan.1203 }
-	}
+	option = { name = culture_japan.1201.b scope:target_shogunate = { trigger_event_non_silently = culture_japan.1203 } }
 
-	option = { # Refuse
-		name = culture_japan.1201.c
-		culture_japan.1200_clan_refuses_help = yes
-	}
+	option = { name = culture_japan.1201.c culture_japan.1200_clan_refuses_help = yes }
 }
 
 # Clan comes to help
@@ -2101,15 +1835,10 @@ culture_japan.1202 = {
 	option = {
 		name = culture_japan.1202.a
 
-		show_as_tooltip = {
-			add_opinion = { target = scope:target_clan modifier = opinion_sent_help }
-		}
+		show_as_tooltip = { add_opinion = { target = scope:target_clan modifier = opinion_sent_help } }
 		if = { limit = { legitimacy <= 60 } add_legitimacy = legitimacy_weak_bonus }
 		if = { limit = { stability <= 50 } add_stability = stability_weak_bonus }
-		if = {
-			limit = { war_exhaustion >= 5 }
-			add_war_exhaustion = war_exhaustion_weak_bonus
-		}
+		if = { limit = { war_exhaustion >= 5 } add_war_exhaustion = war_exhaustion_weak_bonus }
 	}
 }
 
@@ -2127,34 +1856,21 @@ culture_japan.1203 = {
 			foreground = estate_type:nobles_estate
 			background = estate_type:nobles_estate
 		}
-
 		random_owned_location = {
-			limit = {
-				NOT = {
-					has_building = building_type:yamashiro
-				}
-			}
-
+			limit = { NOT = { has_building = building_type:yamashiro } }
 			save_scope_as = target_location
 		}
 	}
 
 	option = { # Give them land
 		name = culture_japan.1203.a
-
-		custom_tooltip = {
-			text = culture_japan.1203.tt
-			scope:target_clan = { trigger_event_silently = culture_japan.1204 }
-		}
+		custom_tooltip = { text = culture_japan.1203.tt scope:target_clan = { trigger_event_silently = culture_japan.1204 } }
 	}
 
 	option = { # Threaten them
 		name = culture_japan.1203.b
 
-		custom_tooltip = {
-			text = culture_japan.1102.b.tt
-			scope:target_clan = { trigger_event_silently = culture_japan.1205 }
-		}
+		custom_tooltip = { text = culture_japan.1102.b.tt scope:target_clan = { trigger_event_silently = culture_japan.1205 } }
 
 		add_prestige = prestige_weak_penalty
 	}
@@ -2197,10 +1913,7 @@ culture_japan.1204 = {
 		culture_japan.1200_clan_sends_help = yes
 	}
 
-	option = { # Refuse
-		name = culture_japan.1204.b
-		culture_japan.1200_clan_refuses_help = yes
-	}
+	option = { name = culture_japan.1204.b culture_japan.1200_clan_refuses_help = yes }
 }
 
 # The shogunate threatens us
@@ -2225,10 +1938,7 @@ culture_japan.1205 = {
 		add_prestige = prestige_severe_penalty
 	}
 
-	option = { # Refuse
-		name = culture_japan.1205.b
-		culture_japan.1200_clan_refuses_help = yes
-	}
+	option = { name = culture_japan.1205.b culture_japan.1200_clan_refuses_help = yes }
 }
 
 # The shogunate backs donwn
@@ -2269,10 +1979,7 @@ culture_japan.1207 = {
 	option = { # Traitors!
 		name = culture_japan.1207.a
 
-		add_casus_belli = {
-			target = scope:target_clan
-			type = casus_belli:cb_shogunate_reassert_authority
-		}
+		add_casus_belli = { target = scope:target_clan type = casus_belli:cb_shogunate_reassert_authority }
 
 		scope:target_clan = { trigger_event_silently = culture_japan.1106 }
 	}
@@ -2294,12 +2001,8 @@ culture_japan.1300 = {
 	trigger = {
 		culture = { has_culture_group = culture_group:japanese_group }
 		country_type = building
-		NOT = {
-			is_situation_active = situation:nanbokuchou
-		}
-		NOT = {
-			is_situation_active = situation:sengoku
-		}
+		NOT = { is_situation_active = situation:nanbokuchou }
+		NOT = { is_situation_active = situation:sengoku }
 
 		exists = international_organization:japanese_shogunate
 		is_member_of_international_organization = international_organization:japanese_shogunate
@@ -2312,11 +2015,7 @@ culture_japan.1300 = {
 					stability <= 50
 					war_exhaustion >= 5
 				}
-				any_owned_location = {
-					NOT = {
-						has_building = building_type:yamashiro
-					}
-				}
+				any_owned_location = { NOT = { has_building = building_type:yamashiro } }
 			}
 		}
 	}
@@ -2329,9 +2028,7 @@ culture_japan.1300 = {
 			background = estate_type:nobles_estate
 		}
 
-		international_organization:japanese_shogunate ?= {
-			leader_country ?= { save_scope_as = target_shogunate }
-		}
+		international_organization:japanese_shogunate ?= { leader_country ?= { save_scope_as = target_shogunate } }
 
 		save_scope_as = target_clan
 	}
@@ -2343,6 +2040,7 @@ culture_japan.1300 = {
 			text = culture_japan.1300.a.tt
 			scope:target_shogunate = { trigger_event_silently = culture_japan.1301 }
 		}
+
 		if = {
 			limit = { religion = { has_honor = yes } }
 			add_honor = honor_mild_penalty
@@ -2352,6 +2050,7 @@ culture_japan.1300 = {
 	option = { # Legitimize
 		name = culture_japan.1300.b
 		add_legitimacy = legitimacy_severe_bonus
+
 		if = {
 			limit = { religion = { has_honor = yes } }
 			add_honor = honor_weak_penalty
@@ -2375,14 +2074,8 @@ culture_japan.1301 = {
 			foreground = estate_type:nobles_estate
 			background = estate_type:nobles_estate
 		}
-
 		random_owned_location = {
-			limit = {
-				NOT = {
-					has_building = building_type:yamashiro
-				}
-			}
-
+			limit = { NOT = { has_building = building_type:yamashiro } }
 			save_scope_as = target_location
 		}
 	}
@@ -2390,18 +2083,12 @@ culture_japan.1301 = {
 	option = { # They get nothing
 		name = culture_japan.1301.a
 
-		custom_tooltip = {
-			text = culture_japan.1102.b.tt
-			scope:target_clan = { trigger_event_silently = culture_japan.1302 }
-		}
+		custom_tooltip = { text = culture_japan.1102.b.tt scope:target_clan = { trigger_event_silently = culture_japan.1302 } }
 
 		add_prestige = prestige_weak_penalty
 	}
 
-	option = { # Diplomatic ease
-		name = culture_japan.1301.b
-		add_legitimacy = legitimacy_mild_penalty
-	}
+	option = { name = culture_japan.1301.b add_legitimacy = legitimacy_mild_penalty }
 
 	option = { # Give land
 		name = culture_japan.1301.c
@@ -2449,6 +2136,7 @@ culture_japan.1302 = {
 			target = scope:target_shogunate
 			type = casus_belli:cb_japanese_clan_rebel_against_shogunate_authority
 		}
+
 		if = {
 			limit = { religion = { has_honor = yes } }
 			add_honor = honor_mild_penalty

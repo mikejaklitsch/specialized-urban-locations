@@ -13,7 +13,6 @@ typhus = {
 				population > 1
 				any_unit_in_location = { is_army = yes owner = { at_war = yes } }
 			}
-
 			spawn_disease = {
 				disease = scope:disease
 				value = 0.5
@@ -23,16 +22,11 @@ typhus = {
 	}
 
 	r0 = {
-		if = {
-			limit = { modifier:sul_is_rural_settlement_rank_tier = yes }
-			value = { 1.2 1.8 }
-		}
-		else_if = {
-			limit = { modifier:sul_is_town_rank_tier = yes }
-			value = { 1.8 2.5 }
-		}
+		if = { limit = { modifier:sul_is_rural_settlement_rank_tier = yes } value = { 1.2 1.8 } }
+		else_if = { limit = { modifier:sul_is_town_rank_tier = yes } value = { 1.8 2.5 } }
 		else = { value = { 2.5 3.5 } }
 		if = { limit = { prosperity < 0 } multiply = 3 }
+
 		if = {
 			limit = {
 				OR = {
@@ -44,10 +38,14 @@ typhus = {
 					has_building_with_at_least_one_level = stock_exchange
 				}
 			}
-
 			multiply = 1.2
 		}
-		multiply = { value = "disease_presence(scope:disease)" multiply = 2 add = 1 }
+
+		multiply = {
+			value = "disease_presence(scope:disease)"
+			multiply = 2
+			add = 1
+		}
 	}
 
 	calc_interval_days = { 24 36 }
@@ -60,30 +58,24 @@ typhus = {
 			multiply = 0.005
 			multiply = 0.025
 		}
-		else = {
-			value = "distance_to_squared(scope:disease.origin)"
-			multiply = 0.0005
-		}
+		else = { value = "distance_to_squared(scope:disease.origin)" multiply = 0.0005 }
+
 		if = {
 			limit = { "disease_resistance(scope:disease)" > 0.7 }
 			add = { value = "disease_resistance(scope:disease)" subtract = 0.5 }
 		}
+
 		if = { limit = { "disease_resistance(scope:disease)" > 0.9 } add = 0.2 }
 	}
 
-	sub_unit_stagnation_chance = {
-		value = 0.5
-		subtract = { value = "disease_presence(scope:disease)" multiply = 0.5 }
-	}
+	sub_unit_stagnation_chance = { value = 0.5 subtract = { value = "disease_presence(scope:disease)" multiply = 0.5 } }
 
 	percentage_to_meet_their_fate_on_calc = { value = 0.35 }
 
 	location_modifier = {
 		potential_trigger = {
 			disease_presence = { disease = scope:disease value >= 0.2 }
-			NOT = {
-				disease_has_stagnated = scope:disease
-			}
+			NOT = { disease_has_stagnated = scope:disease }
 		}
 
 		local_forced_attrition = 5
@@ -92,17 +84,24 @@ typhus = {
 
 	mortality_rate = { 0.15 0.50 }
 
-	character_mortality_chance = {
-		value = 0.06
-		multiply = "disease_presence(scope:disease)"
-	}
+	character_mortality_chance = { value = 0.06 multiply = "disease_presence(scope:disease)" }
 
 	on_spread_to_country = { trigger_event_non_silently = diseases.1 }
 
 	map_color = {
 		lerp = {
-			min_color = rgb { 211 157 128 }
-			max_color = rgb { 129 47 3 }
+			min_color = rgb {
+				211
+				157
+				128
+			}
+
+			max_color = rgb {
+				129
+				47
+				3
+			}
+
 			factor = "disease_presence(scope:disease)"
 		}
 	}
@@ -110,7 +109,11 @@ typhus = {
 	secondary_map_color = {
 		if = {
 			limit = { disease_affects_pops_here = scope:disease }
-			value = rgb { 100 120 188 }
+			value = rgb {
+				100
+				120
+				188
+			}
 		}
 	}
 

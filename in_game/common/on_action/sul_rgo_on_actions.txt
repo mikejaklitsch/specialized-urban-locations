@@ -4,22 +4,21 @@
 
 sul_rgo_init = {
 	effect = {
+		debug_log = "SUL_TRACE: rgo_init ENTER"
 		sul_init_rgo_map = yes
 
 		every_location_in_the_world = {
 			limit = { is_ownable = yes }
 			set_variable = { name = sul_rgo_constructing value = 0 }
 
-			set_variable = {
-				name = sul_rgo_building_type
-				value = "global_variable_map(sul_rgo_map|raw_material)"
-			}
+			set_variable = { name = sul_rgo_building_type value = "global_variable_map(sul_rgo_map|raw_material)" }
 		}
 	}
 }
 
 sul_rgo_removal_start = {
 	effect = {
+		debug_log = "SUL_TRACE: rgo_removal_start ENTER"
 		every_country = { trigger_event_silently = { id = rgo_removal.01 } }
 	}
 }
@@ -31,12 +30,9 @@ sul_yearly_rgo_trim = {
 	trigger = { is_real_country = yes }
 
 	effect = {
+		debug_log = "SUL_TRACE: yearly_rgo_trim ENTER"
 		every_owned_location = {
-			limit = {
-				exists = raw_material
-				sul_location_rgo_building_level > sul_location_max_rgo_building_level_rounded
-			}
-
+			limit = { exists = raw_material sul_location_rgo_building_level > sul_location_max_rgo_building_level_rounded }
 			sul_trim_rgo_levels = yes
 		}
 	}

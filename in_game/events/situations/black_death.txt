@@ -38,7 +38,6 @@ black_death.100 = {
 	immediate = {
 		if = {
 			limit = { is_human = yes }
-
 			set_variable = {
 				name = bd_total_death_toll_variable
 				value = "disease_country_deaths(disease:bubonic_plague)"
@@ -49,12 +48,7 @@ black_death.100 = {
 
 	option = {
 		name = black_death.100.a
-
-		if = {
-			limit = { has_variable = bd_total_death_toll_variable }
-
-			custom_tooltip = total_death_toll_tt
-		}
+		if = { limit = { has_variable = bd_total_death_toll_variable } custom_tooltip = total_death_toll_tt }
 	}
 }
 
@@ -70,9 +64,7 @@ black_death.101 = {
 	image = "gfx/interface/illustrations/situation/black_death.dds"
 
 	trigger = {
-		NOT = {
-			has_variable = bd101_cd
-		}
+		NOT = { has_variable = bd101_cd }
 
 		country_has_disease = disease:bubonic_plague
 		religion = religion:catholic
@@ -83,23 +75,15 @@ black_death.101 = {
 		if = {
 			limit = {
 				any_province = {
-					any_location_in_province = {
-						disease_presence = { disease = disease:bubonic_plague value > 0 }
-					}
-
+					any_location_in_province = { disease_presence = { disease = disease:bubonic_plague value > 0 } }
 					region = root.capital.region
 				}
 			}
-
 			random_province = {
 				limit = {
-					any_location_in_province = {
-						disease_presence = { disease = disease:bubonic_plague value > 0 }
-					}
-
+					any_location_in_province = { disease_presence = { disease = disease:bubonic_plague value > 0 } }
 					region = root.capital.region
 				}
-
 				save_scope_as = target_province
 			}
 		}
@@ -108,20 +92,13 @@ black_death.101 = {
 	option = { # Order the flagellant' beat by town guards
 		name = black_death.101.a
 
-		add_estate_satisfaction = {
-			type = estate_type:clergy_estate
-			value = estate_satisfaction_severe_bonus
-		}
-		add_estate_satisfaction = {
-			type = estate_type:peasants_estate
-			value = estate_satisfaction_mild_penalty
-		}
+		add_estate_satisfaction = { type = estate_type:clergy_estate value = estate_satisfaction_severe_bonus }
+		add_estate_satisfaction = { type = estate_type:peasants_estate value = estate_satisfaction_mild_penalty }
+
 		if = {
 			limit = { exists = scope:target_province }
-
 			custom_tooltip = {
 				text = plague_lessen_spread_piss_off_peasants_tt
-
 				scope:target_province ?= {
 					every_location_in_province = {
 						limit = { disease_presence = { disease = disease:bubonic_plague value > 0 } }
@@ -140,10 +117,7 @@ black_death.101 = {
 	option = { # Allow the flagellants to tell everyone the world is going to end
 		name = black_death.101.b
 
-		add_estate_satisfaction = {
-			type = estate_type:peasants_estate
-			value = estate_satisfaction_severe_bonus
-		}
+		add_estate_satisfaction = { type = estate_type:peasants_estate value = estate_satisfaction_severe_bonus }
 
 		add_stability = stability_mild_penalty
 	}
@@ -161,27 +135,17 @@ black_death.102 = {
 	image = "gfx/interface/illustrations/situation/black_death.dds"
 
 	trigger = {
-		NOT = {
-			has_variable = bd102_cd
-		}
+		NOT = { has_variable = bd102_cd }
 
 		country_has_disease = disease:bubonic_plague
 
-		any_owned_location = {
-			population > 5.0
-			disease_presence = { disease = disease:bubonic_plague value > 0 }
-		}
+		any_owned_location = { population > 5.0 disease_presence = { disease = disease:bubonic_plague value > 0 } }
 	}
 
 	immediate = {
 		set_variable = bd102_cd
-
 		random_owned_location = {
-			limit = {
-				population > 5.0
-				disease_presence = { disease = disease:bubonic_plague value > 0 }
-			}
-
+			limit = { population > 5.0 disease_presence = { disease = disease:bubonic_plague value > 0 } }
 			save_scope_as = target_location
 		}
 	}
@@ -195,11 +159,7 @@ black_death.102 = {
 			scope:target_location = {
 				every_neighbor_location = {
 					limit = { owner ?= root }
-
-					every_pop = {
-						limit = { owner = root }
-						add_pop_satisfaction = pop_satisfaction_mild_penalty
-					}
+					every_pop = { limit = { owner = root } add_pop_satisfaction = pop_satisfaction_mild_penalty }
 				}
 			}
 		}
@@ -220,10 +180,7 @@ black_death.102 = {
 			}
 		}
 
-		add_estate_satisfaction = {
-			type = estate_type:burghers_estate
-			value = estate_satisfaction_extreme_penalty
-		}
+		add_estate_satisfaction = { type = estate_type:burghers_estate value = estate_satisfaction_extreme_penalty }
 	}
 }
 
@@ -239,9 +196,7 @@ black_death.103 = {
 	image = "gfx/interface/illustrations/situation/black_death.dds"
 
 	trigger = {
-		NOT = {
-			has_variable = bd103_cd
-		}
+		NOT = { has_variable = bd103_cd }
 
 		country_has_disease = disease:bubonic_plague
 		any_owned_location = { has_building_with_at_least_one_level = university }
@@ -266,10 +221,7 @@ black_death.103 = {
 		name = black_death.103.b
 		add_prestige = prestige_mild_penalty
 
-		change_societal_value = {
-			type = traditionalist_vs_innovative
-			value = societal_value_tiny_move_to_left
-		}
+		change_societal_value = { type = traditionalist_vs_innovative value = societal_value_tiny_move_to_left }
 	}
 }
 
@@ -285,9 +237,7 @@ black_death.1001 = {
 	image = "gfx/interface/illustrations/situation/black_death.dds"
 
 	trigger = {
-		NOT = {
-			has_variable = bd1001_cd
-		}
+		NOT = { has_variable = bd1001_cd }
 
 		country_has_disease = disease:bubonic_plague
 
@@ -297,9 +247,7 @@ black_death.1001 = {
 			is_capital = no
 		}
 
-		capital = {
-			disease_presence = { disease = disease:bubonic_plague value > 0.1 }
-		}
+		capital = { disease_presence = { disease = disease:bubonic_plague value > 0.1 } }
 
 		any_owned_location = {
 			disease_presence = { disease = disease:bubonic_plague value <= 0.01 }
@@ -309,12 +257,8 @@ black_death.1001 = {
 
 	immediate = {
 		set_variable = bd1001_cd
-
 		ordered_owned_location = {
-			order_by = {
-				value = "disease_presence(disease:bubonic_plague)"
-				multiply = -1
-			}
+			order_by = { value = "disease_presence(disease:bubonic_plague)" multiply = -1 }
 
 			limit = { region = root.capital.region is_capital = no }
 			max = 1
@@ -327,10 +271,7 @@ black_death.1001 = {
 		name = black_death.1001.a
 
 		ordered_owned_location = {
-			order_by = {
-				value = "disease_presence(disease:bubonic_plague)"
-				multiply = -1
-			}
+			order_by = { value = "disease_presence(disease:bubonic_plague)" multiply = -1 }
 
 			limit = {
 				region = root.capital.region
@@ -381,10 +322,7 @@ black_death.1001 = {
 
 		add_stability = stability_severe_penalty
 
-		add_estate_satisfaction = {
-			type = estate_type:peasants_estate
-			value = estate_satisfaction_extreme_penalty
-		}
+		add_estate_satisfaction = { type = estate_type:peasants_estate value = estate_satisfaction_extreme_penalty }
 	}
 }
 
@@ -400,15 +338,11 @@ black_death.1002 = {
 	image = "gfx/interface/illustrations/situation/black_death.dds"
 
 	trigger = {
-		NOT = {
-			has_variable = bd1002_cd
-		}
+		NOT = { has_variable = bd1002_cd }
 
 		country_has_disease = disease:bubonic_plague
 
-		any_owned_location ?= {
-			disease_presence = { disease = disease:bubonic_plague value > 0 }
-		}
+		any_owned_location ?= { disease_presence = { disease = disease:bubonic_plague value > 0 } }
 	}
 
 	immediate = {
@@ -426,13 +360,10 @@ black_death.1002 = {
 		name = black_death.1002.a
 
 		add_stability = stability_weak_penalty
+
 		if = {
 			limit = { has_country_modifier = black_death_austerity_movement }
-
-			add_estate_satisfaction = {
-				type = estate_type:peasants_estate
-				value = estate_satisfaction_severe_penalty
-			}
+			add_estate_satisfaction = { type = estate_type:peasants_estate value = estate_satisfaction_severe_penalty }
 		}
 		else = {
 			add_country_modifier = {
@@ -446,10 +377,7 @@ black_death.1002 = {
 	option = { # Disco inferno!
 		name = black_death.1002.b
 
-		add_estate_satisfaction = {
-			type = estate_type:peasants_estate
-			value = estate_satisfaction_weak_bonus
-		}
+		add_estate_satisfaction = { type = estate_type:peasants_estate value = estate_satisfaction_weak_bonus }
 
 		custom_tooltip = plague_satisfaction_and_spread_tt
 
@@ -458,9 +386,7 @@ black_death.1002 = {
 				every_location_in_province = {
 					limit = {
 						disease_presence = { disease = disease:bubonic_plague value > 0 }
-						NOT = {
-							disease_has_stagnated = disease:bubonic_plague
-						}
+						NOT = { disease_has_stagnated = disease:bubonic_plague }
 
 						"disease_resistance(disease:bubonic_plague)" < 0.5
 					}
@@ -488,38 +414,23 @@ black_death.1003 = {
 	image = "gfx/interface/illustrations/situation/black_death.dds"
 
 	trigger = {
-		NOT = {
-			has_variable = bd1003_cd
-		}
+		NOT = { has_variable = bd1003_cd }
 
 		has_ruler = yes
 
-		ruler.location = {
-			disease_presence = { disease = disease:bubonic_plague value > 0 }
-		}
+		ruler.location = { disease_presence = { disease = disease:bubonic_plague value > 0 } }
 	}
 
-	immediate = {
-		set_variable = bd1003_cd
-		ruler ?= { save_scope_as = target_portrait_character }
-	}
+	immediate = { set_variable = bd1003_cd ruler ?= { save_scope_as = target_portrait_character } }
 
-	option = {
-		name = black_death.1003.a
-		kill_character = { target = ruler reason = disease }
-	}
+	option = { name = black_death.1003.a kill_character = { target = ruler reason = disease } }
 
 	option = {
 		name = black_death.1003.b
 
 		trigger = { capital.market = { "stockpile_in_market(goods:medicaments)" > 45 } }
 
-		capital.market = {
-			add_goods_supply = {
-				goods = goods:medicaments
-				amount = market_goods_mild_loss
-			}
-		}
+		capital.market = { add_goods_supply = { goods = goods:medicaments amount = market_goods_mild_loss } }
 
 		random = { chance = 45 kill_character = { target = ruler reason = disease } }
 	}
@@ -537,67 +448,53 @@ black_death.1004 = {
 	image = "gfx/interface/illustrations/situation/black_death.dds"
 
 	trigger = {
-		NOT = {
-			has_variable = bd1004_cd
-		}
+		NOT = { has_variable = bd1004_cd }
 
 		country_has_disease = disease:bubonic_plague
 
 		any_owned_rural_location = {
 			disease_presence = { disease = disease:bubonic_plague value > 0.25 }
-			NOT = {
-				has_location_modifier = damaged_soil
-			}
+			NOT = { has_location_modifier = damaged_soil }
 		}
 	}
 
 	immediate = {
 		set_variable = bd1004_cd
-
 		random_owned_rural_location = {
-			limit = {
-				disease_presence = { disease = disease:bubonic_plague value > 0.25 }
-			}
-
+			limit = { disease_presence = { disease = disease:bubonic_plague value > 0.25 } }
 			save_scope_as = target_location
 		}
 	}
 
 	option = {
 		name = black_death.1004.a
-
 		scope:target_location = {
 			add_location_modifier = {
 				modifier = damaged_soil
 				years = 2
 				mode = add_and_extend
 			}
-
 			change_control = control_weak_penalty
 		}
 	}
 
 	option = {
 		name = black_death.1004.b
-
 		scope:target_location = {
 			every_pop = {
 				limit = { owner = root pop_type = pop_type:peasants }
 				add_pop_satisfaction = pop_satisfaction_ultimate_penalty
 			}
+
 			if = {
 				limit = {
 					max_control <= { value = { add = this.max_control subtract = 0.05 } }
 				}
-
 				change_control = control_weak_bonus
 			}
 			else = {
 				owner = {
-					change_societal_value = {
-						type = centralization_vs_decentralization
-						value = societal_value_minor_move_to_left
-					}
+					change_societal_value = { type = centralization_vs_decentralization value = societal_value_minor_move_to_left }
 				}
 			}
 		}
@@ -615,9 +512,7 @@ black_death.1005 = {
 	image = "gfx/interface/illustrations/situation/black_death.dds"
 
 	trigger = {
-		NOT = {
-			has_variable = bd1005_cd
-		}
+		NOT = { has_variable = bd1005_cd }
 
 		country_has_disease = disease:bubonic_plague
 
@@ -647,12 +542,8 @@ black_death.1005 = {
 
 			limit = {
 				region = root.capital.region
-				NOT = {
-					any_location_in_province = { is_capital = yes }
-				}
-				any_location_in_province = {
-					disease_presence = { disease = disease:bubonic_plague value > 0 }
-				}
+				NOT = { any_location_in_province = { is_capital = yes } }
+				any_location_in_province = { disease_presence = { disease = disease:bubonic_plague value > 0 } }
 			}
 
 			max = 1
@@ -660,7 +551,11 @@ black_death.1005 = {
 
 			every_location_in_province = {
 				every_pop = {
-					limit = { owner = root pop_type = pop_type:peasants culture = root.culture }
+					limit = {
+						owner = root
+						pop_type = pop_type:peasants
+						culture = root.culture
+					}
 					add_pop_satisfaction = pop_satisfaction_mild_penalty
 				}
 			}
@@ -679,9 +574,7 @@ black_death.1006 = {
 	image = "gfx/interface/illustrations/situation/black_death.dds"
 
 	trigger = {
-		NOT = {
-			has_variable = bd1006_cd
-		}
+		NOT = { has_variable = bd1006_cd }
 
 		country_has_disease = disease:bubonic_plague
 		societal_value:aristocracy_vs_plutocracy <= -50
@@ -694,15 +587,9 @@ black_death.1006 = {
 
 		add_stability = stability_mild_penalty
 
-		change_societal_value = {
-			type = serfdom_vs_free_subjects
-			value = societal_value_minor_move_to_left
-		}
+		change_societal_value = { type = serfdom_vs_free_subjects value = societal_value_minor_move_to_left }
 
-		add_estate_satisfaction = {
-			type = estate_type:peasants_estate
-			value = estate_satisfaction_mild_penalty
-		}
+		add_estate_satisfaction = { type = estate_type:peasants_estate value = estate_satisfaction_mild_penalty }
 	}
 
 	option = {
@@ -710,15 +597,9 @@ black_death.1006 = {
 
 		add_government_power = government_power_mild_penalty
 
-		change_societal_value = {
-			type = serfdom_vs_free_subjects
-			value = societal_value_minor_move_to_right
-		}
+		change_societal_value = { type = serfdom_vs_free_subjects value = societal_value_minor_move_to_right }
 
-		add_estate_satisfaction = {
-			type = estate_type:nobles_estate
-			value = estate_satisfaction_extreme_penalty
-		}
+		add_estate_satisfaction = { type = estate_type:nobles_estate value = estate_satisfaction_extreme_penalty }
 	}
 }
 
@@ -733,38 +614,23 @@ black_death.1007 = {
 	image = "gfx/interface/illustrations/situation/black_death.dds"
 
 	trigger = {
-		NOT = {
-			has_variable = bd1007_cd
-		}
+		NOT = { has_variable = bd1007_cd }
 
 		tag = DLH
 		country_has_disease = disease:bubonic_plague
 
-		any_owned_location = {
-			any_pop = { religion = root.religion }
-			any_pop = { religion != root.religion }
-		}
+		any_owned_location = { any_pop = { religion = root.religion } any_pop = { religion != root.religion } }
 	}
 
 	immediate = {
 		set_variable = bd1007_cd
-
 		random_owned_location = {
-			limit = {
-				any_pop = { religion = root.religion }
-				any_pop = { religion != root.religion }
-			}
+			limit = { any_pop = { religion = root.religion } any_pop = { religion != root.religion } }
 
 			save_scope_as = target_location
 
-			random_pop = {
-				limit = { religion = root.religion }
-				religion = { save_scope_as = target_owner_religion }
-			}
-			random_pop = {
-				limit = { religion != root.religion }
-				religion = { save_scope_as = target_other_religion }
-			}
+			random_pop = { limit = { religion = root.religion } religion = { save_scope_as = target_owner_religion } }
+			random_pop = { limit = { religion != root.religion } religion = { save_scope_as = target_other_religion } }
 		}
 	}
 
@@ -779,10 +645,7 @@ black_death.1007 = {
 
 		scope:target_location.province = {
 			every_location_in_province = {
-				every_pop = {
-					limit = { religion = scope:target_other_religion }
-					change_pop_allegiance = scope:target_rebel
-				}
+				every_pop = { limit = { religion = scope:target_other_religion } change_pop_allegiance = scope:target_rebel }
 				every_pop = {
 					limit = { religion = root.religion }
 					split_pop = { fraction = 0.03 religion = scope:target_other_religion }
@@ -811,10 +674,7 @@ black_death.1007 = {
 		add_stability = stability_mild_penalty
 		add_government_power = government_power_mild_penalty
 
-		add_estate_satisfaction = {
-			type = estate_type:peasants_estate
-			value = estate_satisfaction_extreme_penalty
-		}
+		add_estate_satisfaction = { type = estate_type:peasants_estate value = estate_satisfaction_extreme_penalty }
 	}
 }
 
@@ -829,9 +689,7 @@ black_death.1008 = {
 	image = "gfx/interface/illustrations/situation/black_death.dds"
 
 	trigger = {
-		NOT = {
-			has_variable = bd1008_cd
-		}
+		NOT = { has_variable = bd1008_cd }
 		OR = {
 			country_has_disease = disease:bubonic_plague
 			any_known_country = { country_has_disease = disease:bubonic_plague }
@@ -843,10 +701,7 @@ black_death.1008 = {
 	immediate = {
 		set_variable = bd1008_cd
 
-		random_owned_location = {
-			limit = { is_coastal = yes region = root.capital.region }
-			save_scope_as = target_location
-		}
+		random_owned_location = { limit = { is_coastal = yes region = root.capital.region } save_scope_as = target_location }
 
 		random_list = {
 			1 = { set_variable = { name = outcome1 value = yes } }
@@ -855,54 +710,33 @@ black_death.1008 = {
 		}
 	}
 
-	option = {
-		name = black_death.1008.a
-
-		custom_tooltip = custom_tooltip_generic_nothing_happens
-	}
+	option = { name = black_death.1008.a custom_tooltip = custom_tooltip_generic_nothing_happens }
 
 	option = {
 		name = black_death.1008.b
 
 		if = {
 			limit = { has_variable = outcome1 }
-
-			capital.market = {
-				add_goods_supply = { goods = goods:silver amount = market_goods_mild_gain }
-			}
+			capital.market = { add_goods_supply = { goods = goods:silver amount = market_goods_mild_gain } }
 		}
 		else_if = {
 			limit = { has_variable = outcome2 }
-
-			capital.market = {
-				add_goods_supply = {
-					goods = goods:medicaments
-					amount = market_goods_mild_gain
-				}
-			}
+			capital.market = { add_goods_supply = { goods = goods:medicaments amount = market_goods_mild_gain } }
 		}
 		else_if = {
 			limit = { has_variable = outcome3 }
-
-			capital.market = {
-				add_goods_supply = { goods = goods:weaponry amount = market_goods_weak_gain }
-			}
+			capital.market = { add_goods_supply = { goods = goods:weaponry amount = market_goods_weak_gain } }
 		}
+
 		scope:target_location = {
 			if = {
 				limit = {
 					disease_presence = { disease = disease:bubonic_plague value <= 0.85 }
-					NOT = {
-						disease_has_stagnated = disease:bubonic_plague
-					}
+					NOT = { disease_has_stagnated = disease:bubonic_plague }
 
 					"disease_resistance(disease:bubonic_plague)" < 0.5
 				}
-
-				set_disease_presence = {
-					disease_outbreak = disease:bubonic_plague.original_outbreak
-					value = 0.10
-				}
+				set_disease_presence = { disease_outbreak = disease:bubonic_plague.original_outbreak value = 0.10 }
 			}
 			else = { change_prosperity = prosperity_severe_penalty }
 		}
@@ -926,44 +760,30 @@ black_death.1009 = {
 	image = "gfx/interface/illustrations/situation/black_death.dds"
 
 	trigger = {
-		NOT = {
-			has_variable = bd1009_cd
-		}
+		NOT = { has_variable = bd1009_cd }
 
 		country_has_disease = disease:bubonic_plague
 
 		any_unit = {
 			exists = this
 			is_army = yes
-			NOT = {
-				has_unit_modifier = disease_outbreak
-			}
+			NOT = { has_unit_modifier = disease_outbreak }
 		}
 	}
 
 	immediate = {
 		set_variable = bd1009_cd
-
 		random_unit = {
-			limit = {
-				is_army = yes
-				NOT = {
-					has_unit_modifier = disease_outbreak
-				}
-			}
+			limit = { is_army = yes NOT = { has_unit_modifier = disease_outbreak } }
 
 			save_scope_as = random_unit
 
-			unit_location = {
-				save_scope_as = target_location
-				province = { save_scope_as = target_province }
-			}
+			unit_location = { save_scope_as = target_location province = { save_scope_as = target_province } }
 		}
 	}
 
 	option = {
 		name = black_death.1009.a
-
 		scope:random_unit = {
 			add_unit_modifier = {
 				modifier = disease_outbreak
@@ -980,11 +800,7 @@ black_death.1009 = {
 
 		scope:target_province = {
 			if = { limit = { province_food >= 200 } change_province_food = -200 }
-			else = {
-				every_location_in_province = {
-					change_prosperity = prosperity_very_weak_penalty
-				}
-			}
+			else = { every_location_in_province = { change_prosperity = prosperity_very_weak_penalty } }
 		}
 	}
 }
@@ -1000,18 +816,14 @@ black_death.1010 = {
 	image = "gfx/interface/illustrations/situation/black_death.dds"
 
 	trigger = {
-		NOT = {
-			has_variable = bd1010_cd
-		}
+		NOT = { has_variable = bd1010_cd }
 
 		country_has_disease = disease:bubonic_plague
 		religion.group = religion_group:muslim
 		exists = capital.market
 		any_market_with_merchants = {
 			location.region = region:caucasus_region
-			NOT = {
-				this = root.capital.market
-			}
+			NOT = { this = root.capital.market }
 
 			"stockpile_in_market(goods:clay)" > 15
 		}
@@ -1024,11 +836,8 @@ black_death.1010 = {
 			limit = {
 				location.region = region:caucasus_region
 				"stockpile_in_market(goods:clay)" > 15
-				NOT = {
-					this = root.capital.market
-				}
+				NOT = { this = root.capital.market }
 			}
-
 			save_scope_as = target_market
 		}
 		random_market_with_merchants = {
@@ -1038,11 +847,8 @@ black_death.1010 = {
 					country = root
 					value >= 15
 				}
-				NOT = {
-					this = root.capital.market
-				}
+				NOT = { this = root.capital.market }
 			}
-
 			save_scope_as = target_market2
 		}
 	}
@@ -1056,18 +862,11 @@ black_death.1010 = {
 			scale = -2
 		}
 
-		capital.market = {
-			add_goods_supply = { goods = goods:clay amount = market_goods_weak_gain }
-		}
+		capital.market = { add_goods_supply = { goods = goods:clay amount = market_goods_weak_gain } }
 
-		scope:target_market = {
-			add_goods_supply = { goods = goods:clay amount = market_goods_weak_loss }
-		}
+		scope:target_market = { add_goods_supply = { goods = goods:clay amount = market_goods_weak_loss } }
 
-		change_societal_value = {
-			type = traditionalist_vs_innovative
-			value = societal_value_tiny_move_to_left
-		}
+		change_societal_value = { type = traditionalist_vs_innovative value = societal_value_tiny_move_to_left }
 	}
 
 	option = {
@@ -1079,24 +878,11 @@ black_death.1010 = {
 			scale = -2
 		}
 
-		capital.market = {
-			add_goods_supply = {
-				goods = goods:medicaments
-				amount = market_goods_weak_gain
-			}
-		}
+		capital.market = { add_goods_supply = { goods = goods:medicaments amount = market_goods_weak_gain } }
 
-		scope:target_market = {
-			add_goods_supply = {
-				goods = goods:medicaments
-				amount = market_goods_weak_loss
-			}
-		}
+		scope:target_market = { add_goods_supply = { goods = goods:medicaments amount = market_goods_weak_loss } }
 
-		change_societal_value = {
-			type = traditionalist_vs_innovative
-			value = societal_value_tiny_move_to_right
-		}
+		change_societal_value = { type = traditionalist_vs_innovative value = societal_value_tiny_move_to_right }
 	}
 
 	option = { name = black_death.1010.c add_stability = stability_weak_penalty }
@@ -1113,16 +899,12 @@ black_death.1011 = {
 	image = "gfx/interface/illustrations/situation/black_death.dds"
 
 	trigger = {
-		NOT = {
-			has_variable = bd1011_cd
-		}
+		NOT = { has_variable = bd1011_cd }
 		any_known_country = { country_has_disease = disease:bubonic_plague }
 
 		any_owned_non_rural_location = {
 			disease_presence = { disease = disease:bubonic_plague value <= 0.1 }
-			NOT = {
-				disease_has_stagnated = disease:bubonic_plague
-			}
+			NOT = { disease_has_stagnated = disease:bubonic_plague }
 
 			"disease_resistance(disease:bubonic_plague)" < 0.5
 		}
@@ -1134,13 +916,10 @@ black_death.1011 = {
 		random_owned_non_rural_location = {
 			limit = {
 				disease_presence = { disease = disease:bubonic_plague value <= 0.1 }
-				NOT = {
-					disease_has_stagnated = disease:bubonic_plague
-				}
+				NOT = { disease_has_stagnated = disease:bubonic_plague }
 
 				"disease_resistance(disease:bubonic_plague)" < 0.5
 			}
-
 			save_scope_as = target_location
 		}
 
@@ -1157,24 +936,17 @@ black_death.1011 = {
 		# Random chance to spread the disease with the refugees
 		if = {
 			limit = { country_has_disease = disease:bubonic_plague }
+
 			if = {
 				limit = { has_variable = outcome1 }
-
 				scope:target_location = {
-					set_disease_presence = {
-						disease_outbreak = disease:bubonic_plague.original_outbreak
-						value = 0.05
-					}
+					set_disease_presence = { disease_outbreak = disease:bubonic_plague.original_outbreak value = 0.05 }
 				}
 			}
 			else_if = {
 				limit = { has_variable = outcome2 }
-
 				scope:target_location = {
-					set_disease_presence = {
-						disease_outbreak = disease:bubonic_plague.original_outbreak
-						value = 0.1
-					}
+					set_disease_presence = { disease_outbreak = disease:bubonic_plague.original_outbreak value = 0.1 }
 				}
 			}
 		}
@@ -1183,10 +955,7 @@ black_death.1011 = {
 
 		hidden_effect = {
 			scope:target_location = {
-				every_pop = {
-					limit = { owner = root }
-					add_pop_satisfaction = pop_satisfaction_mild_penalty
-				}
+				every_pop = { limit = { owner = root } add_pop_satisfaction = pop_satisfaction_mild_penalty }
 			}
 		}
 
@@ -1207,10 +976,7 @@ black_death.1011 = {
 				region = root.capital.region
 			}
 
-			order_by = {
-				value = "disease_presence(disease:bubonic_plague)"
-				multiply = -1
-			}
+			order_by = { value = "disease_presence(disease:bubonic_plague)" multiply = -1 }
 
 			max = 3
 			check_range_bounds = no
@@ -1222,10 +988,7 @@ black_death.1011 = {
 			}
 		}
 
-		change_societal_value = {
-			type = traditionalist_vs_innovative
-			value = societal_value_tiny_move_to_left
-		}
+		change_societal_value = { type = traditionalist_vs_innovative value = societal_value_tiny_move_to_left }
 	}
 
 	option = {
@@ -1250,10 +1013,7 @@ black_death.1011 = {
 				region = root.capital.region
 			}
 
-			order_by = {
-				value = "disease_presence(disease:bubonic_plague)"
-				multiply = -1
-			}
+			order_by = { value = "disease_presence(disease:bubonic_plague)" multiply = -1 }
 
 			max = 1
 			check_range_bounds = no
@@ -1271,10 +1031,7 @@ black_death.1011 = {
 
 		add_prestige = prestige_weak_penalty
 
-		change_societal_value = {
-			type = traditionalist_vs_innovative
-			value = societal_value_tiny_move_to_right
-		}
+		change_societal_value = { type = traditionalist_vs_innovative value = societal_value_tiny_move_to_right }
 	}
 
 	after = {
@@ -1294,37 +1051,22 @@ black_death.1012 = {
 	image = "gfx/interface/illustrations/situation/black_death.dds"
 
 	trigger = {
-		NOT = {
-			has_variable = bd1012_cd
-		}
+		NOT = { has_variable = bd1012_cd }
 
 		country_has_disease = disease:bubonic_plague
 		religion = religion:catholic
-		NOT = {
-			c:PAP = root
-		}
+		NOT = { c:PAP = root }
 
 		exists = c:PAP.ruler
-		c:PAP = {
-			has_ruler = yes
-			NOT = {
-				has_insulted = root
-			}
-		}
+		c:PAP = { has_ruler = yes NOT = { has_insulted = root } }
 	}
 
-	immediate = {
-		set_variable = bd1012_cd
-		c:PAP.ruler = { save_scope_as = target_character }
-	}
+	immediate = { set_variable = bd1012_cd c:PAP.ruler = { save_scope_as = target_character } }
 
 	option = {
 		name = black_death.1012.a
 
-		add_estate_satisfaction = {
-			type = estate_type:clergy_estate
-			value = estate_satisfaction_mild_bonus
-		}
+		add_estate_satisfaction = { type = estate_type:clergy_estate value = estate_satisfaction_mild_bonus }
 
 		add_religious_influence_if_valid = { VALUE = religious_influence_weak_bonus }
 		add_government_power = government_power_weak_penalty
@@ -1336,10 +1078,7 @@ black_death.1012 = {
 		add_stability = stability_weak_penalty
 		add_prestige = prestige_weak_bonus
 
-		add_estate_satisfaction = {
-			type = estate_type:peasants_estate
-			value = estate_satisfaction_mild_bonus
-		}
+		add_estate_satisfaction = { type = estate_type:peasants_estate value = estate_satisfaction_mild_bonus }
 
 		c:PAP = { add_opinion = { target = root modifier = opinion_insulted } }
 		add_religious_influence_if_valid = { VALUE = religious_influence_weak_penalty }
@@ -1357,60 +1096,42 @@ black_death.1013 = {
 	image = "gfx/interface/illustrations/situation/black_death.dds"
 
 	trigger = {
-		NOT = {
-			has_variable = bd1013_cd
-		}
+		NOT = { has_variable = bd1013_cd }
 
 		country_has_disease = disease:bubonic_plague
 
-		any_owned_rural_location = {
-			disease_presence = { disease = disease:bubonic_plague value > 0.25 }
-		}
-		NOT = {
-			has_country_modifier = peasants_estate_less_tax_burden
-		}
+		any_owned_rural_location = { disease_presence = { disease = disease:bubonic_plague value > 0.25 } }
+		NOT = { has_country_modifier = peasants_estate_less_tax_burden }
 	}
 
 	immediate = {
 		set_variable = bd1013_cd
-
 		random_owned_rural_location = {
-			limit = {
-				disease_presence = { disease = disease:bubonic_plague value > 0.25 }
-			}
-
+			limit = { disease_presence = { disease = disease:bubonic_plague value > 0.25 } }
 			save_scope_as = target_location
 		}
 	}
 
 	option = {
 		name = black_death.1013.a
-
 		scope:target_location = {
 			change_control = control_mild_bonus
 			custom_tooltip = every_pop_25_satisfaction_loss_tt
 
 			hidden_effect = {
-				every_pop = {
-					limit = { owner = root }
-					add_pop_satisfaction = pop_satisfaction_extreme_penalty
-				}
+				every_pop = { limit = { owner = root } add_pop_satisfaction = pop_satisfaction_extreme_penalty }
 			}
 		}
 	}
 
 	option = {
 		name = black_death.1013.b
-
 		scope:target_location = {
 			change_control = control_mild_penalty
 			custom_tooltip = every_pop_10_satisfaction_gain_tt
 
 			hidden_effect = {
-				every_pop = {
-					limit = { owner = root }
-					add_pop_satisfaction = pop_satisfaction_mild_bonus
-				}
+				every_pop = { limit = { owner = root } add_pop_satisfaction = pop_satisfaction_mild_bonus }
 			}
 		}
 	}
@@ -1439,19 +1160,12 @@ black_death.1014 = {
 	image = "gfx/interface/illustrations/situation/black_death.dds"
 
 	trigger = {
-		NOT = {
-			has_variable = bd1014_cd
-		}
-		NOT = {
-			has_variable = had_overextension_event
-		}
+		NOT = { has_variable = bd1014_cd }
+		NOT = { has_variable = had_overextension_event }
 
 		country_has_disease = disease:bubonic_plague
 
-		any_owned_location = {
-			count > 25
-			disease_presence = { disease = disease:bubonic_plague value > 0 }
-		}
+		any_owned_location = { count > 25 disease_presence = { disease = disease:bubonic_plague value > 0 } }
 	}
 
 	immediate = {
@@ -1463,16 +1177,10 @@ black_death.1014 = {
 
 		ordered_owned_location = {
 			order_by = {
-				value = {
-					value = proximity
-					multiply = { value = "disease_presence(disease:bubonic_plague)" }
-				}
+				value = { value = proximity multiply = { value = "disease_presence(disease:bubonic_plague)" } }
 			}
 
-			limit = {
-				disease_presence = { disease = disease:bubonic_plague value > 0 }
-				is_capital = no
-			}
+			limit = { disease_presence = { disease = disease:bubonic_plague value > 0 } is_capital = no }
 
 			max = 50
 			check_range_bounds = no
@@ -1497,10 +1205,7 @@ black_death.1014 = {
 			mode = add_and_extend
 		}
 
-		change_societal_value = {
-			type = centralization_vs_decentralization
-			value = societal_value_move_to_left
-		}
+		change_societal_value = { type = centralization_vs_decentralization value = societal_value_move_to_left }
 	}
 
 	option = {
@@ -1509,29 +1214,23 @@ black_death.1014 = {
 		custom_tooltip = far_away_locations_with_plague_loses_10_control_tt
 
 		hidden_effect = {
-			every_owned_location = {
-				limit = { has_variable = plagued_locations_variable }
-				change_control = control_mild_penalty
-			}
+			every_owned_location = { limit = { has_variable = plagued_locations_variable } change_control = control_mild_penalty }
 		}
 
-		change_societal_value = {
-			type = centralization_vs_decentralization
-			value = societal_value_move_to_right
-		}
+		change_societal_value = { type = centralization_vs_decentralization value = societal_value_move_to_right }
 
 		add_government_power = {
 			value = government_power_mild_penalty
-			add = { value = var:plagued_locations_variable divide = 5 multiply = -1 }
+			add = {
+				value = var:plagued_locations_variable
+				divide = 5
+				multiply = -1
+			}
 		}
 	}
 
 	after = {
-		every_owned_location = {
-			limit = { has_variable = far_away_locations }
-			remove_variable = far_away_locations
-		}
-
+		every_owned_location = { limit = { has_variable = far_away_locations } remove_variable = far_away_locations }
 		remove_variable = plagued_locations_variable
 	}
 }
@@ -1547,9 +1246,7 @@ black_death.1015 = {
 	image = "gfx/interface/illustrations/situation/black_death.dds"
 
 	trigger = {
-		NOT = {
-			has_variable = bd1015_cd
-		}
+		NOT = { has_variable = bd1015_cd }
 
 		country_has_disease = disease:bubonic_plague
 		capital.market = { "stockpile_in_market(goods:medicaments)" > 25 }
@@ -1564,12 +1261,7 @@ black_death.1015 = {
 			scale = -2
 		}
 
-		capital.market = {
-			add_goods_supply = {
-				goods = goods:medicaments
-				amount = market_goods_mild_loss
-			}
-		}
+		capital.market = { add_goods_supply = { goods = goods:medicaments amount = market_goods_mild_loss } }
 	}
 
 	option = {
@@ -1578,9 +1270,7 @@ black_death.1015 = {
 		trigger = {
 			any_owned_location = {
 				disease_presence = { disease = disease:bubonic_plague value > 0 }
-				NOT = {
-					disease_has_stagnated = disease:bubonic_plague
-				}
+				NOT = { disease_has_stagnated = disease:bubonic_plague }
 
 				"disease_resistance(disease:bubonic_plague)" < 0.5
 			}
@@ -1592,13 +1282,10 @@ black_death.1015 = {
 			every_owned_location = {
 				limit = {
 					disease_presence = { disease = disease:bubonic_plague value > 0 }
-					NOT = {
-						disease_has_stagnated = disease:bubonic_plague
-					}
+					NOT = { disease_has_stagnated = disease:bubonic_plague }
 
 					"disease_resistance(disease:bubonic_plague)" < 0.5
 				}
-
 				change_disease_presence = { disease = disease:bubonic_plague value = 0.1 }
 			}
 		}
@@ -1607,10 +1294,7 @@ black_death.1015 = {
 	option = {
 		name = black_death.1015.c
 
-		add_estate_satisfaction = {
-			type = estate_type:burghers_estate
-			value = estate_satisfaction_extreme_penalty
-		}
+		add_estate_satisfaction = { type = estate_type:burghers_estate value = estate_satisfaction_extreme_penalty }
 
 		add_gold_to_estate = {
 			estate_type = estate_type:burghers_estate
@@ -1638,32 +1322,19 @@ black_death.1016 = {
 	desc = black_death.1016.desc
 	image = "gfx/interface/illustrations/situation/black_death.dds"
 
-	trigger = {
-		NOT = {
-			has_variable = bd1016_cd
-		}
+	trigger = { NOT = { has_variable = bd1016_cd } country_has_disease = disease:bubonic_plague }
 
-		country_has_disease = disease:bubonic_plague
-	}
-
-	weight_multiplier = {
-		base = 1
-		modifier = { add = 1.5 has_country_modifier = black_death_austerity_movement }
-	}
+	weight_multiplier = { base = 1 modifier = { add = 1.5 has_country_modifier = black_death_austerity_movement } }
 
 	immediate = {
 		set_variable = bd1016_cd
-
 		random_owned_location ?= {
 			limit = {
 				disease_presence = { disease = disease:bubonic_plague value > 0 }
-				NOT = {
-					disease_has_stagnated = disease:bubonic_plague
-				}
+				NOT = { disease_has_stagnated = disease:bubonic_plague }
 
 				"disease_resistance(disease:bubonic_plague)" < 0.5
 			}
-
 			save_scope_as = target_location
 		}
 	}
@@ -1673,44 +1344,31 @@ black_death.1016 = {
 
 		if = {
 			limit = { exists = scope:target_location }
-
 			scope:target_location = {
 				province = {
 					every_location_in_province = {
 						limit = {
 							disease_presence = { disease = disease:bubonic_plague value > 0 }
-							NOT = {
-								disease_has_stagnated = disease:bubonic_plague
-							}
+							NOT = { disease_has_stagnated = disease:bubonic_plague }
 
 							"disease_resistance(disease:bubonic_plague)" < 0.5
 						}
-
 						change_disease_presence = { disease = disease:bubonic_plague value = 0.10 }
 					}
 					every_location_in_province = {
 						limit = {
 							disease_presence = { disease = disease:bubonic_plague value = 0 }
-							NOT = {
-								disease_has_stagnated = disease:bubonic_plague
-							}
+							NOT = { disease_has_stagnated = disease:bubonic_plague }
 
 							"disease_resistance(disease:bubonic_plague)" < 0.5
 						}
-
-						set_disease_presence = {
-							disease_outbreak = disease:bubonic_plague.original_outbreak
-							value = 0.05
-						}
+						set_disease_presence = { disease_outbreak = disease:bubonic_plague.original_outbreak value = 0.05 }
 					}
 				}
 			}
 		}
 		else = { add_government_power = government_power_mild_penalty }
-		change_societal_value = {
-			type = serfdom_vs_free_subjects
-			value = societal_value_minor_move_to_right
-		}
+		change_societal_value = { type = serfdom_vs_free_subjects value = societal_value_minor_move_to_right }
 	}
 
 	option = {
@@ -1718,15 +1376,9 @@ black_death.1016 = {
 
 		add_stability = stability_weak_penalty
 
-		add_estate_satisfaction = {
-			type = estate_type:peasants_estate
-			value = estate_satisfaction_mild_penalty
-		}
+		add_estate_satisfaction = { type = estate_type:peasants_estate value = estate_satisfaction_mild_penalty }
 
-		change_societal_value = {
-			type = serfdom_vs_free_subjects
-			value = societal_value_tiny_move_to_left
-		}
+		change_societal_value = { type = serfdom_vs_free_subjects value = societal_value_tiny_move_to_left }
 	}
 }
 
@@ -1741,20 +1393,15 @@ black_death.1017 = {
 	image = "gfx/interface/illustrations/situation/black_death.dds"
 
 	trigger = {
-		NOT = {
-			has_variable = bd1017_cd
-		}
+		NOT = { has_variable = bd1017_cd }
 
 		country_has_disease = disease:bubonic_plague
 
-		any_owned_location = {
-			disease_presence = { disease = disease:bubonic_plague value > 0 }
-		}
+		any_owned_location = { disease_presence = { disease = disease:bubonic_plague value > 0 } }
 	}
 
 	immediate = {
 		set_variable = bd1017_cd
-
 		random_owned_location = {
 			limit = { disease_presence = { disease = disease:bubonic_plague value > 0 } }
 			save_scope_as = target_location
@@ -1772,16 +1419,12 @@ black_death.1017 = {
 				limit = { owner = root pop_type = pop_type:peasants }
 				add_pop_satisfaction = pop_satisfaction_extreme_penalty
 			}
-
 			change_prosperity = prosperity_very_weak_bonus
 		}
 
 		add_stability = stability_mild_penalty
 
-		change_societal_value = {
-			type = traditionalist_vs_innovative
-			value = societal_value_tiny_move_to_right
-		}
+		change_societal_value = { type = traditionalist_vs_innovative value = societal_value_tiny_move_to_right }
 	}
 
 	option = {
@@ -1789,14 +1432,8 @@ black_death.1017 = {
 
 		add_research_progress = research_progress_weak_penalty
 
-		change_societal_value = {
-			type = traditionalist_vs_innovative
-			value = societal_value_tiny_move_to_left
-		}
-		change_societal_value = {
-			type = spiritualist_vs_humanist
-			value = societal_value_tiny_move_to_left
-		}
+		change_societal_value = { type = traditionalist_vs_innovative value = societal_value_tiny_move_to_left }
+		change_societal_value = { type = spiritualist_vs_humanist value = societal_value_tiny_move_to_left }
 	}
 }
 
@@ -1810,52 +1447,32 @@ black_death.1018 = {
 	image = "gfx/interface/illustrations/situation/black_death.dds"
 
 	trigger = {
-		NOT = {
-			has_variable = bd1018_cd
-		}
+		NOT = { has_variable = bd1018_cd }
 		any_neighbor_country = {
-			NOT = {
-				is_rival_of = root
-			}
-			NOT = {
-				is_enemy_of = root
-			}
-			NOT = {
-				has_opinion = { target = root modifier = opinion_sent_help }
-			}
-			NOT = {
-				has_opinion = { target = root modifier = denied_aid }
-			}
+			NOT = { is_rival_of = root }
+			NOT = { is_enemy_of = root }
+			NOT = { has_opinion = { target = root modifier = opinion_sent_help } }
+			NOT = { has_opinion = { target = root modifier = denied_aid } }
 
 			country_has_disease = disease:bubonic_plague
 			capital.market = { has_merchant = prev }
 		}
 
 		capital.market = {
-			NOT = {
-				has_merchant_power = { country = root key = merchants_not_supported }
-			}
-			NOT = {
-				has_merchant_power = { country = root key = BANNED_EXPORTS }
-			}
+			NOT = { has_merchant_power = { country = root key = merchants_not_supported } }
+			NOT = { has_merchant_power = { country = root key = BANNED_EXPORTS } }
 		}
 	}
 
 	immediate = {
 		set_variable = bd1018_cd
-
 		random_neighbor_country = {
 			limit = {
-				NOT = {
-					is_rival_of = root
-				}
-				NOT = {
-					is_enemy_of = root
-				}
+				NOT = { is_rival_of = root }
+				NOT = { is_enemy_of = root }
 
 				country_has_disease = disease:bubonic_plague
 			}
-
 			save_scope_as = charity_target
 		}
 	}
@@ -1863,9 +1480,7 @@ black_death.1018 = {
 	option = {
 		name = black_death.1018.a
 
-		scope:charity_target = {
-			add_opinion = { target = root modifier = opinion_sent_help }
-		}
+		scope:charity_target = { add_opinion = { target = root modifier = opinion_sent_help } }
 
 		capital.market = {
 			add_merchant_power = {
@@ -1882,11 +1497,7 @@ black_death.1018 = {
 
 		if = {
 			limit = { country_has_estate = estate_type:burghers_estate }
-
-			add_estate_satisfaction = {
-				type = estate_type:burghers_estate
-				value = estate_satisfaction_extreme_penalty
-			}
+			add_estate_satisfaction = { type = estate_type:burghers_estate value = estate_satisfaction_extreme_penalty }
 		}
 		else = { add_legitimacy = legitimacy_weak_penalty }
 
@@ -1903,16 +1514,9 @@ black_death.1018 = {
 	option = {
 		name = black_death.1018.c
 
-		scope:charity_target = {
-			add_opinion = { target = root modifier = denied_aid }
-		}
+		scope:charity_target = { add_opinion = { target = root modifier = denied_aid } }
 
-		capital.market = {
-			add_goods_supply = {
-				goods = goods:medicaments
-				amount = market_goods_weak_gain
-			}
-		}
+		capital.market = { add_goods_supply = { goods = goods:medicaments amount = market_goods_weak_gain } }
 	}
 }
 
@@ -1921,11 +1525,7 @@ scripted_trigger
 miniority_pop_trigger = {
 	culture != root.culture
 
-	culture = {
-		NOT = {
-			is_accepted_in = root
-		}
-	}
+	culture = { NOT = { is_accepted_in = root } }
 }
 
 scripted_trigger
@@ -1953,9 +1553,7 @@ black_death.1020 = {
 	image = "gfx/interface/illustrations/situation/black_death.dds"
 
 	trigger = {
-		NOT = {
-			has_variable = bd1020_cd
-		}
+		NOT = { has_variable = bd1020_cd }
 
 		country_has_disease = disease:bubonic_plague
 		any_province = { miniority_province_trigger = yes }
@@ -1963,7 +1561,6 @@ black_death.1020 = {
 
 	immediate = {
 		set_variable = bd1020_cd
-
 		random_province = {
 			limit = { miniority_province_trigger = yes }
 			save_scope_as = target_province
@@ -1972,10 +1569,7 @@ black_death.1020 = {
 				limit = { miniority_location_trigger = yes }
 				save_scope_as = target_location
 
-				random_pop = {
-					limit = { miniority_pop_trigger = yes }
-					culture = { save_scope_as = target_culture }
-				}
+				random_pop = { limit = { miniority_pop_trigger = yes } culture = { save_scope_as = target_culture } }
 			}
 		}
 	}
@@ -2000,17 +1594,11 @@ black_death.1020 = {
 					limit = { owner = root culture = scope:target_culture }
 					add_pop_satisfaction = pop_satisfaction_extreme_bonus
 				}
-				every_pop = {
-					limit = { owner = root culture = root.culture }
-					add_pop_satisfaction = pop_satisfaction_mild_penalty
-				}
+				every_pop = { limit = { owner = root culture = root.culture } add_pop_satisfaction = pop_satisfaction_mild_penalty }
 			}
 		}
 
-		change_societal_value = {
-			type = spiritualist_vs_humanist
-			value = societal_value_minor_move_to_right
-		}
+		change_societal_value = { type = spiritualist_vs_humanist value = societal_value_minor_move_to_right }
 	}
 
 	option = {
@@ -2033,17 +1621,11 @@ black_death.1020 = {
 					limit = { owner = root culture = scope:target_culture }
 					add_pop_satisfaction = pop_satisfaction_ultimate_penalty
 				}
-				every_pop = {
-					limit = { owner = root culture = root.culture }
-					add_pop_satisfaction = pop_satisfaction_mild_bonus
-				}
+				every_pop = { limit = { owner = root culture = root.culture } add_pop_satisfaction = pop_satisfaction_mild_bonus }
 			}
 		}
 
-		change_societal_value = {
-			type = spiritualist_vs_humanist
-			value = societal_value_minor_move_to_left
-		}
+		change_societal_value = { type = spiritualist_vs_humanist value = societal_value_minor_move_to_left }
 	}
 }
 
@@ -2058,9 +1640,7 @@ black_death.1021 = {
 	image = "gfx/interface/illustrations/situation/black_death.dds"
 
 	trigger = {
-		NOT = {
-			has_variable = bd1021_cd
-		}
+		NOT = { has_variable = bd1021_cd }
 
 		country_has_disease = disease:bubonic_plague
 
@@ -2081,35 +1661,18 @@ black_death.1021 = {
 	option = {
 		name = black_death.1021.a
 
-		add_estate_satisfaction = {
-			type = estate_type:burghers_estate
-			value = estate_satisfaction_extreme_penalty
-		}
+		add_estate_satisfaction = { type = estate_type:burghers_estate value = estate_satisfaction_extreme_penalty }
 
-		capital.market = {
-			add_goods_supply = {
-				goods = goods:medicaments
-				amount = market_goods_weak_gain
-			}
-		}
+		capital.market = { add_goods_supply = { goods = goods:medicaments amount = market_goods_weak_gain } }
 
-		add_estate_satisfaction = {
-			type = estate_type:peasants_estate
-			value = estate_satisfaction_mild_bonus
-		}
+		add_estate_satisfaction = { type = estate_type:peasants_estate value = estate_satisfaction_mild_bonus }
 	}
 
 	option = {
 		name = black_death.1021.b
 
-		add_estate_satisfaction = {
-			type = estate_type:burghers_estate
-			value = estate_satisfaction_mild_bonus
-		}
-		add_estate_satisfaction = {
-			type = estate_type:peasants_estate
-			value = estate_satisfaction_extreme_penalty
-		}
+		add_estate_satisfaction = { type = estate_type:burghers_estate value = estate_satisfaction_mild_bonus }
+		add_estate_satisfaction = { type = estate_type:peasants_estate value = estate_satisfaction_extreme_penalty }
 	}
 
 	option = {
@@ -2119,10 +1682,7 @@ black_death.1021 = {
 			scale = 1.25
 		}
 
-		add_estate_satisfaction = {
-			type = estate_type:burghers_estate
-			value = estate_satisfaction_extreme_penalty
-		}
+		add_estate_satisfaction = { type = estate_type:burghers_estate value = estate_satisfaction_extreme_penalty }
 	}
 }
 
@@ -2137,9 +1697,7 @@ black_death.1023 = {
 	image = "gfx/interface/illustrations/situation/black_death.dds"
 
 	trigger = {
-		NOT = {
-			has_variable = bd1023_cd
-		}
+		NOT = { has_variable = bd1023_cd }
 
 		country_has_disease = disease:bubonic_plague
 
@@ -2153,7 +1711,6 @@ black_death.1023 = {
 
 	immediate = {
 		set_variable = bd1023_cd
-
 		random_owned_location = {
 			limit = {
 				disease_presence = { disease = disease:bubonic_plague value > 0.3 }
@@ -2161,7 +1718,6 @@ black_death.1023 = {
 				is_capital = no
 				any_pop = { pop_type = pop_type:nobles pop_satisfaction <= 0.5 }
 			}
-
 			save_scope_as = target_location
 		}
 	}
@@ -2171,17 +1727,13 @@ black_death.1023 = {
 
 		scope:target_location = {
 			change_control = control_mild_penalty
-
 			random_pop = {
 				limit = { owner = root pop_type = pop_type:peasants }
 				add_pop_satisfaction = pop_satisfaction_extreme_penalty
 			}
 		}
 
-		add_estate_satisfaction = {
-			type = estate_type:nobles_estate
-			value = estate_satisfaction_weak_bonus
-		}
+		add_estate_satisfaction = { type = estate_type:nobles_estate value = estate_satisfaction_weak_bonus }
 
 		add_army_tradition = army_tradition_weak_penalty
 	}
@@ -2189,10 +1741,7 @@ black_death.1023 = {
 	option = {
 		name = black_death.1023.b
 
-		add_estate_satisfaction = {
-			type = estate_type:nobles_estate
-			value = estate_satisfaction_extreme_penalty
-		}
+		add_estate_satisfaction = { type = estate_type:nobles_estate value = estate_satisfaction_extreme_penalty }
 
 		add_stability = stability_mild_penalty
 	}
@@ -2210,33 +1759,23 @@ black_death.1024 = {
 
 	weight_multiplier = {
 		base = 1
-
 		modifier = {
 			add = 2
-
 			any_market_present_in_country = {
-				location = {
-					disease_presence = { disease = disease:bubonic_plague value > 0.20 }
-				}
+				location = { disease_presence = { disease = disease:bubonic_plague value > 0.20 } }
 			}
 		}
 	}
 
 	trigger = {
-		NOT = {
-			has_variable = bd1024_cd
-		}
+		NOT = { has_variable = bd1024_cd }
 
 		country_has_disease = disease:bubonic_plague
-		NOT = {
-			has_country_modifier = open_silk_trade_modifier
-		}
+		NOT = { has_country_modifier = open_silk_trade_modifier }
 
 		capital.region = region:persia_region
 		any_market_present_in_country = { exists = this }
-		NOT = {
-			any_owned_location = { has_location_modifier = state_textiles_modifier }
-		}
+		NOT = { any_owned_location = { has_location_modifier = state_textiles_modifier } }
 	}
 
 	immediate = { set_variable = bd1024_cd }
@@ -2262,7 +1801,6 @@ black_death.1024 = {
 
 		every_owned_location = {
 			limit = { raw_material = goods:silk }
-
 			add_location_modifier = {
 				modifier = state_textiles_modifier
 				years = 10
@@ -2274,10 +1812,7 @@ black_death.1024 = {
 	option = {
 		name = flavor_boh.27.b
 
-		add_estate_satisfaction = {
-			type = estate_type:burghers_estate
-			value = estate_satisfaction_extreme_penalty
-		}
+		add_estate_satisfaction = { type = estate_type:burghers_estate value = estate_satisfaction_extreme_penalty }
 
 		add_stability = stability_weak_penalty
 	}
@@ -2294,15 +1829,11 @@ black_death.1025 = {
 	image = "gfx/interface/illustrations/situation/black_death.dds"
 
 	trigger = {
-		NOT = {
-			has_variable = bd1025_cd
-		}
+		NOT = { has_variable = bd1025_cd }
 
 		country_has_disease = disease:bubonic_plague
 
-		any_owned_location = {
-			disease_presence = { disease = disease:bubonic_plague value > 0.30 }
-		}
+		any_owned_location = { disease_presence = { disease = disease:bubonic_plague value > 0.30 } }
 
 		any_neighbor_country ?= { count > 0 }
 	}
@@ -2312,74 +1843,39 @@ black_death.1025 = {
 
 		modifier = {
 			add = 1
-
-			any_owned_location = {
-				count > 1
-				disease_presence = { disease = disease:bubonic_plague value > 0.20 }
-			}
+			any_owned_location = { count > 1 disease_presence = { disease = disease:bubonic_plague value > 0.20 } }
 		}
 		modifier = {
 			add = 1
-
-			any_owned_location = {
-				count > 2
-				disease_presence = { disease = disease:bubonic_plague value > 0.20 }
-			}
+			any_owned_location = { count > 2 disease_presence = { disease = disease:bubonic_plague value > 0.20 } }
 		}
 		modifier = {
 			add = 1
-
-			any_owned_location = {
-				count > 3
-				disease_presence = { disease = disease:bubonic_plague value > 0.20 }
-			}
+			any_owned_location = { count > 3 disease_presence = { disease = disease:bubonic_plague value > 0.20 } }
 		}
 		modifier = {
 			add = 1
-
-			any_owned_location = {
-				count > 4
-				disease_presence = { disease = disease:bubonic_plague value > 0.20 }
-			}
+			any_owned_location = { count > 4 disease_presence = { disease = disease:bubonic_plague value > 0.20 } }
 		}
 		modifier = {
 			add = 1
-
-			any_owned_location = {
-				count > 5
-				disease_presence = { disease = disease:bubonic_plague value > 0.20 }
-			}
+			any_owned_location = { count > 5 disease_presence = { disease = disease:bubonic_plague value > 0.20 } }
 		}
 		modifier = {
 			add = 2
-
-			any_owned_location = {
-				count > 6
-				disease_presence = { disease = disease:bubonic_plague value > 0.20 }
-			}
+			any_owned_location = { count > 6 disease_presence = { disease = disease:bubonic_plague value > 0.20 } }
 		}
 		modifier = {
 			add = 4
-
-			any_owned_location = {
-				count > 8
-				disease_presence = { disease = disease:bubonic_plague value > 0.20 }
-			}
+			any_owned_location = { count > 8 disease_presence = { disease = disease:bubonic_plague value > 0.20 } }
 		}
 		modifier = {
 			add = 8
-
-			any_owned_location = {
-				count > 12
-				disease_presence = { disease = disease:bubonic_plague value > 0.20 }
-			}
+			any_owned_location = { count > 12 disease_presence = { disease = disease:bubonic_plague value > 0.20 } }
 		}
 	}
 
-	immediate = {
-		set_variable = bd1025_cd
-		random_neighbor_country ?= { save_scope_as = blame_target }
-	}
+	immediate = { set_variable = bd1025_cd random_neighbor_country ?= { save_scope_as = blame_target } }
 
 	option = {
 		name = black_death.1025.a
@@ -2389,10 +1885,8 @@ black_death.1025 = {
 		hidden_effect = {
 			every_owned_location = {
 				limit = { disease_presence = { disease = disease:bubonic_plague value > 0 } }
-
 				every_pop = {
 					limit = { owner = root }
-
 					add_pop_satisfaction = {
 						value = {
 							value = -1
@@ -2408,7 +1902,6 @@ black_death.1025 = {
 
 	option = {
 		name = black_death.1025.b
-
 		change_gold_effect = {
 			scale = -4
 		}
@@ -2416,10 +1909,7 @@ black_death.1025 = {
 
 	option = {
 		name = black_death.1025.c
-
-		scope:blame_target = {
-			add_opinion = { target = root modifier = opinion_insulted }
-		}
+		scope:blame_target = { add_opinion = { target = root modifier = opinion_insulted } }
 	}
 }
 
@@ -2435,9 +1925,7 @@ black_death.1026 = {
 	image = "gfx/interface/illustrations/situation/black_death.dds"
 
 	trigger = {
-		NOT = {
-			has_variable = bd1026_cd
-		}
+		NOT = { has_variable = bd1026_cd }
 		any_character = { in_cabinet = yes }
 		country_has_disease = disease:bubonic_plague
 	}
@@ -2445,19 +1933,13 @@ black_death.1026 = {
 	immediate = {
 		set_variable = bd1026_cd
 
-		random_character = {
-			limit = { in_cabinet = yes }
-			save_scope_as = target_character
-		}
+		random_character = { limit = { in_cabinet = yes } save_scope_as = target_character }
 
 		kill_character = { target = scope:target_character reason = fever }
 	}
 
 	option = {
 		name = black_death.1026.a
-
-		show_as_tooltip = {
-			kill_character = { target = scope:target_character reason = fever }
-		}
+		show_as_tooltip = { kill_character = { target = scope:target_character reason = fever } }
 	}
 }

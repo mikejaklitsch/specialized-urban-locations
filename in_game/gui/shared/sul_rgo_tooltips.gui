@@ -28,9 +28,7 @@ template sul_rgo_button_tooltip {
 
 		blockoverride "concept_link" { text = [resource_gathering_operations|e] }
 
-		blockoverride "title_button" {
-			mapmode_tooltip_button = { datacontext = "[GetMapMode('raw_material')]" }
-		}
+		blockoverride "title_button" { mapmode_tooltip_button = { datacontext = "[GetMapMode('raw_material')]" } }
 
 		blockoverride "tooltip_content" {
 			# --- Pie chart + info table ---
@@ -60,7 +58,13 @@ template sul_rgo_button_tooltip {
 							alwaystransparent = yes
 							texture = "gfx/interface/pie_charts/pie_chart_alpha_80_green.dds"
 							value = "[Divide_CFixedPoint(Location.MakeScope.ScriptValue('sul_location_rgo_building_level'), Location.MakeScope.ScriptValue('sul_location_max_rgo_building_level_rounded'))]"
-							color = { 1 1 1 1 }
+
+							color = {
+								1
+								1
+								1
+								1
+							}
 						}
 
 						pieslice_no_highlight = {
@@ -68,7 +72,13 @@ template sul_rgo_button_tooltip {
 							alwaystransparent = yes
 							texture = "gfx/interface/pie_charts/pie_chart_alpha_80_red.dds"
 							value = "[Subtract_float('(float)1.0', FixedPointToFloatPercentageCapped(Divide_CFixedPoint(Location.MakeScope.ScriptValue('sul_location_rgo_building_level'), Location.MakeScope.ScriptValue('sul_location_max_rgo_building_level_rounded')), '(bool)yes'))]"
-							color = { 1 1 1 1 }
+
+							color = {
+								1
+								1
+								1
+								1
+							}
 						}
 					}
 				}
@@ -89,15 +99,9 @@ template sul_rgo_button_tooltip {
 									tooltipwidget = {
 										SimpleContextualStringPairTooltipType = {
 											blockoverride "title_icon" {
-												icon = {
-													using = tooltip_title_icon_size
-													texture = "gfx/interface/icons/outliner/categories/buildings.dds"
-												}
+												icon = { using = tooltip_title_icon_size texture = "gfx/interface/icons/outliner/categories/buildings.dds" }
 											}
-											blockoverride "tooltip_title" {
-												ContextualTooltipHeader = {  }
-												blockoverride "title_text" { text = "WPDO_RGO_TT_MAX_LEVEL_TITLE" }
-											}
+											blockoverride "tooltip_title" { ContextualTooltipHeader = {  } blockoverride "title_text" { text = "WPDO_RGO_TT_MAX_LEVEL_TITLE" } }
 											blockoverride "concept_link" { text = "[building|e]" }
 											lowpriotextcontext = "[BuildingType.GetMaxLevelInformation(Location.Self)]"
 										}
@@ -110,15 +114,9 @@ template sul_rgo_button_tooltip {
 									tooltipwidget = {
 										SimpleContextualStringPairTooltipType = {
 											blockoverride "title_icon" {
-												icon = {
-													using = tooltip_title_icon_size
-													texture = "gfx/interface/icons/outliner/categories/buildings.dds"
-												}
+												icon = { using = tooltip_title_icon_size texture = "gfx/interface/icons/outliner/categories/buildings.dds" }
 											}
-											blockoverride "tooltip_title" {
-												ContextualTooltipHeader = {  }
-												blockoverride "title_text" { text = "WPDO_RGO_TT_MAX_LEVEL_TITLE" }
-											}
+											blockoverride "tooltip_title" { ContextualTooltipHeader = {  } blockoverride "title_text" { text = "WPDO_RGO_TT_MAX_LEVEL_TITLE" } }
 											blockoverride "concept_link" { text = "[building|e]" }
 											lowpriotextcontext = "[BuildingType.GetMaxLevelInformation(Location.Self)]"
 										}
@@ -133,9 +131,7 @@ template sul_rgo_button_tooltip {
 								text_single = { raw_text = "WPDO_RGO_TT_COST" }
 								expand = {  }
 
-								text_single = {
-									raw_text = "[GetBuildOrExpandBuildingCost(BuildingType.Self, Location.Self)|2]@gold!"
-								}
+								text_single = { raw_text = "[GetBuildOrExpandBuildingCost(BuildingType.Self, Location.Self)|2]@gold!" }
 							}
 						}
 
@@ -154,9 +150,7 @@ template sul_rgo_button_tooltip {
 								text_single = { raw_text = "WPDO_RGO_TT_EMPLOYMENT" }
 								expand = {  }
 
-								text_single = {
-									raw_text = "[BuildingType.GetEmploymentSize] [PopType.GetName]"
-								}
+								text_single = { raw_text = "[BuildingType.GetEmploymentSize] [PopType.GetName]" }
 							}
 						}
 
@@ -176,9 +170,7 @@ template sul_rgo_button_tooltip {
 
 						# Production method
 						TooltipManualTableField = {
-							blockoverride "field_content" {
-								text_single = { raw_text = "[BuildingType.GetProductionMethodsLabel]" }
-							}
+							blockoverride "field_content" { text_single = { raw_text = "[BuildingType.GetProductionMethodsLabel]" } }
 						}
 
 						# Goods per level
@@ -187,9 +179,7 @@ template sul_rgo_button_tooltip {
 								text_single = { raw_text = "WPDO_RGO_TT_OUTPUT" }
 								expand = {  }
 
-								text_single = {
-									raw_text = "[Location.MakeScope.ScriptValue('sul_rgo_output_per_level')|2] [Goods.GetName]"
-								}
+								text_single = { raw_text = "[Location.MakeScope.ScriptValue('sul_rgo_output_per_level')|2] [Goods.GetName]" }
 							}
 						}
 
@@ -200,9 +190,7 @@ template sul_rgo_button_tooltip {
 			}
 
 			# --- Available employment ---
-			TooltipContentSection = {
-				using = construct_building_in_location_employment_info
-			}
+			TooltipContentSection = { using = construct_building_in_location_employment_info }
 
 			# --- Construction demand (goods required to build) ---
 			TooltipContentSection = {

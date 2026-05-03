@@ -15,19 +15,11 @@ REPLACE:create_market = {
 
 	price = {
 		if = {
-			limit = {
-				exists = scope:target
-				scope:target = { modifier:sul_is_rural_settlement_rank_tier = yes }
-			}
-
+			limit = { exists = scope:target scope:target = { modifier:sul_is_rural_settlement_rank_tier = yes } }
 			value = price:sul_designate_specialization_price_rural
 		}
 		else_if = {
-			limit = {
-				exists = scope:target
-				scope:target = { modifier:sul_is_town_rank_tier = yes }
-			}
-
+			limit = { exists = scope:target scope:target = { modifier:sul_is_town_rank_tier = yes } }
 			value = price:sul_designate_specialization_price_town
 		}
 		else = { value = price:sul_designate_specialization_price_city }
@@ -45,30 +37,19 @@ REPLACE:create_market = {
 		column = { data = population }
 		column = { data = left_click_and_confirm_cost }
 
-		visible = {
-			NOT = {
-				root = market.location
-			}
-		}
+		visible = { NOT = { root = market.location } }
 
 		enabled = {
 			is_ownable = yes
-			NOT = {
-				has_location_modifier = sul_recently_respecialized
-			}
+			NOT = { has_location_modifier = sul_recently_respecialized }
 			OR = {
 				owner = scope:actor
 				has_owned_buildings = scope:actor
-				AND = {
-					owner = { is_subject_of = scope:actor }
-					owner.subject_type = { overlord_can_build_markets = yes }
-				}
+				AND = { owner = { is_subject_of = scope:actor } owner.subject_type = { overlord_can_build_markets = yes } }
 			}
 
 			has_market_construction = no
-			NOT = {
-				market = { owner = { has_trade_treaty_with = scope:actor } }
-			}
+			NOT = { market = { owner = { has_trade_treaty_with = scope:actor } } }
 		}
 	}
 
@@ -76,9 +57,7 @@ REPLACE:create_market = {
 		if = {
 			limit = { exists = scope:target }
 
-			scope:target = {
-				market = { location = { save_scope_as = old_location } }
-			}
+			scope:target = { market = { location = { save_scope_as = old_location } } }
 
 			create_market = {
 				builder = scope:actor
@@ -90,20 +69,13 @@ REPLACE:create_market = {
 
 			scope:target = { sul_specialization_switch_to_commercial = yes }
 		}
-
 		if = {
 			limit = { scope:actor = { is_human = yes } ironman = yes }
-
-			scope:actor = {
-				set_variable = { name = unlock_achievement_its_just_business months = 1 }
-			}
+			scope:actor = { set_variable = { name = unlock_achievement_its_just_business months = 1 } }
 		}
 	}
 
 	ai_will_do = {
-		if = {
-			limit = { exists = scope:target }
-			add = "scope:actor.create_market_utility(scope:target)"
-		}
+		if = { limit = { exists = scope:target } add = "scope:actor.create_market_utility(scope:target)" }
 	}
 }

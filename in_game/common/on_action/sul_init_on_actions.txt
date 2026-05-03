@@ -1,6 +1,7 @@
 ﻿
 sul_set_unowned_development = {
 	effect = {
+		debug_log = "SUL_TRACE: set_unowned_development ENTER"
 		every_location_in_the_world = {
 			limit = { is_ownable = yes has_owner = no }
 
@@ -17,12 +18,10 @@ sul_set_unowned_development = {
 
 sul_initialize_all = {
 	effect = {
+		debug_log = "SUL_TRACE: initialize_all ENTER"
 		sul_specialization_full_rebuild = yes
 
-		set_global_variable = {
-			name = sul_version
-			value = sul_specialization_version_value
-		}
+		set_global_variable = { name = sul_version value = sul_specialization_version_value }
 	}
 }
 
@@ -31,21 +30,13 @@ sul_initialize_all = {
 
 sul_version_check = {
 	trigger = {
-		OR = {
-			NOT = {
-				has_global_variable = sul_version
-			}
-
-			global_var:sul_version < sul_specialization_version_value
-		}
+		OR = { NOT = { has_global_variable = sul_version } global_var:sul_version < sul_specialization_version_value }
 	}
 
 	effect = {
+		debug_log = "SUL_TRACE: version_check ENTER"
 		sul_specialization_full_rebuild = yes
 
-		set_global_variable = {
-			name = sul_version
-			value = sul_specialization_version_value
-		}
+		set_global_variable = { name = sul_version value = sul_specialization_version_value }
 	}
 }

@@ -7,12 +7,7 @@
 
 sul_minting_init_variable = {
 	if = {
-		limit = {
-			NOT = {
-				has_variable = $name$
-			}
-		}
-
+		limit = { NOT = { has_variable = $name$ } }
 		set_variable = { name = $name$ value = $value$ }
 	}
 }
@@ -22,7 +17,6 @@ sul_minting_init_variable = {
 sul_minting_check_minting_good = {
 	if = {
 		limit = { modifier:$good$_used_for_minting = yes }
-
 		add_to_variable_list = { name = sul_minting_goods target = goods:$good$ }
 	}
 }
@@ -32,7 +26,11 @@ sul_minting_check_minting_good = {
 sul_minting_adjust_currency = {
 	change_variable = { name = sul_minting_$type$_level add = $delta$ }
 
-	clamp_variable = { name = sul_minting_$type$_level min = 0 max = 2.0 }
+	clamp_variable = {
+		name = sul_minting_$type$_level
+		min = 0
+		max = 2.0
+	}
 
 	set_variable = { name = sul_minting_$other$_level value = 0 }
 }
@@ -142,20 +140,11 @@ sul_minting_rebuild_minting_goods = {
 		variable = sul_minting_goods
 
 		change_local_variable = { name = sul_minting_tmp_count add = 1 }
-		change_local_variable = {
-			name = sul_minting_tmp_target
-			add = "default_price(this)"
-		}
+		change_local_variable = { name = sul_minting_tmp_target add = "default_price(this)" }
 	}
 
-	set_variable = {
-		name = sul_minting_goods_count
-		value = local_var:sul_minting_tmp_count
-	}
-	set_variable = {
-		name = sul_minting_target_value
-		value = local_var:sul_minting_tmp_target
-	}
+	set_variable = { name = sul_minting_goods_count value = local_var:sul_minting_tmp_count }
+	set_variable = { name = sul_minting_target_value value = local_var:sul_minting_tmp_target }
 }
 
 # Resolves and caches the market center location reference on the country
@@ -163,50 +152,35 @@ sul_minting_rebuild_minting_goods = {
 # random_location_in_market searches at runtime.
 
 sul_minting_cache_market_center = {
-	capital ?= {
-		market ?= { location = { save_scope_as = sul_minting_mc_ref } }
-	}
+	capital ?= { market ?= { location = { save_scope_as = sul_minting_mc_ref } } }
 
-	set_variable = {
-		name = sul_minting_market_center
-		value = scope:sul_minting_mc_ref
-	}
+	set_variable = { name = sul_minting_market_center value = scope:sul_minting_mc_ref }
 }
 
 # ---- Price Cache Update ----
-# Reads per-good prices from the shared sul_market_prices variable map
-# (populated by sul_passthrough_apply in the weather pulse).
-# Sums the cost of one unit of each good in sul_minting_goods, then
-# recomputes E and real E from the result.
+# Sums the market price of each good in sul_minting_goods (~2 goods),
+# then recomputes E and real E from the result.
 # Scope: country (requires cached market center location)
 
 sul_minting_update_price_cache = {
-	var:sul_minting_market_center = { save_temporary_scope_as = sul_minting_mc }
+	var:sul_minting_market_center = {
+		save_temporary_scope_as = sul_minting_mc
+		market = { save_temporary_scope_as = sul_minting_mkt }
+	}
 
 	set_local_variable = { name = sul_minting_tmp_mc value = 0 }
 
-	if = {
-		limit = { scope:sul_minting_mc = { has_variable_map = sul_market_prices } }
+	every_in_list = {
+		variable = sul_minting_goods
+		save_temporary_scope_as = sul_minting_current_good
 
-		every_in_list = {
-			variable = sul_minting_goods
-
-			scope:sul_minting_mc = {
-				change_local_variable = {
-					name = sul_minting_tmp_mc
-					add = "variable_map(sul_market_prices|prev)"
-				}
-			}
+		change_local_variable = {
+			name = sul_minting_tmp_mc
+			add = "scope:sul_minting_current_good.price_in_market(scope:sul_minting_mkt)"
 		}
 	}
 
-	set_variable = {
-		name = sul_minting_market_cost
-		value = local_var:sul_minting_tmp_mc
-	}
+	set_variable = { name = sul_minting_market_cost value = local_var:sul_minting_tmp_mc }
 
-	set_variable = {
-		name = sul_minting_efficiency
-		value = sul_minting_efficiency_from_cached_cost
-	}
+	set_variable = { name = sul_minting_efficiency value = sul_minting_efficiency_from_cached_cost }
 }

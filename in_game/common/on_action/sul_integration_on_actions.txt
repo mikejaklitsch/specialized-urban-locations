@@ -1,6 +1,7 @@
 ﻿
 sul_integration_on_game_start = {
 	effect = {
+		debug_log = "SUL_TRACE: integration_on_game_start ENTER"
 		sul_integration_initialize = yes
 	}
 }
@@ -11,15 +12,13 @@ sul_integration_on_game_start = {
 sul_integration_init_check = {
 	trigger = {
 		OR = {
-			NOT = {
-				has_global_variable = sul_integration_version
-			}
-
+			NOT = { has_global_variable = sul_integration_version }
 			global_var:sul_integration_version < sul_integration_version_value
 		}
 	}
 
 	effect = {
+		debug_log = "SUL_TRACE: integration_init_check ENTER"
 		sul_integration_initialize = yes
 	}
 }
@@ -28,6 +27,7 @@ sul_integration_on_location_conquered = {
 	trigger = { integration_level = conquered }
 
 	effect = {
+		debug_log = "SUL_TRACE: integration_on_location_conquered ENTER"
 		sul_integration_track_location = yes
 		sul_integration_apply_capacity_bonus = yes
 	}
@@ -40,24 +40,18 @@ sul_integration_on_location_conquered = {
 
 sul_integration_monthly_update = {
 	effect = {
+		debug_log = "SUL_TRACE: integration_monthly_update ENTER"
 		# Pass 1: update or tag for removal.
 		# Avoids mutating the conquered list during iteration.
 		every_in_global_list = {
 			variable = sul_integration_conquered_locations
 
 			if = {
-				limit = {
-					NOT = {
-						integration_level = conquered
-					}
-				}
+				limit = { NOT = { integration_level = conquered } }
 
 				remove_location_modifier = sul_integration_capacity_bonus
 
-				add_to_global_variable_list = {
-					name = sul_integration_remove_queue
-					target = this
-				}
+				add_to_global_variable_list = { name = sul_integration_remove_queue target = this }
 			}
 			else = { sul_integration_apply_capacity_bonus = yes }
 		}
@@ -65,11 +59,7 @@ sul_integration_monthly_update = {
 		# Pass 2: drain the removal queue.
 		every_in_global_list = {
 			variable = sul_integration_remove_queue
-
-			remove_list_global_variable = {
-				name = sul_integration_conquered_locations
-				target = this
-			}
+			remove_list_global_variable = { name = sul_integration_conquered_locations target = this }
 		}
 
 		clear_global_variable_list = sul_integration_remove_queue

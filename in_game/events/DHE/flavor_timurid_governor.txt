@@ -24,10 +24,7 @@ flavor_tim_governor.1 = {
 
 		ruler_or_regent ?= { save_scope_as = target_character }
 
-		overlord ?= {
-			save_scope_as = target_country
-			ruler_or_regent ?= { save_scope_as = target_character2 }
-		}
+		overlord ?= { save_scope_as = target_country ruler_or_regent ?= { save_scope_as = target_character2 } }
 
 		previous_ruler ?= { save_scope_as = target_character3 }
 
@@ -38,17 +35,13 @@ flavor_tim_governor.1 = {
 
 	option = {
 		name = flavor_tim_governor.1.a
-
 		overlord ?= { annex_country = { country = root } }
 	}
 
 	option = { # Banished Governor
 		name = flavor_tim_governor.1.b
 
-		trigger = {
-			has_reform = government_reform:soyurghal_governor_banished_reform
-			ruler != overlord.ruler
-		}
+		trigger = { has_reform = government_reform:soyurghal_governor_banished_reform ruler != overlord.ruler }
 
 		overlord ?= { trigger_event_non_silently = { id = flavor_tim_governor.2 } }
 	}
@@ -61,11 +54,7 @@ flavor_tim_governor.2 = {
 	title = flavor_tim_governor.2.title
 	desc = flavor_tim_governor.2.desc
 
-	option = {
-		name = flavor_tim_governor.2.a
-
-		annex_country = { country = scope:prev_country }
-	}
+	option = { name = flavor_tim_governor.2.a annex_country = { country = scope:prev_country } }
 
 	option = {
 		name = flavor_tim_governor.2.b
@@ -82,14 +71,8 @@ flavor_tim_governor.3 = {
 
 	desc = {
 		first_valid = {
-			triggered_desc = {
-				trigger = { exists = scope:target_character3 }
-				desc = flavor_tim_governor.3.desc.a
-			}
-			triggered_desc = {
-				trigger = { always = yes }
-				desc = flavor_tim_governor.3.desc.b
-			}
+			triggered_desc = { trigger = { exists = scope:target_character3 } desc = flavor_tim_governor.3.desc.a }
+			triggered_desc = { trigger = { always = yes } desc = flavor_tim_governor.3.desc.b }
 		}
 	}
 
@@ -123,11 +106,8 @@ flavor_tim_governor.3 = {
 					in_cabinet = no
 					is_adult = yes
 					is_legally_male = yes
-					NOT = {
-						dynasty ?= scope:target_character.dynasty
-					}
+					NOT = { dynasty ?= scope:target_character.dynasty }
 				}
-
 				save_scope_as = target_character3
 			}
 		}
@@ -137,10 +117,7 @@ flavor_tim_governor.3 = {
 		name = flavor_tim_governor.3.a
 
 		show_as_tooltip = {
-			scope:target_country = {
-				transfer_yearly_manpower = { target = root value = 1.5 }
-			}
-
+			scope:target_country = { transfer_yearly_manpower = { target = root value = 1.5 } }
 			add_liberty_desire = -20
 		}
 
@@ -157,7 +134,6 @@ flavor_tim_governor.3 = {
 
 		show_as_tooltip = {
 			scope:target_country = { transfer_yearly_gold = { target = root value = 1.5 } }
-
 			add_liberty_desire = -20
 		}
 
@@ -174,10 +150,7 @@ flavor_tim_governor.3 = {
 
 		trigger = { exists = scope:target_character3 }
 
-		show_as_tooltip = {
-			scope:target_character3 = { move_country = root }
-			add_liberty_desire = -20
-		}
+		show_as_tooltip = { scope:target_character3 = { move_country = root } add_liberty_desire = -20 }
 
 		set_variable = timurid_governor_demand_character
 
@@ -187,11 +160,7 @@ flavor_tim_governor.3 = {
 		}
 	}
 
-	option = {
-		name = flavor_tim_governor.3.d
-
-		custom_tooltip = timurid_governor_no_demand_tt
-	}
+	option = { name = flavor_tim_governor.3.d custom_tooltip = timurid_governor_no_demand_tt }
 }
 
 flavor_tim_governor.4 = {
@@ -211,9 +180,7 @@ flavor_tim_governor.4 = {
 	option = {
 		name = flavor_tim_governor.4.a
 
-		trigger = {
-			scope:prev_country ?= { has_variable = timurid_governor_demand_manpower }
-		}
+		trigger = { scope:prev_country ?= { has_variable = timurid_governor_demand_manpower } }
 
 		transfer_yearly_manpower = { target = scope:prev_country value = 1.5 }
 
@@ -223,9 +190,7 @@ flavor_tim_governor.4 = {
 	option = {
 		name = flavor_tim_governor.4.b
 
-		trigger = {
-			scope:prev_country ?= { has_variable = timurid_governor_demand_gold }
-		}
+		trigger = { scope:prev_country ?= { has_variable = timurid_governor_demand_gold } }
 
 		transfer_yearly_gold = { target = scope:prev_country value = 1.5 }
 
@@ -235,19 +200,13 @@ flavor_tim_governor.4 = {
 	option = {
 		name = flavor_tim_governor.4.c
 
-		trigger = {
-			scope:prev_country ?= { has_variable = timurid_governor_demand_character }
-		}
+		trigger = { scope:prev_country ?= { has_variable = timurid_governor_demand_character } }
 
 		scope:target_character3 = { move_country = scope:prev_country }
 		scope:prev_country = { add_liberty_desire = -20 }
 	}
 
-	option = {
-		name = flavor_tim_governor.4.d
-
-		scope:prev_country = { add_liberty_desire = 5 }
-	}
+	option = { name = flavor_tim_governor.4.d scope:prev_country = { add_liberty_desire = 5 } }
 }
 
 # Advisor arrives in court
@@ -308,12 +267,15 @@ flavor_tim_governor.5 = {
 		name = flavor_tim_governor.5.b
 
 		ruler_or_heir_if_regent ?= {
-			random_list = { 33 = { add_adm = 5 } 33 = { add_dip = 5 } 33 = { add_mil = 5 } }
+			random_list = {
+				33 = { add_adm = 5 }
+				33 = { add_dip = 5 }
+				33 = { add_mil = 5 }
+			}
 		}
 
 		scope:target_character = {
 			move_country = root
-
 			add_character_modifier = {
 				mode = add_and_extend
 				modifier = refuses_to_serve_in_cabinet
@@ -356,11 +318,7 @@ flavor_tim_governor.5 = {
 	}
 
 	# Exile them
-	option = {
-		name = flavor_tim_governor.5.e
-
-		scope:target_character = { banish_character = yes }
-	}
+	option = { name = flavor_tim_governor.5.e scope:target_character = { banish_character = yes } }
 }
 
 #################
@@ -372,10 +330,7 @@ flavor_tim_governor.6 = {
 	title = flavor_tim_governor.6.title
 	desc = flavor_tim_governor.6.desc
 
-	trigger = {
-		has_ruler = yes
-		has_reform = government_reform:soyurghal_governor_reform
-	}
+	trigger = { has_ruler = yes has_reform = government_reform:soyurghal_governor_reform }
 
 	illustration_tags = { 10 = regular 10 = interior }
 
@@ -397,12 +352,8 @@ flavor_tim_governor.6 = {
 
 		custom_tooltip = {
 			text = timurid_governor_increase_development_in_area_tt
-
 			scope:target_area = {
-				every_location_in_area = {
-					limit = { owner ?= root }
-					change_development = development_weak_bonus
-				}
+				every_location_in_area = { limit = { owner ?= root } change_development = development_weak_bonus }
 			}
 		}
 
@@ -411,11 +362,7 @@ flavor_tim_governor.6 = {
 		}
 	}
 
-	option = {
-		name = flavor_tim_governor.6.b
-
-		scope:target_character = { add_adm = 3 }
-	}
+	option = { name = flavor_tim_governor.6.b scope:target_character = { add_adm = 3 } }
 }
 
 flavor_tim_governor.7 = {
@@ -423,10 +370,7 @@ flavor_tim_governor.7 = {
 	title = flavor_tim_governor.7.title
 	desc = flavor_tim_governor.7.desc
 
-	trigger = {
-		has_ruler = yes
-		has_reform = government_reform:soyurghal_governor_reform
-	}
+	trigger = { has_ruler = yes has_reform = government_reform:soyurghal_governor_reform }
 
 	illustration_tags = { 10 = regular 10 = interior }
 
@@ -443,15 +387,10 @@ flavor_tim_governor.7 = {
 
 	option = {
 		name = flavor_tim_governor.7.a
-
 		custom_tooltip = {
 			text = timurid_governor_decrease_development_in_area_tt
-
 			scope:target_area = {
-				every_location_in_area = {
-					limit = { owner ?= root }
-					change_development = development_weak_penalty
-				}
+				every_location_in_area = { limit = { owner ?= root } change_development = development_weak_penalty }
 			}
 		}
 	}
@@ -476,10 +415,7 @@ flavor_tim_governor.8 = {
 	title = flavor_tim_governor.8.title
 	desc = flavor_tim_governor.8.desc
 
-	trigger = {
-		has_ruler = yes
-		has_reform = government_reform:soyurghal_governor_banished_reform
-	}
+	trigger = { has_ruler = yes has_reform = government_reform:soyurghal_governor_banished_reform }
 
 	illustration_tags = { 10 = armed 10 = exterior }
 
@@ -501,10 +437,7 @@ flavor_tim_governor.8 = {
 
 		add_army_tradition = army_tradition_mild_bonus
 
-		change_societal_value = {
-			type = quality_vs_quantity
-			value = societal_value_minor_move_to_right
-		}
+		change_societal_value = { type = quality_vs_quantity value = societal_value_minor_move_to_right }
 
 		change_gold_effect = {
 			scale = -2
@@ -513,11 +446,7 @@ flavor_tim_governor.8 = {
 
 	option = {
 		name = flavor_tim_governor.8.b
-
-		change_societal_value = {
-			type = belligerent_vs_conciliatory
-			value = societal_value_minor_move_to_right
-		}
+		change_societal_value = { type = belligerent_vs_conciliatory value = societal_value_minor_move_to_right }
 	}
 }
 
@@ -526,10 +455,7 @@ flavor_tim_governor.9 = {
 	title = flavor_tim_governor.9.title
 	desc = flavor_tim_governor.9.desc
 
-	trigger = {
-		has_ruler = yes
-		has_reform = government_reform:soyurghal_governor_banished_reform
-	}
+	trigger = { has_ruler = yes has_reform = government_reform:soyurghal_governor_banished_reform }
 
 	illustration_tags = { 10 = armed 10 = exterior }
 
@@ -555,17 +481,13 @@ flavor_tim_governor.9 = {
 
 		ai_chance = {
 			base = 50
-
 			modifier = {
 				factor = 0
 				army_size_percentage < scope:target_country.army_size_percentage # Weaker governor should never rebel
 			}
 		}
 
-		declare_war_with_cb = {
-			target = scope:target_country
-			type = casus_belli:cb_claim_timurids
-		}
+		declare_war_with_cb = { target = scope:target_country type = casus_belli:cb_claim_timurids }
 	}
 
 	option = {
@@ -582,10 +504,7 @@ flavor_tim_governor.10 = {
 	title = flavor_tim_governor.10.title
 	desc = flavor_tim_governor.10.desc
 
-	trigger = {
-		has_ruler = yes
-		has_reform = government_reform:soyurghal_governor_banished_reform
-	}
+	trigger = { has_ruler = yes has_reform = government_reform:soyurghal_governor_banished_reform }
 
 	illustration_tags = { 10 = regular 10 = interior }
 
@@ -618,17 +537,9 @@ flavor_tim_governor.10 = {
 	option = {
 		name = flavor_tim_governor.10.a
 
-		add_opinion = {
-			modifier = tim_governor_welcomed_exiled_character
-			target = scope:target_country
-		}
+		add_opinion = { modifier = tim_governor_welcomed_exiled_character target = scope:target_country }
 
-		scope:target_country = {
-			add_opinion = {
-				modifier = tim_governor_welcomed_exiled_character
-				target = root
-			}
-		}
+		scope:target_country = { add_opinion = { modifier = tim_governor_welcomed_exiled_character target = root } }
 
 		scope:target_character2 = { move_country = root }
 
@@ -642,14 +553,9 @@ flavor_tim_governor.10 = {
 
 		kill_character = scope:target_character2
 
-		add_opinion = {
-			modifier = tim_governor_executed_traitor
-			target = scope:target_country
-		}
+		add_opinion = { modifier = tim_governor_executed_traitor target = scope:target_country }
 
-		scope:target_country = {
-			add_opinion = { modifier = tim_governor_executed_traitor target = root }
-		}
+		scope:target_country = { add_opinion = { modifier = tim_governor_executed_traitor target = root } }
 	}
 }
 
@@ -664,7 +570,6 @@ flavor_tim_governor.11 = {
 
 	trigger = {
 		has_reform = government_reform:soyurghal_governor_effective_governor_reform
-
 		ruler ?= { total_abilities > 125 }
 	}
 
@@ -683,29 +588,20 @@ flavor_tim_governor.11 = {
 
 	option = {
 		name = flavor_tim_governor.11.a
-
 		custom_tooltip = {
 			text = timurid_governor_increase_prosperity_and_satisfaction_tt
-
 			scope:target_area = {
 				every_location_in_area = {
 					limit = { owner ?= root }
 					change_prosperity = prosperity_weak_bonus
 
-					every_pop = {
-						limit = { owner = root }
-						add_pop_satisfaction = pop_satisfaction_mild_bonus
-					}
+					every_pop = { limit = { owner = root } add_pop_satisfaction = pop_satisfaction_mild_bonus }
 				}
 			}
 		}
 	}
 
-	option = {
-		name = flavor_tim_governor.11.b
-
-		add_stability = stability_extreme_bonus
-	}
+	option = { name = flavor_tim_governor.11.b add_stability = stability_extreme_bonus }
 }
 
 flavor_tim_governor.12 = {
@@ -715,7 +611,6 @@ flavor_tim_governor.12 = {
 
 	trigger = {
 		has_reform = government_reform:soyurghal_governor_effective_governor_reform
-
 		ruler ?= { total_abilities < 70 }
 	}
 
@@ -734,19 +629,14 @@ flavor_tim_governor.12 = {
 
 	option = {
 		name = flavor_tim_governor.12.a
-
 		custom_tooltip = {
 			text = timurid_governor_decrease_prosperity_and_satisfaction_in_area_tt
-
 			scope:target_area = {
 				every_location_in_area = {
 					limit = { owner ?= root }
 					change_prosperity = prosperity_weak_penalty
 
-					every_pop = {
-						limit = { owner = root }
-						add_pop_satisfaction = pop_satisfaction_mild_penalty
-					}
+					every_pop = { limit = { owner = root } add_pop_satisfaction = pop_satisfaction_mild_penalty }
 				}
 			}
 		}
@@ -785,12 +675,7 @@ flavor_tim_governor.13 = {
 		}
 
 		random_port_in_country = {
-			limit = {
-				NOT = {
-					modifier:sul_is_rural_settlement_rank_tier = yes
-				}
-			}
-
+			limit = { NOT = { modifier:sul_is_rural_settlement_rank_tier = yes } }
 			save_scope_as = target_location
 		}
 
@@ -800,15 +685,9 @@ flavor_tim_governor.13 = {
 	option = {
 		name = flavor_tim_governor.13.a
 
-		scope:target_location = {
-			change_development = development_mild_bonus
-			change_prosperity = prosperity_mild_bonus
-		}
+		scope:target_location = { change_development = development_mild_bonus change_prosperity = prosperity_mild_bonus }
 
-		change_societal_value = {
-			type = land_vs_naval
-			value = societal_value_minor_move_to_right
-		}
+		change_societal_value = { type = land_vs_naval value = societal_value_minor_move_to_right }
 	}
 
 	option = {
@@ -818,10 +697,7 @@ flavor_tim_governor.13 = {
 			scale = 2
 		}
 
-		change_societal_value = {
-			type = land_vs_naval
-			value = societal_value_minor_move_to_left
-		}
+		change_societal_value = { type = land_vs_naval value = societal_value_minor_move_to_left }
 	}
 }
 
@@ -835,12 +711,7 @@ flavor_tim_governor.14 = {
 
 		ruler ?= { mil >= 60 }
 
-		any_owned_location = {
-			count >= 1
-			NOT = {
-				has_building = building_type:castle
-			}
-		}
+		any_owned_location = { count >= 1 NOT = { has_building = building_type:castle } }
 	}
 
 	illustration_tags = { 10 = regular 10 = interior }
@@ -854,12 +725,7 @@ flavor_tim_governor.14 = {
 		ruler ?= { save_scope_as = target_character }
 
 		random_owned_location = {
-			limit = {
-				NOT = {
-					has_building = building_type:castle
-				}
-			}
-
+			limit = { NOT = { has_building = building_type:castle } }
 			save_scope_as = target_location
 		}
 	}
@@ -875,10 +741,7 @@ flavor_tim_governor.14 = {
 			}
 		}
 
-		change_societal_value = {
-			type = offensive_vs_defensive
-			value = societal_value_minor_move_to_right
-		}
+		change_societal_value = { type = offensive_vs_defensive value = societal_value_minor_move_to_right }
 	}
 
 	option = {
@@ -886,9 +749,6 @@ flavor_tim_governor.14 = {
 
 		add_army_tradition = army_tradition_mild_bonus
 
-		change_societal_value = {
-			type = offensive_vs_defensive
-			value = societal_value_move_to_left
-		}
+		change_societal_value = { type = offensive_vs_defensive value = societal_value_move_to_left }
 	}
 }

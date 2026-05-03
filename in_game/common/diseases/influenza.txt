@@ -9,17 +9,9 @@ influenza = {
 		random_ownable_location = {
 			limit = {
 				population > 1
-				OR = {
-					winter_level = normal
-					winter_level = severe
-				}
+				OR = { winter_level = normal winter_level = severe }
 				trigger_if = {
-					limit = {
-						situation:great_pestilence = {
-							situation_is_active = no
-							situation_has_ended = no
-						}
-					}
+					limit = { situation:great_pestilence = { situation_is_active = no situation_has_ended = no } }
 					OR = {
 						continent = continent:asia
 						continent = continent:europe
@@ -30,7 +22,6 @@ influenza = {
 
 				"disease_resistance(scope:disease)" < 0.5
 			}
-
 			spawn_disease = {
 				disease = scope:disease
 				value = 0.5
@@ -43,16 +34,12 @@ influenza = {
 
 	r0 = {
 		value = { 1 2 }
-		if = {
-			limit = {
-				OR = {
-					climate = continental
-					climate = cold_arid
-				}
-			}
 
+		if = {
+			limit = { OR = { climate = continental climate = cold_arid } }
 			multiply = 1.2
 		}
+
 		if = {
 			limit = {
 				OR = {
@@ -64,10 +51,14 @@ influenza = {
 					has_building_with_at_least_one_level = stock_exchange
 				}
 			}
-
 			multiply = 1.2
 		}
-		multiply = { value = "disease_presence(scope:disease)" multiply = 2 add = 1 }
+
+		multiply = {
+			value = "disease_presence(scope:disease)"
+			multiply = 2
+			add = 1
+		}
 	}
 
 	calc_interval_days = { 4 12 }
@@ -79,14 +70,13 @@ influenza = {
 			multiply = 0.003
 			multiply = 0.015
 		}
-		else = {
-			value = "distance_to_squared(scope:disease.origin)"
-			multiply = 0.0003
-		}
+		else = { value = "distance_to_squared(scope:disease.origin)" multiply = 0.0003 }
+
 		if = {
 			limit = { "disease_resistance(scope:disease)" > 0.8 }
 			add = { value = "disease_resistance(scope:disease)" subtract = 0.6 }
 		}
+
 		if = { limit = { "disease_resistance(scope:disease)" > 0.95 } add = 0.15 }
 	}
 
@@ -96,17 +86,24 @@ influenza = {
 
 	mortality_rate = { 0.03 0.05 }
 
-	character_mortality_chance = {
-		value = 0.05
-		multiply = "disease_presence(scope:disease)"
-	}
+	character_mortality_chance = { value = 0.05 multiply = "disease_presence(scope:disease)" }
 
 	on_spread_to_country = {  }
 
 	map_color = {
 		lerp = {
-			min_color = rgb { 150 177 188 }
-			max_color = rgb { 2 113 141 }
+			min_color = rgb {
+				150
+				177
+				188
+			}
+
+			max_color = rgb {
+				2
+				113
+				141
+			}
+
 			factor = "disease_presence(scope:disease)"
 		}
 	}
@@ -114,7 +111,11 @@ influenza = {
 	secondary_map_color = {
 		if = {
 			limit = { disease_affects_pops_here = scope:disease }
-			value = rgb { 100 120 188 }
+			value = rgb {
+				100
+				120
+				188
+			}
 		}
 	}
 }

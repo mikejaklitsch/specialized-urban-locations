@@ -31,12 +31,7 @@ sul_epbm_rebuild_location_lists = {
 
 		save_temporary_scope_as = sul_epbm_loc
 
-		prev = {
-			add_to_variable_list = {
-				name = sul_epbm_locations
-				target = scope:sul_epbm_loc
-			}
-		}
+		prev = { add_to_variable_list = { name = sul_epbm_locations target = scope:sul_epbm_loc } }
 	}
 }
 
@@ -45,10 +40,7 @@ sul_epbm_rebuild_location_lists = {
 # Scope: country
 
 sul_epbm_structural_rebuild = {
-	every_owned_location = {
-		clear_variable_list = sul_epbm_buildings
-		sul_epbm_initialize_location = yes
-	}
+	every_owned_location = { clear_variable_list = sul_epbm_buildings sul_epbm_initialize_location = yes }
 
 	sul_epbm_rebuild_location_lists = yes
 }
@@ -67,10 +59,7 @@ sul_epbm_full_rebuild = {
 	}
 
 	every_country = {
-		limit = {
-			is_real_country = yes
-			any_estate = { estate_type != estate_type:crown_estate }
-		}
+		limit = { is_real_country = yes any_estate = { estate_type != estate_type:crown_estate } }
 
 		sul_epbm_rebuild_location_lists = yes
 		sul_epbm_calculate_maintenance = yes
@@ -83,15 +72,18 @@ sul_epbm_full_rebuild = {
 			set_variable = { name = sul_epbm_pay_burghers value = 0 }
 			set_variable = { name = sul_epbm_pay_peasants value = 0 }
 			set_variable = { name = sul_epbm_pay_tribes value = 0 }
+
 			if = {
 				limit = { country_has_estate = estate_type:dhimmi_estate }
 				set_variable = { name = sul_epbm_pay_dhimmi value = 0 }
 			}
+
 			if = {
 				limit = { country_has_estate = estate_type:cossacks_estate }
 				set_variable = { name = sul_epbm_pay_cossacks value = 0 }
 			}
 		}
+
 		set_variable = { name = sul_epbm_rebuild_counter value = 0 }
 	}
 
@@ -110,18 +102,9 @@ sul_epbm_on_building_built = {
 	owner ?= {
 		if = {
 			limit = {
-				NOT = {
-					is_target_in_variable_list = {
-						name = sul_epbm_locations
-						target = scope:sul_epbm_loc
-					}
-				}
+				NOT = { is_target_in_variable_list = { name = sul_epbm_locations target = scope:sul_epbm_loc } }
 			}
-
-			add_to_variable_list = {
-				name = sul_epbm_locations
-				target = scope:sul_epbm_loc
-			}
+			add_to_variable_list = { name = sul_epbm_locations target = scope:sul_epbm_loc }
 		}
 	}
 }
@@ -132,20 +115,11 @@ sul_epbm_on_building_built = {
 sul_epbm_on_building_destroyed = {
 	location = {
 		if = {
-			limit = {
-				NOT = {
-					has_variable_list = sul_epbm_buildings
-				}
-			}
+			limit = { NOT = { has_variable_list = sul_epbm_buildings } }
 
 			save_temporary_scope_as = sul_epbm_loc
 
-			owner ?= {
-				remove_list_variable = {
-					name = sul_epbm_locations
-					target = scope:sul_epbm_loc
-				}
-			}
+			owner ?= { remove_list_variable = { name = sul_epbm_locations target = scope:sul_epbm_loc } }
 		}
 	}
 }

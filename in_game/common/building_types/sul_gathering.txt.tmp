@@ -1,0 +1,852 @@
+# Gathering specialization gates — REPLACE with full vanilla definitions + SUL gates
+
+# @sul-diff: ~~~+++ 4648
+
+# @sul-diff: ~~+++ f0fc
+
+# @sul-diff: ~~+++ f0fc
+
+# @sul-diff: ~~+++ f0fc
+
+REPLACE:clay_pit = {
+	icon = sul_rgo_clay # PLACEHOLDER ICON TODO
+	is_foreign = no
+	max_levels = sul_extraction_max_level
+	pop_type = laborers
+
+	employment_size = rural_peasant_produce_employment
+
+	gathering_rural = yes
+	gathering_town = yes
+	gathering_city = yes
+
+	location_potential = {
+		OR = {
+			is_coastal = yes
+			has_river = yes
+			is_adjacent_to_lake = yes
+		}
+		NOT = {
+			raw_material = goods:clay
+		}
+	}
+
+	category = rgo_building_category
+
+	unique_production_methods = {
+		sul_clay_pit_maintenance = {
+			produced = clay
+			output = 1
+			lumber = 0.28
+			category = building_maintenance
+		}
+	}
+
+	build_time = rural_build_time
+	construction_demand = basic_construction_needs
+
+	modifier = {
+		local_clay_output_modifier = 0.005
+		sul_is_extraction_building = yes
+		local_monthly_development = -0.01
+		sul_extraction_size = 1
+		local_population_growth = 0.00015
+	}
+}
+
+# @sul-diff: ~~~~++ 4648
+
+# @sul-diff: ~~~++ f0fc
+
+# @sul-diff: ~~~++ f0fc
+
+# @sul-diff: ~~~++ f0fc
+
+REPLACE:salt_collector = {
+	icon = sul_rgo_salt # PLACEHOLDER ICON TODO
+	is_foreign = no
+	pop_type = laborers
+	max_levels = sul_extraction_max_level
+
+	employment_size = rural_peasant_produce_employment
+
+	category = rgo_building_category
+
+	gathering_rural = yes
+	gathering_town = yes
+	gathering_city = yes
+
+	location_potential = {
+		OR = {
+			vegetation = desert
+			is_coastal = yes
+		}
+	}
+
+	unique_production_methods = {
+		sul_salt_collector_maintenance = {
+			produced = salt
+			output = 0.3
+
+			clay = 2.0
+			category = building_maintenance
+		}
+	}
+
+	modifier = {
+		local_salt_output_modifier = 0.005
+		sul_is_extraction_building = yes
+		local_monthly_development = -0.01
+		sul_extraction_size = 1
+		local_population_growth = 0.00015
+	}
+
+	build_time = rural_build_time
+
+	construction_demand = farm_constructions
+}
+
+# @sul-diff: ~~~+++ 4648
+
+# @sul-diff: ~~+++ f0fc
+
+# @sul-diff: ~~+++ f0fc
+
+# @sul-diff: ~~+++ f0fc
+
+REPLACE:sand_pit = {
+	icon = sul_rgo_sand # PLACEHOLDER ICON TODO
+	is_foreign = no
+	max_levels = sul_extraction_max_level
+	pop_type = laborers
+
+	employment_size = rural_peasant_produce_employment
+
+	gathering_rural = yes
+	gathering_town = yes
+	gathering_city = yes
+
+	location_potential = {
+		NOT = {
+			raw_material = goods:sand
+		}
+	}
+
+	category = rgo_building_category
+
+	build_time = rural_build_time
+
+	unique_production_methods = {
+		sul_sand_pit_maintenance = {
+			tools = 0.06
+			lumber = 0.15
+			category = building_maintenance
+
+			produced = sand
+			output = 1
+		}
+	}
+
+	construction_demand = basic_construction_needs
+
+	modifier = {
+		local_sand_output_modifier = 0.005
+		sul_is_extraction_building = yes
+		local_monthly_development = -0.01
+		sul_extraction_size = 1
+		local_population_growth = 0.00015
+	}
+}
+
+# @sul-diff: ~~~~+ 8cd9
+
+# @sul-diff: ~~~~+ 8cd9
+
+# @sul-diff: ~~~~+ 8cd9
+
+# @sul-diff: ~~~~+ 8cd9
+
+REPLACE:glass_guild = {
+	is_foreign = no
+	pop_type = burghers
+	max_levels = sul_production_max_level
+
+	category = basic_industry_category
+
+	employment_size = guild_employment
+
+	mining_town = yes
+	mining_city = yes
+	farming_town = yes
+	farming_city = yes
+	gathering_town = yes
+	gathering_city = yes
+	woodland_town = yes
+	woodland_city = yes
+	commercial_town = yes
+	commercial_city = yes
+
+	location_potential = {
+		is_produced_in_location_market = goods:sand
+		OR = {
+			modifier:sul_allows_glass_production = yes
+		}
+	}
+
+	build_time = guild_build_time
+
+	unique_production_methods = {
+		sul_glass_guild_maintenance = {
+			lumber = 0.1
+			sand = 1.0
+			tools = 0.2
+			produced = glass
+			output = 0.75
+
+			category = guild_input
+		}
+
+		sul_metal_glass_guild_maintenance = {
+			lumber = 0.15
+			sand = 1.0
+			tools = 0.2
+			alum = 0.02
+			lead = 0.04
+			produced = glass
+			output = 1
+
+			debug_max_profit = 0.4
+
+			category = guild_input
+		}
+	}
+
+	construction_demand = guild_construction
+
+	modifier = {
+		local_glass_output_modifier = 0.005
+		sul_is_production_building = yes
+		local_monthly_development = 0.01
+		sul_production_size = 1
+	}
+
+	custom_tags = { guild }
+}
+
+# @sul-diff: ~~~~~+ 5200
+
+# @sul-diff: ~~~~+ 3926
+
+# @sul-diff: ~~~~+ 3926
+
+# @sul-diff: ~~~~+ 3926
+
+REPLACE:sheep_farms = {
+	icon = sul_rgo_wool # PLACEHOLDER ICON TODO
+	is_foreign = no
+	pop_type = peasants
+	max_levels = sul_extraction_max_level
+
+	employment_size = rural_peasant_produce_employment
+
+	category = rgo_building_category
+
+	gathering_rural = yes
+
+	location_potential = {
+		OR = {
+			vegetation = sparse
+			vegetation = farmland
+			vegetation = grasslands
+		}
+	}
+
+	unique_production_methods = {
+		sul_sheep_farm_maintenance = {
+			produced = wool
+			output = 0.5
+
+			lumber = 0.2
+			tools = 0.08
+			category = building_maintenance
+		}
+	}
+
+	modifier = {
+		sul_is_extraction_building = yes
+		local_monthly_development = -0.01
+		sul_extraction_size = 1
+		local_population_growth = 0.00015
+	}
+
+	build_time = rural_build_time
+
+	construction_demand = farm_constructions
+}
+
+# @sul-diff: ~~~++ 8cd9
+
+# @sul-diff: ~~~++ 8cd9
+
+# @sul-diff: ~~~++ 8cd9
+
+# @sul-diff: ~~~++ 8cd9
+
+REPLACE:saltpeter_guild = {
+	is_foreign = no
+	pop_type = burghers
+	max_levels = sul_extraction_max_level
+
+	category = basic_industry_category
+
+	employment_size = guild_employment
+
+	mining_town = yes
+	mining_city = yes
+	farming_town = yes
+	farming_city = yes
+	gathering_town = yes
+	gathering_city = yes
+	woodland_town = yes
+	woodland_city = yes
+	commercial_town = yes
+	commercial_city = yes
+
+	build_time = guild_build_time
+
+	location_potential = {
+		market ?= {
+			is_produced_in_market = goods:livestock
+			is_produced_in_market = goods:clay
+		}
+		OR = {
+			modifier:sul_allows_saltpeter_production = yes
+		}
+	}
+
+	unique_production_methods = {
+		sul_saltpeter_guild_demands = {
+			pottery = 0.2
+			livestock = 1.0
+			produced = saltpeter
+			output = 1
+			category = guild_input
+		}
+	}
+
+	custom_tags = { guild }
+
+	construction_demand = guild_construction
+
+	modifier = {
+		local_saltpeter_output_modifier = 0.005
+		sul_is_extraction_building = yes
+		local_monthly_development = -0.01
+		sul_extraction_size = 1
+		local_population_growth = 0.00015
+	}
+}
+
+# @sul-diff: ~~+++ 8cd9
+
+# @sul-diff: ~~+++ 8cd9
+
+# @sul-diff: ~~+++ 8cd9
+
+# @sul-diff: ~~+++ 8cd9
+
+REPLACE:glass_workshop = {
+	is_foreign = no
+	pop_type = burghers
+	max_levels = sul_production_max_level
+
+	category = basic_industry_category
+
+	employment_size = workshop_employment
+
+	mining_town = yes
+	mining_city = yes
+	farming_town = yes
+	farming_city = yes
+	gathering_town = yes
+	gathering_city = yes
+	woodland_town = yes
+	woodland_city = yes
+	commercial_town = yes
+	commercial_city = yes
+
+	location_potential = {
+		OR = {
+			modifier:sul_allows_glass_production = yes
+		}
+	}
+
+	build_time = workshop_build_time
+
+	unique_production_methods = {
+		sul_metal_glass_workshop_maintenance = {
+			lumber = 0.15
+			sand = 1.0
+			tools = 0.2
+			alum = 0.02
+			lead = 0.04
+			produced = glass
+			output = 1.1
+
+			debug_max_profit = 0.6
+
+			category = workshop_input
+		}
+	}
+
+	construction_demand = workshop_construction
+
+	custom_tags = { workshop }
+
+	obsolete = glass_guild
+
+	modifier = {
+		local_glass_output_modifier = 0.005
+		sul_is_production_building = yes
+		local_monthly_development = 0.01
+		sul_production_size = 1
+	}
+}
+
+INJECT:glassworks = {
+
+	location_potential = {
+		OR = {
+			modifier:sul_allows_glass_production = yes
+		}
+	}
+
+	max_levels = sul_production_max_level
+
+	modifier = {
+		local_glass_output_modifier = 0.005
+		sul_is_production_building = yes
+		local_monthly_development = 0.01
+		sul_production_size = 1
+	}
+
+	city = no
+	town = no
+	rural_settlement = no
+
+	gathering_city = yes
+	gathering_town = yes
+}
+
+INJECT:glass_mill = {
+	pop_type = burghers
+
+	location_potential = {
+		OR = {
+			modifier:sul_allows_glass_production = yes
+		}
+	}
+
+	max_levels = sul_production_max_level
+
+	modifier = {
+		local_glass_output_modifier = 0.005
+		sul_is_production_building = yes
+		local_monthly_development = 0.01
+		sul_production_size = 1
+	}
+
+	city = no
+	town = no
+	rural_settlement = no
+
+	gathering_city = yes
+	gathering_town = yes
+}
+
+INJECT:porcelain_guild = {
+
+	location_potential = {
+		OR = {
+			modifier:sul_allows_porcelain_production = yes
+		}
+	}
+
+	max_levels = sul_production_max_level
+
+	modifier = {
+		local_porcelain_output_modifier = 0.005
+		sul_is_production_building = yes
+		local_monthly_development = 0.01
+		sul_production_size = 1
+	}
+
+	city = no
+	town = no
+	rural_settlement = no
+
+	gathering_city = yes
+	gathering_town = yes
+}
+
+INJECT:porcelain_manufactory = {
+
+	location_potential = {
+		OR = {
+			modifier:sul_allows_porcelain_production = yes
+		}
+	}
+
+	max_levels = sul_production_max_level
+
+	modifier = {
+		local_porcelain_output_modifier = 0.005
+		sul_is_production_building = yes
+		local_monthly_development = 0.01
+		sul_production_size = 1
+	}
+
+	city = no
+	town = no
+	rural_settlement = no
+
+	gathering_city = yes
+	gathering_town = yes
+}
+
+INJECT:pottery_guild = {
+
+	location_potential = {
+		OR = {
+			modifier:sul_allows_pottery_production = yes
+		}
+	}
+
+	max_levels = sul_production_max_level
+
+	modifier = {
+		local_pottery_output_modifier = 0.005
+		sul_is_production_building = yes
+		local_monthly_development = 0.01
+		sul_production_size = 1
+	}
+
+	city = no
+	town = no
+	rural_settlement = no
+
+	gathering_city = yes
+	gathering_town = yes
+}
+
+INJECT:pottery_workshop = {
+
+	location_potential = {
+		OR = {
+			modifier:sul_allows_pottery_production = yes
+		}
+	}
+
+	max_levels = sul_production_max_level
+
+	modifier = {
+		local_pottery_output_modifier = 0.005
+		sul_is_production_building = yes
+		local_monthly_development = 0.01
+		sul_production_size = 1
+	}
+
+	city = no
+	town = no
+	rural_settlement = no
+
+	gathering_city = yes
+	gathering_town = yes
+}
+
+INJECT:pottery_manufactory = {
+
+	location_potential = {
+		OR = {
+			modifier:sul_allows_pottery_production = yes
+		}
+	}
+
+	max_levels = sul_production_max_level
+
+	modifier = {
+		local_pottery_output_modifier = 0.005
+		sul_is_production_building = yes
+		local_monthly_development = 0.01
+		sul_production_size = 1
+	}
+
+	city = no
+	town = no
+	rural_settlement = no
+
+	gathering_city = yes
+	gathering_town = yes
+}
+
+INJECT:pottery_mill = {
+	pop_type = burghers
+
+	location_potential = {
+		OR = {
+			modifier:sul_allows_pottery_production = yes
+		}
+	}
+
+	max_levels = sul_production_max_level
+
+	modifier = {
+		local_pottery_output_modifier = 0.005
+		sul_is_production_building = yes
+		local_monthly_development = 0.01
+		sul_production_size = 1
+	}
+
+	city = no
+	town = no
+	rural_settlement = no
+
+	gathering_city = yes
+	gathering_town = yes
+}
+
+INJECT:apothecary = {
+
+	location_potential = {
+		OR = {
+			modifier:sul_allows_apothecary_production = yes
+		}
+	}
+
+	max_levels = sul_extraction_max_level
+
+	modifier = {
+		local_medicaments_output_modifier = 0.005
+		sul_is_extraction_building = yes
+		local_monthly_development = -0.01
+		sul_extraction_size = 1
+		local_population_growth = 0.00015
+	}
+
+	city = no
+	town = no
+	rural_settlement = no
+
+	gathering_city = yes
+	gathering_town = yes
+}
+
+INJECT:saltpeter_workshop = {
+
+	location_potential = {
+		OR = {
+			modifier:sul_allows_saltpeter_production = yes
+		}
+	}
+
+	max_levels = sul_extraction_max_level
+
+	modifier = {
+		local_saltpeter_output_modifier = 0.005
+		sul_is_extraction_building = yes
+		local_monthly_development = -0.01
+		sul_extraction_size = 1
+		local_population_growth = 0.00015
+	}
+
+	city = no
+	town = no
+	rural_settlement = no
+
+	gathering_city = yes
+	gathering_town = yes
+}
+
+INJECT:putrefaction_works = {
+
+	location_potential = {
+		OR = {
+			modifier:sul_allows_saltpeter_production = yes
+		}
+	}
+
+	max_levels = sul_extraction_max_level
+
+	modifier = {
+		local_saltpeter_output_modifier = 0.005
+		sul_is_extraction_building = yes
+		local_monthly_development = -0.01
+		sul_extraction_size = 1
+		local_population_growth = 0.00015
+	}
+
+	city = no
+	town = no
+	rural_settlement = no
+
+	gathering_city = yes
+	gathering_town = yes
+}
+
+INJECT:putrefaction_mill = {
+	pop_type = burghers
+
+	location_potential = {
+		OR = {
+			modifier:sul_allows_saltpeter_production = yes
+		}
+	}
+
+	max_levels = sul_extraction_max_level
+
+	modifier = {
+		local_saltpeter_output_modifier = 0.005
+		sul_is_extraction_building = yes
+		local_monthly_development = -0.01
+		sul_extraction_size = 1
+		local_population_growth = 0.00015
+	}
+
+	city = no
+	town = no
+	rural_settlement = no
+
+	gathering_city = yes
+	gathering_town = yes
+}
+
+sul_rural_glassmaker = {
+	is_foreign = no
+	pop_type = laborers
+	max_levels = sul_production_max_level
+	category = consumer_goods_category
+	employment_size = 0.4
+	mining_rural = yes
+	mining_town = yes
+	mining_city = yes
+	farming_rural = yes
+	farming_town = yes
+	farming_city = yes
+	gathering_rural = yes
+	gathering_town = yes
+	gathering_city = yes
+	woodland_rural = yes
+	woodland_town = yes
+	woodland_city = yes
+	commercial_rural = yes
+	commercial_town = yes
+	commercial_city = yes
+	obsolete = glass_guild
+
+	location_potential = {
+		is_produced_in_location_market = goods:sand
+		OR = {
+			modifier:sul_allows_glass_production = yes
+		}
+	}
+
+	build_time = rural_build_time
+
+	possible_production_methods = { sul_rural_glass_from_sand }
+
+	construction_demand = village_construction
+
+	modifier = {
+		local_glass_output_modifier = 0.005
+		sul_is_production_building = yes
+		local_monthly_development = 0.01
+		sul_production_size = 1
+	}
+}
+
+sul_rural_potter = {
+	is_foreign = no
+	pop_type = laborers
+	max_levels = sul_production_max_level
+	category = consumer_goods_category
+	employment_size = 0.4
+	mining_rural = yes
+	mining_town = yes
+	mining_city = yes
+	farming_rural = yes
+	farming_town = yes
+	farming_city = yes
+	gathering_rural = yes
+	gathering_town = yes
+	gathering_city = yes
+	woodland_rural = yes
+	woodland_town = yes
+	woodland_city = yes
+	commercial_rural = yes
+	commercial_town = yes
+	commercial_city = yes
+	obsolete = pottery_guild
+
+	location_potential = {
+		is_produced_in_location_market = goods:clay
+		OR = {
+			modifier:sul_allows_pottery_production = yes
+		}
+	}
+
+	build_time = rural_build_time
+
+	possible_production_methods = { sul_rural_clay_pottery }
+
+	construction_demand = village_construction
+
+	modifier = {
+		local_pottery_output_modifier = 0.005
+		sul_is_production_building = yes
+		local_monthly_development = 0.01
+		sul_production_size = 1
+	}
+}
+
+sul_rural_herbalist = {
+	is_foreign = no
+	pop_type = laborers
+	max_levels = sul_extraction_max_level
+	category = consumer_goods_category
+	employment_size = 0.4
+	mining_rural = yes
+	mining_town = yes
+	mining_city = yes
+	farming_rural = yes
+	farming_town = yes
+	farming_city = yes
+	gathering_rural = yes
+	gathering_town = yes
+	gathering_city = yes
+	woodland_rural = yes
+	woodland_town = yes
+	woodland_city = yes
+	commercial_rural = yes
+	commercial_town = yes
+	commercial_city = yes
+
+	location_potential = {
+		OR = {
+			modifier:sul_allows_apothecary_production = yes
+		}
+	}
+
+	build_time = rural_build_time
+
+	possible_production_methods = { sul_rural_herbal_remedies }
+
+	construction_demand = village_construction
+
+	modifier = {
+		local_medicaments_output_modifier = 0.005
+		sul_is_extraction_building = yes
+		local_monthly_development = -0.01
+		sul_extraction_size = 1
+		local_population_growth = 0.00015
+	}
+}

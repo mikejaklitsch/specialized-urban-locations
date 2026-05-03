@@ -18,22 +18,15 @@ sul_minting_ai_set_debasement = {
 	ai_tick = monthly
 	ai_tick_frequency = 1
 
-	ai_prerequisite = {
-		exists = capital
-		has_variable = sul_minting_debasement_level
-	}
+	ai_prerequisite = { exists = capital has_variable = sul_minting_debasement_level }
 
 	ai_will_do = {
 		if = {
 			limit = {
 				scope:actor = {
 					OR = {
-						NOT = {
-							var:sul_minting_debasement_level = 0
-						}
-						NOT = {
-							var:sul_minting_rebasement_level = 0
-						}
+						NOT = { var:sul_minting_debasement_level = 0 }
+						NOT = { var:sul_minting_rebasement_level = 0 }
 
 						num_loans >= 1
 						monthly_balance < 0
@@ -45,31 +38,21 @@ sul_minting_ai_set_debasement = {
 					}
 				}
 			}
-
 			add = { value = 100 }
 		}
 	}
 
 	effect = {
 		scope:actor = {
-			set_variable = {
-				name = sul_minting_ai_debasement_target_temp
-				value = sul_minting_ai_debasement_target
-			}
+			set_variable = { name = sul_minting_ai_debasement_target_temp value = sul_minting_ai_debasement_target }
 
 			if = {
 				limit = { var:sul_minting_ai_debasement_target_temp > 0 }
 
 				# Move debasement toward target, capped at +/-0.2/month
-				set_local_variable = {
-					name = sul_minting_desired_delta
-					value = var:sul_minting_ai_debasement_target_temp
-				}
+				set_local_variable = { name = sul_minting_desired_delta value = var:sul_minting_ai_debasement_target_temp }
 
-				change_local_variable = {
-					name = sul_minting_desired_delta
-					subtract = var:sul_minting_debasement_level
-				}
+				change_local_variable = { name = sul_minting_desired_delta subtract = var:sul_minting_debasement_level }
 
 				clamp_local_variable = {
 					name = sul_minting_desired_delta
@@ -77,12 +60,13 @@ sul_minting_ai_set_debasement = {
 					max = 0.2
 				}
 
-				change_variable = {
-					name = sul_minting_debasement_level
-					add = local_var:sul_minting_desired_delta
-				}
+				change_variable = { name = sul_minting_debasement_level add = local_var:sul_minting_desired_delta }
 
-				clamp_variable = { name = sul_minting_debasement_level min = 0 max = 2.0 }
+				clamp_variable = {
+					name = sul_minting_debasement_level
+					min = 0
+					max = 2.0
+				}
 
 				if = {
 					limit = { var:sul_minting_debasement_level > 0 }
@@ -98,22 +82,13 @@ sul_minting_ai_set_debasement = {
 				}
 
 				# Move rebasement toward |target|, capped at +/-0.2/month
-				set_local_variable = {
-					name = sul_minting_desired_rebase
-					value = var:sul_minting_ai_debasement_target_temp
-				}
+				set_local_variable = { name = sul_minting_desired_rebase value = var:sul_minting_ai_debasement_target_temp }
 
 				change_local_variable = { name = sul_minting_desired_rebase multiply = -1 }
 
-				set_local_variable = {
-					name = sul_minting_desired_delta
-					value = local_var:sul_minting_desired_rebase
-				}
+				set_local_variable = { name = sul_minting_desired_delta value = local_var:sul_minting_desired_rebase }
 
-				change_local_variable = {
-					name = sul_minting_desired_delta
-					subtract = var:sul_minting_rebasement_level
-				}
+				change_local_variable = { name = sul_minting_desired_delta subtract = var:sul_minting_rebasement_level }
 
 				clamp_local_variable = {
 					name = sul_minting_desired_delta
@@ -121,12 +96,13 @@ sul_minting_ai_set_debasement = {
 					max = 0.2
 				}
 
-				change_variable = {
-					name = sul_minting_rebasement_level
-					add = local_var:sul_minting_desired_delta
-				}
+				change_variable = { name = sul_minting_rebasement_level add = local_var:sul_minting_desired_delta }
 
-				clamp_variable = { name = sul_minting_rebasement_level min = 0 max = 2.0 }
+				clamp_variable = {
+					name = sul_minting_rebasement_level
+					min = 0
+					max = 2.0
+				}
 
 				if = {
 					limit = { var:sul_minting_rebasement_level > 0 }
@@ -138,21 +114,28 @@ sul_minting_ai_set_debasement = {
 				if = {
 					limit = { var:sul_minting_debasement_level > 0 }
 					change_variable = { name = sul_minting_debasement_level add = -0.2 }
-					clamp_variable = { name = sul_minting_debasement_level min = 0 max = 2.0 }
+
+					clamp_variable = {
+						name = sul_minting_debasement_level
+						min = 0
+						max = 2.0
+					}
 				}
 				if = {
 					limit = { var:sul_minting_rebasement_level > 0 }
 					change_variable = { name = sul_minting_rebasement_level add = -0.2 }
-					clamp_variable = { name = sul_minting_rebasement_level min = 0 max = 2.0 }
+
+					clamp_variable = {
+						name = sul_minting_rebasement_level
+						min = 0
+						max = 2.0
+					}
 				}
 			}
 
 			remove_variable = sul_minting_ai_debasement_target_temp
 
-			set_variable = {
-				name = sul_minting_efficiency
-				value = sul_minting_efficiency_from_cached_cost
-			}
+			set_variable = { name = sul_minting_efficiency value = sul_minting_efficiency_from_cached_cost }
 
 			add_country_modifier = {
 				modifier = sul_minting_ai_minting

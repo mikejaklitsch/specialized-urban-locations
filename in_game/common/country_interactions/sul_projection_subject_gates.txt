@@ -29,16 +29,13 @@ REPLACE:enforce_culture = {
 		name = "choose_country"
 		column = { data = name }
 
-		visible = {
-			NOT = {
-				culture = scope:actor.culture
-			}
-		}
+		visible = { NOT = { culture = scope:actor.culture } }
 
 		enabled = {
 			subject_loyalty >= MIN_SUBJECT_LOYALTY_FOR_ACTION
 			liberty_desire < MAX_SUBJECT_LIBERTY_DESIRE_FOR_ACTION
 			# SUL projection gate: overlord must out-project the subject.
+			scope:actor = { has_variable = sul_power_projection }
 			scope:actor.var:sul_power_projection >= var:sul_power_projection
 		}
 	}
@@ -48,7 +45,6 @@ REPLACE:enforce_culture = {
 			actor = scope:actor
 			target = scope:recipient
 		}
-
 		scope:recipient = { add_liberty_desire = liberty_desire_ultimate_plus }
 	}
 }
@@ -74,27 +70,20 @@ REPLACE:enforce_religion = {
 		name = "choose_country"
 		column = { data = name }
 
-		visible = {
-			NOT = {
-				religion = scope:actor.religion
-			}
-		}
+		visible = { NOT = { religion = scope:actor.religion } }
 
 		enabled = {
 			subject_loyalty >= MIN_SUBJECT_LOYALTY_FOR_ACTION
 			liberty_desire < MAX_SUBJECT_LIBERTY_DESIRE_FOR_ACTION
 
 			trigger_if = {
-				limit = {
-					modifier:blocked_from_conversion = yes
-					has_reform = government_reform:military_order_reform
-				}
-
+				limit = { modifier:blocked_from_conversion = yes has_reform = government_reform:military_order_reform }
 				overlord = { has_reform = government_reform:military_order_reform }
 			}
 
 			trigger_else = { modifier:blocked_from_conversion = no }
 			# SUL projection gate: overlord must out-project the subject.
+			scope:actor = { has_variable = sul_power_projection }
 			scope:actor.var:sul_power_projection >= var:sul_power_projection
 		}
 	}
@@ -104,14 +93,10 @@ REPLACE:enforce_religion = {
 			actor = scope:actor
 			target = scope:recipient
 		}
-
 		scope:recipient = { add_liberty_desire = liberty_desire_ultimate_plus }
 	}
 
 	ai_will_do = {
-		if = {
-			limit = { scope:actor = { at_war = no } }
-			add = { value = 10 }
-		}
+		if = { limit = { scope:actor = { at_war = no } } add = { value = 10 } }
 	}
 }

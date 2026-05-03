@@ -18,9 +18,7 @@ sul.1 = {
 	trigger = {
 		is_ai = yes
 		sul_control_deficit > 0.8
-		NOT = {
-			has_variable = sul_capital_cooldown
-		}
+		NOT = { has_variable = sul_capital_cooldown }
 
 		modifier:cannot_move_capital = no
 		num_locations > 10
@@ -37,10 +35,7 @@ sul.1 = {
 			set_variable = { name = sul_capital_score value = 0 }
 		}
 
-		add_to_variable_list = {
-			name = sul_candidate_list
-			target = scope:sul_add_loc
-		}
+		add_to_variable_list = { name = sul_candidate_list target = scope:sul_add_loc }
 
 		# Step 2: Add top 10 economic centers
 		ordered_core_location = {
@@ -53,10 +48,12 @@ sul.1 = {
 
 				multiply = {
 					value = 1
+
 					if = {
 						limit = { owner = { has_primary_or_accepted_culture = prev.dominant_culture } }
 						add = 0.5
 					}
+
 					if = { limit = { local_religious_unity > 0.5 } add = 0.25 }
 				}
 			}
@@ -66,12 +63,7 @@ sul.1 = {
 			save_scope_as = sul_add_loc
 			set_variable = { name = sul_capital_score value = 0 }
 
-			root = {
-				add_to_variable_list = {
-					name = sul_candidate_list
-					target = scope:sul_add_loc
-				}
-			}
+			root = { add_to_variable_list = { name = sul_candidate_list target = scope:sul_add_loc } }
 		}
 
 		# Step 3: For each candidate (anchor), rank others by proximity.
@@ -82,15 +74,10 @@ sul.1 = {
 
 			root = {
 				set_variable = { name = sul_rank value = 10 }
-
 				ordered_in_list = {
 					variable = sul_candidate_list
 
-					limit = {
-						NOT = {
-							this = scope:current_anchor
-						}
-					}
+					limit = { NOT = { this = scope:current_anchor } }
 
 					order_by = { value = "this.distance_to(scope:current_anchor)" multiply = -1 }
 					max = 9
@@ -107,75 +94,35 @@ sul.1 = {
 			variable = sul_candidate_list
 
 			# Settlement tier
-			if = {
-				limit = { is_city = yes }
-				change_variable = { name = sul_capital_score add = 30 }
-			}
-			else_if = {
-				limit = { modifier:sul_is_town_rank_tier = yes }
-				change_variable = { name = sul_capital_score add = 15 }
-			}
+			if = { limit = { is_city = yes } change_variable = { name = sul_capital_score add = 30 } }
+			else_if = { limit = { modifier:sul_is_town_rank_tier = yes } change_variable = { name = sul_capital_score add = 15 } }
 
 			# Port value
-			change_variable = {
-				name = sul_capital_score
-				add = { value = modifier:harbor_suitability multiply = 30 }
-			}
+			change_variable = { name = sul_capital_score add = { value = modifier:harbor_suitability multiply = 30 } }
 
 			# River
-			if = {
-				limit = { has_river = yes }
-				change_variable = { name = sul_capital_score add = 15 }
-			}
+			if = { limit = { has_river = yes } change_variable = { name = sul_capital_score add = 15 } }
 
 			# Current capital
-			if = {
-				limit = { is_capital = yes }
-				change_variable = { name = sul_capital_score add = 50 }
-			}
+			if = { limit = { is_capital = yes } change_variable = { name = sul_capital_score add = 50 } }
 
 			# Lake
-			if = {
-				limit = { is_adjacent_to_lake = yes }
-				change_variable = { name = sul_capital_score add = 15 }
-			}
+			if = { limit = { is_adjacent_to_lake = yes } change_variable = { name = sul_capital_score add = 15 } }
 
 			# Topography
-			if = {
-				limit = { topography = flatland }
-				change_variable = { name = sul_capital_score add = 10 }
-			}
-			else_if = {
-				limit = { topography = plateau }
-				change_variable = { name = sul_capital_score add = 5 }
-			}
-			else_if = {
-				limit = { topography = mountains }
-				change_variable = { name = sul_capital_score add = -10 }
-			}
+			if = { limit = { topography = flatland } change_variable = { name = sul_capital_score add = 10 } }
+			else_if = { limit = { topography = plateau } change_variable = { name = sul_capital_score add = 5 } }
+			else_if = { limit = { topography = mountains } change_variable = { name = sul_capital_score add = -10 } }
 
 			# Vegetation
-			if = {
-				limit = { vegetation = farmland }
-				change_variable = { name = sul_capital_score add = 10 }
-			}
-			else_if = {
-				limit = { vegetation = grasslands }
-				change_variable = { name = sul_capital_score add = 5 }
-			}
-			else_if = {
-				limit = { vegetation = sparse }
-				change_variable = { name = sul_capital_score add = 2.5 }
-			}
+			if = { limit = { vegetation = farmland } change_variable = { name = sul_capital_score add = 10 } }
+			else_if = { limit = { vegetation = grasslands } change_variable = { name = sul_capital_score add = 5 } }
+			else_if = { limit = { vegetation = sparse } change_variable = { name = sul_capital_score add = 2.5 } }
 
 			# Economic weight
 			change_variable = {
 				name = sul_capital_score
-
-				add = {
-					value = location_tax_base
-					divide = { value = local_control min = 0.1 }
-				}
+				add = { value = location_tax_base divide = { value = local_control min = 0.1 } }
 			}
 
 			# Population
@@ -191,23 +138,14 @@ sul.1 = {
 		}
 
 		# Clean up
-		every_in_list = {
-			variable = sul_candidate_list
-			remove_variable = sul_capital_score
-		}
+		every_in_list = { variable = sul_candidate_list remove_variable = sul_capital_score }
 
 		clear_variable_list = sul_candidate_list
 		remove_variable = sul_rank
 
 		# Step 5: Move if winner is not current capital
 		if = {
-			limit = {
-				exists = scope:sul_capital_winner
-				NOT = {
-					scope:sul_capital_winner = scope:sul_current_capital
-				}
-			}
-
+			limit = { exists = scope:sul_capital_winner NOT = { scope:sul_capital_winner = scope:sul_current_capital } }
 			set_capital = scope:sul_capital_winner
 		}
 	}

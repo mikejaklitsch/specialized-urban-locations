@@ -48,37 +48,20 @@ sul_war_monthly_update = {
 		# realistically reinforce existing troops don't reduce the penalty).
 		set_local_variable = {
 			name = sul_war_effective_army
+			value = { add = local_var:sul_war_mil_strength subtract = local_var:sul_war_max_manpower }
+		}
+		set_local_variable = { name = sul_war_manpower_cap value = { add = local_var:sul_war_reg_capacity multiply = 4 } }
+		set_local_variable = { name = sul_war_effective_manpower value = local_var:sul_war_raw_manpower }
 
-			value = {
-				add = local_var:sul_war_mil_strength
-				subtract = local_var:sul_war_max_manpower
-			}
-		}
-		set_local_variable = {
-			name = sul_war_manpower_cap
-			value = { add = local_var:sul_war_reg_capacity multiply = 4 }
-		}
-		set_local_variable = {
-			name = sul_war_effective_manpower
-			value = local_var:sul_war_raw_manpower
-		}
 		if = {
 			limit = { local_var:sul_war_raw_manpower > local_var:sul_war_manpower_cap }
-
-			set_local_variable = {
-				name = sul_war_effective_manpower
-				value = local_var:sul_war_manpower_cap
-			}
+			set_local_variable = { name = sul_war_effective_manpower value = local_var:sul_war_manpower_cap }
 		}
 
 		# Effective strength: army + capped manpower.
 		set_local_variable = {
 			name = sul_war_effective_strength
-
-			value = {
-				add = local_var:sul_war_effective_army
-				add = local_var:sul_war_effective_manpower
-			}
+			value = { add = local_var:sul_war_effective_army add = local_var:sul_war_effective_manpower }
 		}
 
 		sul_war_update_peaks = yes
@@ -97,67 +80,34 @@ sul_war_update_peaks = {
 	# Peak military strength (ratchets upward, used for both fort defense and war exhaustion)
 	# Uses sul_war_effective_strength (army + capped manpower) set by sul_war_monthly_update.
 	if = {
-		limit = {
-			NOT = {
-				has_variable = sul_war_potential_peak
-			}
-		}
-
-		set_variable = {
-			name = sul_war_potential_peak
-			value = local_var:sul_war_effective_strength
-		}
+		limit = { NOT = { has_variable = sul_war_potential_peak } }
+		set_variable = { name = sul_war_potential_peak value = local_var:sul_war_effective_strength }
 	}
+
 	if = {
 		limit = { local_var:sul_war_effective_strength > var:sul_war_potential_peak }
-
-		set_variable = {
-			name = sul_war_potential_peak
-			value = local_var:sul_war_effective_strength
-		}
+		set_variable = { name = sul_war_potential_peak value = local_var:sul_war_effective_strength }
 	}
 
 	# Per-component peaks (ratchet upward, for GUI display)
 	if = {
-		limit = {
-			NOT = {
-				has_variable = sul_war_army_peak
-			}
-		}
-
-		set_variable = {
-			name = sul_war_army_peak
-			value = local_var:sul_war_effective_army
-		}
+		limit = { NOT = { has_variable = sul_war_army_peak } }
+		set_variable = { name = sul_war_army_peak value = local_var:sul_war_effective_army }
 	}
+
 	if = {
 		limit = { local_var:sul_war_effective_army > var:sul_war_army_peak }
-
-		set_variable = {
-			name = sul_war_army_peak
-			value = local_var:sul_war_effective_army
-		}
+		set_variable = { name = sul_war_army_peak value = local_var:sul_war_effective_army }
 	}
 
 	if = {
-		limit = {
-			NOT = {
-				has_variable = sul_war_manpower_peak
-			}
-		}
-
-		set_variable = {
-			name = sul_war_manpower_peak
-			value = local_var:sul_war_effective_manpower
-		}
+		limit = { NOT = { has_variable = sul_war_manpower_peak } }
+		set_variable = { name = sul_war_manpower_peak value = local_var:sul_war_effective_manpower }
 	}
+
 	if = {
 		limit = { local_var:sul_war_effective_manpower > var:sul_war_manpower_peak }
-
-		set_variable = {
-			name = sul_war_manpower_peak
-			value = local_var:sul_war_effective_manpower
-		}
+		set_variable = { name = sul_war_manpower_peak value = local_var:sul_war_effective_manpower }
 	}
 }
 
@@ -246,12 +196,7 @@ sul_war_cleanup = {
 sul_war_init = {
 	# Clean orphaned capital resilience modifiers and stale auto-conquest transfer tags
 	every_ownable_location = {
-		limit = {
-			OR = {
-				has_location_modifier = sul_war_momentum_capital
-				has_variable = sul_war_original_owner
-			}
-		}
+		limit = { OR = { has_location_modifier = sul_war_momentum_capital has_variable = sul_war_original_owner } }
 
 		remove_location_modifier = sul_war_momentum_capital
 		remove_variable = sul_war_original_owner

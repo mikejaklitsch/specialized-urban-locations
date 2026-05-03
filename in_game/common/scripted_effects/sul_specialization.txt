@@ -13,35 +13,10 @@
 # current spec violates the updated rules.
 
 sul_specialization_full_rebuild = {
-	sul_setup_goods_spec_map = yes
-
-	# Cleanup: destroy fruit orchards in locations that no longer meet climate gates
-	every_location_in_the_world = {
-		limit = {
-			has_building = building_type:fruit_orchard
-			NOT = {
-				OR = {
-					climate = mediterranean
-					climate = subtropical
-					climate = tropical
-				}
-			}
-		}
-
-		every_buildings_in_location = {
-			limit = { building_type = building_type:fruit_orchard }
-			location = { destroy_building = prev }
-		}
-	}
-
-	# All ownable locations: recalculate eligibility cache
 	every_location_in_the_world = {
 		limit = { is_ownable = yes exists = raw_material }
 		sul_specialization_calculate_eligibility = yes
 	}
-
-	# Market cache
-	sul_market_cache_refresh_all = yes
 }
 
 # root = location (eligibility already calculated). Two paths:
@@ -52,27 +27,11 @@ sul_specialization_rebuild_location = {
 	if = {
 		limit = { sul_has_any_specialization = yes }
 		if = {
-			limit = {
-				NOT = {
-					sul_current_specialization_is_valid = yes
-				}
-			}
-
+			limit = { NOT = { sul_current_specialization_is_valid = yes } }
 			sul_specialization_reassign = yes
 		}
 	}
 	else = { sul_specialization_init_new = yes }
-}
-
-# Stubs — rank_modifier handles modifiers natively now.
-
-sul_specialization_refresh_modifier = {
-}
-
-sul_specialization_apply_modifier = {
-}
-
-sul_specialization_clear_all_modifiers = {
 }
 
 # Bridge: set sul_spec_type from rank boolean modifiers for GUI visibility checks.
@@ -113,6 +72,7 @@ sul_specialization_reassign = {
 
 sul_specialization_init_new = {
 	sul_rank_assign_by_resources = yes
+
 	if = { limit = { exists = owner } sul_specialization_tech_cleanup = yes }
 }
 
@@ -130,7 +90,6 @@ sul_specialization_calculate_eligibility = {
 				is_adjacent_to_lake = yes
 			}
 		}
-
 		set_variable = { name = sul_can_mine value = 1 }
 	}
 	else = { remove_variable = sul_can_mine }
@@ -141,17 +100,10 @@ sul_specialization_calculate_eligibility = {
 			OR = {
 				sul_has_farming_resources = yes
 				vegetation = farmland
-				AND = {
-					topography = flatland
-					has_river = yes
-				}
-				AND = {
-					topography = flatland
-					vegetation = grasslands
-				}
+				AND = { topography = flatland has_river = yes }
+				AND = { topography = flatland vegetation = grasslands }
 			}
 		}
-
 		set_variable = { name = sul_can_farm value = 1 }
 	}
 	else = { remove_variable = sul_can_farm }
@@ -166,7 +118,6 @@ sul_specialization_calculate_eligibility = {
 				is_adjacent_to_lake = yes
 			}
 		}
-
 		set_variable = { name = sul_can_gather value = 1 }
 	}
 	else = { remove_variable = sul_can_gather }
@@ -181,7 +132,6 @@ sul_specialization_calculate_eligibility = {
 				vegetation = jungle
 			}
 		}
-
 		set_variable = { name = sul_can_woodland value = 1 }
 	}
 	else = { remove_variable = sul_can_woodland }
@@ -192,33 +142,19 @@ sul_specialization_calculate_eligibility = {
 
 sul_specialization_validate = {
 	if = {
-		limit = {
-			NOT = {
-				sul_current_specialization_is_valid = yes
-			}
-		}
-
+		limit = { NOT = { sul_current_specialization_is_valid = yes } }
 		sul_specialization_reassign_or_commercial = yes
 	}
 }
 
 sul_specialization_reassign_or_commercial = {
-	if = {
-		limit = { is_market_center = yes }
-		sul_specialization_switch_to_commercial = yes
-	}
-	else = {
-		sul_specialization_calculate_eligibility = yes
-		sul_specialization_reassign = yes
-	}
+	if = { limit = { is_market_center = yes } sul_specialization_switch_to_commercial = yes }
+	else = { sul_specialization_calculate_eligibility = yes sul_specialization_reassign = yes }
 }
 
 sul_specialization_switch_to_commercial = {
 	sul_rank_set_commercial = yes
 }
-
-# NOTE: Market cache effects (sul_market_cache_update, sul_market_cache_refresh_all)
-# moved to sul_market_cache.txt
 
 # root = location. Sets per-good vars (1-day expiry) that mirror the
 # Specialized Urban Locations - Building Destruction Effects
@@ -230,15 +166,9 @@ sul_specialization_destroy_non_mining_buildings = {
 	every_buildings_in_location = {
 		limit = {
 			sul_is_destroyable_specialization_building = yes
-			NOT = {
-				sul_is_mining_building = yes
-			}
-			NAND = {
-				building_type = building_type:university
-				location = { modifier:sul_is_city_rank_tier = yes }
-			}
+			NOT = { sul_is_mining_building = yes }
+			NAND = { building_type = building_type:university location = { modifier:sul_is_city_rank_tier = yes } }
 		}
-
 		location = { destroy_building = prev }
 	}
 }
@@ -247,15 +177,9 @@ sul_specialization_destroy_non_farming_buildings = {
 	every_buildings_in_location = {
 		limit = {
 			sul_is_destroyable_specialization_building = yes
-			NOT = {
-				sul_is_farming_building = yes
-			}
-			NAND = {
-				building_type = building_type:university
-				location = { modifier:sul_is_city_rank_tier = yes }
-			}
+			NOT = { sul_is_farming_building = yes }
+			NAND = { building_type = building_type:university location = { modifier:sul_is_city_rank_tier = yes } }
 		}
-
 		location = { destroy_building = prev }
 	}
 }
@@ -264,15 +188,9 @@ sul_specialization_destroy_non_woodland_buildings = {
 	every_buildings_in_location = {
 		limit = {
 			sul_is_destroyable_specialization_building = yes
-			NOT = {
-				sul_is_woodland_building = yes
-			}
-			NAND = {
-				building_type = building_type:university
-				location = { modifier:sul_is_city_rank_tier = yes }
-			}
+			NOT = { sul_is_woodland_building = yes }
+			NAND = { building_type = building_type:university location = { modifier:sul_is_city_rank_tier = yes } }
 		}
-
 		location = { destroy_building = prev }
 	}
 }
@@ -281,15 +199,9 @@ sul_specialization_destroy_non_gathering_buildings = {
 	every_buildings_in_location = {
 		limit = {
 			sul_is_destroyable_specialization_building = yes
-			NOT = {
-				sul_is_gathering_building = yes
-			}
-			NAND = {
-				building_type = building_type:university
-				location = { modifier:sul_is_city_rank_tier = yes }
-			}
+			NOT = { sul_is_gathering_building = yes }
+			NAND = { building_type = building_type:university location = { modifier:sul_is_city_rank_tier = yes } }
 		}
-
 		location = { destroy_building = prev }
 	}
 }
@@ -298,13 +210,7 @@ sul_specialization_destroy_non_gathering_buildings = {
 
 sul_specialization_destroy_non_commercial_buildings = {
 	every_buildings_in_location = {
-		limit = {
-			sul_is_destroyable_specialization_building = yes
-			NOT = {
-				sul_is_commercial_building = yes
-			}
-		}
-
+		limit = { sul_is_destroyable_specialization_building = yes NOT = { sul_is_commercial_building = yes } }
 		location = { destroy_building = prev }
 	}
 }
@@ -317,23 +223,17 @@ sul_specialization_destroy_and_penalize = {
 
 	sul_specialization_destroy_non_matching_buildings = yes
 
-	change_variable = {
-		name = sul_respec_destroyed
-		subtract = total_building_levels
-	}
+	change_variable = { name = sul_respec_destroyed subtract = total_building_levels }
 
 	if = {
 		limit = { var:sul_respec_destroyed > 0 }
-
 		add_location_modifier = {
 			modifier = sul_recently_respecialized
 			years = 5
 			size = var:sul_respec_destroyed
 		}
 	}
-	else = {
-		add_location_modifier = { modifier = sul_recently_respecialized years = 5 }
-	}
+	else = { add_location_modifier = { modifier = sul_recently_respecialized years = 5 } }
 
 	remove_variable = sul_respec_destroyed
 }
@@ -341,18 +241,9 @@ sul_specialization_destroy_and_penalize = {
 # Dispatcher to the per-spec destroy effect. root = location.
 
 sul_specialization_destroy_non_matching_buildings = {
-	if = {
-		limit = { sul_has_mining_specialization = yes }
-		sul_specialization_destroy_non_mining_buildings = yes
-	}
-	else_if = {
-		limit = { sul_has_farming_specialization = yes }
-		sul_specialization_destroy_non_farming_buildings = yes
-	}
-	else_if = {
-		limit = { sul_has_woodland_specialization = yes }
-		sul_specialization_destroy_non_woodland_buildings = yes
-	}
+	if = { limit = { sul_has_mining_specialization = yes } sul_specialization_destroy_non_mining_buildings = yes }
+	else_if = { limit = { sul_has_farming_specialization = yes } sul_specialization_destroy_non_farming_buildings = yes }
+	else_if = { limit = { sul_has_woodland_specialization = yes } sul_specialization_destroy_non_woodland_buildings = yes }
 	else_if = {
 		limit = { sul_has_gathering_specialization = yes }
 		sul_specialization_destroy_non_gathering_buildings = yes
@@ -369,22 +260,10 @@ sul_specialization_destroy_non_matching_buildings = {
 
 sul_rank_assign_by_resources = {
 	if = { limit = { is_market_center = yes } sul_rank_set_commercial = yes }
-	else_if = {
-		limit = { sul_has_farming_resources = yes }
-		sul_rank_set_farming = yes
-	}
-	else_if = {
-		limit = { sul_has_mining_resources = yes }
-		sul_rank_set_mining = yes
-	}
-	else_if = {
-		limit = { sul_has_gathering_resources = yes }
-		sul_rank_set_gathering = yes
-	}
-	else_if = {
-		limit = { sul_has_woodland_resources = yes }
-		sul_rank_set_woodland = yes
-	}
+	else_if = { limit = { sul_has_farming_resources = yes } sul_rank_set_farming = yes }
+	else_if = { limit = { sul_has_mining_resources = yes } sul_rank_set_mining = yes }
+	else_if = { limit = { sul_has_gathering_resources = yes } sul_rank_set_gathering = yes }
+	else_if = { limit = { sul_has_woodland_resources = yes } sul_rank_set_woodland = yes }
 	else = { sul_rank_set_commercial = yes }
 }
 
@@ -398,12 +277,6 @@ sul_specialization_assign_by_resources = {
 # sul_specialization_count_increment, sul_specialization_count_decrement)
 # moved to sul_specialization_count.txt
 #
-# NOTE: sul_market_cache_refresh_all (formerly sul_do_refresh_market_cache)
-# moved to sul_market_cache.txt
-
-# NOTE: Passthrough pulse effects (sul_passthrough_pulse, sul_passthrough_per_good)
-# moved to sul_passthrough_pulse.txt
-
 # root = location. Destroys pre-placed buildings the current owner can't build
 # due to missing advances. Called from sul_specialization_full_rebuild before
 # the spec-mismatch destroy pass, so tech-invalid buildings are cleared first.
@@ -416,95 +289,38 @@ sul_specialization_tech_cleanup = {
 			OR = {
 				AND = {
 					building_type = building_type:sul_iron_mine
-
-					location = {
-						owner ?= {
-							NOT = {
-								has_advance = iron_working
-							}
-						}
-					}
+					location = { owner ?= { NOT = { has_advance = iron_working } } }
 				}
 				AND = {
 					building_type = building_type:weapon_guild
-
-					location = {
-						owner ?= {
-							NOT = {
-								has_advance = weapon_guild_advance
-							}
-						}
-					}
+					location = { owner ?= { NOT = { has_advance = weapon_guild_advance } } }
 				}
 				AND = {
 					building_type = building_type:tools_guild
-
-					location = {
-						owner ?= {
-							NOT = {
-								has_advance = metallurgy
-							}
-						}
-					}
+					location = { owner ?= { NOT = { has_advance = metallurgy } } }
 				}
 				AND = {
 					building_type = building_type:porcelain_guild
-
-					location = {
-						owner ?= {
-							NOT = {
-								has_advance = porcelain_kiln_advance
-							}
-						}
-					}
+					location = { owner ?= { NOT = { has_advance = porcelain_kiln_advance } } }
 				}
 				AND = {
 					building_type = building_type:apothecary
-
-					location = {
-						owner ?= {
-							NOT = {
-								has_advance = apothecary_advance
-							}
-						}
-					}
+					location = { owner ?= { NOT = { has_advance = apothecary_advance } } }
 				}
 				AND = {
 					building_type = building_type:lacquerware_guild
-
-					location = {
-						owner ?= {
-							NOT = {
-								has_advance = lacquerware_guild_advance
-							}
-						}
-					}
+					location = { owner ?= { NOT = { has_advance = lacquerware_guild_advance } } }
 				}
 				AND = {
 					building_type = building_type:paper_guild
-
-					location = {
-						owner ?= {
-							NOT = {
-								has_advance = paper_guild_advance
-							}
-						}
-					}
+					location = { owner ?= { NOT = { has_advance = paper_guild_advance } } }
 				}
 				AND = {
 					building_type = building_type:scriptorium
-
-					location = {
-						owner ?= {
-							NOT = {
-								has_advance = scriptorium_advance
-							}
-						}
-					}
+					location = { owner ?= { NOT = { has_advance = scriptorium_advance } } }
 				}
 			}
 		}
-
 		location = { destroy_building = prev }
 	}
 }

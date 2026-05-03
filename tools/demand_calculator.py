@@ -61,7 +61,7 @@ RICH_SHARES = {
     "exotic":     0.10,
     "enrichment": 0.53,
 }
-CROSSOVER_WPP = 1.0
+CROSSOVER_WPP = 3.0
 
 # Tier thresholds retained for tooltip script values (sul_read_tier_*) only.
 TIER_THRESHOLD = {

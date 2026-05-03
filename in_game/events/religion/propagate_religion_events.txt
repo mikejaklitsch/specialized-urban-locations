@@ -6,7 +6,6 @@ scripted_effect
 location_pops_convert_to_muslim = {
 	custom_tooltip = {
 		text = location_pops_convert_to_muslim.tt
-
 		every_pop = {
 			limit = { religion != scope:target_country.religion }
 			split_pop = { religion = scope:target_country.religion fraction = 0.01 }
@@ -32,22 +31,15 @@ propagate_religion_events.1 = {
 	desc = propagate_religion_events.1.desc
 
 	trigger = {
-		NOT = {
-			religion.group = religion_group:muslim
-		}
+		NOT = { religion.group = religion_group:muslim }
 		any_market_with_merchants = {
 			any_merchant_in_market = { is_valid_muslim_sufi_country = yes }
-
 			any_location_in_market = {
 				is_port = yes
 				owner ?= root
 				dominant_religion ?= { group != religion_group:muslim }
-				NOT = {
-					has_location_modifier = trading_settlement
-				}
-				NOT = {
-					has_location_modifier = muslim_traders_controlled
-				}
+				NOT = { has_location_modifier = trading_settlement }
+				NOT = { has_location_modifier = muslim_traders_controlled }
 			}
 		}
 	}
@@ -59,21 +51,15 @@ propagate_religion_events.1 = {
 			foreground = estate_type:burghers_estate
 			background = estate_type:burghers_estate
 		}
-
 		random_market_with_merchants = {
 			limit = {
 				any_merchant_in_market = { is_valid_muslim_sufi_country = yes }
-
 				any_location_in_market = {
 					is_port = yes
 					owner ?= root
 					dominant_religion ?= { group != religion_group:muslim }
-					NOT = {
-						has_location_modifier = trading_settlement
-					}
-					NOT = {
-						has_location_modifier = muslim_traders_controlled
-					}
+					NOT = { has_location_modifier = trading_settlement }
+					NOT = { has_location_modifier = muslim_traders_controlled }
 				}
 			}
 
@@ -82,14 +68,9 @@ propagate_religion_events.1 = {
 					is_port = yes
 					owner ?= root
 					dominant_religion ?= { group != religion_group:muslim }
-					NOT = {
-						has_location_modifier = trading_settlement
-					}
-					NOT = {
-						has_location_modifier = muslim_traders_controlled
-					}
+					NOT = { has_location_modifier = trading_settlement }
+					NOT = { has_location_modifier = muslim_traders_controlled }
 				}
-
 				save_scope_as = target_location
 			}
 
@@ -100,10 +81,7 @@ propagate_religion_events.1 = {
 				random_pop = {
 					weight = { base = 1 modifier = { add = pop_character_chance } }
 
-					limit = {
-						estate_type = estate_type:burghers_estate
-						religion = scope:target_country.religion
-					}
+					limit = { estate_type = estate_type:burghers_estate religion = scope:target_country.religion }
 
 					save_scope_as = target_pop
 					save_scope_as = target_pop_bckg
@@ -136,7 +114,6 @@ propagate_religion_events.1 = {
 
 	option = { # Refuse the settlement
 		name = propagate_religion_events.1.b
-
 		scope:target_location = {
 			add_location_modifier = {
 				modifier = muslim_traders_controlled
@@ -155,22 +132,15 @@ propagate_religion_events.2 = {
 	desc = propagate_religion_events.2.desc
 
 	trigger = {
-		NOT = {
-			religion.group = religion_group:muslim
-		}
+		NOT = { religion.group = religion_group:muslim }
 		any_market_with_merchants = {
 			any_merchant_in_market = { is_valid_muslim_sufi_country = yes }
-
 			any_location_in_market = {
 				is_port = yes
 				owner ?= root
 				dominant_religion ?= { group != religion_group:muslim }
-				NOT = {
-					has_location_modifier = islamic_missionaries
-				}
-				NOT = {
-					has_variable = had_missionaries_settle
-				}
+				NOT = { has_location_modifier = islamic_missionaries }
+				NOT = { has_variable = had_missionaries_settle }
 			}
 		}
 	}
@@ -182,21 +152,15 @@ propagate_religion_events.2 = {
 			foreground = estate_type:clergy_estate
 			background = estate_type:clergy_estate
 		}
-
 		random_market_with_merchants = {
 			limit = {
 				any_merchant_in_market = { is_valid_muslim_sufi_country = yes }
-
 				any_location_in_market = {
 					is_port = yes
 					owner ?= root
 					dominant_religion ?= { group != religion_group:muslim }
-					NOT = {
-						has_location_modifier = islamic_missionaries
-					}
-					NOT = {
-						has_variable = had_missionaries_settle
-					}
+					NOT = { has_location_modifier = islamic_missionaries }
+					NOT = { has_variable = had_missionaries_settle }
 				}
 			}
 
@@ -205,16 +169,17 @@ propagate_religion_events.2 = {
 					is_port = yes
 					owner ?= root
 					dominant_religion ?= { group != religion_group:muslim }
-					NOT = {
-						has_location_modifier = islamic_missionaries
-					}
-					NOT = {
-						has_variable = had_missionaries_settle
-					}
+					NOT = { has_location_modifier = islamic_missionaries }
+					NOT = { has_variable = had_missionaries_settle }
 				}
 
 				save_scope_as = target_location
-				set_variable = { name = had_missionaries_settle value = 1 years = 10 }
+
+				set_variable = {
+					name = had_missionaries_settle
+					value = 1
+					years = 10
+				}
 			}
 
 			random_merchant_in_market = {
@@ -224,10 +189,7 @@ propagate_religion_events.2 = {
 				random_pop = {
 					weight = { base = 1 modifier = { add = pop_character_chance } }
 
-					limit = {
-						estate_type = estate_type:clergy_estate
-						religion = scope:target_country.religion
-					}
+					limit = { estate_type = estate_type:clergy_estate religion = scope:target_country.religion }
 
 					save_scope_as = target_pop
 					save_scope_as = target_pop_bckg
@@ -236,14 +198,10 @@ propagate_religion_events.2 = {
 		}
 	}
 
-	option = { # Forbid missionaries
-		name = propagate_religion_events.2.a
-		add_legitimacy = legitimacy_mild_bonus
-	}
+	option = { name = propagate_religion_events.2.a add_legitimacy = legitimacy_mild_bonus }
 
 	option = { # Accept missionaries
 		name = propagate_religion_events.2.b
-
 		scope:target_location = {
 			add_location_modifier = {
 				modifier = islamic_missionaries
@@ -275,24 +233,14 @@ propagate_religion_events.3 = {
 	desc = propagate_religion_events.3.desc
 
 	trigger = {
-		NOT = {
-			religion.group = religion_group:muslim
-		}
+		NOT = { religion.group = religion_group:muslim }
 		any_market_with_merchants = {
-			any_merchant_in_market = {
-				is_valid_muslim_sufi_country = yes
-				has_ports = yes
-			}
-
+			any_merchant_in_market = { is_valid_muslim_sufi_country = yes has_ports = yes }
 			any_location_in_market = {
 				is_port = yes
 				owner ?= root
-				NOT = {
-					has_location_modifier = muslim_sailor_community
-				}
-				NOT = {
-					has_variable = muslim_sailors_present
-				}
+				NOT = { has_location_modifier = muslim_sailor_community }
+				NOT = { has_variable = muslim_sailors_present }
 			}
 		}
 	}
@@ -307,20 +255,12 @@ propagate_religion_events.3 = {
 
 		random_market_with_merchants = {
 			limit = {
-				any_merchant_in_market = {
-					is_valid_muslim_sufi_country = yes
-					has_ports = yes
-				}
-
+				any_merchant_in_market = { is_valid_muslim_sufi_country = yes has_ports = yes }
 				any_location_in_market = {
 					is_port = yes
 					owner ?= root
-					NOT = {
-						has_location_modifier = muslim_sailor_community
-					}
-					NOT = {
-						has_variable = muslim_sailors_present
-					}
+					NOT = { has_location_modifier = muslim_sailor_community }
+					NOT = { has_variable = muslim_sailors_present }
 				}
 			}
 
@@ -331,10 +271,7 @@ propagate_religion_events.3 = {
 				random_pop = {
 					weight = { base = 1 modifier = { add = pop_character_chance } }
 
-					limit = {
-						estate_type = estate_type:burghers_estate
-						religion = scope:target_country.religion
-					}
+					limit = { estate_type = estate_type:burghers_estate religion = scope:target_country.religion }
 
 					save_scope_as = target_pop
 					save_scope_as = target_pop_bckg
@@ -344,7 +281,12 @@ propagate_religion_events.3 = {
 			random_location_in_market = {
 				limit = { is_port = yes owner ?= root }
 				save_scope_as = target_location
-				set_variable = { name = muslim_sailors_present value = yes years = 10 }
+
+				set_variable = {
+					name = muslim_sailors_present
+					value = yes
+					years = 10
+				}
 			}
 		}
 
@@ -370,10 +312,9 @@ propagate_religion_events.3 = {
 				mode = add_and_extend
 			}
 		}
-		if = {
-			limit = { monthly_sailors > 0 }
-			add_sailors = { value = monthly_sailors multiply = 2 }
-		}
+
+		if = { limit = { monthly_sailors > 0 } add_sailors = { value = monthly_sailors multiply = 2 } }
+
 		change_gold_effect = {
 			scale = -10
 		}
@@ -401,7 +342,6 @@ propagate_religion_events.4 = {
 	trigger = {
 		any_market_with_merchants = {
 			any_merchant_in_market = { is_valid_muslim_sufi_country = yes }
-
 			any_location_in_market = {
 				owner ?= root
 				is_capital = no
@@ -421,7 +361,6 @@ propagate_religion_events.4 = {
 		random_market_with_merchants = {
 			limit = {
 				any_merchant_in_market = { is_valid_muslim_sufi_country = yes }
-
 				any_location_in_market = {
 					owner ?= root
 					is_capital = no
@@ -432,6 +371,7 @@ propagate_religion_events.4 = {
 			random_merchant_in_market = {
 				limit = { is_valid_muslim_sufi_country = yes }
 				save_scope_as = target_country
+
 				if = {
 					limit = { religious_school = { is_sufi_school = yes } }
 					religious_school = { save_scope_as = target_school }
@@ -496,22 +436,13 @@ propagate_religion_events.5 = {
 
 	trigger = {
 		religion.group != religion_group:muslim
-
 		any_market_with_merchants = {
-			any_merchant_in_market = {
-				is_valid_muslim_sufi_country = yes
-				num_of_advances_researched >= tech_level_to_advances_4
-			}
-
+			any_merchant_in_market = { is_valid_muslim_sufi_country = yes num_of_advances_researched >= tech_level_to_advances_4 }
 			any_location_in_market = {
 				owner ?= root
 				dominant_religion.group = religion_group:muslim
-				NOT = {
-					has_location_modifier = religious_community_isolated
-				}
-				NOT = {
-					has_location_modifier = mosque_of_x
-				}
+				NOT = { has_location_modifier = religious_community_isolated }
+				NOT = { has_location_modifier = mosque_of_x }
 				any_neighbor_location = {
 					area = prev.area
 					owner ?= root
@@ -529,23 +460,14 @@ propagate_religion_events.5 = {
 			foreground = estate_type:clergy_estate
 			background = estate_type:clergy_estate
 		}
-
 		random_market_with_merchants = {
 			limit = {
-				any_merchant_in_market = {
-					is_valid_muslim_sufi_country = yes
-					num_of_advances_researched >= tech_level_to_advances_4
-				}
-
+				any_merchant_in_market = { is_valid_muslim_sufi_country = yes num_of_advances_researched >= tech_level_to_advances_4 }
 				any_location_in_market = {
 					owner ?= root
 					dominant_religion.group = religion_group:muslim
-					NOT = {
-						has_location_modifier = religious_community_isolated
-					}
-					NOT = {
-						has_location_modifier = mosque_of_x
-					}
+					NOT = { has_location_modifier = religious_community_isolated }
+					NOT = { has_location_modifier = mosque_of_x }
 					any_neighbor_location = {
 						area = prev.area
 						owner ?= root
@@ -556,11 +478,7 @@ propagate_religion_events.5 = {
 			}
 
 			random_merchant_in_market = {
-				limit = {
-					is_valid_muslim_sufi_country = yes
-					num_of_advances_researched >= tech_level_to_advances_4
-				}
-
+				limit = { is_valid_muslim_sufi_country = yes num_of_advances_researched >= tech_level_to_advances_4 }
 				save_scope_as = target_country
 			}
 
@@ -594,12 +512,7 @@ propagate_religion_events.5 = {
 			}
 		}
 
-		scope:target_country = {
-			add_opinion = {
-				target = root
-				modifier = opinion_discriminated_our_countrymen
-			}
-		}
+		scope:target_country = { add_opinion = { target = root modifier = opinion_discriminated_our_countrymen } }
 	}
 
 	option = { # Support it
@@ -607,30 +520,17 @@ propagate_religion_events.5 = {
 
 		scope:target_location = {
 			if = {
-				limit = {
-					NOT = {
-						modifier:sul_is_rural_settlement_rank_tier = yes
-					}
-					NOT = {
-						has_building = building_type:temple
-					}
-				}
-
-				change_building_level_in_location = {
-					building = building_type:temple
-					value = 1
-				}
+				limit = { NOT = { modifier:sul_is_rural_settlement_rank_tier = yes } NOT = { has_building = building_type:temple } }
+				change_building_level_in_location = { building = building_type:temple value = 1 }
 			}
 
 			change_development = development_weak_bonus
 
 			custom_tooltip = {
 				text = propagate_religion.5.b.tt
-
 				area = {
 					every_location_in_area = {
 						change_control = control_severe_penalty
-
 						add_location_modifier = {
 							modifier = mosque_of_x
 							years = 10
@@ -662,34 +562,19 @@ propagate_religion_events.6 = {
 
 	trigger = {
 		religion.group != religion_group:muslim
-		NOT = {
-			has_variable = sultan_titles_for_non_muslims
-		}
+		NOT = { has_variable = sultan_titles_for_non_muslims }
 
 		has_regent = no
 		government_type = government_type:monarchy
 		country_rank = country_rank:rank_kingdom
-		NOT = {
-			tag = ARK
-		}
-		NOT = {
-			has_reform = government_reform:shogunate
-		}
-		ruler ?= {
-			NOT = {
-				has_variable = said_no_to_islamic_titles
-			}
-		}
-		OR = {
-			is_subject = no
-			is_subject_type = tributary
-		}
+		NOT = { tag = ARK }
+		NOT = { has_reform = government_reform:shogunate }
+		ruler ?= { NOT = { has_variable = said_no_to_islamic_titles } }
+		OR = { is_subject = no is_subject_type = tributary }
 
 		dominant_religion != root.religion
 		capital = { dominant_religion.group = religion_group:muslim }
-		NOT = {
-			has_country_modifier = islamic_titles
-		}
+		NOT = { has_country_modifier = islamic_titles }
 	}
 
 	illustration_tags = { 10 = interior 10 = regular }
@@ -699,7 +584,6 @@ propagate_religion_events.6 = {
 			foreground = estate_type:nobles_estate
 			background = estate_type:nobles_estate
 		}
-
 		ruler = { save_scope_as = target_ruler }
 	}
 
@@ -716,7 +600,6 @@ propagate_religion_events.6 = {
 
 		custom_tooltip = {
 			text = sultan_titles_for_non_muslims_tooltip
-
 			every_known_country = {
 				limit = { religion.group = religion_group:muslim }
 				add_opinion = { target = root modifier = opinion_adopted_islamic_titles }
@@ -748,7 +631,6 @@ propagate_religion_events.7 = {
 
 	immediate = {
 		remove_variable = sultan_titles_for_non_muslims
-
 		event_illustration_estate_effect = {
 			foreground = estate_type:nobles_estate
 			background = estate_type:nobles_estate
@@ -757,19 +639,16 @@ propagate_religion_events.7 = {
 
 	option = {
 		name = propagate_religion_events.7.a
-
 		custom_tooltip = {
 			text = sultan_conversion_tooltip
-
 			every_known_country = {
 				limit = { religion.group = religion_group:muslim }
-				if = {
-					limit = {
-						has_opinion = { target = root modifier = opinion_adopted_islamic_titles }
-					}
 
+				if = {
+					limit = { has_opinion = { target = root modifier = opinion_adopted_islamic_titles } }
 					remove_opinion = { target = root modifier = opinion_adopted_islamic_titles }
 				}
+
 				add_opinion_mutual_effect = {
 					target = root
 					modifier = opinion_converted_to_islam
@@ -804,6 +683,7 @@ propagate_religion_events.8 = {
 			random_merchant_in_market = {
 				limit = { is_valid_muslim_sufi_country = yes }
 				save_scope_as = target_country
+
 				if = {
 					limit = { religious_school = { is_sufi_school = yes } }
 					religious_school = { save_scope_as = target_school }
@@ -859,14 +739,11 @@ propagate_religion_events.9 = {
 	trigger = {
 		any_market_with_merchants = {
 			any_merchant_in_market = { is_valid_muslim_sufi_country = yes }
-
 			any_location_in_market = {
 				owner ?= root
 				is_capital = no
 				dominant_religion.group != religion_group:muslim
-				NOT = {
-					has_location_modifier = chiefs_with_pretensions
-				}
+				NOT = { has_location_modifier = chiefs_with_pretensions }
 
 				local_control < 0.3
 			}
@@ -880,36 +757,27 @@ propagate_religion_events.9 = {
 			foreground = estate_type:nobles_estate
 			background = estate_type:nobles_estate
 		}
-
 		random_market_with_merchants = {
 			limit = {
 				any_merchant_in_market = { is_valid_muslim_sufi_country = yes }
-
 				any_location_in_market = {
 					owner ?= root
 					is_capital = no
 					dominant_religion.group != religion_group:muslim
-					NOT = {
-						has_location_modifier = chiefs_with_pretensions
-					}
+					NOT = { has_location_modifier = chiefs_with_pretensions }
 
 					local_control < 0.3
 				}
 			}
 
-			random_merchant_in_market = {
-				limit = { is_valid_muslim_sufi_country = yes }
-				save_scope_as = target_country
-			}
+			random_merchant_in_market = { limit = { is_valid_muslim_sufi_country = yes } save_scope_as = target_country }
 
 			random_location_in_market = {
 				limit = {
 					owner ?= root
 					is_capital = no
 					dominant_religion.group != religion_group:muslim
-					NOT = {
-						has_location_modifier = chiefs_with_pretensions
-					}
+					NOT = { has_location_modifier = chiefs_with_pretensions }
 
 					local_control < 0.3
 				}
@@ -926,10 +794,8 @@ propagate_religion_events.9 = {
 
 	option = {
 		name = propagate_religion_events.9.a
-
 		scope:target_location = {
 			location_pops_convert_to_muslim = yes
-
 			add_location_modifier = {
 				modifier = chiefs_with_pretensions
 				years = 10
@@ -948,17 +814,11 @@ propagate_religion_events.10 = {
 
 	trigger = {
 		religion.group != religion_group:muslim
-		NOT = {
-			has_country_modifier = rejection_of_syncretism
-		}
-		any_owned_location = {
-			dominant_religion.group = religion_group:muslim
-			dominant_culture = root.culture
-		}
+		NOT = { has_country_modifier = rejection_of_syncretism }
+		any_owned_location = { dominant_religion.group = religion_group:muslim dominant_culture = root.culture }
 
 		any_market_with_merchants = {
 			any_merchant_in_market = { is_valid_muslim_sufi_country = yes }
-
 			any_location_in_market = {
 				owner ?= root
 				is_capital = no
@@ -974,11 +834,9 @@ propagate_religion_events.10 = {
 			foreground = estate_type:clergy_estate
 			background = estate_type:clergy_estate
 		}
-
 		random_market_with_merchants = {
 			limit = {
 				any_merchant_in_market = { is_valid_muslim_sufi_country = yes }
-
 				any_location_in_market = {
 					owner ?= root
 					is_capital = no
@@ -986,10 +844,7 @@ propagate_religion_events.10 = {
 				}
 			}
 
-			random_merchant_in_market = {
-				limit = { is_valid_muslim_sufi_country = yes }
-				save_scope_as = target_country
-			}
+			random_merchant_in_market = { limit = { is_valid_muslim_sufi_country = yes } save_scope_as = target_country }
 
 			random_location_in_market = {
 				limit = {
@@ -1010,7 +865,6 @@ propagate_religion_events.10 = {
 
 	option = { # Reject it
 		name = propagate_religion_events.10.a
-
 		add_country_modifier = {
 			modifier = rejection_of_syncretism
 			years = 10
@@ -1033,23 +887,11 @@ propagate_religion_events.11 = {
 	trigger = {
 		religion.group != religion_group:muslim
 
-		any_owned_location = {
-			dominant_religion.group = religion_group:muslim
-			dominant_culture = root.culture
-		}
+		any_owned_location = { dominant_religion.group = religion_group:muslim dominant_culture = root.culture }
 
 		any_market_with_merchants = {
-			any_merchant_in_market = {
-				is_valid_muslim_sufi_country = yes
-				NOT = {
-					is_at_war_with = root
-				}
-			}
-
-			any_location_in_market = {
-				owner ?= root
-				dominant_religion.group != religion_group:muslim
-			}
+			any_merchant_in_market = { is_valid_muslim_sufi_country = yes NOT = { is_at_war_with = root } }
+			any_location_in_market = { owner ?= root dominant_religion.group != religion_group:muslim }
 		}
 	}
 
@@ -1060,29 +902,14 @@ propagate_religion_events.11 = {
 			foreground = estate_type:nobles_estate
 			background = estate_type:nobles_estate
 		}
-
 		random_market_with_merchants = {
 			limit = {
-				any_merchant_in_market = {
-					is_valid_muslim_sufi_country = yes
-					NOT = {
-						is_at_war_with = root
-					}
-				}
-
-				any_location_in_market = {
-					owner ?= root
-					dominant_religion.group != religion_group:muslim
-				}
+				any_merchant_in_market = { is_valid_muslim_sufi_country = yes NOT = { is_at_war_with = root } }
+				any_location_in_market = { owner ?= root dominant_religion.group != religion_group:muslim }
 			}
 
 			random_merchant_in_market = {
-				limit = {
-					is_valid_muslim_sufi_country = yes
-					NOT = {
-						is_at_war_with = root
-					}
-				}
+				limit = { is_valid_muslim_sufi_country = yes NOT = { is_at_war_with = root } }
 
 				save_scope_as = target_country
 				event_illustration_peasants_foreign_religion_pop_type_effect = yes
@@ -1110,8 +937,5 @@ propagate_religion_events.11 = {
 
 		scope:target_location = { location_pops_convert_to_muslim = yes }
 	}
-	option = {
-		name = propagate_religion_events.11.b
-		add_legitimacy = legitimacy_mild_bonus
-	}
+	option = { name = propagate_religion_events.11.b add_legitimacy = legitimacy_mild_bonus }
 }

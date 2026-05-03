@@ -562,10 +562,8 @@ lots_of_religion = {
 
 		every_owned_location = {
 			limit = { region = root.capital.region }
-
 			every_pop = {
 				limit = { religion = $other_religion$ }
-
 				random_list = {
 					10 = {  }														# ~10% no change
 					10 = { split_pop = { fraction = 0.05 religion = $religion$ } }	# ~10% convert 5%
@@ -590,14 +588,9 @@ upset_countries_of_religion = {
 			every_country_in_religion = {
 				limit = {
 					this != scope:root_country
-					NOT = {
-						is_subject_of = scope:root_country
-					}
-					NOT = {
-						is_allied_with = { target = scope:root_country }
-					}
+					NOT = { is_subject_of = scope:root_country }
+					NOT = { is_allied_with = { target = scope:root_country } }
 				}
-
 				add_opinion = { modifier = $modifier$ target = scope:root_country }
 			}
 		}
@@ -606,11 +599,7 @@ upset_countries_of_religion = {
 
 add_opinion_mutual_effect = {
 	if = {
-		limit = {
-			NOT = {
-				this = $target$
-			}
-		}
+		limit = { NOT = { this = $target$ } }
 
 		add_opinion = { target = $target$ modifier = $modifier$ }
 		reverse_add_opinion = { target = $target$ modifier = $modifier$ }
@@ -619,11 +608,7 @@ add_opinion_mutual_effect = {
 
 add_trust_mutual_effect = {
 	if = {
-		limit = {
-			NOT = {
-				this = $target$
-			}
-		}
+		limit = { NOT = { this = $target$ } }
 
 		add_trust = { target = $target$ modifier = $modifier$ }
 		reverse_add_trust = { target = $target$ modifier = $modifier$ }
@@ -632,11 +617,7 @@ add_trust_mutual_effect = {
 
 add_casus_belli_mutual_effect = {
 	if = {
-		limit = {
-			NOT = {
-				this = $target$
-			}
-		}
+		limit = { NOT = { this = $target$ } }
 
 		add_casus_belli = { target = $target$ type = $type$ }
 		$target$ = { add_casus_belli = { target = prev type = $type$ } }
@@ -645,20 +626,17 @@ add_casus_belli_mutual_effect = {
 
 remove_opinion_mutual_effect = {
 	if = {
-		limit = {
-			NOT = {
-				this = $target$
-			}
-		}
+		limit = { NOT = { this = $target$ } }
+
 		if = {
 			limit = { has_opinion = { target = $target$ modifier = $modifier$ } }
 			remove_opinion = { target = $target$ modifier = $modifier$ }
 		}
+
 		if = {
 			limit = {
 				$target$ = { has_opinion = { target = prev modifier = $modifier$ } }
 			}
-
 			$target$ = { remove_opinion = { target = prev modifier = $modifier$ } }
 		}
 	}
@@ -666,20 +644,17 @@ remove_opinion_mutual_effect = {
 
 remove_trust_mutual_effect = {
 	if = {
-		limit = {
-			NOT = {
-				this = $target$
-			}
-		}
+		limit = { NOT = { this = $target$ } }
+
 		if = {
 			limit = { has_trust = { target = $target$ modifier = $modifier$ } }
 			remove_trust = { target = $target$ modifier = $modifier$ }
 		}
+
 		if = {
 			limit = {
 				$target$ = { has_trust = { target = prev modifier = $modifier$ } }
 			}
-
 			$target$ = { remove_trust = { target = prev modifier = $modifier$ } }
 		}
 	}
@@ -687,11 +662,7 @@ remove_trust_mutual_effect = {
 
 remove_casus_belli_mutual_effect = {
 	if = {
-		limit = {
-			NOT = {
-				this = $target$
-			}
-		}
+		limit = { NOT = { this = $target$ } }
 
 		remove_casus_belli = { target = $target$ type = $type$ }
 		$target$ = { remove_casus_belli = { target = prev type = $type$ } }
@@ -701,6 +672,7 @@ remove_casus_belli_mutual_effect = {
 turn_japanese_clan_into_normal_tag = {
 	custom_tooltip = {
 		text = turn_japanese_clan_into_normal_tag.tt
+
 		if = {
 			limit = { has_reform = government_reform:japanese_clan }
 			remove_reform = government_reform:japanese_clan
@@ -712,10 +684,7 @@ turn_japanese_clan_into_normal_tag = {
 
 		every_owned_foreign_building_location = {
 			if = {
-				limit = {
-					this != location:kyoto
-					can_clan_get_this_location_when_turning_into_normal_tag = yes
-				}
+				limit = { this != location:kyoto can_clan_get_this_location_when_turning_into_normal_tag = yes }
 
 				change_location_owner = prev
 				add_core = prev
@@ -723,49 +692,26 @@ turn_japanese_clan_into_normal_tag = {
 			}
 			every_foreign_buildings_in_location = {
 				limit = { owner = scope:target_clan }
+
 				if = {
-					limit = {
-						location != location:kyoto
-						location = { can_clan_get_this_location_when_turning_into_normal_tag = yes }
-					}
+					limit = { location != location:kyoto location = { can_clan_get_this_location_when_turning_into_normal_tag = yes } }
+
 					if = {
 						limit = {
 							building_type = building_type:yamashiro
-
-							location = {
-								NOR = {
-									has_building = building_type:stockade
-									has_building = building_type:castle
-								}
-							}
+							location = { NOR = { has_building = building_type:stockade has_building = building_type:castle } }
 						}
-
-						location = {
-							change_building_level_in_location = {
-								building = building_type:stockade
-								value = 1
-							}
-						}
+						location = { change_building_level_in_location = { building = building_type:stockade value = 1 } }
 					}
+
 					if = {
 						limit = { building_type = building_type:shoen }
-
-						location = {
-							change_building_level_in_location = {
-								building = building_type:market_village
-								value = 1
-							}
-						}
+						location = { change_building_level_in_location = { building = building_type:market_village value = 1 } }
 					}
 				}
-				if = {
-					limit = {
-						NAND = {
-							location = location:kyoto
-							building_type = building_type:gosho
-						}
-					}
 
+				if = {
+					limit = { NAND = { location = location:kyoto building_type = building_type:gosho } }
 					location = { destroy_building = prev }
 				}
 			}
@@ -799,6 +745,7 @@ turn_japanese_clan_into_building_based = {
 		}
 
 		change_country_type = building
+
 		if = {
 			limit = { has_reform = government_reform:daimyo }
 			remove_reform = government_reform:daimyo
@@ -829,7 +776,6 @@ promote_to_head_of_cabinet_effect_base = {
 			limit = { has_character_modifier = head_of_the_cabinet_modifier }
 			remove_head_of_cabinet_effect = yes
 		}
-
 		$target$ = {
 			add_character_modifier = {
 				modifier = head_of_the_cabinet_modifier
@@ -910,10 +856,7 @@ remove_head_of_cabinet_effect = {
 add_3_noble_privileges = {
 	"estate(estate_type:nobles_estate)" = {
 		random_possible_privilege = { save_scope_as = first_privilege }
-		random_possible_privilege = {
-			limit = { this != scope:first_privilege }
-			save_scope_as = second_privilege
-		}
+		random_possible_privilege = { limit = { this != scope:first_privilege } save_scope_as = second_privilege }
 		random_possible_privilege = {
 			limit = { this != scope:first_privilege this != scope:second_privilege }
 			save_scope_as = third_privilege
@@ -924,7 +867,6 @@ add_3_noble_privileges = {
 set_new_ruler_with_union_fratricide = {
 	if = {
 		limit = { exists = union }
-
 		custom_description = {
 			text = set_new_ruler_with_union
 			object = $character$
@@ -937,10 +879,7 @@ set_new_ruler_with_union_fratricide = {
 
 			union ?= {
 				every_international_organization_member = {
-					limit = {
-						this != scope:union_country_event_scope
-						succession_law = heir_selection:fratricide_succesion
-					}
+					limit = { this != scope:union_country_event_scope succession_law = heir_selection:fratricide_succesion }
 
 					# don't update the unions....yet
 					set_new_foreign_ruler_no_update = $character$
@@ -964,16 +903,11 @@ set_new_ruler_with_union_if_senior = {
 	if = {
 		limit = { exists = union }
 		save_scope_as = root_country
+
 		if = {
 			limit = {
-				union ?= {
-					country_has_special_status = {
-						type = special_status:senior_partner
-						country = scope:root_country
-					}
-				}
+				union ?= { country_has_special_status = { type = special_status:senior_partner country = scope:root_country } }
 			}
-
 			set_new_ruler_with_union = { character = $character$ }
 		}
 		else = {
@@ -996,7 +930,6 @@ set_new_ruler_with_union_if_senior = {
 	}
 	else = {
 		set_new_ruler = $character$
-
 		every_subject = {
 			limit = { subject_type = { has_overlords_ruler = yes } }
 			set_new_foreign_ruler_no_update = $character$
@@ -1007,7 +940,6 @@ set_new_ruler_with_union_if_senior = {
 set_new_ruler_with_union = {
 	if = {
 		limit = { exists = union }
-
 		custom_description = {
 			text = set_new_ruler_with_union
 			object = $character$
@@ -1058,10 +990,7 @@ set_new_ruler_with_union = {
 add_effect_scaling_with_societal_value = {
 	if = {
 		limit = { societal_value:$societal_value$ != 0 }
-
-		add_$effect$ = {
-			value = { add = societal_value:$societal_value$ $operator$ = $value$ }
-		}
+		add_$effect$ = { value = { add = societal_value:$societal_value$ $operator$ = $value$ } }
 	}
 }
 
@@ -1073,10 +1002,7 @@ lock_current_government_reforms = {
 }
 
 lock_current_policy = {
-	custom_tooltip = {
-		text = lock_current_policy_tt
-		set_variable = { name = has_locked_policy_of_$type$ value = yes }
-	}
+	custom_tooltip = { text = lock_current_policy_tt set_variable = { name = has_locked_policy_of_$type$ value = yes } }
 }
 
 lock_current_heir_selection = {
@@ -1087,17 +1013,11 @@ lock_current_heir_selection = {
 }
 
 lock_current_law = {
-	custom_tooltip = {
-		text = lock_current_law_tt
-		set_variable = { name = has_locked_law_of_$type$ value = yes }
-	}
+	custom_tooltip = { text = lock_current_law_tt set_variable = { name = has_locked_law_of_$type$ value = yes } }
 }
 
 lock_current_subject_type = {
-	custom_tooltip = {
-		text = lock_current_subject_type_tt
-		set_variable = { name = has_locked_subject_type value = yes }
-	}
+	custom_tooltip = { text = lock_current_subject_type_tt set_variable = { name = has_locked_subject_type value = yes } }
 }
 
 unlock_current_government_reforms = {
@@ -1108,82 +1028,42 @@ unlock_current_government_reforms = {
 }
 
 unlock_current_policy = {
-	custom_tooltip = {
-		text = unlock_current_policy_tt
-		remove_variable = has_locked_policy_of_$type$
-	}
+	custom_tooltip = { text = unlock_current_policy_tt remove_variable = has_locked_policy_of_$type$ }
 }
 
 unlock_current_heir_selection = {
-	custom_tooltip = {
-		text = unlock_current_heir_selection_tt
-		remove_variable = has_locked_heir_selection
-	}
+	custom_tooltip = { text = unlock_current_heir_selection_tt remove_variable = has_locked_heir_selection }
 }
 
 unlock_current_law = {
-	custom_tooltip = {
-		text = unlock_current_law_tt
-		remove_variable = has_locked_law_of_$type$
-	}
+	custom_tooltip = { text = unlock_current_law_tt remove_variable = has_locked_law_of_$type$ }
 }
 
 unlock_current_subject_type = {
-	custom_tooltip = {
-		text = unlock_current_subject_type_tt
-		remove_variable = has_locked_subject_type
-	}
+	custom_tooltip = { text = unlock_current_subject_type_tt remove_variable = has_locked_subject_type }
 }
 
 nudge_towards_isolationism = {
 	custom_tooltip = isolationism_tt
 
-	change_societal_value = {
-		type = traditionalist_vs_innovative
-		value = societal_value_minor_move_to_left
-	}
-	change_societal_value = {
-		type = individualism_vs_communalism
-		value = societal_value_minor_move_to_right
-	}
-	if = {
-		limit = {
-			NOR = {
-				current_age = age_1_traditions
-				current_age = age_2_renaissance
-			}
-		}
+	change_societal_value = { type = traditionalist_vs_innovative value = societal_value_minor_move_to_left }
+	change_societal_value = { type = individualism_vs_communalism value = societal_value_minor_move_to_right }
 
-		change_societal_value = {
-			type = outward_vs_inward
-			value = societal_value_minor_move_to_right
-		}
+	if = {
+		limit = { NOR = { current_age = age_1_traditions current_age = age_2_renaissance } }
+		change_societal_value = { type = outward_vs_inward value = societal_value_minor_move_to_right }
 	}
 }
 
 nudge_towards_openness = {
 	custom_tooltip = openness_tt
 
-	change_societal_value = {
-		type = traditionalist_vs_innovative
-		value = societal_value_minor_move_to_right
-	}
-	change_societal_value = {
-		type = individualism_vs_communalism
-		value = societal_value_minor_move_to_left
-	}
-	if = {
-		limit = {
-			NOR = {
-				current_age = age_1_traditions
-				current_age = age_2_renaissance
-			}
-		}
+	change_societal_value = { type = traditionalist_vs_innovative value = societal_value_minor_move_to_right }
+	change_societal_value = { type = individualism_vs_communalism value = societal_value_minor_move_to_left }
 
-		change_societal_value = {
-			type = outward_vs_inward
-			value = societal_value_minor_move_to_left
-		}
+	if = {
+		limit = { NOR = { current_age = age_1_traditions current_age = age_2_renaissance } }
+		change_societal_value = { type = outward_vs_inward value = societal_value_minor_move_to_left }
 	}
 }
 
@@ -1213,18 +1093,10 @@ add_decree_monthly_celestial_authority_loss = {
 }
 
 remove_decree_monthly_celestial_authority_loss = {
-	change_country_modifier_size = {
-		modifier = celestial_decree_maintenance
-		value = -1
-	}
-	if = {
-		limit = {
-			country_modifier_strength = {
-				modifier = celestial_decree_maintenance
-				value <= 0
-			}
-		}
+	change_country_modifier_size = { modifier = celestial_decree_maintenance value = -1 }
 
+	if = {
+		limit = { country_modifier_strength = { modifier = celestial_decree_maintenance value <= 0 } }
 		remove_country_modifier = celestial_decree_maintenance
 	}
 
@@ -1248,7 +1120,6 @@ create_alliance = {
 break_alliance = {
 	if = {
 		limit = { is_allied_with = { target = $target$ } }
-
 		remove_relation = {
 			first = this
 			second = $target$
@@ -1261,34 +1132,32 @@ add_all_estate_satisfaction = {
 	custom_description = {
 		text = add_all_estate_satisfaction
 		value = $value$
+
 		if = {
 			limit = { country_has_estate = estate_type:nobles_estate }
 			add_estate_satisfaction = { type = estate_type:nobles_estate value = $value$ }
 		}
+
 		if = {
 			limit = { country_has_estate = estate_type:clergy_estate }
 			add_estate_satisfaction = { type = estate_type:clergy_estate value = $value$ }
 		}
+
 		if = {
 			limit = { country_has_estate = estate_type:burghers_estate }
-
-			add_estate_satisfaction = {
-				type = estate_type:burghers_estate
-				value = $value$
-			}
+			add_estate_satisfaction = { type = estate_type:burghers_estate value = $value$ }
 		}
+
 		if = {
 			limit = { country_has_estate = estate_type:peasants_estate }
-
-			add_estate_satisfaction = {
-				type = estate_type:peasants_estate
-				value = $value$
-			}
+			add_estate_satisfaction = { type = estate_type:peasants_estate value = $value$ }
 		}
+
 		if = {
 			limit = { country_has_estate = estate_type:tribes_estate }
 			add_estate_satisfaction = { type = estate_type:tribes_estate value = $value$ }
 		}
+
 		if = {
 			limit = { country_has_estate = estate_type:dhimmi_estate }
 			add_estate_satisfaction = { type = estate_type:dhimmi_estate value = $value$ }
@@ -1297,10 +1166,7 @@ add_all_estate_satisfaction = {
 }
 
 save_ruler_regent_as_target_character = {
-	if = {
-		limit = { has_ruler = yes }
-		ruler ?= { save_scope_as = target_character }
-	}
+	if = { limit = { has_ruler = yes } ruler ?= { save_scope_as = target_character } }
 	else = { regent ?= { save_scope_as = target_character } }
 }
 
@@ -1339,55 +1205,22 @@ setup_societal_values = {
 		reset_all_societal_values = yes
 	}
 
-	change_societal_value = {
-		type = centralization_vs_decentralization
-		value = $centralization_vs_decentralization$
-	}
-	change_societal_value = {
-		type = traditionalist_vs_innovative
-		value = $traditionalist_vs_innovative$
-	}
-	change_societal_value = {
-		type = spiritualist_vs_humanist
-		value = $spiritualist_vs_humanist$
-	}
-	change_societal_value = {
-		type = aristocracy_vs_plutocracy
-		value = $aristocracy_vs_plutocracy$
-	}
-	change_societal_value = {
-		type = serfdom_vs_free_subjects
-		value = $serfdom_vs_free_subjects$
-	}
-	change_societal_value = {
-		type = mercantilism_vs_free_trade
-		value = $mercantilism_vs_free_trade$
-	}
-	change_societal_value = {
-		type = belligerent_vs_conciliatory
-		value = $belligerent_vs_conciliatory$
-	}
-	change_societal_value = {
-		type = quality_vs_quantity
-		value = $quality_vs_quantity$
-	}
-	change_societal_value = {
-		type = offensive_vs_defensive
-		value = $offensive_vs_defensive$
-	}
+	change_societal_value = { type = centralization_vs_decentralization value = $centralization_vs_decentralization$ }
+	change_societal_value = { type = traditionalist_vs_innovative value = $traditionalist_vs_innovative$ }
+	change_societal_value = { type = spiritualist_vs_humanist value = $spiritualist_vs_humanist$ }
+	change_societal_value = { type = aristocracy_vs_plutocracy value = $aristocracy_vs_plutocracy$ }
+	change_societal_value = { type = serfdom_vs_free_subjects value = $serfdom_vs_free_subjects$ }
+	change_societal_value = { type = mercantilism_vs_free_trade value = $mercantilism_vs_free_trade$ }
+	change_societal_value = { type = belligerent_vs_conciliatory value = $belligerent_vs_conciliatory$ }
+	change_societal_value = { type = quality_vs_quantity value = $quality_vs_quantity$ }
+	change_societal_value = { type = offensive_vs_defensive value = $offensive_vs_defensive$ }
 	change_societal_value = { type = land_vs_naval value = $land_vs_naval$ }
 	change_societal_value = {
 		type = capital_economy_vs_traditional_economy
 		value = $capital_economy_vs_traditional_economy$
 	}
-	change_societal_value = {
-		type = individualism_vs_communalism
-		value = $individualism_vs_communalism$
-	}
-	change_societal_value = {
-		type = outward_vs_inward
-		value = $outward_vs_inward$
-	}
+	change_societal_value = { type = individualism_vs_communalism value = $individualism_vs_communalism$ }
+	change_societal_value = { type = outward_vs_inward value = $outward_vs_inward$ }
 }
 
 apply_societal_value_push_modifiers = {
@@ -1395,11 +1228,9 @@ apply_societal_value_push_modifiers = {
 		text = apply_societal_value_push_modifiers
 		object = $country$
 		value = $years$
-		if = {
-			limit = {
-				$country$ = { societal_value:centralization_vs_decentralization > 0 }
-			}
 
+		if = {
+			limit = { $country$ = { societal_value:centralization_vs_decentralization > 0 } }
 			add_country_modifier = {
 				modifier = societal_value_push_centralization
 				years = $years$
@@ -1413,9 +1244,9 @@ apply_societal_value_push_modifiers = {
 				size = $size$
 			}
 		}
+
 		if = {
 			limit = { $country$ = { societal_value:traditionalist_vs_innovative > 0 } }
-
 			add_country_modifier = {
 				modifier = societal_value_push_traditionalist
 				years = $years$
@@ -1429,9 +1260,9 @@ apply_societal_value_push_modifiers = {
 				size = $size$
 			}
 		}
+
 		if = {
 			limit = { $country$ = { societal_value:spiritualist_vs_humanist > 0 } }
-
 			add_country_modifier = {
 				modifier = societal_value_push_spiritualist
 				years = $years$
@@ -1445,9 +1276,9 @@ apply_societal_value_push_modifiers = {
 				size = $size$
 			}
 		}
+
 		if = {
 			limit = { $country$ = { societal_value:aristocracy_vs_plutocracy > 0 } }
-
 			add_country_modifier = {
 				modifier = societal_value_push_aristocracy
 				years = $years$
@@ -1461,9 +1292,9 @@ apply_societal_value_push_modifiers = {
 				size = $size$
 			}
 		}
+
 		if = {
 			limit = { $country$ = { societal_value:serfdom_vs_free_subjects > 0 } }
-
 			add_country_modifier = {
 				modifier = societal_value_push_serfdom
 				years = $years$
@@ -1477,9 +1308,9 @@ apply_societal_value_push_modifiers = {
 				size = $size$
 			}
 		}
+
 		if = {
 			limit = { $country$ = { societal_value:mercantilism_vs_free_trade > 0 } }
-
 			add_country_modifier = {
 				modifier = societal_value_push_mercantilism
 				years = $years$
@@ -1493,9 +1324,9 @@ apply_societal_value_push_modifiers = {
 				size = $size$
 			}
 		}
+
 		if = {
 			limit = { $country$ = { societal_value:belligerent_vs_conciliatory > 0 } }
-
 			add_country_modifier = {
 				modifier = societal_value_push_belligerent
 				years = $years$
@@ -1509,9 +1340,9 @@ apply_societal_value_push_modifiers = {
 				size = $size$
 			}
 		}
+
 		if = {
 			limit = { $country$ = { societal_value:quality_vs_quantity > 0 } }
-
 			add_country_modifier = {
 				modifier = societal_value_push_quality
 				years = $years$
@@ -1525,9 +1356,9 @@ apply_societal_value_push_modifiers = {
 				size = $size$
 			}
 		}
+
 		if = {
 			limit = { $country$ = { societal_value:offensive_vs_defensive > 0 } }
-
 			add_country_modifier = {
 				modifier = societal_value_push_offensive
 				years = $years$
@@ -1541,9 +1372,9 @@ apply_societal_value_push_modifiers = {
 				size = $size$
 			}
 		}
+
 		if = {
 			limit = { $country$ = { societal_value:land_vs_naval > 0 } }
-
 			add_country_modifier = {
 				modifier = societal_value_push_land
 				years = $years$
@@ -1557,11 +1388,9 @@ apply_societal_value_push_modifiers = {
 				size = $size$
 			}
 		}
-		if = {
-			limit = {
-				$country$ = { societal_value:capital_economy_vs_traditional_economy > 0 }
-			}
 
+		if = {
+			limit = { $country$ = { societal_value:capital_economy_vs_traditional_economy > 0 } }
 			add_country_modifier = {
 				modifier = societal_value_push_capital_economy
 				years = $years$
@@ -1575,9 +1404,9 @@ apply_societal_value_push_modifiers = {
 				size = $size$
 			}
 		}
+
 		if = {
 			limit = { $country$ = { societal_value:individualism_vs_communalism > 0 } }
-
 			add_country_modifier = {
 				modifier = societal_value_push_individualism
 				years = $years$
@@ -1591,9 +1420,9 @@ apply_societal_value_push_modifiers = {
 				size = $size$
 			}
 		}
+
 		if = {
 			limit = { $country$ = { societal_value:outward_vs_inward > 0 } }
-
 			add_country_modifier = {
 				modifier = societal_value_push_outward
 				years = $years$
@@ -1607,9 +1436,9 @@ apply_societal_value_push_modifiers = {
 				size = $size$
 			}
 		}
+
 		if = {
 			limit = { $country$ = { societal_value:sinicized_vs_unsinicized > 0 } }
-
 			add_country_modifier = {
 				modifier = societal_value_push_sinicized
 				years = $years$
@@ -1623,9 +1452,9 @@ apply_societal_value_push_modifiers = {
 				size = $size$
 			}
 		}
+
 		if = {
 			limit = { $country$ = { societal_value:absolutism_vs_liberalism > 0 } }
-
 			add_country_modifier = {
 				modifier = societal_value_push_absolutism
 				years = $years$
@@ -1644,12 +1473,7 @@ apply_societal_value_push_modifiers = {
 
 set_ended_disaster_flag_effect = {
 	if = {
-		limit = {
-			NOT = {
-				has_variable = had_$type$_disaster
-			}
-		}
-
+		limit = { NOT = { has_variable = had_$type$_disaster } }
 		set_variable = { name = had_$type$_disaster value = 1 }
 	}
 	else = { change_variable = { name = had_$type$_disaster add = 1 } }
@@ -1661,52 +1485,32 @@ make_regent_to_ruler = {
 
 		regent ?= {
 			if = {
-				limit = {
-					NOT = {
-						has_estate = estate_type:nobles_estate
-					}
-				}
-
+				limit = { NOT = { has_estate = estate_type:nobles_estate } }
 				change_character_estate = estate_type:nobles_estate
 			}
+
 			if = {
 				limit = { has_dynasty = no }
 				custom_tooltip = regencies.1.founds_dynasty_tt
 
 				hidden_effect = {
-					owner.capital ?= {
-						create_dynasty_from_location = random
-						last_dynasty_in_location = { save_scope_as = target_dynasty }
-					}
-					if = {
-						limit = { exists = scope:target_dynasty }
-						change_dynasty = scope:target_dynasty
-					}
+					owner.capital ?= { create_dynasty_from_location = random last_dynasty_in_location = { save_scope_as = target_dynasty } }
+					if = { limit = { exists = scope:target_dynasty } change_dynasty = scope:target_dynasty }
 				}
 			}
+
 			every_descendant = {
 				if = {
-					limit = {
-						NOR = {
-							has_estate = estate_type:nobles_estate
-							has_estate = estate_type:clergy_estate
-						}
-					}
-
+					limit = { NOR = { has_estate = estate_type:nobles_estate has_estate = estate_type:clergy_estate } }
 					change_character_estate = estate_type:nobles_estate
 				}
 				hidden_effect = {
-					if = {
-						limit = { has_dynasty = no exists = scope:target_dynasty }
-						change_dynasty = scope:target_dynasty
-					}
+					if = { limit = { has_dynasty = no exists = scope:target_dynasty } change_dynasty = scope:target_dynasty }
 				}
 			}
 		}
-		if = {
-			limit = { regent.religion.group != religion.group }
-			change_religion = regent.religion
-		}
+
+		if = { limit = { regent.religion.group != religion.group } change_religion = regent.religion }
 
 		set_new_ruler = regent
 	}
@@ -1716,21 +1520,11 @@ set_country_rank_effect = {
 	if = {
 		limit = {
 			OR = {
-				AND = {
-					country_rank_level < 2
-					$rank$ = country_rank:rank_duchy
-				}
-				AND = {
-					country_rank_level < 3
-					$rank$ = country_rank:rank_kingdom
-				}
-				AND = {
-					country_rank_level < 4
-					$rank$ = country_rank:rank_empire
-				}
+				AND = { country_rank_level < 2 $rank$ = country_rank:rank_duchy }
+				AND = { country_rank_level < 3 $rank$ = country_rank:rank_kingdom }
+				AND = { country_rank_level < 4 $rank$ = country_rank:rank_empire }
 			}
 		}
-
 		set_country_rank = $rank$
 	}
 }
@@ -1738,7 +1532,6 @@ set_country_rank_effect = {
 set_character_as_the_great = {
 	$target$ = {
 		set_nickname = nick_the_great
-
 		add_character_modifier = {
 			modifier = the_great_ruler_modifier
 			years = -1
@@ -1754,31 +1547,16 @@ set_character_as_the_great = {
 }
 
 make_the_great_scope = {
-	if = {
-		limit = { has_or_had_great_ruler = yes }
-		var:dynamic_the_great_character = { save_scope_as = $save_scope_as$ }
-	}
+	if = { limit = { has_or_had_great_ruler = yes } var:dynamic_the_great_character = { save_scope_as = $save_scope_as$ } }
 }
 
 add_historical_rival_scripted = {
 	if = {
-		limit = {
-			exists = $target$
-			NOT = {
-				this = $target$
-			}
-		}
+		limit = { exists = $target$ NOT = { this = $target$ } }
 
 		add_historical_rival = $target$
-		if = {
-			limit = {
-				NOT = {
-					is_rival_of = $target$
-				}
-			}
+		if = { limit = { NOT = { is_rival_of = $target$ } } add_rival = $target$ }
 
-			add_rival = $target$
-		}
 		if = {
 			limit = { country_exists = $target$ }
 			if = {
@@ -1786,6 +1564,7 @@ add_historical_rival_scripted = {
 				break_alliance = { target = $target$ }
 			}
 		}
+
 		hidden_effect = {
 			set_local_variable = { name = trigger_recipient_event value = $trigger_recipient_event$ }	# Yes/no
 			if = {
@@ -1801,17 +1580,15 @@ remove_historical_rival_scripted = {
 	if = {
 		limit = {
 			exists = $target$
-			NOT = {
-				this = $target$
-			}
+			NOT = { this = $target$ }
 
 			has_historical_rival = $target$
 		}
 
 		remove_historical_rival = $target$
+
 		if = {
 			limit = { country_exists = $target$ }
-
 			hidden_effect = {
 				set_local_variable = { name = trigger_recipient_event value = $trigger_recipient_event$ }	# Yes/no
 				if = {
@@ -1828,40 +1605,31 @@ chi_adjust_pre_rtr_modifiers = {
 	if = {
 		limit = {
 			current_date < 1368.1.1
-
-			situation:red_turban_rebellions = {
-				situation_is_active = no
-				situation_has_ended = no
-			}
+			situation:red_turban_rebellions = { situation_is_active = no situation_has_ended = no }
 		}
 
 		custom_description = {
 			text = chi_adjust_pre_rtr_modifiers_text
 			value = $value$
-			if = {
-				limit = {
-					NOT = {
-						has_variable = chi_rtr_modifier_intensity
-					}
-				}
 
-				set_variable = {
-					name = chi_rtr_modifier_intensity
-					value = { value = 1 add = $value$ }
-				}
-			}
-			else = {
-				change_variable = { name = chi_rtr_modifier_intensity add = $value$ }
-			}
 			if = {
-				limit = {
-					has_variable = chi_rtr_modifier_intensity
-					var:chi_rtr_modifier_intensity > 0
-				}
+				limit = { NOT = { has_variable = chi_rtr_modifier_intensity } }
+				set_variable = { name = chi_rtr_modifier_intensity value = { value = 1 add = $value$ } }
+			}
+			else = { change_variable = { name = chi_rtr_modifier_intensity add = $value$ } }
 
+			if = {
+				limit = { has_variable = chi_rtr_modifier_intensity var:chi_rtr_modifier_intensity > 0 }
 				add_country_modifier = {
 					modifier = chi_factional_strife
-					months = { value = 1368 add = 1 subtract = current_year multiply = 12 }
+
+					months = {
+						value = 1368
+						add = 1
+						subtract = current_year
+						multiply = 12
+					}
+
 					mode = replace
 					size = var:chi_rtr_modifier_intensity
 				}
@@ -1885,7 +1653,6 @@ move_capital_event_effect = {
 				multiply = 0.75
 			}
 		}
-
 		$from$ = {
 			change_development = {
 				value = $from$.development
@@ -1899,7 +1666,6 @@ move_capital_event_effect = {
 	hidden_effect = {
 		set_local_variable = {
 			name = difference_between_targets
-
 			value = {
 				value = $from$.development
 				subtract = $to$.development
@@ -1910,26 +1676,15 @@ move_capital_event_effect = {
 
 		$to$ = { change_development = local_var:difference_between_targets }
 
-		$from$ = {
-			change_development = {
-				value = local_var:difference_between_targets
-				multiply = -1
-			}
-		}
+		$from$ = { change_development = { value = local_var:difference_between_targets multiply = -1 } }
 	}
 
 	$to$ = {
 		if = {
 			limit = { modifier:sul_is_city_rank_tier = yes }
-
-			province = {
-				every_location_in_province = { change_prosperity = prosperity_mild_bonus }
-			}
+			province = { every_location_in_province = { change_prosperity = prosperity_mild_bonus } }
 		}
-		else_if = {
-			limit = { modifier:sul_is_town_rank_tier = yes }
-			sul_set_rank_city = yes
-		}
+		else_if = { limit = { modifier:sul_is_town_rank_tier = yes } sul_set_rank_city = yes }
 		else = { sul_set_rank_town = yes }
 	}
 
@@ -1942,7 +1697,11 @@ move_capital_event_effect = {
 		amount = {
 			fixed_range = {
 				min = { value = $from$.population divide = 100 }
-				max = { value = $from$.population multiply = 2 divide = 100 }
+				max = {
+					value = $from$.population
+					multiply = 2
+					divide = 100
+				}
 			}
 		}
 
@@ -1957,12 +1716,7 @@ enable_treasure_voyages = {
 
 		# pre-construct a list of areas we can voyage to
 		if = {
-			limit = {
-				NOT = {
-					has_global_variable_list = treasure_voyage_areas
-				}
-			}
-
+			limit = { NOT = { has_global_variable_list = treasure_voyage_areas } }
 			every_area = {
 				limit = {
 					is_area_coastal_sea = yes
@@ -1972,12 +1726,8 @@ enable_treasure_voyages = {
 						sub_continent = sub_continent:south_asia
 						sub_continent = sub_continent:middle_east
 					}
-					NOR = {
-						region = region:anatolia_region
-						region = region:crescent_region
-					}
+					NOR = { region = region:anatolia_region region = region:crescent_region }
 				}
-
 				add_to_global_variable_list = { name = treasure_voyage_areas target = this }
 			}
 		}
@@ -1997,7 +1747,6 @@ chinese_treasure_sail_to = {
 
 	set_local_variable = {
 		name = time_to_travel
-
 		value = {
 			if = {
 				limit = {
@@ -2008,12 +1757,16 @@ chinese_treasure_sail_to = {
 
 				value = "scope:next_tile.distance_to(scope:expedition_initiator.var:chinese_treasure_fleet_location)"
 				divide = 5
+
 				if = {
 					limit = { exists = scope:target_character }
-
 					multiply = { # Leader's military skill can speed up the expedition travel time greatly
 						value = 1
-						subtract = { value = scope:target_character.mil divide = 100 multiply = 0.5 }
+						subtract = {
+							value = scope:target_character.mil
+							divide = 100
+							multiply = 0.5
+						}
 					}
 				}
 
@@ -2023,10 +1776,7 @@ chinese_treasure_sail_to = {
 		}
 	}
 
-	trigger_event_silently = {
-		id = flavor_chi.2003
-		days = local_var:time_to_travel
-	}
+	trigger_event_silently = { id = flavor_chi.2003 days = local_var:time_to_travel }
 }
 
 chinese_treasure_depart_from_port = {
@@ -2040,7 +1790,6 @@ chinese_treasure_depart_from_port = {
 chinese_expedition_calculate_gift_for_this = {
 	set_variable = {
 		name = gift_value
-
 		value = {
 			value = total_population
 			divide = 1000
@@ -2063,21 +1812,16 @@ chi_expedition_resolution_very_positive = {
 		modifier = chi_beloved_by_expedition
 		years = 25
 	}
+
 	if = {
 		limit = {
 			exists = international_organization:middle_kingdom
-			NOT = {
-				is_member_of_international_organization = international_organization:middle_kingdom
-			}
+			NOT = { is_member_of_international_organization = international_organization:middle_kingdom }
 		}
 
-		international_organization:middle_kingdom = {
-			add_country_to_international_organization = root
-		}
+		international_organization:middle_kingdom = { add_country_to_international_organization = root }
 
-		scope:expedition_initiator = {
-			add_to_variable_list = { name = nations_to_make_tributary target = root }
-		}
+		scope:expedition_initiator = { add_to_variable_list = { name = nations_to_make_tributary target = root } }
 	}
 }
 
@@ -2087,21 +1831,16 @@ chi_expedition_resolution_positive = {
 		modifier = chi_favored_by_expedition
 		years = 25
 	}
+
 	if = {
 		limit = {
 			exists = international_organization:middle_kingdom
-			NOT = {
-				is_member_of_international_organization = international_organization:middle_kingdom
-			}
+			NOT = { is_member_of_international_organization = international_organization:middle_kingdom }
 		}
 
-		international_organization:middle_kingdom = {
-			add_country_to_international_organization = root
-		}
+		international_organization:middle_kingdom = { add_country_to_international_organization = root }
 
-		scope:expedition_initiator = {
-			add_to_variable_list = { name = nations_to_make_tributary target = root }
-		}
+		scope:expedition_initiator = { add_to_variable_list = { name = nations_to_make_tributary target = root } }
 	}
 }
 
@@ -2156,36 +1895,21 @@ decrease_opinion_of_expedition_greatly = {
 
 grant_effects_of_opinion = {
 	custom_tooltip = based_on_expedition_opinion
-	if = {
-		limit = {
-			has_variable = chinese_expedition_opinion
-			var:chinese_expedition_opinion >= 67
-		}
 
+	if = {
+		limit = { has_variable = chinese_expedition_opinion var:chinese_expedition_opinion >= 67 }
 		chi_expedition_resolution_very_positive = yes
 	}
 	else_if = {
-		limit = {
-			has_variable = chinese_expedition_opinion
-			var:chinese_expedition_opinion >= 33
-		}
-
+		limit = { has_variable = chinese_expedition_opinion var:chinese_expedition_opinion >= 33 }
 		chi_expedition_resolution_positive = yes
 	}
 	else_if = {
-		limit = {
-			has_variable = chinese_expedition_opinion
-			var:chinese_expedition_opinion <= -33
-		}
-
+		limit = { has_variable = chinese_expedition_opinion var:chinese_expedition_opinion <= -33 }
 		chi_expedition_resolution_negative = yes
 	}
 	else_if = {
-		limit = {
-			has_variable = chinese_expedition_opinion
-			var:chinese_expedition_opinion <= -67
-		}
-
+		limit = { has_variable = chinese_expedition_opinion var:chinese_expedition_opinion <= -67 }
 		chi_expedition_resolution_very_negative = yes
 	}
 	else = { custom_tooltip = custom_tooltip_generic_nothing_happens }
@@ -2207,19 +1931,13 @@ select_insignificant_gov_reform = {
 	if = {
 		limit = { num_open_reform_slots = 0 }
 
-		random_current_reforms = {
-			limit = { is_unique_reform = no is_major_reform = no }
-			save_scope_as = $save_scope_as$
-		}
+		random_current_reforms = { limit = { is_unique_reform = no is_major_reform = no } save_scope_as = $save_scope_as$ }
 		random_current_reforms = {
 			limit = {
 				is_unique_reform = no
 				is_major_reform = no
-				NOT = {
-					is_fully_implemented_in = prev
-				}
+				NOT = { is_fully_implemented_in = prev }
 			}
-
 			save_scope_as = $save_scope_as$
 		}
 	}
@@ -2227,10 +1945,8 @@ select_insignificant_gov_reform = {
 
 add_replacing_gov_reform = {
 	select_insignificant_gov_reform = { save_scope_as = target_reform }
-	if = {
-		limit = { exists = scope:target_reform }
-		remove_reform = scope:target_reform
-	}
+
+	if = { limit = { exists = scope:target_reform } remove_reform = scope:target_reform }
 
 	add_reform = $reform$
 }
@@ -2249,12 +1965,7 @@ clr_government_name = {
 
 add_character_to_random_open_cabinet = {
 	random_cabinet = {
-		limit = {
-			NOT = {
-				exists = cabinet_member
-			}
-		}
-
+		limit = { NOT = { exists = cabinet_member } }
 		add_to_cabinet = $target$
 	}
 }
@@ -2276,37 +1987,22 @@ break_union = {
 		text = break_union_text
 		object = $target$
 		save_scope_as = root_country
-		if = {
-			limit = { has_variable = pu_war_senior_partner }
-			remove_variable = pu_war_senior_partner
-		}
+		if = { limit = { has_variable = pu_war_senior_partner } remove_variable = pu_war_senior_partner }
+
 		if = {
 			limit = { in_union_with = $target$ }
 			union = { remove_country_from_international_organization = scope:root_country }
 		}
+
 		if = {
 			limit = {
-				OR = {
-					has_ruler = no
-
-					ruler = {
-						NOT = {
-							owner = scope:root_country
-						}
-					}
-				}
+				OR = { has_ruler = no ruler = { NOT = { owner = scope:root_country } } }
 			}
-			if = {
-				limit = { has_ruler = yes }
-				ruler = { save_scope_as = target_character }
-			}
-			if = {
-				limit = {
-					NOT = {
-						exists = scope:target_character
-					}
-				}
 
+			if = { limit = { has_ruler = yes } ruler = { save_scope_as = target_character } }
+
+			if = {
+				limit = { NOT = { exists = scope:target_character } }
 				ordered_character = {
 					order_by = heir_score_home
 					limit = { is_adult = yes }
@@ -2315,13 +2011,9 @@ break_union = {
 					save_scope_as = target_character
 				}
 			}
-			if = {
-				limit = {
-					NOT = {
-						exists = scope:target_character
-					}
-				}
 
+			if = {
+				limit = { NOT = { exists = scope:target_character } }
 				create_character = {
 					estate = estate_type:nobles_estate
 					adm = { 20 60 }
@@ -2332,10 +2024,8 @@ break_union = {
 					save_scope_as = target_character
 				}
 			}
-			if = {
-				limit = { exists = scope:target_character }
-				set_new_ruler = scope:target_character
-			}
+
+			if = { limit = { exists = scope:target_character } set_new_ruler = scope:target_character }
 		}
 	}
 }
@@ -2383,17 +2073,15 @@ set_revolution_effect = {
 		add_manpower = 50
 		save_scope_as = rev_country_scope
 
-		every_estate_privilege = {
-			scope:rev_country_scope = { revoke_estate_privilege = prev }
-		}
+		every_estate_privilege = { scope:rev_country_scope = { revoke_estate_privilege = prev } }
 
 		add_all_estate_satisfaction = { value = estate_satisfaction_extreme_bonus }
 		start_parliament_effect = yes
 		add_army_tradition = army_tradition_radical_bonus
 		add_navy_tradition = navy_tradition_radical_bonus
+
 		while = {
 			count = 8
-
 			create_character = {
 				adm = { 50 70 }
 				dip = { 50 70 }
@@ -2414,23 +2102,15 @@ remove_revolution = {
 
 	ruler_or_regent ?= {
 		if = { limit = { has_dynasty = no } found_dynasty = random }
-		if = {
-			limit = {
-				NOT = {
-					has_estate = estate_type:nobles_estate
-				}
-			}
 
+		if = {
+			limit = { NOT = { has_estate = estate_type:nobles_estate } }
 			change_character_estate = estate_type:nobles_estate
 		}
+
 		hidden_effect = {
 			every_descendant = {
-				limit = {
-					NOR = {
-						has_estate = estate_type:nobles_estate
-						has_estate = estate_type:clergy_estate
-					}
-				}
+				limit = { NOR = { has_estate = estate_type:nobles_estate has_estate = estate_type:clergy_estate } }
 
 				change_character_estate = estate_type:nobles_estate
 
@@ -2439,6 +2119,7 @@ remove_revolution = {
 				}
 			}
 		}
+
 		if = {
 			limit = { prev = { has_regent = yes } }
 			prev = { set_new_ruler = prev }
@@ -2457,45 +2138,35 @@ set_revolution_target_effect = {
 start_parliament_effect = {
 	if = {
 		limit = { is_active_parliament = no }
+
 		if = {
 			limit = { exists = scope:parliament_location }
 			set_parliament_location = scope:parliament_location
 			custom_tooltip = select_parliament_location_modifier_tooltip
+
 			if = {
 				limit = { scope:parliament_location = capital }
 				custom_tooltip = select_parliament_location_capital_modifier_tooltip
 			}
-			else = {
-				custom_tooltip = select_parliament_location_not_capital_modifier_tooltip
-			}
+			else = { custom_tooltip = select_parliament_location_not_capital_modifier_tooltip }
 		}
 		else_if = { limit = { exists = capital } set_parliament_location = capital }
 		set_parliament_active = yes
-		if = {
-			limit = {
-				NOT = {
-					exists = scope:parliament_issue
-				}
-			}
 
+		if = {
+			limit = { NOT = { exists = scope:parliament_issue } }
 			random_possible_parliament_issue = { save_scope_as = parliament_issue }
 		}
+
 		if = {
 			limit = { exists = scope:parliament_issue }
 			set_parliament_issue = scope:parliament_issue
 
 			set_parliament_issue_support = {
-				add = {
-					desc = parliament_base_support
-					value = modifier:parliament_base_support
-				}
+				add = { desc = parliament_base_support value = modifier:parliament_base_support }
 				if = {
 					limit = { scope:parliament_issue.estate_type = { always_loyal = no } }
-
-					add = {
-						desc = estate_power
-						value = "estate_power(scope:parliament_issue.estate_type)"
-					}
+					add = { desc = estate_power value = "estate_power(scope:parliament_issue.estate_type)" }
 				}
 			}
 		}
@@ -2505,20 +2176,14 @@ start_parliament_effect = {
 create_union_of_integration_level = {
 	if = {
 		limit = {
-			NOT = {
-				in_union_with = $target$
-			}
-			$target$ = {
-				NOT = {
-					exists = union
-				}
-			}
+			NOT = { in_union_with = $target$ }
+			$target$ = { NOT = { exists = union } }
 		}
-
 		custom_description = {
 			text = create_union_of_integration_level
 			object = $target$
 			value = $level$
+
 			if = {
 				limit = { exists = union }
 
@@ -2526,27 +2191,20 @@ create_union_of_integration_level = {
 					if = {
 						limit = { modifier:union_integration_level > 0 }
 						save_temporary_scope_value_as = { name = applied_level value = $level$ }
-						save_temporary_scope_value_as = {
-							name = current_level
-							value = modifier:union_integration_level
-						}
+						save_temporary_scope_value_as = { name = current_level value = modifier:union_integration_level }
+
 						if = {
 							limit = { scope:applied_level > scope:current_level }
-
-							save_temporary_scope_value_as = {
-								name = applied_level
-								value = scope:current_level
-							}
+							save_temporary_scope_value_as = { name = applied_level value = scope:current_level }
 						}
 					}
-
 					save_temporary_scope_as = temp_target_union
 				}
 
 				create_union = $target$
+
 				if = {
 					limit = { exists = scope:applied_level exists = scope:temp_target_union }
-
 					$target$ = {
 						set_individual_integration_level = {
 							value = scope:applied_level
@@ -2564,9 +2222,7 @@ create_union_of_integration_level = {
 }
 
 annex_country_diplomatically = {
-	show_as_tooltip = {
-		annex_country = { country = $country$ reason = Diplomatic }
-	}
+	show_as_tooltip = { annex_country = { country = $country$ reason = Diplomatic } }
 
 	hidden_effect = {
 		$country$ = { set_variable = no_annex_event_trigger }
@@ -2582,30 +2238,22 @@ on_bribe_default_effect = {
 			union ?= { modifier:union_integration_level > 0 }
 			exists = scope:recipient
 		}
+
 		if = {
 			limit = { scope:recipient = { has_variable = integrated_in_union } }
-
 			save_temporary_scope_value_as = {
 				name = union_cost_factor_multiplier
-
-				value = {
-					value = union.modifier:union_integration_level
-					subtract = scope:recipient.var:integrated_in_union
-				}
+				value = { value = union.modifier:union_integration_level subtract = scope:recipient.var:integrated_in_union }
 			}
 		}
 		else = {
-			save_temporary_scope_value_as = {
-				name = union_cost_factor_multiplier
-				value = union.modifier:union_integration_level
-			}
+			save_temporary_scope_value_as = { name = union_cost_factor_multiplier value = union.modifier:union_integration_level }
 		}
+
 		if = {
 			limit = { great_power_score > 0 }
-
 			save_temporary_scope_value_as = {
 				name = union_special_status_multiplier
-
 				value = {
 					value = scope:recipient.great_power_score
 					divide = great_power_score
@@ -2614,26 +2262,19 @@ on_bribe_default_effect = {
 			}
 		}
 	}
+
 	if = {
 		limit = { exists = scope:union_cost_factor_multiplier }
 
 		add_government_power = {
 			value = government_power_weak_penalty
 			multiply = scope:union_cost_factor_multiplier
-			if = {
-				limit = { exists = scope:union_special_status_multiplier }
-				multiply = scope:union_special_status_multiplier
-			}
+			if = { limit = { exists = scope:union_special_status_multiplier } multiply = scope:union_special_status_multiplier }
 		}
 
 		add_gold = union_parliament_gold_bribe_actor
 
-		scope:recipient = {
-			add_gold_to_estate = {
-				estate_type = scope:target
-				value = union_parliament_gold_bribe_recipient
-			}
-		}
+		scope:recipient = { add_gold_to_estate = { estate_type = scope:target value = union_parliament_gold_bribe_recipient } }
 	}
 }
 
@@ -2650,15 +2291,9 @@ change_religion_for_ruler_and_family = {
 				ruler ?= {
 					change_character_religion = $religion$
 
-					every_descendant = {
-						limit = { owner = $country$ }
-						change_character_religion = $religion$
-					}
+					every_descendant = { limit = { owner = $country$ } change_character_religion = $religion$ }
 
-					every_spouse = {
-						limit = { owner = $country$ this != $country$.heir }
-						change_character_religion = $religion$
-					}
+					every_spouse = { limit = { owner = $country$ this != $country$.heir } change_character_religion = $religion$ }
 				}
 			}
 		}
@@ -2683,24 +2318,14 @@ setup_colonial_nation = {
 }
 
 cc_setup_new_town = {
-	change_building_level_in_location = {
-		building = building_type:clay_pit
-		value = 1
-	}
-	change_building_level_in_location = {
-		building = building_type:lumber_mill
-		value = 1
-	}
-	change_building_level_in_location = {
-		building = building_type:mason
-		value = 1
-	}
+	change_building_level_in_location = { building = building_type:clay_pit value = 1 }
+	change_building_level_in_location = { building = building_type:lumber_mill value = 1 }
+	change_building_level_in_location = { building = building_type:mason value = 1 }
 
 	change_max_raw_material_workers = 1
 
 	if = {
 		limit = { market_access <= 0 }
-
 		create_market = {
 			builder = root
 			location = scope:new_town
@@ -2709,37 +2334,27 @@ cc_setup_new_town = {
 			price_modifier = 0
 		}
 	}
+
 	if = {
 		limit = { scope:actor = { is_human = yes } ironman = yes }
-
-		scope:actor = {
-			set_variable = { name = unlock_achievement_its_just_business months = 1 }
-		}
+		scope:actor = { set_variable = { name = unlock_achievement_its_just_business months = 1 } }
 	}
 }
 
 adopt_compatible_heir_religion_law = {
 	$country$ = { save_temporary_scope_as = temp_actor }
+
 	if = {
 		limit = {
 			exists = scope:temp_actor
 			OR = {
-				NOT = {
-					has_law = heir_religion_law
-				}
-				"law_policy(law:heir_religion_law)" = {
-					NOT = {
-						is_locked_for = prev
-					}
-				}
+				NOT = { has_law = heir_religion_law }
+				"law_policy(law:heir_religion_law)" = { NOT = { is_locked_for = prev } }
 			}
 		}
-		if = {
-			limit = {
-				religion = scope:temp_actor.religion
-				policy:heir_same_religion = { is_available_for = prev }
-			}
 
+		if = {
+			limit = { religion = scope:temp_actor.religion policy:heir_same_religion = { is_available_for = prev } }
 			add_policy = policy:heir_same_religion
 		}
 		else_if = {
@@ -2747,7 +2362,6 @@ adopt_compatible_heir_religion_law = {
 				religion.group = scope:temp_actor.religion.group
 				policy:heir_same_religion_group = { is_available_for = prev }
 			}
-
 			add_policy = policy:heir_same_religion_group
 		}
 		else_if = {
@@ -2761,11 +2375,7 @@ adopt_compatible_heir_religion_law = {
 remove_current_major_government_reform = {
 	if = {
 		limit = { any_current_reforms = { is_major_reform = yes } }
-
-		random_current_reforms = {
-			limit = { is_major_reform = yes }
-			root = { remove_reform = prev }
-		}
+		random_current_reforms = { limit = { is_major_reform = yes } root = { remove_reform = prev } }
 	}
 }
 
@@ -2776,12 +2386,8 @@ add_organization_donation_opinion_bonus = {
 
 		scale = {
 			value = $value$
-
 			divide = {
-				if = {
-					limit = { $international_organization$.gold > 0 }
-					value = $international_organization$.gold
-				}
+				if = { limit = { $international_organization$.gold > 0 } value = $international_organization$.gold }
 				else = { value = 1 }
 				value = $international_organization$.gold
 				min = 1
@@ -2792,23 +2398,17 @@ add_organization_donation_opinion_bonus = {
 
 donate_gold_to_international_organization = {
 	save_temporary_scope_as = root_country
-	if = {
-		limit = {
-			is_leader_of_international_organization = $international_organization$
-		}
 
+	if = {
+		limit = { is_leader_of_international_organization = $international_organization$ }
 		custom_tooltip = {
 			text = donate_gold_to_international_organization_tt
-
 			$international_organization$ = {
 				if = {
-					limit = {
-						international_organization_type = international_organization_type:hre
-					}
+					limit = { international_organization_type = international_organization_type:hre }
 
 					every_country_with_special_status_of_type = {
 						type = elector
-
 						add_organization_donation_opinion_bonus = {
 							target = scope:root_country
 							value = $value$
@@ -2817,7 +2417,6 @@ donate_gold_to_international_organization = {
 					}
 					every_country_with_special_status_of_type = {
 						type = archbishop_elector
-
 						add_organization_donation_opinion_bonus = {
 							target = scope:root_country
 							value = $value$
@@ -2848,6 +2447,7 @@ donate_gold_to_international_organization = {
 			}
 		}
 	}
+
 	add_gold = { value = $value$ multiply = -1 }
 }
 
@@ -2860,7 +2460,6 @@ move_imperial_work_of_art = {
 				international_organization = $international_organization$
 			}
 		}
-
 		$work_of_art$ = { move_art = $location$ set_art_owner = $country$ }
 	}
 }
@@ -2868,17 +2467,10 @@ move_imperial_work_of_art = {
 reject_hegemon_ultimatum_effect = {
 	if = {
 		limit = { exists = scope:actor exists = scope:recipient }
-
 		scope:actor = {
-			add_casus_belli = {
-				type = casus_belli:cb_hegemon_ultimatum
-				target = scope:recipient
-			}
+			add_casus_belli = { type = casus_belli:cb_hegemon_ultimatum target = scope:recipient }
 
-			add_opinion = {
-				modifier = opinion_disobeyed_hegemon_demand
-				target = scope:recipient
-			}
+			add_opinion = { modifier = opinion_disobeyed_hegemon_demand target = scope:recipient }
 
 			add_prestige = prestige_extreme_penalty
 			set_variable = { name = hegemon_war_reason_var value = $type$ }
@@ -2890,21 +2482,13 @@ enforce_religion_effect = {
 	$target$ = {
 		change_religion = $actor$.religion
 
-		change_religion_for_ruler_and_family = {
-			country = $target$
-			religion = $actor$.religion
-		}
+		change_religion_for_ruler_and_family = { country = $target$ religion = $actor$.religion }
 
 		add_cooldown = { type = convert_religion years = 10 }
 
 		capital = {
 			every_pop = {
-				limit = {
-					NOT = {
-						religion = $actor$.religion
-					}
-				}
-
+				limit = { NOT = { religion = $actor$.religion } }
 				split_pop = { fraction = 0.16 religion = $actor$.religion }
 			}
 		}
@@ -2919,23 +2503,14 @@ enforce_culture_effect = {
 		every_cabinet = {
 			limit = {
 				has_cabinet_action = yes
-				OR = {
-					cabinet_action = cabinet_action:assimilate_area
-					cabinet_action = cabinet_action:promote_culture
-				}
+				OR = { cabinet_action = cabinet_action:assimilate_area cabinet_action = cabinet_action:promote_culture }
 			}
-
 			stop_cabinet_action = {  }
 		}
 
 		capital = {
 			every_pop = {
-				limit = {
-					NOT = {
-						culture = $actor$.culture
-					}
-				}
-
+				limit = { NOT = { culture = $actor$.culture } }
 				split_pop = { fraction = 0.16 culture = $actor$.culture }
 			}
 		}

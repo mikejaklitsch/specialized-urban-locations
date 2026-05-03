@@ -17,21 +17,13 @@
 
 sul_read_wpp = {
 	value = 0
+
 	if = {
 		limit = {
 			has_variable_map = sul_wealth_per_pop
 			is_key_in_variable_map = { name = sul_wealth_per_pop target = prev.pop_type }
 		}
-
 		add = "variable_map(sul_wealth_per_pop|prev.pop_type)"
-	}
-	if = {
-		limit = { var:sul_dhimmi_return_per_pop > 0 prev = { is_dhimmi = yes } }
-		add = var:sul_dhimmi_return_per_pop
-	}
-	else_if = {
-		limit = { var:sul_cossacks_return_per_pop > 0 prev = { is_cossacks = yes } }
-		add = var:sul_cossacks_return_per_pop
 	}
 }
 
@@ -88,12 +80,12 @@ sul_read_tier_exotic = {
 # @macros derived: w_tier = share × crossover (constant) or share (growth)
 #                  intercept = crossover, slope = 1
 
-@sul_demand_intercept = 1.0
+@sul_demand_intercept = 3.0
 @sul_demand_slope = 1.0
 
-@sul_w_necessity = 0.55
-@sul_w_basic = 0.30
-@sul_w_common = 0.15
+@sul_w_necessity = 1.65
+@sul_w_basic = 0.90
+@sul_w_common = 0.45
 @sul_w_upper = 0.21
 @sul_w_luxury = 0.16
 @sul_w_exotic = 0.10
@@ -101,12 +93,12 @@ sul_read_tier_exotic = {
 
 sul_read_demand_base = {
 	value = 0
+
 	if = {
 		limit = {
 			has_variable_map = sul_demand_base
 			is_key_in_variable_map = { name = sul_demand_base target = prev.pop_type }
 		}
-
 		add = "variable_map(sul_demand_base|prev.pop_type)"
 	}
 }

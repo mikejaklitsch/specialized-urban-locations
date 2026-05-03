@@ -8,17 +8,12 @@ sul_respec_on_built_effect = {
 		# Count bookkeeping
 		if = {
 			limit = { exists = owner }
-
 			owner = {
 				if = {
-					limit = {
-						NOT = {
-							has_variable = sul_mining_count
-						}
-					}
-
+					limit = { NOT = { has_variable = sul_mining_count } }
 					sul_specialization_count_initialize = yes
 				}
+
 				prev = { save_temporary_scope_as = sul_loc }
 				sul_specialization_count_decrement = yes
 			}
@@ -26,12 +21,7 @@ sul_respec_on_built_effect = {
 
 		# Destroy market if leaving commercial
 		if = {
-			limit = {
-				is_market_center = yes
-				NOT = {
-					sul_has_$SPEC$_specialization = yes
-				}
-			}
+			limit = { is_market_center = yes NOT = { sul_has_$SPEC$_specialization = yes } }
 
 			sul_migration_on_market_destroyed = yes
 			market = { destroy_market = {  } }
@@ -42,12 +32,7 @@ sul_respec_on_built_effect = {
 
 		# Create market if becoming commercial
 		if = {
-			limit = {
-				sul_has_commercial_specialization = yes
-				NOT = {
-					is_market_center = yes
-				}
-			}
+			limit = { sul_has_commercial_specialization = yes NOT = { is_market_center = yes } }
 
 			create_market = {
 				builder = owner
@@ -66,7 +51,6 @@ sul_respec_on_built_effect = {
 		# Count increment (after rank is set)
 		if = {
 			limit = { exists = owner }
-
 			owner = {
 				prev = { save_temporary_scope_as = sul_loc }
 				change_variable = { name = $COUNT_VAR$ add = 1 }
@@ -84,6 +68,7 @@ sul_respec_on_built_effect = {
 sul_construct_resource_spec_carrier = {
 	if = {
 		limit = { sul_has_farming_resources = yes }
+
 		if = {
 			limit = { modifier:sul_is_rural_settlement_rank_tier = yes }
 			construct_building = { building_type = building_type:sul_respec_farming_rural }
@@ -92,12 +77,11 @@ sul_construct_resource_spec_carrier = {
 			limit = { modifier:sul_is_town_rank_tier = yes }
 			construct_building = { building_type = building_type:sul_respec_farming_town }
 		}
-		else = {
-			construct_building = { building_type = building_type:sul_respec_farming_city }
-		}
+		else = { construct_building = { building_type = building_type:sul_respec_farming_city } }
 	}
 	else_if = {
 		limit = { sul_has_mining_resources = yes }
+
 		if = {
 			limit = { modifier:sul_is_rural_settlement_rank_tier = yes }
 			construct_building = { building_type = building_type:sul_respec_mining_rural }
@@ -106,47 +90,32 @@ sul_construct_resource_spec_carrier = {
 			limit = { modifier:sul_is_town_rank_tier = yes }
 			construct_building = { building_type = building_type:sul_respec_mining_town }
 		}
-		else = {
-			construct_building = { building_type = building_type:sul_respec_mining_city }
-		}
+		else = { construct_building = { building_type = building_type:sul_respec_mining_city } }
 	}
 	else_if = {
 		limit = { sul_has_gathering_resources = yes }
+
 		if = {
 			limit = { modifier:sul_is_rural_settlement_rank_tier = yes }
-
-			construct_building = {
-				building_type = building_type:sul_respec_gathering_rural
-			}
+			construct_building = { building_type = building_type:sul_respec_gathering_rural }
 		}
 		else_if = {
 			limit = { modifier:sul_is_town_rank_tier = yes }
-
-			construct_building = {
-				building_type = building_type:sul_respec_gathering_town
-			}
+			construct_building = { building_type = building_type:sul_respec_gathering_town }
 		}
-		else = {
-			construct_building = {
-				building_type = building_type:sul_respec_gathering_city
-			}
-		}
+		else = { construct_building = { building_type = building_type:sul_respec_gathering_city } }
 	}
 	else_if = {
 		limit = { sul_has_woodland_resources = yes }
+
 		if = {
 			limit = { modifier:sul_is_rural_settlement_rank_tier = yes }
-
-			construct_building = {
-				building_type = building_type:sul_respec_woodland_rural
-			}
+			construct_building = { building_type = building_type:sul_respec_woodland_rural }
 		}
 		else_if = {
 			limit = { modifier:sul_is_town_rank_tier = yes }
 			construct_building = { building_type = building_type:sul_respec_woodland_town }
 		}
-		else = {
-			construct_building = { building_type = building_type:sul_respec_woodland_city }
-		}
+		else = { construct_building = { building_type = building_type:sul_respec_woodland_city } }
 	}
 }

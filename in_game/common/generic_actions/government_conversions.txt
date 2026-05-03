@@ -17,37 +17,20 @@ steppe_horde_to_monarchy = {
 	cooldown = { type = transition_government years = 20 }
 
 	potential = {
-		scope:actor = {
-			government_type = government_type:steppe_horde
-			NOT = {
-				has_variable = is_about_to_reform_government
-			}
-		}
+		scope:actor = { government_type = government_type:steppe_horde NOT = { has_variable = is_about_to_reform_government } }
 	}
 
 	allow = {
 		scope:actor = {
-			capital = {
-				dominant_culture = scope:actor.culture
-				NOT = {
-					modifier:sul_is_rural_settlement_rank_tier = yes
-				}
-			}
+			capital = { dominant_culture = scope:actor.culture NOT = { modifier:sul_is_rural_settlement_rank_tier = yes } }
 
 			at_war = no
 			average_control_in_home_region > 0.25
 
 			any_subject = { subject_loyalty > 50 count = all }
-			NOT = {
-				has_country_modifier = reformation_of_the_horde
-			}
+			NOT = { has_country_modifier = reformation_of_the_horde }
 
-			custom_tooltip = {
-				text = not_in_union_tt
-				NOT = {
-					exists = union
-				}
-			}
+			custom_tooltip = { text = not_in_union_tt NOT = { exists = union } }
 		}
 	}
 
@@ -64,12 +47,8 @@ steppe_horde_to_monarchy = {
 				mode = add
 			}
 
-			add_estate_satisfaction = {
-				type = estate_type:nobles_estate
-				value = estate_satisfaction_extreme_bonus
-			}
+			add_estate_satisfaction = { type = estate_type:nobles_estate value = estate_satisfaction_extreme_bonus }
 		}
-
 		custom_tooltip = warn_about_loss_of_content_tt
 	}
 
@@ -94,14 +73,8 @@ monarchy_to_republic = {
 				international_organization:hre ?= { leader_country ?= prev }
 				international_organization:hre ?= {
 					OR = {
-						country_has_special_status = {
-							type = special_status:elector
-							country = scope:actor
-						}
-						country_has_special_status = {
-							type = special_status:archbishop_elector
-							country = scope:actor
-						}
+						country_has_special_status = { type = special_status:elector country = scope:actor }
+						country_has_special_status = { type = special_status:archbishop_elector country = scope:actor }
 					}
 				}
 			}
@@ -119,25 +92,15 @@ monarchy_to_republic = {
 			legitimacy > 80
 			stability > 0
 
-			custom_tooltip = {
-				text = not_in_union_tt
-				NOT = {
-					exists = union
-				}
-			}
+			custom_tooltip = { text = not_in_union_tt NOT = { exists = union } }
 		}
 	}
 
 	effect = {
 		scope:actor = {
 			change_government_type = government_type:republic
-
-			add_estate_satisfaction = {
-				type = estate_type:burghers_estate
-				value = estate_satisfaction_extreme_bonus
-			}
+			add_estate_satisfaction = { type = estate_type:burghers_estate value = estate_satisfaction_extreme_bonus }
 		}
-
 		custom_tooltip = warn_about_loss_of_content_tt
 	}
 
@@ -161,10 +124,7 @@ monarchy_to_theocracy = {
 				international_organization:hre ?= {
 					OR = {
 						country_has_special_status = { type = special_status:elector country = prev }
-						country_has_special_status = {
-							type = special_status:archbishop_elector
-							country = scope:actor
-						}
+						country_has_special_status = { type = special_status:archbishop_elector country = scope:actor }
 					}
 				}
 			}
@@ -182,25 +142,15 @@ monarchy_to_theocracy = {
 			legitimacy > 80
 			stability > 0
 
-			custom_tooltip = {
-				text = not_in_union_tt
-				NOT = {
-					exists = union
-				}
-			}
+			custom_tooltip = { text = not_in_union_tt NOT = { exists = union } }
 		}
 	}
 
 	effect = {
 		scope:actor = {
 			change_government_type = government_type:theocracy
-
-			add_estate_satisfaction = {
-				type = estate_type:clergy_estate
-				value = estate_satisfaction_extreme_bonus
-			}
+			add_estate_satisfaction = { type = estate_type:clergy_estate value = estate_satisfaction_extreme_bonus }
 		}
-
 		custom_tooltip = warn_about_loss_of_content_tt
 	}
 
@@ -225,10 +175,7 @@ theocracy_to_monarchy = {
 				tag = PAP
 				international_organization:hre ?= { leader_country ?= prev }
 				international_organization:hre ?= {
-					country_has_special_status = {
-						type = special_status:archbishop_elector
-						country = scope:actor
-					}
+					country_has_special_status = { type = special_status:archbishop_elector country = scope:actor }
 				}
 			}
 		}
@@ -246,12 +193,7 @@ theocracy_to_monarchy = {
 			legitimacy > 80
 			stability > 0
 
-			custom_tooltip = {
-				text = not_in_union_tt
-				NOT = {
-					exists = union
-				}
-			}
+			custom_tooltip = { text = not_in_union_tt NOT = { exists = union } }
 		}
 	}
 
@@ -259,32 +201,23 @@ theocracy_to_monarchy = {
 		scope:actor = {
 			change_government_type = government_type:monarchy
 
-			add_estate_satisfaction = {
-				type = estate_type:nobles_estate
-				value = estate_satisfaction_extreme_bonus
-			}
+			add_estate_satisfaction = { type = estate_type:nobles_estate value = estate_satisfaction_extreme_bonus }
 
 			custom_tooltip = {
 				text = ruler_regent_relatives_crown_estate_tt
-
 				ruler_or_regent = {
 					change_character_estate = estate_type:crown_estate
-
 					every_close_relative = {
 						limit = {
 							owner = scope:actor
 							is_alive = yes
-							NOT = {
-								has_estate = estate_type:crown_estate
-							}
+							NOT = { has_estate = estate_type:crown_estate }
 						}
-
 						change_character_estate = estate_type:crown_estate
 					}
 				}
 			}
 		}
-
 		custom_tooltip = warn_about_loss_of_content_tt
 	}
 
@@ -307,14 +240,8 @@ theocracy_to_republic = {
 				international_organization:hre ?= { leader_country ?= prev }
 				international_organization:hre ?= {
 					OR = {
-						country_has_special_status = {
-							type = special_status:elector
-							country = scope:actor
-						}
-						country_has_special_status = {
-							type = special_status:archbishop_elector
-							country = scope:actor
-						}
+						country_has_special_status = { type = special_status:elector country = scope:actor }
+						country_has_special_status = { type = special_status:archbishop_elector country = scope:actor }
 					}
 				}
 			}
@@ -328,33 +255,20 @@ theocracy_to_republic = {
 			is_during_bankruptcy = no
 			country_has_estate = estate_type:burghers_estate
 			"estate_power(estate_type:burghers_estate)" > "estate_power(estate_type:clergy_estate)"
-			OR = {
-				societal_value:aristocracy_vs_plutocracy >= 95
-				societal_value:spiritualist_vs_humanist >= 50
-			}
+			OR = { societal_value:aristocracy_vs_plutocracy >= 95 societal_value:spiritualist_vs_humanist >= 50 }
 
 			legitimacy > 80
 			stability > 0
 
-			custom_tooltip = {
-				text = not_in_union_tt
-				NOT = {
-					exists = union
-				}
-			}
+			custom_tooltip = { text = not_in_union_tt NOT = { exists = union } }
 		}
 	}
 
 	effect = {
 		scope:actor = {
 			change_government_type = government_type:republic
-
-			add_estate_satisfaction = {
-				type = estate_type:burghers_estate
-				value = estate_satisfaction_extreme_bonus
-			}
+			add_estate_satisfaction = { type = estate_type:burghers_estate value = estate_satisfaction_extreme_bonus }
 		}
-
 		custom_tooltip = warn_about_loss_of_content_tt
 	}
 
@@ -379,14 +293,8 @@ republic_to_monarchy = {
 				international_organization:hre ?= { leader_country ?= prev }
 				international_organization:hre ?= {
 					OR = {
-						country_has_special_status = {
-							type = special_status:elector
-							country = scope:actor
-						}
-						country_has_special_status = {
-							type = special_status:archbishop_elector
-							country = scope:actor
-						}
+						country_has_special_status = { type = special_status:elector country = scope:actor }
+						country_has_special_status = { type = special_status:archbishop_elector country = scope:actor }
 					}
 				}
 			}
@@ -404,25 +312,15 @@ republic_to_monarchy = {
 			legitimacy > 80
 			stability > 0
 
-			custom_tooltip = {
-				text = not_in_union_tt
-				NOT = {
-					exists = union
-				}
-			}
+			custom_tooltip = { text = not_in_union_tt NOT = { exists = union } }
 		}
 	}
 
 	effect = {
 		scope:actor = {
 			change_government_type = government_type:monarchy
-
-			add_estate_satisfaction = {
-				type = estate_type:nobles_estate
-				value = estate_satisfaction_extreme_bonus
-			}
+			add_estate_satisfaction = { type = estate_type:nobles_estate value = estate_satisfaction_extreme_bonus }
 		}
-
 		custom_tooltip = warn_about_loss_of_content_tt
 	}
 
@@ -446,10 +344,7 @@ gov_action_republic_to_theocracy = {
 				international_organization:hre ?= {
 					OR = {
 						country_has_special_status = { type = special_status:elector country = prev }
-						country_has_special_status = {
-							type = special_status:archbishop_elector
-							country = scope:actor
-						}
+						country_has_special_status = { type = special_status:archbishop_elector country = scope:actor }
 					}
 				}
 			}
@@ -467,25 +362,15 @@ gov_action_republic_to_theocracy = {
 			legitimacy > 80
 			stability > 0
 
-			custom_tooltip = {
-				text = not_in_union_tt
-				NOT = {
-					exists = union
-				}
-			}
+			custom_tooltip = { text = not_in_union_tt NOT = { exists = union } }
 		}
 	}
 
 	effect = {
 		scope:actor = {
 			change_government_type = government_type:theocracy
-
-			add_estate_satisfaction = {
-				type = estate_type:clergy_estate
-				value = estate_satisfaction_extreme_bonus
-			}
+			add_estate_satisfaction = { type = estate_type:clergy_estate value = estate_satisfaction_extreme_bonus }
 		}
-
 		custom_tooltip = warn_about_loss_of_content_tt
 	}
 
@@ -511,14 +396,8 @@ tribal_to_monarchy = {
 				international_organization:hre ?= { leader_country ?= prev }
 				international_organization:hre ?= {
 					OR = {
-						country_has_special_status = {
-							type = special_status:elector
-							country = scope:actor
-						}
-						country_has_special_status = {
-							type = special_status:archbishop_elector
-							country = scope:actor
-						}
+						country_has_special_status = { type = special_status:elector country = scope:actor }
+						country_has_special_status = { type = special_status:archbishop_elector country = scope:actor }
 					}
 				}
 			}
@@ -535,12 +414,7 @@ tribal_to_monarchy = {
 			legitimacy > 80
 			stability > 0
 
-			custom_tooltip = {
-				text = not_in_union_tt
-				NOT = {
-					exists = union
-				}
-			}
+			custom_tooltip = { text = not_in_union_tt NOT = { exists = union } }
 		}
 	}
 
@@ -548,10 +422,7 @@ tribal_to_monarchy = {
 		scope:actor = {
 			change_government_type = government_type:monarchy
 
-			add_estate_satisfaction = {
-				type = estate_type:nobles_estate
-				value = estate_satisfaction_extreme_bonus
-			}
+			add_estate_satisfaction = { type = estate_type:nobles_estate value = estate_satisfaction_extreme_bonus }
 
 			if = {
 				limit = {
@@ -560,11 +431,9 @@ tribal_to_monarchy = {
 						leader_country != scope:actor
 					}
 				}
-
 				custom_tooltip = kicks_us_from_jurchen_confederation_tt
 			}
 		}
-
 		custom_tooltip = warn_about_loss_of_content_tt
 	}
 

@@ -1,8 +1,7 @@
 ﻿# Display-only script values for the wealth tooltip and debug panel.
 # Tooltip values (deltas, totals, fill) read from cached variable maps
-# populated by sul_wealth_write_maps. This avoids nested script_value
-# resolution which the GUI engine may truncate at depth, and guarantees
-# display matches computation.
+# Variable maps (sul_estate_assets, sul_estate_targets) are the sole
+# storage — written directly by seed, convergence, and loot effects.
 # Debug values (fractions, targets, gold) compute live for the debug
 # panel — acceptable there since it's a developer tool, not player-facing.
 
@@ -244,339 +243,160 @@ sul_dbg_aggregate_political_pct = {
 	multiply = 100
 }
 
-# --- PER-ESTATE ASSET VALUE (location scope, reads from variable map) ---
-# Each read is gated on the source variable existing — estates not present
-# at a location never have their variable_map entry written.
+# --- BASE LAYER: per-estate map reads (location scope) ---
+# Single guarded read per estate per map. All composites reference these.
+# Guard: has_variable_map (map exists) + is_key_in_variable_map (key exists).
 
 sul_map_asset_nobles = {
 	value = 0
-	if = {
-		limit = { has_variable = sul_wealth_nobles }
-		add = "variable_map(sul_estate_assets|estate_type:nobles_estate)"
-	}
+	if = { limit = { has_variable = sul_asset_nobles } add = var:sul_asset_nobles }
 }
 
 sul_map_asset_clergy = {
 	value = 0
-	if = {
-		limit = { has_variable = sul_wealth_clergy }
-		add = "variable_map(sul_estate_assets|estate_type:clergy_estate)"
-	}
+	if = { limit = { has_variable = sul_asset_clergy } add = var:sul_asset_clergy }
 }
 
 sul_map_asset_burghers = {
 	value = 0
 	if = {
-		limit = { has_variable = sul_wealth_burghers }
-		add = "variable_map(sul_estate_assets|estate_type:burghers_estate)"
+		limit = { has_variable = sul_asset_burghers }
+
+		add = var:sul_asset_burghers
 	}
 }
 
 sul_map_asset_peasants = {
 	value = 0
 	if = {
-		limit = { has_variable = sul_wealth_peasants }
-		add = "variable_map(sul_estate_assets|estate_type:peasants_estate)"
+		limit = { has_variable = sul_asset_peasants }
+
+		add = var:sul_asset_peasants
 	}
 }
 
 sul_map_asset_crown = {
 	value = 0
-	if = {
-		limit = { has_variable = sul_wealth_crown }
-		add = "variable_map(sul_estate_assets|estate_type:crown_estate)"
-	}
+	if = { limit = { has_variable = sul_asset_crown } add = var:sul_asset_crown }
 }
 
 sul_map_asset_dhimmi = {
 	value = 0
-	if = {
-		limit = { has_variable = sul_wealth_dhimmi }
-		add = "variable_map(sul_estate_assets|estate_type:dhimmi_estate)"
-	}
+	if = { limit = { has_variable = sul_asset_dhimmi } add = var:sul_asset_dhimmi }
 }
 
 sul_map_asset_cossacks = {
 	value = 0
 	if = {
-		limit = { has_variable = sul_wealth_cossacks }
-		add = "variable_map(sul_estate_assets|estate_type:cossacks_estate)"
+		limit = { has_variable = sul_asset_cossacks }
+
+		add = var:sul_asset_cossacks
 	}
 }
 
 sul_map_asset_tribes = {
 	value = 0
-	if = {
-		limit = { has_variable = sul_wealth_tribes }
-		add = "variable_map(sul_estate_assets|estate_type:tribes_estate)"
-	}
+	if = { limit = { has_variable = sul_asset_tribes } add = var:sul_asset_tribes }
 }
 
-# --- PIE CHART SHARES (estate assets / total, 0-1 for pieslice value) ---
-
-sul_wealth_share_nobles = {
+sul_map_target_nobles = {
 	value = 0
 	if = {
-		limit = { has_variable = sul_wealth_nobles }
-		add = "variable_map(sul_estate_assets|estate_type:nobles_estate)"
-	}
+		limit = { has_variable = sul_potential_nobles }
 
-	divide = sul_wealth_total
+		add = var:sul_potential_nobles
+	}
 }
 
-sul_wealth_share_clergy = {
+sul_map_target_clergy = {
 	value = 0
 	if = {
-		limit = { has_variable = sul_wealth_clergy }
-		add = "variable_map(sul_estate_assets|estate_type:clergy_estate)"
-	}
+		limit = { has_variable = sul_potential_clergy }
 
-	divide = sul_wealth_total
+		add = var:sul_potential_clergy
+	}
 }
 
-sul_wealth_share_burghers = {
+sul_map_target_burghers = {
 	value = 0
 	if = {
-		limit = { has_variable = sul_wealth_burghers }
-		add = "variable_map(sul_estate_assets|estate_type:burghers_estate)"
-	}
+		limit = { has_variable = sul_potential_burghers }
 
-	divide = sul_wealth_total
+		add = var:sul_potential_burghers
+	}
 }
 
-sul_wealth_share_peasants = {
+sul_map_target_peasants = {
 	value = 0
 	if = {
-		limit = { has_variable = sul_wealth_peasants }
-		add = "variable_map(sul_estate_assets|estate_type:peasants_estate)"
-	}
+		limit = { has_variable = sul_potential_peasants }
 
-	divide = sul_wealth_total
+		add = var:sul_potential_peasants
+	}
 }
 
-sul_wealth_share_dhimmi = {
+sul_map_target_crown = {
 	value = 0
 	if = {
-		limit = { has_variable = sul_wealth_dhimmi }
-		add = "variable_map(sul_estate_assets|estate_type:dhimmi_estate)"
-	}
+		limit = { has_variable = sul_potential_crown }
 
-	divide = sul_wealth_total
+		add = var:sul_potential_crown
+	}
 }
 
-sul_wealth_share_cossacks = {
+sul_map_target_dhimmi = {
 	value = 0
 	if = {
-		limit = { has_variable = sul_wealth_cossacks }
-		add = "variable_map(sul_estate_assets|estate_type:cossacks_estate)"
-	}
+		limit = { has_variable = sul_potential_dhimmi }
 
-	divide = sul_wealth_total
+		add = var:sul_potential_dhimmi
+	}
 }
 
-sul_wealth_share_tribes = {
+sul_map_target_cossacks = {
 	value = 0
 	if = {
-		limit = { has_variable = sul_wealth_tribes }
-		add = "variable_map(sul_estate_assets|estate_type:tribes_estate)"
-	}
+		limit = { has_variable = sul_potential_cossacks }
 
-	divide = sul_wealth_total
+		add = var:sul_potential_cossacks
+	}
 }
 
-sul_wealth_share_crown = {
+sul_map_target_tribes = {
 	value = 0
 	if = {
-		limit = { has_variable = sul_wealth_crown }
-		add = "variable_map(sul_estate_assets|estate_type:crown_estate)"
+		limit = { has_variable = sul_potential_tribes }
+
+		add = var:sul_potential_tribes
 	}
-
-	divide = sul_wealth_total
 }
 
-# --- MONTHLY DELTA (target - current) × rate ---
-
-@sul_wealth_converge_rate_display = 0.025
-
-sul_wealth_delta_nobles = {
-	value = 0
-	if = {
-		limit = { has_variable = sul_wealth_nobles }
-		add = "variable_map(sul_estate_targets|estate_type:nobles_estate)"
-		subtract = "variable_map(sul_estate_assets|estate_type:nobles_estate)"
-	}
-
-	multiply = @sul_wealth_converge_rate_display
-}
-
-sul_wealth_delta_clergy = {
-	value = 0
-	if = {
-		limit = { has_variable = sul_wealth_clergy }
-		add = "variable_map(sul_estate_targets|estate_type:clergy_estate)"
-		subtract = "variable_map(sul_estate_assets|estate_type:clergy_estate)"
-	}
-
-	multiply = @sul_wealth_converge_rate_display
-}
-
-sul_wealth_delta_burghers = {
-	value = 0
-	if = {
-		limit = { has_variable = sul_wealth_burghers }
-		add = "variable_map(sul_estate_targets|estate_type:burghers_estate)"
-		subtract = "variable_map(sul_estate_assets|estate_type:burghers_estate)"
-	}
-
-	multiply = @sul_wealth_converge_rate_display
-}
-
-sul_wealth_delta_peasants = {
-	value = 0
-	if = {
-		limit = { has_variable = sul_wealth_peasants }
-		add = "variable_map(sul_estate_targets|estate_type:peasants_estate)"
-		subtract = "variable_map(sul_estate_assets|estate_type:peasants_estate)"
-	}
-
-	multiply = @sul_wealth_converge_rate_display
-}
-
-sul_wealth_delta_dhimmi = {
-	value = 0
-	if = {
-		limit = { has_variable = sul_wealth_dhimmi }
-		add = "variable_map(sul_estate_targets|estate_type:dhimmi_estate)"
-		subtract = "variable_map(sul_estate_assets|estate_type:dhimmi_estate)"
-	}
-
-	multiply = @sul_wealth_converge_rate_display
-}
-
-sul_wealth_delta_cossacks = {
-	value = 0
-	if = {
-		limit = { has_variable = sul_wealth_cossacks }
-		add = "variable_map(sul_estate_targets|estate_type:cossacks_estate)"
-		subtract = "variable_map(sul_estate_assets|estate_type:cossacks_estate)"
-	}
-
-	multiply = @sul_wealth_converge_rate_display
-}
-
-sul_wealth_delta_tribes = {
-	value = 0
-	if = {
-		limit = { has_variable = sul_wealth_tribes }
-		add = "variable_map(sul_estate_targets|estate_type:tribes_estate)"
-		subtract = "variable_map(sul_estate_assets|estate_type:tribes_estate)"
-	}
-
-	multiply = @sul_wealth_converge_rate_display
-}
-
-sul_wealth_delta_crown = {
-	value = 0
-	if = {
-		limit = { has_variable = sul_wealth_crown }
-		add = "variable_map(sul_estate_targets|estate_type:crown_estate)"
-		subtract = "variable_map(sul_estate_assets|estate_type:crown_estate)"
-	}
-
-	multiply = @sul_wealth_converge_rate_display
-}
-
-sul_wealth_delta_total = {
-	value = sul_wealth_delta_nobles
-	add = sul_wealth_delta_clergy
-	add = sul_wealth_delta_burghers
-	add = sul_wealth_delta_peasants
-	add = sul_wealth_delta_dhimmi
-	add = sul_wealth_delta_cossacks
-	add = sul_wealth_delta_tribes
-	add = sul_wealth_delta_crown
-}
-
-# --- WEALTH BAR (location scope) ---
-# Total assets and target for fill ratio.
+# --- COMPOSITES: totals, shares, deltas, bar heights ---
+# No direct map reads below this line — everything references the base layer.
 
 sul_wealth_total = {
-	value = 0
-	if = {
-		limit = { has_variable = sul_wealth_nobles }
-		add = "variable_map(sul_estate_assets|estate_type:nobles_estate)"
-	}
-	if = {
-		limit = { has_variable = sul_wealth_clergy }
-		add = "variable_map(sul_estate_assets|estate_type:clergy_estate)"
-	}
-	if = {
-		limit = { has_variable = sul_wealth_burghers }
-		add = "variable_map(sul_estate_assets|estate_type:burghers_estate)"
-	}
-	if = {
-		limit = { has_variable = sul_wealth_peasants }
-		add = "variable_map(sul_estate_assets|estate_type:peasants_estate)"
-	}
-	if = {
-		limit = { has_variable = sul_wealth_crown }
-		add = "variable_map(sul_estate_assets|estate_type:crown_estate)"
-	}
-	if = {
-		limit = { has_variable = sul_wealth_dhimmi }
-		add = "variable_map(sul_estate_assets|estate_type:dhimmi_estate)"
-	}
-	if = {
-		limit = { has_variable = sul_wealth_cossacks }
-		add = "variable_map(sul_estate_assets|estate_type:cossacks_estate)"
-	}
-	if = {
-		limit = { has_variable = sul_wealth_tribes }
-		add = "variable_map(sul_estate_assets|estate_type:tribes_estate)"
-	}
-
+	value = sul_map_asset_nobles
+	add = sul_map_asset_clergy
+	add = sul_map_asset_burghers
+	add = sul_map_asset_peasants
+	add = sul_map_asset_crown
+	add = sul_map_asset_dhimmi
+	add = sul_map_asset_cossacks
+	add = sul_map_asset_tribes
 	min = 0.001
 }
 
 sul_wealth_target_total = {
-	value = 0
-	if = {
-		limit = { has_variable = sul_wealth_target_nobles }
-		add = "variable_map(sul_estate_targets|estate_type:nobles_estate)"
-	}
-	if = {
-		limit = { has_variable = sul_wealth_target_clergy }
-		add = "variable_map(sul_estate_targets|estate_type:clergy_estate)"
-	}
-	if = {
-		limit = { has_variable = sul_wealth_target_burghers }
-		add = "variable_map(sul_estate_targets|estate_type:burghers_estate)"
-	}
-	if = {
-		limit = { has_variable = sul_wealth_target_peasants }
-		add = "variable_map(sul_estate_targets|estate_type:peasants_estate)"
-	}
-	if = {
-		limit = { has_variable = sul_wealth_target_crown }
-		add = "variable_map(sul_estate_targets|estate_type:crown_estate)"
-	}
-	if = {
-		limit = { has_variable = sul_wealth_target_dhimmi }
-		add = "variable_map(sul_estate_targets|estate_type:dhimmi_estate)"
-	}
-	if = {
-		limit = { has_variable = sul_wealth_target_cossacks }
-		add = "variable_map(sul_estate_targets|estate_type:cossacks_estate)"
-	}
-	if = {
-		limit = { has_variable = sul_wealth_target_tribes }
-		add = "variable_map(sul_estate_targets|estate_type:tribes_estate)"
-	}
-
+	value = sul_map_target_nobles
+	add = sul_map_target_clergy
+	add = sul_map_target_burghers
+	add = sul_map_target_peasants
+	add = sul_map_target_crown
+	add = sul_map_target_dhimmi
+	add = sul_map_target_cossacks
+	add = sul_map_target_tribes
 	min = 0.001
 }
-
-# Fill ratio 0-1, capped at 1
 
 sul_wealth_fill_ratio = {
 	value = sul_wealth_total
@@ -586,15 +406,143 @@ sul_wealth_fill_ratio = {
 	max = 100
 }
 
-# Per-estate bar section height in pixels (240px total)
+# --- PIE CHART SHARES (estate assets / total, 0-1) ---
 
-sul_wealth_bar_nobles = {
+sul_wealth_share_nobles = {
+	value = sul_map_asset_nobles
+	divide = sul_wealth_total
+}
+
+sul_wealth_share_clergy = {
+	value = sul_map_asset_clergy
+	divide = sul_wealth_total
+}
+
+sul_wealth_share_burghers = {
+	value = sul_map_asset_burghers
+	divide = sul_wealth_total
+}
+
+sul_wealth_share_peasants = {
+	value = sul_map_asset_peasants
+	divide = sul_wealth_total
+}
+
+sul_wealth_share_crown = {
+	value = sul_map_asset_crown
+	divide = sul_wealth_total
+}
+
+sul_wealth_share_dhimmi = {
+	value = sul_map_asset_dhimmi
+	divide = sul_wealth_total
+}
+
+sul_wealth_share_cossacks = {
+	value = sul_map_asset_cossacks
+	divide = sul_wealth_total
+}
+
+sul_wealth_share_tribes = {
+	value = sul_map_asset_tribes
+	divide = sul_wealth_total
+}
+
+# --- MONTHLY DELTA (target - current) × rate ---
+
+sul_wealth_delta_nobles = {
+	value = 0
+	if = { limit = { has_variable = sul_delta_nobles } add = var:sul_delta_nobles }
+}
+
+sul_wealth_delta_clergy = {
+	value = 0
+	if = { limit = { has_variable = sul_delta_clergy } add = var:sul_delta_clergy }
+}
+
+sul_wealth_delta_burghers = {
 	value = 0
 	if = {
-		limit = { has_variable = sul_wealth_nobles }
-		add = "variable_map(sul_estate_assets|estate_type:nobles_estate)"
-	}
+		limit = { has_variable = sul_delta_burghers }
 
+		add = var:sul_delta_burghers
+	}
+}
+
+sul_wealth_delta_peasants = {
+	value = 0
+	if = {
+		limit = { has_variable = sul_delta_peasants }
+
+		add = var:sul_delta_peasants
+	}
+}
+
+sul_wealth_delta_crown = {
+	value = 0
+	if = { limit = { has_variable = sul_delta_crown } add = var:sul_delta_crown }
+}
+
+sul_wealth_delta_dhimmi = {
+	value = 0
+	if = { limit = { has_variable = sul_delta_dhimmi } add = var:sul_delta_dhimmi }
+}
+
+sul_wealth_delta_cossacks = {
+	value = 0
+	if = {
+		limit = { has_variable = sul_delta_cossacks }
+
+		add = var:sul_delta_cossacks
+	}
+}
+
+sul_wealth_delta_tribes = {
+	value = 0
+	if = { limit = { has_variable = sul_delta_tribes } add = var:sul_delta_tribes }
+}
+
+sul_wealth_delta_total = {
+	value = sul_wealth_delta_nobles
+	add = sul_wealth_delta_clergy
+	add = sul_wealth_delta_burghers
+	add = sul_wealth_delta_peasants
+	add = sul_wealth_delta_crown
+	add = sul_wealth_delta_dhimmi
+	add = sul_wealth_delta_cossacks
+	add = sul_wealth_delta_tribes
+}
+
+sul_wealth_monthly_change = {
+	value = sul_wealth_total
+	if = {
+		limit = { has_variable = sul_wealth_last_total }
+		subtract = var:sul_wealth_last_total
+	}
+}
+
+sul_wealth_loot_display = {
+	value = 0
+	if = {
+		limit = {
+			has_variable = sul_wealth_loot_amount
+			var:sul_wealth_loot_amount > 0
+		}
+
+		subtract = var:sul_wealth_loot_amount
+	}
+}
+
+sul_wealth_spending_display = {
+	value = sul_wealth_monthly_change
+	subtract = sul_wealth_delta_total
+	subtract = sul_wealth_loot_display
+}
+
+# --- BAR SECTION HEIGHTS (pixels, 202px total) ---
+
+sul_wealth_bar_nobles = {
+	value = sul_map_asset_nobles
 	divide = sul_wealth_total
 	multiply = sul_wealth_fill_ratio
 	multiply = 202
@@ -602,12 +550,7 @@ sul_wealth_bar_nobles = {
 }
 
 sul_wealth_bar_clergy = {
-	value = 0
-	if = {
-		limit = { has_variable = sul_wealth_clergy }
-		add = "variable_map(sul_estate_assets|estate_type:clergy_estate)"
-	}
-
+	value = sul_map_asset_clergy
 	divide = sul_wealth_total
 	multiply = sul_wealth_fill_ratio
 	multiply = 202
@@ -615,12 +558,7 @@ sul_wealth_bar_clergy = {
 }
 
 sul_wealth_bar_burghers = {
-	value = 0
-	if = {
-		limit = { has_variable = sul_wealth_burghers }
-		add = "variable_map(sul_estate_assets|estate_type:burghers_estate)"
-	}
-
+	value = sul_map_asset_burghers
 	divide = sul_wealth_total
 	multiply = sul_wealth_fill_ratio
 	multiply = 202
@@ -628,12 +566,7 @@ sul_wealth_bar_burghers = {
 }
 
 sul_wealth_bar_peasants = {
-	value = 0
-	if = {
-		limit = { has_variable = sul_wealth_peasants }
-		add = "variable_map(sul_estate_assets|estate_type:peasants_estate)"
-	}
-
+	value = sul_map_asset_peasants
 	divide = sul_wealth_total
 	multiply = sul_wealth_fill_ratio
 	multiply = 202
@@ -641,12 +574,7 @@ sul_wealth_bar_peasants = {
 }
 
 sul_wealth_bar_crown = {
-	value = 0
-	if = {
-		limit = { has_variable = sul_wealth_crown }
-		add = "variable_map(sul_estate_assets|estate_type:crown_estate)"
-	}
-
+	value = sul_map_asset_crown
 	divide = sul_wealth_total
 	multiply = sul_wealth_fill_ratio
 	multiply = 202

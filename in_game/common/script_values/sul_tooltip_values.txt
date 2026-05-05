@@ -300,198 +300,35 @@ sul_commoner_enfr_wage = {
 	value = 0
 }
 
-# --- DEMAND PER POP (GDP wages + asset returns + national returns - provisions) ---
+# --- DEMAND PER POP (reads cached WPP from variable map) ---
+# These now just read the stored WPP value — the effect handles the waterfall.
 
 sul_noble_demand_per_pop = {
-	value = 0
-
-	if = {
-		limit = { num_pop_type:nobles > 0 }
-		add = {
-			value = var:sul_local_gdp
-			multiply = var:sul_wage_share
-			add = { value = var:sul_local_assets multiply = @asset_return_rate }
-			multiply = "local_relative_estate_power(estate_type:nobles_estate)"
-			divide = num_pop_type:nobles
-
-			add = {
-				value = owner.var:sul_estate_gold_nobles
-				multiply = @estate_return_rate
-				divide = { value = owner.var:sul_country_pop_nobles min = 1 }
-			}
-
-			subtract = sul_noble_provisions_cost
-
-			min = 0
-		}
-	}
+	value = "variable_map(sul_wealth_per_pop|pop_type:nobles)"
 }
 
 sul_clergy_demand_per_pop = {
-	value = 0
-
-	if = {
-		limit = { num_pop_type:clergy > 0 }
-		add = {
-			value = var:sul_local_gdp
-			multiply = var:sul_wage_share
-			add = { value = var:sul_local_assets multiply = @asset_return_rate }
-			multiply = "local_relative_estate_power(estate_type:clergy_estate)"
-			divide = num_pop_type:clergy
-
-			add = {
-				value = owner.var:sul_estate_gold_clergy
-				multiply = @estate_return_rate
-				divide = { value = owner.var:sul_country_pop_clergy min = 1 }
-			}
-
-			subtract = sul_clergy_provisions_cost
-
-			min = 0
-		}
-	}
+	value = "variable_map(sul_wealth_per_pop|pop_type:clergy)"
 }
 
 sul_burgher_demand_per_pop = {
-	value = 0
-
-	if = {
-		limit = { num_pop_type:burghers > 0 }
-		add = {
-			value = var:sul_local_gdp
-			multiply = var:sul_wage_share
-			add = { value = var:sul_local_assets multiply = @asset_return_rate }
-			multiply = "local_relative_estate_power(estate_type:burghers_estate)"
-			divide = num_pop_type:burghers
-
-			add = {
-				value = owner.var:sul_estate_gold_burghers
-				multiply = @estate_return_rate
-				divide = { value = owner.var:sul_country_pop_burghers min = 1 }
-			}
-
-			subtract = sul_burgher_provisions_cost
-
-			min = 0
-		}
-	}
+	value = "variable_map(sul_wealth_per_pop|pop_type:burghers)"
 }
 
 sul_soldier_demand_per_pop = {
-	value = 0
-
-	if = {
-		limit = { num_pop_type:soldiers > 0 }
-		add = {
-			value = var:sul_local_gdp
-			multiply = var:sul_wage_share
-			add = { value = var:sul_local_assets multiply = @asset_return_rate }
-			multiply = "local_relative_estate_power(estate_type:peasants_estate)"
-			multiply = @commoner_weight_soldiers
-			divide = sul_commoner_weighted_total
-
-			add = {
-				value = owner.var:sul_estate_gold_peasants
-				multiply = @estate_return_rate
-
-				divide = {
-					value = owner.var:sul_country_pop_soldiers
-					add = owner.var:sul_country_pop_laborers
-					add = owner.var:sul_country_pop_peasants
-					min = 1
-				}
-			}
-
-			subtract = sul_soldier_provisions_cost
-
-			min = 0
-		}
-	}
+	value = "variable_map(sul_wealth_per_pop|pop_type:soldiers)"
 }
 
 sul_laborer_demand_per_pop = {
-	value = 0
-
-	if = {
-		limit = { num_pop_type:laborers > 0 }
-		add = {
-			value = var:sul_local_gdp
-			multiply = var:sul_wage_share
-			add = { value = var:sul_local_assets multiply = @asset_return_rate }
-			multiply = "local_relative_estate_power(estate_type:peasants_estate)"
-			multiply = @commoner_weight_laborers
-			divide = sul_commoner_weighted_total
-
-			add = {
-				value = owner.var:sul_estate_gold_peasants
-				multiply = @estate_return_rate
-
-				divide = {
-					value = owner.var:sul_country_pop_soldiers
-					add = owner.var:sul_country_pop_laborers
-					add = owner.var:sul_country_pop_peasants
-					min = 1
-				}
-			}
-
-			subtract = sul_laborer_provisions_cost
-
-			min = 0
-		}
-	}
+	value = "variable_map(sul_wealth_per_pop|pop_type:laborers)"
 }
 
 sul_peasant_demand_per_pop = {
-	value = 0
-
-	if = {
-		limit = { num_pop_type:peasants > 0 }
-		add = {
-			value = var:sul_local_gdp
-			multiply = var:sul_wage_share
-			add = { value = var:sul_local_assets multiply = @asset_return_rate }
-			multiply = "local_relative_estate_power(estate_type:peasants_estate)"
-			multiply = @commoner_weight_peasants
-			divide = sul_commoner_weighted_total
-
-			add = {
-				value = owner.var:sul_estate_gold_peasants
-				multiply = @estate_return_rate
-
-				divide = {
-					value = owner.var:sul_country_pop_soldiers
-					add = owner.var:sul_country_pop_laborers
-					add = owner.var:sul_country_pop_peasants
-					min = 1
-				}
-			}
-
-			min = 0
-		}
-	}
+	value = "variable_map(sul_wealth_per_pop|pop_type:peasants)"
 }
 
 sul_tribesmen_demand_per_pop = {
-	value = 0
-
-	if = {
-		limit = { num_pop_type:tribesmen > 0 }
-		add = {
-			value = var:sul_local_gdp
-			multiply = var:sul_wage_share
-			add = { value = var:sul_local_assets multiply = @asset_return_rate }
-			multiply = "local_relative_estate_power(estate_type:tribes_estate)"
-			divide = { value = num_pop_type:tribesmen min = 0.001 }
-
-			add = {
-				value = owner.var:sul_estate_gold_tribes
-				multiply = @estate_return_rate
-				divide = { value = owner.var:sul_country_pop_tribesmen min = 1 }
-			}
-
-			min = 0
-		}
-	}
+	value = "variable_map(sul_wealth_per_pop|pop_type:tribesmen)"
 }
 
 sul_tribesmen_wage_rate = {
@@ -788,22 +625,36 @@ sul_gross_wage_pool_display = {
 }
 
 sul_provisions_deducted_display = {
-	value = 0
+	value = var:sul_local_gdp
+	multiply = var:sul_wage_share
+	subtract = var:sul_local_wages
+	max = 0
 }
 
 sul_noble_provisions_cost = {
-	value = "global_variable_map(sul_prov_cost_nobles|market)"
+	value = @[24/30]
+	multiply = "global_variable_map(sul_provisions_price_cache|market)"
 }
 
 sul_clergy_provisions_cost = {
-	value = "global_variable_map(sul_prov_cost_clergy|market)"
+	value = @[6/30]
+	multiply = "global_variable_map(sul_provisions_price_cache|market)"
 }
 
 sul_burgher_provisions_cost = {
-	value = "global_variable_map(sul_prov_cost_burghers|market)"
+	value = @[6/30]
+	multiply = "global_variable_map(sul_provisions_price_cache|market)"
 }
 
-# Provisions demand QUANTITY per 1k pops (food_consumption / 30, constant)
+sul_soldier_provisions_cost = {
+	value = @[4.5/30]
+	multiply = "global_variable_map(sul_provisions_price_cache|market)"
+}
+
+sul_laborer_provisions_cost = {
+	value = @[1.5/30]
+	multiply = "global_variable_map(sul_provisions_price_cache|market)"
+}
 
 sul_noble_provisions_qty = {
 	value = @[24/30]
@@ -823,14 +674,6 @@ sul_soldier_provisions_qty = {
 
 sul_laborer_provisions_qty = {
 	value = @[1.5/30]
-}
-
-sul_soldier_provisions_cost = {
-	value = "global_variable_map(sul_prov_cost_soldiers|market)"
-}
-
-sul_laborer_provisions_cost = {
-	value = "global_variable_map(sul_prov_cost_laborers|market)"
 }
 
 sul_net_wage_pool_display = {

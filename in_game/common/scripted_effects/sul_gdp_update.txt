@@ -4,12 +4,20 @@
 #
 # WPP Formula (per location, per estate pop type):
 #
-#   gdp_wages        = @wage_share × sul_local_gdp × (estate_power / total_power) / pops
-#   local_returns    = @asset_return_rate × sul_local_assets × (estate_power / total_power) / pops
-#   national_returns = @estate_return_rate × estate_gold / national_estate_pops
-#   provisions_cost  = (food_consumption / 30) × provisions_market_price
+#   gross_wage_pool  = @wage_share × sul_local_gdp
+#   total_provisions = Σ(pops_i × food_qty_i × (1+food_mods_i) × prov_price)
+#   net_wage_pool    = max(0, gross_wage_pool - total_provisions)
+#   deficit_per_pop  = max(0, total_provisions - gross_wage_pool) / population
 #
-#   WPP = gdp_wages + local_returns + national_returns - provisions_cost
+#   net_wages        = net_wage_pool × (estate_power / total_power) / pops
+#   returns          = asset_returns + national_returns
+#   net_returns      = max(0, returns - deficit_per_pop)
+#
+#   WPP = net_wages + net_returns (min 0)
+#
+#   Provisions demand multiplier per pop type:
+#     sul_prov_mult_X = food_mod_multiplier × funded_ratio
+#     funded_ratio    = wage_coverage + (1-wage_coverage) × min(1, returns/remaining_cost)
 #
 # Local Assets:
 #   max_assets = @asset_max_multiplier × sul_local_gdp × (1 + prosperity/100)
@@ -64,54 +72,18 @@
 # -----------------------------------------------------------------------------
 # PROVISIONS CACHE REBUILD (scopeless, called on init + monthly)
 # -----------------------------------------------------------------------------
-# Precomputes provisions price and per-pop costs per market.
+# Caches provisions market price per market. Per-pop costs are computed
+# per-location (they depend on local food_consumption modifiers).
 
 sul_provisions_cache_rebuild = {
 	clear_global_variable_map = sul_provisions_price_cache
-	clear_global_variable_map = sul_prov_cost_nobles
-	clear_global_variable_map = sul_prov_cost_clergy
-	clear_global_variable_map = sul_prov_cost_burghers
-	clear_global_variable_map = sul_prov_cost_soldiers
-	clear_global_variable_map = sul_prov_cost_laborers
 
 	every_market_in_world = {
 		save_scope_as = sul_prov_market
-		set_local_variable = { name = p value = "goods:provisions.price_in_market(scope:sul_prov_market)" }
-		set_local_variable = { name = c_nobles value = { value = local_var:p multiply = @prov_qty_nobles } }
-		set_local_variable = { name = c_clergy value = { value = local_var:p multiply = @prov_qty_clergy } }
-		set_local_variable = { name = c_burghers value = { value = local_var:p multiply = @prov_qty_burghers } }
-		set_local_variable = { name = c_soldiers value = { value = local_var:p multiply = @prov_qty_soldiers } }
-		set_local_variable = { name = c_laborers value = { value = local_var:p multiply = @prov_qty_laborers } }
-
 		add_to_global_variable_map = {
 			name = sul_provisions_price_cache
 			key = scope:sul_prov_market
-			value = local_var:p
-		}
-		add_to_global_variable_map = {
-			name = sul_prov_cost_nobles
-			key = scope:sul_prov_market
-			value = local_var:c_nobles
-		}
-		add_to_global_variable_map = {
-			name = sul_prov_cost_clergy
-			key = scope:sul_prov_market
-			value = local_var:c_clergy
-		}
-		add_to_global_variable_map = {
-			name = sul_prov_cost_burghers
-			key = scope:sul_prov_market
-			value = local_var:c_burghers
-		}
-		add_to_global_variable_map = {
-			name = sul_prov_cost_soldiers
-			key = scope:sul_prov_market
-			value = local_var:c_soldiers
-		}
-		add_to_global_variable_map = {
-			name = sul_prov_cost_laborers
-			key = scope:sul_prov_market
-			value = local_var:c_laborers
+			value = "goods:provisions.price_in_market(scope:sul_prov_market)"
 		}
 	}
 }
@@ -160,8 +132,11 @@ sul_update_location_wpp = {
 		}
 	}
 
-	# GDP wages pool for this location
-	set_local_variable = { name = sul_gdp_wage_pool value = { value = var:sul_local_gdp multiply = var:sul_wage_share } }
+	# Gross GDP wages pool for this location (before provisions deduction)
+	set_local_variable = {
+		name = sul_gross_wage_pool
+		value = { value = var:sul_local_gdp multiply = var:sul_wage_share }
+	}
 
 	# Local asset returns pool
 	set_local_variable = { name = sul_asset_pool value = 0 }
@@ -171,18 +146,157 @@ sul_update_location_wpp = {
 		set_local_variable = { name = sul_asset_pool value = { value = var:sul_local_assets multiply = @asset_return_rate } }
 	}
 
+	# --- Provisions: wage pool pays first, then per-pop asset returns, then demand reduction ---
+
+	# Per-pop-type food cost = base_qty × (1 + food_consumption_modifiers) × provisions_price
+	set_local_variable = {
+		name = sul_food_cost_nobles
+		value = {
+			value = @prov_qty_nobles
+
+			multiply = {
+				value = 1
+				add = modifier:local_pop_food_consumption
+				add = owner.modifier:global_pop_food_consumption
+				add = owner.modifier:global_nobles_food_consumption
+				add = modifier:local_nobles_food_consumption
+			}
+
+			multiply = local_var:sul_provisions_price
+			max = 0
+		}
+	}
+	set_local_variable = {
+		name = sul_food_cost_clergy
+		value = {
+			value = @prov_qty_clergy
+
+			multiply = {
+				value = 1
+				add = modifier:local_pop_food_consumption
+				add = owner.modifier:global_pop_food_consumption
+				add = owner.modifier:global_clergy_food_consumption
+				add = modifier:local_clergy_food_consumption
+			}
+
+			multiply = local_var:sul_provisions_price
+			max = 0
+		}
+	}
+	set_local_variable = {
+		name = sul_food_cost_burghers
+		value = {
+			value = @prov_qty_burghers
+
+			multiply = {
+				value = 1
+				add = modifier:local_pop_food_consumption
+				add = owner.modifier:global_pop_food_consumption
+				add = owner.modifier:global_burghers_food_consumption
+				add = modifier:local_burghers_food_consumption
+			}
+
+			multiply = local_var:sul_provisions_price
+			max = 0
+		}
+	}
+	set_local_variable = {
+		name = sul_food_cost_soldiers
+		value = {
+			value = @prov_qty_soldiers
+
+			multiply = {
+				value = 1
+				add = modifier:local_pop_food_consumption
+				add = owner.modifier:global_pop_food_consumption
+				add = owner.modifier:global_soldiers_food_consumption
+				add = modifier:local_soldiers_food_consumption
+			}
+
+			multiply = local_var:sul_provisions_price
+			max = 0
+		}
+	}
+	set_local_variable = {
+		name = sul_food_cost_laborers
+		value = {
+			value = @prov_qty_laborers
+
+			multiply = {
+				value = 1
+				add = modifier:local_pop_food_consumption
+				add = owner.modifier:global_pop_food_consumption
+				add = owner.modifier:global_laborers_food_consumption
+				add = modifier:local_laborers_food_consumption
+			}
+
+			multiply = local_var:sul_provisions_price
+			max = 0
+		}
+	}
+
+	# Total provisions cost for the location
+	set_local_variable = {
+		name = sul_total_provisions
+		value = {
+			value = { value = num_pop_type:nobles multiply = local_var:sul_food_cost_nobles }
+			add = { value = num_pop_type:clergy multiply = local_var:sul_food_cost_clergy }
+			add = { value = num_pop_type:burghers multiply = local_var:sul_food_cost_burghers }
+			add = { value = num_pop_type:soldiers multiply = local_var:sul_food_cost_soldiers }
+			add = { value = num_pop_type:laborers multiply = local_var:sul_food_cost_laborers }
+		}
+	}
+
+	# Wage pool pays provisions first (coverage ratio 0..1)
+	set_local_variable = {
+		name = sul_wage_coverage
+		value = {
+			value = local_var:sul_gross_wage_pool
+			divide = { value = local_var:sul_total_provisions min = 0.001 }
+			min = 0
+			max = 1
+		}
+	}
+
+	# Net wage pool after provisions
+	set_local_variable = {
+		name = sul_gdp_wage_pool
+		value = {
+			value = local_var:sul_gross_wage_pool
+
+			subtract = {
+				value = local_var:sul_total_provisions
+				min = 0
+				max = local_var:sul_gross_wage_pool
+			}
+
+			min = 0
+		}
+	}
+
+	# Provisions deficit (what wages couldn't cover), distributed per-pop
+	set_local_variable = {
+		name = sul_prov_deficit_per_pop
+		value = {
+			value = local_var:sul_total_provisions
+			subtract = local_var:sul_gross_wage_pool
+			max = 0
+			divide = { value = population min = 0.001 }
+		}
+	}
+
 	# --- Upper estates: nobles, clergy, burghers ---
-	# WPP = (gdp_wages + asset_returns) × power_share / pops + national_returns - provisions
+	# WPP = net_wages × power / pops + max(0, returns - deficit_share) + national_returns
 
 	set_local_variable = { name = sul_noble_wpp value = 0 }
 
 	if = {
 		limit = { num_pop_type:nobles > 0 }
+
 		set_local_variable = {
-			name = sul_noble_wpp
+			name = sul_noble_returns
 			value = {
-				value = local_var:sul_gdp_wage_pool
-				add = local_var:sul_asset_pool
+				value = local_var:sul_asset_pool
 				multiply = "local_relative_estate_power(estate_type:nobles_estate)"
 				divide = { value = num_pop_type:nobles min = 0.001 }
 
@@ -191,8 +305,20 @@ sul_update_location_wpp = {
 					multiply = @estate_return_rate
 					divide = { value = owner.var:sul_country_pop_nobles min = 1 }
 				}
+			}
+		}
+		set_local_variable = {
+			name = sul_noble_wpp
+			value = {
+				value = local_var:sul_gdp_wage_pool
+				multiply = "local_relative_estate_power(estate_type:nobles_estate)"
+				divide = { value = num_pop_type:nobles min = 0.001 }
 
-				subtract = "global_variable_map(sul_prov_cost_nobles|market)"
+				add = {
+					value = local_var:sul_noble_returns
+					subtract = local_var:sul_prov_deficit_per_pop
+					max = 0
+				}
 
 				min = 0
 			}
@@ -203,11 +329,11 @@ sul_update_location_wpp = {
 
 	if = {
 		limit = { num_pop_type:clergy > 0 }
+
 		set_local_variable = {
-			name = sul_clergy_wpp
+			name = sul_clergy_returns
 			value = {
-				value = local_var:sul_gdp_wage_pool
-				add = local_var:sul_asset_pool
+				value = local_var:sul_asset_pool
 				multiply = "local_relative_estate_power(estate_type:clergy_estate)"
 				divide = { value = num_pop_type:clergy min = 0.001 }
 
@@ -216,8 +342,20 @@ sul_update_location_wpp = {
 					multiply = @estate_return_rate
 					divide = { value = owner.var:sul_country_pop_clergy min = 1 }
 				}
+			}
+		}
+		set_local_variable = {
+			name = sul_clergy_wpp
+			value = {
+				value = local_var:sul_gdp_wage_pool
+				multiply = "local_relative_estate_power(estate_type:clergy_estate)"
+				divide = { value = num_pop_type:clergy min = 0.001 }
 
-				subtract = "global_variable_map(sul_prov_cost_clergy|market)"
+				add = {
+					value = local_var:sul_clergy_returns
+					subtract = local_var:sul_prov_deficit_per_pop
+					max = 0
+				}
 
 				min = 0
 			}
@@ -228,11 +366,11 @@ sul_update_location_wpp = {
 
 	if = {
 		limit = { num_pop_type:burghers > 0 }
+
 		set_local_variable = {
-			name = sul_burgher_wpp
+			name = sul_burgher_returns
 			value = {
-				value = local_var:sul_gdp_wage_pool
-				add = local_var:sul_asset_pool
+				value = local_var:sul_asset_pool
 				multiply = "local_relative_estate_power(estate_type:burghers_estate)"
 				divide = { value = num_pop_type:burghers min = 0.001 }
 
@@ -241,8 +379,20 @@ sul_update_location_wpp = {
 					multiply = @estate_return_rate
 					divide = { value = owner.var:sul_country_pop_burghers min = 1 }
 				}
+			}
+		}
+		set_local_variable = {
+			name = sul_burgher_wpp
+			value = {
+				value = local_var:sul_gdp_wage_pool
+				multiply = "local_relative_estate_power(estate_type:burghers_estate)"
+				divide = { value = num_pop_type:burghers min = 0.001 }
 
-				subtract = "global_variable_map(sul_prov_cost_burghers|market)"
+				add = {
+					value = local_var:sul_burgher_returns
+					subtract = local_var:sul_prov_deficit_per_pop
+					max = 0
+				}
 
 				min = 0
 			}
@@ -250,7 +400,7 @@ sul_update_location_wpp = {
 	}
 
 	# --- Commoners: soldiers, laborers, peasants (share peasants_estate) ---
-	# Weighted distribution: soldiers 8x, laborers 4x, peasants 1x
+	# Weighted distribution: soldiers 12x, laborers 4x, peasants 1x
 
 	set_local_variable = { name = sul_commoner_base value = 0 }
 	set_local_variable = { name = sul_soldier_wpp value = 0 }
@@ -276,20 +426,18 @@ sul_update_location_wpp = {
 			}
 		}
 
-		# Base per weighted pop: (GDP wages + asset returns) × power / weighted_total + national returns / weighted_national
+		# Base per weighted pop: net wages × power / weighted_total
 		set_local_variable = {
 			name = sul_commoner_base
 			value = {
 				value = local_var:sul_gdp_wage_pool
-				add = local_var:sul_asset_pool
 				multiply = "local_relative_estate_power(estate_type:peasants_estate)"
 				divide = local_var:sul_commoner_weighted_total
-
 				min = 0
 			}
 		}
 
-		# National returns (unweighted, same for all commoner types)
+		# National returns (same for all commoner types)
 		set_local_variable = {
 			name = sul_commoner_national_return
 			value = {
@@ -305,6 +453,28 @@ sul_update_location_wpp = {
 			}
 		}
 
+		# Commoner local asset returns per pop (shared across all commoner pops)
+		set_local_variable = {
+			name = sul_commoner_local_return
+			value = {
+				value = local_var:sul_asset_pool
+				multiply = "local_relative_estate_power(estate_type:peasants_estate)"
+
+				divide = {
+					value = num_pop_type:soldiers
+					add = num_pop_type:laborers
+					add = num_pop_type:peasants
+					min = 0.001
+				}
+			}
+		}
+
+		# Commoner per-pop returns (local + national) before deficit
+		set_local_variable = {
+			name = sul_commoner_returns
+			value = { value = local_var:sul_commoner_local_return add = local_var:sul_commoner_national_return }
+		}
+
 		if = {
 			limit = { num_pop_type:soldiers > 0 }
 			set_local_variable = {
@@ -312,9 +482,12 @@ sul_update_location_wpp = {
 				value = {
 					value = local_var:sul_commoner_base
 					multiply = @commoner_weight_soldiers
-					add = local_var:sul_commoner_national_return
 
-					subtract = "global_variable_map(sul_prov_cost_soldiers|market)"
+					add = {
+						value = local_var:sul_commoner_returns
+						subtract = local_var:sul_prov_deficit_per_pop
+						max = 0
+					}
 
 					min = 0
 				}
@@ -328,16 +501,18 @@ sul_update_location_wpp = {
 				value = {
 					value = local_var:sul_commoner_base
 					multiply = @commoner_weight_laborers
-					add = local_var:sul_commoner_national_return
 
-					subtract = "global_variable_map(sul_prov_cost_laborers|market)"
+					add = {
+						value = local_var:sul_commoner_returns
+						subtract = local_var:sul_prov_deficit_per_pop
+						max = 0
+					}
 
 					min = 0
 				}
 			}
 		}
 
-		# Peasants: 1x weight, zero food consumption
 		if = {
 			limit = { num_pop_type:peasants > 0 }
 			set_local_variable = {
@@ -345,7 +520,13 @@ sul_update_location_wpp = {
 				value = {
 					value = local_var:sul_commoner_base
 					multiply = @commoner_weight_peasants
-					add = local_var:sul_commoner_national_return
+
+					add = {
+						value = local_var:sul_commoner_returns
+						subtract = local_var:sul_prov_deficit_per_pop
+						max = 0
+					}
+
 					min = 0
 				}
 			}
@@ -357,11 +538,11 @@ sul_update_location_wpp = {
 
 	if = {
 		limit = { num_pop_type:tribesmen > 0 }
+
 		set_local_variable = {
-			name = sul_tribesmen_wpp
+			name = sul_tribesmen_returns
 			value = {
-				value = local_var:sul_gdp_wage_pool
-				add = local_var:sul_asset_pool
+				value = local_var:sul_asset_pool
 				multiply = "local_relative_estate_power(estate_type:tribes_estate)"
 				divide = { value = num_pop_type:tribesmen min = 0.001 }
 
@@ -370,13 +551,103 @@ sul_update_location_wpp = {
 					multiply = @estate_return_rate
 					divide = { value = owner.var:sul_country_pop_tribesmen min = 1 }
 				}
+			}
+		}
+		set_local_variable = {
+			name = sul_tribesmen_wpp
+			value = {
+				value = local_var:sul_gdp_wage_pool
+				multiply = "local_relative_estate_power(estate_type:tribes_estate)"
+				divide = { value = num_pop_type:tribesmen min = 0.001 }
+
+				add = {
+					value = local_var:sul_tribesmen_returns
+					subtract = local_var:sul_prov_deficit_per_pop
+					max = 0
+				}
 
 				min = 0
 			}
 		}
 	}
 
-	# --- Wage bills (per-estate, for national accumulation + estate payment) ---
+	# --- Provisions demand multiplier per pop type ---
+	# Single location-wide funded ratio: min(1, (wages + asset_returns) / total_provisions)
+	# sul_prov_mult_X = (1 + food_mods_X) × funded_ratio
+
+	set_local_variable = {
+		name = sul_prov_funded_ratio
+		value = {
+			value = local_var:sul_gross_wage_pool
+			add = local_var:sul_asset_pool
+			divide = { value = local_var:sul_total_provisions min = 0.001 }
+			min = 0
+			max = 1
+		}
+	}
+
+	set_variable = {
+		name = sul_prov_mult_nobles
+		value = {
+			value = 1
+			add = modifier:local_pop_food_consumption
+			add = owner.modifier:global_pop_food_consumption
+			add = owner.modifier:global_nobles_food_consumption
+			add = modifier:local_nobles_food_consumption
+			multiply = local_var:sul_prov_funded_ratio
+			max = 0
+		}
+	}
+	set_variable = {
+		name = sul_prov_mult_clergy
+		value = {
+			value = 1
+			add = modifier:local_pop_food_consumption
+			add = owner.modifier:global_pop_food_consumption
+			add = owner.modifier:global_clergy_food_consumption
+			add = modifier:local_clergy_food_consumption
+			multiply = local_var:sul_prov_funded_ratio
+			max = 0
+		}
+	}
+	set_variable = {
+		name = sul_prov_mult_burghers
+		value = {
+			value = 1
+			add = modifier:local_pop_food_consumption
+			add = owner.modifier:global_pop_food_consumption
+			add = owner.modifier:global_burghers_food_consumption
+			add = modifier:local_burghers_food_consumption
+			multiply = local_var:sul_prov_funded_ratio
+			max = 0
+		}
+	}
+	set_variable = {
+		name = sul_prov_mult_soldiers
+		value = {
+			value = 1
+			add = modifier:local_pop_food_consumption
+			add = owner.modifier:global_pop_food_consumption
+			add = owner.modifier:global_soldiers_food_consumption
+			add = modifier:local_soldiers_food_consumption
+			multiply = local_var:sul_prov_funded_ratio
+			max = 0
+		}
+	}
+	set_variable = {
+		name = sul_prov_mult_laborers
+		value = {
+			value = 1
+			add = modifier:local_pop_food_consumption
+			add = owner.modifier:global_pop_food_consumption
+			add = owner.modifier:global_laborers_food_consumption
+			add = modifier:local_laborers_food_consumption
+			multiply = local_var:sul_prov_funded_ratio
+			max = 0
+		}
+	}
+
+	# --- Wage bills (per-estate, from NET wage pool after provisions) ---
 	set_variable = {
 		name = sul_wage_bill_nobles
 		value = { value = local_var:sul_gdp_wage_pool multiply = "local_relative_estate_power(estate_type:nobles_estate)" }
@@ -394,7 +665,7 @@ sul_update_location_wpp = {
 		value = { value = local_var:sul_gdp_wage_pool multiply = "local_relative_estate_power(estate_type:peasants_estate)" }
 	}
 
-	# Total local wages (tooltip)
+	# Total local wages (tooltip — shows net after provisions)
 	set_variable = {
 		name = sul_local_wages
 		value = {

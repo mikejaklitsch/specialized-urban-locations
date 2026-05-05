@@ -1,4 +1,4 @@
-﻿# Military Building Overrides
+# Military Building Overrides
 # REPLACE vanilla army, port, and naval supplies buildings with custom production methods.
 # Army/port: reduced maintenance costs + boosted manpower/sailors.
 # Naval supplies: specialization-gated with multi-variant production methods.
@@ -410,7 +410,6 @@ REPLACE:naval_supplies_guild = {
 	}
 
 	modifier = {
-		local_naval_supplies_output_modifier = 0.015
 		sul_is_production_building = yes
 		local_monthly_development = 0.0025
 	}
@@ -516,7 +515,6 @@ REPLACE:naval_supplies_workshop = {
 	}
 
 	modifier = {
-		local_naval_supplies_output_modifier = 0.015
 		sul_is_production_building = yes
 		local_monthly_development = 0.0025
 	}
@@ -623,7 +621,6 @@ REPLACE:naval_supplies_manufactory = {
 	}
 
 	modifier = {
-		local_naval_supplies_output_modifier = 0.015
 		sul_is_production_building = yes
 		local_monthly_development = 0.0025
 	}
@@ -730,7 +727,6 @@ REPLACE:naval_supplies_mill = {
 	}
 
 	modifier = {
-		local_naval_supplies_output_modifier = 0.015
 		sul_is_production_building = yes
 		local_monthly_development = 0.0025
 	}
@@ -1165,19 +1161,17 @@ INJECT:wharf = {
 	mining_town = yes
 	woodland_city = yes
 	woodland_town = yes
+	on_built = {
+		location = { add_to_variable_list = { name = sul_epbm_buildings target = prev } }
+		sul_epbm_on_building_built = yes
+	}
+	on_destroyed = {
+		location = { remove_list_variable = { name = sul_epbm_buildings target = prev } }
+		sul_epbm_on_building_destroyed = yes
+	}
 }
 
 # Fishing Village: boost sailors for early naval capacity (vanilla 0.001 -> 0.002)
-
-INJECT:fishing_village = {
-	modifier = { local_sailors = 0.001 }
-
-	city = no
-	town = no
-	rural_settlement = no
-
-	gathering_rural = yes
-}
 
 # @sul-diff: ~~~+ 6f9a
 

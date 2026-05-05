@@ -2,28 +2,27 @@
 # REPLACE blocks for buildings with existing on_built/on_destroyed hooks
 
 # monastery uses monastery_maintenance (REPLACE due to existing on_built)
-
 REPLACE:monastery = {
 	is_foreign = no
 	max_levels = 1
 	pop_type = clergy
-
+	
 	employment_size = large_religious_building_employment
-
+	
 	category = religious_category
-
+	
 	rural_settlement = yes
 	town = yes
 	city = yes
-
+	
 	build_time = religious_building_time
-
 	graphical_tags = { medium_religious }
-
+	
+	
 	country_potential = {
 		modifier:can_have_monasteries = yes
 	}
-
+	
 	possible_production_methods = {
 		monastery_maintenance
 		hab_reformed_monastery_maintenance
@@ -32,30 +31,33 @@ REPLACE:monastery = {
 		dual_nature_maintenance
 		separate_nature_maintenance
 	}
-
+	
 	on_built = {
 		if = {
 			limit = {
-				location.owner = { religion = { has_sects = yes } is_member_of_international_organization_of_type = { type = sect } }
+				location.owner = { 
+					religion = { has_sects = yes }
+					is_member_of_international_organization_of_type = { type = sect }
+				}
 			}
 			location.owner = {
 				random_international_organizations_member_of = {
-					limit = {
+					limit = { 
 						international_organization_type = international_organization_type:sect
-						NOT = { any_international_organization_enemy = { this = root.owner } }
+						NOT = {	any_international_organization_enemy = { this = root.owner } }
 						NOT = { has_location = root.location }
 					}
 					add_location_to_international_organization = root.location
 				}
 			}
 		}
-
+	
 		location = { add_to_variable_list = { name = sul_epbm_buildings target = prev } }
 		sul_epbm_on_building_built = yes
 	}
 
 	construction_demand = town_building_construction
-
+	
 	modifier = {
 		local_clergy_food_consumption = 0.1
 		local_clergy_max_literacy = 10

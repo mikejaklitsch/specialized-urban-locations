@@ -334,7 +334,7 @@ def load_mod_buildings():
     mod_buildings = {}
     inject_blocks = defaultdict(list)
     for f in sorted(MOD_BUILDING_DIR.glob("*.txt")):
-        if "epbm_generated" in f.name or f.name == "sul_rank_flag_injects.txt":
+        if f.name == "sul_rank_flag_injects.txt":
             continue
         text = f.read_text(encoding="utf-8-sig")
         buildings = parse_file_buildings(text)
@@ -342,6 +342,9 @@ def load_mod_buildings():
             bldg["source_file"] = f.name
             prefix_upper = bldg["prefix"].upper()
             if prefix_upper.startswith("INJECT"):
+                # Skip INJECTs from generated files (they're managed by their generator)
+                if "epbm_generated" in f.name:
+                    continue
                 inject_blocks[name].append(bldg)
             else:
                 mod_buildings[name] = bldg

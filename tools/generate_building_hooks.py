@@ -858,6 +858,9 @@ def _strip_epbm_injected_lines(text):
     text = '\n'.join(result)
     text = _remove_empty_hook_blocks(text)
 
+    # Collapse runs of 3+ blank lines down to 1
+    text = re.sub(r'\n{3,}', '\n\n', text)
+
     return text
 
 
@@ -1078,10 +1081,253 @@ def _is_mod_file(building, mod_bt_dir):
         return False
 
 
-def generate_inject(qualifying, buildings, gdp_buildings=None, mod_bt_dir=None):
+def scan_existing_injects(mod_bt_dir):
+    """
+    Scan the mod's building_types directory for existing INJECT blocks in
+    non-generated files. Returns dict: building_name -> filepath.
+    Only records the first occurrence per building (duplicates are a bug).
+    """
+    existing = {}
+    if mod_bt_dir is None or not mod_bt_dir.exists():
+        return existing
+
+    for f in sorted(mod_bt_dir.iterdir()):
+        if not f.name.endswith(".txt"):
+            continue
+        if f.name.startswith(f"{PREFIX}_generated_"):
+            continue
+        text = f.read_text(encoding="utf-8-sig")
+        for m in re.finditer(r'^INJECT:(\w+)\s*=\s*\{', text, re.MULTILINE):
+            bname = m.group(1)
+            if bname not in existing:
+                existing[bname] = f
+    return existing
+
+
+def scan_existing_replaces(mod_bt_dir):
+    """
+    Scan for REPLACE blocks in non-generated mod files.
+    Returns set of building names that have REPLACE blocks.
+    """
+    replaced = set()
+    if mod_bt_dir is None or not mod_bt_dir.exists():
+        return replaced
+
+    for f in sorted(mod_bt_dir.iterdir()):
+        if not f.name.endswith(".txt"):
+            continue
+        if f.name.startswith(f"{PREFIX}_generated_"):
+            continue
+        text = f.read_text(encoding="utf-8-sig")
+        for m in re.finditer(r'^REPLACE:(\w+)\s*=\s*\{', text, re.MULTILINE):
+            replaced.add(m.group(1))
+    return replaced
+
+
+def strip_hooks_from_inject_files(mod_bt_dir):
+    """
+    Strip previously-merged EPBM/GDP hooks from all non-generated INJECT files
+    in the mod's building_types directory. Must be called BEFORE parsing buildings
+    so the parser sees the clean state without our hooks.
+    """
+    if mod_bt_dir is None or not mod_bt_dir.exists():
+        return
+
+    for f in sorted(mod_bt_dir.iterdir()):
+        if not f.name.endswith(".txt"):
+            continue
+        if f.name.startswith(f"{PREFIX}_generated_"):
+            continue
+        text = f.read_text(encoding="utf-8-sig")
+        cleaned = _strip_epbm_injected_lines(text)
+        if cleaned != text:
+            f.write_text(cleaned, encoding="utf-8-sig")
+
+
+def _build_hook_lines(bname, qualifying, gdp_buildings):
+    """
+    Build the on_built/on_destroyed lines for a building.
+    Returns (on_built_lines, on_destroyed_lines) as lists of strings (no leading tab).
+    Returns (None, None) if this building needs no hooks.
+    """
+    list_name = _p('buildings')
+    is_epbm = any(bn == bname and not fg for bn, _, _, fg, _ in qualifying)
+    is_gdp = bname in gdp_buildings
+
+    if not is_epbm and not is_gdp:
+        return None, None
+
+    built = []
+    destroyed = []
+
+    if is_epbm:
+        built.append(f"location = {{ add_to_variable_list = {{ name = {list_name} target = prev }} }}")
+        built.append(f"{_p('on_building_built')} = yes")
+        destroyed.append(f"location = {{ remove_list_variable = {{ name = {list_name} target = prev }} }}")
+        destroyed.append(f"{_p('on_building_destroyed')} = yes")
+
+    if is_gdp:
+        built.append("sul_gdp_on_building_built = yes")
+        destroyed.append("sul_gdp_on_building_destroyed = yes")
+
+    return built, destroyed
+
+
+def merge_hooks_into_existing_injects(existing_injects, qualifying, buildings,
+                                      gdp_buildings, mod_bt_dir):
+    """
+    For buildings that already have an INJECT block in another mod file,
+    merge on_built/on_destroyed hooks directly into that INJECT block.
+    Strips any previously-merged hooks first to be idempotent.
+    Returns the set of building names that were merged (so they can be
+    skipped in the generated inject file).
+    """
+    if gdp_buildings is None:
+        gdp_buildings = {}
+
+    # Determine which buildings need hooks AND have existing INJECTs
+    needs_hooks = set()
+    for bname, _, _, is_foreign, _ in qualifying:
+        if is_foreign:
+            continue
+        if _is_mod_file(buildings[bname], mod_bt_dir):
+            continue
+        b = buildings[bname]
+        if b['has_on_built'] or b['has_on_destroyed']:
+            continue
+        needs_hooks.add(bname)
+
+    for bname in gdp_buildings:
+        b = buildings.get(bname)
+        if b is None or b['is_foreign']:
+            continue
+        if _is_mod_file(b, mod_bt_dir):
+            continue
+        if b['has_on_built'] or b['has_on_destroyed']:
+            continue
+        epbm_handled = any(bn == bname for bn, _, _, fg, _ in qualifying if not fg)
+        if not epbm_handled:
+            needs_hooks.add(bname)
+
+    mergeable = needs_hooks & set(existing_injects.keys())
+    if not mergeable:
+        return set()
+
+    # Group by file for efficient batch editing
+    by_file = {}
+    for bname in mergeable:
+        fp = existing_injects[bname]
+        by_file.setdefault(fp, []).append(bname)
+
+    merged = set()
+    for filepath, bnames in sorted(by_file.items(), key=lambda x: x[0].name):
+        text = filepath.read_text(encoding="utf-8-sig")
+        original = text
+
+        for bname in bnames:
+            built_lines, destroyed_lines = _build_hook_lines(bname, qualifying, gdp_buildings)
+            if built_lines is None:
+                continue
+
+            # Find the INJECT:bname block and its closing brace
+            pattern = re.compile(
+                r'^(INJECT:' + re.escape(bname) + r')\s*=\s*\{',
+                re.MULTILINE
+            )
+            match = pattern.search(text)
+            if not match:
+                continue
+
+            brace_start = text.index('{', match.start())
+            depth = 0
+            i = brace_start
+            while i < len(text):
+                if text[i] == '{':
+                    depth += 1
+                elif text[i] == '}':
+                    depth -= 1
+                    if depth == 0:
+                        # Insert on_built + on_destroyed before the closing brace
+                        # Strip trailing whitespace before } to avoid blank line accumulation
+                        pre = text[:i].rstrip('\n\t ')
+                        indent = "\t"
+                        hook_text = f"\n{indent}on_built = {{\n"
+                        for line in built_lines:
+                            hook_text += f"{indent}\t{line}\n"
+                        hook_text += f"{indent}}}\n"
+                        hook_text += f"{indent}on_destroyed = {{\n"
+                        for line in destroyed_lines:
+                            hook_text += f"{indent}\t{line}\n"
+                        hook_text += f"{indent}}}\n"
+                        text = pre + hook_text + text[i:]
+                        merged.add(bname)
+                        break
+                i += 1
+
+        if text != original:
+            filepath.write_text(text, encoding="utf-8-sig")
+            print(f"  {filepath.name}: merged hooks into {len([b for b in bnames if b in merged])} existing INJECT block(s)")
+
+    return merged
+
+
+def _remove_injects_for_replaced(existing_injects, replaced_buildings):
+    """
+    Remove INJECT blocks from source files for buildings that now have
+    a REPLACE block (which includes their rank flags). Prevents INJECT+REPLACE
+    conflicts on the same building.
+    """
+    by_file = {}
+    for bname in replaced_buildings:
+        if bname in existing_injects:
+            fp = existing_injects[bname]
+            by_file.setdefault(fp, []).append(bname)
+
+    for filepath, bnames in sorted(by_file.items(), key=lambda x: x[0].name):
+        text = filepath.read_text(encoding="utf-8-sig")
+        original = text
+
+        for bname in bnames:
+            # Remove the entire INJECT:bname = { ... } block
+            pattern = re.compile(
+                r'\n?^INJECT:' + re.escape(bname) + r'\s*=\s*\{',
+                re.MULTILINE
+            )
+            match = pattern.search(text)
+            if not match:
+                continue
+
+            brace_start = text.index('{', match.start())
+            depth = 0
+            i = brace_start
+            while i < len(text):
+                if text[i] == '{':
+                    depth += 1
+                elif text[i] == '}':
+                    depth -= 1
+                    if depth == 0:
+                        # Remove from match start to end of block (plus trailing newline)
+                        end = i + 1
+                        if end < len(text) and text[end] == '\n':
+                            end += 1
+                        start = match.start()
+                        if start > 0 and text[start] == '\n':
+                            start += 1
+                        text = text[:start] + text[end:]
+                        break
+                i += 1
+
+        if text != original:
+            filepath.write_text(text, encoding="utf-8-sig")
+
+
+def generate_inject(qualifying, buildings, gdp_buildings=None, mod_bt_dir=None,
+                    already_merged=None):
     """Generate epbm_generated_inject.txt (INJECT blocks for buildings without on_built)."""
     if gdp_buildings is None:
         gdp_buildings = {}
+    if already_merged is None:
+        already_merged = set()
     lines = [
         "# Auto-generated by tools/generate_building_hooks.py",
         "# INJECT blocks: manage location tracking list on build/destroy",
@@ -1098,6 +1344,8 @@ def generate_inject(qualifying, buildings, gdp_buildings=None, mod_bt_dir=None):
         if _is_mod_file(b, mod_bt_dir):
             continue
         if b['has_on_built'] or b['has_on_destroyed']:
+            continue
+        if bname in already_merged:
             continue
 
         list_name = _p('buildings')
@@ -1126,6 +1374,8 @@ def generate_inject(qualifying, buildings, gdp_buildings=None, mod_bt_dir=None):
     for bname in sorted(gdp_buildings.keys()):
         if bname in injected_buildings:
             continue
+        if bname in already_merged:
+            continue
         b = buildings.get(bname)
         if b is None or b['is_foreign']:
             continue
@@ -1152,10 +1402,94 @@ def generate_inject(qualifying, buildings, gdp_buildings=None, mod_bt_dir=None):
     return "\n".join(lines)
 
 
-def generate_replace(qualifying, buildings, gdp_buildings=None, mod_bt_dir=None):
+def _read_inject_content(filepath, building_name):
+    """
+    Read the raw content of an INJECT:building_name block from a file.
+    Returns the content between the braces (excluding on_built/on_destroyed
+    which we manage), or None if not found.
+    """
+    text = filepath.read_text(encoding="utf-8-sig")
+    pattern = re.compile(r'^INJECT:' + re.escape(building_name) + r'\s*=\s*\{', re.MULTILINE)
+    match = pattern.search(text)
+    if not match:
+        return None
+
+    brace_start = text.index('{', match.start())
+    depth = 0
+    i = brace_start
+    while i < len(text):
+        if text[i] == '{':
+            depth += 1
+        elif text[i] == '}':
+            depth -= 1
+            if depth == 0:
+                block_content = text[brace_start + 1:i]
+                # Strip on_built/on_destroyed blocks (we add our own)
+                block_content = re.sub(
+                    r'\n?\s*on_built\s*=\s*\{[^}]*\}', '', block_content
+                )
+                block_content = re.sub(
+                    r'\n?\s*on_destroyed\s*=\s*\{[^}]*\}', '', block_content
+                )
+                return block_content.strip()
+        i += 1
+    return None
+
+
+def _merge_inject_into_replace(raw_text, inject_content):
+    """
+    Merge rank flags (and other INJECT content) into a REPLACE block's text.
+    Inserts the content before the closing brace of the building definition.
+    Also replaces old rank flags (rural_settlement/town/city = yes) with new ones.
+    """
+    if not inject_content:
+        return raw_text
+
+    # Parse inject content for rank flag replacements
+    inject_lines = inject_content.strip().split('\n')
+    rank_overrides = {}
+    other_lines = []
+    for line in inject_lines:
+        stripped = line.strip()
+        if '=' in stripped:
+            parts = stripped.split('=', 1)
+            key = parts[0].strip()
+            val = parts[1].strip()
+            # Rank flags that override vanilla values
+            if key in ('rural_settlement', 'town', 'city') or '_' in key:
+                rank_overrides[key] = val
+            else:
+                other_lines.append(line)
+        elif stripped:
+            other_lines.append(line)
+
+    # Apply rank overrides: replace existing flags and add new ones
+    for key, val in rank_overrides.items():
+        # Try to replace existing line
+        old_pattern = re.compile(r'^(\s*)' + re.escape(key) + r'\s*=\s*\w+', re.MULTILINE)
+        if old_pattern.search(raw_text):
+            raw_text = old_pattern.sub(f'\\1{key} = {val}', raw_text)
+        else:
+            # Add before the closing brace
+            last_brace = raw_text.rindex('}')
+            raw_text = raw_text[:last_brace] + f"\t{key} = {val}\n" + raw_text[last_brace:]
+
+    # Add any other non-rank content before closing brace
+    if other_lines:
+        last_brace = raw_text.rindex('}')
+        extra = "\n".join(other_lines) + "\n"
+        raw_text = raw_text[:last_brace] + extra + raw_text[last_brace:]
+
+    return raw_text
+
+
+def generate_replace(qualifying, buildings, gdp_buildings=None, mod_bt_dir=None,
+                     existing_injects=None):
     """Generate epbm_generated_replace.txt (REPLACE blocks for buildings with existing on_built)."""
     if gdp_buildings is None:
         gdp_buildings = {}
+    if existing_injects is None:
+        existing_injects = {}
     lines = [
         "# Auto-generated by tools/generate_building_hooks.py",
         "# REPLACE blocks for buildings with existing on_built/on_destroyed hooks",
@@ -1179,6 +1513,12 @@ def generate_replace(qualifying, buildings, gdp_buildings=None, mod_bt_dir=None)
             lines.append(f"# WARNING: Could not extract raw text for {bname}")
             lines.append("")
             continue
+
+        # Merge rank flags from existing INJECT blocks into the REPLACE
+        if bname in existing_injects:
+            inject_content = _read_inject_content(existing_injects[bname], bname)
+            if inject_content:
+                raw = _merge_inject_into_replace(raw, inject_content)
 
         is_gdp = bname in gdp_buildings
         modified = inject_on_built_hook(raw, bname, gdp_tracked=is_gdp)
@@ -1216,7 +1556,7 @@ def generate_replace(qualifying, buildings, gdp_buildings=None, mod_bt_dir=None)
         lines.append(f"REPLACE:{modified}")
         lines.append("")
 
-    return "\n".join(lines)
+    return "\n".join(lines), replaced_buildings
 
 
 def _inject_gdp_only_replace(raw_text, building_name):
@@ -1575,6 +1915,11 @@ Examples:
                       if not v['no_upkeep'] and not v['has_output'] and v['goods']}
     print(f"  Qualifying PMs (has goods, no no_upkeep, no output): {len(qualifying_pms)}")
 
+    # Strip previously-merged hooks before parsing so the parser sees clean state
+    if mod_dir:
+        mod_bt_dir = mod_dir / "common" / "building_types"
+        strip_hooks_from_inject_files(mod_bt_dir)
+
     # Parse building types
     print("\nParsing building types...")
     buildings = parse_all_buildings(vanilla_dir, mod_dir)
@@ -1611,16 +1956,44 @@ Examples:
     out_buildings = output_dir / "in_game" / "common" / "building_types"
     out_buildings.mkdir(parents=True, exist_ok=True)
 
+    # Merge hooks into existing INJECT blocks from other mod files
+    print(f"\nMerging hooks into existing INJECT blocks...")
+    existing_injects = scan_existing_injects(mod_bt_dir)
+    already_merged = merge_hooks_into_existing_injects(
+        existing_injects, qualifying, buildings, gdp_buildings, mod_bt_dir
+    )
+    if already_merged:
+        print(f"  Merged {len(already_merged)} building(s) into existing INJECT blocks")
+    else:
+        print(f"  No existing INJECT blocks to merge into")
+
     print(f"\nGenerating INJECT/REPLACE files...")
-    inject_code = generate_inject(qualifying, buildings, gdp_buildings=gdp_buildings, mod_bt_dir=mod_bt_dir)
+    inject_code = generate_inject(qualifying, buildings, gdp_buildings=gdp_buildings,
+                                  mod_bt_dir=mod_bt_dir, already_merged=already_merged)
     out_path = out_buildings / f"{PREFIX}_generated_inject.txt"
     out_path.write_text(inject_code, encoding="utf-8-sig")
     print(f"  Wrote {out_path.relative_to(output_dir)}")
 
-    replace_code = generate_replace(qualifying, buildings, gdp_buildings=gdp_buildings, mod_bt_dir=mod_bt_dir)
+    replace_code, replaced_buildings = generate_replace(
+        qualifying, buildings, gdp_buildings=gdp_buildings,
+        mod_bt_dir=mod_bt_dir, existing_injects=existing_injects)
     out_path = out_buildings / f"{PREFIX}_generated_replace.txt"
     out_path.write_text(replace_code, encoding="utf-8-sig")
     print(f"  Wrote {out_path.relative_to(output_dir)}")
+
+    # Remove INJECT blocks for buildings we REPLACE'd (their flags are now in the REPLACE)
+    conflicting_replaces = replaced_buildings & set(existing_injects.keys())
+    if conflicting_replaces:
+        _remove_injects_for_replaced(existing_injects, conflicting_replaces)
+        print(f"  Removed {len(conflicting_replaces)} INJECT block(s) absorbed into REPLACE")
+
+    # Also remove INJECT blocks that conflict with REPLACE blocks in other mod files
+    # (e.g., rank flag INJECTs for buildings that have hand-written REPLACE elsewhere)
+    other_replaces = scan_existing_replaces(mod_bt_dir)
+    stale_injects = set(existing_injects.keys()) & other_replaces
+    if stale_injects:
+        _remove_injects_for_replaced(existing_injects, stale_injects)
+        print(f"  Removed {len(stale_injects)} stale INJECT block(s) conflicting with REPLACE in other files")
 
     # Generate shared files (both modes)
 

@@ -1,50 +1,22 @@
-﻿# SUL — Ported DWUI Startup & CMF Integration
-
-on_game_start = {
-	on_actions = { sul_dwui_on_game_start }
-}
-
-# Re-run on save load (on_game_start does not fire on save load)
-
-monthly_weather_pulse = {
-	on_actions = { sul_dwui_on_game_start }
-}
-
-# CMF action bar registration — hook CMF's documented extension point.
-# cmf_on_mod_registration fires on both new-game AND save-load after the
-# player has selected a country, so it covers both lifecycle events in one.
+﻿# SUL — DWUI CMM Settings Registration
 
 cmf_on_mod_registration = {
 	on_actions = { sul_dwui_cmf_register }
 }
 
-# CMF button click callback
-
 cmf_on_callback = {
 	on_actions = { sul_dwui_cmf_callback }
 }
 
-sul_dwui_on_game_start = {
-	effect = {
-		every_country = {
-			every_army = { sul_dwui_calculate_unit_composition = yes }
-			every_navy = { sul_dwui_calculate_unit_composition = yes }
-		}
-	}
-}
-
 sul_dwui_cmf_register = {
 	effect = {
-		cmf_add_action_bar_element = { element = sul_dwui_settings_config }
+		sul_dwui_register_cmm_settings = yes
+		sul_dwui_sync_aliases = yes
 	}
 }
 
 sul_dwui_cmf_callback = {
 	effect = {
-		if = {
-			limit = { var:cmf_callback = flag:sul_dwui_settings_config }
-			if = { limit = { has_variable = sul_dwui_show_panel } remove_variable = sul_dwui_show_panel }
-			else = { set_variable = { name = sul_dwui_show_panel value = yes } }
-		}
+		sul_dwui_sync_aliases = yes
 	}
 }

@@ -1,9 +1,25 @@
 ﻿# Building caps: production scales with development, extraction inverse.
-# Population multiplies the base (+100% per 50 pops).
-# Location rank adds flat bonus: +2 town, +5 city.
+# Dev term scaled by min(pop/250, 1) — full effect at 250 pops.
+# Production = dev × multiplier × min(pop/250, 1) + rank + pop.
+# Extraction = (100 - dev) × 0.25 × min(pop/250, 1) + rank + pop.
+# Rank adds flat bonus: +2 town, +5 city (shared by both).
 
 REPLACE:guild_max_level = {
-	add = { desc = "SUL_CAP_PRODUCTION_SIZE" value = modifier:sul_production_size }
+	add = {
+		desc = "SUL_CAP_DEVELOPMENT"
+		value = development
+		multiply = 0.25
+
+		multiply = {
+			value = population
+			divide = 250
+			max = 1
+		}
+	}
+
+	if = { limit = { modifier:sul_is_city_rank_tier = yes } add = { desc = "SUL_CAP_RANK" value = 5 } }
+	else_if = { limit = { modifier:sul_is_town_rank_tier = yes } add = { desc = "SUL_CAP_RANK" value = 2 } }
+
 	add = {
 		desc = "SUL_CAP_POPULATION"
 		value = population
@@ -15,10 +31,20 @@ REPLACE:guild_max_level = {
 
 REPLACE:workshop_max_level = {
 	add = {
-		desc = "SUL_CAP_PRODUCTION_SIZE"
-		value = modifier:sul_production_size
-		multiply = 1.5
+		desc = "SUL_CAP_DEVELOPMENT"
+		value = development
+		multiply = 0.50
+
+		multiply = {
+			value = population
+			divide = 250
+			max = 1
+		}
 	}
+
+	if = { limit = { modifier:sul_is_city_rank_tier = yes } add = { desc = "SUL_CAP_RANK" value = 5 } }
+	else_if = { limit = { modifier:sul_is_town_rank_tier = yes } add = { desc = "SUL_CAP_RANK" value = 2 } }
+
 	add = {
 		desc = "SUL_CAP_POPULATION"
 		value = population
@@ -30,10 +56,20 @@ REPLACE:workshop_max_level = {
 
 REPLACE:manufactory_max_level = {
 	add = {
-		desc = "SUL_CAP_PRODUCTION_SIZE"
-		value = modifier:sul_production_size
-		multiply = 2.0
+		desc = "SUL_CAP_DEVELOPMENT"
+		value = development
+		multiply = 1.00
+
+		multiply = {
+			value = population
+			divide = 250
+			max = 1
+		}
 	}
+
+	if = { limit = { modifier:sul_is_city_rank_tier = yes } add = { desc = "SUL_CAP_RANK" value = 5 } }
+	else_if = { limit = { modifier:sul_is_town_rank_tier = yes } add = { desc = "SUL_CAP_RANK" value = 2 } }
+
 	add = {
 		desc = "SUL_CAP_POPULATION"
 		value = population
@@ -45,10 +81,20 @@ REPLACE:manufactory_max_level = {
 
 REPLACE:mills_max_level = {
 	add = {
-		desc = "SUL_CAP_PRODUCTION_SIZE"
-		value = modifier:sul_production_size
-		multiply = 1.5
+		desc = "SUL_CAP_DEVELOPMENT"
+		value = development
+		multiply = 0.75
+
+		multiply = {
+			value = population
+			divide = 250
+			max = 1
+		}
 	}
+
+	if = { limit = { modifier:sul_is_city_rank_tier = yes } add = { desc = "SUL_CAP_RANK" value = 5 } }
+	else_if = { limit = { modifier:sul_is_town_rank_tier = yes } add = { desc = "SUL_CAP_RANK" value = 2 } }
+
 	add = {
 		desc = "SUL_CAP_POPULATION"
 		value = population
@@ -58,23 +104,23 @@ REPLACE:mills_max_level = {
 	min = 0
 }
 
-REPLACE:market_max_level = {
-	add = {
-		desc = "SUL_CAP_PRODUCTION_SIZE"
-		value = modifier:sul_production_size
-		multiply = 1.75
-	}
-	add = {
-		desc = "SUL_CAP_POPULATION"
-		value = population
-		multiply = 0.03
-	}
-
-	min = 0
-}
-
 REPLACE:rural_building_cap = {
-	add = { desc = "SUL_CAP_EXTRACTION_SIZE" value = modifier:sul_extraction_size }
+	add = {
+		desc = "SUL_CAP_DEVELOPMENT"
+		value = 100
+		subtract = development
+		multiply = 0.25
+
+		multiply = {
+			value = population
+			divide = 250
+			max = 1
+		}
+	}
+
+	if = { limit = { modifier:sul_is_city_rank_tier = yes } add = { desc = "SUL_CAP_RANK" value = 5 } }
+	else_if = { limit = { modifier:sul_is_town_rank_tier = yes } add = { desc = "SUL_CAP_RANK" value = 2 } }
+
 	add = {
 		desc = "SUL_CAP_POPULATION"
 		value = population
@@ -86,7 +132,22 @@ REPLACE:rural_building_cap = {
 
 REPLACE:irrigant_cap = {
 	add = { desc = "BUILDING_LEVEL_BASE" value = 2 }
-	add = { desc = "SUL_CAP_EXTRACTION_SIZE" value = modifier:sul_extraction_size }
+	add = {
+		desc = "SUL_CAP_DEVELOPMENT"
+		value = 100
+		subtract = development
+		multiply = 0.25
+
+		multiply = {
+			value = population
+			divide = 250
+			max = 1
+		}
+	}
+
+	if = { limit = { modifier:sul_is_city_rank_tier = yes } add = { desc = "SUL_CAP_RANK" value = 5 } }
+	else_if = { limit = { modifier:sul_is_town_rank_tier = yes } add = { desc = "SUL_CAP_RANK" value = 2 } }
+
 	add = {
 		desc = "SUL_CAP_POPULATION"
 		value = population
@@ -98,7 +159,22 @@ REPLACE:irrigant_cap = {
 # Wrappers referenced by building_types files.
 
 sul_extraction_max_level = {
-	add = { desc = "SUL_CAP_EXTRACTION_SIZE" value = modifier:sul_extraction_size }
+	add = {
+		desc = "SUL_CAP_DEVELOPMENT"
+		value = 100
+		subtract = development
+		multiply = 0.25
+
+		multiply = {
+			value = population
+			divide = 250
+			max = 1
+		}
+	}
+
+	if = { limit = { modifier:sul_is_city_rank_tier = yes } add = { desc = "SUL_CAP_RANK" value = 5 } }
+	else_if = { limit = { modifier:sul_is_town_rank_tier = yes } add = { desc = "SUL_CAP_RANK" value = 2 } }
+
 	add = {
 		desc = "SUL_CAP_POPULATION"
 		value = population
@@ -110,10 +186,21 @@ sul_extraction_max_level = {
 
 sul_extraction_efficiency_max_level = {
 	add = {
-		desc = "SUL_CAP_EXTRACTION_SIZE"
-		value = modifier:sul_extraction_size
-		multiply = 0.5
+		desc = "SUL_CAP_DEVELOPMENT"
+		value = 100
+		subtract = development
+		multiply = 0.125
+
+		multiply = {
+			value = population
+			divide = 250
+			max = 1
+		}
 	}
+
+	if = { limit = { modifier:sul_is_city_rank_tier = yes } add = { desc = "SUL_CAP_RANK" value = 2.5 } }
+	else_if = { limit = { modifier:sul_is_town_rank_tier = yes } add = { desc = "SUL_CAP_RANK" value = 1 } }
+
 	add = {
 		desc = "SUL_CAP_POPULATION"
 		value = population
@@ -124,7 +211,21 @@ sul_extraction_efficiency_max_level = {
 }
 
 sul_production_max_level = {
-	add = { desc = "SUL_CAP_PRODUCTION_SIZE" value = modifier:sul_production_size }
+	add = {
+		desc = "SUL_CAP_DEVELOPMENT"
+		value = development
+		multiply = 0.25
+
+		multiply = {
+			value = population
+			divide = 250
+			max = 1
+		}
+	}
+
+	if = { limit = { modifier:sul_is_city_rank_tier = yes } add = { desc = "SUL_CAP_RANK" value = 5 } }
+	else_if = { limit = { modifier:sul_is_town_rank_tier = yes } add = { desc = "SUL_CAP_RANK" value = 2 } }
+
 	add = {
 		desc = "SUL_CAP_POPULATION"
 		value = population

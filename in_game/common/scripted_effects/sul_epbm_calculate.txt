@@ -147,17 +147,27 @@ sul_epbm_calc_location_costs = {
 		save_temporary_scope_as = sul_epbm_bldg
 		building_type ?= { save_temporary_scope_as = sul_epbm_bt }
 
-		set_global_variable = { name = sul_epbm_pm_ref value = "global_variable_map(sul_epbm_profiles|scope:sul_epbm_bt)" }
+		ordered_production_method_of_building = {
+			limit = { is_key_in_global_variable_map = { name = sul_epbm_profiles target = this } }
+			order_by = "this.production_method_profit(scope:sul_epbm_bldg)"
+			position = 0
+			check_range_bounds = no
 
-		global_var:sul_epbm_pm_ref = { sul_epbm_lookup_pm_cost = yes }
+			save_temporary_scope_as = sul_epbm_pm
 
-		set_local_variable = {
-			name = sul_epbm_bldg_cost
-			value = { value = local_var:sul_epbm_pm_cost multiply = building_level }
+			prev = {
+				set_global_variable = { name = sul_epbm_pm_ref value = "global_variable_map(sul_epbm_profiles|scope:sul_epbm_pm)" }
+
+				global_var:sul_epbm_pm_ref = { sul_epbm_lookup_pm_cost = yes }
+
+				set_local_variable = {
+					name = sul_epbm_bldg_cost
+					value = { value = local_var:sul_epbm_pm_cost multiply = building_level }
+				}
+
+				sul_epbm_route_building_cost = yes
+			}
 		}
-
-		# Route cost to correct accumulator
-		sul_epbm_route_building_cost = yes
 	}
 }
 
@@ -173,20 +183,28 @@ sul_epbm_calc_foreign_building_costs = {
 		save_temporary_scope_as = sul_epbm_bldg
 		building_type ?= { save_temporary_scope_as = sul_epbm_bt }
 
-		if = {
-			limit = { is_key_in_global_variable_map = { name = sul_epbm_profiles target = scope:sul_epbm_bt } }
+		location ?= { market ?= { save_temporary_scope_as = sul_epbm_mkt } }
 
-			set_global_variable = { name = sul_epbm_pm_ref value = "global_variable_map(sul_epbm_profiles|scope:sul_epbm_bt)" }
+		ordered_production_method_of_building = {
+			limit = { is_key_in_global_variable_map = { name = sul_epbm_profiles target = this } }
+			order_by = "this.production_method_profit(scope:sul_epbm_bldg)"
+			position = 0
+			check_range_bounds = no
 
-			location ?= { market ?= { save_temporary_scope_as = sul_epbm_mkt } }
-			global_var:sul_epbm_pm_ref = { sul_epbm_lookup_pm_cost = yes }
+			save_temporary_scope_as = sul_epbm_pm
 
-			set_local_variable = {
-				name = sul_epbm_bldg_cost
-				value = { value = local_var:sul_epbm_pm_cost multiply = building_level }
+			prev = {
+				set_global_variable = { name = sul_epbm_pm_ref value = "global_variable_map(sul_epbm_profiles|scope:sul_epbm_pm)" }
+
+				global_var:sul_epbm_pm_ref = { sul_epbm_lookup_pm_cost = yes }
+
+				set_local_variable = {
+					name = sul_epbm_bldg_cost
+					value = { value = local_var:sul_epbm_pm_cost multiply = building_level }
+				}
+
+				sul_epbm_route_building_cost = yes
 			}
-
-			sul_epbm_route_building_cost = yes
 		}
 	}
 }

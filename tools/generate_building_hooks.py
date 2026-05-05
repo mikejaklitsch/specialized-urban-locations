@@ -496,7 +496,7 @@ def classify(buildings, pms, exclusions):
       - Has at least one qualifying PM (category=building_maintenance, has goods, no no_upkeep, no output)
 
     Returns:
-      qualifying: list of (building_name, pm_name, pm_source, is_foreign, estate) tuples
+      qualifying: list of (building_name, is_foreign, estate) tuples
                   where estate is None (split by estate power) or an estate key string
       all_pm_goods: dict pm_name -> OrderedDict(good->amount)
     """
@@ -504,27 +504,15 @@ def classify(buildings, pms, exclusions):
     all_pm_goods = OrderedDict()
     excluded_count = 0
 
-    for bname, b in buildings.items():
-        if bname in exclusions:
-            excluded_count += 1
+    # Pass 1: catalog every qualifying maintenance PM
+    for pm_name, pm in pms.items():
+        if pm['no_upkeep'] or pm['has_output']:
             continue
+        if not pm['goods']:
+            continue
+        all_pm_goods[pm_name] = pm['goods']
 
-        best_pm = None
-
-        # Check external PMs
-        for pm_name in b['possible_pms']:
-            if pm_name not in pms:
-                continue
-            pm = pms[pm_name]
-            if pm['no_upkeep'] or pm['has_output']:
-                continue
-            if not pm['goods']:
-                continue
-            if best_pm is None:
-                best_pm = (pm_name, 'external')
-                all_pm_goods[pm_name] = pm['goods']
-
-        # Check inline PMs
+    for bname, b in buildings.items():
         for pm_name, pm_data in b['unique_pms'].items():
             if not pm_data.get('is_maintenance', False):
                 continue
@@ -532,13 +520,29 @@ def classify(buildings, pms, exclusions):
                 continue
             if not pm_data['goods']:
                 continue
-            if best_pm is None:
-                best_pm = (pm_name, 'inline')
-                all_pm_goods[pm_name] = pm_data['goods']
+            all_pm_goods[pm_name] = pm_data['goods']
 
-        if best_pm:
-            estate = b['estate']  # None for unassigned, or estate key string
-            qualifying.append((bname, best_pm[0], best_pm[1], b['is_foreign'], estate))
+    # Pass 2: any building that references at least one catalog PM qualifies
+    for bname, b in buildings.items():
+        if bname in exclusions:
+            excluded_count += 1
+            continue
+
+        has_tracked = False
+        for pm_name in b['possible_pms']:
+            if pm_name in all_pm_goods:
+                has_tracked = True
+                break
+        if not has_tracked:
+            for pm_name in b['unique_pms']:
+                if pm_name in all_pm_goods:
+                    has_tracked = True
+                    break
+        if not has_tracked:
+            continue
+
+        estate = b['estate']
+        qualifying.append((bname, b['is_foreign'], estate))
 
     if excluded_count > 0:
         print(f"  Excluded {excluded_count} building(s) from tracking")
@@ -1002,7 +1006,7 @@ def apply_in_place(qualifying, buildings, mod_dir, gdp_buildings=None):
     (they go into INJECT/REPLACE output instead).
     If gdp_buildings is provided, also adds GDP hooks for buildings that produce goods.
     Returns (modified_file_count, vanilla_only_buildings) where vanilla_only_buildings
-    is a list of (bname, pm_name, pm_source, is_foreign, estate) for buildings not in mod files.
+    is a list of (bname, is_foreign, estate) for buildings not in mod files.
     """
     if gdp_buildings is None:
         gdp_buildings = {}
@@ -1012,7 +1016,7 @@ def apply_in_place(qualifying, buildings, mod_dir, gdp_buildings=None):
     mod_buildings_by_file = {}
     vanilla_only = []
 
-    for bname, pm_name, pm_source, is_foreign, estate in qualifying:
+    for bname, is_foreign, estate in qualifying:
         if is_foreign:
             continue
         b = buildings[bname]
@@ -1024,7 +1028,7 @@ def apply_in_place(qualifying, buildings, mod_dir, gdp_buildings=None):
             mod_buildings_by_file.setdefault(filepath, []).append((bname, b))
         except ValueError:
             # File is in vanilla, not mod — needs INJECT/REPLACE instead
-            vanilla_only.append((bname, pm_name, pm_source, is_foreign, estate))
+            vanilla_only.append((bname, is_foreign, estate))
 
     if vanilla_only:
         print(f"  {len(vanilla_only)} building(s) from vanilla-only files (will generate INJECT/REPLACE)")
@@ -1173,7 +1177,7 @@ def _build_hook_lines(bname, qualifying, gdp_buildings):
     Returns (None, None) if this building needs no hooks.
     """
     list_name = _p('buildings')
-    is_epbm = any(bn == bname and not fg for bn, _, _, fg, _ in qualifying)
+    is_epbm = any(bn == bname and not fg for bn, fg, _ in qualifying)
     is_gdp = bname in gdp_buildings
 
     if not is_epbm and not is_gdp:
@@ -1209,7 +1213,7 @@ def merge_hooks_into_existing_injects(existing_injects, qualifying, buildings,
 
     # Determine which buildings need hooks AND have existing INJECTs
     needs_hooks = set()
-    for bname, _, _, is_foreign, _ in qualifying:
+    for bname, is_foreign, _ in qualifying:
         if is_foreign:
             continue
         if _is_mod_file(buildings[bname], mod_bt_dir):
@@ -1227,7 +1231,7 @@ def merge_hooks_into_existing_injects(existing_injects, qualifying, buildings,
             continue
         if b['has_on_built'] or b['has_on_destroyed']:
             continue
-        epbm_handled = any(bn == bname for bn, _, _, fg, _ in qualifying if not fg)
+        epbm_handled = any(bn == bname for bn, fg, _ in qualifying if not fg)
         if not epbm_handled:
             needs_hooks.add(bname)
 
@@ -1359,7 +1363,7 @@ def generate_inject(qualifying, buildings, gdp_buildings=None, mod_bt_dir=None,
     # Track which buildings already got INJECT blocks from EPBM
     injected_buildings = set()
 
-    for bname, pm_name, _, is_foreign, _estate in sorted(qualifying, key=lambda x: x[0]):
+    for bname, is_foreign, _estate in sorted(qualifying, key=lambda x: x[0]):
         b = buildings[bname]
         if is_foreign:
             continue
@@ -1372,7 +1376,7 @@ def generate_inject(qualifying, buildings, gdp_buildings=None, mod_bt_dir=None,
 
         list_name = _p('buildings')
         is_gdp = bname in gdp_buildings
-        lines.append(f"# {bname} uses {pm_name}")
+        lines.append(f"# {bname}")
         lines.append(f"INJECT:{bname} = {{")
         lines.append(f"\ton_built = {{")
         lines.append(f"\t\tlocation = {{ add_to_variable_list = {{ name = {list_name} target = prev }} }}")
@@ -1406,7 +1410,7 @@ def generate_inject(qualifying, buildings, gdp_buildings=None, mod_bt_dir=None,
         if b['has_on_built'] or b['has_on_destroyed']:
             continue
         # Check if already handled by REPLACE (has existing hooks from EPBM)
-        epbm_handled = any(bn == bname for bn, _, _, fg, _ in qualifying if not fg)
+        epbm_handled = any(bn == bname for bn, fg, _ in qualifying if not fg)
         if epbm_handled:
             continue
         goods_str = ", ".join(sorted(gdp_buildings[bname]))
@@ -1521,7 +1525,7 @@ def generate_replace(qualifying, buildings, gdp_buildings=None, mod_bt_dir=None,
     # Track which buildings already got REPLACE blocks from EPBM
     replaced_buildings = set()
 
-    for bname, pm_name, _, is_foreign, _estate in sorted(qualifying, key=lambda x: x[0]):
+    for bname, is_foreign, _estate in sorted(qualifying, key=lambda x: x[0]):
         b = buildings[bname]
         if is_foreign:
             continue
@@ -1544,7 +1548,7 @@ def generate_replace(qualifying, buildings, gdp_buildings=None, mod_bt_dir=None,
 
         is_gdp = bname in gdp_buildings
         modified = inject_on_built_hook(raw, bname, gdp_tracked=is_gdp)
-        lines.append(f"# {bname} uses {pm_name} (REPLACE due to existing on_built)")
+        lines.append(f"# {bname} (REPLACE due to existing on_built)")
         lines.append(f"REPLACE:{modified}")
         lines.append("")
         replaced_buildings.add(bname)
@@ -1561,7 +1565,7 @@ def generate_replace(qualifying, buildings, gdp_buildings=None, mod_bt_dir=None,
             continue
         if not b['has_on_built'] and not b['has_on_destroyed']:
             continue
-        epbm_handled = any(bn == bname for bn, _, _, fg, _ in qualifying if not fg)
+        epbm_handled = any(bn == bname for bn, fg, _ in qualifying if not fg)
         if epbm_handled:
             continue
 
@@ -1696,27 +1700,53 @@ def generate_io_localization(all_pm_goods):
 def generate_init_effects(qualifying, all_pm_goods):
     """
     Generate init effects file:
-    1. {prefix}_stamp_globals: creates PM IOs + stamps global building_type->IO map
-    2. {prefix}_init_building: dispatch that adds building to list (game start)
+    1. {prefix}_stamp_globals: creates PM IOs + stamps global production_method->IO map
+    2. {prefix}_register_pm: helper to register one PM's IO (nested metascripting)
+    3. {prefix}_good: helper to add one good entry to an IO during creation
     """
     pm_prefix = _p('pm')
-    list_name = _p('buildings')
     all_ios = _p('all_ios')
     profiles = _p('profiles')
     estate_map = _p('estate_map')
     goods = _p('goods')
-    bldg = _p('bldg')
 
     lines = [
         "# Auto-generated by tools/generate_building_hooks.py",
-        "# IO creation + global profile lookup + init dispatch",
+        "# IO creation + global profile map (production_method -> IO scope)",
         "",
     ]
 
-    # ── Part 1: Create IOs and stamp global profile map ──
-    lines.append("# Create PM international organizations and populate their goods maps,")
-    lines.append(f"# then stamp global map {profiles} (building_type -> IO scope).")
-    lines.append("# Called once at game start.")
+    # ── Helper: add one good entry to the IO being created ──
+    lines.append(f"{_p('good')} = {{")
+    lines.append(f"\tadd_to_variable_map = {{")
+    lines.append(f"\t\tname = {goods}")
+    lines.append(f"\t\tkey = goods:$good$")
+    lines.append(f"\t\tvalue = $amount$")
+    lines.append(f"\t}}")
+    lines.append("}")
+    lines.append("")
+
+    # ── Helper: register one PM's IO via nested metascripting ──
+    lines.append(f"{_p('register_pm')} = {{")
+    lines.append(f"\tcreate_international_organization = {{")
+    lines.append(f"\t\ttype = international_organization_type:{pm_prefix}_$pm$")
+    lines.append(f"\t\t$goods_block$")
+    lines.append(f"\t}}")
+    lines.append(f"\tadd_to_global_variable_map = {{")
+    lines.append(f"\t\tname = {profiles}")
+    lines.append(f"\t\tkey = production_method:$pm$")
+    lines.append(f"\t\tvalue = international_organization:{pm_prefix}_$pm$")
+    lines.append(f"\t}}")
+    lines.append(f"\tadd_to_global_variable_list = {{")
+    lines.append(f"\t\tname = {all_ios}")
+    lines.append(f"\t\ttarget = international_organization:{pm_prefix}_$pm$")
+    lines.append(f"\t}}")
+    lines.append("}")
+    lines.append("")
+
+    # ── stamp_globals: destroy stale IOs, clear globals, register all PMs ──
+    lines.append("# Called once at game start: destroy stale IOs, clear globals, then")
+    lines.append(f"# register one IO per maintenance PM via {_p('register_pm')}.")
     lines.append(f"{_p('stamp_globals')} = {{")
     lines.append("\t# destroy_international_organization requires country scope")
     lines.append("\trandom_country = {")
@@ -1733,73 +1763,29 @@ def generate_init_effects(qualifying, all_pm_goods):
     lines.append(f"\tclear_global_variable_map = {profiles}")
     lines.append(f"\tclear_global_variable_map = {estate_map}")
     lines.append("")
-    lines.append("\t# Create all PM IOs and populate goods maps inside creation scope")
     lines.append("\trandom_country = {")
     lines.append("\t\tlimit = { is_real_country = yes }")
 
     for pm_name in sorted(all_pm_goods.keys()):
         pm_goods = all_pm_goods[pm_name]
-        io_type = f"international_organization_type:{pm_prefix}_{pm_name}"
-        goods_str = ", ".join(f"{g} {a}" for g, a in pm_goods.items())
-        lines.append(f"\t\t# PM: {pm_name} ({goods_str})")
-        lines.append(f"\t\tcreate_international_organization = {{")
-        lines.append(f"\t\t\ttype = {io_type}")
+        lines.append(f"\t\t{_p('register_pm')} = {{")
+        lines.append(f"\t\t\tpm = {pm_name}")
+        lines.append(f"\t\t\tgoods_block = \"")
         for good, amount in pm_goods.items():
-            lines.append(f"\t\t\tadd_to_variable_map = {{ name = {goods} key = goods:{good} value = {amount} }}")
+            lines.append(f"\t\t\t\t{_p('good')} = {{ good = {good} amount = {amount} }}")
+        lines.append("\t\t\t\"")
         lines.append("\t\t}")
 
     lines.append("\t}")
-    lines.append("")
-    lines.append("\t# Global map: building_type -> IO scope")
 
-    for bname, pm_name, _, is_foreign, estate in sorted(qualifying, key=lambda x: x[0]):
-        bt_ref = f"building_type:{bname}"
-        io_ref = f"international_organization:{pm_prefix}_{pm_name}"
-        tags = []
-        if is_foreign:
-            tags.append('foreign')
-        if estate:
-            tags.append(f'estate:{estate}')
-        tag = f'  # ({", ".join(tags)})' if tags else ''
-        lines.append(f"\tadd_to_global_variable_map = {{ name = {profiles} key = {bt_ref} value = {io_ref} }}{tag}")
-
-    # Estate map: building_type -> estate_type (only for estate-assigned buildings)
-    estate_buildings = [(b, e) for b, _, _, _, e in qualifying if e is not None]
+    # Estate-assignment map: building_type → estate_type
+    estate_buildings = [(b, e) for b, _, e in qualifying if e is not None]
     if estate_buildings:
         lines.append("")
-        lines.append(f"\t# Estate map: building_type -> estate_type (charged entirely to assigned estate)")
-        lines.append(f"\tclear_global_variable_map = {estate_map}")
+        lines.append(f"\t# Estate-assigned buildings: charge full cost to the named estate")
         for bname, estate in sorted(estate_buildings):
             bt_ref = f"building_type:{bname}"
             lines.append(f"\tadd_to_global_variable_map = {{ name = {estate_map} key = {bt_ref} value = estate_type:{estate} }}")
-
-    lines.append("")
-    lines.append("\t# Global list of all PM IOs (for monthly cache clearing)")
-    for pm_name in sorted(all_pm_goods.keys()):
-        io_ref = f"international_organization:{pm_prefix}_{pm_name}"
-        lines.append(f"\tadd_to_global_variable_list = {{ name = {all_ios} target = {io_ref} }}")
-
-    lines.append("}")
-    lines.append("")
-
-    # ── Part 2: Init dispatch for pre-existing buildings ──
-    lines.append(f"# Init dispatch: add building instance to {list_name} list for pre-existing buildings")
-    lines.append("# Scope: building (called via every_buildings_in_location)")
-    lines.append(f"# All non-foreign buildings go to {list_name}. Foreign buildings are skipped.")
-    lines.append(f"{_p('init_building')} = {{")
-    lines.append(f"\tsave_temporary_scope_as = {bldg}")
-
-    first = True
-    for bname, pm_name, _, is_foreign, _estate in sorted(qualifying, key=lambda x: x[0]):
-        if is_foreign:
-            continue
-        keyword = "if" if first else "else_if"
-        first = False
-        bt_ref = f"building_type:{bname}"
-        lines.append(f"\t{keyword} = {{")
-        lines.append(f"\t\tlimit = {{ building_type = {bt_ref} }}")
-        lines.append(f"\t\tlocation = {{ add_to_variable_list = {{ name = {list_name} target = scope:{bldg} }} }}")
-        lines.append("\t}")
 
     lines.append("}")
     lines.append("")
@@ -1959,13 +1945,9 @@ Examples:
     print(f"  GDP-tracked buildings: {len(gdp_buildings)}")
     print(f"  Unique output goods: {len(all_output_goods)} ({', '.join(all_output_goods)})")
 
-    pm_to_buildings = {}
-    for bname, pm_name, _, _, _ in qualifying:
-        pm_to_buildings.setdefault(pm_name, []).append(bname)
-
-    non_foreign = [q for q in qualifying if not q[3]]
-    foreign_count = sum(1 for q in qualifying if q[3])
-    estate_count = sum(1 for q in qualifying if q[4] is not None)
+    non_foreign = [q for q in qualifying if not q[1]]
+    foreign_count = sum(1 for q in qualifying if q[1])
+    estate_count = sum(1 for q in qualifying if q[2] is not None)
 
     # Output directories
     out_effects = output_dir / "in_game" / "common" / "scripted_effects"
@@ -2092,16 +2074,11 @@ Examples:
     print(f"GDP-tracked buildings: {len(gdp_buildings)} ({gdp_only_count} GDP-only)")
     print(f"Unique output goods: {len(all_output_goods)} ({', '.join(all_output_goods)})")
 
-    print("\n=== PM to Buildings Mapping ===")
+    print("\n=== PM Goods Profiles ===")
     for pm_name in sorted(all_pm_goods.keys()):
-        blist = pm_to_buildings.get(pm_name, [])
         goods = all_pm_goods[pm_name]
         goods_str = ", ".join(f"{g}={a}" for g, a in goods.items())
-        print(f"  {pm_name} ({len(blist)} buildings): [{goods_str}]")
-        for b in sorted(blist):
-            src = "inline" if any(bn == b and s == 'inline' for bn, _, s, _, _ in qualifying) else "external"
-            tag = " (foreign)" if buildings[b]['is_foreign'] else ""
-            print(f"    - {b} ({src}){tag}")
+        print(f"  {pm_name}: [{goods_str}]")
 
     return 0
 

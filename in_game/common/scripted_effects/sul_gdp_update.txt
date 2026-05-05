@@ -1075,7 +1075,6 @@ sul_init_economy_full_pass = {
 	set_local_variable = { name = sul_enrich_burghers value = 0 }
 	set_local_variable = { name = sul_enrich_commoners value = 0 }
 	set_local_variable = { name = sul_enrich_tribesmen value = 0 }
-	set_local_variable = { name = sul_transfer_weighted value = 0 }
 
 	every_owned_location = {
 		if = {
@@ -1096,29 +1095,10 @@ sul_init_economy_full_pass = {
 					change_local_variable = { name = sul_enrich_burghers add = prev.var:sul_enrichment_burghers }
 					change_local_variable = { name = sul_enrich_commoners add = prev.var:sul_enrichment_commoners }
 					change_local_variable = { name = sul_enrich_tribesmen add = prev.var:sul_enrichment_tribesmen }
-
-					# Enfranchisement × commoner political power
-					change_local_variable = {
-						name = sul_transfer_weighted
-						add = {
-							value = prev.var:sul_wage_bill_commoners
-
-							multiply = {
-								value = prev.modifier:local_peasant_enfranchisment
-								add = modifier:global_peasant_enfranchisment
-								min = 0.1
-								max = 1.0
-							}
-
-							multiply = "prev.local_relative_estate_power(estate_type:peasants_estate)"
-						}
-					}
 				}
 			}
 		}
 	}
-
-	set_variable = { name = sul_transfer_weighted_total value = local_var:sul_transfer_weighted }
 
 	# Pay enrichment to estates (negative = withdraw from estate gold)
 	if = {

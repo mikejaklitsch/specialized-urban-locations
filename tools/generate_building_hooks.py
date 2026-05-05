@@ -45,6 +45,28 @@ PREFIX = "epbm"
 # Files to skip when scanning building_types directories
 SKIP_FILES = {"readme.txt", "__readme.txt", "00_unique_buildings_to_make_obsolete.txt"}
 
+PDX_FORMAT_DIR = Path("/mnt/c/Users/Mjaklitsch/Documents/pdx-format")
+
+
+def _format_files(filepaths):
+    """Format files using pdx_format, imported fresh to avoid namespace collisions."""
+    paths = [Path(f) for f in filepaths if Path(f).exists()]
+    if not paths or not PDX_FORMAT_DIR.exists():
+        return
+    import importlib
+    sys.path.insert(0, str(PDX_FORMAT_DIR))
+    try:
+        pdx_config = importlib.import_module("pdx_format.config")
+        pdx_file_io = importlib.import_module("pdx_format.file_io")
+        config = pdx_config.FormatConfig()
+        for p in paths:
+            pdx_file_io.format_file(p, config)
+            pdx_file_io.format_file(p, config)
+    except (ImportError, Exception) as e:
+        print(f"  WARNING: pdx-format failed: {e}")
+    finally:
+        sys.path.remove(str(PDX_FORMAT_DIR))
+
 
 def _p(name):
     """Prefix a name with the configured PREFIX. e.g. _p('buildings') -> 'epbm_buildings'."""
@@ -2028,6 +2050,28 @@ Examples:
         out_path = out_effects / "sul_gdp_generated_effects.txt"
         out_path.write_text(gdp_code, encoding="utf-8-sig")
         print(f"  Wrote {out_path.relative_to(output_dir)}")
+
+    # Format all generated and modified files
+    print(f"\nFormatting files...")
+    format_targets = []
+    if mod_bt_dir:
+        for f in sorted(mod_bt_dir.iterdir()):
+            if f.name.endswith(".txt"):
+                format_targets.append(f)
+    format_targets.append(out_effects / f"{PREFIX}_generated_init_effects.txt")
+    format_targets.append(out_effects / "sul_gdp_generated_effects.txt")
+    _format_files(format_targets)
+
+    # Ensure all output mtimes are newer than inputs (for stale detection)
+    import time
+    time.sleep(0.1)
+    for f in out_buildings.glob(f"{PREFIX}_generated_*.txt"):
+        f.touch()
+    for d in (out_effects, out_ios, out_biases, out_loc):
+        if d.exists():
+            for f in d.iterdir():
+                if PREFIX in f.name:
+                    f.touch()
 
     # Summary
     print("\n=== Summary ===")

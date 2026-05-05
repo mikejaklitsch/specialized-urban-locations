@@ -1,260 +1,464 @@
 ﻿# Per pop-type per tier breakdown values for the GUI budget tooltip.
-#
-# Each value = demand_base × weight (constant tiers) or
-# demand_base × WPP × weight (growth tiers).
-#
-# These are per-pop values matching the demand column in the WPP tooltip.
-# Evaluated on tooltip hover only — never in the economy hot path.
+# demand = demand_base × (floor + slope × WPP)
+# Evaluated on tooltip hover only.
 
-# Tier weights (must match sul_pop_demand_wpp.txt)
-@sul_w_necessity = 1.65
-@sul_w_basic = 0.90
-@sul_w_common = 0.45
-@sul_w_upper = 0.21
-@sul_w_luxury = 0.16
-@sul_w_exotic = 0.10
+@sul_floor_necessity = 1.5
+@sul_slope_necessity = 0.03
+@sul_floor_basic = 0.7
+@sul_slope_basic = 0.08
+@sul_floor_common = 0.4
+@sul_slope_common = 0.07
+@sul_floor_upper = 0.2
+@sul_slope_upper = 0.16
+@sul_floor_luxury = 0.1
+@sul_slope_luxury = 0.13
+@sul_floor_exotic = 0.05
+@sul_slope_exotic = 0.06
 
 # --- NOBLES ---
 
 sul_nobles_necessity = {
 	value = "variable_map(sul_demand_base|pop_type:nobles)"
-	multiply = @sul_w_necessity
+
+	multiply = {
+		value = @sul_floor_necessity
+		add = { value = "variable_map(sul_wealth_per_pop|pop_type:nobles)" multiply = @sul_slope_necessity }
+	}
 }
 
 sul_nobles_basic = {
 	value = "variable_map(sul_demand_base|pop_type:nobles)"
-	multiply = @sul_w_basic
+
+	multiply = {
+		value = @sul_floor_basic
+		add = { value = "variable_map(sul_wealth_per_pop|pop_type:nobles)" multiply = @sul_slope_basic }
+	}
 }
 
 sul_nobles_common = {
 	value = "variable_map(sul_demand_base|pop_type:nobles)"
-	multiply = @sul_w_common
+
+	multiply = {
+		value = @sul_floor_common
+		add = { value = "variable_map(sul_wealth_per_pop|pop_type:nobles)" multiply = @sul_slope_common }
+	}
 }
 
 sul_nobles_upper = {
 	value = "variable_map(sul_demand_base|pop_type:nobles)"
-	multiply = "variable_map(sul_wealth_per_pop|pop_type:nobles)"
-	multiply = @sul_w_upper
+
+	multiply = {
+		value = @sul_floor_upper
+		add = { value = "variable_map(sul_wealth_per_pop|pop_type:nobles)" multiply = @sul_slope_upper }
+	}
 }
 
 sul_nobles_luxury = {
 	value = "variable_map(sul_demand_base|pop_type:nobles)"
-	multiply = "variable_map(sul_wealth_per_pop|pop_type:nobles)"
-	multiply = @sul_w_luxury
+
+	multiply = {
+		value = @sul_floor_luxury
+		add = { value = "variable_map(sul_wealth_per_pop|pop_type:nobles)" multiply = @sul_slope_luxury }
+	}
 }
 
 sul_nobles_exotic = {
 	value = "variable_map(sul_demand_base|pop_type:nobles)"
-	multiply = "variable_map(sul_wealth_per_pop|pop_type:nobles)"
-	multiply = @sul_w_exotic
+
+	multiply = {
+		value = @sul_floor_exotic
+		add = { value = "variable_map(sul_wealth_per_pop|pop_type:nobles)" multiply = @sul_slope_exotic }
+	}
 }
 
 # --- CLERGY ---
 
 sul_clergy_necessity = {
 	value = "variable_map(sul_demand_base|pop_type:clergy)"
-	multiply = @sul_w_necessity
+
+	multiply = {
+		value = @sul_floor_necessity
+		add = { value = "variable_map(sul_wealth_per_pop|pop_type:clergy)" multiply = @sul_slope_necessity }
+	}
 }
 
 sul_clergy_basic = {
 	value = "variable_map(sul_demand_base|pop_type:clergy)"
-	multiply = @sul_w_basic
+
+	multiply = {
+		value = @sul_floor_basic
+		add = { value = "variable_map(sul_wealth_per_pop|pop_type:clergy)" multiply = @sul_slope_basic }
+	}
 }
 
 sul_clergy_common = {
 	value = "variable_map(sul_demand_base|pop_type:clergy)"
-	multiply = @sul_w_common
+
+	multiply = {
+		value = @sul_floor_common
+		add = { value = "variable_map(sul_wealth_per_pop|pop_type:clergy)" multiply = @sul_slope_common }
+	}
 }
 
 sul_clergy_upper = {
 	value = "variable_map(sul_demand_base|pop_type:clergy)"
-	multiply = "variable_map(sul_wealth_per_pop|pop_type:clergy)"
-	multiply = @sul_w_upper
+
+	multiply = {
+		value = @sul_floor_upper
+		add = { value = "variable_map(sul_wealth_per_pop|pop_type:clergy)" multiply = @sul_slope_upper }
+	}
 }
 
 sul_clergy_luxury = {
 	value = "variable_map(sul_demand_base|pop_type:clergy)"
-	multiply = "variable_map(sul_wealth_per_pop|pop_type:clergy)"
-	multiply = @sul_w_luxury
+
+	multiply = {
+		value = @sul_floor_luxury
+		add = { value = "variable_map(sul_wealth_per_pop|pop_type:clergy)" multiply = @sul_slope_luxury }
+	}
 }
 
 sul_clergy_exotic = {
 	value = "variable_map(sul_demand_base|pop_type:clergy)"
-	multiply = "variable_map(sul_wealth_per_pop|pop_type:clergy)"
-	multiply = @sul_w_exotic
+
+	multiply = {
+		value = @sul_floor_exotic
+		add = { value = "variable_map(sul_wealth_per_pop|pop_type:clergy)" multiply = @sul_slope_exotic }
+	}
 }
 
 # --- BURGHERS ---
 
 sul_burghers_necessity = {
 	value = "variable_map(sul_demand_base|pop_type:burghers)"
-	multiply = @sul_w_necessity
+
+	multiply = {
+		value = @sul_floor_necessity
+		add = { value = "variable_map(sul_wealth_per_pop|pop_type:burghers)" multiply = @sul_slope_necessity }
+	}
 }
 
 sul_burghers_basic = {
 	value = "variable_map(sul_demand_base|pop_type:burghers)"
-	multiply = @sul_w_basic
+
+	multiply = {
+		value = @sul_floor_basic
+		add = { value = "variable_map(sul_wealth_per_pop|pop_type:burghers)" multiply = @sul_slope_basic }
+	}
 }
 
 sul_burghers_common = {
 	value = "variable_map(sul_demand_base|pop_type:burghers)"
-	multiply = @sul_w_common
+
+	multiply = {
+		value = @sul_floor_common
+		add = { value = "variable_map(sul_wealth_per_pop|pop_type:burghers)" multiply = @sul_slope_common }
+	}
 }
 
 sul_burghers_upper = {
 	value = "variable_map(sul_demand_base|pop_type:burghers)"
-	multiply = "variable_map(sul_wealth_per_pop|pop_type:burghers)"
-	multiply = @sul_w_upper
+
+	multiply = {
+		value = @sul_floor_upper
+		add = { value = "variable_map(sul_wealth_per_pop|pop_type:burghers)" multiply = @sul_slope_upper }
+	}
 }
 
 sul_burghers_luxury = {
 	value = "variable_map(sul_demand_base|pop_type:burghers)"
-	multiply = "variable_map(sul_wealth_per_pop|pop_type:burghers)"
-	multiply = @sul_w_luxury
+
+	multiply = {
+		value = @sul_floor_luxury
+		add = { value = "variable_map(sul_wealth_per_pop|pop_type:burghers)" multiply = @sul_slope_luxury }
+	}
 }
 
 sul_burghers_exotic = {
 	value = "variable_map(sul_demand_base|pop_type:burghers)"
-	multiply = "variable_map(sul_wealth_per_pop|pop_type:burghers)"
-	multiply = @sul_w_exotic
+
+	multiply = {
+		value = @sul_floor_exotic
+		add = { value = "variable_map(sul_wealth_per_pop|pop_type:burghers)" multiply = @sul_slope_exotic }
+	}
 }
 
 # --- SOLDIERS ---
 
 sul_soldiers_necessity = {
 	value = "variable_map(sul_demand_base|pop_type:soldiers)"
-	multiply = @sul_w_necessity
+
+	multiply = {
+		value = @sul_floor_necessity
+		add = { value = "variable_map(sul_wealth_per_pop|pop_type:soldiers)" multiply = @sul_slope_necessity }
+	}
 }
 
 sul_soldiers_basic = {
 	value = "variable_map(sul_demand_base|pop_type:soldiers)"
-	multiply = @sul_w_basic
+
+	multiply = {
+		value = @sul_floor_basic
+		add = { value = "variable_map(sul_wealth_per_pop|pop_type:soldiers)" multiply = @sul_slope_basic }
+	}
 }
 
 sul_soldiers_common = {
 	value = "variable_map(sul_demand_base|pop_type:soldiers)"
-	multiply = @sul_w_common
+
+	multiply = {
+		value = @sul_floor_common
+		add = { value = "variable_map(sul_wealth_per_pop|pop_type:soldiers)" multiply = @sul_slope_common }
+	}
 }
 
 sul_soldiers_upper = {
 	value = "variable_map(sul_demand_base|pop_type:soldiers)"
-	multiply = "variable_map(sul_wealth_per_pop|pop_type:soldiers)"
-	multiply = @sul_w_upper
+
+	multiply = {
+		value = @sul_floor_upper
+		add = { value = "variable_map(sul_wealth_per_pop|pop_type:soldiers)" multiply = @sul_slope_upper }
+	}
 }
 
 sul_soldiers_luxury = {
 	value = "variable_map(sul_demand_base|pop_type:soldiers)"
-	multiply = "variable_map(sul_wealth_per_pop|pop_type:soldiers)"
-	multiply = @sul_w_luxury
+
+	multiply = {
+		value = @sul_floor_luxury
+		add = { value = "variable_map(sul_wealth_per_pop|pop_type:soldiers)" multiply = @sul_slope_luxury }
+	}
 }
 
 sul_soldiers_exotic = {
 	value = "variable_map(sul_demand_base|pop_type:soldiers)"
-	multiply = "variable_map(sul_wealth_per_pop|pop_type:soldiers)"
-	multiply = @sul_w_exotic
+
+	multiply = {
+		value = @sul_floor_exotic
+		add = { value = "variable_map(sul_wealth_per_pop|pop_type:soldiers)" multiply = @sul_slope_exotic }
+	}
 }
 
 # --- LABORERS ---
 
 sul_laborers_necessity = {
 	value = "variable_map(sul_demand_base|pop_type:laborers)"
-	multiply = @sul_w_necessity
+
+	multiply = {
+		value = @sul_floor_necessity
+		add = { value = "variable_map(sul_wealth_per_pop|pop_type:laborers)" multiply = @sul_slope_necessity }
+	}
 }
 
 sul_laborers_basic = {
 	value = "variable_map(sul_demand_base|pop_type:laborers)"
-	multiply = @sul_w_basic
+
+	multiply = {
+		value = @sul_floor_basic
+		add = { value = "variable_map(sul_wealth_per_pop|pop_type:laborers)" multiply = @sul_slope_basic }
+	}
 }
 
 sul_laborers_common = {
 	value = "variable_map(sul_demand_base|pop_type:laborers)"
-	multiply = @sul_w_common
+
+	multiply = {
+		value = @sul_floor_common
+		add = { value = "variable_map(sul_wealth_per_pop|pop_type:laborers)" multiply = @sul_slope_common }
+	}
 }
 
 sul_laborers_upper = {
 	value = "variable_map(sul_demand_base|pop_type:laborers)"
-	multiply = "variable_map(sul_wealth_per_pop|pop_type:laborers)"
-	multiply = @sul_w_upper
+
+	multiply = {
+		value = @sul_floor_upper
+		add = { value = "variable_map(sul_wealth_per_pop|pop_type:laborers)" multiply = @sul_slope_upper }
+	}
 }
 
 sul_laborers_luxury = {
 	value = "variable_map(sul_demand_base|pop_type:laborers)"
-	multiply = "variable_map(sul_wealth_per_pop|pop_type:laborers)"
-	multiply = @sul_w_luxury
+
+	multiply = {
+		value = @sul_floor_luxury
+		add = { value = "variable_map(sul_wealth_per_pop|pop_type:laborers)" multiply = @sul_slope_luxury }
+	}
 }
 
 sul_laborers_exotic = {
 	value = "variable_map(sul_demand_base|pop_type:laborers)"
-	multiply = "variable_map(sul_wealth_per_pop|pop_type:laborers)"
-	multiply = @sul_w_exotic
+
+	multiply = {
+		value = @sul_floor_exotic
+		add = { value = "variable_map(sul_wealth_per_pop|pop_type:laborers)" multiply = @sul_slope_exotic }
+	}
 }
 
 # --- PEASANTS ---
 
 sul_peasants_necessity = {
 	value = "variable_map(sul_demand_base|pop_type:peasants)"
-	multiply = @sul_w_necessity
+
+	multiply = {
+		value = @sul_floor_necessity
+		add = { value = "variable_map(sul_wealth_per_pop|pop_type:peasants)" multiply = @sul_slope_necessity }
+	}
 }
 
 sul_peasants_basic = {
 	value = "variable_map(sul_demand_base|pop_type:peasants)"
-	multiply = @sul_w_basic
+
+	multiply = {
+		value = @sul_floor_basic
+		add = { value = "variable_map(sul_wealth_per_pop|pop_type:peasants)" multiply = @sul_slope_basic }
+	}
 }
 
 sul_peasants_common = {
 	value = "variable_map(sul_demand_base|pop_type:peasants)"
-	multiply = @sul_w_common
+
+	multiply = {
+		value = @sul_floor_common
+		add = { value = "variable_map(sul_wealth_per_pop|pop_type:peasants)" multiply = @sul_slope_common }
+	}
 }
 
 sul_peasants_upper = {
 	value = "variable_map(sul_demand_base|pop_type:peasants)"
-	multiply = "variable_map(sul_wealth_per_pop|pop_type:peasants)"
-	multiply = @sul_w_upper
+
+	multiply = {
+		value = @sul_floor_upper
+		add = { value = "variable_map(sul_wealth_per_pop|pop_type:peasants)" multiply = @sul_slope_upper }
+	}
 }
 
 sul_peasants_luxury = {
 	value = "variable_map(sul_demand_base|pop_type:peasants)"
-	multiply = "variable_map(sul_wealth_per_pop|pop_type:peasants)"
-	multiply = @sul_w_luxury
+
+	multiply = {
+		value = @sul_floor_luxury
+		add = { value = "variable_map(sul_wealth_per_pop|pop_type:peasants)" multiply = @sul_slope_luxury }
+	}
 }
 
 sul_peasants_exotic = {
 	value = "variable_map(sul_demand_base|pop_type:peasants)"
-	multiply = "variable_map(sul_wealth_per_pop|pop_type:peasants)"
-	multiply = @sul_w_exotic
+
+	multiply = {
+		value = @sul_floor_exotic
+		add = { value = "variable_map(sul_wealth_per_pop|pop_type:peasants)" multiply = @sul_slope_exotic }
+	}
 }
 
 # --- TRIBESMEN ---
 
 sul_tribesmen_necessity = {
 	value = "variable_map(sul_demand_base|pop_type:tribesmen)"
-	multiply = @sul_w_necessity
+
+	multiply = {
+		value = @sul_floor_necessity
+		add = { value = "variable_map(sul_wealth_per_pop|pop_type:tribesmen)" multiply = @sul_slope_necessity }
+	}
 }
 
 sul_tribesmen_basic = {
 	value = "variable_map(sul_demand_base|pop_type:tribesmen)"
-	multiply = @sul_w_basic
+
+	multiply = {
+		value = @sul_floor_basic
+		add = { value = "variable_map(sul_wealth_per_pop|pop_type:tribesmen)" multiply = @sul_slope_basic }
+	}
 }
 
 sul_tribesmen_common = {
 	value = "variable_map(sul_demand_base|pop_type:tribesmen)"
-	multiply = @sul_w_common
+
+	multiply = {
+		value = @sul_floor_common
+		add = { value = "variable_map(sul_wealth_per_pop|pop_type:tribesmen)" multiply = @sul_slope_common }
+	}
 }
 
 sul_tribesmen_upper = {
 	value = "variable_map(sul_demand_base|pop_type:tribesmen)"
-	multiply = "variable_map(sul_wealth_per_pop|pop_type:tribesmen)"
-	multiply = @sul_w_upper
+
+	multiply = {
+		value = @sul_floor_upper
+		add = { value = "variable_map(sul_wealth_per_pop|pop_type:tribesmen)" multiply = @sul_slope_upper }
+	}
 }
 
 sul_tribesmen_luxury = {
 	value = "variable_map(sul_demand_base|pop_type:tribesmen)"
-	multiply = "variable_map(sul_wealth_per_pop|pop_type:tribesmen)"
-	multiply = @sul_w_luxury
+
+	multiply = {
+		value = @sul_floor_luxury
+		add = { value = "variable_map(sul_wealth_per_pop|pop_type:tribesmen)" multiply = @sul_slope_luxury }
+	}
 }
 
 sul_tribesmen_exotic = {
 	value = "variable_map(sul_demand_base|pop_type:tribesmen)"
-	multiply = "variable_map(sul_wealth_per_pop|pop_type:tribesmen)"
-	multiply = @sul_w_exotic
+
+	multiply = {
+		value = @sul_floor_exotic
+		add = { value = "variable_map(sul_wealth_per_pop|pop_type:tribesmen)" multiply = @sul_slope_exotic }
+	}
+}
+
+# --- SLAVES ---
+
+sul_slaves_necessity = {
+	value = "variable_map(sul_demand_base|pop_type:slaves)"
+
+	multiply = {
+		value = @sul_floor_necessity
+		add = { value = "variable_map(sul_wealth_per_pop|pop_type:slaves)" multiply = @sul_slope_necessity }
+	}
+}
+
+sul_slaves_basic = {
+	value = "variable_map(sul_demand_base|pop_type:slaves)"
+
+	multiply = {
+		value = @sul_floor_basic
+		add = { value = "variable_map(sul_wealth_per_pop|pop_type:slaves)" multiply = @sul_slope_basic }
+	}
+}
+
+sul_slaves_common = {
+	value = "variable_map(sul_demand_base|pop_type:slaves)"
+
+	multiply = {
+		value = @sul_floor_common
+		add = { value = "variable_map(sul_wealth_per_pop|pop_type:slaves)" multiply = @sul_slope_common }
+	}
+}
+
+sul_slaves_upper = {
+	value = "variable_map(sul_demand_base|pop_type:slaves)"
+
+	multiply = {
+		value = @sul_floor_upper
+		add = { value = "variable_map(sul_wealth_per_pop|pop_type:slaves)" multiply = @sul_slope_upper }
+	}
+}
+
+sul_slaves_luxury = {
+	value = "variable_map(sul_demand_base|pop_type:slaves)"
+
+	multiply = {
+		value = @sul_floor_luxury
+		add = { value = "variable_map(sul_wealth_per_pop|pop_type:slaves)" multiply = @sul_slope_luxury }
+	}
+}
+
+sul_slaves_exotic = {
+	value = "variable_map(sul_demand_base|pop_type:slaves)"
+
+	multiply = {
+		value = @sul_floor_exotic
+		add = { value = "variable_map(sul_wealth_per_pop|pop_type:slaves)" multiply = @sul_slope_exotic }
+	}
 }

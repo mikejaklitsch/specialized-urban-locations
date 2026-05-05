@@ -3,8 +3,7 @@
 # Gross output per location = sum of (goods_output × market_price) for each
 # good tracked in the sul_local_goods variable map. Building hooks maintain
 # this map as buildings are constructed and destroyed, so only goods actually
-# produced at a location get checked. Asset share = local GDP / national GDP
-# drives upper-class capital returns allocation.
+# produced at a location get checked.
 
 # Location scope: iterate the local goods map and sum output × price.
 # The variable map keys are goods scopes; every_key_in_variable_map iterates
@@ -13,7 +12,7 @@
 sul_gdp_compute_location = {
 	save_scope_as = sul_gdp_loc
 
-	set_variable = { name = sul_local_gdp_output value = 0 }
+	set_variable = { name = sul_local_gdp value = 0 }
 
 	if = {
 		limit = { has_variable_map = sul_local_goods }
@@ -23,7 +22,7 @@ sul_gdp_compute_location = {
 
 			scope:sul_gdp_loc = {
 				change_variable = {
-					name = sul_local_gdp_output
+					name = sul_local_gdp
 					add = {
 						value = "goods_output(scope:sul_gdp_good)"
 						multiply = "scope:sul_gdp_good.price_in_market(scope:sul_gdp_loc.market)"
@@ -33,7 +32,7 @@ sul_gdp_compute_location = {
 		}
 	}
 
-	if = { limit = { var:sul_local_gdp_output < 0.01 } set_variable = { name = sul_local_gdp_output value = 0.01 } }
+	if = { limit = { var:sul_local_gdp < 0.01 } set_variable = { name = sul_local_gdp value = 0.01 } }
 }
 
 sul_gdp_yearly_update = {
@@ -41,22 +40,14 @@ sul_gdp_yearly_update = {
 
 	every_owned_location = {
 		sul_gdp_compute_location = yes
-		owner ?= { change_variable = { name = sul_national_gdp add = prev.var:sul_local_gdp_output } }
+		owner ?= { change_variable = { name = sul_national_gdp add = prev.var:sul_local_gdp } }
 	}
 
 	if = { limit = { var:sul_national_gdp < 1 } set_variable = { name = sul_national_gdp value = 1 } }
-
-	every_owned_location = {
-		set_variable = {
-			name = sul_asset_share
-			value = { value = var:sul_local_gdp_output divide = owner.var:sul_national_gdp }
-		}
-	}
 }
 
 # Populates sul_local_goods from pre-existing buildings, then computes
-# the first GDP values so asset shares are available before the first
-# yearly pulse fires.
+# the first GDP values before the first yearly pulse fires.
 
 sul_gdp_init = {
 	every_owned_location = { every_buildings_in_location = { sul_gdp_init_building = yes } }

@@ -1,9 +1,6 @@
 ﻿# Display-only script values for the wealth tooltip and debug panel.
-# Tooltip values (deltas, totals, fill) read from cached variable maps
-# Variable maps (sul_estate_assets, sul_estate_targets) are the sole
-# storage — written directly by seed, convergence, and loot effects.
-# Debug values (fractions, targets, gold) compute live for the debug
-# panel — acceptable there since it's a developer tool, not player-facing.
+# Local assets are a single aggregate variable per location (sul_local_assets).
+# Max = @asset_max_multiplier × GDP × (1 + prosperity/100).
 
 # --- RAW LOCAL ESTATE POWER (location scope, live) ---
 
@@ -45,97 +42,79 @@ sul_dbg_local_power_crown = {
 	add = "local_estate_power(estate_type:tribes_estate)"
 }
 
-# --- NATIONAL ESTATE POWER (cached country vars) ---
+# --- NATIONAL POWER (legacy — no longer tracked, return 0) ---
 
 sul_dbg_national_power_nobles = {
-	value = owner.var:sul_national_power_nobles
+	value = 0
 }
 
 sul_dbg_national_power_clergy = {
-	value = owner.var:sul_national_power_clergy
+	value = 0
 }
 
 sul_dbg_national_power_burghers = {
-	value = owner.var:sul_national_power_burghers
+	value = 0
 }
 
 sul_dbg_national_power_peasants = {
-	value = owner.var:sul_national_power_peasants
+	value = 0
 }
 
 sul_dbg_national_power_dhimmi = {
-	value = owner.var:sul_national_power_dhimmi
+	value = 0
 }
 
 sul_dbg_national_power_cossacks = {
-	value = owner.var:sul_national_power_cossacks
+	value = 0
 }
 
 sul_dbg_national_power_tribes = {
-	value = owner.var:sul_national_power_tribes
+	value = 0
 }
 
 sul_dbg_national_power_crown = {
-	value = owner.var:sul_national_power_crown
+	value = 0
 }
 
-# --- FRACTION OF NATIONAL POWER (local / cached national) ---
+# --- POWER FRACTION (legacy stubs) ---
 
 sul_dbg_fraction_nobles = {
-	value = "local_estate_power(estate_type:nobles_estate)"
-
-	divide = { value = owner.var:sul_national_power_nobles min = 0.001 }
+	value = 0
 }
 
 sul_dbg_fraction_clergy = {
-	value = "local_estate_power(estate_type:clergy_estate)"
-
-	divide = { value = owner.var:sul_national_power_clergy min = 0.001 }
+	value = 0
 }
 
 sul_dbg_fraction_burghers = {
-	value = "local_estate_power(estate_type:burghers_estate)"
-
-	divide = { value = owner.var:sul_national_power_burghers min = 0.001 }
+	value = 0
 }
 
 sul_dbg_fraction_peasants = {
-	value = "local_estate_power(estate_type:peasants_estate)"
-
-	divide = { value = owner.var:sul_national_power_peasants min = 0.001 }
+	value = 0
 }
 
 sul_dbg_fraction_dhimmi = {
-	value = "local_estate_power(estate_type:dhimmi_estate)"
-
-	divide = { value = owner.var:sul_national_power_dhimmi min = 0.001 }
+	value = 0
 }
 
 sul_dbg_fraction_cossacks = {
-	value = "local_estate_power(estate_type:cossacks_estate)"
-
-	divide = { value = owner.var:sul_national_power_cossacks min = 0.001 }
+	value = 0
 }
 
 sul_dbg_fraction_tribes = {
-	value = "local_estate_power(estate_type:tribes_estate)"
-
-	divide = { value = owner.var:sul_national_power_tribes min = 0.001 }
+	value = 0
 }
 
 sul_dbg_fraction_crown = {
-	value = sul_dbg_local_power_crown
-
-	divide = { value = owner.var:sul_national_power_crown min = 0.001 }
+	value = 0
 }
-
-# --- AGGREGATE POLITICAL POWER FRACTION (for comparison) ---
 
 sul_dbg_aggregate_political_fraction = {
 	value = local_political_power_fraction
 }
 
-# --- ESTATE GOLD (cached for upper estates, live for crown) ---
+# --- ESTATE GOLD (cached for national returns) ---
 
 sul_dbg_gold_nobles = {
 	value = owner.var:sul_estate_gold_nobles
@@ -154,11 +133,11 @@ sul_dbg_gold_peasants = {
 }
 
 sul_dbg_gold_dhimmi = {
-	value = owner.var:sul_estate_gold_dhimmi
+	value = 0
 }
 
 sul_dbg_gold_cossacks = {
-	value = owner.var:sul_estate_gold_cossacks
+	value = 0
 }
 
 sul_dbg_gold_tribes = {
@@ -169,73 +148,60 @@ sul_dbg_gold_crown = {
 	value = owner.gold
 }
 
-# --- IMPLIED WEALTH TARGET (fraction × gold) ---
+# --- WEALTH TARGET (legacy — per-estate targets removed) ---
 
 sul_dbg_target_nobles = {
-	value = sul_dbg_fraction_nobles
-	multiply = owner.var:sul_estate_gold_nobles
+	value = 0
 }
 
 sul_dbg_target_clergy = {
-	value = sul_dbg_fraction_clergy
-	multiply = owner.var:sul_estate_gold_clergy
+	value = 0
 }
 
 sul_dbg_target_burghers = {
-	value = sul_dbg_fraction_burghers
-	multiply = owner.var:sul_estate_gold_burghers
+	value = 0
 }
 
 sul_dbg_target_peasants = {
-	value = sul_dbg_fraction_peasants
-	multiply = owner.var:sul_estate_gold_peasants
+	value = 0
 }
 
 sul_dbg_target_dhimmi = {
-	value = sul_dbg_fraction_dhimmi
-	multiply = owner.var:sul_estate_gold_dhimmi
+	value = 0
 }
 
 sul_dbg_target_cossacks = {
-	value = sul_dbg_fraction_cossacks
-	multiply = owner.var:sul_estate_gold_cossacks
+	value = 0
 }
 
 sul_dbg_target_tribes = {
-	value = sul_dbg_fraction_tribes
-	multiply = owner.var:sul_estate_gold_tribes
+	value = 0
 }
 
 sul_dbg_target_crown = {
-	value = sul_dbg_fraction_crown
-	multiply = owner.gold
+	value = 0
 }
 
-# --- DISPLAY HELPERS (× 100 for percentage display) ---
+# --- DISPLAY HELPERS ---
 
 sul_dbg_fraction_nobles_pct = {
-	value = sul_dbg_fraction_nobles
-	multiply = 100
+	value = 0
 }
 
 sul_dbg_fraction_clergy_pct = {
-	value = sul_dbg_fraction_clergy
-	multiply = 100
+	value = 0
 }
 
 sul_dbg_fraction_burghers_pct = {
-	value = sul_dbg_fraction_burghers
-	multiply = 100
+	value = 0
 }
 
 sul_dbg_fraction_peasants_pct = {
-	value = sul_dbg_fraction_peasants
-	multiply = 100
+	value = 0
 }
 
 sul_dbg_fraction_crown_pct = {
-	value = sul_dbg_fraction_crown
-	multiply = 100
+	value = 0
 }
 
 sul_dbg_aggregate_political_pct = {
@@ -243,130 +209,104 @@ sul_dbg_aggregate_political_pct = {
 	multiply = 100
 }
 
-# --- BASE LAYER: per-estate map reads (location scope) ---
-# Single guarded read per estate per map. All composites reference these.
-# Guard: has_variable_map (map exists) + is_key_in_variable_map (key exists).
+# --- AGGREGATE LOCAL ASSETS ---
 
-sul_map_asset_nobles = {
+sul_map_asset_total = {
 	value = 0
 
-	if = { limit = { has_variable = sul_asset_nobles } add = var:sul_asset_nobles }
+	if = { limit = { has_variable = sul_local_assets } add = var:sul_local_assets }
+}
+
+# Legacy per-estate reads — all return aggregate × power share
+
+sul_map_asset_nobles = {
+	value = sul_map_asset_total
+	multiply = "local_relative_estate_power(estate_type:nobles_estate)"
 }
 
 sul_map_asset_clergy = {
-	value = 0
-
-	if = { limit = { has_variable = sul_asset_clergy } add = var:sul_asset_clergy }
+	value = sul_map_asset_total
+	multiply = "local_relative_estate_power(estate_type:clergy_estate)"
 }
 
 sul_map_asset_burghers = {
-	value = 0
-
-	if = { limit = { has_variable = sul_asset_burghers } add = var:sul_asset_burghers }
+	value = sul_map_asset_total
+	multiply = "local_relative_estate_power(estate_type:burghers_estate)"
 }
 
 sul_map_asset_peasants = {
-	value = 0
-
-	if = { limit = { has_variable = sul_asset_peasants } add = var:sul_asset_peasants }
+	value = sul_map_asset_total
+	multiply = "local_relative_estate_power(estate_type:peasants_estate)"
 }
 
 sul_map_asset_crown = {
 	value = 0
-
-	if = { limit = { has_variable = sul_asset_crown } add = var:sul_asset_crown }
 }
 
 sul_map_asset_dhimmi = {
 	value = 0
-
-	if = { limit = { has_variable = sul_asset_dhimmi } add = var:sul_asset_dhimmi }
 }
 
 sul_map_asset_cossacks = {
 	value = 0
-
-	if = { limit = { has_variable = sul_asset_cossacks } add = var:sul_asset_cossacks }
 }
 
 sul_map_asset_tribes = {
 	value = 0
+}
 
-	if = { limit = { has_variable = sul_asset_tribes } add = var:sul_asset_tribes }
+# --- AGGREGATE TARGET ---
+
+sul_map_target_total = {
+	value = var:sul_local_gdp
+	multiply = 5
+
+	multiply = { value = 1 add = { value = prosperity divide = 100 } }
+
+	min = 0
 }
 
 sul_map_target_nobles = {
 	value = 0
-
-	if = { limit = { has_variable = sul_potential_nobles } add = var:sul_potential_nobles }
 }
 
 sul_map_target_clergy = {
 	value = 0
-
-	if = { limit = { has_variable = sul_potential_clergy } add = var:sul_potential_clergy }
 }
 
 sul_map_target_burghers = {
 	value = 0
-
-	if = { limit = { has_variable = sul_potential_burghers } add = var:sul_potential_burghers }
 }
 
 sul_map_target_peasants = {
 	value = 0
-
-	if = { limit = { has_variable = sul_potential_peasants } add = var:sul_potential_peasants }
 }
 
 sul_map_target_crown = {
 	value = 0
-
-	if = { limit = { has_variable = sul_potential_crown } add = var:sul_potential_crown }
 }
 
 sul_map_target_dhimmi = {
 	value = 0
-
-	if = { limit = { has_variable = sul_potential_dhimmi } add = var:sul_potential_dhimmi }
 }
 
 sul_map_target_cossacks = {
 	value = 0
-
-	if = { limit = { has_variable = sul_potential_cossacks } add = var:sul_potential_cossacks }
 }
 
 sul_map_target_tribes = {
 	value = 0
-
-	if = { limit = { has_variable = sul_potential_tribes } add = var:sul_potential_tribes }
 }
 
-# --- COMPOSITES: totals, shares, deltas, bar heights ---
-# No direct map reads below this line — everything references the base layer.
+# --- COMPOSITES ---
 
 sul_wealth_total = {
-	value = sul_map_asset_nobles
-	add = sul_map_asset_clergy
-	add = sul_map_asset_burghers
-	add = sul_map_asset_peasants
-	add = sul_map_asset_crown
-	add = sul_map_asset_dhimmi
-	add = sul_map_asset_cossacks
-	add = sul_map_asset_tribes
+	value = sul_map_asset_total
 	min = 0.001
 }
 
 sul_wealth_target_total = {
-	value = sul_map_target_nobles
-	add = sul_map_target_clergy
-	add = sul_map_target_burghers
-	add = sul_map_target_peasants
-	add = sul_map_target_crown
-	add = sul_map_target_dhimmi
-	add = sul_map_target_cossacks
-	add = sul_map_target_tribes
+	value = sul_map_target_total
 	min = 0.001
 }
 
@@ -378,107 +318,78 @@ sul_wealth_fill_ratio = {
 	max = 100
 }
 
-# --- PIE CHART SHARES (estate assets / total, 0-1) ---
+# --- PIE CHART SHARES (estate power share of aggregate) ---
 
 sul_wealth_share_nobles = {
-	value = sul_map_asset_nobles
-	divide = sul_wealth_total
+	value = "local_relative_estate_power(estate_type:nobles_estate)"
 }
 
 sul_wealth_share_clergy = {
-	value = sul_map_asset_clergy
-	divide = sul_wealth_total
+	value = "local_relative_estate_power(estate_type:clergy_estate)"
 }
 
 sul_wealth_share_burghers = {
-	value = sul_map_asset_burghers
-	divide = sul_wealth_total
+	value = "local_relative_estate_power(estate_type:burghers_estate)"
 }
 
 sul_wealth_share_peasants = {
-	value = sul_map_asset_peasants
-	divide = sul_wealth_total
+	value = "local_relative_estate_power(estate_type:peasants_estate)"
 }
 
 sul_wealth_share_crown = {
-	value = sul_map_asset_crown
-	divide = sul_wealth_total
+	value = 0
 }
 
 sul_wealth_share_dhimmi = {
-	value = sul_map_asset_dhimmi
-	divide = sul_wealth_total
+	value = 0
 }
 
 sul_wealth_share_cossacks = {
-	value = sul_map_asset_cossacks
-	divide = sul_wealth_total
+	value = 0
 }
 
 sul_wealth_share_tribes = {
-	value = sul_map_asset_tribes
-	divide = sul_wealth_total
+	value = 0
 }
 
-# --- MONTHLY DELTA (target - current) × rate ---
+# --- MONTHLY DELTA ---
+
+sul_wealth_delta_total = {
+	value = 0
+
+	if = { limit = { has_variable = sul_asset_delta } add = var:sul_asset_delta }
+}
 
 sul_wealth_delta_nobles = {
 	value = 0
-
-	if = { limit = { has_variable = sul_delta_nobles } add = var:sul_delta_nobles }
 }
 
 sul_wealth_delta_clergy = {
 	value = 0
-
-	if = { limit = { has_variable = sul_delta_clergy } add = var:sul_delta_clergy }
 }
 
 sul_wealth_delta_burghers = {
 	value = 0
-
-	if = { limit = { has_variable = sul_delta_burghers } add = var:sul_delta_burghers }
 }
 
 sul_wealth_delta_peasants = {
 	value = 0
-
-	if = { limit = { has_variable = sul_delta_peasants } add = var:sul_delta_peasants }
 }
 
 sul_wealth_delta_crown = {
 	value = 0
-
-	if = { limit = { has_variable = sul_delta_crown } add = var:sul_delta_crown }
 }
 
 sul_wealth_delta_dhimmi = {
 	value = 0
-
-	if = { limit = { has_variable = sul_delta_dhimmi } add = var:sul_delta_dhimmi }
 }
 
 sul_wealth_delta_cossacks = {
 	value = 0
-
-	if = { limit = { has_variable = sul_delta_cossacks } add = var:sul_delta_cossacks }
 }
 
 sul_wealth_delta_tribes = {
 	value = 0
-
-	if = { limit = { has_variable = sul_delta_tribes } add = var:sul_delta_tribes }
-}
-
-sul_wealth_delta_total = {
-	value = sul_wealth_delta_nobles
-	add = sul_wealth_delta_clergy
-	add = sul_wealth_delta_burghers
-	add = sul_wealth_delta_peasants
-	add = sul_wealth_delta_crown
-	add = sul_wealth_delta_dhimmi
-	add = sul_wealth_delta_cossacks
-	add = sul_wealth_delta_tribes
 }
 
 sul_wealth_monthly_change = {
@@ -505,41 +416,33 @@ sul_wealth_spending_display = {
 # --- BAR SECTION HEIGHTS (pixels, 202px total) ---
 
 sul_wealth_bar_nobles = {
-	value = sul_map_asset_nobles
-	divide = sul_wealth_total
+	value = "local_relative_estate_power(estate_type:nobles_estate)"
 	multiply = sul_wealth_fill_ratio
 	multiply = 202
 	min = 0
 }
 
 sul_wealth_bar_clergy = {
-	value = sul_map_asset_clergy
-	divide = sul_wealth_total
+	value = "local_relative_estate_power(estate_type:clergy_estate)"
 	multiply = sul_wealth_fill_ratio
 	multiply = 202
 	min = 0
 }
 
 sul_wealth_bar_burghers = {
-	value = sul_map_asset_burghers
-	divide = sul_wealth_total
+	value = "local_relative_estate_power(estate_type:burghers_estate)"
 	multiply = sul_wealth_fill_ratio
 	multiply = 202
 	min = 0
 }
 
 sul_wealth_bar_peasants = {
-	value = sul_map_asset_peasants
-	divide = sul_wealth_total
+	value = "local_relative_estate_power(estate_type:peasants_estate)"
 	multiply = sul_wealth_fill_ratio
 	multiply = 202
 	min = 0
 }
 
 sul_wealth_bar_crown = {
-	value = sul_map_asset_crown
-	divide = sul_wealth_total
-	multiply = sul_wealth_fill_ratio
-	multiply = 202
-	min = 0
+	value = 0
 }

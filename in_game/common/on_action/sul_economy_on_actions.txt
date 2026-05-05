@@ -29,11 +29,12 @@ sul_initialize_economy = {
 			set_variable = { name = sul_country_pop_nobles value = 1 }
 			set_variable = { name = sul_country_pop_clergy value = 1 }
 			set_variable = { name = sul_country_pop_burghers value = 1 }
+			set_variable = { name = sul_country_pop_soldiers value = 1 }
+			set_variable = { name = sul_country_pop_laborers value = 1 }
+			set_variable = { name = sul_country_pop_peasants value = 1 }
+			set_variable = { name = sul_country_pop_tribesmen value = 1 }
 
-			# Compute wage rates per location (base × modifiers → location variables)
-			every_owned_location = { sul_calculate_location_wages = yes }
-
-			# Full economy pass: accumulate estate power, compute WPP + demand + enrichment,
+			# Full economy pass: compute GDP, WPP + demand + enrichment,
 			# pay enrichment to estates, cache estate gold
 			sul_gdp_init = yes
 			sul_init_economy_full_pass = yes
@@ -100,7 +101,21 @@ sul_batch_location_update = {
 sul_wealth_on_location_occupied = {
 	effect = {
 		debug_log = "SUL_TRACE: wealth_on_location_occupied ENTER"
-		if = { limit = { has_variable = sul_asset_nobles } sul_wealth_loot_location = yes }
+		if = { limit = { has_variable = sul_local_assets } sul_wealth_loot_location = yes }
+	}
+}
+
+# --- PROVISIONS CACHE (game start + monthly refresh) ---
+
+sul_provisions_cache_seed = {
+	effect = {
+		sul_provisions_cache_rebuild = yes
+	}
+}
+
+sul_provisions_cache_clear = {
+	effect = {
+		sul_provisions_cache_rebuild = yes
 	}
 }
 

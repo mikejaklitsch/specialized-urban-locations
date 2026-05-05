@@ -45,32 +45,18 @@ CAT_ORDER = ["necessity", "basic", "common", "upper", "luxury", "exotic"]
 GOODS_BUDGET_SHARE = 0.65  # 65% of wealth goes to goods demand, rest to estate activities
 RAW_GOODS_FACTOR = 0.75 # Raw goods get 75% of produced goods demand (25% dampening)
 
-# Continuous percentage demand model.
-# Runtime handles tier allocation via WPP × weight / (A + B×WPP).
-# demand_add distributes WITHIN each tier by 1/price, no tier_weight baked in.
-#
-# Config: set budget share at extremes of wealth, plus crossover point.
-POOR_SHARES = {
-    "necessity": 0.55,
-    "basic":     0.30,
-    "common":    0.15,
-}
-RICH_SHARES = {
-    "upper":      0.21,
-    "luxury":     0.16,
-    "exotic":     0.10,
-    "enrichment": 0.53,
-}
-CROSSOVER_WPP = 3.0
-
-# Tier thresholds retained for tooltip script values (sul_read_tier_*) only.
-TIER_THRESHOLD = {
-    "necessity": 0,
-    "basic":     0.05,
-    "common":    0.12,
-    "upper":     0.25,
-    "luxury":    0.5,
-    "exotic":    1.5,
+# Universal demand model: share = (floor + slope × WPP) / (A + WPP)
+# floor = baseline need at zero wealth, slope = growth with wealth
+# Constraint: sum(floors) = A, sum(slopes) = 1.0
+DEMAND_A = 3.0
+TIER_PARAMS = {
+    "necessity":  {"floor": 1.50, "slope": 0.03},
+    "basic":      {"floor": 0.70, "slope": 0.08},
+    "common":     {"floor": 0.40, "slope": 0.07},
+    "upper":      {"floor": 0.20, "slope": 0.16},
+    "luxury":     {"floor": 0.10, "slope": 0.13},
+    "exotic":     {"floor": 0.05, "slope": 0.06},
+    "enrichment": {"floor": 0.05, "slope": 0.47},
 }
 
 POP_TYPES = [
@@ -517,13 +503,10 @@ def _section(title):
 
 def compute_macros():
     """Compute the @macro values for the script files."""
-    A = CROSSOVER_WPP
-    B = 1.0
-    macros = {"A": A, "B": B}
-    for cat, share in POOR_SHARES.items():
-        macros[cat] = share * CROSSOVER_WPP
-    for cat, share in RICH_SHARES.items():
-        macros[cat] = share
+    macros = {"A": DEMAND_A}
+    for cat, p in TIER_PARAMS.items():
+        macros[f"{cat}_floor"] = p["floor"]
+        macros[f"{cat}_slope"] = p["slope"]
     return macros
 
 
@@ -531,38 +514,30 @@ def print_config():
     _section("CONFIGURATION")
 
     print(f"\n  Formula: demand_add = {GOODS_BUDGET_SHARE} / price × source_factor / weighted_in_cat")
-    print(f"  Tier allocation at runtime: WPP × weight / (A + B×WPP)")
+    print(f"  Tier allocation: share = (floor + slope × WPP) / ({DEMAND_A} + WPP)")
 
-    print(f"\n  Poor-pop shares (constant tiers, WPP → 0):")
-    for cat, share in POOR_SHARES.items():
-        print(f"    {cat:<12s} {share:>6.0%}")
-    print(f"\n  Rich-pop shares (growth tiers, WPP → ∞):")
-    for cat, share in RICH_SHARES.items():
-        print(f"    {cat:<12s} {share:>6.0%}")
-    print(f"\n  Crossover WPP: {CROSSOVER_WPP}")
+    print(f"\n  {'Tier':<12s} {'Floor':>6s} {'Slope':>6s}")
+    print(f"  {'-'*12} {'-'*6} {'-'*6}")
+    for cat in CAT_ORDER + ["enrichment"]:
+        p = TIER_PARAMS.get(cat)
+        if p:
+            print(f"  {cat:<12s} {p['floor']:>6.2f} {p['slope']:>6.2f}")
 
-    macros = compute_macros()
-    print(f"\n  Derived @macros:")
-    print(f"    @sul_denom_A = {macros['A']}")
-    print(f"    @sul_denom_B = {macros['B']}")
-    for cat in CAT_ORDER:
-        if cat in macros:
-            print(f"    @sul_w_{cat} = {macros[cat]}")
+    floor_sum = sum(p["floor"] for p in TIER_PARAMS.values())
+    slope_sum = sum(p["slope"] for p in TIER_PARAMS.values())
+    print(f"\n  Σ floors = {floor_sum:.2f} (must = {DEMAND_A}), Σ slopes = {slope_sum:.2f} (must = 1.0)")
 
     print(f"\n  Budget shares at sample WPP values:")
-    print(f"  {'WPP':>6s}  {'nec':>5s} {'bas':>5s} {'com':>5s} {'upp':>5s} {'lux':>5s} {'exo':>5s}  {'fill':>5s}")
+    print(f"  {'WPP':>6s}  {'nec':>5s} {'bas':>5s} {'com':>5s} {'upp':>5s} {'lux':>5s} {'exo':>5s}  {'enr':>5s}")
     print(f"  {'-'*6}  {'-'*5} {'-'*5} {'-'*5} {'-'*5} {'-'*5} {'-'*5}  {'-'*5}")
     for wpp in [0.1, 0.5, 1.0, 2.0, 5.0, 10.0, 50.0]:
-        denom = macros["A"] + macros["B"] * wpp
+        denom = DEMAND_A + wpp
         shares = {}
-        for cat in CAT_ORDER:
-            w = macros.get(cat, 0)
-            if cat in POOR_SHARES:
-                shares[cat] = w / denom
-            else:
-                shares[cat] = w * wpp / denom
+        for cat in CAT_ORDER + ["enrichment"]:
+            p = TIER_PARAMS[cat]
+            shares[cat] = (p["floor"] + p["slope"] * wpp) / denom
         total = sum(shares.values())
-        print(f"  {wpp:>6.1f}  {shares['necessity']:>5.1%} {shares['basic']:>5.1%} {shares['common']:>5.1%} {shares['upper']:>5.1%} {shares['luxury']:>5.1%} {shares['exotic']:>5.1%}  {total:>5.1%}")
+        print(f"  {wpp:>6.1f}  {shares['necessity']:>5.1%} {shares['basic']:>5.1%} {shares['common']:>5.1%} {shares['upper']:>5.1%} {shares['luxury']:>5.1%} {shares['exotic']:>5.1%}  {shares['enrichment']:>5.1%}")
 
 
 def print_demands(results):
@@ -589,68 +564,336 @@ def print_demands(results):
 GUI_POP_TYPES = ["nobles", "clergy", "burghers", "soldiers", "laborers", "peasants"]
 
 
-def _gen_pop_subtip(pop, display, results):
-    """Generate the budget sub-tooltip block for one pop type.
+PROVISIONS_COST_SV = {
+    "nobles": "sul_noble_provisions_cost",
+    "clergy": "sul_clergy_provisions_cost",
+    "burghers": "sul_burgher_provisions_cost",
+    "soldiers": "sul_soldier_provisions_cost",
+    "laborers": "sul_laborer_provisions_cost",
+}
 
-    Per tier: a header TooltipManualTableField + a TooltipListRowContent with
-    datamodel iterating the global demand_add map. Both gated on tier visibility.
+PROVISIONS_QTY_SV = {
+    "nobles": "sul_noble_provisions_qty",
+    "clergy": "sul_clergy_provisions_qty",
+    "burghers": "sul_burgher_provisions_qty",
+    "soldiers": "sul_soldier_provisions_qty",
+    "laborers": "sul_laborer_provisions_qty",
+}
+
+POP_WAGE_SV = {
+    "nobles": "sul_noble_wage_rate", "clergy": "sul_clergy_wage_rate",
+    "burghers": "sul_burgher_wage_rate", "soldiers": "sul_soldier_wage_rate",
+    "laborers": "sul_laborer_wage_rate", "peasants": "sul_peasant_wage_rate",
+    "tribesmen": "sul_tribesmen_wage_rate",
+}
+
+POP_RETURN_SV = {
+    "nobles": "sul_noble_total_return", "clergy": "sul_clergy_total_return",
+    "burghers": "sul_burgher_total_return", "soldiers": "sul_soldier_total_return",
+    "laborers": "sul_laborer_total_return", "peasants": "sul_peasant_total_return",
+    "tribesmen": "sul_tribesmen_total_return",
+}
+
+POP_WPP_SV = {
+    "nobles": "sul_noble_demand_per_pop", "clergy": "sul_clergy_demand_per_pop",
+    "burghers": "sul_burgher_demand_per_pop", "soldiers": "sul_soldier_demand_per_pop",
+    "laborers": "sul_laborer_demand_per_pop", "peasants": "sul_peasant_demand_per_pop",
+    "tribesmen": "sul_tribesmen_demand_per_pop",
+}
+
+
+def prov_qty_sv_label(pop):
+    """Human-readable provisions qty for the subtraction line label."""
+    qty_map = {
+        "nobles": "0.80", "clergy": "0.20", "burghers": "0.20",
+        "soldiers": "0.15", "laborers": "0.05",
+    }
+    return qty_map.get(pop, "0")
+
+
+def _gen_demand_template(pop, display, results):
+    """Generate a standalone template definition for one pop type's WPP breakdown.
+
+    Contains WPP summation (Wages + Returns - Provisions = WPP), then
+    per-tier demand breakdown with provisions showing actual cost.
+    Returns a complete `template sul_{pop}_demand_breakdown_tooltip { ... }` block.
     """
     tier_labels = {
         "necessity": "Necessity", "basic": "Basic", "common": "Common",
         "upper": "Upper", "luxury": "Luxury", "exotic": "Exotic",
     }
 
-    blocks = []
+    pop_key = pop.rstrip("s") if pop != "peasants" else "peasant"
+    wage_sv = POP_WAGE_SV[pop]
+    return_sv = POP_RETURN_SV[pop]
+    wpp_sv = POP_WPP_SV[pop]
+    prov_cost_sv = PROVISIONS_COST_SV.get(pop)
+    prov_qty_sv = PROVISIONS_QTY_SV.get(pop)
+
+    P = "\t\t\t\t\t\t"
+
+    rows = []
+
+    # WPP summation section
+    rows.append(f'{P}TooltipManualTableField = {{ blockoverride "field_content" {{ text_single = {{ layoutpolicy_horizontal = expanding raw_text = "#T Wealth Per 1k Pops#!" }} }} }}')
+    rows.append(f'{P}TooltipManualTableField = {{ blockoverride "field_content" {{ text_single = {{ layoutpolicy_horizontal = expanding raw_text = "Wages" }} text_single = {{ min_width = 80 align = right raw_text = "[Location.MakeScope.ScriptValue(\'{wage_sv}\')|3]@gold!" }} }} }}')
+    rows.append(f'{P}TooltipManualTableField = {{ blockoverride "field_content" {{ text_single = {{ layoutpolicy_horizontal = expanding raw_text = "#G + Returns#!" }} text_single = {{ min_width = 80 align = right raw_text = "#G +[Location.MakeScope.ScriptValue(\'{return_sv}\')|3]@gold!#!" }} }} }}')
+    if prov_cost_sv:
+        rows.append(f'{P}TooltipManualTableField = {{ blockoverride "field_content" {{ text_single = {{ layoutpolicy_horizontal = expanding raw_text = "#R − Provisions ({prov_qty_sv_label(pop)})#!" }} text_single = {{ min_width = 80 align = right raw_text = "#R −[Location.MakeScope.ScriptValue(\'{prov_cost_sv}\')|3]@gold!#!" }} }} }}')
+    rows.append(f'{P}TooltipManualTableField = {{ blockoverride "field_content" {{ text_single = {{ layoutpolicy_horizontal = expanding raw_text = "#bold = WPP#!" }} text_single = {{ min_width = 80 align = right raw_text = "#bold [Location.MakeScope.ScriptValue(\'{wpp_sv}\')|3]@gold!#!" }} }} }}')
+
+    # Demand Breakdown header
+    rows.append(f'{P}TooltipManualTableField = {{ blockoverride "field_content" {{ text_single = {{ layoutpolicy_horizontal = expanding raw_text = "#T Demand Breakdown#!" }} }} }}')
+
+    # Provisions demand row
+    if prov_cost_sv:
+        rows.append(f'{P}TooltipManualTableField = {{ blockoverride "field_content" {{ icon = {{ size = {{ 20 20 }} texture = "gfx/interface/icons/trade_goods/icon_goods_provisions.dds" }} text_single = {{ layoutpolicy_horizontal = expanding margin_left = 3 raw_text = "Provisions" }} text_single = {{ min_width = 80 align = right raw_text = "[Location.MakeScope.ScriptValue(\'{prov_qty_sv}\')|3]" }} }} }}')
+
+    # Per-tier goods lists
     for tier in CAT_ORDER:
         map_name = f"sul_da_{tier}"
         sv_name = f"sul_{pop}_{tier}"
         label = tier_labels[tier]
         vis = f"GreaterThan_CFixedPoint(Location.MakeScope.ScriptValue('{sv_name}'), '(CFixedPoint)0')"
 
-        blocks.append(f"""
-\t\t\t\t\t\t\t\t\t\t\t\tTooltipManualTableField = {{
-\t\t\t\t\t\t\t\t\t\t\t\t\tvisible = "[{vis}]"
-\t\t\t\t\t\t\t\t\t\t\t\t\tblockoverride "field_content" {{
-\t\t\t\t\t\t\t\t\t\t\t\t\t\ttext_single = {{ layoutpolicy_horizontal = expanding raw_text = "#T {label}#!" }}
-\t\t\t\t\t\t\t\t\t\t\t\t\t}}
-\t\t\t\t\t\t\t\t\t\t\t\t}}
-\t\t\t\t\t\t\t\t\t\t\t\tTooltipListRowContent = {{
-\t\t\t\t\t\t\t\t\t\t\t\t\tvisible = "[{vis}]"
-\t\t\t\t\t\t\t\t\t\t\t\t\tmax_update_rate = 30
-\t\t\t\t\t\t\t\t\t\t\t\t\tdatamodel = "[GetGlobalMapKeys('{map_name}')]"
-\t\t\t\t\t\t\t\t\t\t\t\t\titem = {{
-\t\t\t\t\t\t\t\t\t\t\t\t\t\tTooltipManualTableField = {{
-\t\t\t\t\t\t\t\t\t\t\t\t\t\t\tblockoverride "field_content" {{
-\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\tdatacontext = "[Scope.GetGoods]"
-\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\ticon = {{ size = {{ 20 20 }} texture = "[GetGoodsIcon(Goods.Self)]" }}
-\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\ttext_single = {{ layoutpolicy_horizontal = expanding margin_left = 3 text = "[Goods.GetName]" }}
-\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\ttext_single = {{ min_width = 60 align = right raw_text = "[Multiply_CFixedPoint(GetVariableFromGlobalVariableMap('{map_name}', Goods.MakeScope).GetValue, Location.MakeScope.ScriptValue('{sv_name}'))|2]" }}
-\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t}}
-\t\t\t\t\t\t\t\t\t\t\t\t\t\t}}
-\t\t\t\t\t\t\t\t\t\t\t\t\t}}
-\t\t\t\t\t\t\t\t\t\t\t\t}}""")
+        rows.append(f"""
+{P}TooltipManualTableField = {{
+{P}\tvisible = "[{vis}]"
+{P}\tblockoverride "field_content" {{ text_single = {{ layoutpolicy_horizontal = expanding raw_text = "#T {label}#!" }} }}
+{P}}}
+{P}TooltipListRowContent = {{
+{P}\tvisible = "[{vis}]"
+{P}\tmax_update_rate = 30
+{P}\tdatamodel = "[GetGlobalMapKeys('{map_name}')]"
+{P}\titem = {{
+{P}\t\tTooltipManualTableField = {{
+{P}\t\t\tblockoverride "field_content" {{
+{P}\t\t\t\tdatacontext = "[Scope.GetGoods]"
+{P}\t\t\t\ticon = {{ size = {{ 20 20 }} texture = "[GetGoodsIcon(Goods.Self)]" }}
+{P}\t\t\t\ttext_single = {{ layoutpolicy_horizontal = expanding margin_left = 3 text = "[Goods.GetName]" }}
+{P}\t\t\t\ttext_single = {{ min_width = 80 align = right raw_text = "[Multiply_CFixedPoint(GetVariableFromGlobalVariableMap('{map_name}', Goods.MakeScope).GetValue, Location.MakeScope.ScriptValue('{sv_name}'))|2]" }}
+{P}\t\t\t}}
+{P}\t\t}}
+{P}\t}}
+{P}}}""")
 
-    tier_content = "".join(blocks)
-    return f"""
-\t\t\t\t\t\ttooltipwidget = {{
-\t\t\t\t\t\t\tContextualTooltipType = {{
-\t\t\t\t\t\t\t\tblockoverride "tooltip_title" {{  }}
-\t\t\t\t\t\t\t\tblockoverride "tooltip_content" {{
-\t\t\t\t\t\t\t\t\tTooltipListBase = {{
-\t\t\t\t\t\t\t\t\t\tmax_update_rate = 30
-\t\t\t\t\t\t\t\t\t\tTooltipTableHeader = {{ blockoverride "tableheader_text" {{ raw_text = "#T {display} — Demand Breakdown#!" }} }}
-\t\t\t\t\t\t\t\t\t\tTooltipListScrollArea = {{
-\t\t\t\t\t\t\t\t\t\t\tblockoverride "block_scrollarea" {{ maximumsize = {{ -1 600 }} minimumsize = {{ -1 30 }} }}
-\t\t\t\t\t\t\t\t\t\t\tblockoverride "scrollarea_content" {{
-\t\t\t\t\t\t\t\t\t\t\t\tTooltipListRowContent = {{
-{tier_content}
+    content = "\n".join(rows)
+    template_name = f"sul_{pop}_demand_breakdown_tooltip"
+    return f"""template {template_name} {{
+\ttooltipwidget = {{
+\t\tContextualTooltipType = {{
+\t\t\tblockoverride "tooltip_title" {{  }}
+\t\t\tblockoverride "tooltip_content" {{
+\t\t\t\tTooltipListBase = {{
+\t\t\t\t\tmax_update_rate = 30
+\t\t\t\t\tTooltipTableHeader = {{ blockoverride "tableheader_text" {{ raw_text = "#T {display} — WPP Breakdown#!" }} }}
+\t\t\t\t\tTooltipListScrollArea = {{
+\t\t\t\t\t\tblockoverride "block_scrollarea" {{ maximumsize = {{ -1 600 }} minimumsize = {{ -1 30 }} }}
+\t\t\t\t\t\tblockoverride "scrollarea_content" {{
+\t\t\t\t\t\t\tTooltipListRowContent = {{
+{content}
+\t\t\t\t\t\t\t}}
+\t\t\t\t\t\t}}
+\t\t\t\t\t}}
+\t\t\t\t}}
+\t\t\t}}
+\t\t}}
+\t}}
+}}"""
+
+
+def generate_standalone_templates(results):
+    """Generate all standalone demand breakdown templates."""
+    all_pops = [
+        ("nobles", "Nobles"), ("clergy", "Clergy"), ("burghers", "Burghers"),
+        ("soldiers", "Soldiers"), ("laborers", "Laborers"), ("peasants", "Peasants"),
+        ("tribesmen", "Tribesmen"),
+    ]
+    blocks = ["# Generated by demand_calculator.py", ""]
+    for pop, display in all_pops:
+        blocks.append(_gen_demand_template(pop, display, results))
+        blocks.append("")
+    return "\n".join(blocks)
+
+
+def generate_wage_pool_template():
+    """Generate the wage pool breakdown tooltip template."""
+    return """template sul_wage_pool_breakdown_tooltip {
+\ttooltipwidget = {
+\t\tContextualTooltipType = {
+\t\t\tblockoverride "tooltip_title" {
+\t\t\t\tContextualTooltipHeader = { blockoverride "title_text" { raw_text = "GDP Wage Pool" } }
+\t\t\t}
+\t\t\tblockoverride "tooltip_content" {
+\t\t\t\tTooltipListBase = {
+\t\t\t\t\tTooltipTableHeader = {
+\t\t\t\t\t\tblockoverride "tableheader_text" { raw_text = "#T Wage Share ([Location.MakeScope.ScriptValue('sul_wage_share_pct')|0]%)#!" }
+\t\t\t\t\t}
+\t\t\t\t\tTooltipManualTableField = { blockoverride "field_content" { text_single = { layoutpolicy_horizontal = expanding raw_text = "Base" } text_single = { align = right min_width = 80 raw_text = "50%" } } }
+\t\t\t\t\tTooltipManualTableField = { blockoverride "field_content" { text_single = { layoutpolicy_horizontal = expanding raw_text = "× Urbanization" } text_single = { align = right min_width = 80 raw_text = "×[Location.MakeScope.ScriptValue('sul_wage_share_dev_factor')|2] ([Location.MakeScope.ScriptValue('sul_wage_share_dev_pct')|0] dev)" } } }
+\t\t\t\t\tTooltipManualTableField = { blockoverride "field_content" { text_single = { layoutpolicy_horizontal = expanding raw_text = "× Employment" } text_single = { align = right min_width = 80 raw_text = "×[Location.MakeScope.ScriptValue('sul_wage_share_emp_factor')|2] ([Location.MakeScope.ScriptValue('sul_wage_share_emp_pct')|0]%)" } } }
+\t\t\t\t\tTooltipManualTableField = { blockoverride "field_content" { text_single = { layoutpolicy_horizontal = expanding raw_text = "× Market Access" } text_single = { align = right min_width = 80 raw_text = "×[Multiply_CFixedPoint(Location.MakeScope.ScriptValue('sul_wage_share_market_access'), '(CFixedPoint)100')|0]%" } } }
+\t\t\t\t\tTooltipTableHeader = { blockoverride "tableheader_text" { raw_text = "#T Estate Breakdown#!" } }
+\t\t\t\t\tTooltipManualTableField = { blockoverride "field_content" { text_single = { layoutpolicy_horizontal = expanding raw_text = "Nobles" } text_single = { align = right min_width = 80 raw_text = "[Location.MakeScope.ScriptValue('sul_wage_bill_nobles_display')|2]@gold!" } } }
+\t\t\t\t\tTooltipManualTableField = { blockoverride "field_content" { text_single = { layoutpolicy_horizontal = expanding raw_text = "Clergy" } text_single = { align = right min_width = 80 raw_text = "[Location.MakeScope.ScriptValue('sul_wage_bill_clergy_display')|2]@gold!" } } }
+\t\t\t\t\tTooltipManualTableField = { blockoverride "field_content" { text_single = { layoutpolicy_horizontal = expanding raw_text = "Burghers" } text_single = { align = right min_width = 80 raw_text = "[Location.MakeScope.ScriptValue('sul_wage_bill_burghers_display')|2]@gold!" } } }
+\t\t\t\t\tTooltipManualTableField = { blockoverride "field_content" { text_single = { layoutpolicy_horizontal = expanding raw_text = "Soldiers" } text_single = { align = right min_width = 80 raw_text = "[Location.MakeScope.ScriptValue('sul_wage_bill_soldiers_display')|2]@gold!" } } }
+\t\t\t\t\tTooltipManualTableField = { blockoverride "field_content" { text_single = { layoutpolicy_horizontal = expanding raw_text = "Laborers" } text_single = { align = right min_width = 80 raw_text = "[Location.MakeScope.ScriptValue('sul_wage_bill_laborers_display')|2]@gold!" } } }
+\t\t\t\t\tTooltipManualTableField = { blockoverride "field_content" { text_single = { layoutpolicy_horizontal = expanding raw_text = "Peasants" } text_single = { align = right min_width = 80 raw_text = "[Location.MakeScope.ScriptValue('sul_wage_bill_peasants_display')|2]@gold!" } } }
+\t\t\t\t}
+\t\t\t}
+\t\t}
+\t}
+}"""
+
+
+WEALTH_BAR_ESTATES = [
+    ("nobles", "Nobles", "0.33 0.49 0.80 1", "sul_wealth_slice_nobles"),
+    ("clergy", "Clergy", "0.78 0.82 0.90 1", "sul_wealth_slice_clergy"),
+    ("burghers", "Burghers", "0.79 0.55 0.10 1", "sul_wealth_slice_burghers"),
+    ("peasants", "Commoners", "0.37 0.47 0.26 1", "sul_wealth_slice_commoners"),
+    ("crown", "Crown", "0.54 0.36 0.80 1", "sul_wealth_slice_crown"),
+]
+
+WEALTH_BAR_DETAIL_ESTATES = [
+    ("nobles", "Nobles", "0.33 0.49 0.80 1"),
+    ("clergy", "Clergy", "0.78 0.82 0.90 1"),
+    ("burghers", "Burghers", "0.79 0.55 0.10 1"),
+    ("peasants", "Commoners", "0.37 0.47 0.26 1"),
+    ("dhimmi", "Dhimmi", "0.85 0.05 0.35 1"),
+    ("cossacks", "Cossacks", "0.76 0.78 0.24 1"),
+    ("tribes", "Tribes", "0.47 0.33 0.26 1"),
+    ("crown", "Crown", "0.54 0.36 0.80 1"),
+]
+
+
+def generate_wealth_bar_template():
+    """Generate the wealth bar tooltip template with GDP section and hoverable breakdowns."""
+    # Pie slices
+    slices = []
+    for key, _label, color, tt in WEALTH_BAR_ESTATES:
+        slices.append(f"""\t\t\t\t\t\tpieslice = {{
+\t\t\t\t\t\t\ttexture = "gfx/interface/pie_charts/pie_chart_alpha_80.dds"
+\t\t\t\t\t\t\tvalue = "[FixedPointToFloat(LocationView.GetLocation.MakeScope.ScriptValue('sul_wealth_share_{key}'))]"
+\t\t\t\t\t\t\tcolor = {{ {color} }}
+\t\t\t\t\t\t\ttooltip = "{tt}"
+\t\t\t\t\t\t}}""")
+    pie_content = "\n".join(slices)
+
+    # Estate asset rows
+    estate_rows = []
+    for key, label, color in WEALTH_BAR_DETAIL_ESTATES:
+        vis_key = key if key != "crown" else None
+        vis = ""
+        if vis_key:
+            sv = f"sul_dbg_local_power_{key}"
+            vis = f'\n\t\t\t\t\t\tvisible = "[GreaterThan_CFixedPoint(LocationView.GetLocation.MakeScope.ScriptValue(\'{sv}\'), \'(CFixedPoint)0\')]"'
+        estate_rows.append(f"""\t\t\t\t\t\tTooltipManualTableField = {{{vis}
+\t\t\t\t\t\t\tblockoverride "field_content" {{
+\t\t\t\t\t\t\t\ticon = {{ size = {{ 10 20 }} texture = "gfx/interface/component_tiles/bookmark_white.dds" tintcolor = {{ {color} }} }}
+\t\t\t\t\t\t\t\ttext_single = {{ default_format = "#subtle_name" raw_text = "{label}" }}
+\t\t\t\t\t\t\t\texpand = {{  }}
+\t\t\t\t\t\t\t\ttext_single = {{ align = right raw_text = "[LocationView.GetLocation.MakeScope.ScriptValue('sul_map_asset_{key}')|2]@gold! (#green [LocationView.GetLocation.MakeScope.ScriptValue('sul_wealth_delta_{key}')|+=2]@gold!#!)" }}
+\t\t\t\t\t\t\t}}
+\t\t\t\t\t\t}}""")
+    estate_content = "\n".join(estate_rows)
+
+    return f"""template sul_wealth_bar_tooltip {{
+\tContextualTooltipType = {{
+\t\tblockoverride "title_icon" {{ icon = {{ using = tooltip_title_icon_size texture = "[GetConceptTexture('wealth')]" }} }}
+\t\tblockoverride "title_text" {{ raw_text = "#T [sul_location_assets|E]#!" }}
+\t\tblockoverride "concept_link" {{ text = "[sul_location_assets|e]" }}
+\t\tblockoverride "tooltip_content" {{
+\t\t\thbox = {{
+\t\t\t\tlayoutpolicy_horizontal = expanding
+\t\t\t\tspacing = 10
+\t\t\t\twidget = {{
+\t\t\t\t\tsize = {{ 100 100 }}
+\t\t\t\t\tusing = marker_bg_circle
+\t\t\t\t\tpiechart = {{
+\t\t\t\t\t\tparentanchor = center
+\t\t\t\t\t\tsize = {{ 90% 90% }}
+\t\t\t\t\t\tusing = piechart_angles
+{pie_content}
+\t\t\t\t\t\ticon = {{ parentanchor = center size = {{ 55% 55% }} texture = "[GetConceptTexture('wealth')]" }}
+\t\t\t\t\t}}
+\t\t\t\t}}
+\t\t\t\tvbox = {{
+\t\t\t\t\tspacing = 5
+\t\t\t\t\tTooltipListBase = {{
+\t\t\t\t\t\tTooltipListRowContent = {{
+\t\t\t\t\t\t\tTooltipManualTableField = {{
+\t\t\t\t\t\t\t\tblockoverride "field_content" {{
+\t\t\t\t\t\t\t\t\ttext_single = {{ raw_text = "#T Local GDP#!" }}
+\t\t\t\t\t\t\t\t\texpand = {{  }}
+\t\t\t\t\t\t\t\t\ttext_single = {{ raw_text = "[LocationView.GetLocation.MakeScope.ScriptValue('sul_local_assets_gdp')|2]@gold!" }}
+\t\t\t\t\t\t\t\t}}
+\t\t\t\t\t\t\t}}
+\t\t\t\t\t\t\tTooltipManualTableField = {{
+\t\t\t\t\t\t\t\tblockoverride "field_content" {{
+\t\t\t\t\t\t\t\t\ttext_single = {{ raw_text = "#T [sul_location_assets]#!" }}
+\t\t\t\t\t\t\t\t\texpand = {{  }}
+\t\t\t\t\t\t\t\t\ttext_single = {{ raw_text = "[LocationView.GetLocation.MakeScope.ScriptValue('sul_wealth_total')|2] [wealth_icon]" }}
+\t\t\t\t\t\t\t\t}}
+\t\t\t\t\t\t\t}}
+\t\t\t\t\t\t\tTooltipManualTableField = {{
+\t\t\t\t\t\t\t\tblockoverride "field_content" {{
+\t\t\t\t\t\t\t\t\ttext_single = {{ raw_text = "Monthly" }}
+\t\t\t\t\t\t\t\t\texpand = {{  }}
+\t\t\t\t\t\t\t\t\ttext_single = {{
+\t\t\t\t\t\t\t\t\t\traw_text = "#green [LocationView.GetLocation.MakeScope.ScriptValue('sul_wealth_delta_total')|+=2]#! [wealth_icon]"
+\t\t\t\t\t\t\t\t\t\ttooltipwidget = {{
+\t\t\t\t\t\t\t\t\t\t\tContextualTooltipType = {{
+\t\t\t\t\t\t\t\t\t\t\t\tblockoverride "tooltip_title" {{ ContextualTooltipHeader = {{ blockoverride "title_text" {{ raw_text = "Monthly Asset Change" }} }} }}
+\t\t\t\t\t\t\t\t\t\t\t\tblockoverride "tooltip_content" {{
+\t\t\t\t\t\t\t\t\t\t\t\t\tTooltipListBase = {{
+\t\t\t\t\t\t\t\t\t\t\t\t\t\tTooltipManualTableField = {{ blockoverride "field_content" {{ text_single = {{ layoutpolicy_horizontal = expanding raw_text = "Potential" }} text_single = {{ align = right min_width = 100 raw_text = "[Location.MakeScope.ScriptValue('sul_local_assets_max')|2]@gold!" }} }} }}
+\t\t\t\t\t\t\t\t\t\t\t\t\t\tTooltipManualTableField = {{ blockoverride "field_content" {{ text_single = {{ layoutpolicy_horizontal = expanding raw_text = "Current" }} text_single = {{ align = right min_width = 100 raw_text = "[Location.MakeScope.ScriptValue('sul_local_assets_display')|2]@gold!" }} }} }}
+\t\t\t\t\t\t\t\t\t\t\t\t\t\tTooltipManualTableField = {{ blockoverride "field_content" {{ text_single = {{ layoutpolicy_horizontal = expanding raw_text = "Gap" }} text_single = {{ align = right min_width = 100 raw_text = "[Location.MakeScope.ScriptValue('sul_local_assets_gap')|2]@gold!" }} }} }}
+\t\t\t\t\t\t\t\t\t\t\t\t\t\tTooltipManualTableField = {{ blockoverride "field_content" {{ text_single = {{ layoutpolicy_horizontal = expanding raw_text = "Converge (5%/mo)" }} text_single = {{ align = right min_width = 100 raw_text = "[Location.MakeScope.ScriptValue('sul_local_assets_converge_step')|2]@gold!" }} }} }}
+\t\t\t\t\t\t\t\t\t\t\t\t\t\tTooltipManualTableField = {{ blockoverride "field_content" {{ text_single = {{ layoutpolicy_horizontal = expanding raw_text = "#bold = Monthly Change#!" }} text_single = {{ align = right min_width = 100 raw_text = "#bold [Location.MakeScope.ScriptValue('sul_local_assets_delta')|+=2]@gold!#!" }} }} }}
+\t\t\t\t\t\t\t\t\t\t\t\t\t}}
 \t\t\t\t\t\t\t\t\t\t\t\t}}
 \t\t\t\t\t\t\t\t\t\t\t}}
 \t\t\t\t\t\t\t\t\t\t}}
 \t\t\t\t\t\t\t\t\t}}
 \t\t\t\t\t\t\t\t}}
 \t\t\t\t\t\t\t}}
-\t\t\t\t\t\t}}"""
+\t\t\t\t\t\t\tTooltipManualTableField = {{
+\t\t\t\t\t\t\t\tblockoverride "field_content" {{
+\t\t\t\t\t\t\t\t\ttext_single = {{ raw_text = "Potential" }}
+\t\t\t\t\t\t\t\t\texpand = {{  }}
+\t\t\t\t\t\t\t\t\ttext_single = {{
+\t\t\t\t\t\t\t\t\t\traw_text = "[LocationView.GetLocation.MakeScope.ScriptValue('sul_wealth_target_total')|2] [wealth_icon]"
+\t\t\t\t\t\t\t\t\t\ttooltipwidget = {{
+\t\t\t\t\t\t\t\t\t\t\tContextualTooltipType = {{
+\t\t\t\t\t\t\t\t\t\t\t\tblockoverride "tooltip_title" {{ ContextualTooltipHeader = {{ blockoverride "title_text" {{ raw_text = "Potential Assets" }} }} }}
+\t\t\t\t\t\t\t\t\t\t\t\tblockoverride "tooltip_content" {{
+\t\t\t\t\t\t\t\t\t\t\t\t\tTooltipListBase = {{
+\t\t\t\t\t\t\t\t\t\t\t\t\t\tTooltipManualTableField = {{ blockoverride "field_content" {{ text_single = {{ layoutpolicy_horizontal = expanding raw_text = "Local GDP" }} text_single = {{ align = right min_width = 100 raw_text = "[Location.MakeScope.ScriptValue('sul_local_assets_gdp')|2]@gold!" }} }} }}
+\t\t\t\t\t\t\t\t\t\t\t\t\t\tTooltipManualTableField = {{ blockoverride "field_content" {{ text_single = {{ layoutpolicy_horizontal = expanding raw_text = "× Multiplier" }} text_single = {{ align = right min_width = 100 raw_text = "×5" }} }} }}
+\t\t\t\t\t\t\t\t\t\t\t\t\t\tTooltipManualTableField = {{ blockoverride "field_content" {{ text_single = {{ layoutpolicy_horizontal = expanding raw_text = "× Prosperity" }} text_single = {{ align = right min_width = 100 raw_text = "×[Location.MakeScope.ScriptValue('sul_local_assets_prosperity_factor')|2] ([Location.MakeScope.ScriptValue('sul_local_assets_prosperity_pct')|0]%)" }} }} }}
+\t\t\t\t\t\t\t\t\t\t\t\t\t\tTooltipManualTableField = {{ blockoverride "field_content" {{ text_single = {{ layoutpolicy_horizontal = expanding raw_text = "#bold = Potential#!" }} text_single = {{ align = right min_width = 100 raw_text = "#bold [Location.MakeScope.ScriptValue('sul_local_assets_max')|2]@gold!#!" }} }} }}
+\t\t\t\t\t\t\t\t\t\t\t\t\t}}
+\t\t\t\t\t\t\t\t\t\t\t\t}}
+\t\t\t\t\t\t\t\t\t\t\t}}
+\t\t\t\t\t\t\t\t\t\t}}
+\t\t\t\t\t\t\t\t\t}}
+\t\t\t\t\t\t\t\t}}
+\t\t\t\t\t\t\t}}
+\t\t\t\t\t\t}}
+\t\t\t\t\t}}
+\t\t\t\t}}
+\t\t\t}}
+\t\t\tTooltipListBase = {{
+\t\t\t\tTooltipTableHeader = {{ blockoverride "tableheader_text" {{ raw_text = "#T Estate Assets#!" }} }}
+\t\t\t\tTooltipListRowContent = {{
+{estate_content}
+\t\t\t\t}}
+\t\t\t}}
+\t\t}}
+\t}}
+}}"""
 
 
 def generate_gui_tooltip(results):
@@ -767,7 +1010,7 @@ def generate_gui_tooltip(results):
         lmod_sv = pop_local_mod_sv[pop]
         gmod_key = pop_global_mod_key[pop]
         is_upper = pop in upper_pops
-        subtip = _gen_pop_subtip(pop, display, results)
+        template_name = f"sul_{pop}_demand_breakdown_tooltip"
 
         lines.append(f"")
         lines.append(f"\t\t\t# {display}")
@@ -836,11 +1079,11 @@ def generate_gui_tooltip(results):
         lines.append(f"\t\t\t\t\t\t}}")
         lines.append(f"\t\t\t\t\t}}")
 
-        # WPP column with demand breakdown tooltip
+        # WPP column with demand breakdown tooltip (pluggable template)
         lines.append(f"\t\t\t\t\ttext_single = {{")
         lines.append(f"\t\t\t\t\t\tmin_width = 70 max_width = 70 align = right")
         lines.append(f"\t\t\t\t\t\traw_text = \"[Location.MakeScope.ScriptValue('{wpp_sv}')|2]@gold!\"")
-        lines.append(subtip)
+        lines.append(f"\t\t\t\t\t\tusing = {template_name}")
         lines.append(f"\t\t\t\t\t}}")
 
         lines.append(f"\t\t\t\t}}")
@@ -907,42 +1150,25 @@ def write_demand_init(results):
 
 
 def write_gui(results):
-    """Write the generated GUI tooltip to aaa_sul_location_tooltips.gui.
+    """Write demand breakdown templates to aaa_sul_demand_breakdown_tooltips.gui.
 
-    Replaces everything from ### PDO: POP DEMAND BUDGET to the end of the template.
+    This file contains ONLY the per-pop-type demand breakdown templates
+    (WPP summation + per-tier goods lists). Referenced via `using =` from
+    the main tooltip file.
     """
     script_dir = os.path.dirname(os.path.abspath(__file__))
     mod_dir = os.path.dirname(script_dir)
     gui_path = os.path.join(mod_dir, "in_game", "gui", "shared",
-                            "aaa_sul_location_tooltips.gui")
+                            "aaa_sul_demand_breakdown_tooltips.gui")
+    os.makedirs(os.path.dirname(gui_path), exist_ok=True)
 
-    with open(gui_path, encoding="utf-8-sig") as f:
-        content = f.read()
-
-    marker = "### WPDO: POP DEMAND BUDGET"
-    idx = content.find(marker)
-    if idx < 0:
-        print(f"  ERROR: marker '{marker}' not found in {gui_path}", file=sys.stderr)
-        return
-
-    # Find the start of the line containing the marker
-    line_start = content.rfind("\n", 0, idx)
-    if line_start < 0:
-        line_start = 0
-    else:
-        line_start += 1
-
-    # The template ends with "}\n" — keep everything before the marker,
-    # insert our generated block, close the template
-    before = content[:line_start]
-    generated = generate_gui_tooltip(results)
+    standalone = generate_standalone_templates(results)
 
     with open(gui_path, "w", encoding="utf-8-sig") as f:
-        f.write(before)
-        f.write(generated)
-        f.write("\n}\n")
+        f.write(standalone)
+        f.write("\n")
 
-    print(f"Wrote GUI tooltip to {gui_path}")
+    print(f"Wrote demand breakdown templates to {gui_path}")
 
 
 # ===============================================================

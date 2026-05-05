@@ -1,24 +1,20 @@
 ﻿# =============================================================================
-# POP DEMANDS WITH GDP PER CAPITA SCALING
+# POP DEMANDS WITH GDP PER CAPITA SCALING + MARKET PRICE ADJUSTMENT
 # =============================================================================
 #
-# This file REPLACEs vanilla pop_demands.txt to add GDP-based demand scaling.
-# Each goods entry uses a category-specific GDP scale with elasticity dampening:
-# Elasticity (demand growth rate past affordability threshold):
-#   necessity = 0.25 (slow growth — always needed)
-#   common    = 0.75 (moderate growth)
-#   upper     = 1.0  (standard growth)
-#   luxury    = 1.5  (fast growth — wealth-driven)
-#   exotic    = 2.0  (fastest growth — pure luxury)
+# This file REPLACEs vanilla pop_demands.txt to add GDP-based demand scaling
+# with live market price correction. Each good's demand is adjusted by
+# (default_price / market_price) so that total spending stays within the
+# pop's budget regardless of price fluctuations.
 #
-# Demand gate: max(0, (demand_power - price) / price) × elasticity
 # Requires: sul_demand_power variable map on locations
 #
 # =============================================================================
 
 # pop_demand is a hardcoded key — engine reads it directly and also sources
 # a per-pop scriptvalue. Each entry's final multiply pulls the location's
-# sul_demand_<tier> script_value to apply GDP-based scaling.
+# sul_demand_<tier> script_value to apply GDP-based scaling, then divides
+# by the price ratio to convert from budget share to affordable quantity.
 
 REPLACE:pop_demand = {
 	provisions = {
@@ -147,6 +143,8 @@ REPLACE:pop_demand = {
 		}
 
 		multiply = { value = location.sul_demand_basic }
+		multiply = "default_price(goods:wine)"
+		divide = { value = "location.market.market_price(goods:wine)" min = 0.001 }
 	}
 
 	liquor = {
@@ -214,6 +212,8 @@ REPLACE:pop_demand = {
 		}
 
 		multiply = { value = location.sul_demand_basic }
+		multiply = "default_price(goods:liquor)"
+		divide = { value = "location.market.market_price(goods:liquor)" min = 0.001 }
 	}
 
 	beer = {
@@ -268,6 +268,8 @@ REPLACE:pop_demand = {
 		}
 
 		multiply = { value = location.sul_demand_basic }
+		multiply = "default_price(goods:beer)"
+		divide = { value = "location.market.market_price(goods:beer)" min = 0.001 }
 	}
 
 	fur = {
@@ -322,6 +324,8 @@ REPLACE:pop_demand = {
 		}
 
 		multiply = { value = location.sul_demand_common }
+		multiply = "default_price(goods:fur)"
+		divide = { value = "location.market.market_price(goods:fur)" min = 0.001 }
 	}
 
 	beeswax = {
@@ -343,6 +347,8 @@ REPLACE:pop_demand = {
 		}
 
 		multiply = { value = location.sul_demand_basic }
+		multiply = "default_price(goods:beeswax)"
+		divide = { value = "location.market.market_price(goods:beeswax)" min = 0.001 }
 	}
 
 	coal = {
@@ -373,6 +379,8 @@ REPLACE:pop_demand = {
 		}
 
 		multiply = { value = location.sul_demand_necessity }
+		multiply = "default_price(goods:coal)"
+		divide = { value = "location.market.market_price(goods:coal)" min = 0.001 }
 	}
 
 	pearls = {
@@ -384,6 +392,8 @@ REPLACE:pop_demand = {
 		}
 
 		multiply = { value = location.sul_demand_luxury }
+		multiply = "default_price(goods:pearls)"
+		divide = { value = "location.market.market_price(goods:pearls)" min = 0.001 }
 	}
 
 	amber = {
@@ -408,6 +418,8 @@ REPLACE:pop_demand = {
 		}
 
 		multiply = { value = location.sul_demand_upper }
+		multiply = "default_price(goods:amber)"
+		divide = { value = "location.market.market_price(goods:amber)" min = 0.001 }
 	}
 
 	ivory = {
@@ -422,6 +434,8 @@ REPLACE:pop_demand = {
 		if = { limit = { religion = religion:jain } multiply = { value = 0 desc = "POP_DEMAND_JAIN" } }
 
 		multiply = { value = location.sul_demand_luxury }
+		multiply = "default_price(goods:ivory)"
+		divide = { value = "location.market.market_price(goods:ivory)" min = 0.001 }
 	}
 
 	incense = {
@@ -441,13 +455,30 @@ REPLACE:pop_demand = {
 		}
 
 		multiply = { value = location.sul_demand_common }
+		multiply = "default_price(goods:incense)"
+		divide = { value = "location.market.market_price(goods:incense)" min = 0.001 }
 	}
 
-	gems = { value = 1 multiply = { value = location.sul_demand_luxury } }
+	gems = {
+		value = 1
+		multiply = { value = location.sul_demand_luxury }
+		multiply = "default_price(goods:gems)"
+		divide = { value = "location.market.market_price(goods:gems)" min = 0.001 }
+	}
 
-	marble = { value = 1 multiply = { value = location.sul_demand_luxury } }
+	marble = {
+		value = 1
+		multiply = { value = location.sul_demand_luxury }
+		multiply = "default_price(goods:marble)"
+		divide = { value = "location.market.market_price(goods:marble)" min = 0.001 }
+	}
 
-	horses = { value = 1 multiply = { value = location.sul_demand_common } }
+	horses = {
+		value = 1
+		multiply = { value = location.sul_demand_common }
+		multiply = "default_price(goods:horses)"
+		divide = { value = "location.market.market_price(goods:horses)" min = 0.001 }
+	}
 
 	medicaments = {
 		value = 1
@@ -469,11 +500,23 @@ REPLACE:pop_demand = {
 		}
 
 		multiply = { value = location.sul_demand_necessity }
+		multiply = "default_price(goods:medicaments)"
+		divide = { value = "location.market.market_price(goods:medicaments)" min = 0.001 }
 	}
 
-	pottery = { value = 1 multiply = { value = location.sul_demand_necessity } }
+	pottery = {
+		value = 1
+		multiply = { value = location.sul_demand_necessity }
+		multiply = "default_price(goods:pottery)"
+		divide = { value = "location.market.market_price(goods:pottery)" min = 0.001 }
+	}
 
-	furniture = { value = 1 multiply = { value = location.sul_demand_basic } }
+	furniture = {
+		value = 1
+		multiply = { value = location.sul_demand_basic }
+		multiply = "default_price(goods:furniture)"
+		divide = { value = "location.market.market_price(goods:furniture)" min = 0.001 }
+	}
 
 	porcelain = {
 		value = 1
@@ -490,6 +533,8 @@ REPLACE:pop_demand = {
 			multiply = { value = location.sul_demand_common }
 		}
 		else = { multiply = { value = location.sul_demand_upper } }
+		multiply = "default_price(goods:porcelain)"
+		divide = { value = "location.market.market_price(goods:porcelain)" min = 0.001 }
 	}
 
 	lacquerware = {
@@ -508,9 +553,16 @@ REPLACE:pop_demand = {
 			multiply = { value = location.sul_demand_common }
 		}
 		else = { multiply = { value = location.sul_demand_exotic } }
+		multiply = "default_price(goods:lacquerware)"
+		divide = { value = "location.market.market_price(goods:lacquerware)" min = 0.001 }
 	}
 
-	jewelry = { value = 1 multiply = { value = location.sul_demand_luxury } }
+	jewelry = {
+		value = 1
+		multiply = { value = location.sul_demand_luxury }
+		multiply = "default_price(goods:jewelry)"
+		divide = { value = "location.market.market_price(goods:jewelry)" min = 0.001 }
+	}
 
 	fine_cloth = {
 		value = 1
@@ -526,6 +578,8 @@ REPLACE:pop_demand = {
 		}
 
 		multiply = { value = location.sul_demand_upper }
+		multiply = "default_price(goods:fine_cloth)"
+		divide = { value = "location.market.market_price(goods:fine_cloth)" min = 0.001 }
 	}
 
 	cloth = {
@@ -551,6 +605,8 @@ REPLACE:pop_demand = {
 		}
 
 		multiply = { value = location.sul_demand_necessity }
+		multiply = "default_price(goods:cloth)"
+		divide = { value = "location.market.market_price(goods:cloth)" min = 0.001 }
 	}
 
 	paper = {
@@ -568,6 +624,8 @@ REPLACE:pop_demand = {
 		}
 
 		multiply = { value = location.sul_demand_basic }
+		multiply = "default_price(goods:paper)"
+		divide = { value = "location.market.market_price(goods:paper)" min = 0.001 }
 	}
 
 	books = {
@@ -585,6 +643,8 @@ REPLACE:pop_demand = {
 		}
 
 		multiply = { value = location.sul_demand_upper }
+		multiply = "default_price(goods:books)"
+		divide = { value = "location.market.market_price(goods:books)" min = 0.001 }
 	}
 
 	weaponry = {
@@ -602,6 +662,8 @@ REPLACE:pop_demand = {
 		if = { limit = { religion = religion:jain } multiply = { value = 0 desc = "POP_DEMAND_JAIN" } }
 
 		multiply = { value = location.sul_demand_common }
+		multiply = "default_price(goods:weaponry)"
+		divide = { value = "location.market.market_price(goods:weaponry)" min = 0.001 }
 	}
 
 	salt = {
@@ -627,9 +689,16 @@ REPLACE:pop_demand = {
 		}
 
 		multiply = { value = location.sul_demand_necessity }
+		multiply = "default_price(goods:salt)"
+		divide = { value = "location.market.market_price(goods:salt)" min = 0.001 }
 	}
 
-	sugar = { value = 1 multiply = { value = location.sul_demand_upper } }
+	sugar = {
+		value = 1
+		multiply = { value = location.sul_demand_upper }
+		multiply = "default_price(goods:sugar)"
+		divide = { value = "location.market.market_price(goods:sugar)" min = 0.001 }
+	}
 
 	tobacco = {
 		value = 1
@@ -646,6 +715,8 @@ REPLACE:pop_demand = {
 		# Regional tier: common in Americas, upper elsewhere
 		if = { limit = { location.continent = continent:america } multiply = { value = location.sul_demand_common } }
 		else = { multiply = { value = location.sul_demand_upper } }
+		multiply = "default_price(goods:tobacco)"
+		divide = { value = "location.market.market_price(goods:tobacco)" min = 0.001 }
 	}
 
 	tea = {
@@ -690,6 +761,8 @@ REPLACE:pop_demand = {
 			multiply = { value = location.sul_demand_common }
 		}
 		else = { multiply = { value = location.sul_demand_upper } }
+		multiply = "default_price(goods:tea)"
+		divide = { value = "location.market.market_price(goods:tea)" min = 0.001 }
 	}
 
 	cocoa = {
@@ -698,6 +771,8 @@ REPLACE:pop_demand = {
 		# Regional tier: common in Americas, upper elsewhere
 		if = { limit = { location.continent = continent:america } multiply = { value = location.sul_demand_common } }
 		else = { multiply = { value = location.sul_demand_upper } }
+		multiply = "default_price(goods:cocoa)"
+		divide = { value = "location.market.market_price(goods:cocoa)" min = 0.001 }
 	}
 
 	coffee = {
@@ -709,6 +784,8 @@ REPLACE:pop_demand = {
 			multiply = { value = location.sul_demand_common }
 		}
 		else = { multiply = { value = location.sul_demand_upper } }
+		multiply = "default_price(goods:coffee)"
+		divide = { value = "location.market.market_price(goods:coffee)" min = 0.001 }
 	}
 
 	saffron = {
@@ -747,6 +824,8 @@ REPLACE:pop_demand = {
 			multiply = { value = location.sul_demand_common }
 		}
 		else = { multiply = { value = location.sul_demand_exotic } }
+		multiply = "default_price(goods:saffron)"
+		divide = { value = "location.market.market_price(goods:saffron)" min = 0.001 }
 	}
 
 	pepper = {
@@ -764,6 +843,8 @@ REPLACE:pop_demand = {
 			multiply = { value = location.sul_demand_common }
 		}
 		else = { multiply = { value = location.sul_demand_exotic } }
+		multiply = "default_price(goods:pepper)"
+		divide = { value = "location.market.market_price(goods:pepper)" min = 0.001 }
 	}
 
 	cloves = {
@@ -775,6 +856,8 @@ REPLACE:pop_demand = {
 			multiply = { value = location.sul_demand_common }
 		}
 		else = { multiply = { value = location.sul_demand_exotic } }
+		multiply = "default_price(goods:cloves)"
+		divide = { value = "location.market.market_price(goods:cloves)" min = 0.001 }
 	}
 
 	chili = {
@@ -783,6 +866,8 @@ REPLACE:pop_demand = {
 		# Regional tier: common in Americas, exotic elsewhere
 		if = { limit = { location.continent = continent:america } multiply = { value = location.sul_demand_common } }
 		else = { multiply = { value = location.sul_demand_exotic } }
+		multiply = "default_price(goods:chili)"
+		divide = { value = "location.market.market_price(goods:chili)" min = 0.001 }
 	}
 
 	category = pop_needs

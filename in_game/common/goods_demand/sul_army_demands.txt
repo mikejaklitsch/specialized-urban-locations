@@ -1,243 +1,602 @@
-﻿# Regiment Maintenance Goods
+﻿# Regiment Goods Demands — Standardized per 1k men
 #
-# Consumables at 16x vanilla. Horses/cannons at 4x (durable). Elephants at 2x (long-lived, 10g base).
-# Provisions added: 0.25 infantry/aux, 0.5 cavalry, 0.75 elephants.
-# Ducat values calculated at base good prices (provisions @ 2.4g). All costs scale by max_strength (per 1k men).
+# Design: costs represent equipment upkeep + provisions + soldier life goods.
+# Scaled by max_strength (regiment size in thousands).
+#
+# Tier scaling: ~15% increase per template era.
+# Heavy variants: ~25% over their light counterpart.
+# Cavalry/artillery at ~1.85x infantry base, close to each other.
+# No single good dominates (max ~2:1 ducat ratio for non-elephant units).
+#
+# Goods prices used for balancing:
+#   weaponry=3, firearms=3, cannons=4, leather=3, tools=3, cloth=3,
+#   horses=3, elephants=10, lumber=1.5, copper=3, tin=2,
+#   provisions=2.4, beer=2, liquor=2.5, salt=4, paper=2, medicaments=1,
+#   jewelry=5
 
-# early_infantry_maintenance: 0.24 → 4.44 ducats
+# ═══════════════════════════════════════════════════════════════════
+# INFANTRY MAINTENANCE
+# ═══════════════════════════════════════════════════════════════════
+
+# T1 standard (pre-firearms): ~4.85d/month per 1k
 
 REPLACE:early_infantry_maintenance = {
-	weaponry = 0.8
-	leather = 0.48
-	provisions = 0.25
+	weaponry = 0.5
+	leather = 0.35
+	provisions = 0.5
+	beer = 0.35
+	salt = 0.1
 	category = regiment_maintenance
 }
 
-# early_heavy_infantry_maintenance: 0.24 → 4.44 ducats
-
-REPLACE:early_heavy_infantry_maintenance = {
-	weaponry = 0.8
-	leather = 0.48
-	provisions = 0.25
-	category = regiment_maintenance
-}
-
-# archer_infantry_maintenance: 0.23 → 4.20 ducats
+# T1 light ranged: ~4.75d
 
 REPLACE:archer_infantry_maintenance = {
-	weaponry = 0.48
-	leather = 0.48
-	lumber = 0.48
-	provisions = 0.25
+	weaponry = 0.3
+	lumber = 0.35
+	leather = 0.35
+	provisions = 0.5
+	beer = 0.35
+	salt = 0.1
 	category = regiment_maintenance
 }
 
-# infantry_maintenance: 0.39 → 6.84 ducats
+# T1 heavy (armored, +25%): ~6.05d
+
+REPLACE:early_heavy_infantry_maintenance = {
+	weaponry = 0.6
+	leather = 0.45
+	tools = 0.2
+	provisions = 0.5
+	beer = 0.35
+	salt = 0.1
+	category = regiment_maintenance
+}
+
+# T2 standard (firearms era, +15%): ~6.0d
 
 REPLACE:infantry_maintenance = {
-	firearms = 0.8
-	weaponry = 0.8
-	leather = 0.48
-	provisions = 0.25
+	firearms = 0.4
+	weaponry = 0.35
+	leather = 0.35
+	cloth = 0.15
+	provisions = 0.5
+	beer = 0.35
+	salt = 0.1
 	category = regiment_maintenance
 }
 
-# pikemen_maintenance: 0.42 → 7.32 ducats
+# T2 heavy (pike & shot, +25% over T2): ~7.4d
 
 REPLACE:pikemen_maintenance = {
-	weaponry = 0.64
-	leather = 0.64
-	lumber = 0.64
-	tools = 0.64
-	provisions = 0.25
+	weaponry = 0.6
+	leather = 0.5
+	tools = 0.3
+	lumber = 0.35
+	cloth = 0.15
+	provisions = 0.55
+	beer = 0.35
+	salt = 0.1
 	category = regiment_maintenance
 }
 
-# heavy_infantry_maintenance: 0.45 → 7.80 ducats
+# T3 heavy (line infantry, +15% over T2 heavy): ~8.4d
 
 REPLACE:heavy_infantry_maintenance = {
-	firearms = 0.8
-	weaponry = 0.8
-	leather = 0.48
-	tools = 0.32
-	provisions = 0.25
+	firearms = 0.55
+	weaponry = 0.5
+	leather = 0.5
+	tools = 0.25
+	cloth = 0.2
+	provisions = 0.55
+	beer = 0.35
+	salt = 0.1
 	category = regiment_maintenance
 }
 
-# rifle_infantry_maintenance: 1.14 → 18.84 ducats
+# T3 precision (rifles, between T2 and T3 heavy): ~7.5d
 
 REPLACE:rifle_infantry_maintenance = {
-	firearms = 4.8
-	weaponry = 0.8
-	leather = 0.48
-	provisions = 0.25
+	firearms = 0.65
+	weaponry = 0.3
+	leather = 0.4
+	tools = 0.15
+	cloth = 0.15
+	provisions = 0.55
+	beer = 0.35
+	salt = 0.1
 	category = regiment_maintenance
 }
 
-# cavalry_maintenance: 1.14 → 10.44 ducats (horses 4x)
+# ═══════════════════════════════════════════════════════════════════
+# CAVALRY MAINTENANCE — base ~9.0d (1.85x infantry)
+# ═══════════════════════════════════════════════════════════════════
+
+# Light cavalry (all ages): ~9.0d
 
 REPLACE:cavalry_maintenance = {
-	leather = 0.64
-	cloth = 0.64
-	horses = 1.0
-	weaponry = 0.8
-	provisions = 0.5
-	category = regiment_construction
+	horses = 0.9
+	weaponry = 0.6
+	leather = 0.45
+	cloth = 0.2
+	provisions = 0.6
+	beer = 0.35
+	salt = 0.1
+	category = regiment_maintenance
 }
 
-# heavy_cavalry_maintenance: 2.40 → 21.60 ducats (horses 4x)
+# Heavy cavalry (+25%): ~11.2d
 
 REPLACE:heavy_cavalry_maintenance = {
-	leather = 0.8
-	weaponry = 1.6
-	cloth = 0.8
-	horses = 2.0
-	tools = 1.6
-	provisions = 0.5
+	horses = 1.1
+	weaponry = 0.75
+	leather = 0.55
+	tools = 0.25
+	cloth = 0.2
+	provisions = 0.65
+	beer = 0.35
+	salt = 0.1
 	category = regiment_maintenance
 }
 
-# expensive_heavy_cavalry_maintenance: 4.80 → 42.00 ducats (horses 4x)
+# Super-heavy cavalry (+50%): ~13.3d
 
 REPLACE:expensive_heavy_cavalry_maintenance = {
-	leather = 1.6
-	weaponry = 3.2
-	cloth = 1.6
-	horses = 4.0
-	tools = 3.2
-	provisions = 0.5
+	horses = 1.35
+	weaponry = 0.9
+	leather = 0.7
+	tools = 0.35
+	cloth = 0.25
+	provisions = 0.65
+	beer = 0.35
+	salt = 0.1
 	category = regiment_maintenance
 }
 
-# steppe_horse_archers_maintenance: 0.66 → 4.56 ducats (horses 4x)
+# Steppe horse archers (nomad, -30% from cavalry): ~6.5d
 
 REPLACE:steppe_horse_archers_maintenance = {
-	leather = 0.16
-	horses = 0.8
-	weaponry = 0.16
+	horses = 0.7
+	weaponry = 0.4
+	leather = 0.35
 	provisions = 0.5
-	category = regiment_construction
+	beer = 0.3
+	salt = 0.1
+	category = regiment_maintenance
 }
 
-# steppe_horse_auxiliary_maintenance: 1.57 → 8.32 ducats (horses 4x)
+# Steppe auxiliary (nomad supply): ~5.2d
 
 REPLACE:steppe_horse_auxiliary_maintenance = {
-	leather = 0.16
-	horses = 2.0
-	salt = 0.16
-	provisions = 0.5
-	category = regiment_construction
+	horses = 0.6
+	leather = 0.25
+	salt = 0.12
+	provisions = 0.55
+	beer = 0.35
+	category = regiment_maintenance
 }
 
-# clan_retainer_cavalry_maintenance: 0.15 → 2.88 ducats (horses 4x)
+# Clan retainer cavalry (cheap mounted): ~6.1d
 
 REPLACE:clan_retainer_cavalry_maintenance = {
-	weaponry = 0.32
-	leather = 0.16
-	horses = 0.08
-	provisions = 0.5
+	horses = 0.55
+	weaponry = 0.4
+	leather = 0.3
+	provisions = 0.55
+	beer = 0.3
+	salt = 0.1
 	category = regiment_maintenance
 }
 
-# artillery_maintenance: 2.40 → 15.00 ducats (cannons 4x)
+# ═══════════════════════════════════════════════════════════════════
+# ARTILLERY MAINTENANCE — base ~9.0d (close to cavalry)
+# ═══════════════════════════════════════════════════════════════════
+
+# All ages: ~9.0d
 
 REPLACE:artillery_maintenance = {
-	cannons = 2.0
-	copper = 1.6
-	tin = 0.8
-	provisions = 0.25
+	cannons = 0.8
+	copper = 0.4
+	tools = 0.4
+	leather = 0.3
+	provisions = 0.55
+	beer = 0.35
+	salt = 0.1
 	category = regiment_maintenance
 }
 
-# auxuliary_maintenance: 0.28 → 5.08 ducats
+# ═══════════════════════════════════════════════════════════════════
+# AUXILIARY MAINTENANCE
+# ═══════════════════════════════════════════════════════════════════
+
+# Supply corps: ~4.1d
 
 REPLACE:auxuliary_maintenance = {
-	paper = 0.32
-	medicaments = 0.32
-	tools = 0.32
-	leather = 0.32
-	salt = 0.4
-	provisions = 0.25
+	tools = 0.2
+	lumber = 0.25
+	leather = 0.15
+	paper = 0.15
+	medicaments = 0.2
+	provisions = 0.5
+	beer = 0.3
+	salt = 0.1
 	category = regiment_maintenance
 }
 
-# elephant_auxiliary_maintenance: 2.70 → 17.00 ducats (elephants 2x)
+# ═══════════════════════════════════════════════════════════════════
+# ELEPHANT MAINTENANCE — base ~13d (expensive exotic)
+# ═══════════════════════════════════════════════════════════════════
 
-REPLACE:elephant_auxiliary_maintenance = {
-	paper = 0.8
-	medicaments = 0.8
-	tools = 0.8
-	leather = 0.8
-	cloth = 0.8
-	salt = 0.4
-	elephants = 0.4
-	provisions = 0.75
-	category = regiment_maintenance
-}
-
-# elephant_cavalry_maintenance: 10.45 → 29.00 ducats (elephants 2x)
+# Elephant cavalry: ~13.0d
 
 REPLACE:elephant_cavalry_maintenance = {
-	leather = 0.8
-	cloth = 0.8
-	elephants = 2.0
-	weaponry = 0.8
-	provisions = 0.75
+	elephants = 0.6
+	weaponry = 0.55
+	leather = 0.5
+	cloth = 0.25
+	provisions = 0.8
+	beer = 0.35
+	salt = 0.1
 	category = regiment_maintenance
 }
 
-# elephant_infantry_maintenance: 6.20 → 31.00 ducats (elephants 2x)
+# Elephant infantry (howdah crews): ~12.0d
 
 REPLACE:elephant_infantry_maintenance = {
-	leather = 0.8
-	elephants = 1.0
-	weaponry = 1.6
-	lumber = 8.0
-	provisions = 0.75
+	elephants = 0.5
+	weaponry = 0.55
+	leather = 0.5
+	lumber = 0.6
+	provisions = 0.8
+	beer = 0.3
+	salt = 0.1
 	category = regiment_maintenance
 }
 
-# a_tribesmen_maintenance: 0.15 → 3.00 ducats
+# Elephant auxiliary (war elephants as logistics): ~9.5d
+
+REPLACE:elephant_auxiliary_maintenance = {
+	elephants = 0.45
+	tools = 0.3
+	leather = 0.3
+	medicaments = 0.25
+	provisions = 0.7
+	beer = 0.35
+	salt = 0.12
+	category = regiment_maintenance
+}
+
+# ═══════════════════════════════════════════════════════════════════
+# TRIBAL MAINTENANCE (progressive tiers)
+# ═══════════════════════════════════════════════════════════════════
+
+# Tribesmen (cheapest): ~2.9d
 
 REPLACE:a_tribesmen_maintenance = {
-	weaponry = 0.8
-	provisions = 0.25
-	category = regiment_construction
+	weaponry = 0.3
+	leather = 0.2
+	provisions = 0.35
+	beer = 0.25
+	category = regiment_maintenance
 }
 
-# a_warriors_maintenance: 0.30 → 5.40 ducats
+# Warriors: ~3.7d
 
 REPLACE:a_warriors_maintenance = {
-	weaponry = 0.8
-	leather = 0.8
-	provisions = 0.25
-	category = regiment_construction
+	weaponry = 0.4
+	leather = 0.25
+	provisions = 0.4
+	beer = 0.3
+	salt = 0.05
+	category = regiment_maintenance
 }
 
-# a_champions_maintenance: 0.60 → 10.20 ducats
+# Champions: ~4.6d
 
 REPLACE:a_champions_maintenance = {
-	weaponry = 1.6
-	leather = 1.6
-	provisions = 0.25
-	category = regiment_construction
+	weaponry = 0.5
+	leather = 0.35
+	provisions = 0.45
+	beer = 0.3
+	salt = 0.08
+	category = regiment_maintenance
 }
 
-# a_chieftains_maintenance: 0.85 → 14.20 ducats
+# Chieftains: ~5.6d
 
 REPLACE:a_chieftains_maintenance = {
-	weaponry = 1.6
-	leather = 1.6
-	jewelry = 0.8
-	provisions = 0.25
+	weaponry = 0.5
+	leather = 0.4
+	jewelry = 0.15
+	provisions = 0.5
+	beer = 0.3
+	salt = 0.08
+	category = regiment_maintenance
+}
+
+# Clan retainers (garrison infantry): ~3.5d
+
+REPLACE:clan_retainers_maintenance = {
+	weaponry = 0.3
+	leather = 0.2
+	provisions = 0.45
+	beer = 0.3
+	salt = 0.08
+	category = regiment_maintenance
+}
+
+# ═══════════════════════════════════════════════════════════════════
+# INFANTRY CONSTRUCTION
+# ═══════════════════════════════════════════════════════════════════
+
+# T1 standard: ~9.0d
+
+REPLACE:early_infantry_construction = {
+	weaponry = 1.0
+	leather = 0.7
+	cloth = 0.3
+	tools = 0.25
+	provisions = 0.5
 	category = regiment_construction
 }
 
-# clan_retainers_maintenance: 0.09 → 2.04 ducats
+# T1 light ranged: ~8.6d
 
-REPLACE:clan_retainers_maintenance = {
-	weaponry = 0.32
-	leather = 0.16
-	provisions = 0.25
-	category = regiment_maintenance
+REPLACE:archer_infantry_construction = {
+	weaponry = 0.6
+	lumber = 0.7
+	leather = 0.7
+	cloth = 0.3
+	provisions = 0.5
+	category = regiment_construction
+}
+
+# T1 heavy: ~11.3d
+
+REPLACE:early_heavy_infantry_construction = {
+	weaponry = 1.2
+	leather = 0.9
+	tools = 0.4
+	cloth = 0.3
+	provisions = 0.5
+	category = regiment_construction
+}
+
+# T2 standard (firearms): ~10.4d
+
+REPLACE:infantry_construction = {
+	firearms = 0.8
+	weaponry = 0.7
+	leather = 0.7
+	cloth = 0.3
+	provisions = 0.5
+	category = regiment_construction
+}
+
+# T2 heavy (pikemen): ~12.9d
+
+REPLACE:pikemen_construction = {
+	weaponry = 1.2
+	leather = 1.0
+	tools = 0.6
+	lumber = 0.7
+	cloth = 0.3
+	provisions = 0.5
+	category = regiment_construction
+}
+
+# T3 heavy (line infantry): ~14.7d
+
+REPLACE:heavy_infantry_construction = {
+	firearms = 1.1
+	weaponry = 1.0
+	leather = 1.0
+	tools = 0.5
+	cloth = 0.3
+	provisions = 0.5
+	category = regiment_construction
+}
+
+# T3 precision (rifles): ~13.6d
+
+REPLACE:rifle_infantry_construction = {
+	firearms = 1.3
+	weaponry = 0.6
+	leather = 0.8
+	tools = 0.3
+	cloth = 0.3
+	provisions = 0.5
+	category = regiment_construction
+}
+
+# ═══════════════════════════════════════════════════════════════════
+# CAVALRY CONSTRUCTION
+# ═══════════════════════════════════════════════════════════════════
+
+# Light cavalry: ~17.0d
+
+REPLACE:cavalry_construction = {
+	horses = 2.0
+	weaponry = 1.2
+	leather = 0.9
+	cloth = 0.4
+	provisions = 0.6
+	category = regiment_construction
+}
+
+# Heavy cavalry: ~21.3d
+
+REPLACE:heavy_cavalry_construction = {
+	horses = 2.4
+	weaponry = 1.5
+	leather = 1.1
+	tools = 0.5
+	cloth = 0.4
+	provisions = 0.6
+	category = regiment_construction
+}
+
+# Super-heavy cavalry: ~25.5d
+
+REPLACE:expensive_heavy_cavalry_construction = {
+	horses = 2.8
+	weaponry = 1.8
+	leather = 1.4
+	tools = 0.7
+	cloth = 0.5
+	provisions = 0.6
+	category = regiment_construction
+}
+
+# Steppe horse archers: ~13.0d
+
+REPLACE:steppe_horse_archers_construction = {
+	horses = 1.5
+	weaponry = 0.8
+	leather = 0.7
+	provisions = 0.5
+	category = regiment_construction
+}
+
+# Steppe auxiliary: ~10.0d
+
+REPLACE:steppe_auxiliary_construction = {
+	horses = 1.2
+	leather = 0.5
+	salt = 0.2
+	provisions = 0.5
+	category = regiment_construction
+}
+
+# Clan retainer cavalry: ~12.0d
+
+REPLACE:clan_retainer_cavalry_construction = {
+	horses = 1.2
+	weaponry = 0.8
+	leather = 0.6
+	provisions = 0.5
+	category = regiment_construction
+}
+
+# ═══════════════════════════════════════════════════════════════════
+# ARTILLERY CONSTRUCTION
+# ═══════════════════════════════════════════════════════════════════
+
+# All ages: ~17.5d
+
+REPLACE:artillery_construction = {
+	cannons = 1.6
+	copper = 0.8
+	tools = 0.8
+	leather = 0.5
+	provisions = 0.5
+	category = regiment_construction
+}
+
+# ═══════════════════════════════════════════════════════════════════
+# AUXILIARY CONSTRUCTION
+# ═══════════════════════════════════════════════════════════════════
+
+# Supply corps: ~7.0d
+
+REPLACE:auxuliary_construction = {
+	tools = 0.4
+	leather = 0.3
+	paper = 0.3
+	medicaments = 0.4
+	copper = 0.2
+	provisions = 0.5
+	category = regiment_construction
+}
+
+# ═══════════════════════════════════════════════════════════════════
+# ELEPHANT CONSTRUCTION
+# ═══════════════════════════════════════════════════════════════════
+
+# Elephant cavalry: ~25d
+
+REPLACE:elephant_cavalry_construction = {
+	elephants = 1.2
+	weaponry = 1.1
+	leather = 1.0
+	cloth = 0.5
+	provisions = 0.6
+	category = regiment_construction
+}
+
+# Elephant infantry: ~23d
+
+REPLACE:elephant_infantry_construction = {
+	elephants = 1.0
+	weaponry = 1.1
+	leather = 1.0
+	lumber = 1.2
+	provisions = 0.6
+	category = regiment_construction
+}
+
+# Elephant auxiliary: ~18d
+
+REPLACE:elephant_auxiliary_construction = {
+	elephants = 0.9
+	tools = 0.6
+	leather = 0.6
+	medicaments = 0.5
+	provisions = 0.5
+	category = regiment_construction
+}
+
+# ═══════════════════════════════════════════════════════════════════
+# TRIBAL CONSTRUCTION
+# ═══════════════════════════════════════════════════════════════════
+
+# Tribesmen: ~5.4d
+
+REPLACE:a_tribesmen_construction = {
+	weaponry = 0.6
+	leather = 0.4
+	provisions = 0.4
+	category = regiment_construction
+}
+
+# Warriors: ~7.2d
+
+REPLACE:a_warriors_construction = {
+	weaponry = 0.8
+	leather = 0.5
+	cloth = 0.2
+	provisions = 0.4
+	category = regiment_construction
+}
+
+# Champions: ~9.5d
+
+REPLACE:a_champions_construction = {
+	weaponry = 1.0
+	leather = 0.7
+	cloth = 0.3
+	tools = 0.2
+	provisions = 0.4
+	category = regiment_construction
+}
+
+# Chieftains: ~11.5d
+
+REPLACE:a_chieftains_construction = {
+	weaponry = 1.0
+	leather = 0.8
+	jewelry = 0.3
+	cloth = 0.3
+	provisions = 0.4
+	category = regiment_construction
+}
+
+# Clan retainers: ~6.8d
+
+REPLACE:clan_retainers_construction = {
+	weaponry = 0.6
+	leather = 0.4
+	cloth = 0.2
+	provisions = 0.4
+	category = regiment_construction
 }

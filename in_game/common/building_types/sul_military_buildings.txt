@@ -11,6 +11,10 @@
 
 # @sul-diff: ~~ 2c23
 
+# Reduced: local_manpower 0.01 → 0.005
+# Reduced: maintenance ~0.25x vanilla (firearms/leather/weaponry 0.5 → 0.12, cloth 0.10 → 0.03, paper 0.20 → 0.05)
+# Added: local_levy_size_modifier = -0.05, firearms input
+
 REPLACE:armory = {
 	is_foreign = no
 	pop_type = soldiers
@@ -41,7 +45,11 @@ REPLACE:armory = {
 		NOT = { owner = { has_primary_or_accepted_culture = prev.location.dominant_culture } }
 	}
 
-	modifier = { local_manpower = 0.015 can_recruit_regiment_in_this_location = yes }
+	modifier = {
+		local_manpower = 0.005
+		local_levy_size_modifier = -0.05
+		can_recruit_regiment_in_this_location = yes
+	}
 
 	unique_production_methods = {
 		sul_armory_maintenance = {
@@ -64,6 +72,10 @@ REPLACE:armory = {
 # @sul-diff: ~~+ 61fa
 
 # @sul-diff: ~~+ 61fa
+
+# Reduced: local_manpower 0.01 → 0.005
+# Reduced: maintenance ~0.25x vanilla (firearms/leather/weaponry 0.5 → 0.12, cloth 0.10 → 0.03, paper 0.20 → 0.05)
+# Added: local_levy_size_modifier = -0.05, firearms input
 
 REPLACE:training_fields = {
 	is_foreign = no
@@ -88,7 +100,11 @@ REPLACE:training_fields = {
 		NOT = { owner = { has_primary_or_accepted_culture = prev.location.dominant_culture } }
 	}
 
-	modifier = { local_manpower = 0.015 can_recruit_regiment_in_this_location = yes }
+	modifier = {
+		local_manpower = 0.005
+		local_levy_size_modifier = -0.05
+		can_recruit_regiment_in_this_location = yes
+	}
 
 	unique_production_methods = {
 		sul_training_fields_maintenance = {
@@ -111,6 +127,10 @@ REPLACE:training_fields = {
 # @sul-diff: ~~+ 61fa
 
 # @sul-diff: ~~+ 61fa
+
+# Reduced: local_manpower 0.015 → 0.010
+# Reduced: maintenance ~0.25x vanilla (firearms/leather/weaponry 1.0 → 0.25, cloth 0.20 → 0.05, paper 0.40 → 0.1)
+# Added: local_levy_size_modifier = -0.10, firearms input
 
 REPLACE:barracks = {
 	is_foreign = no
@@ -142,7 +162,8 @@ REPLACE:barracks = {
 	}
 
 	modifier = {
-		local_manpower = 0.025
+		local_manpower = 0.010
+		local_levy_size_modifier = -0.10
 		can_recruit_regiment_in_this_location = yes
 		max_regiments_trained_at_same_time = 1
 	}
@@ -169,6 +190,10 @@ REPLACE:barracks = {
 
 # @sul-diff: ~~+ 61fa
 
+# Reduced: local_manpower 0.02 → 0.010
+# Reduced: maintenance ~0.25x vanilla (firearms/leather/weaponry 1.0 → 0.25, cloth 0.20 → 0.05, paper 0.40 → 0.1)
+# Added: local_levy_size_modifier = -0.10, firearms input
+
 REPLACE:regimental_camp = {
 	is_foreign = no
 	pop_type = soldiers
@@ -193,7 +218,11 @@ REPLACE:regimental_camp = {
 		NOT = { owner = { has_primary_or_accepted_culture = prev.location.dominant_culture } }
 	}
 
-	modifier = { local_manpower = 0.025 can_recruit_regiment_in_this_location = yes }
+	modifier = {
+		local_manpower = 0.010
+		local_levy_size_modifier = -0.10
+		can_recruit_regiment_in_this_location = yes
+	}
 
 	unique_production_methods = {
 		sul_regimental_camp_maintenance = {
@@ -216,6 +245,10 @@ REPLACE:regimental_camp = {
 # @sul-diff: ~~+ 61fa
 
 # @sul-diff: ~~+ 61fa
+
+# Reduced: local_manpower 0.025 → 0.020
+# Reduced: maintenance ~0.25x vanilla (firearms/leather/weaponry 1.0 → 0.25, cloth 0.20 → 0.05, paper 0.50 → 0.12)
+# Added: local_levy_size_modifier = -0.20, firearms input
 
 REPLACE:conscription_center = {
 	is_foreign = no
@@ -253,7 +286,8 @@ REPLACE:conscription_center = {
 	}
 
 	modifier = {
-		local_manpower = 0.05
+		local_manpower = 0.020
+		local_levy_size_modifier = -0.20
 		can_recruit_regiment_in_this_location = yes
 		max_regiments_trained_at_same_time = 5
 	}
@@ -277,6 +311,8 @@ REPLACE:conscription_center = {
 INJECT:sergeantry = {
 	important_for_AI = yes
 
+	modifier = { local_levy_size_modifier = -0.15 }
+
 	city = no
 	town = no
 	rural_settlement = no
@@ -292,10 +328,14 @@ INJECT:sergeantry = {
 	woodland_city = yes
 	woodland_town = yes
 }
+
+# Reduced: local_manpower 0.01 → 0.005
 
 INJECT:warrior_temple = {
 	important_for_AI = yes
 
+	modifier = { local_manpower = -0.005 local_levy_size_modifier = -0.05 }
+
 	city = no
 	town = no
 	rural_settlement = no
@@ -312,8 +352,12 @@ INJECT:warrior_temple = {
 	woodland_town = yes
 }
 
+# Reduced: local_manpower 0.0025 → 0.001 (minimum)
+
 INJECT:jurchen_barracks = {
 	important_for_AI = yes
+
+	modifier = { local_manpower = -0.0015 local_levy_size_modifier = -0.01 }
 
 	city = no
 	town = no
@@ -336,8 +380,12 @@ INJECT:jurchen_barracks = {
 	woodland_town = yes
 }
 
+# Reduced: local_manpower 0.01 → 0.005
+
 INJECT:thema_headquarters = {
 	important_for_AI = yes
+
+	modifier = { local_manpower = -0.005 local_levy_size_modifier = -0.05 }
 
 	city = no
 	town = no
@@ -357,6 +405,8 @@ INJECT:thema_headquarters = {
 
 INJECT:city_guard = {
 	important_for_AI = yes
+
+	modifier = { local_levy_size_modifier = -0.15 }
 
 	city = no
 	town = no
@@ -793,6 +843,8 @@ REPLACE:naval_supplies_mill = {
 
 # @sul-diff: ~+ dce3
 
+# Reduced: local_sailors 0.016 → 0.012
+
 REPLACE:dock = {
 	is_foreign = no
 	max_levels = 1
@@ -832,7 +884,7 @@ REPLACE:dock = {
 
 	modifier = {
 		max_ships_built_at_same_time = 1
-		local_sailors = 0.016
+		local_sailors = 0.012
 		can_build_ships_in_this_location = yes
 		harbor_suitability = 0.1
 		local_repair_speed = 0.02
@@ -846,6 +898,8 @@ REPLACE:dock = {
 # @sul-diff: ~+ dce3
 
 # @sul-diff: ~+ dce3
+
+# Reduced: local_sailors 0.032 → 0.020
 
 REPLACE:dry_dock = {
 	is_foreign = no
@@ -887,7 +941,7 @@ REPLACE:dry_dock = {
 
 	modifier = {
 		max_ships_built_at_same_time = 2
-		local_sailors = 0.032
+		local_sailors = 0.020
 		can_build_ships_in_this_location = yes
 		harbor_suitability = 0.15
 		local_repair_speed = 0.04
@@ -901,6 +955,8 @@ REPLACE:dry_dock = {
 # @sul-diff: ~+ dce3
 
 # @sul-diff: ~+ dce3
+
+# Reduced: local_sailors 0.064 → 0.030
 
 REPLACE:shipyard = {
 	is_foreign = no
@@ -942,7 +998,7 @@ REPLACE:shipyard = {
 
 	modifier = {
 		max_ships_built_at_same_time = 4
-		local_sailors = 0.064
+		local_sailors = 0.030
 		can_build_ships_in_this_location = yes
 		harbor_suitability = 0.2
 		local_repair_speed = 0.06
@@ -956,6 +1012,8 @@ REPLACE:shipyard = {
 # @sul-diff: ~+ dce3
 
 # @sul-diff: ~+ dce3
+
+# Reduced: local_sailors 0.125 → 0.045
 
 REPLACE:grand_shipyard = {
 	is_foreign = no
@@ -997,7 +1055,7 @@ REPLACE:grand_shipyard = {
 
 	modifier = {
 		max_ships_built_at_same_time = 8
-		local_sailors = 0.125
+		local_sailors = 0.045
 		can_build_ships_in_this_location = yes
 		harbor_suitability = 0.25
 		local_repair_speed = 0.08
@@ -1011,6 +1069,8 @@ REPLACE:grand_shipyard = {
 # @sul-diff: ~+ dce3
 
 # @sul-diff: ~+ dce3
+
+# Reduced: local_sailors 0.200 → 0.060
 
 REPLACE:naval_base = {
 	is_foreign = no
@@ -1052,7 +1112,7 @@ REPLACE:naval_base = {
 
 	modifier = {
 		max_ships_built_at_same_time = 12
-		local_sailors = 0.2
+		local_sailors = 0.060
 		can_build_ships_in_this_location = yes
 		harbor_suitability = 0.3
 		local_navy_attrition = -1
@@ -1117,7 +1177,7 @@ REPLACE:protected_harbor = {
 # Bailiff: add local levy mustering (vanilla has no manpower)
 
 INJECT:bailiff = {
-	modifier = { local_manpower = 0.002 }
+	modifier = { local_manpower = 0.001 local_levy_size_modifier = -0.01 }
 
 	city = no
 	town = no
@@ -1170,6 +1230,100 @@ INJECT:wharf = {
 # @sul-diff: ~~~+ 6f9a
 
 # @sul-diff: ~~~+ 6f9a
+
+# Manpower rebalance: halve vanilla values, add levy size penalty (-1% per manpower)
+
+# Reduced: local_manpower 0.005 → 0.0025
+
+INJECT:korean_barracks = {
+	modifier = { local_manpower = -0.0025 local_levy_size_modifier = -0.025 }
+}
+
+# Reduced: local_manpower 0.0025 → 0.001 (minimum)
+
+INJECT:provincial_garrison = {
+	modifier = { local_manpower = -0.0015 local_levy_size_modifier = -0.01 }
+}
+
+# Reduced: local_manpower 0.01 → 0.005
+
+INJECT:nobles_recruitment_center = {
+	modifier = { local_manpower = -0.005 local_levy_size_modifier = -0.05 }
+
+	on_built = {
+		location = { add_to_variable_list = { name = sul_epbm_buildings target = prev } }
+		sul_epbm_on_building_built = yes
+	}
+
+	on_destroyed = {
+		location = { remove_list_variable = { name = sul_epbm_buildings target = prev } }
+		sul_epbm_on_building_destroyed = yes
+	}
+}
+
+# Reduced: local_manpower 0.01 → 0.005
+
+INJECT:warrior_monks_training_grounds = {
+	modifier = { local_manpower = -0.005 local_levy_size_modifier = -0.05 }
+
+	on_built = {
+		location = { add_to_variable_list = { name = sul_epbm_buildings target = prev } }
+		sul_epbm_on_building_built = yes
+	}
+
+	on_destroyed = {
+		location = { remove_list_variable = { name = sul_epbm_buildings target = prev } }
+		sul_epbm_on_building_destroyed = yes
+	}
+}
+
+# Vanilla: local_manpower 0.001 (at minimum, no reduction)
+
+INJECT:peasants_training_grounds = {
+	modifier = { local_levy_size_modifier = -0.01 }
+}
+
+# Reduced: local_manpower 0.01 → 0.005 (event-only)
+
+INJECT:cantonments = {
+	modifier = { local_manpower = -0.005 local_levy_size_modifier = -0.05 }
+}
+
+# Reduced: local_manpower 0.02 → 0.01 (event-only)
+
+INJECT:enderun_academy = {
+	modifier = { local_manpower = -0.01 local_levy_size_modifier = -0.10 }
+}
+
+# Reduced: local_manpower 0.012 → 0.006 (event-only)
+
+INJECT:segovia_artillery_academy = {
+	modifier = { local_manpower = -0.006 local_levy_size_modifier = -0.06 }
+}
+
+# Reduced: local_manpower 0.02 → 0.01 (capital building)
+
+INJECT:order_headquarters = {
+	modifier = { local_manpower = -0.01 local_levy_size_modifier = -0.10 }
+}
+
+# Reduced: local_manpower 0.2 → 0.1 (capital building)
+
+INJECT:war_college = {
+	modifier = { local_manpower = -0.1 local_levy_size_modifier = -1.0 }
+}
+
+# Reduced: manpower_to_building_owner 0.005 → 0.0025
+
+INJECT:trade_company_governance = {
+	modifier = { manpower_to_building_owner = -0.0025 local_levy_size_modifier = -0.025 }
+}
+
+# Vanilla: local_manpower 0.001 (at minimum, no reduction)
+
+INJECT:pirate_tavern = {
+	modifier = { local_levy_size_modifier = -0.01 }
+}
 
 REPLACE:local_governor = {
 	is_foreign = no

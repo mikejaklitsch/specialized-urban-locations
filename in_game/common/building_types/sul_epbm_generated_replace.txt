@@ -2,27 +2,28 @@
 # REPLACE blocks for buildings with existing on_built/on_destroyed hooks
 
 # monastery uses monastery_maintenance (REPLACE due to existing on_built)
+
 REPLACE:monastery = {
 	is_foreign = no
 	max_levels = 1
 	pop_type = clergy
-	
+
 	employment_size = large_religious_building_employment
-	
+
 	category = religious_category
-	
+
 	rural_settlement = yes
 	town = yes
 	city = yes
-	
+
 	build_time = religious_building_time
+
 	graphical_tags = { medium_religious }
-	
-	
+
 	country_potential = {
 		modifier:can_have_monasteries = yes
 	}
-	
+
 	possible_production_methods = {
 		monastery_maintenance
 		hab_reformed_monastery_maintenance
@@ -31,33 +32,30 @@ REPLACE:monastery = {
 		dual_nature_maintenance
 		separate_nature_maintenance
 	}
-	
+
 	on_built = {
 		if = {
 			limit = {
-				location.owner = { 
-					religion = { has_sects = yes }
-					is_member_of_international_organization_of_type = { type = sect }
-				}
+				location.owner = { religion = { has_sects = yes } is_member_of_international_organization_of_type = { type = sect } }
 			}
 			location.owner = {
 				random_international_organizations_member_of = {
-					limit = { 
+					limit = {
 						international_organization_type = international_organization_type:sect
-						NOT = {	any_international_organization_enemy = { this = root.owner } }
+						NOT = { any_international_organization_enemy = { this = root.owner } }
 						NOT = { has_location = root.location }
 					}
 					add_location_to_international_organization = root.location
 				}
 			}
 		}
-	
+
 		location = { add_to_variable_list = { name = sul_epbm_buildings target = prev } }
 		sul_epbm_on_building_built = yes
 	}
 
 	construction_demand = town_building_construction
-	
+
 	modifier = {
 		local_clergy_food_consumption = 0.1
 		local_clergy_max_literacy = 10
@@ -68,4 +66,4118 @@ REPLACE:monastery = {
 		location = { remove_list_variable = { name = sul_epbm_buildings target = prev } }
 		sul_epbm_on_building_destroyed = yes
 	}
+}
+
+# ablaq_palace produces silk (GDP-only REPLACE)
+
+REPLACE:ablaq_palace = {
+	is_special = yes
+	is_foreign = no
+	pop_type = burghers
+	max_levels = 5
+
+	category = government_category
+
+	employment_size = generic_burgher_employment
+
+	town = yes
+	city = yes
+
+	build_time = generic_event_building
+
+	country_potential = {
+		custom_tooltip = { text = unlocked_ablaq_palace_tt has_variable = enable_ablaq_palace_variable }
+	}
+
+	location_potential = {
+		is_capital = yes
+		this = location:cairo
+	}
+
+	construction_demand = guild_construction
+
+	possible_production_methods = { ablaq_palace_maintenance }
+
+	capital_country_modifier = { monthly_legitimacy = 0.02 global_silk_output_modifier = 0.025 }
+
+	modifier = { local_cloth_output_modifier = 0.05 }
+
+	custom_tags = { unique_palace }
+
+	on_built = { sul_gdp_on_building_built = yes }
+
+	on_destroyed = { sul_gdp_on_building_destroyed = yes }
+}
+
+# apothecary produces medicaments (GDP-only REPLACE)
+
+REPLACE:apothecary = {
+	is_foreign = no
+	pop_type = burghers
+	max_levels = guild_max_level
+
+	category = basic_industry_category
+
+	employment_size = guild_employment
+
+	town = yes
+	city = yes
+
+	build_time = guild_build_time
+
+	unique_production_methods = {
+		natural_medicine_apotechary = {
+			wild_game = 0.05
+			fiber_crops = 0.2
+
+			produced = medicaments
+			output = 0.5
+
+			debug_max_profit = 0.15
+			category = guild_input
+		}
+		ancient_medicine_apotechary = {
+			mercury = 0.02
+			ivory = 0.1
+
+			produced = medicaments
+			output = 0.5
+
+			debug_max_profit = 0.15
+			category = guild_input
+		}
+	}
+
+	construction_demand = guild_construction
+
+	on_built = { sul_gdp_on_building_built = yes }
+
+	on_destroyed = { sul_gdp_on_building_destroyed = yes }
+}
+
+# beer_workshop produces beer (GDP-only REPLACE)
+
+REPLACE:beer_workshop = {
+	is_foreign = no
+	pop_type = burghers
+	max_levels = workshop_max_level
+
+	category = consumer_goods_category
+
+	employment_size = workshop_employment
+
+	town = yes
+	city = yes
+
+	build_time = workshop_build_time
+
+	unique_production_methods = {
+		wheat_beer_workshop_maintenance = {
+			wheat = 1.0
+			lumber = 0.25
+			tools = 0.1
+
+			produced = beer
+			output = 1.1
+
+			debug_max_profit = 0.6
+
+			category = workshop_input
+		}
+
+		millet_beer_workshop_maintenance = {
+			millet = 1.0
+			lumber = 0.25
+			tools = 0.1
+
+			produced = beer
+			output = 1.1
+			debug_max_profit = 0.6
+
+			category = workshop_input
+		}
+
+		fruit_beer_workshop_maintenance = {
+			fruit = 1
+			lumber = 0.2
+			tools = 0.1
+
+			produced = beer
+			output = 1.1
+
+			debug_max_profit = 0.6
+
+			category = workshop_input
+		}
+
+		maize_beer_workshop_maintenance = {
+			maize = 1.3
+			pottery = 0.3
+
+			produced = beer
+			output = 1.1
+
+			debug_max_profit = 0.6
+			category = workshop_input
+		}
+
+		bavarian_beer_workshop_maintenance = {
+			wheat = 1.1
+			lumber = 0.2
+			tools = 0.1
+
+			produced = beer
+			output = 1.3
+
+			category = workshop_input
+			debug_max_profit = 0.6
+		}
+
+		honey_beer_workshop_maintenance = {
+			beeswax = 0.25
+			millet = 0.5
+			lumber = 0.2
+			tools = 0.1
+
+			produced = beer
+			output = 1.1
+
+			debug_max_profit = 0.6
+
+			category = workshop_input
+		}
+	}
+
+	obsolete = brewery
+
+	custom_tags = { workshop }
+
+	construction_demand = workshop_construction
+
+	on_built = { sul_gdp_on_building_built = yes }
+
+	on_destroyed = { sul_gdp_on_building_destroyed = yes }
+}
+
+# brewery produces beer (GDP-only REPLACE)
+
+REPLACE:brewery = {
+	is_foreign = no
+	pop_type = burghers
+	max_levels = guild_max_level
+
+	category = consumer_goods_category
+
+	employment_size = guild_employment
+
+	town = yes
+	city = yes
+
+	build_time = guild_build_time
+
+	unique_production_methods = {
+		wheat_brewery_maintenance = {
+			wheat = 1.0
+			lumber = 0.25
+			tools = 0.1
+
+			produced = beer
+			output = 1
+
+			category = guild_input
+		}
+
+		millet_brewery_maintenance = {
+			millet = 1.0
+			lumber = 0.25
+			tools = 0.1
+
+			produced = beer
+			output = 1
+
+			category = guild_input
+		}
+
+		fruit_brewery_maintenance = {
+			fruit = 1
+			lumber = 0.2
+			tools = 0.1
+
+			produced = beer
+			output = 1
+
+			category = guild_input
+		}
+
+		maize_brewery_maintenance = {
+			maize = 1.4
+			pottery = 0.3
+
+			produced = beer
+			output = 1
+			category = guild_input
+		}
+
+		bavarian_brewery_maintenance = {
+			wheat = 1.2
+			lumber = 0.2
+			tools = 0.1
+
+			produced = beer
+			output = 1.2
+
+			category = guild_input
+			debug_max_profit = 0.4
+		}
+
+		honey_brewery_maintenance = {
+			beeswax = 0.25
+			millet = 0.5
+			lumber = 0.2
+			tools = 0.1
+
+			produced = beer
+			output = 1
+
+			category = guild_input
+		}
+	}
+
+	custom_tags = { guild }
+
+	construction_demand = guild_construction
+
+	on_built = { sul_gdp_on_building_built = yes }
+
+	on_destroyed = { sul_gdp_on_building_destroyed = yes }
+}
+
+# brewery_manufactory produces beer (GDP-only REPLACE)
+
+REPLACE:brewery_manufactory = {
+	is_foreign = no
+	pop_type = burghers
+	max_levels = manufactory_max_level
+
+	category = consumer_goods_category
+
+	employment_size = manufactory_employment
+
+	town = yes
+	city = yes
+
+	build_time = manufactory_build_time
+
+	obsolete = beer_workshop
+
+	unique_production_methods = {
+		brewery_manufactory_maintenance = {
+			lumber = 0.3
+			wheat = 2.0
+			tools = 0.15
+
+			produced = beer
+			output = 2
+
+			debug_max_profit = 0.75
+
+			category = manufactory_input
+		}
+	}
+
+	custom_tags = { midgame_manufactory }
+
+	construction_demand = manufactory_construction
+
+	on_built = { sul_gdp_on_building_built = yes }
+
+	on_destroyed = { sul_gdp_on_building_destroyed = yes }
+}
+
+# brewery_mill produces beer (GDP-only REPLACE)
+
+REPLACE:brewery_mill = {
+	is_foreign = no
+	pop_type = laborers
+	max_levels = mills_max_level
+
+	category = consumer_goods_category
+
+	employment_size = mills_employment
+
+	town = yes
+	city = yes
+
+	build_time = mills_build_time
+
+	obsolete = brewery_manufactory
+
+	unique_production_methods = {
+		brewery_mill_maintenance = {
+			lumber = 0.4
+			wheat = 3.5
+			tools = 0.2
+
+			produced = beer
+			output = 4
+
+			debug_max_profit = 1.0
+
+			category = mills_input
+		}
+	}
+
+	custom_tags = { lategame_manufactory }
+
+	construction_demand = mill_construction
+
+	on_built = { sul_gdp_on_building_built = yes }
+
+	on_destroyed = { sul_gdp_on_building_destroyed = yes }
+}
+
+# cannon_foundry produces cannons (GDP-only REPLACE)
+
+REPLACE:cannon_foundry = {
+	is_foreign = no
+	pop_type = burghers
+	max_levels = manufactory_max_level # Mass Production
+
+	category = weapons_industry_category
+
+	employment_size = manufactory_employment
+
+	town = yes
+	city = yes
+
+	build_time = manufactory_build_time
+
+	obsolete = cannon_workshop
+
+	unique_production_methods = {
+		cannon_foundry_maintenance = {
+			tools = 0.4
+			lead = 0.3
+
+			# Gunpowder
+			saltpeter = 0.5
+
+			# Bronze
+			copper = 0.5
+			tin = 0.25
+
+			produced = cannons
+			output = 2.0
+
+			debug_max_profit = 0.75
+			category = manufactory_input
+		}
+	}
+
+	custom_tags = { midgame_manufactory }
+
+	construction_demand = mill_construction
+
+	on_built = { sul_gdp_on_building_built = yes }
+
+	on_destroyed = { sul_gdp_on_building_destroyed = yes }
+}
+
+# cannon_maker produces cannons (GDP-only REPLACE)
+
+REPLACE:cannon_maker = {
+	is_foreign = no
+	pop_type = burghers
+	max_levels = guild_max_level
+
+	category = weapons_industry_category
+
+	employment_size = guild_employment
+
+	town = yes
+	city = yes
+
+	build_time = guild_build_time
+
+	unique_production_methods = {
+		cannon_maker_lumber_maintenance = {
+			# Wood
+			lumber = 0.12
+			iron = 0.045
+			tools = 0.02
+
+			produced = cannons
+			output = 0.1
+
+			category = guild_input
+
+			debug_max_profit = 0.1
+		}
+
+		cannon_maker_bronze_maintenance = {
+			# Bronze
+			copper = 0.5
+			tin = 0.1
+			tools = 0.5
+
+			produced = cannons
+			output = 1
+
+			category = guild_input
+		}
+
+		cannon_maker_iron_maintenance = {
+			# Wrought Iron
+			iron = 0.6
+			tools = 0.5
+
+			produced = cannons
+			output = 1
+
+			category = guild_input
+		}
+	}
+
+	unique_production_methods = {
+		cannon_maker_ammunition_stone_maintenance = {
+			stone = 0.1
+			saltpeter = 0.1
+			produced = cannons
+			output = 0.087
+
+			category = guild_input
+		}
+
+		cannon_maker_ammunition_lead_maintenance = {
+			lead = 0.1
+			saltpeter = 0.1
+			produced = cannons
+			output = 0.12
+
+			category = guild_input
+		}
+
+		cannon_maker_ammunition_iron_maintenance = {
+			iron = 0.1
+			saltpeter = 0.1
+			produced = cannons
+			output = 0.16
+
+			category = guild_input
+		}
+	}
+
+	construction_demand = guild_construction
+
+	on_built = { sul_gdp_on_building_built = yes }
+
+	on_destroyed = { sul_gdp_on_building_destroyed = yes }
+}
+
+# cannon_workshop produces cannons (GDP-only REPLACE)
+
+REPLACE:cannon_workshop = {
+	is_foreign = no
+	pop_type = burghers
+	max_levels = workshop_max_level
+
+	category = weapons_industry_category
+
+	employment_size = workshop_employment
+
+	obsolete = cannon_maker
+
+	town = yes
+	city = yes
+
+	build_time = workshop_build_time
+
+	unique_production_methods = {
+		cannon_workshop_bronze_maintenance = {
+			# Bronze
+			copper = 0.8
+			tin = 0.2
+			tools = 0.1
+
+			produced = cannons
+			output = 1.1
+
+			debug_max_profit = 0.5
+
+			category = workshop_input
+		}
+		cannon_workshop_iron_maintenance = {
+			# Wrought Iron
+			iron = 0.9
+			tools = 0.1
+
+			produced = cannons
+			output = 1.1
+
+			debug_max_profit = 0.5
+
+			category = workshop_input
+		}
+	}
+
+	unique_production_methods = {
+		cannon_workshop_ammunition_stone_maintenance = {
+			stone = 0.1
+			saltpeter = 0.1
+			produced = cannons
+			output = 0.1
+
+			debug_max_profit = 0.5
+
+			category = workshop_input
+		}
+
+		cannon_workshop_ammunition_lead_maintenance = {
+			lead = 0.1
+			saltpeter = 0.1
+			produced = cannons
+			output = 0.15
+
+			debug_max_profit = 0.5
+
+			category = workshop_input
+		}
+
+		cannon_workshop_ammunition_iron_maintenance = {
+			iron = 0.12
+			saltpeter = 0.1
+			produced = cannons
+			output = 0.2
+
+			debug_max_profit = 0.5
+
+			category = workshop_input
+		}
+	}
+
+	custom_tags = { workshop }
+
+	construction_demand = workshop_construction
+
+	on_built = { sul_gdp_on_building_built = yes }
+
+	on_destroyed = { sul_gdp_on_building_destroyed = yes }
+}
+
+# cannons_factory produces cannons (GDP-only REPLACE)
+
+REPLACE:cannons_factory = {
+	is_foreign = no
+	pop_type = laborers
+	max_levels = manufactory_max_level
+
+	category = weapons_industry_category
+	employment_size = mills_employment
+
+	town = yes
+	city = yes
+
+	build_time = mills_build_time
+
+	obsolete = cannon_foundry
+
+	unique_production_methods = {
+		gun_factory_maintenance = {
+			steel = 1.5
+
+			lead = 0.3 # Ammunition
+
+			# Gunpowder
+			saltpeter = 0.5
+
+			produced = cannons
+			output = 4
+
+			debug_max_profit = 1.0
+
+			category = mills_input
+		}
+	}
+
+	custom_tags = { lategame_manufactory }
+
+	construction_demand = mill_construction
+
+	on_built = { sul_gdp_on_building_built = yes }
+
+	on_destroyed = { sul_gdp_on_building_destroyed = yes }
+}
+
+# charcoal_maker produces coal (GDP-only REPLACE)
+
+REPLACE:charcoal_maker = {
+	is_foreign = no
+	pop_type = laborers
+	max_levels = rural_building_cap
+
+	employment_size = rural_peasant_produce_employment
+
+	category = rgo_building_category
+
+	rural_settlement = yes
+
+	build_time = rural_build_time
+
+	unique_production_methods = {
+		char_coal_maintenance = {
+			produced = coal
+			output = 0.8
+
+			debug_max_profit = 0.4
+
+			lumber = 0.8
+			category = guild_input
+		}
+	}
+
+	construction_demand = guild_construction
+
+	on_built = { sul_gdp_on_building_built = yes }
+
+	on_destroyed = { sul_gdp_on_building_destroyed = yes }
+}
+
+# cloth_guild produces cloth (GDP-only REPLACE)
+
+REPLACE:cloth_guild = {
+	is_foreign = no
+	pop_type = burghers
+	max_levels = guild_max_level
+
+	category = consumer_goods_category
+
+	employment_size = guild_employment
+
+	town = yes
+	city = yes
+
+	build_time = guild_build_time
+
+	unique_production_methods = {
+		cotton_cloth_guild_maintenance = {
+			cotton = 0.8
+
+			produced = cloth
+			output = 1
+
+			category = guild_input
+		}
+
+		wool_cloth_guild_maintenance = {
+			wool = 2.0
+
+			produced = cloth
+			output = 1
+
+			category = guild_input
+		}
+
+		fiber_crops_cloth_guild_maintenance = {
+			fiber_crops = 1.0
+
+			produced = cloth
+			output = 0.8
+
+			category = guild_input
+		}
+	}
+
+	construction_demand = guild_construction
+
+	custom_tags = { guild }
+
+	modifier = {  }
+
+	on_built = { sul_gdp_on_building_built = yes }
+
+	on_destroyed = { sul_gdp_on_building_destroyed = yes }
+}
+
+# cloth_manufactory produces cloth (GDP-only REPLACE)
+
+REPLACE:cloth_manufactory = {
+	is_foreign = no
+	pop_type = burghers
+	max_levels = manufactory_max_level
+
+	category = consumer_goods_category
+
+	employment_size = manufactory_employment
+
+	town = yes
+	city = yes
+
+	obsolete = cloth_workshop
+
+	build_time = manufactory_build_time
+
+	unique_production_methods = {
+		wool_cloth_manufactory_maintenance = {
+			wool = 2.4
+			dyes = 0.11
+			produced = cloth
+			output = 2
+
+			category = guild_input
+			debug_max_profit = 0.75
+		}
+
+		cotton_cloth_manufactory_maintenance = {
+			produced = cloth
+			output = 2
+			cotton = 1.0
+			dyes = 0.11
+
+			category = guild_input
+			debug_max_profit = 0.75
+		}
+
+		fiber_crops_cloth_manufactory_maintenance = {
+			produced = cloth
+			fiber_crops = 1.8
+			dyes = 0.05
+			output = 2
+
+			category = guild_input
+			debug_max_profit = 0.75
+		}
+	}
+
+	custom_tags = { midgame_manufactory }
+
+	construction_demand = guild_construction
+
+	on_built = { sul_gdp_on_building_built = yes }
+
+	on_destroyed = { sul_gdp_on_building_destroyed = yes }
+}
+
+# cloth_workshop produces cloth (GDP-only REPLACE)
+
+REPLACE:cloth_workshop = {
+	is_foreign = no
+	pop_type = burghers
+	max_levels = workshop_max_level
+
+	category = consumer_goods_category
+
+	employment_size = workshop_employment
+
+	obsolete = cloth_guild
+
+	town = yes
+	city = yes
+
+	build_time = workshop_build_time
+
+	unique_production_methods = {
+		cotton_cloth_workshop_maintenance = {
+			cotton = 0.8
+
+			produced = cloth
+			output = 1.1
+
+			debug_max_profit = 0.6
+
+			category = workshop_input
+		}
+
+		wool_cloth_workshop_maintenance = {
+			wool = 2.0
+
+			produced = cloth
+			output = 1.1
+
+			debug_max_profit = 0.6
+			category = workshop_input
+		}
+
+		fiber_crops_cloth_workshop_maintenance = {
+			fiber_crops = 1.0
+
+			produced = cloth
+			output = 0.9
+
+			category = workshop_input
+			debug_max_profit = 0.6
+		}
+	}
+
+	construction_demand = workshop_construction
+
+	custom_tags = { workshop }
+
+	modifier = {  }
+
+	on_built = { sul_gdp_on_building_built = yes }
+
+	on_destroyed = { sul_gdp_on_building_destroyed = yes }
+}
+
+# distiller_manufactory produces liquor (GDP-only REPLACE)
+
+REPLACE:distiller_manufactory = {
+	is_foreign = no
+	pop_type = burghers
+	max_levels = manufactory_max_level
+
+	category = consumer_goods_category
+
+	employment_size = manufactory_employment
+
+	town = yes
+	city = yes
+
+	build_time = manufactory_build_time
+
+	obsolete = distillers_workshop
+
+	unique_production_methods = {
+		sugar_distillery_maintenance = {
+			sugar = 1.0
+			pottery = 0.1
+			glass = 0.2
+
+			produced = liquor
+			output = 2
+
+			category = manufactory_input
+
+			debug_max_profit = 0.75
+		}
+
+		rice_distillery_maintenance = {
+			rice = 3.0
+			pottery = 0.1
+			glass = 0.2
+
+			produced = liquor
+			output = 2
+
+			category = manufactory_input
+			debug_max_profit = 0.75
+		}
+
+		potato_distillery_maintenance = {
+			potato = 3.0
+			pottery = 0.1
+			glass = 0.2
+
+			produced = liquor
+			output = 2
+
+			category = manufactory_input
+			debug_max_profit = 0.75
+		}
+
+		wheat_distillery_maintenance = {
+			pottery = 0.1
+			wheat = 3.0
+			glass = 0.2
+			produced = liquor
+			output = 2
+
+			category = manufactory_input
+			debug_max_profit = 0.75
+		}
+
+		scottish_whisky_distillery_maintenance = {
+			millet = 3.0
+			pottery = 0.1
+			glass = 0.2
+
+			produced = liquor
+			output = 2
+
+			category = manufactory_input
+			debug_max_profit = 0.75
+		}
+	}
+
+	custom_tags = { midgame_manufactory }
+
+	construction_demand = manufactory_construction
+
+	on_built = { sul_gdp_on_building_built = yes }
+
+	on_destroyed = { sul_gdp_on_building_destroyed = yes }
+}
+
+# distiller_mill produces liquor (GDP-only REPLACE)
+
+REPLACE:distiller_mill = {
+	is_foreign = no
+	pop_type = laborers
+	max_levels = mills_max_level
+
+	category = consumer_goods_category
+
+	employment_size = mills_employment
+
+	town = yes
+	city = yes
+
+	build_time = mills_build_time
+
+	obsolete = distiller_manufactory
+
+	unique_production_methods = {
+		sugar_distillery_mill_maintenance = {
+			sugar = 1.8
+			pottery = 0.1
+			glass = 0.4
+
+			produced = liquor
+			output = 4
+
+			category = mills_input
+
+			debug_max_profit = 1.0
+		}
+
+		rice_distillery_mill_maintenance = {
+			rice = 4.1
+			pottery = 0.1
+			glass = 0.4
+
+			produced = liquor
+			output = 4
+
+			category = mills_input
+			debug_max_profit = 1.0
+		}
+
+		potato_distillery_mill_maintenance = {
+			potato = 4.25
+			pottery = 0.1
+			glass = 0.4
+
+			produced = liquor
+			output = 4
+
+			category = mills_input
+			debug_max_profit = 1.0
+		}
+
+		wheat_distillery_mill_maintenance = {
+			pottery = 0.1
+			wheat = 4.25
+			glass = 0.4
+			produced = liquor
+			output = 4
+
+			category = mills_input
+			debug_max_profit = 1.0
+		}
+
+		scottish_whisky_distillery_mill_maintenance = {
+			millet = 4.0
+			pottery = 0.1
+			glass = 0.4
+
+			produced = liquor
+			output = 4
+
+			category = mills_input
+			debug_max_profit = 1.1
+		}
+	}
+
+	custom_tags = { lategame_manufactory }
+
+	construction_demand = mill_construction
+
+	on_built = { sul_gdp_on_building_built = yes }
+
+	on_destroyed = { sul_gdp_on_building_destroyed = yes }
+}
+
+# distillers_guild produces liquor (GDP-only REPLACE)
+
+REPLACE:distillers_guild = {
+	is_foreign = no
+	pop_type = burghers
+	max_levels = guild_max_level
+
+	category = consumer_goods_category
+
+	employment_size = guild_employment
+
+	town = yes
+	city = yes
+
+	build_time = guild_build_time
+	construction_demand = guild_construction
+
+	unique_production_methods = {
+		sugar_liquor_guild_maintenance = {
+			sugar = 0.6
+			pottery = 0.1
+			glass = 0.1
+
+			produced = liquor
+			output = 1
+
+			category = guild_input
+		}
+
+		rice_liquor_guild_maintenance = {
+			rice = 1.75
+			pottery = 0.1
+			glass = 0.1
+
+			produced = liquor
+			output = 1
+
+			category = guild_input
+		}
+
+		potato_liquor_guild_maintenance = {
+			potato = 1.75
+			pottery = 0.1
+			glass = 0.1
+
+			produced = liquor
+			output = 1
+
+			category = guild_input
+		}
+
+		wheat_liquor_guild_maintenance = {
+			wheat = 1.75
+			pottery = 0.1
+			glass = 0.1
+
+			produced = liquor
+			output = 1
+
+			category = guild_input
+		}
+
+		beer_liquor_guild_maintenance = {
+			beer = 0.85
+			pottery = 0.1
+			glass = 0.1
+
+			produced = liquor
+			output = 1
+
+			category = guild_input
+		}
+
+		wine_liquor_guild_maintenance = {
+			wine = 0.85
+			pottery = 0.1
+			glass = 0.1
+
+			produced = liquor
+			output = 1
+
+			category = guild_input
+		}
+	}
+
+	custom_tags = { guild }
+
+	on_built = { sul_gdp_on_building_built = yes }
+
+	on_destroyed = { sul_gdp_on_building_destroyed = yes }
+}
+
+# distillers_workshop produces liquor (GDP-only REPLACE)
+
+REPLACE:distillers_workshop = {
+	is_foreign = no
+	pop_type = burghers
+	max_levels = workshop_max_level
+
+	category = consumer_goods_category
+
+	employment_size = workshop_employment
+
+	town = yes
+	city = yes
+
+	build_time = workshop_build_time
+	construction_demand = workshop_construction
+
+	unique_production_methods = {
+		sugar_liquor_workshop_maintenance = {
+			sugar = 0.6
+			pottery = 0.1
+			glass = 0.1
+
+			produced = liquor
+			output = 1.1
+
+			debug_max_profit = 0.6
+
+			category = workshop_input
+		}
+
+		rice_liquor_workshop_maintenance = {
+			rice = 1.75
+			pottery = 0.1
+			glass = 0.1
+
+			produced = liquor
+			output = 1.1
+
+			debug_max_profit = 0.6
+
+			category = workshop_input
+		}
+
+		potato_liquor_workshop_maintenance = {
+			potato = 1.75
+			pottery = 0.1
+			glass = 0.1
+
+			produced = liquor
+			output = 1.1
+
+			debug_max_profit = 0.6
+
+			category = workshop_input
+		}
+
+		wheat_liquor_workshop_maintenance = {
+			wheat = 1.75
+			pottery = 0.1
+			glass = 0.1
+
+			produced = liquor
+			output = 1.1
+
+			debug_max_profit = 0.6
+
+			category = workshop_input
+		}
+
+		beer_liquor_workshop_maintenance = {
+			beer = 0.85
+			pottery = 0.1
+			glass = 0.1
+
+			produced = liquor
+			output = 1.1
+
+			debug_max_profit = 0.6
+
+			category = workshop_input
+		}
+
+		wine_liquor_workshop_maintenance = {
+			wine = 0.85
+			pottery = 0.1
+			glass = 0.1
+
+			produced = liquor
+			output = 1.1
+
+			debug_max_profit = 0.6
+
+			category = workshop_input
+		}
+	}
+
+	custom_tags = { workshop }
+
+	obsolete = distillers_guild
+
+	on_built = { sul_gdp_on_building_built = yes }
+
+	on_destroyed = { sul_gdp_on_building_destroyed = yes }
+}
+
+# dyes_guild produces dyes (GDP-only REPLACE)
+
+REPLACE:dyes_guild = {
+	is_foreign = no
+	pop_type = burghers
+	max_levels = guild_max_level
+
+	category = basic_industry_category
+
+	employment_size = guild_employment
+
+	town = yes
+	city = yes
+
+	build_time = guild_build_time
+
+	unique_production_methods = {
+		dyes_guild_maintenance = {
+			lumber = 0.45
+
+			produced = dyes
+			output = 0.2
+
+			category = guild_input
+		}
+		alum_dyes_guild_maintenance = {
+			alum = 0.02
+			lumber = 0.6
+
+			produced = dyes
+			output = 0.3
+
+			debug_max_profit = 0.4		# better one
+			category = guild_input
+		}
+	}
+
+	construction_demand = guild_construction
+
+	on_built = { sul_gdp_on_building_built = yes }
+
+	on_destroyed = { sul_gdp_on_building_destroyed = yes }
+}
+
+# dyes_mill produces dyes (GDP-only REPLACE)
+
+REPLACE:dyes_mill = {
+	is_foreign = no
+	pop_type = laborers
+	max_levels = mills_max_level
+
+	category = basic_industry_category
+
+	employment_size = mills_employment
+
+	town = yes
+	city = yes
+
+	build_time = mills_build_time
+
+	unique_production_methods = {
+		dyesmill_maintenance = {
+			alum = 0.3
+			lumber = 6.0
+
+			produced = dyes
+			output = 4
+
+			debug_max_profit = 1.0
+
+			category = guild_input
+		}
+	}
+
+	obsolete = dyesworks
+
+	construction_demand = manufactory_construction
+
+	on_built = { sul_gdp_on_building_built = yes }
+
+	on_destroyed = { sul_gdp_on_building_destroyed = yes }
+}
+
+# dyes_workshop produces dyes (GDP-only REPLACE)
+
+REPLACE:dyes_workshop = {
+	is_foreign = no
+	pop_type = burghers
+	max_levels = workshop_max_level
+
+	category = basic_industry_category
+
+	employment_size = workshop_employment
+
+	obsolete = dyes_guild
+
+	town = yes
+	city = yes
+
+	build_time = workshop_build_time
+
+	unique_production_methods = {
+		dyes_workshop_maintenance = {
+			alum = 0.05
+			lumber = 0.6
+
+			produced = dyes
+			output = 0.4
+
+			debug_max_profit = 0.6
+			category = workshop_input
+		}
+	}
+
+	construction_demand = workshop_construction
+
+	on_built = { sul_gdp_on_building_built = yes }
+
+	on_destroyed = { sul_gdp_on_building_destroyed = yes }
+}
+
+# dyesworks produces dyes (GDP-only REPLACE)
+
+REPLACE:dyesworks = {
+	is_foreign = no
+	pop_type = burghers
+	max_levels = manufactory_max_level
+
+	category = basic_industry_category
+
+	employment_size = manufactory_employment
+
+	town = yes
+	city = yes
+
+	build_time = manufactory_build_time
+
+	unique_production_methods = {
+		dyesworks_maintenance = {
+			alum = 0.25
+			lumber = 2.6
+
+			produced = dyes
+			output = 2
+
+			debug_max_profit = 0.75
+
+			category = workshop_input
+		}
+	}
+
+	obsolete = dyes_workshop
+
+	construction_demand = manufactory_construction
+
+	on_built = { sul_gdp_on_building_built = yes }
+
+	on_destroyed = { sul_gdp_on_building_destroyed = yes }
+}
+
+# fine_cloth_guild produces fine_cloth (GDP-only REPLACE)
+
+REPLACE:fine_cloth_guild = {
+	is_foreign = no
+	pop_type = burghers
+	max_levels = guild_max_level
+
+	category = consumer_goods_category
+
+	employment_size = guild_employment
+
+	town = yes
+	city = yes
+
+	build_time = guild_build_time
+
+	unique_production_methods = {
+		fine_cloth_guild_maintenance = {
+			cloth = 0.8
+			produced = fine_cloth
+			output = 0.5
+
+			category = guild_input
+		}
+
+		wool_weavers_maintenance = {
+			wool = 2.0
+
+			produced = fine_cloth
+			output = 0.5
+
+			category = guild_input
+		}
+
+		silk_weavers_maintenance = {
+			silk = 0.8
+
+			produced = fine_cloth
+			output = 0.7
+
+			category = guild_input
+			debug_max_profit = 0.35	# its ok to be a bit better..
+		}
+
+		spanish_cloth_maintenance = {
+			allow = {
+				custom_tooltip = { text = has_unlocked_spanish_cloth_industry has_variable = spanish_cloth_industry }
+			}
+
+			wool = 1.6
+
+			produced = fine_cloth
+			output = 0.5
+
+			category = guild_input
+			debug_max_profit = 0.5
+		}
+	}
+
+	unique_production_methods = {
+		base_fine_cloth_guild_maintenance = {
+			produced = fine_cloth
+			dyes = 0.14
+			output = 0.1
+
+			category = guild_input
+
+			debug_max_profit = 0.1		# improvement
+		}
+		alum_fine_cloth_guild_maintenance = {
+			alum = 0.05
+			dyes = 0.2
+			produced = fine_cloth
+			output = 0.2
+
+			category = guild_input
+		}
+	}
+
+	custom_tags = { guild }
+
+	construction_demand = guild_construction
+
+	on_built = { sul_gdp_on_building_built = yes }
+
+	on_destroyed = { sul_gdp_on_building_destroyed = yes }
+}
+
+# fine_cloth_manufactory produces fine_cloth (GDP-only REPLACE)
+
+REPLACE:fine_cloth_manufactory = {
+	is_foreign = no
+	pop_type = burghers
+	max_levels = manufactory_max_level
+
+	category = consumer_goods_category
+
+	employment_size = manufactory_employment
+
+	town = yes
+	city = yes
+
+	obsolete = fine_cloth_workshop
+
+	build_time = manufactory_build_time
+
+	unique_production_methods = {
+		silk_cloth_manufactory_maintenance = {
+			silk = 1.8
+
+			produced = fine_cloth
+			output = 2.0
+
+			category = manufactory_input
+			debug_max_profit = 0.7
+		}
+		fine_cloth_manufactory_maintenance = {
+			produced = fine_cloth
+			cloth = 2.4
+
+			output = 2.0
+			debug_max_profit = 0.7
+
+			category = manufactory_input
+		}
+	}
+
+	unique_production_methods = {
+		base_cloth_manufactory_maintenance = {
+			dyes = 0.25
+
+			produced = fine_cloth
+			output = 0.2
+
+			category = guild_input
+			debug_max_profit = 0.2
+		}
+		alum_fine_cloth_manufactory_maintenance = {
+			produced = fine_cloth
+			output = 0.4
+			dyes = 0.4
+			alum = 0.1
+
+			category = guild_input
+			debug_max_profit = 0.3
+		}
+	}
+
+	custom_tags = { midgame_manufactory }
+
+	construction_demand = guild_construction
+
+	on_built = { sul_gdp_on_building_built = yes }
+
+	on_destroyed = { sul_gdp_on_building_destroyed = yes }
+}
+
+# fine_cloth_mill produces fine_cloth (GDP-only REPLACE)
+
+REPLACE:fine_cloth_mill = {
+	is_foreign = no
+	pop_type = laborers
+	max_levels = mills_max_level
+
+	category = consumer_goods_category
+	employment_size = mills_employment
+
+	town = yes
+	city = yes
+
+	obsolete = fine_cloth_manufactory
+
+	build_time = mills_build_time
+
+	unique_production_methods = {
+		fine_cloth_mill_maintenance = {
+			cloth = 3.7
+			dyes = 0.25
+
+			produced = fine_cloth
+			output = 4
+
+			debug_max_profit = 1.0
+
+			category = mills_input
+		}
+		silk_cloth_mill_maintenance = {
+			silk = 2.8
+			dyes = 0.25
+
+			produced = fine_cloth
+			output = 4
+
+			debug_max_profit = 1.0
+
+			category = mills_input
+		}
+	}
+
+	custom_tags = { lategame_manufactory }
+
+	construction_demand = mill_construction
+
+	on_built = { sul_gdp_on_building_built = yes }
+
+	on_destroyed = { sul_gdp_on_building_destroyed = yes }
+}
+
+# fine_cloth_workshop produces fine_cloth (GDP-only REPLACE)
+
+REPLACE:fine_cloth_workshop = {
+	is_foreign = no
+	pop_type = burghers
+	max_levels = workshop_max_level
+
+	category = consumer_goods_category
+
+	employment_size = workshop_employment
+
+	town = yes
+	city = yes
+
+	build_time = workshop_build_time
+
+	unique_production_methods = {
+		fine_cloth_workshop_maintenance = {
+			cloth = 0.8
+			produced = fine_cloth
+			output = 0.6
+
+			category = workshop_input
+
+			debug_max_profit = 0.6
+		}
+
+		wool_weavers_workshop_maintenance = {
+			wool = 2.0
+
+			produced = fine_cloth
+			output = 0.6
+
+			category = workshop_input
+			debug_max_profit = 0.6
+		}
+
+		silk_weavers_workshop_maintenance = {
+			silk = 0.8
+
+			produced = fine_cloth
+			output = 0.8
+
+			category = workshop_input
+
+			debug_max_profit = 0.6
+		}
+
+		spanish_cloth_workshop_maintenance = {
+			allow = {
+				custom_tooltip = { text = has_unlocked_spanish_cloth_industry has_variable = spanish_cloth_industry }
+			}
+
+			wool = 1.6
+
+			produced = fine_cloth
+			output = 0.6
+
+			debug_max_profit = 0.8
+
+			category = workshop_input
+		}
+	}
+
+	unique_production_methods = {
+		base_fine_cloth_workshop_maintenance = {
+			produced = fine_cloth
+			dyes = 0.14
+			output = 0.12
+
+			category = workshop_input
+		}
+		alum_fine_cloth_workshop_maintenance = {
+			alum = 0.05
+			dyes = 0.26
+			produced = fine_cloth
+			output = 0.25
+
+			category = workshop_input
+		}
+	}
+
+	obsolete = fine_cloth_guild
+
+	custom_tags = { workshop }
+
+	construction_demand = workshop_construction
+
+	on_built = { sul_gdp_on_building_built = yes }
+
+	on_destroyed = { sul_gdp_on_building_destroyed = yes }
+}
+
+# firearms_factory produces firearms (GDP-only REPLACE)
+
+REPLACE:firearms_factory = {
+	is_foreign = no
+	pop_type = laborers
+	max_levels = mills_max_level
+
+	category = weapons_industry_category
+	employment_size = mills_employment
+
+	town = yes
+	city = yes
+
+	build_time = mills_build_time
+
+	obsolete = firearms_manufactory
+
+	unique_production_methods = {
+		firearms_factory_maintenance = {
+			steel = 1
+
+			lead = 0.3 # Ammunition
+
+			# Gunpowder
+			saltpeter = 0.5
+
+			produced = firearms
+			output = 4
+
+			debug_max_profit = 1.0
+
+			category = mills_input
+		}
+	}
+
+	custom_tags = { lategame_manufactory }
+
+	construction_demand = mill_construction
+
+	on_built = { sul_gdp_on_building_built = yes }
+
+	on_destroyed = { sul_gdp_on_building_destroyed = yes }
+}
+
+# firearms_manufactory produces firearms (GDP-only REPLACE)
+
+REPLACE:firearms_manufactory = {
+	is_foreign = no
+	pop_type = burghers
+	max_levels = manufactory_max_level # Mass Production
+
+	category = weapons_industry_category
+
+	employment_size = manufactory_employment
+
+	town = yes
+	city = yes
+
+	obsolete = guns_workshop
+
+	build_time = manufactory_build_time
+
+	unique_production_methods = {
+		firearms_manufactory_maintenance = {
+			lumber = 0.3
+			coal = 0.3
+			iron = 0.8
+
+			lead = 0.1
+			saltpeter = 0.2
+
+			category = manufactory_input
+			produced = firearms
+			output = 2
+			debug_max_profit = 0.75
+		}
+	}
+
+	custom_tags = { midgame_manufactory }
+
+	construction_demand = manufactory_construction
+
+	on_built = { sul_gdp_on_building_built = yes }
+
+	on_destroyed = { sul_gdp_on_building_destroyed = yes }
+}
+
+# furniture_guild produces furniture (GDP-only REPLACE)
+
+REPLACE:furniture_guild = {
+	is_foreign = no
+	pop_type = burghers
+	max_levels = guild_max_level
+
+	category = consumer_goods_category
+
+	employment_size = guild_employment
+
+	town = yes
+	city = yes
+
+	build_time = guild_build_time
+
+	unique_production_methods = {
+		furniture_maintenance = {
+			lumber = 1.0
+			dyes = 0.15
+			tools = 0.15
+
+			produced = furniture
+			output = 1
+
+			category = guild_input
+		}
+	}
+
+	construction_demand = guild_construction
+
+	on_built = { sul_gdp_on_building_built = yes }
+
+	on_destroyed = { sul_gdp_on_building_destroyed = yes }
+}
+
+# furniture_manufactory produces furniture (GDP-only REPLACE)
+
+REPLACE:furniture_manufactory = {
+	is_foreign = no
+	pop_type = burghers
+	max_levels = manufactory_max_level
+
+	category = consumer_goods_category
+
+	employment_size = manufactory_employment
+
+	town = yes
+	city = yes
+
+	build_time = manufactory_build_time
+
+	obsolete = furniture_workshop
+
+	unique_production_methods = {
+		furniture_manufactory_maintenance = {
+			lumber = 1.8
+			dyes = 0.2
+			tools = 0.2
+
+			produced = furniture
+			output = 2.0
+
+			category = manufactory_input
+
+			debug_max_profit = 0.75
+		}
+	}
+
+	construction_demand = manufactory_construction
+
+	on_built = { sul_gdp_on_building_built = yes }
+
+	on_destroyed = { sul_gdp_on_building_destroyed = yes }
+}
+
+# furniture_mill produces furniture (GDP-only REPLACE)
+
+REPLACE:furniture_mill = {
+	is_foreign = no
+	pop_type = laborers
+	max_levels = mills_max_level
+
+	category = consumer_goods_category
+	employment_size = mills_employment
+
+	town = yes
+	city = yes
+
+	obsolete = furniture_manufactory
+
+	build_time = mills_build_time
+
+	unique_production_methods = {
+		furniture_mill_maintenance = {
+			lumber = 3
+			dyes = 0.35
+			tools = 0.35
+
+			produced = furniture
+			output = 4
+
+			debug_max_profit = 1.0
+
+			category = mills_input
+		}
+	}
+
+	construction_demand = mill_construction
+
+	on_built = { sul_gdp_on_building_built = yes }
+
+	on_destroyed = { sul_gdp_on_building_destroyed = yes }
+}
+
+# furniture_workshop produces furniture (GDP-only REPLACE)
+
+REPLACE:furniture_workshop = {
+	is_foreign = no
+	pop_type = burghers
+	max_levels = workshop_max_level
+
+	category = consumer_goods_category
+
+	employment_size = workshop_employment
+
+	town = yes
+	city = yes
+
+	build_time = workshop_build_time
+
+	unique_production_methods = {
+		furniture_workshop_maintenance = {
+			lumber = 1.0
+			dyes = 0.12
+			tools = 0.12
+
+			produced = furniture
+			output = 1.1
+
+			debug_max_profit = 0.6
+
+			category = workshop_input
+		}
+	}
+
+	obsolete = furniture_guild
+
+	construction_demand = workshop_construction
+
+	on_built = { sul_gdp_on_building_built = yes }
+
+	on_destroyed = { sul_gdp_on_building_destroyed = yes }
+}
+
+# glass_mill produces glass (GDP-only REPLACE)
+
+REPLACE:glass_mill = {
+	is_foreign = no
+	pop_type = laborers
+	max_levels = mills_max_level
+
+	category = basic_industry_category
+
+	employment_size = mills_employment
+
+	town = yes
+	city = yes
+
+	build_time = mills_build_time
+
+	unique_production_methods = {
+		glassmill_maintenance = {
+			lumber = 0.2
+			sand = 3.0
+			stone = 0.1
+			tools = 0.5
+			coal = 0.3
+			alum = 0.05
+
+			produced = glass
+			output = 4
+
+			debug_max_profit = 1.0
+
+			category = guild_input
+		}
+	}
+
+	obsolete = glassworks
+
+	custom_tags = { lategame_manufactory }
+
+	construction_demand = manufactory_construction
+
+	on_built = { sul_gdp_on_building_built = yes }
+
+	on_destroyed = { sul_gdp_on_building_destroyed = yes }
+}
+
+# glassworks produces glass (GDP-only REPLACE)
+
+REPLACE:glassworks = {
+	is_foreign = no
+	pop_type = burghers
+	max_levels = manufactory_max_level
+
+	category = basic_industry_category
+
+	employment_size = manufactory_employment
+
+	town = yes
+	city = yes
+
+	build_time = manufactory_build_time
+
+	unique_production_methods = {
+		glassworks_maintenance = {
+			lumber = 0.2
+			sand = 2.0
+			stone = 0.1
+			tools = 0.3
+			coal = 0.2
+			alum = 0.02
+
+			produced = glass
+			output = 2
+
+			debug_max_profit = 0.75
+
+			category = workshop_input
+		}
+	}
+
+	obsolete = glass_workshop
+
+	custom_tags = { midgame_manufactory }
+
+	construction_demand = manufactory_construction
+
+	on_built = { sul_gdp_on_building_built = yes }
+
+	on_destroyed = { sul_gdp_on_building_destroyed = yes }
+}
+
+# gun_smith produces firearms (GDP-only REPLACE)
+
+REPLACE:gun_smith = {
+	is_foreign = no
+	pop_type = burghers
+	max_levels = guild_max_level
+
+	category = weapons_industry_category
+
+	employment_size = guild_employment
+
+	town = yes
+	city = yes
+
+	obsolete = hand_cannon_guild
+
+	build_time = guild_build_time
+
+	unique_production_methods = {
+		guns_guild_lumber_maintenance = {
+			# Wood
+			lumber = 0.15
+			iron = 0.045
+			tools = 0.02
+
+			produced = firearms
+			output = 0.15
+
+			category = guild_input
+
+			debug_max_profit = 0.1
+		}
+
+		guns_guild_bronze_maintenance = {
+			# Bronze
+			copper = 0.5
+			tin = 0.1
+			tools = 0.3
+
+			produced = firearms
+			output = 1
+
+			category = guild_input
+		}
+
+		guns_guild_iron_maintenance = {
+			# Wrought Iron
+			iron = 0.5
+			tools = 0.3
+
+			produced = firearms
+			output = 1
+
+			category = guild_input
+		}
+	}
+
+	unique_production_methods = {
+		guns_guild_ammunition_lead_maintenance = {
+			lead = 0.1
+			saltpeter = 0.1
+			produced = firearms
+			output = 0.16
+			category = guild_input
+		}
+		guns_guild_ammunition_iron_maintenance = {
+			iron = 0.1
+			saltpeter = 0.1
+			produced = firearms
+			output = 0.20
+
+			category = guild_input
+		}
+	}
+
+	construction_demand = guild_construction
+
+	modifier = {  }
+
+	on_built = { sul_gdp_on_building_built = yes }
+
+	on_destroyed = { sul_gdp_on_building_destroyed = yes }
+}
+
+# guns_workshop produces firearms (GDP-only REPLACE)
+
+REPLACE:guns_workshop = {
+	is_foreign = no
+	pop_type = burghers
+	max_levels = workshop_max_level
+
+	category = weapons_industry_category
+
+	employment_size = workshop_employment
+
+	town = yes
+	city = yes
+
+	build_time = workshop_build_time
+
+	unique_production_methods = {
+		guns_workshop_bronze_maintenance = {
+			# Bronze
+			copper = 0.4
+			tin = 0.08
+			tools = 0.25
+
+			produced = firearms
+			output = 1.1
+			debug_max_profit = 0.6
+
+			category = workshop_input
+		}
+		guns_workshop_iron_maintenance = {
+			# Wrought Iron
+			iron = 0.4
+			tools = 0.25
+
+			produced = firearms
+			output = 1
+			debug_max_profit = 0.6
+
+			category = workshop_input
+		}
+	}
+
+	unique_production_methods = {
+		guns_workshop_ammunition_lead_maintenance = {
+			lead = 0.1
+			saltpeter = 0.1
+			produced = firearms
+			output = 0.2
+			debug_max_profit = 0.6
+			category = workshop_input
+		}
+		guns_workshop_ammunition_iron_maintenance = {
+			iron = 0.1
+			saltpeter = 0.1
+			produced = firearms
+			output = 0.25
+			debug_max_profit = 0.6
+			category = workshop_input
+		}
+	}
+
+	obsolete = gun_smith
+
+	construction_demand = workshop_construction
+
+	modifier = {  }
+
+	custom_tags = { workshop }
+
+	on_built = { sul_gdp_on_building_built = yes }
+
+	on_destroyed = { sul_gdp_on_building_destroyed = yes }
+}
+
+# hand_cannon_guild produces firearms (GDP-only REPLACE)
+
+REPLACE:hand_cannon_guild = {
+	is_foreign = no
+	pop_type = burghers
+	max_levels = 1
+	category = weapons_industry_category
+	employment_size = manufactory_employment		# yes.. its early and require more
+	town = yes
+	city = yes
+
+	build_time = guild_build_time
+
+	unique_production_methods = {
+		hand_cannon_guild_maintenance = {
+			tools = 0.05
+			lead = 0.01
+
+			# Gunpowder
+			saltpeter = 0.1
+			alum = 0.005
+
+			# Bronze
+			copper = 0.1
+			tin = 0.02
+
+			produced = firearms
+			output = 0.30
+
+			category = guild_input
+		}
+	}
+
+	construction_demand = guild_construction
+
+	modifier = {  }
+
+	on_built = { sul_gdp_on_building_built = yes }
+
+	on_destroyed = { sul_gdp_on_building_destroyed = yes }
+}
+
+# improved_charcoal_maker produces coal (GDP-only REPLACE)
+
+REPLACE:improved_charcoal_maker = {
+	is_foreign = no
+	pop_type = laborers
+	max_levels = rural_building_cap
+
+	employment_size = rural_peasant_produce_employment
+	obsolete = charcoal_maker
+
+	category = rgo_building_category
+
+	rural_settlement = yes
+	town = yes
+	city = yes
+
+	build_time = rural_build_time
+
+	unique_production_methods = {
+		improved_char_coal_maintenance = {
+			produced = coal
+			output = 1.2
+
+			debug_max_profit = 1
+
+			lumber = 0.8
+			category = guild_input
+		}
+	}
+
+	construction_demand = guild_construction
+
+	on_built = { sul_gdp_on_building_built = yes }
+
+	on_destroyed = { sul_gdp_on_building_destroyed = yes }
+}
+
+# iron_foundry produces tools (GDP-only REPLACE)
+
+REPLACE:iron_foundry = {
+	is_foreign = no
+	pop_type = laborers		# unique
+	max_levels = manufactory_max_level
+
+	employment_size = manufactory_employment
+
+	category = basic_industry_category
+	town = yes
+	city = yes
+
+	build_time = manufactory_build_time
+
+	unique_production_methods = {
+		iron_foundry_maintenance = {
+			iron = 1.0
+			coal = 0.25
+
+			category = manufactory_input
+			produced = tools
+			output = 2
+
+			debug_max_profit = 0.75
+		}
+	}
+
+	obsolete = tools_workshop
+
+	construction_demand = manufactory_construction
+
+	on_built = { sul_gdp_on_building_built = yes }
+
+	on_destroyed = { sul_gdp_on_building_destroyed = yes }
+}
+
+# iron_mill produces tools (GDP-only REPLACE)
+
+REPLACE:iron_mill = {
+	is_foreign = no
+	pop_type = laborers		# unique
+	max_levels = mills_max_level
+
+	employment_size = mills_employment
+
+	category = basic_industry_category
+	town = yes
+	city = yes
+
+	build_time = mills_build_time
+
+	unique_production_methods = {
+		iron_mill_maintenance = {
+			iron = 2.0
+			coal = 0.5
+
+			category = mills_input
+			produced = tools
+			output = 4
+
+			debug_max_profit = 1.0
+		}
+		steel_tools = {
+			steel = 1.25
+
+			category = mills_input
+			produced = tools
+			output = 4
+
+			debug_max_profit = 1.0
+		}
+	}
+
+	obsolete = iron_foundry
+
+	construction_demand = mill_construction
+
+	on_built = { sul_gdp_on_building_built = yes }
+
+	on_destroyed = { sul_gdp_on_building_destroyed = yes }
+}
+
+# jewelry_guild produces jewelry (GDP-only REPLACE)
+
+# Jewelers, goldmiths, etc
+
+REPLACE:jewelry_guild = {
+	is_foreign = no
+	pop_type = burghers
+	max_levels = guild_max_level
+
+	category = consumer_goods_category
+
+	employment_size = guild_employment
+
+	town = yes
+	city = yes
+
+	build_time = guild_build_time
+
+	unique_production_methods = {
+		gold_base = {
+			goods_gold = 0.4
+
+			produced = jewelry
+			output = 1
+
+			category = guild_input
+		}
+
+		silver_base = {
+			silver = 0.5
+
+			produced = jewelry
+			output = 1
+
+			category = guild_input
+		}
+
+		copper_base = {
+			# unlocked by copperworking
+			copper = 1.3
+
+			produced = jewelry
+			output = 1
+
+			category = guild_input
+		}
+	}
+
+	unique_production_methods = {
+		ivory_enhancement = {
+			ivory = 0.1
+			produced = jewelry
+			output = 0.1
+
+			category = guild_input
+		}
+
+		amber_enhancement = {
+			amber = 0.1
+			produced = jewelry
+			output = 0.1
+
+			category = guild_input
+		}
+
+		gems_enhancement = {
+			gems = 0.1
+			produced = jewelry
+			output = 0.1
+
+			category = guild_input
+		}
+
+		pearls_enhancement = {
+			pearls = 0.1
+			produced = jewelry
+			output = 0.1
+
+			category = guild_input
+		}
+	}
+
+	custom_tags = { guild }
+
+	construction_demand = guild_construction
+
+	on_built = { sul_gdp_on_building_built = yes }
+
+	on_destroyed = { sul_gdp_on_building_destroyed = yes }
+}
+
+# lacquerware_guild produces lacquerware (GDP-only REPLACE)
+
+REPLACE:lacquerware_guild = {
+	is_foreign = no
+	pop_type = burghers
+	max_levels = guild_max_level
+
+	category = consumer_goods_category
+
+	employment_size = guild_employment
+
+	town = yes
+	city = yes
+
+	build_time = guild_build_time
+
+	unique_production_methods = {
+		lacquerware_shop_maintenance = {
+			lumber = 1.2
+			dyes = 0.5
+			tools = 0.12
+
+			produced = lacquerware
+			output = 1.0
+
+			category = guild_input
+			debug_max_profit = 0.35
+		}
+	}
+
+	custom_tags = { guild }
+
+	construction_demand = guild_construction
+
+	on_built = { sul_gdp_on_building_built = yes }
+
+	on_destroyed = { sul_gdp_on_building_destroyed = yes }
+}
+
+# lacquerware_manufactory produces lacquerware (GDP-only REPLACE)
+
+REPLACE:lacquerware_manufactory = {
+	is_foreign = no
+	pop_type = burghers
+	max_levels = manufactory_max_level
+
+	category = consumer_goods_category
+
+	employment_size = manufactory_employment
+
+	town = yes
+	city = yes
+
+	obsolete = lacquerware_guild
+
+	build_time = manufactory_build_time
+
+	unique_production_methods = {
+		lacquerware_manufactory_maintenance = {
+			lumber = 2
+			dyes = 0.8
+			tools = 0.2
+
+			produced = lacquerware
+			output = 2
+
+			debug_max_profit = 0.6
+			category = manufactory_input
+		}
+	}
+
+	custom_tags = { midgame_manufactory }
+
+	construction_demand = manufactory_construction
+
+	on_built = { sul_gdp_on_building_built = yes }
+
+	on_destroyed = { sul_gdp_on_building_destroyed = yes }
+}
+
+# paper_guild produces paper (GDP-only REPLACE)
+
+REPLACE:paper_guild = {
+	is_foreign = no
+	pop_type = burghers
+	max_levels = guild_max_level
+
+	category = basic_industry_category
+
+	employment_size = guild_employment
+
+	town = yes
+	city = yes
+
+	build_time = guild_build_time
+
+	unique_production_methods = {
+		paper_guild_leather_maintenance = {
+			leather = 0.2
+			lumber = 0.2
+			produced = paper
+			output = 0.5
+
+			debug_max_profit = 0.15
+
+			category = guild_input
+		}
+
+		paper_guild_fiber_pulp_maintenance = {
+			# unlocked by paper_guild_fiber_pulp_maintenance_advance
+			fiber_crops = 0.6
+			lumber = 0.2
+			produced = paper
+			output = 1.0
+
+			debug_max_profit = 0.45
+
+			category = guild_input
+		}
+
+		paper_guild_cloth_maintenance = {
+			# unlocked by paper_guild_cloth_maintenance_advance
+			cloth = 0.5
+			lumber = 0.1
+			produced = paper
+			output = 1
+
+			category = guild_input
+		}
+	}
+
+	custom_tags = { guild }
+
+	construction_demand = guild_construction
+
+	on_built = { sul_gdp_on_building_built = yes }
+
+	on_destroyed = { sul_gdp_on_building_destroyed = yes }
+}
+
+# paper_manufactory produces paper (GDP-only REPLACE)
+
+REPLACE:paper_manufactory = {
+	is_foreign = no
+	pop_type = burghers
+	max_levels = manufactory_max_level
+
+	category = basic_industry_category
+
+	employment_size = manufactory_employment
+
+	town = yes
+	city = yes
+
+	build_time = manufactory_build_time
+
+	unique_production_methods = {
+		paper_manufactory_maintenance = {
+			cloth = 0.2 # Lump
+			fiber_crops = 0.8
+			lumber = 0.2
+
+			produced = paper
+			output = 2
+
+			debug_max_profit = 0.75
+			category = manufactory_input
+		}
+	}
+
+	obsolete = paper_workshop
+
+	custom_tags = { midgame_manufactory }
+
+	construction_demand = manufactory_construction
+
+	on_built = { sul_gdp_on_building_built = yes }
+
+	on_destroyed = { sul_gdp_on_building_destroyed = yes }
+}
+
+# paper_mill produces paper (GDP-only REPLACE)
+
+REPLACE:paper_mill = {
+	is_foreign = no
+	pop_type = laborers
+	max_levels = mills_max_level
+
+	category = basic_industry_category
+
+	employment_size = mills_employment
+
+	town = yes
+	city = yes
+
+	build_time = mills_build_time
+
+	unique_production_methods = {
+		paper_mill_maintenance = {
+			cloth = 0.1
+			fiber_crops = 1.0
+
+			produced = paper
+			output = 2
+
+			debug_max_profit = 1.0
+			category = mills_input
+		}
+		paper_wood_pulp_maintenance = {
+			# unlocked by paper_guild_wood_pulp_maintenance_advance
+			lumber = 3.0
+			produced = paper
+			output = 4.5
+
+			debug_max_profit = 1.25		# better one
+
+			category = mills_input
+		}
+	}
+
+	obsolete = paper_manufactory
+
+	custom_tags = { lategame_manufactory }
+
+	construction_demand = mill_construction
+
+	on_built = { sul_gdp_on_building_built = yes }
+
+	on_destroyed = { sul_gdp_on_building_destroyed = yes }
+}
+
+# paper_workshop produces paper (GDP-only REPLACE)
+
+REPLACE:paper_workshop = {
+	is_foreign = no
+	pop_type = burghers
+	max_levels = workshop_max_level
+
+	category = basic_industry_category
+
+	employment_size = workshop_employment
+
+	town = yes
+	city = yes
+
+	build_time = workshop_build_time
+
+	unique_production_methods = {
+		paper_workshop_fiber_pulp_maintenance = {
+			fiber_crops = 0.65
+			produced = paper
+			output = 1.0
+
+			debug_max_profit = 0.6
+
+			category = workshop_input
+		}
+		paper_workshop_cloth_maintenance = {
+			cloth = 0.45
+			lumber = 0.1
+			produced = paper
+			output = 1.1
+
+			debug_max_profit = 0.6
+
+			category = workshop_input
+		}
+	}
+
+	obsolete = paper_guild
+
+	custom_tags = { workshop }
+
+	construction_demand = workshop_construction
+
+	on_built = { sul_gdp_on_building_built = yes }
+
+	on_destroyed = { sul_gdp_on_building_destroyed = yes }
+}
+
+# perfumery produces incense (GDP-only REPLACE)
+
+REPLACE:perfumery = {
+	is_foreign = no
+	pop_type = burghers
+	max_levels = manufactory_max_level
+
+	category = consumer_goods_category
+	employment_size = manufactory_employment
+
+	town = yes
+	city = yes
+
+	build_time = manufactory_build_time
+
+	unique_production_methods = {
+		perfumery_maintenance = {
+			liquor = 0.2
+			pepper = 0.25
+
+			produced = incense
+			output = 1
+
+			debug_max_profit = 0.6
+
+			category = guild_input
+		}
+	}
+
+	custom_tags = { midgame_manufactory }
+
+	construction_demand = mill_construction
+
+	on_built = { sul_gdp_on_building_built = yes }
+
+	on_destroyed = { sul_gdp_on_building_destroyed = yes }
+}
+
+# porcelain_guild produces porcelain (GDP-only REPLACE)
+
+REPLACE:porcelain_guild = {
+	is_foreign = no
+	pop_type = burghers
+	max_levels = guild_max_level
+
+	category = consumer_goods_category
+
+	employment_size = guild_employment
+
+	town = yes
+	city = yes
+
+	build_time = guild_build_time
+
+	unique_production_methods = {
+		porcelain_guild_maintenance = {
+			clay = 2.5
+			coal = 0.5
+			tools = 0.05
+			produced = porcelain
+			output = 1
+
+			category = guild_input
+		}
+	}
+
+	custom_tags = { guild }
+
+	construction_demand = guild_construction
+
+	on_built = { sul_gdp_on_building_built = yes }
+
+	on_destroyed = { sul_gdp_on_building_destroyed = yes }
+}
+
+# porcelain_manufactory produces porcelain (GDP-only REPLACE)
+
+REPLACE:porcelain_manufactory = {
+	is_foreign = no
+	pop_type = burghers
+	max_levels = manufactory_max_level
+
+	category = consumer_goods_category
+	employment_size = manufactory_employment
+
+	town = yes
+	city = yes
+
+	build_time = manufactory_build_time
+
+	unique_production_methods = {
+		porcelain_manufactory_maintenance = {
+			clay = 4
+			coal = 0.5
+			tools = 0.25
+
+			produced = porcelain
+			output = 2
+
+			debug_max_profit = 0.6
+
+			category = manufactory_input
+		}
+	}
+
+	obsolete = porcelain_guild
+
+	custom_tags = { midgame_manufactory }
+
+	construction_demand = manufactory_construction
+
+	on_built = { sul_gdp_on_building_built = yes }
+
+	on_destroyed = { sul_gdp_on_building_destroyed = yes }
+}
+
+# pottery_guild produces pottery (GDP-only REPLACE)
+
+REPLACE:pottery_guild = {
+	is_foreign = no
+	pop_type = burghers
+	max_levels = guild_max_level
+
+	category = basic_industry_category
+
+	employment_size = guild_employment
+
+	town = yes
+	city = yes
+
+	build_time = guild_build_time
+
+	unique_production_methods = {
+		pottery_maintenance = {
+			clay = 1.0
+			lumber = 0.12
+			tools = 0.05
+
+			produced = pottery
+			output = 1.0
+
+			category = guild_input
+		}
+	}
+
+	construction_demand = guild_construction
+
+	on_built = { sul_gdp_on_building_built = yes }
+
+	on_destroyed = { sul_gdp_on_building_destroyed = yes }
+}
+
+# pottery_manufactory produces pottery (GDP-only REPLACE)
+
+REPLACE:pottery_manufactory = {
+	is_foreign = no
+	pop_type = burghers
+	max_levels = manufactory_max_level
+
+	category = basic_industry_category
+
+	employment_size = manufactory_employment
+
+	town = yes
+	city = yes
+
+	build_time = manufactory_build_time
+
+	obsolete = pottery_workshop
+
+	unique_production_methods = {
+		pottery_manufactory_maintenance = {
+			clay = 1.0
+			lumber = 0.15
+			tools = 0.1
+
+			produced = pottery
+			output = 1.5
+
+			category = manufactory_input
+
+			debug_max_profit = 0.75
+		}
+	}
+
+	construction_demand = manufactory_construction
+
+	on_built = { sul_gdp_on_building_built = yes }
+
+	on_destroyed = { sul_gdp_on_building_destroyed = yes }
+}
+
+# pottery_mill produces pottery (GDP-only REPLACE)
+
+REPLACE:pottery_mill = {
+	is_foreign = no
+	pop_type = laborers
+	max_levels = mills_max_level
+
+	category = consumer_goods_category
+	employment_size = mills_employment
+
+	town = yes
+	city = yes
+
+	obsolete = pottery_manufactory
+
+	build_time = mills_build_time
+
+	unique_production_methods = {
+		pottery_mill_maintenance = {
+			clay = 2.25
+			lumber = 0.2
+			tools = 0.1
+
+			produced = pottery
+			output = 3.25
+
+			debug_max_profit = 1.0
+
+			category = mills_input
+		}
+	}
+
+	construction_demand = mill_construction
+
+	on_built = { sul_gdp_on_building_built = yes }
+
+	on_destroyed = { sul_gdp_on_building_destroyed = yes }
+}
+
+# pottery_workshop produces pottery (GDP-only REPLACE)
+
+REPLACE:pottery_workshop = {
+	is_foreign = no
+	pop_type = burghers
+	max_levels = workshop_max_level
+
+	category = basic_industry_category
+
+	employment_size = workshop_employment
+
+	town = yes
+	city = yes
+
+	build_time = workshop_build_time
+
+	obsolete = pottery_guild
+
+	unique_production_methods = {
+		pottery_w_maintenance = {
+			clay = 1.0
+			lumber = 0.10
+			tools = 0.05
+
+			produced = pottery
+			output = 1.1
+
+			debug_max_profit = 0.5
+
+			category = workshop_input
+		}
+	}
+
+	construction_demand = workshop_construction
+
+	on_built = { sul_gdp_on_building_built = yes }
+
+	on_destroyed = { sul_gdp_on_building_destroyed = yes }
+}
+
+# printing_manufactory produces books (GDP-only REPLACE)
+
+REPLACE:printing_manufactory = {
+	is_foreign = no
+	pop_type = burghers
+	max_levels = manufactory_max_level
+
+	category = consumer_goods_category
+
+	employment_size = manufactory_employment
+
+	town = yes
+	city = yes
+
+	obsolete = printing_press_shop
+
+	build_time = manufactory_build_time
+
+	unique_production_methods = {
+		printing_manufactory_maintenance = {
+			lead = 0.4 # Types
+			paper = 2.0
+			tools = 0.5
+			lumber = 0.5
+
+			produced = books
+			output = 2
+
+			debug_max_profit = 0.75
+
+			category = manufactory_input
+		}
+	}
+
+	construction_demand = manufactory_construction
+
+	on_built = { sul_gdp_on_building_built = yes }
+
+	on_destroyed = { sul_gdp_on_building_destroyed = yes }
+}
+
+# printing_mill produces books (GDP-only REPLACE)
+
+REPLACE:printing_mill = {
+	is_foreign = no
+	pop_type = laborers
+	max_levels = mills_max_level
+
+	category = consumer_goods_category
+
+	employment_size = mills_employment
+
+	town = yes
+	city = yes
+
+	obsolete = printing_manufactory
+
+	build_time = mills_build_time
+
+	unique_production_methods = {
+		printing_mill_maintenance = {
+			lead = 0.5 # Types
+			paper = 3.5
+			tools = 1.0
+			lumber = 1.0
+
+			produced = books
+			output = 4
+
+			debug_max_profit = 1.0
+
+			category = mills_input
+		}
+	}
+
+	construction_demand = mill_construction
+
+	on_built = { sul_gdp_on_building_built = yes }
+
+	on_destroyed = { sul_gdp_on_building_destroyed = yes }
+}
+
+# printing_press_shop produces books (GDP-only REPLACE)
+
+REPLACE:printing_press_shop = {
+	is_foreign = no
+	pop_type = burghers
+	max_levels = workshop_max_level
+
+	category = consumer_goods_category
+
+	employment_size = workshop_employment
+
+	town = yes
+	city = yes
+
+	obsolete = scriptorium
+
+	build_time = workshop_build_time
+
+	unique_production_methods = {
+		printing_press_maintenance = {
+			lead = 0.25 # Types
+			paper = 1.0
+			tools = 0.2
+			lumber = 0.4
+
+			produced = books
+			output = 1
+
+			debug_max_profit = 0.6
+
+			category = workshop_input
+		}
+	}
+
+	construction_demand = workshop_construction
+
+	on_built = { sul_gdp_on_building_built = yes }
+
+	on_destroyed = { sul_gdp_on_building_destroyed = yes }
+}
+
+# putrefaction_mill produces saltpeter (GDP-only REPLACE)
+
+REPLACE:putrefaction_mill = {
+	is_foreign = no
+	pop_type = laborers
+	max_levels = manufactory_max_level
+
+	category = basic_industry_category
+
+	employment_size = mills_employment
+
+	town = yes
+	city = yes
+
+	build_time = manufactory_build_time
+
+	obsolete = putrefaction_works
+
+	unique_production_methods = {
+		putrefaction_mill_demands = {
+			pottery = 1.1
+			livestock = 2.0
+			produced = saltpeter
+			output = 4.0
+
+			debug_max_profit = 1.0
+
+			category = mills_input
+		}
+	}
+
+	custom_tags = { lategame_manufactory }
+
+	construction_demand = mill_construction
+
+	on_built = { sul_gdp_on_building_built = yes }
+
+	on_destroyed = { sul_gdp_on_building_destroyed = yes }
+}
+
+# putrefaction_works produces saltpeter (GDP-only REPLACE)
+
+REPLACE:putrefaction_works = {
+	is_foreign = no
+	pop_type = burghers
+	max_levels = manufactory_max_level
+
+	category = basic_industry_category
+
+	employment_size = manufactory_employment
+
+	town = yes
+	city = yes
+
+	build_time = manufactory_build_time
+
+	obsolete = saltpeter_workshop
+
+	unique_production_methods = {
+		putrefaction_demands = {
+			pottery = 0.6
+			livestock = 1.2
+			produced = saltpeter
+			output = 2.0
+
+			debug_max_profit = 0.75
+
+			category = manufactory_input
+		}
+	}
+
+	custom_tags = { midgame_manufactory }
+
+	construction_demand = manufactory_construction
+
+	on_built = { sul_gdp_on_building_built = yes }
+
+	on_destroyed = { sul_gdp_on_building_destroyed = yes }
+}
+
+# rural_clothmaker produces cloth (GDP-only REPLACE)
+
+REPLACE:rural_clothmaker = {
+	is_foreign = no
+	pop_type = laborers
+	max_levels = guild_max_level
+
+	category = consumer_goods_category
+
+	employment_size = rural_peasant_produce_employment
+
+	rural_settlement = yes
+
+	town = no
+	city = no
+
+	build_time = rural_build_time
+
+	unique_production_methods = {
+		rural_wool_clothmaker = {
+			wool = 1.0
+
+			produced = cloth
+			output = 0.5
+
+			category = guild_input
+		}
+
+		rural_cotton_clothmaker = {
+			cotton = 0.4
+
+			produced = cloth
+			output = 0.5
+
+			category = guild_input
+		}
+
+		rural_fiber_clothmaker = {
+			fiber_crops = 0.5
+
+			produced = cloth
+			output = 0.4
+
+			category = guild_input
+		}
+	}
+
+	construction_demand = village_construction
+
+	modifier = {  }
+
+	on_built = { sul_gdp_on_building_built = yes }
+
+	on_destroyed = { sul_gdp_on_building_destroyed = yes }
+}
+
+# saltpeter_workshop produces saltpeter (GDP-only REPLACE)
+
+REPLACE:saltpeter_workshop = {
+	is_foreign = no
+	pop_type = burghers
+	max_levels = workshop_max_level
+
+	category = basic_industry_category
+
+	employment_size = workshop_employment
+
+	town = yes
+	city = yes
+
+	build_time = workshop_build_time
+
+	unique_production_methods = {
+		saltpeter_workshop_demands = {
+			pottery = 0.15
+			livestock = 0.9
+			produced = saltpeter
+			output = 1.1
+			debug_max_profit = 0.6
+			category = workshop_input
+		}
+	}
+
+	obsolete = saltpeter_guild
+
+	custom_tags = { workshop }
+
+	construction_demand = workshop_construction
+
+	on_built = { sul_gdp_on_building_built = yes }
+
+	on_destroyed = { sul_gdp_on_building_destroyed = yes }
+}
+
+# schwaz_mine produces silver (GDP-only REPLACE)
+
+REPLACE:schwaz_mine = {
+	is_special = yes
+	is_foreign = no
+	pop_type = laborers
+	max_levels = 1
+
+	category = rgo_building_category
+
+	employment_size = rural_peasant_produce_employment
+
+	rural_settlement = yes
+	town = yes
+	city = yes
+
+	country_potential = {
+		always = no
+	}
+
+	allow = {
+		always = no
+	}
+
+	build_time = infrastructure_build_time
+
+	unique_production_methods = {
+		schwaz_mine_maintenance = {
+			tools = 0.4
+			leather = 0.5
+			lumber = 0.5
+			stone = 0.5
+			liquor = 0.2
+
+			produced = silver
+			output = 1.0
+
+			debug_max_profit = 1		# unique building only 1 level, acceptable to have a high profit.
+
+			category = building_maintenance
+		}
+	}
+
+	modifier = { local_silver_output_modifier = 2.0 }
+
+	construction_demand = basic_construction_needs
+
+	on_built = { sul_gdp_on_building_built = yes }
+
+	on_destroyed = { sul_gdp_on_building_destroyed = yes }
+}
+
+# scriptorium produces books (GDP-only REPLACE)
+
+REPLACE:scriptorium = {
+	is_foreign = no
+	pop_type = clergy
+	max_levels = guild_max_level
+
+	category = consumer_goods_category
+
+	employment_size = religious_building_employment
+
+	town = yes
+	city = yes
+
+	build_time = guild_build_time
+
+	unique_production_methods = {
+		scriptorium_maintenance = {
+			dyes = 0.1
+			paper = 0.3
+			lumber = 0.2
+			produced = books
+			output = 0.3
+
+			category = guild_input
+		}
+	}
+
+	construction_demand = guild_construction
+
+	on_built = { sul_gdp_on_building_built = yes }
+
+	on_destroyed = { sul_gdp_on_building_destroyed = yes }
+}
+
+# slave_market produces slaves_goods (GDP-only REPLACE)
+
+REPLACE:slave_market = {
+	is_foreign = no
+	max_levels = slave_market_max_level
+	pop_type = burghers
+
+	category = government_category
+
+	employment_size = trade_employment
+
+	rural_settlement = no
+	town = yes
+	city = yes
+
+	country_potential = {
+		religion.group != religion_group:christian
+	}
+
+	allow = {
+		scope:actor = { has_slavery = yes }
+	}
+
+	remove_if = { scope:actor = { has_slavery = no } }
+
+	build_time = generic_town_build_time
+
+	unique_production_methods = {
+		slave_market_maintenance = {
+			leather = 0.35
+			tools = 0.3
+			weaponry = 0.25
+			paper = 0.25
+			slaves_goods = 0.5
+
+			produced = slaves_goods
+			output = 2.0
+
+			category = building_maintenance
+		}
+	}
+
+	modifier = { building_enslavement_power = 0.02 local_slave_pop_satisfaction = -0.025 }
+
+	construction_demand = town_building_construction
+
+	on_built = { sul_gdp_on_building_built = yes }
+
+	on_destroyed = { sul_gdp_on_building_destroyed = yes }
+}
+
+# steel_mill produces steel (GDP-only REPLACE)
+
+REPLACE:steel_mill = {
+	is_foreign = no
+	pop_type = laborers
+	max_levels = mills_max_level
+
+	employment_size = mills_employment
+
+	category = basic_industry_category
+	town = yes
+	city = yes
+
+	build_time = mills_build_time
+
+	unique_production_methods = {
+		steel_mill_maintenance = {
+			iron = 2.0
+			coal = 2.0
+			produced = steel
+			output = 4
+
+			debug_max_profit = 1.0
+			category = mills_input
+		}
+	}
+
+	construction_demand = mill_construction
+
+	on_built = { sul_gdp_on_building_built = yes }
+
+	on_destroyed = { sul_gdp_on_building_destroyed = yes }
+}
+
+# tannery produces leather (GDP-only REPLACE)
+
+REPLACE:tannery = {
+	is_foreign = no
+	pop_type = burghers
+	max_levels = guild_max_level
+
+	category = basic_industry_category
+
+	employment_size = guild_employment
+
+	town = yes
+	city = yes
+
+	build_time = guild_build_time
+
+	unique_production_methods = {
+		leather_guild_maintenance = {
+			livestock = 1.0
+			sand = 0.75
+			tools = 0.15
+
+			produced = leather
+			output = 1
+
+			category = guild_input
+		}
+		tannery_maintenance = {
+			wild_game = 1.5
+			sand = 0.75
+			tools = 0.15
+
+			produced = leather
+			output = 1
+
+			category = guild_input
+		}
+	}
+
+	custom_tags = { guild }
+
+	construction_demand = guild_construction
+
+	on_built = { sul_gdp_on_building_built = yes }
+
+	on_destroyed = { sul_gdp_on_building_destroyed = yes }
+}
+
+# tannery_manufactory produces leather (GDP-only REPLACE)
+
+REPLACE:tannery_manufactory = {
+	is_foreign = no
+	pop_type = burghers
+	max_levels = manufactory_max_level
+
+	category = basic_industry_category
+
+	employment_size = manufactory_employment
+
+	town = yes
+	city = yes
+
+	build_time = manufactory_build_time
+
+	unique_production_methods = {
+		leather_manufactory_maintenance = {
+			livestock = 1.5
+			sand = 1.5
+			tools = 0.2
+
+			produced = leather
+			output = 2
+			debug_max_profit = 0.75
+
+			category = manufactory_input
+		}
+		tannery_manufactory_maintenance = {
+			wild_game = 2.1
+			sand = 1.5
+			tools = 0.2
+
+			produced = leather
+			output = 2
+			debug_max_profit = 0.75
+			category = manufactory_input
+		}
+	}
+
+	obsolete = tanning_workshop
+
+	custom_tags = { midgame_manufactory }
+
+	construction_demand = manufactory_construction
+
+	on_built = { sul_gdp_on_building_built = yes }
+
+	on_destroyed = { sul_gdp_on_building_destroyed = yes }
+}
+
+# tannery_mill produces leather (GDP-only REPLACE)
+
+REPLACE:tannery_mill = {
+	is_foreign = no
+	pop_type = laborers
+	max_levels = mills_max_level
+
+	category = basic_industry_category
+
+	employment_size = mills_employment
+
+	town = yes
+	city = yes
+
+	build_time = mills_build_time
+
+	unique_production_methods = {
+		leather_mill_maintenance = {
+			livestock = 3.0
+			sand = 2.5
+			tools = 0.3
+
+			produced = leather
+			output = 4
+			debug_max_profit = 1.0
+
+			category = mills_input
+		}
+		tannery_mill_maintenance = {
+			wild_game = 5.0
+			sand = 2.5
+			tools = 0.3
+
+			produced = leather
+			output = 4
+			debug_max_profit = 1.0
+			category = mills_input
+		}
+	}
+
+	obsolete = tannery_manufactory
+
+	custom_tags = { lategame_manufactory }
+
+	construction_demand = mill_construction
+
+	on_built = { sul_gdp_on_building_built = yes }
+
+	on_destroyed = { sul_gdp_on_building_destroyed = yes }
+}
+
+# tanning_workshop produces leather (GDP-only REPLACE)
+
+REPLACE:tanning_workshop = {
+	is_foreign = no
+	pop_type = burghers
+	max_levels = workshop_max_level
+
+	category = basic_industry_category
+
+	employment_size = workshop_employment
+
+	town = yes
+	city = yes
+
+	build_time = workshop_build_time
+
+	unique_production_methods = {
+		leather_livestock_workshop_maintenance = {
+			livestock = 0.9
+			sand = 0.70
+			tools = 0.15
+
+			produced = leather
+			output = 1.1
+
+			debug_max_profit = 0.6
+
+			category = workshop_input
+		}
+		leather_wildgame_workshop_maintenance = {
+			wild_game = 1.4
+			sand = 0.70
+			tools = 0.15
+
+			produced = leather
+			output = 1.1
+
+			debug_max_profit = 0.6
+
+			category = workshop_input
+		}
+	}
+
+	obsolete = tannery
+
+	custom_tags = { workshop }
+
+	construction_demand = workshop_construction
+
+	on_built = { sul_gdp_on_building_built = yes }
+
+	on_destroyed = { sul_gdp_on_building_destroyed = yes }
+}
+
+# textile_mill produces cloth (GDP-only REPLACE)
+
+REPLACE:textile_mill = {
+	is_foreign = no
+	pop_type = laborers
+	max_levels = mills_max_level
+
+	category = consumer_goods_category
+	employment_size = mills_employment
+
+	town = yes
+	city = yes
+
+	obsolete = cloth_manufactory
+
+	build_time = mills_build_time
+
+	unique_production_methods = {
+		cotton_mill_maintenance = {
+			cotton = 1.5
+			dyes = 0.2
+			produced = cloth
+			output = 3
+
+			debug_max_profit = 1.0
+
+			category = mills_input
+		}
+
+		wool_mill_maintenance = {
+			wool = 3.0
+			dyes = 0.2
+			produced = cloth
+			output = 2.5
+
+			debug_max_profit = 1.0
+
+			category = mills_input
+		}
+
+		fiber_crops_mill_maintenance = {
+			fiber_crops = 2.0
+			dyes = 0.2
+			produced = cloth
+			output = 2.5
+			debug_max_profit = 1.0
+
+			category = mills_input
+		}
+	}
+
+	custom_tags = { lategame_manufactory }
+
+	construction_demand = mill_construction
+
+	on_built = { sul_gdp_on_building_built = yes }
+
+	on_destroyed = { sul_gdp_on_building_destroyed = yes }
+}
+
+# tools_guild produces tools (GDP-only REPLACE)
+
+REPLACE:tools_guild = {
+	is_foreign = no
+	pop_type = burghers
+	max_levels = guild_max_level
+
+	category = basic_industry_category
+
+	employment_size = guild_employment
+
+	town = yes
+	city = yes
+
+	build_time = guild_build_time
+
+	unique_production_methods = {
+		metalwork_guild_maintenance = {
+			iron = 0.75
+			produced = tools
+			output = 1
+
+			debug_max_profit = 0.4
+			category = guild_input
+		}
+
+		stone_tools_guild_maintenance = {
+			stone = 0.70
+			produced = tools
+			output = 0.25
+			debug_max_profit = 0.1
+
+			category = guild_input
+		}
+
+		bronze_tools_guild_maintenance = {
+			copper = 0.5
+			tin = 0.04
+			produced = tools
+			output = 0.6
+			debug_max_profit = 0.2
+
+			category = guild_input
+		}
+
+		copper_tools_guild_maintenance = {
+			# unlocked by copperworking advance
+			copper = 0.5
+			produced = tools
+			output = 0.55
+			debug_max_profit = 0.15
+
+			category = guild_input
+		}
+	}
+
+	construction_demand = guild_construction
+
+	on_built = { sul_gdp_on_building_built = yes }
+
+	on_destroyed = { sul_gdp_on_building_destroyed = yes }
+}
+
+# tools_workshop produces tools (GDP-only REPLACE)
+
+REPLACE:tools_workshop = {
+	is_foreign = no
+	pop_type = burghers
+	max_levels = workshop_max_level
+
+	category = basic_industry_category
+
+	employment_size = workshop_employment
+
+	town = yes
+	city = yes
+
+	build_time = workshop_build_time
+
+	unique_production_methods = {
+		metalwork_workshop_maintenance = {
+			iron = 0.8
+			produced = tools
+			output = 1.1
+			debug_max_profit = 0.5
+			category = workshop_input
+		}
+	}
+
+	construction_demand = workshop_construction
+
+	obsolete = tools_guild
+
+	on_built = { sul_gdp_on_building_built = yes }
+
+	on_destroyed = { sul_gdp_on_building_destroyed = yes }
+}
+
+# weapon_factory produces weaponry (GDP-only REPLACE)
+
+REPLACE:weapon_factory = {
+	is_foreign = no
+	pop_type = laborers
+	max_levels = mills_max_level
+
+	category = weapons_industry_category
+	employment_size = mills_employment
+
+	town = yes
+	city = yes
+
+	obsolete = weapon_manufactory
+
+	build_time = mills_build_time
+
+	unique_production_methods = {
+		weapon_factory_maintenance = {
+			steel = 1.0
+			coal = 0.3
+			lumber = 0.3
+			category = mills_input
+			produced = weaponry
+			output = 4.0
+
+			debug_max_profit = 1.0
+		}
+	}
+
+	custom_tags = { lategame_manufactory }
+
+	construction_demand = mill_construction
+
+	on_built = { sul_gdp_on_building_built = yes }
+
+	on_destroyed = { sul_gdp_on_building_destroyed = yes }
+}
+
+# weapon_guild produces weaponry (GDP-only REPLACE)
+
+REPLACE:weapon_guild = {
+	is_foreign = no
+	pop_type = burghers
+	max_levels = guild_max_level
+
+	category = weapons_industry_category
+
+	employment_size = guild_employment
+
+	town = yes
+	city = yes
+
+	build_time = guild_build_time
+
+	unique_production_methods = {
+		pre_columbian_weapon_smith_maintenance = {
+			lumber = 0.07
+			stone = 1.0
+			produced = weaponry
+			output = 0.4
+			category = guild_input
+
+			debug_max_profit = 0.1
+		}
+
+		weapon_smith_maintenance = {
+			lumber = 0.25
+			coal = 0.3
+			tools = 0.5
+			category = guild_input
+			produced = weaponry
+			output = 1
+		}
+
+		weapon_guild_obsidian_maintenance = {
+			lumber = 0.12
+			stone = 0.5
+			gems = 0.1
+			produced = weaponry
+			output = 0.4
+			category = guild_input
+
+			debug_max_profit = 0.2
+		}
+	}
+
+	custom_tags = { guild }
+
+	construction_demand = guild_construction
+
+	on_built = { sul_gdp_on_building_built = yes }
+
+	on_destroyed = { sul_gdp_on_building_destroyed = yes }
+}
+
+# weapon_manufactory produces weaponry (GDP-only REPLACE)
+
+REPLACE:weapon_manufactory = {
+	is_foreign = no
+	pop_type = burghers
+	max_levels = manufactory_max_level
+
+	category = weapons_industry_category
+
+	employment_size = manufactory_employment
+
+	town = yes
+	city = yes
+
+	obsolete = weapon_workshop
+
+	build_time = manufactory_build_time
+
+	unique_production_methods = {
+		weapon_manufactory_maintenance = {
+			lumber = 0.5
+			coal = 0.5
+			iron = 0.4
+			tools = 0.4
+			category = manufactory_input
+			produced = weaponry
+			output = 2.0
+			debug_max_profit = 0.75
+		}
+	}
+
+	custom_tags = { midgame_manufactory }
+
+	construction_demand = manufactory_construction
+
+	on_built = { sul_gdp_on_building_built = yes }
+
+	on_destroyed = { sul_gdp_on_building_destroyed = yes }
+}
+
+# weapon_workshop produces weaponry (GDP-only REPLACE)
+
+REPLACE:weapon_workshop = {
+	is_foreign = no
+	pop_type = burghers
+	max_levels = workshop_max_level
+
+	category = weapons_industry_category
+
+	employment_size = workshop_employment
+
+	town = yes
+	city = yes
+
+	build_time = workshop_build_time
+
+	unique_production_methods = {
+		weapon_workshop_maintenance = {
+			lumber = 0.3
+			coal = 0.3
+			iron = 0.25
+			tools = 0.2
+			category = workshop_input
+			produced = weaponry
+			output = 1.1
+
+			debug_max_profit = 0.5
+		}
+	}
+
+	obsolete = weapon_guild
+
+	custom_tags = { workshop }
+
+	construction_demand = workshop_construction
+
+	on_built = { sul_gdp_on_building_built = yes }
+
+	on_destroyed = { sul_gdp_on_building_destroyed = yes }
+}
+
+# winery produces wine (GDP-only REPLACE)
+
+REPLACE:winery = {
+	is_foreign = no
+	pop_type = burghers
+	max_levels = guild_max_level
+
+	category = consumer_goods_category
+
+	employment_size = guild_employment
+
+	town = yes
+	city = yes
+
+	build_time = guild_build_time
+
+	unique_production_methods = {
+		fruit_winery_maintenance = {
+			fruit = 1.25
+			lumber = 0.17
+			tools = 0.1
+
+			produced = wine
+			output = 1
+			category = guild_input
+
+			debug_max_profit = 0.2
+		}
+
+		rice_winery_maintenance = {
+			rice = 1.25
+			lumber = 0.16
+			tools = 0.1
+
+			produced = wine
+			output = 1
+			category = guild_input
+
+			debug_max_profit = 0.2
+		}
+
+		honey_winery_maintenance = {
+			beeswax = 0.60
+			lumber = 0.20
+			tools = 0.1
+
+			produced = wine
+			output = 1
+
+			category = guild_input
+
+			debug_max_profit = 0.2
+		}
+	}
+
+	on_built = { sul_gdp_on_building_built = yes }
+
+	on_destroyed = { sul_gdp_on_building_destroyed = yes }
+}
+
+# winery_manufactory produces wine (GDP-only REPLACE)
+
+REPLACE:winery_manufactory = {
+	is_foreign = no
+	pop_type = burghers
+	max_levels = manufactory_max_level
+
+	category = consumer_goods_category
+
+	employment_size = manufactory_employment
+
+	town = yes
+	city = yes
+
+	build_time = manufactory_build_time
+
+	obsolete = winery
+
+	unique_production_methods = {
+		fruit_winery_manufactory_maintenance = {
+			fruit = 1.9
+			lumber = 0.4
+			tools = 0.2
+
+			produced = wine
+			output = 2
+			category = guild_input
+
+			debug_max_profit = 0.4
+		}
+
+		rice_winery_manufactory_maintenance = {
+			rice = 1.9
+			lumber = 0.4
+			tools = 0.2
+
+			produced = wine
+			output = 2
+			category = manufactory_input
+
+			debug_max_profit = 0.4
+		}
+
+		honey_winery_manufactory_maintenance = {
+			beeswax = 1.00
+			lumber = 0.40
+			tools = 0.2
+
+			produced = wine
+			output = 2
+
+			category = manufactory_input
+
+			debug_max_profit = 0.4
+		}
+	}
+
+	construction_demand = manufactory_construction
+
+	on_built = { sul_gdp_on_building_built = yes }
+
+	on_destroyed = { sul_gdp_on_building_destroyed = yes }
 }
